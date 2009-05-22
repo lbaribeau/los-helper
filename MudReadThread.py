@@ -309,10 +309,10 @@ class MudReadThread ( threading.Thread ):
                 if(M_obj != None):
                     MUD_buffer_trunc = max([MUD_buffer_trunc, M_obj.end()])
                     if(in_combat):
-                        MONSTER_LIST = [] # bug fix for bot where mobs arrive at the last second.
+                        #MONSTER_LIST = [] # bug fix for bot where mobs arrive at the last second.
                         self.CommandHandler_inst.stop_KillThread()
                         in_combat = False
-                        self.character_inst.ATTACK_CLK = -self.character_inst.ATTACK_WAIT
+                        self.character_inst.ATTACK_CLK = time.time()-self.character_inst.ATTACK_WAIT
                             #unset attack timer which would prevent action.                
                 # Monster wanders to specific exit
                 M_obj = re.search("The" + s_numbered + " (.+?) just wandered to the .+?\.", MUD_buffer)
@@ -440,7 +440,7 @@ class MudReadThread ( threading.Thread ):
                     if(M_obj):
                         MUD_buffer_trunc = max([MUD_buffer_trunc, M_obj.end()])
                         self.character_inst.MONSTER_CHECK_FLAG = 0
-                else:
+                #else:
                     # Clear list if "You see... " because there are cases where
                     # something can arrive while the bot is on the way out or
                     # some such thing and MONSTER_LIST is invalid, causing the
@@ -448,18 +448,33 @@ class MudReadThread ( threading.Thread ):
                     # was in the bot, but that had an error once when something
                     # wandered away when I was about to engage it.
                     #M_obj = re.search("(?s)You see .+\.", MUD_buffer)  # Match multlines
-                    if(re.search("(?s)Obvious exits:", MUD_buffer) or
-                       re.search("(?s)You see ", MUD_buffer)):
-                        self.character_inst.MONSTER_LIST = []
+                    #if(re.search("(?s)Obvious exits:", MUD_buffer) or
+                    #   re.search("(?s)You see ", MUD_buffer)):
+                    #    self.character_inst.MONSTER_LIST = []
+                    
+                #     Clear the monster list if I see Obvious exits followed by an empty
+                #     line.  However, this isn't rigorous because there could be items.
+                #    M_obj = re.search("(?s)Obvious exits: .+?\.\n\r\n\r", MUD_buffer)
+                #    if(M_obj):
+                #        MUD_buffer_trunc = max([MUD_buffer_trunc, M_obj.end()])
+                #        self.character_inst.MONSTER_LIST = []                        
 
 
                 # Bot wants to know if we left the room or not.
+                # Note:  The following do NOT clear the buffer!  
+                # There is no danger of matching twice because the 
+                # check_go_flag is unset afterwards.  The buffer must 
+                # remain because the bot is about to look for monsters, 
+                # an operation which needs the same buffer contents.
                 if(self.character_inst.CHECK_GO_FLAG == 1):
                     if(re.search("(?s)Obvious exits: ", MUD_buffer) or
                        re.search("It's too dark to see", MUD_buffer)):
                         magentaprint("MUD_READ: successful go")
                         self.character_inst.BLOCKING_MOB = ""
                         self.character_inst.SUCCESSFUL_GO = True
+                        # Determined that we left an area: this is the place to 
+                        # clear the monster list!
+                        self.character_inst.MONSTER_LIST = []
                         self.character_inst.CHECK_GO_FLAG = 0
                     M_obj = re.search("The" + s_numbered + " (.+?) blocks your exit\.", MUD_buffer)
                     if(M_obj):
