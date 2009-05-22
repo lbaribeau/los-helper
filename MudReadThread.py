@@ -474,6 +474,7 @@ class MudReadThread ( threading.Thread ):
                         self.character_inst.SUCCESSFUL_GO = True
                         # Determined that we left an area: this is the place to 
                         # clear the monster list!
+                        magentaprint("Clearing monster list, was:" + str(self.character_inst.MONSTER_LIST))
                         self.character_inst.MONSTER_LIST = []
                         self.character_inst.CHECK_GO_FLAG = 0
                     M_obj = re.search("The" + s_numbered + " (.+?) blocks your exit\.", MUD_buffer)

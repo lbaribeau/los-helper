@@ -459,8 +459,8 @@ class BotThread(threading.Thread):
         while(self.character_inst.CHECK_GO_FLAG == 1 and time.time() - now < 2.0 and not self.__stopping):
             time.sleep(0.05)
             
-        if(time.time() - now < 2.0):
-            magentaprint("Bot: MudReadThread timed out on check_go")
+        if(time.time() - now > 2.0):
+            magentaprint("Bot: MudReadThread timed out on check_go by %f", time.time()-now-2.0)
 
         magentaprint("Check for successful go, returning " + str(self.character_inst.SUCCESSFUL_GO))
 
@@ -596,9 +596,9 @@ class BotThread(threading.Thread):
             # turf if necessary.
             time.sleep(0.05)    # Do a short sleep so this busy loop doesn't
                                 # hog resources.
-        if(time.time() - start_time < 1.5):
-            magentaprint("Bot: MudReadThread timed out on check_for_monsters.  Returned: " + 
-                         str(self.character_inst.MONSTER_LIST))
+        if(time.time() - start_time > 1.5):
+            magentaprint("Bot: MudReadThread timed out on check_for_monsters by %f.  Returned: " + 
+                         str(self.character_inst.MONSTER_LIST), time.time()-start_time-1.5)
             
         self.character_inst.MONSTER_CHECK_FLAG = 0  # Unset flag in case it timed out.
         

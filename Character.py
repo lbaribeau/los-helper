@@ -49,38 +49,45 @@ class Character():
         # Bot variables
         self.MONSTER_CHECK_FLAG = 0
         self.MONSTER_LIST=[]
-#        self.MONSTER_KILL_LIST = [ "dustman", "small girl", "young boy", "old woman",
-#            "old man", "townsman", "stall holder", "duck", "hedgehog", "piglet",
-#            "shopper", "window shopper", "old kobold", "kobold child", "kobold dam", 
-#            "waitress", "housewife", "squirrel", "milk maid", "rabbit", "one man band",
-#            "heather seller", "irate teenager", "blond hooker", "sultry hooker",
-#            "village elder", "small dog", "tribesman", "searcher", "delivery boy",
-#            "oaf", "traveller", "wanderer", "villager", "rich kid", "vagrant",
-#            "dropout", "tramp", "serf", "wanderer", "vagrant", 
-                                                  # Vagrant can be near coral guards.
-        
- #           "hawker", "kobold sentry", "barmaid", "smelly beggar", "spiv", "black crow",
-        self.MONSTER_KILL_LIST = ["old kobold", "kobold child", "kobold dam", "blond hooker", 
-            "sultry hooker", "kobold sentry", "spiv",
-            "oaf", "journeyman", 
-            "sheep", "goose", "penitent", "singer", "musician", "acolyte",
+
+        self.__preferred_monsters = ["old kobold", "kobold child", "kobold dam", 
+            "blond hooker", "oaf", "journeyman", "kobold", "wanderer","acolyte"
+            "sultry hooker", "kobold sentry", "spiv", "kobold miner", "kobold archer", 
+            "angry kobold"]
+        self.__lvl1_monsters = [ "dustman", "small girl", "young boy", "old woman",
+            "old man", "townsman", "stall holder", "duck", "hedgehog", "piglet",
+            "shopper", "window shopper", 
+            "waitress", "housewife", "squirrel", "milk maid", "rabbit", "one man band",
+            "heather seller", "irate teenager", 
+            "village elder", "small dog", "tribesman", "searcher", "delivery boy",
+            "traveller", "wanderer", "villager", "rich kid", "vagrant",
+            "dropout", "tramp", "serf", "wanderer"]     
+        self.__lvl2_monsters = ["hawker", "barmaid", "smelly beggar", "black crow"
+            "sheep", "goose", "penitent", "singer", "musician",
             "bidder", "dairy cow", "scholar", "juggler", 
-            "shepherd", "gazelle", "kobold miner", "kobold archer", "angry kobold",
-        #MONSTER_KILL_LIST = [ "oaf", "acolyte", "journeyman", "spiv","kobold child",
-        #                      "wanderer", "kobold sentry", "kobold miner", 
+            "shepherd", "gazelle"]
+        self.__lvl3_monsters = [
             "market official", "pickpocket", "robed pilgrim", "merchant", "large kobold",
-            "kobold guard", "street trader", "field worker", "harvester", "horse", "cow",
-            "doorman", "stilt walker",  "messenger", "cashier", "kobold",
-            "thatcher",  "tax inspector",
-            "actor", "actress", "theatre goer", "kobold shaman", 
+            "street trader", "field worker", "harvester", "horse", "cow",
+            "doorman", "stilt walker",  "messenger", "cashier",
+            "thatcher",  "tax inspector", "theatre goer" ]
+        self.__lvl4_monsters = ["actor", "actress", "grip", "kobold shaman", 
             "journeyman", "logger", "insane kobold", "kobold scout", "drunken trouble-maker", 
             "kobold champion", "butcher", "young knight", "acrobat", "drunken miner",
             "logger", #"auctioneer", # auctioneers are darn annoying, leave them out!
-            "militia soldier", "carpenter", "stagehand", # "kobold priest", #priests make me too good.
-            "nobleman", 
+            "militia soldier", "carpenter", "stagehand"]
+        self.__lvlx_monsters = [
+            "nobleman", #, "kobold priest"
             "fort sentry", "fur trader", "hunter",
-            "bandit swordsman", "large bandit", "bull",]#, "usher"]#,
-            #"sentry", "farm foreman"]  # 140 experience... but bad idea! (there are two next to eachother & they join)
+            "bandit swordsman", "large bandit", "bull", "kobold guard"
+                                ]
+        self.MONSTER_KILL_LIST = []
+        self.MONSTER_KILL_LIST.extend(self.__preferred_monsters)
+        #self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
+        #self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
+        #self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
+        self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
+        self.MONSTER_KILL_LIST.extend(self.__lvlx_monsters)
 
         self.INVENTORY_CHECK_FLAG = 0
         self.INVENTORY_LIST = []
