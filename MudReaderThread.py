@@ -17,6 +17,7 @@ class MudReaderThread ( threading.Thread ):
     # This thread watches the the MUD output and appends it 
     # to the buffer for the MudReaderThread to read it.
     
+    ConsoleHandler = newConsoleHandler()
     def __init__(self, MUD_buffer_in, character_inst, CommandHandler_inst):
         Thread.__init__(self)       
         # Constants
@@ -559,7 +560,7 @@ class MudReaderThread ( threading.Thread ):
                 self.character_inst.INVENTORY_LIST = self.parse_inventory_list(M_obj.group(1))
                 self.CHECK_INVENTORY_FLAG = 0                
                 
-            #ConsoleHandler.white() 
+            #self.ConsoleHandler.white() 
         
             ##### DONE MATCHING RE's  WOOOOOOOO ######
         
@@ -592,29 +593,29 @@ class MudReaderThread ( threading.Thread ):
         bright_char = ANSI_escape_sequence[2]
         colour_char = ANSI_escape_sequence[3]
         if(bright_char == '3'):
-            ConsoleHandler.set_dark()
+            self.ConsoleHandler.set_dark()
         elif(bright_char == '4'):
-            ConsoleHandler.set_bright()
+            self.ConsoleHandler.set_bright()
         else:
             pass # do nothing
         # Maybe check if character 2 is a '3' or '4' which designate colour
         # commands but I'm too lazy.
         if(colour_char == '0'):
-            ConsoleHandler.black()
+            self.ConsoleHandler.black()
         elif(colour_char == '1'):
-            ConsoleHandler.red()
+            self.ConsoleHandler.red()
         elif(colour_char == '2'):
-            ConsoleHandler.green()
+            self.ConsoleHandler.green()
         elif(colour_char == '3'):
-            ConsoleHandler.yellow()
+            self.ConsoleHandler.yellow()
         elif(colour_char == '4'):
-            ConsoleHandler.blue()
+            self.ConsoleHandler.blue()
         elif(colour_char == '5'):
-            ConsoleHandler.magenta()
+            self.ConsoleHandler.magenta()
         elif(colour_char == '6'):
-            ConsoleHandler.cyan()
+            self.ConsoleHandler.cyan()
         elif(colour_char == '7' or colour_char == '9'):
-            ConsoleHandler.white()
+            self.ConsoleHandler.white()
         else:
             # Do nothing (don't know this ANSI code)
             pass

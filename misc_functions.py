@@ -1,6 +1,6 @@
 
 import time
-import ConsoleHandler
+from ConsoleHandler import newConsoleHandler
 
 ##################################### MISC FUNCTIONS ########################
                        
@@ -113,7 +113,7 @@ def make_list_sellable(inv_list, keep_list):
 
 #def magentaprint(s, mod_s=""):
 def magentaprint(s):
-    ConsoleHandler.magenta()
+    newConsoleHandler().magenta()
 #    if(mod_s != ""):
 #        print s % mod_s
 #    else:
@@ -121,7 +121,7 @@ def magentaprint(s):
     debug = False
     if(debug):
         print s 
-    ConsoleHandler.white()
+    newConsoleHandler().white()
     return
     
 

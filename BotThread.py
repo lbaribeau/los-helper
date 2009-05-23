@@ -9,6 +9,7 @@ from CommandHandler import *
 
 class BotThread(threading.Thread):
 
+    ConsoleHandler = newConsoleHandler()
     def __init__(self, starting_path, character_inst_in, CommandHandler_in, MudReaderHandler_inst_in):   # Constructor
         Thread.__init__(self)
         # Initialize some variables local to this thread
@@ -620,7 +621,7 @@ class BotThread(threading.Thread):
         
             
 #    def decide_which_ones_to_kill(self, monster_list):
-#        ConsoleHandler.magenta()
+#        self.ConsoleHandler.magenta()
 #        print("Inside decide_which_ones_to_kill")
 #        return_list = monster_list[:] # create a copy.
 #        for i in range(0, len(monster_list)):
@@ -801,7 +802,7 @@ class BotThread(threading.Thread):
         
 #                monster_list = self.check_for_monsters()
                     # This fuction should also wait a bit.
-                #ConsoleHandler.magenta()
+                #self.ConsoleHandler.magenta()
                 #print monster_list
 
 #                target_list = self.decide_which_ones_to_kill(monster_list)
