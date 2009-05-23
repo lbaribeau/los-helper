@@ -77,8 +77,19 @@
 # restoratives
 # ### Someone just flashed,
 # The 2nd actress blocks your exit.  (bug: attacks the 1st actress)
+# remove unneccessary __init__s
 
-# done list
+# TBD... mages cast faster (change timers)
+# TBD... a "set chase" functionality which will automatically chase
+#       mobs that run or chase command
+# TBD... a "keep item" list, sell all, drop all.
+# TBD combat with circle
+# TBD reverse engineering ticker timings from Piety and maintain current health
+# TBD haste timers and thread.
+# TBD implement MAXHP, MAXMP, 
+
+
+# DONE LIST
 # aura checks.
 # Bug for kobold guards... won't continue to engage if health is low!
 # blocks your exit
@@ -88,24 +99,13 @@
 #  1. mobs joining in
 #  2. mobs who block
 #  3. not fighting in presence of guard . found one bug (re.match)
-# "sell silver ring" will sell a silver chalice.
+# "sell silver ring" will a silver chalice...
 #  Solution... when doing inventory give everything a good enough name.
 #  still needs to avoid all unusable words.  (test: "silver ring", "tiny silver vial")
 # "Small mace" -> "small restorative" ... fixed if mace is removed on
 #     successful sales... this would be very good to do.
 # town guards. Done.  Reworked top level algorithm.
 # make flee stop the bot. 
-
-#diagoras
-
-# TBD... mages cast faster (change timers)
-# TBD... a "set chase" functionality which will automatically chase
-#       mobs that run or chase command
-# TBD... a "keep item" list, sell all, drop all.
-# TBD combat with circle
-# TBD reverse engineering ticker timings from Piety and maintain current health
-# TBD haste timers.
-# TBD implement MAXHP, MAXMP, 
 
 #Features
   # ANSI color

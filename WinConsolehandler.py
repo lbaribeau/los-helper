@@ -5,6 +5,7 @@ import ctypes
 # See http://msdn.microsoft.com/library/default.asp?url=/library/en-us/winprog/winprog/windows_api_reference.asp
 # for information on Windows APIs.
 class WinConsoleHandler:
+	
 	STD_INPUT_HANDLE = -10
 	STD_OUTPUT_HANDLE= -11
 	STD_ERROR_HANDLE = -12
@@ -18,55 +19,52 @@ class WinConsoleHandler:
 	BACKGROUND_RED  = 0x40 # background color contains red.
 	BACKGROUND_INTENSITY = 0x80 # background color is intensified.
 
-	brightness = 0x00;
+	__brightness = 0x00;
 
+	__std_out_handle = ctypes.windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
 
-	std_out_handle = ctypes.windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
-
-	def set_color(self, color, handle=std_out_handle):
+	def set_color(self, color):
 		"""(color) -> BOOL
 		
 		Example: set_color(FOREGROUND_GREEN | FOREGROUND_INTENSITY)
 		"""
-		bool = ctypes.windll.kernel32.SetConsoleTextAttribute(handle, color)
+		bool = ctypes.windll.kernel32.SetConsoleTextAttribute(self.__std_out_handle, color)
 		return bool
 # set_color
 
 # win_console.py
 
 	def black(self):
-		set_color(0x00 | brightness)
+		self.set_color(0x00 | self.__brightness)
 		return
 	def blue(self):
-		set_color(FOREGROUND_BLUE | brightness)
+		self.set_color(self.FOREGROUND_BLUE | self.__brightness)
 		return
 	def green(self):
-		set_color(FOREGROUND_GREEN | brightness)
+		self.set_color(self.FOREGROUND_GREEN | self.__brightness)
 		return
 	def cyan(self):
-		set_color(0x03 | brightness)
+		self.set_color(0x03 | self.__brightness)
 		return
 	def red(self):
-		set_color(FOREGROUND_RED | brightness)
+		self.set_color(self.FOREGROUND_RED | self.__brightness)
 		return
 	def magenta(self):
-		set_color(0x05 | brightness)
+		self.set_color(0x05 | self.__brightness)
 		return
 	def yellow(self):
-		set_color(0x06 | brightness)
+		self.set_color(0x06 | self.__brightness)
 		return
 	def white(self): 
-		set_color(0x07 | brightness)
+		self.set_color(0x07 | self.__brightness)
 		return    
 
 # Hopefully not misleading - you have to call these BEFORE calling colors to
 # have an effect.. default is dark.
 	def set_bright(self):                      
-		global brightness
-		brightness = 0x08
+		self.__brightness = 0x08
 		return
 	def set_dark(self):
-		global brightness
-		brightness = 0x00
+		self.__brightness = 0x00
 		return
 
