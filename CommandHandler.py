@@ -122,13 +122,13 @@ class CommandHandler():
             self.Character_inst.ATTACK_CLK = now
             self.tn.write(user_input + "\n")
         elif(time_remaining < 1.0):
-            magentaprint("Delaying by %.1f sec ...", time_remaining)
+            magentaprint("Delaying by %.1f sec ..." % time_remaining)
             time.sleep(time_remaining)
             magentaprint("Sent.")
             self.Character_inst.ATTACK_CLK = now
             self.tn.write(user_input + "\n")
         else:
-            magentaprint("(Python) Wait %.1f more seconds", time_remaining)
+            magentaprint("(Python) Wait %.1f more seconds" % time_remaining)
             
     def user_ca(self, user_input):
         # TBD: Match this to a spell list so I can actually tell if they
@@ -147,13 +147,13 @@ class CommandHandler():
             self.Character_inst.CAST_CLK = now
             self.tn.write(user_input + "\n")
         elif (time_remaining < 1.0):
-            magentaprint("(Python) Delaying by %.1f sec ... ", time_remaining)
+            magentaprint("(Python) Delaying by %.1f sec ... " % time_remaining)
             time.sleep(time_remaining)
             magentaprint("Sent.")
             self.Character_inst.CAST_CLK = now
             self.tn.write(user_input + "\n")
         else:
-            magentaprint("(Python) Wait %.1f more seconds", time_remaining)
+            magentaprint("(Python) Wait %.1f more seconds" % time_remaining)
 
 
     def user_move(self, user_input):
@@ -182,13 +182,13 @@ class CommandHandler():
             self.tn.write(user_input + "\n")
         elif(time_remaining < 1.0):
             # Less than a second, just do the delay for them.
-            magentaprint("(Python) Delaying by %.1f sec ...", time_remaining)
+            magentaprint("(Python) Delaying by %.1f sec ..." % time_remaining)
             time.sleep(time_remaining)
             magentaprint("Sent.")
             self.Character_inst.MOVE_CLK = now
             self.tn.write(user_input + "\n")
         else:
-            magentaprint("(Python) Wait %.1f more seconds", time_remaining)
+            magentaprint("(Python) Wait %.1f more seconds" % time_remaining)
 
 
     def user_dr(self, user_input):
@@ -330,7 +330,7 @@ class CommandHandler():
         if (time_remaining < 0):
             self.Character_inst.MOVE_CLK = now
         else:
-            magentaprint("(Python) Delaying by %.1f sec ...", time_remaining)
+            magentaprint("(Python) Delaying by %.1f sec ..." % time_remaining)
             time.sleep(time_remaining)
             magentaprint("Sent.")
             self.Character_inst.MOVE_CLK = now
@@ -342,7 +342,6 @@ class CommandHandler():
         self.tn.write("fl\n")
         self.tn.write("fl\n")
         self.tn.write("fl\n")
-        #self.tn.write("fl\n")
 
         # Put weapons back on.
         time.sleep(0.1)

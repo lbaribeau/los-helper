@@ -1,4 +1,5 @@
 
+import time
 
 class Character():
 
@@ -9,17 +10,23 @@ class Character():
         # character init function sets variables to default (initial)
         # values.  
     
+#        self.char_class = ""
+#        self.level = 0
+#        self.preferred_alignment = "grey"
+#        self.weapon_skills = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
+#        self.magic_skills = [0, 0, 0, 0, 0]
+        self.EXPERIENCE = 0
+        self.GOLD = 0
+        
         self.ATTACK_PERIOD = 3 #sec
         self.ATTACK_PERIOD_HASTE = 2 #sec
         self.CAST_PERIOD = 6
         #self.CAST_PERIOD_MAGE = 3
 
-        # Constants
         self.ATTACK_WAIT = self.ATTACK_PERIOD   # Used by timer.  Same as ATTACK_PERIOD.
                                     # Amount of time to wait to walk after attacking
         self.MOVE_WAIT = 0.3
         self.CAST_WAIT = self.CAST_PERIOD
-
 
         # Game environment variables.
         self.HASTING = False 
@@ -46,13 +53,12 @@ class Character():
         self.MAX_MANA = 24
         self.MANA_TO_ENGAGE = 6
 
-        # Bot variables
-        self.MONSTER_CHECK_FLAG = 0
         self.MONSTER_LIST=[]
 
-        self.__preferred_monsters = ["old kobold", "kobold child", "kobold dam", 
-            "blond hooker", "oaf", "journeyman", "kobold", "wanderer","acolyte"
-            "sultry hooker", "kobold sentry", "spiv", "kobold miner", "kobold archer", 
+        self.__preferred_monsters = ["oaf", "journeyman", "acolyte", "wanderer"]
+        self.__red_monsters = ["old kobold", "kobold child", "kobold dam", 
+            "blond hooker",  "kobold", "sultry hooker", "kobold sentry", "spiv", 
+            "kobold miner", "kobold archer", 
             "angry kobold"]
         self.__lvl1_monsters = [ "dustman", "small girl", "young boy", "old woman",
             "old man", "townsman", "stall holder", "duck", "hedgehog", "piglet",
@@ -61,7 +67,7 @@ class Character():
             "heather seller", "irate teenager", 
             "village elder", "small dog", "tribesman", "searcher", "delivery boy",
             "traveller", "wanderer", "villager", "rich kid", "vagrant",
-            "dropout", "tramp", "serf", "wanderer"]     
+            "dropout", "tramp", "serf"]     
         self.__lvl2_monsters = ["hawker", "barmaid", "smelly beggar", "black crow"
             "sheep", "goose", "penitent", "singer", "musician",
             "bidder", "dairy cow", "scholar", "juggler", 
@@ -83,13 +89,13 @@ class Character():
                                 ]
         self.MONSTER_KILL_LIST = []
         self.MONSTER_KILL_LIST.extend(self.__preferred_monsters)
+        #self.MONSTER_KILL_LIST.extend(self.__red_monsters)
         #self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
-        #self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
-        #self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
+        self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
+        self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
         self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
         self.MONSTER_KILL_LIST.extend(self.__lvlx_monsters)
 
-        self.INVENTORY_CHECK_FLAG = 0
         self.INVENTORY_LIST = []
         self.KEEP_LIST = ["large bag", "silver chalice", "steel bottle",
                      "adamantine sword", "claymore", "poison ring", 
@@ -101,25 +107,17 @@ class Character():
                      "ring mail hood", "ring mail gauntlets", "leather collar", 
                      "furry cloak", "white amulet", "white potion", 
                      "stilleto", 'rapier', 'heavy crossbow'] 
-                    #"brass ring", "copper ring", "silver ring",
-                     #"diamantium ring", "platinum ring", "iron ring"]
-        self.SELL_LIST = []
-        self.DROP_LIST = []  # global because 'bot.go' function calls sell_items and
-                        # drop_items and is in no position to pass parameters
-
-        self.SELL_CHECK_FLAG = 0
+       
         self.MUD_RETURN_ITEM_SOLD = False
-
-        self.EXPERIENCE = 0
-        self.GOLD = 0
 
         self.MOBS_JOINED_IN = []
 
-        self.CHECK_GO_FLAG = 0
         self.SUCCESSFUL_GO = False
-        self.BLOCKING_MOB = ""
+        self.GO_BLOCKING_MOB = ""
+        self.GO_PLEASE_WAIT = False
+        self.GO_NO_EXIT = False
+        self.GO_TIMEOUT = False
 
-        self.AURA_CHECK_FLAG = 0
         self.AURA_LIST = ['demonic red', 'ominous red', 'ghastly red', 'murky red',
                      'red', 'rusty', 'dusty red', 'grey',
                      'dusty blue', 'pale blue', 'blue',
@@ -129,4 +127,6 @@ class Character():
         self.AURA_SCALE = 8
         self.AURA_PREFERRED = "pale blue"
         self.AURA_PREFERRED_SCALE = 10
+        
+        self.START_TIME = time.time()
         

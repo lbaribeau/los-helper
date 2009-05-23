@@ -126,29 +126,50 @@ from misc_functions import *
 from Character import *
 from BotThread import BotThread
 from CommandHandler import CommandHandler
-from MudReadThread import MudReadThread
+from MudReaderHandler import MudReaderHandler
+from MudReaderThread import MudReaderThread
+from MudListenerThread import MudListenerThread
+from MyBuffer import MyBuffer
 
 character_inst = None
 CommandHandler_inst = None
-MudReadThread_inst = None
+MudReaderThread_inst = None
+MudReaderHandler_inst = None
 
 def main():
     global tn
     global character_inst
     global CommandHandler_inst
-    global MudReadThread_inst
+    global MudReaderThread_inst
+    global MudReaderHandler_inst
 
     tn = connect_to_MUD()  # Sets up telnet object
 
     character_inst = Character()
     CommandHandler_inst = CommandHandler(character_inst, tn)
+    
+    magentaprint("creating buffer")
+    MUD_buffer = MyBuffer()
 
-    # Thread which watches MUD messages
-    MudReadThread_inst = MudReadThread(character_inst, CommandHandler_inst, tn)
-    MudReadThread_inst.start()
+    # Thread to listen to telnet socket
+    magentaprint("creating listener")
+    MudListenerThread_inst = MudListenerThread(tn, MUD_buffer, character_inst)
+    MudListenerThread_inst.start()    
+
+    # MudReader: Thread which watches and parses MUD text
+    magentaprint("creating reader")
+    MudReaderThread_inst = MudReaderThread(MUD_buffer, character_inst, CommandHandler_inst)
+    MudReaderThread_inst.start()
+    
+    # MudReaderHandler: Thread which supplies a couple of 
+    # functions in coordinating with the MudReader.  Most 
+    # commonly timing related.
+    magentaprint("creating handler")
+    MudReaderHandler_inst = MudReaderHandler(MudReaderThread_inst, character_inst)
 
     # Now that the MUD thread is going I can trust it to issue the 
     # username/password prompts
+    magentaprint("doing password")
     issue_name_and_password(tn)
 
     # These threads now belong to the CommandHandler
@@ -164,17 +185,17 @@ def main():
     bot_thread_inst = None
 
     # Main thread will go to having raw_input open all the time.
-    watch_user_input(MudReadThread_inst, character_inst)   # The MUD_read thread quits if it hits
+    watch_user_input(MudReaderHandler_inst, character_inst)   # The MUD_read thread quits if it hits
                                         # and EOF.  watch_user_input watches for
                                         # that and quits too.
 
     # Clean exit:  watch_user_input sees the "quit" and sends it, then we
-    # get here.  MudReadThread_inst will quit at the EOF, where we join up.
+    # get here.  MudReaderThread_inst will quit at the EOF, where we join up.
     
-    while (MudReadThread_inst.is_alive()): 
-        MudReadThread_inst.join(3)  # Wait 3 sec for the other thread to quit.
-        if (MudReadThread_inst.is_alive()):
-            MudReadThread_inst.stop()  # Last resort.
+    while (MudReaderThread_inst.is_alive()): 
+        MudReaderThread_inst.join(3)  # Wait 3 sec for the other thread to quit.
+        if (MudReaderThread_inst.is_alive()):
+            MudReaderThread_inst.stop()  # Last resort.
 
     #Okay, clean exit!  
 
@@ -209,7 +230,7 @@ def issue_name_and_password(tn):
     
 
 
-def watch_user_input(MudReadThread_inst, character_inst):
+def watch_user_input(MudReaderHandler_inst, character_inst):
     
     # This thread watches user input.  For now it will shovel everything
     # to the MUD
@@ -236,7 +257,7 @@ def watch_user_input(MudReadThread_inst, character_inst):
         # Mass switch on user input to get functionality
         user_input = user_input.lstrip() #Optional
         #PREV_USER_COMMAND = user_input
-        if(not MudReadThread_inst.is_alive()):
+        if(not MudReaderThread_inst.is_alive()):
             magentaprint("\nWhat happened to read thread?  Time to turf.\n")
             tn.write(user_input + "\n")
             stopping = True
@@ -347,7 +368,7 @@ def start_bot(user_input, character_inst, CommandHandler_inst):
     # Start the bot thread.
 
     global bot_thread_inst
-    global MudReadThread_inst
+    global MudReaderHandler_inst
 
     # Check for an argument
     M_obj = re.search("[0-9]", user_input)
@@ -359,7 +380,7 @@ def start_bot(user_input, character_inst, CommandHandler_inst):
     if (bot_thread_inst != None and bot_thread_inst.is_alive()):
         magentaprint("It's already going, you'll have to stop it.  Use \"stop\".")
     else:
-        bot_thread_inst = BotThread(starting_path, character_inst, CommandHandler_inst, MudReadThread_inst)
+        bot_thread_inst = BotThread(starting_path, character_inst, CommandHandler_inst, MudReaderHandler_inst)
             # Constructor arg is which path to start on.
         bot_thread_inst.start()
 

@@ -44,6 +44,15 @@ def my_list_count(thelist, item):
             start_point = start_point + 1
         return count
     
+def my_list_equal(listA, listB):
+    lenA = len(listA)
+    if(lenA != len(listB)):
+        return False
+    for i in range(0, lenA):
+        if (listA[i] != listB[i]):
+            return False
+    return True
+    
 
 def make_list_sellable(inv_list, keep_list):
     # Now... do fix for selling the wrong thing...
@@ -102,26 +111,16 @@ def make_list_sellable(inv_list, keep_list):
     return return_list               
 
 
-def replace_newlines_with_spaces(s):
-    return_string = s[:] # create a copy.
-    
-    for removechar in ["\r", "\n"]:
-        Nindex = return_string.find(removechar)
-        while(Nindex != -1):
-            if(removechar == '\r'):
-                return_string = return_string[0:Nindex] + return_string[Nindex+1:]
-            else:
-                return_string = return_string[0:Nindex] + ' ' + return_string[Nindex+1:]
-            Nindex = return_string.find(removechar)
-
-    return return_string
-
-def magentaprint(s, mod_s=""):
+#def magentaprint(s, mod_s=""):
+def magentaprint(s):
     ConsoleHandler.magenta()
-    if(mod_s != ""):
-        print s % mod_s
-    else:
-        print s
+#    if(mod_s != ""):
+#        print s % mod_s
+#    else:
+#        print s
+    debug = False
+    if(debug):
+        print s 
     ConsoleHandler.white()
     return
     

@@ -9,19 +9,18 @@ from CommandHandler import *
 
 class BotThread(threading.Thread):
 
-    def __init__(self, starting_path, character_inst_in, CommandHandler_in, MudReadThread_in):   # Constructor
+    def __init__(self, starting_path, character_inst_in, CommandHandler_in, MudReaderHandler_inst_in):   # Constructor
         Thread.__init__(self)
         # Initialize some variables local to this thread
         self.__stopping = False
         self.__TOTALPATHS = 12
-        #self.__TOTALPATHS = 8 # not doing kobolds for while.
         if(isinstance(starting_path, int) and starting_path < self.__TOTALPATHS):
             self.__nextpath = starting_path
         else:
             self.__nextpath = 0
         self.character_inst = character_inst_in
         self.CommandHandler_inst = CommandHandler_in
-        self.MudReadThread_inst = MudReadThread_in
+        self.MudReaderHandler_inst = MudReaderHandler_inst_in
         atexit.register(self.stop)
 
     def stop(self):
@@ -32,6 +31,15 @@ class BotThread(threading.Thread):
         self.__stopping = False
 
     def run(self):
+        # Overall algorithm is:
+            # rest
+            # check weapons, armour
+            #    go a direction
+            #    (monster list up to date if go worked)
+            #        engage
+            #        heal, check weapons
+            # Always healed while traveling.
+                    
         #global MOBS_JOINED_IN
         self.__stopping = False
 
@@ -58,59 +66,91 @@ class BotThread(threading.Thread):
                 # updated before we started resting.
 
             while(direction_list != [] and not self.__stopping):
+                # Note that go returns a success value.  We have to be aware 
+                # of what text has gone by to keep track of MONSTER_LIST
+                # So since we know go was successful we know that 
+                # MONSTER_LIST is good to go by now.
                 if(self.go(direction_list[0])):
+                    # Successful go.
                     direction_list.pop(0)
-                    self.character_inst.MOBS_JOINED_IN = [] # this is the most sensible place to
-                                        # clear this list.  (successful 'go')
+                    self.character_inst.MOBS_JOINED_IN = [] 
+                        # this is the most sensible place to
+                        # clear this list.  (successful 'go')
+                        # Revamp note:  try removing this it might work.
                 else:
                     # Go fails... usually something blocked exit.
                     # Also happens on timeout... which happens to me when I
                     # use the scroll bar on the command prompt window, which 
-                    #suppresses output
-                    if(self.character_inst.BLOCKING_MOB != ""):
-                        #MUD_read_thread sets BLOCKING_MOB when go returns false
-                        self.engage_monster(self.character_inst.BLOCKING_MOB)
+                    # suppresses output
+                    
+                    # Why might go fail?  
+                    #  - blocking mob
+                    #  - please wait 1 second
+                    #  - exit doesn't exist
+                    
+                    # These should all be set by MudReader and unset by the 
+                    # MudReaderHandler when we called check_for_successful_go.
+                    if(self.character_inst.GO_BLOCKING_MOB != ""):
+                        #MUD_read_thread sets GO_BLOCKING_MOB when go returns false
+                        self.begin_combat(self.character_inst.GO_BLOCKING_MOB)
                         # Error here...  check_for_monsters will clear
                         # MONSTER_LIST at the same time as MUD_read
                         # notices that the street trader is dead and tries to
                         # remove it.
+                        self.character_inst.GO_BLOCKING_MOB = ""
                         continue  # No need to do all that other stuff
                             # if we were trying to leave and were blocked.
                             # Actually it would be buggy because MUD_thread's
                             # gonna want to remove the street trader from
                             # the list, but check_for_monsters might
                             # clear it.
-                    else:
-                        # assume the go check was wrong and that it was successful.
-                        #direction_list.pop(0)
-                        # Just try again I guess.
+                    elif(self.character_inst.GO_PLEASE_WAIT):
+                        # Just try again.
+                        magentaprint("Bot: Got please wait on a go attempt, retrying.")
+                        continue
+                    elif(self.character_inst.GO_TIMEOUT):
+                        magentaprint("Bot: Check go timed out. I will try again, hopefully next one will work.")
+                        continue
+                    elif(self.character_inst.GO_NO_EXIT): 
+                        # This is a tough one.  Hopefully it never 
+                        # happens.  I'm gonna assume it happened 
+                        # because the last go actually worked and 
+                        # was wrongly determined not to.
+                        direction_list.pop()
                         self.character_inst.MOBS_JOINED_IN = []
                         continue
 
-                monster_list = self.check_for_monsters()
-                  # Updates and returns MONSTER_LIST (its the same reference!)
+                # Okay, successful go.  I'm going to assume now that 
+                # MONSTER_LIST is now up to date.
+                
+                #monster_list = MudReaderHandler_inst.check_for_monsters()
+                    # Updates and returns MONSTER_LIST (its the same reference!)
+                #monster_list = self.character_inst.MONSTER_LIST[:]
 
-                new_target = self.decide_which_mob_to_kill(monster_list)
-                while (new_target != "" and not self.__stopping):
-                    # Overall algorithm is:
-                    # rest
-                    # check weapons, armour
-                    #    go a direction
-                    #    get initial monster list.
-                    #        engage
-                    #        heal, check weapons
-                    # Always healed while traveling.
-
-                    self.engage_monster(new_target)
-                    #MONSTER_LIST.remove(new_target) # Is this bad?  Should I
-                        # limit access to this global thing only to MUD_read?
-                        # Meh.
-                        # Now the other thread will do that.
-                    #monster_list.remove(new_target)
-
-                    self.get_items()
+                if(self.ready_for_combat()):
+                    new_target = self.decide_which_mob_to_kill(self.character_inst.MONSTER_LIST)
+                else:
+                    new_target = ""
                     
-                    self.check_weapons()
+                while (new_target != "" and not self.__stopping):
+                    
+                    #self.engage_monster(new_target)
+                    #self.get_items()
+                    
+                    # MudReader maintains MONSTER_LIST pretty well by
+                    # adding and removing.  
+                    # It will not remove from MOBS_JOINED_IN nor 
+                    # MOBS_ATTACKING because the three lists can contain 
+                    # common mobs.  So before engaging a mob in one of the 
+                    # latter two lists the bot should check that it is 
+                    # still in the MONSTER_LIST.  Also be mindful of timing:
+                    # MOBS_ATTACKING might not be populated as soon as the 
+                    # bot enters the room - that's why they are engaged last
+                    # (as a cleanup).
+                    #self.engage_mobs_who_joined_in()
+                    #self.engage_mobs_who_are_attacking()
+                    #self.heal_up()  
+                    #self.check_weapons()
 
                     # Can be a problem here... heal_up assumes we're
                     # not in combat and there could be something attacking.
@@ -119,22 +159,23 @@ class BotThread(threading.Thread):
                     # that's how I will do it.
                     # MUD_read adds things to "joins in the fight" and
                     # I will check it here and if not empty I can't stop to
-                    # heal up!
-                    self.engage_mobs_who_joined_in()
+                    # heal up!                   
+                                            
+                    # Now we can reference MONSTER_LIST again.  Note that
+                    # MudReader has already removed all of the mobs that we
+                    # killed.  (That's in fact how we knew combat was over)
+                    # The higher priority mobs were in the other lists 
+                    # and will also have been removed from MONSTER_LIST
                     
-                    self.heal_up()  
-
-                    #if(monster_list != self.character_inst.MONSTER_LIST):
-                        # MUD_read must have done something, so update now.
-                        # This happens when a mob arrives or leaves.
-                    #    monster_list = self.character_inst.MONSTER_LIST[:]
-
-                    new_target = self.decide_which_mob_to_kill(monster_list)
-
+                    self.begin_combat(new_target)
                     
-
+                    if(self.ready_for_combat()):
+                        new_target = self.decide_which_mob_to_kill(self.character_inst.MONSTER_LIST)
+                    else:
+                        new_target = ""
+                        
                     
-                
+                    
 
     def rest(self):
         # Check current health, rest if necessary.  Return when full health
@@ -210,6 +251,47 @@ class BotThread(threading.Thread):
             time.sleep(1.2) #Wait for prompt to respond before checking MANA again.
             
         return
+    
+    def update_aura(self):
+        
+        if(self.__stopping):
+            return False
+
+        wait_for_cast_ready(self.character_inst)
+        #tn.write("c show\n")
+        self.CommandHandler_inst.user_ca('c show')
+        
+        self.MudReaderHandler_inst.wait_for_aura_match()
+        
+        return True
+    
+    def heal_up(self):
+        #global CastThread_inst
+        
+        heal_spell = "vig"
+        heal_cost = 2
+        
+        if(self.__stopping):
+            return
+        
+        magentaprint("Inside heal_up")
+        if(self.character_inst.HEALTH <= self.character_inst.HEALTH_TO_HEAL and 
+           self.character_inst.MANA >= heal_cost):
+            self.CommandHandler_inst.user_cc(heal_spell)  # Easiest way to start casting vig
+            
+        # Just wait for MUD_buffer to set HEALTH for us (above 60)
+        while(self.character_inst.HEALTH <= self.character_inst.HEALTH_TO_HEAL and 
+              self.character_inst.MANA >= heal_cost and not self.__stopping):
+            time.sleep(0.05)     
+
+        #if(CastThread_inst != None and CastThread_inst.is_alive()):
+        #    CastThread_inst.stop()
+        self.CommandHandler_inst.stop_CastThread()
+        
+        magentaprint("Exiting heal_up")
+            
+        return
+
 
     def check_weapons(self):
         
@@ -294,8 +376,12 @@ class BotThread(threading.Thread):
                           "cave 3", 'e', "se", "nw", "ne", "cave", "out",
                           'e', "ne", "cave", "out", "ladder", "nw", "cave",
                           "out", 'w', 'd', 'n', 's', 'u', 'e', "se", 
-                          #"prepare", 'e', 'ne', "door", "door", "prepare", 'sw',
-                          #'w',
+                          # Note: You can remove the following line of code 
+                          # to remove the kobold guards and priests fights.
+                          # Priests turn you very blue.  These fights may be 
+                          # difficult.
+                          # Also useful to test mobs who join in.
+                          #"prepare", 'e', 'ne', "door", "door", "prepare", 'sw','w',
                           "ladder", "sw", 'w', "sw", 'w', "out", 'd',
                           "boulder", 'd', 'd', 'e', "open door", 'w', 's', 's',
                           'e', 's', "sw", 's', 's', 's', 's', "gully",
@@ -349,61 +435,6 @@ class BotThread(threading.Thread):
             
         #print "Returning" + str(path_to_go)
         return path_to_go
-
-    def update_aura(self):
-        #global AURA
-        #global AURA_CHECK_FLAG
-        
-        SHOW_AURA_COST = 1  # Mana
-
-        if(self.__stopping):
-            return False
-
-        wait_for_cast_ready(self.character_inst)
-        #tn.write("c show\n")
-        self.CommandHandler_inst.user_ca('c show')
-        
-        #AURA = ""          # no need to error check at that level of detail
-                            # I don't think that this function will ever fail...
-                            # but even if it does I think the desired behavior
-                            # is just to keep the same previous aura.
-                            
-        #self.character_inst.AURA_CHECK_FLAG = 1
-        #now = time.time()
-        #while(self.character_inst.AURA_CHECK_FLAG == 1 and time.time() - now < 0.8):
-        #    time.sleep(0.05)
-        
-        #tn.write("cast show-aura")
-        
-        if(self.character_inst.MANA >= SHOW_AURA_COST):
-            M_obj = self.MudReadThread_inst.MUD_output_check("You glow with a (.+?) aura\.")
-            if(M_obj):
-                self.character_inst.AURA = M_obj.group(1)
-                self.character_inst.AURA_SCALE = my_list_search(self.character_inst.AURA_LIST, self.character_inst.AURA)
-                return True
-            else:
-                return False
-        else:
-            return False
-
-    def update_inventory_list(self):
-        # not tested if he has no inventory
-        # Send the 'i' command to the MUD and let MUD_read_thread get the
-        # response
-
-        #global INVENTORY_LIST
-        #global INVENTORY_CHECK_FLAG
-        
-        if(self.__stopping):
-            return
-        self.CommandHandler_inst.process("i")
-        self.character_inst.INVENTORY_LIST = []
-        self.character_inst.INVENTORY_CHECK_FLAG = 1
-        now = time.time()
-        while(self.character_inst.INVENTORY_CHECK_FLAG == 1 and time.time() - now < 0.8):
-            time.sleep(0.05)
-
-        return
             
     def go(self, exit_str):
         wait_for_move_ready(self.character_inst)
@@ -418,16 +449,18 @@ class BotThread(threading.Thread):
         # logic should be fixed to realize that its not in a new area 
         # in these instances.
         
-        magentaprint("Going " + exit_str)
+        magentaprint("Going " + exit_str + (". %f" % (time.time() - self.character_inst.START_TIME)))
         # "go sw" doesn't work... check for nw, ne, sw, se, and accommodate
         if(exit_str == "nw" or exit_str == "ne" or
            exit_str == "sw" or exit_str == "se" or
            exit_str == 'n' or exit_str == 'e' or
            exit_str == 's' or exit_str == 'w'):
             self.CommandHandler_inst.process(exit_str)
+            return self.MudReaderHandler_inst.check_for_successful_go() 
         elif(re.match("open ", exit_str)):
             self.CommandHandler_inst.process(exit_str)
             self.CommandHandler_inst.process("go " + exit_str.split(' ')[1])
+            return self.MudReaderHandler_inst.check_for_successful_go() 
         elif(exit_str == "prepare"):
             self.CommandHandler_inst.process(exit_str)
             return True
@@ -439,33 +472,7 @@ class BotThread(threading.Thread):
             return True
         else:
             self.CommandHandler_inst.process("go " + exit_str)
-
-        # Now check if successful.
-       
-        return self.check_for_successful_go()
-
-    def check_for_successful_go(self):
-        # This function can be called right after going through an exit
-        # to determine whether 
-        #global CHECK_GO_FLAG
-        #global SUCCESSFUL_GO
-
-
-        magentaprint("Inside check_for_successful_go")
-
-        self.character_inst.CHECK_GO_FLAG = 1
-        self.character_inst.SUCCESSFUL_GO = False
-        now = time.time()
-        while(self.character_inst.CHECK_GO_FLAG == 1 and time.time() - now < 2.0 and not self.__stopping):
-            time.sleep(0.05)
-            
-        if(time.time() - now > 2.0):
-            magentaprint("Bot: MudReadThread timed out on check_go by %f", time.time()-now-2.0)
-
-        magentaprint("Check for successful go, returning " + str(self.character_inst.SUCCESSFUL_GO))
-
-        return self.character_inst.SUCCESSFUL_GO        
-        
+            return self.MudReaderHandler_inst.check_for_successful_go()
 
     def sell_items(self):
         """
@@ -476,18 +483,23 @@ class BotThread(threading.Thread):
         #global SELL_LIST
         #global DROP_LIST
 
-        self.update_inventory_list()
+        inv_success = self.update_inventory_list()
+        
+        if(not inv_success):
+            magentaprint("BotThread: sell_items.  Timeout problem matching inventory")
+            return
 
-        self.character_inst.SELL_LIST = self.character_inst.INVENTORY_LIST[:] # create a copy
+        inv = self.character_inst.INVENTORY_LIST[:] # create a copy
         
         #for item in KEEP_LIST:
         #    while(my_list_search(SELL_LIST, item) != -1):
         #        SELL_LIST.remove(item)
                 
-        my_sell_list = make_list_sellable(self.character_inst.SELL_LIST, self.character_inst.KEEP_LIST)
+        my_sell_list = make_list_sellable(inv, self.character_inst.KEEP_LIST)
           # Chooses item names to evade "silver chalice" and "silver ring" collisions
           # Also does not include keepers.
-        self.character_inst.DROP_LIST = my_sell_list[:]  # important to copy here
+        self.__drop_list = my_sell_list[:]  # important to copy here
+                                        # also not increased scope of drop list
         debug = False
         for item in my_sell_list:
         #for i in range(0, len(my_sell_list)):
@@ -495,20 +507,46 @@ class BotThread(threading.Thread):
             
             if(self.__stopping):
                 return
-            
-            if(debug):
-                magentaprint("sell " + item)
-            else:
-                magentaprint("sell " + item)
-                self.CommandHandler_inst.process("sell " + item)
-
-            if(self.item_was_sold()):  # function which handshakes with
-                                    # MUD_read_thread to determine
-                                    # if an item sold.
-                self.character_inst.DROP_LIST.remove(item)
+            magentaprint("sell " + item)
+            self.CommandHandler_inst.process("sell " + item)
+            if(self.MudReaderHandler_inst.check_if_item_was_sold()):  
+                # function which handshakes with
+                # MudReaderThread to determine
+                # if an item sold.
+                self.__drop_list.remove(item)
 
         return 
+ # Wish list.
+ # In selling items, bot should:
+ #  be in chapel
+ #  check inventory
+ #  pick sell list
+ #  (then if its empty he doesn't have to go to the shop)
+ #  (another reason is to limit the scope of the drop list)
+ #  (it would be a function like
+ # def clean_inventory():
+ #     self.update_inventory()
+ #     sell_list = make_things_sellable()
+ #     drop_list = go_sell(sell_list)
+ #     go_drop(drop_list)
+ # Maybe this function can be user accessable :)
+                
 
+    def update_inventory_list(self):
+        # not tested if he has no inventory
+        # Send the 'i' command to the MUD and let MUD_read_thread get the
+        # response
+
+        #global INVENTORY_LIST
+        #global INVENTORY_CHECK_FLAG
+        
+        if(self.__stopping):
+            return
+        
+        self.CommandHandler_inst.process("i")
+        
+        return self.MudReaderHandler_inst.wait_for_inventory_match()    
+    
     def item_was_sold(self):
         #global SELL_CHECK_FLAG
         #global MUD_RETURN_ITEM_SOLD
@@ -518,6 +556,7 @@ class BotThread(threading.Thread):
         now = time.time()
         while(self.character_inst.SELL_CHECK_FLAG == 1 and time.time() - now < 3.0):
             time.sleep(0.05)
+        magentaprint("Bot: Time for sell check was %f." % (time.time()-now))
         
         return self.character_inst.MUD_RETURN_ITEM_SOLD    
 
@@ -544,14 +583,10 @@ class BotThread(threading.Thread):
 #        return
     def drop_items(self):
 
-        #global DROP_LIST
-        # This was set up from sell_items
-        
-
-          # Chooses item names to evade "silver chalice" and "silver ring" collisions
         debug = False
-        for item in self.character_inst.DROP_LIST:
-            time.sleep(0.4)
+        for item in self.__drop_list:
+            time.sleep(0.4)  # TBD:  MudReaderHandler function to 
+                            # wait properly although its unnecessary.
             
             if(self.__stopping):
                 return
@@ -579,82 +614,7 @@ class BotThread(threading.Thread):
 
         
 
-    def check_for_monsters(self):
-        
-        #global MONSTER_LIST
-        #global MONSTER_CHECK_FLAG
-        
-        #magentaprint("check_for_monsters:starting... waiting for MUD_read")
-        
-        self.character_inst.MONSTER_LIST = []
-        self.character_inst.MONSTER_CHECK_FLAG = 1
-        start_time = time.time()
-        while(self.character_inst.MONSTER_CHECK_FLAG == 1 and 
-              (time.time() - start_time < 1.5)):
-            # Set the flag and wait for MUD_read_thread to do some magic.
-            # (reminds me... TBD make bot check for MUD_read_thread life and
-            # turf if necessary.
-            time.sleep(0.05)    # Do a short sleep so this busy loop doesn't
-                                # hog resources.
-        if(time.time() - start_time > 1.5):
-            magentaprint("Bot: MudReadThread timed out on check_for_monsters by %f.  Returned: " + 
-                         str(self.character_inst.MONSTER_LIST), time.time()-start_time-1.5)
-            
-        self.character_inst.MONSTER_CHECK_FLAG = 0  # Unset flag in case it timed out.
-        
-        magentaprint("check_for_monsters: got the monster list, now parsing.")    
-        magentaprint( self.character_inst.MONSTER_LIST)  
-        
-        # Now, trim the preceding "a" or "some" or "two," s well as the
-        # trailing comma, and the 's' if it was plural and there's an 's'
-        M_LIST = self.character_inst.MONSTER_LIST # copy the reference of the
-                        # list to a variable with a shorter name
-        for i in range(0, len(M_LIST)):
-            #M_LIST[i].ljust(0)  # this isn't doing what I thought.
-            M_LIST[i].lstrip()
-            if(re.match("a ", M_LIST[i])):
-                M_LIST[i] = M_LIST[i][2:]
-            elif(re.match("an ", M_LIST[i])):
-                M_LIST[i] = M_LIST[i][3:]
-            elif(re.match("two ", M_LIST[i])):
-                M_LIST[i] = M_LIST[i][4:]
-                if(M_LIST[i][len(M_LIST[i])-3:] == "ses"):
-                    M_LIST[i] = M_LIST[i][0:len(M_LIST[i])-2]
-                elif(M_LIST[i][len(M_LIST[i])-1] == 's'):
-                    M_LIST[i] = M_LIST[i][0:len(M_LIST[i])-1]
-                elif(M_LIST[i][len(M_LIST[i])-8:] == "children"):
-                     M_LIST[i] = M_LIST[i][0:len(M_LIST[i])-3]
-                M_LIST.append(M_LIST[i])
-            elif(re.match("three ", M_LIST[i])):
-                M_LIST[i] = M_LIST[i][6:]
-                if(M_LIST[i][len(M_LIST[i])-3:] == "ses"):
-                    M_LIST[i] = M_LIST[i][0:len(M_LIST[i])-2]
-                elif(M_LIST[i][len(M_LIST[i])-1] == 's'):
-                    M_LIST[i] = M_LIST[i][0:len(M_LIST[i])-1]
-                elif(M_LIST[i][len(M_LIST[i])-8:] == "children"):
-                    M_LIST[i] = M_LIST[i][0:len(M_list[i])-3]
-                for j in range(1, 3):
-                    M_LIST.append(M_LIST[i])
-            elif(re.match("four ", M_LIST[i])):
-                M_LIST[i] = M_LIST[i][5:]
-                if(M_LIST[i][len(M_LIST[i])-3:] == "ses"):
-                    M_LIST[i] = M_LIST[i][0:len(M_LIST[i])-2]
-                elif(M_LIST[i][len(M_LIST[i])-1] == 's'):
-                    M_LIST[i] = M_LIST[i][0:len(M_LIST[i])-1]
-                elif(M_LIST[i][len(M_LIST[i])-8:] == "children"):
-                    M_LIST[i] = M_LIST[i][0:len(M_list[i])-3]
-                for j in range(1, 4):
-                    M_LIST.append(M_LIST[i])
-            commaindex = M_LIST[i].find(',')
-            if(commaindex != -1):
-                M_LIST = M_LIST[:commaindex]
-        # I think that's it.
-        
-        magentaprint("Done parsing, returning list to 'run'")
-        return M_LIST
-        # returning it even though its global... that way
-        # the caller doesn't have to fetch the global one... hopefully it isn't
-        # too unintuitive.
+    
                 
             
         
@@ -680,10 +640,10 @@ class BotThread(threading.Thread):
         monster_list = monster_list_in[:]  # make a copy in case list is volatile
         # First, make sure that we are good to go
         # Check for mana and whether there are any guards.
-        if (self.character_inst.HEALTH < self.character_inst.HEALTH_TO_HEAL):
-            self.heal_up()
-        if (self.character_inst.MANA <= self.character_inst.MANA_TO_ENGAGE):
-            return ""
+        #if (self.character_inst.HEALTH < self.character_inst.HEALTH_TO_HEAL):
+        #    self.heal_up()
+        #if (self.character_inst.MANA <= self.character_inst.MANA_TO_ENGAGE):
+        #    return ""
         for mob in monster_list:
             if (re.search("town guard", mob) or re.search("town crier", mob) or
                 mob == "clown"):
@@ -695,36 +655,6 @@ class BotThread(threading.Thread):
                 return mob
             
         return ""
-            
-            
-
-    def heal_up(self):
-        #global CastThread_inst
-
-        heal_spell = "vig"
-        heal_cost = 2
-        
-        if(self.__stopping):
-            return
-        
-        magentaprint("Inside heal_up")
-        if(self.character_inst.HEALTH <= self.character_inst.HEALTH_TO_HEAL and 
-           self.character_inst.MANA >= heal_cost):
-            self.CommandHandler_inst.user_cc(heal_spell)  # Easiest way to start casting vig
-            
-        # Just wait for MUD_buffer to set HEALTH for us (above 60)
-        while(self.character_inst.HEALTH <= self.character_inst.HEALTH_TO_HEAL and 
-              self.character_inst.MANA >= heal_cost and not self.__stopping):
-            time.sleep(0.05)     
-
-        #if(CastThread_inst != None and CastThread_inst.is_alive()):
-        #    CastThread_inst.stop()
-        self.CommandHandler_inst.stop_CastThread()
-        
-        magentaprint("Exiting heal_up")
-            
-        return
-
     
 
 #    def decide_whether_to_engage(self, monster):
@@ -740,6 +670,23 @@ class BotThread(threading.Thread):
         
 #        return self.character_inst.HEALTH > self.character_inst.HEALTH_TO_HEAL and self.character_inst.MANA != 0
 
+    def begin_combat(self, monster):
+        """ This is a higher level function than engage_monster.
+        Engage_monster handles the combat threads and exits when 
+        the monster is toast.  This function calls engage monster 
+        but also will additionally engage all the monsters that 
+        joined in or may have begun attacking.  It also grabs the 
+        items, heals up, and maintains weapons before returning to 
+        the top level, simply because the bot always does that :).
+        """
+        self.engage_monster(monster)
+        self.get_items()
+        self.engage_mobs_who_joined_in()
+        self.engage_mobs_who_are_attacking()
+        self.heal_up()
+        self.check_weapons()
+        return
+        
 
 
     def engage_monster(self, monster):
@@ -793,7 +740,8 @@ class BotThread(threading.Thread):
         # Done.  Hopefully the mob is dead.
         #if(CastThread_inst != None and CastThread_inst.is_alive()):
         #    user_sc()
-        self.CommandHandler_inst.stop_CastThread()     
+        self.CommandHandler_inst.stop_CastThread()    
+        magentaprint("Leaving engage_monster") 
         
         return
 
@@ -821,18 +769,34 @@ class BotThread(threading.Thread):
 
         # Don't try to heal up first since they are already fighting!
 
-        mobs_joined_in_copy = self.character_inst.MOBS_JOINED_IN[:]
-        for mob in mobs_joined_in_copy:
+        # Commented code: bad because more mobs can join in when 
+        # fighting the currently joined in mobs.
+        # Also don't think I should check weapons in a fight!
+#        mobs_joined_in_copy = self.character_inst.MOBS_JOINED_IN[:]
+#        for mob in mobs_joined_in_copy:
 
-            self.engage_monster(mob)
+#            self.engage_monster(mob)
 
-            self.character_inst.MOBS_JOINED_IN.remove(mob)
+#            self.character_inst.MOBS_JOINED_IN.remove(mob)
 
-            self.get_items()
+#            self.get_items()
                     
-            self.check_weapons()
+#            self.check_weapons()
 
+        while(self.character_inst.MOBS_JOINED_IN != []):
+            self.engage_monster(self.character_inst.MOBS_JOINED_IN[0])
+            self.character_inst.MOBS_JOINED_IN = self.character_inst.MOBS_JOINED_IN[1:]
+            self.get_items()         
         return
+    
+    def engage_mobs_who_are_attacking(self):
+        # TBD
+        # MudReader not currently matching strings for mobs attacking
+        return
+    
+    def ready_for_combat(self):
+        return (self.character_inst.HEALTH > self.character_inst.HEALTH_TO_HEAL and
+                self.character_inst.MANA > self.character_inst.MANA_TO_ENGAGE)
 
         
 #                monster_list = self.check_for_monsters()
@@ -888,4 +852,5 @@ class BotThread(threading.Thread):
  # departures, ideally,) and then changing logic to say, decide on WHICH
  # mob to kill.  That also doubles as deciding whether to engage.  Its a
  # sensible way to check for guards.
-                 
+ 
+ 
