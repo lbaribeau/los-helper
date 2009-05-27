@@ -438,6 +438,7 @@ class BotThread(threading.Thread):
         return path_to_go
             
     def go(self, exit_str):
+        time.sleep(0.1) # sometimes not a good idea to go immediately
         wait_for_move_ready(self.character_inst)
         wait_for_attack_ready(self.character_inst)
         wait_for_cast_ready(self.character_inst)
