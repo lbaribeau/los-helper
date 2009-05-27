@@ -48,16 +48,16 @@ class Character():
         self.HEALTH = 0
         self.MANA = 0
 
-        self.HEALTH_TO_HEAL = 52
-        self.HEALTH_TO_FLEE = 20 # Note: if the bot flees, it stops forever.
-        self.MAX_MANA = 24
+        self.HEALTH_TO_HEAL = 58
+        self.HEALTH_TO_FLEE = 26 # Note: if the bot flees, it stops forever.
+        self.MAX_MANA = 27
         self.MANA_TO_ENGAGE = 6
 
         self.MONSTER_LIST=[]
 
-        self.__preferred_monsters = ["oaf", "journeyman", "acolyte", "wanderer"]
+        self.__preferred_monsters = ["oaf", "journeyman", "acolyte", "wanderer", "spiv"]
         self.__red_monsters = ["old kobold", "kobold child", "kobold dam", 
-            "blond hooker",  "kobold", "sultry hooker", "kobold sentry", "spiv", 
+            "blond hooker",  "kobold", "sultry hooker", "kobold sentry", 
             "kobold miner", "kobold archer", 
             "angry kobold"]
         self.__lvl1_monsters = [ "dustman", "small girl", "young boy", "old woman",

@@ -273,6 +273,33 @@ class MudReaderThread ( threading.Thread ):
                 elif(re.match("some ",weap2)):
                     weap2 = weap2[5:]
                 self.character_inst.WEAPON2 = weap2
+            
+            # The following few are short term.
+            # Re equipping weapons if there is a replacement in 
+            # inventory (doesn't check for replacement beforehand)
+            M_obj = re.search("Your (.*?) breaks and you have to remove it\.", text_buffer)
+            if (M_obj):
+                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                if(M_obj.group(1) == self.character_inst.WEAPON2):
+                    self.CommandHandler_inst.process("seco " + M_obj.group(1))
+                else:
+                    self.CommandHandler_inst.process("wie " + M_obj.group(1))
+            M_obj = re.search("Your (.*?) shatters\.", text_buffer)
+            if (M_obj):
+                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                if(M_obj.group(1) == self.character_inst.WEAPON2):
+                    self.CommandHandler_inst.process("seco " + M_obj.group(1))
+                else:
+                    self.CommandHandler_inst.process("wie " + M_obj.group(1)) 
+            # Wearing rings
+            M_obj = re.search("You get (.+?)\.", text_buffer)
+            if (M_obj):
+                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                for item in M_obj.group(1).split(','):
+                    if(re.search("a (.+?) ring", item)):
+                        self.CommandHandler_inst.process("wear ring")
+                     
+                
                 
             # Prompt
             M_obj = re.search("\[(.*?) H (.*?) M\]", text_buffer)

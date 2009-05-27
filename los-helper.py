@@ -2,6 +2,7 @@
 
 # Your x breaks and you have to remove it.
 # Your x shatters.
+
 # Wearing rings
 # Your x falls apart. (armour)
 # bug... why does he run by the penitent?

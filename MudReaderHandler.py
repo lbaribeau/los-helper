@@ -131,6 +131,7 @@ class MudReaderHandler ( ):
             return False
 
         #magentaprint(self.MudReaderThread_inst.MUD_buffer.buffer)
+        time.sleep(0.1) # sometimes not a good idea to go immediately
 
         
     
