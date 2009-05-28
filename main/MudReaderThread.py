@@ -18,7 +18,10 @@ class MudReaderThread ( threading.Thread ):
     # to the buffer for the MudReaderThread to read it.
     
     ConsoleHandler = newConsoleHandler()
-    def __init__(self, MUD_buffer_in, character_inst, CommandHandler_inst):
+
+    def __init__(self, MUD_buffer_in=None, character_inst=None, CommandHandler_inst=None):
+        if MUD_buffer_in == None and character_inst == None and CommandHandler_inst == None:
+            return
         Thread.__init__(self)       
         # Constants
         self.ASCII_EOT = 4
@@ -117,12 +120,12 @@ class MudReaderThread ( threading.Thread ):
             new_left_off_index = len(self.MUD_buffer.buffer)            
             
             # First print the new characters.
-            character_list = list(MUD_buffer_copy[self.__left_off_index:len(MUD_buffer_copy)])
+            unparsed_unprinted_characters_from_server = list(MUD_buffer_copy[self.__left_off_index:len(MUD_buffer_copy)])
             self.__left_off_index = new_left_off_index
 
             text_out = ""
             num_escape_characters=0
-            for c in character_list:
+            for c in unparsed_unprinted_characters_from_server:
                 if (ord(c) == self.ASCII_EOT):
                     magentaprint("MudReaderThread: Saw the EOT, quitting.")
                     self.stop()
@@ -657,9 +660,9 @@ class MudReaderThread ( threading.Thread ):
         """
         # TBD:  This would be a lot less painful with split!!!
         # Good target for the rewrite train!
-        # Also it used to be in two functions in different files.  
-        # Now it's one :)  
-        
+        # Also it used to be in two functions in different files.
+        # Now it's one :)
+
         #print "Got a match!"
         num_commas = MUD_mob_str.count(',')
         #print "num_commas" + str(num_commas)
@@ -667,19 +670,19 @@ class MudReaderThread ( threading.Thread ):
         # Take out \n's and \r's
         #print MUD_mob_str
         MUD_mob_str = self.replace_newlines_with_spaces(MUD_mob_str)
-        my_monster_regex = "You see " 
+        my_monster_regex = "You see "
         for i in range(1,num_commas+1):
             # Add a regex group for each mob, and nab the comma
             # and space afterwards too.
-            my_monster_regex = my_monster_regex + "(.+?), " 
-        my_monster_regex = my_monster_regex + "(.+?)\." 
+            my_monster_regex = my_monster_regex + "(.+?), "
+        my_monster_regex = my_monster_regex + "(.+?)\."
         #print "my_monster_regex: " + my_monster_regex
         match_monsters = re.match(my_monster_regex, MUD_mob_str)
-        
+
         M_LIST = []
         for i in range(1, num_monsters+1):
             M_LIST.append(match_monsters.group(i))
-        
+
         # Trim the preceding "a" or "some" or "two," s well as the
         # trailing comma, and the 's' if it was plural and there's an 's'
         for i in range(0, len(M_LIST)):
@@ -717,7 +720,7 @@ class MudReaderThread ( threading.Thread ):
                 elif (M_LIST[i][len(M_LIST[i]) - 8:] == "children"):
                     M_LIST[i] = M_LIST[i][0:len(M_list[i]) - 3]
                 for j in range(1, 4):
-                    M_LIST.append(M_LIST[i])                
+                    M_LIST.append(M_LIST[i])
             commaindex = M_LIST[i].find(',')
             if (commaindex != -1):
                 M_LIST = M_LIST[:commaindex]
@@ -736,10 +739,10 @@ class MudReaderThread ( threading.Thread ):
         return return_string
     
     def parse_inventory_list(self, inv_string):
-        # Now match it.  Have to do the same as MONSTER_LIST 
+        # Now match it.  Have to do the same as MONSTER_LIST
         # where I count commas...
-        # I won't have to worry about You have: if I take the group 
-        # already obtained in M_obj... actually I might even be able 
+        # I won't have to worry about You have: if I take the group
+        # already obtained in M_obj... actually I might even be able
         # to get off really easy with a split!!
         return_list = []
         # Replace newlines with spaces
@@ -754,7 +757,7 @@ class MudReaderThread ( threading.Thread ):
             #print inv_list[i]
             #print i
             #sys.stdout.write("Appending... ")
-            # How should I do quantities?  It probably makes sense 
+            # How should I do quantities?  It probably makes sense
             # just to have duplicate items in the actual list
             if(inv_list[i][0:2] == "a "):
                 inv_list[i] = inv_list[i][2:]
@@ -766,8 +769,8 @@ class MudReaderThread ( threading.Thread ):
                 #sys.stdout.write(inv_list[i] + '\n')
             elif(inv_list[i][0:5] == "some "):
                 inv_list[i] = inv_list[i][5:]
-                return_list.append(inv_list[i])    
-                #sys.stdout.write(inv_list[i] + '\n')                        
+                return_list.append(inv_list[i])
+                #sys.stdout.write(inv_list[i] + '\n')
             # In doing quantities, may as well use insert and keep
             # the list ordered.
             elif(inv_list[i][0:4] == "two "):
@@ -780,7 +783,7 @@ class MudReaderThread ( threading.Thread ):
                     if(inv_list[i][len(inv_list[i])-1] == 's'):
                         if(inv_list[i][len(inv_list[i])-3:] == "ses" or
                            inv_list[i][len(inv_list[i])-3:] == "xes"):
-                            inv_list[i] = inv_list[i][:len(inv_list[i])-2]                                            
+                            inv_list[i] = inv_list[i][:len(inv_list[i])-2]
                         else:
                             inv_list[i] = inv_list[i][:len(inv_list[i])-1]
                 for j in range(0,2):
@@ -838,12 +841,12 @@ class MudReaderThread ( threading.Thread ):
                     #inv_list.insert(inv_list[i], i) # check this
                     return_list.append(inv_list[i])
                 #sys.stdout.write(str(inv_list[i]) + '\n')
-            # TBD go up to fifteen.  Maybe find a more scalable way to 
+            # TBD go up to fifteen.  Maybe find a more scalable way to
             # do it.
             else:
                 #print "BIG FAT ELSE"
                 pass
-                
+
         return return_list
         
     
