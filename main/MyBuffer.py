@@ -1,5 +1,5 @@
 
-class MyBuffer():
+class MyBuffer:
 	
 	def __init__(self, size_in=500):
 		self.buffer = ""

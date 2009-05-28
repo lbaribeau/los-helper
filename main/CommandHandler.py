@@ -9,7 +9,7 @@ from misc_functions import *
 from KillThread import *
 from CastThread import *
 
-class CommandHandler():
+class CommandHandler:
 
     def __init__(self, Character_inst_in, tn_in):
         self.tn = tn_in

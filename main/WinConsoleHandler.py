@@ -32,8 +32,6 @@ class WinConsoleHandler:
 		return bool
 # set_color
 
-# win_console.py
-
 	def black(self):
 		self.set_color(0x00 | self.__brightness)
 		return

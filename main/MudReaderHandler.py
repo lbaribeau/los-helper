@@ -6,7 +6,7 @@ from misc_functions import *
 from MyBuffer import *
 
 
-class MudReaderHandler ( ):
+class MudReaderHandler:
     # This object tells the MudReaderThread what to do.
     # The reason it exits is because you don't want multiple 
     # threads accessing the same buffer so its important for 

@@ -1,7 +1,7 @@
 
 import time
 
-class Character():
+class Character:
 
     # This is a class that holds a bunch of data,
     # mostly obtained by the MUD read thread.
