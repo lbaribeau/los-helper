@@ -153,6 +153,7 @@ class MudReaderThread ( threading.Thread ):
             sys.stdout.write(text_out)   # Not using print because
                                          # it inserts extra spaces.
             #sys.stdout.write("/"+out_str)  # puts slashes between text fragments
+            sys.stdout.flush()
                                         
             # Debug:  Print ascii out!  (doesn't do every character)
             #for i in range(0, len(out_str)):
