@@ -769,52 +769,32 @@ class MudReaderThread ( threading.Thread ):
                     item = item[12:]
                 else:
                     item = item[4:]
-                    # Remove the 's' if its there
-                    if(item[len(item)-1] == 's'):
-                        if(item[len(item)-3:] == "ses" or
-                           item[len(item)-3:] == "xes"):
-                            item = item[:len(item)-2]
-                        else:
-                            item = item[:len(item)-1]
+                    item = self.remove_plural(item)
+
                 return_list = return_list + [item for x in range(0,2)]
             elif(item.startswith("three ")):
                 if(item.startswith("three sets of ")):
                     item = item[14:]
                 else:
                     item = item[6:]
-                    # Remove the 's' if its there
-                    if(item.endswith('s')):
-                        if(item.endswith("ses)" or
-                           item.endswith("xes"))):
-                            item = item[:len(item)-2]
-                        else:
-                            item = item[:len(item)-1]
+                    item = self.remove_plural(item)
+
                 return_list = return_list + [item for x in range(0,3)]
             elif(item.startswith("four ")):
                 if(item[0:13] == "four sets of "):
                     item = item[13:]
                 else:
                     item = item[5:]
-                    # Remove the 's' if its there
-                    if(item.endswith('s')):
-                        if(item.endswith("ses") or
-                           item.endswith("xes")):
-                            item = item[:len(item)-2]
-                        else:
-                            item = item[:len(item)-1]
+                    item = self.remove_plural(item)
+
                 return_list = return_list + [item for x in range(0,4)]
             elif(item.startswith("five ")):
                 if(item.startswith("five sets of ")):
                     item = item[13:]
                 else:
                     item = item[5:]
-                    # Remove the 's' if its there
-                    if(item.endswith('s')):
-                        if(item.endswith("ses") or
-                           item.endswith("xes")):
-                            item = item[:len(item)-2]
-                        else:
-                            item = item[:len(item)-1]
+                    item = self.remove_plural(item)
+
                 return_list = return_list + [item for x in range(0,5)]
             # TBD go up to fifteen.  Maybe find a more scalable way to
             # do it.
@@ -824,7 +804,14 @@ class MudReaderThread ( threading.Thread ):
 
         return return_list
         
-    
+    def remove_plural(self, item):
+        if(item.endswith('s')):
+            if(item.endswith("ses") or
+               item.endswith("xes")):
+                return item[:len(item)-2]
+            else:
+                return item[:len(item)-1]
+        return item      
 
 # end MudReaderThread class
 
