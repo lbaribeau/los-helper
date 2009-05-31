@@ -753,19 +753,19 @@ class MudReaderThread ( threading.Thread ):
             item = item.rstrip()
             # How should I do quantities?  It probably makes sense
             # just to have duplicate items in the actual list
-            if(item[0:2] == "a "):
+            if(item.startswith("a ")):
                 item = item[2:]
                 return_list.append(item)
-            elif(item[0:3] == "an "):
+            elif(item.startswith("an ")):
                 item = item[3:]
                 return_list.append(item)
-            elif(item[0:5] == "some "):
+            elif(item.startswith("some ")):
                 item = item[5:]
                 return_list.append(item)
             # In doing quantities, may as well use insert and keep
             # the list ordered.
-            elif(item[0:4] == "two "):
-                if(item[0:12] == "two sets of "):
+            elif(item.startswith("two ")):
+                if(item.startswith("two sets of ")):
                     item = item[12:]
                 else:
                     item = item[4:]
@@ -777,41 +777,41 @@ class MudReaderThread ( threading.Thread ):
                         else:
                             item = item[:len(item)-1]
                 return_list = return_list + [item for x in range(0,2)]
-            elif(item[0:6] == "three "):
-                if(item[0:14] == "three sets of "):
+            elif(item.startswith("three ")):
+                if(item.startswith("three sets of ")):
                     item = item[14:]
                 else:
                     item = item[6:]
                     # Remove the 's' if its there
-                    if(item[len(item)-1] == 's'):
-                        if(item[len(item)-3:] == "ses" or
-                           item[len(item)-3:] == "xes"):
+                    if(item.endswith('s')):
+                        if(item.endswith("ses)" or
+                           item.endswith("xes"))):
                             item = item[:len(item)-2]
                         else:
                             item = item[:len(item)-1]
                 return_list = return_list + [item for x in range(0,3)]
-            elif(item[0:5] == "four "):
+            elif(item.startswith("four ")):
                 if(item[0:13] == "four sets of "):
                     item = item[13:]
                 else:
                     item = item[5:]
                     # Remove the 's' if its there
-                    if(item[len(item)-1] == 's'):
-                        if(item[len(item)-3:] == "ses" or
-                           item[len(item)-3:] == "xes"):
+                    if(item.endswith('s')):
+                        if(item.endswith("ses") or
+                           item.endswith("xes")):
                             item = item[:len(item)-2]
                         else:
                             item = item[:len(item)-1]
                 return_list = return_list + [item for x in range(0,4)]
-            elif(item[0:5] == "five "):
-                if(item[0:13] == "five sets of "):
+            elif(item.startswith("five ")):
+                if(item.startswith("five sets of ")):
                     item = item[13:]
                 else:
                     item = item[5:]
                     # Remove the 's' if its there
-                    if(item[len(item)-1] == 's'):
-                        if(item[len(item)-3:] == "ses" or
-                           item[len(item)-3:] == "xes"):
+                    if(item.endswith('s')):
+                        if(item.endswith("ses") or
+                           item.endswith("xes")):
                             item = item[:len(item)-2]
                         else:
                             item = item[:len(item)-1]
