@@ -745,36 +745,26 @@ class MudReaderThread ( threading.Thread ):
         # already obtained in M_obj... actually I might even be able
         # to get off really easy with a split!!
         return_list = []
-        # Replace newlines with spaces
         inv_string = self.replace_newlines_with_spaces(inv_string)
         # Use split to break into a list of strings
-        #print inv_string
         inv_list = inv_string.split(',')
-        #print inv_list
         for i in range(0, len(inv_list)):
             inv_list[i] = inv_list[i].lstrip()
             inv_list[i] = inv_list[i].rstrip()
-            #print inv_list[i]
-            #print i
-            #sys.stdout.write("Appending... ")
             # How should I do quantities?  It probably makes sense
             # just to have duplicate items in the actual list
             if(inv_list[i][0:2] == "a "):
                 inv_list[i] = inv_list[i][2:]
                 return_list.append(inv_list[i])
-                #sys.stdout.write(inv_list[i] + '\n')
             elif(inv_list[i][0:3] == "an "):
                 inv_list[i] = inv_list[i][3:]
                 return_list.append(inv_list[i])
-                #sys.stdout.write(inv_list[i] + '\n')
             elif(inv_list[i][0:5] == "some "):
                 inv_list[i] = inv_list[i][5:]
                 return_list.append(inv_list[i])
-                #sys.stdout.write(inv_list[i] + '\n')
             # In doing quantities, may as well use insert and keep
             # the list ordered.
             elif(inv_list[i][0:4] == "two "):
-                #sys.stdout.write("   In two...   ")
                 if(inv_list[i][0:12] == "two sets of "):
                     inv_list[i] = inv_list[i][12:]
                 else:
@@ -788,10 +778,8 @@ class MudReaderThread ( threading.Thread ):
                             inv_list[i] = inv_list[i][:len(inv_list[i])-1]
                 for j in range(0,2):
                     return_list.append(inv_list[i])
-                #sys.stdout.write(str(inv_list[i]) + '\n')
                 #inv_list.insert(i, inv_list[i]) # check this
             elif(inv_list[i][0:6] == "three "):
-                #sys.stdout.write("   In three...   ")
                 if(inv_list[i][0:14] == "three sets of "):
                     inv_list[i] = inv_list[i][14:]
                 else:
@@ -806,9 +794,7 @@ class MudReaderThread ( threading.Thread ):
                 for j in range(0,3):
                     #inv_list.insert(inv_list[i], i) # check this
                     return_list.append(inv_list[i])
-                #sys.stdout.write(str(inv_list[i]) + '\n')
             elif(inv_list[i][0:5] == "four "):
-                #sys.stdout.write("   In four...   ")
                 if(inv_list[i][0:13] == "four sets of "):
                     inv_list[i] = inv_list[i][13:]
                 else:
@@ -825,7 +811,6 @@ class MudReaderThread ( threading.Thread ):
                     return_list.append(inv_list[i])
                 #sys.stdout.write(str(inv_list[i]) + "\n")
             elif(inv_list[i][0:5] == "five "):
-                #sys.stdout.write("   In five...   ")
                 if(inv_list[i][0:13] == "five sets of "):
                     inv_list[i] = inv_list[i][13:]
                 else:
@@ -840,7 +825,6 @@ class MudReaderThread ( threading.Thread ):
                 for j in range(0,5):
                     #inv_list.insert(inv_list[i], i) # check this
                     return_list.append(inv_list[i])
-                #sys.stdout.write(str(inv_list[i]) + '\n')
             # TBD go up to fifteen.  Maybe find a more scalable way to
             # do it.
             else:
