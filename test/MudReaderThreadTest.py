@@ -3,15 +3,6 @@ from main.MudReaderThread import MudReaderThread
 class MudReaderThreadTest(unittest.TestCase):
 
 
-    def test_parse_inventory_list_shouldReturnItemTwice_whenThereAreTwoInInput(self):
-        #setup
-        input = 'two leaf blades'
-        #execute
-        result = MudReaderThread().parse_inventory_list(input)
-        #assert
-        self.assertEquals(['leaf blade', 'leaf blade'], result)
-
-
     #just pulled this list from Ruorg's current inventory and am keeping the test here to make sure I really
     #haven't changed anything
     def test_parse_inventory_list_charecterizationTest(self):
