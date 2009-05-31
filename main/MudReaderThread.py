@@ -781,7 +781,7 @@ class MudReaderThread ( threading.Thread ):
 
                 return_list = return_list + [item for x in range(0,3)]
             elif(item.startswith("four ")):
-                if(item[0:13] == "four sets of "):
+                if(item.startswith("four sets of ")):
                     item = item[13:]
                 else:
                     item = item[5:]
