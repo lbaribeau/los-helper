@@ -11,12 +11,15 @@ class Character:
         # values.  
     
 #        self.char_class = ""
-#        self.level = 0
+        self.LEVEL = 1
 #        self.preferred_alignment = "grey"
 #        self.weapon_skills = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
 #        self.magic_skills = [0, 0, 0, 0, 0]
         self.EXPERIENCE = 0
         self.GOLD = 0
+        
+        self.BLACK_MAGIC = True
+        self.FAVOURITE_SPELL = "hurt"
         
         self.ATTACK_PERIOD = 3 #sec
         self.ATTACK_PERIOD_HASTE = 2 #sec
@@ -48,17 +51,23 @@ class Character:
         self.HEALTH = 0
         self.MANA = 0
 
-        self.HEALTH_TO_HEAL = 58
-        self.HEALTH_TO_FLEE = 26 # Note: if the bot flees, it stops forever.
-        self.MAX_MANA = 27
-        self.MANA_TO_ENGAGE = 6
+        if(self.LEVEL == 1):
+            self.HEALTH_TO_HEAL = 43
+            self.HEALTH_TO_FLEE = 12 # Note: if the bot flees, it stops forever.
+            self.MAX_MANA = 18
+            self.MANA_TO_ENGAGE = 9
+        else:
+            self.HEALTH_TO_HEAL = 58
+            self.HEALTH_TO_FLEE = 26 # Note: if the bot flees, it stops forever.
+            self.MAX_MANA = 27
+            self.MANA_TO_ENGAGE = 6
 
         self.MONSTER_LIST=[]
 
         self.__preferred_monsters = ["oaf", "journeyman", "acolyte", "wanderer", "spiv"]
         self.__red_monsters = ["old kobold", "kobold child", "kobold dam", 
             "blond hooker",  "kobold", "sultry hooker", "kobold sentry", 
-            "kobold miner", "kobold archer", 
+            "kobold miner", "kobold archer", 'angry hooker',
             "angry kobold"]
         self.__lvl1_monsters = [ "dustman", "small girl", "young boy", "old woman",
             "old man", "townsman", "stall holder", "duck", "hedgehog", "piglet",
@@ -88,29 +97,34 @@ class Character:
             "bandit swordsman", "large bandit", "bull", "kobold guard"
                                 ]
         self.MONSTER_KILL_LIST = []
+        
         self.MONSTER_KILL_LIST.extend(self.__preferred_monsters)
-        #self.MONSTER_KILL_LIST.extend(self.__red_monsters)
-        #self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
+        self.MONSTER_KILL_LIST.extend(self.__red_monsters)
+        self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
         self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
         self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
-        self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
-        self.MONSTER_KILL_LIST.extend(self.__lvlx_monsters)
+        if(self.LEVEL != 1):
+            
+            self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvlx_monsters)
 
         self.INVENTORY_LIST = []
         self.KEEP_LIST = ["large bag", "silver chalice", "steel bottle",
-                     "adamantine sword", "claymore", "poison ring", 
-                     "spider leg", "scimitar", "small restorative", 
+                     "adamantine sword", 'adamantine axe', "claymore", 
+                     "poison ring", "spider leg", "scimitar", "small restorative", 
                      "spear", "bolos", 'javelin', "leaf blade", "heathen amulet", 
                      "chain mail armour", 'chain mail sleeves', 'chain mail leggings', 
                      'chain mail gloves', 'chain mail hood', 'chain mail boots', 
                      "ring mail armour", "ring mail sleeves", "ring mail leggings", 
                      "ring mail hood", "ring mail gauntlets", "leather collar", 
                      "furry cloak", "white amulet", "white potion", 
-                     "stilleto", 'rapier', 'heavy crossbow'] 
+                     "stilleto", 'rapier', 'heavy crossbow', 'lion charm', 
+                     'glowing potion', 'war hammer'] 
        
         self.MUD_RETURN_ITEM_SOLD = False
 
         self.MOBS_JOINED_IN = []
+        self.MOBS_ATTACKING = []
 
         self.SUCCESSFUL_GO = False
         self.GO_BLOCKING_MOB = ""

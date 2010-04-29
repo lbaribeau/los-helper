@@ -20,6 +20,7 @@
 # (?) casts a x spell at you for x damage.
 # tries to grab you, but you break free of his grasp.
 # throws a wild punch at you, but it misses.
+# 
 
 # crits
 # You knock the wind out of the x!!
@@ -77,6 +78,7 @@
 # haste, steel bottles, silver chalices.
 # restoratives
 # ### Someone just flashed,
+# Someone just wandered to the out.  (hidden mobs)
 # The 2nd actress blocks your exit.  (bug: attacks the 1st actress)
 # remove unneccessary __init__s
 

@@ -122,11 +122,15 @@ class MudReaderHandler:
             run_time = time.time() - start_time
             
         #magentaprint("MudReaderHandler: Time for check_for_successful_go was %f" % run_time)
+        
+        # Note:  I've found these timing checks to be buggy because the OS often 
+        # changes the system clock in the background.  We can't really rely on time.time() 
+        # too much :(.
         if(run_time < timeout):
             #magentaprint("Check for successful go, returning " + str(self.MudReaderThread.SUCCESSFUL_GO))
             return self.Character_inst.SUCCESSFUL_GO
         else:
-            magentaprint("Bot: MudReadThread timed out on check_go by %f" % (run_time-start_time))
+            magentaprint("MudReaderHandler: MudReadThread timed out on check_go by %f" % (run_time-start_time))
             self.Character_inst.GO_TIMEOUT = True
             return False
 

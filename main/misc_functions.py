@@ -118,7 +118,7 @@ def magentaprint(s):
 #        print s % mod_s
 #    else:
 #        print s
-    debug = False
+    debug = True
     if(debug):
         print s 
     newConsoleHandler().white()

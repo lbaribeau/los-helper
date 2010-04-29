@@ -250,12 +250,19 @@ class MudReaderThread ( threading.Thread ):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("Your spell fails\.", text_buffer)
             if(M_obj):
-                self.character_inst.CAST_CLK = time.time() - self.character_inst.CAST_WAIT 
+                self.character_inst.CAST_CLK = time.time() - self.character_inst.CAST_WAIT
+                # BUG
+                #  - some spells can be cast again immediately if they fail and some cannot
+                #  - equivalently you can move or not move immediately after failing a spell
+                #    based on what spell it was.
+                #  - Spells that should reset here are vigor, light, show-aura
+                #  - spells that should not reset are black magic.  
                     # reset cast clock
-                # Do NOT kill the cast thread... if the spell failed 
-                # we don't wanna.
+                # Do not kill the cast thread if the spell failed  
+                # Note also that you generally can't try again right after 
+                # a spell failure. 
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                                
+                            
             # Set WEAPON1
             M_obj = re.search("You wield (.*?)\.", text_buffer)
             if (M_obj != None and not re.search(" in your off hand", M_obj.group(1))):
@@ -326,7 +333,7 @@ class MudReaderThread ( threading.Thread ):
             if(M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 print "Shucks anyhow"
-                self.stop()
+                self.stop()  # breaks program but allows me to see what happened
                     
             # Do some gold stuff.
             # On gold pickup:
@@ -481,6 +488,32 @@ class MudReaderThread ( threading.Thread ):
                 temp_buf = temp_buf[new_trunc:]
                 M_obj = re.search(second_join_in_regex, temp_buf)
                 
+            # Mobs Attacking you (not from joining in)
+            
+            mobs_attacking_regexes = [
+                "The" + s_numbered + " (.+?) punches you for (.+?) damage\.",
+                "The" + s_numbered + " (.+?) throws a wild punch at you, but it misses\.",
+                "The" + s_numbered + " (.+?) kicks you for (.+?) damage\.",
+                "The" + s_numbered + " (.+?) kicks at you, but fails to hurt you\.",
+                "The" + s_numbered + " (.+?) grabs you and gouges you for (.+?) damage\.",
+                "The" + s_numbered + " (.+?) tries to grab you, but you break free of (his|her|its) grasp\.",
+                "The" + s_numbered + " (.+?) tries to gouge you, but you shake (him|her|it) off\.",
+                "The" + s_numbered + " (.+?) lashes out and thumps you for (.+?) damage\.",
+                "The" + s_numbered + " (.+?) lashes out at you, but misses\.",               
+                "The" + s_numbered + " (.+?) painfully head-butts you for (.+?) damage\.",
+                "The" + s_numbered + " (.+?) casts a (.+?) on you for (.+?) damage\."]
+                # Thought:  We know a mob is attacking also on strings where I attack it, 
+                # but it's doubtfully necessary to add that mob to MOBS_ATTACKING.
+            for attacking_regex in mobs_attacking_regexes:
+                # I think it would be difficult to determine here how many of a certain mob are 
+                # attacking so just make sure that there's one instance of the attacking mob 
+                # in ATTACKING_MOBS
+                M_obj = re.search(attacking_regex, text_buffer)
+                if(M_obj):
+                    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                    if(my_list_search(self.character_inst.MOBS_ATTACKING, M_obj.group(2)) == -1):
+                        self.character_inst.MOBS_ATTACKING.append(M_obj.group(2))    
+                
             # Bot wants to know what monsters are present.
             # Assume he already typed look.
             
@@ -572,6 +605,23 @@ class MudReaderThread ( threading.Thread ):
                     magentaprint('Error in reading aura (not in list), came out as ' + AURA + '.')
                 self.CHECK_AURA_FLAG = 0
         
+            # Having red aura in chapel.
+            # The bot should definitely leave in this case.
+            # However I only want to leave if the bot is currently going...
+            # Ohwell.  This might inconvenience a human user but I'm putting it in.
+            M_obj = re.search("The goodness here sickens and repels you!", text_buffer)
+            if(M_obj):
+                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                self.CommandHandler_inst.process("ou")
+            
+            # Inventory
+            M_obj = re.search("(?s)You have: (.+?)\.", text_buffer)
+            if(M_obj):
+                #magentaprint("MudReaderThread: Got inventory list.  Parsing now.")
+                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                self.character_inst.INVENTORY_LIST = self.parse_inventory_list(M_obj.group(1))
+                self.CHECK_INVENTORY_FLAG = 0                
+        
             # Internal check function MUD_output_check
             #if(self.__check_flag):
             #    M_obj = re.search(self.__check_regex_true, text_buffer)
@@ -582,17 +632,6 @@ class MudReaderThread ( threading.Thread ):
             #    if(M_obj):
             #        self.__check_M_obj = None
             #        self.__check_flag = False
-            
-            # Inventory
-            M_obj = re.search("(?s)You have: (.+?)\.", text_buffer)
-            if(M_obj):
-                #magentaprint("MudReaderThread: Got inventory list.  Parsing now.")
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                self.character_inst.INVENTORY_LIST = self.parse_inventory_list(M_obj.group(1))
-                self.CHECK_INVENTORY_FLAG = 0                
-                
-            #self.ConsoleHandler.white() 
-        
             ##### DONE MATCHING RE's  WOOOOOOOO ######
         
             #sys.stdout.write('"' + MUD_buffer[MUD_buffer_trunc] + '"') #debug.  Shows where last match took place.
