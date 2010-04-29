@@ -19,10 +19,10 @@ class BotThread(threading.Thread):
         self.character_inst = character_inst_in
         self.CommandHandler_inst = CommandHandler_in
         self.MudReaderHandler_inst = MudReaderHandler_inst_in
-        if(self.character_inst.LEVEL != 1):
-            self.__TOTALPATHS = 12
-        else:
+        if(self.character_inst.LEVEL == 1):
             self.__TOTALPATHS = 8 # truncate some paths for low level character
+        else:
+            self.__TOTALPATHS = 12            
         if(isinstance(starting_path, int) and starting_path < self.__TOTALPATHS):
             self.__nextpath = starting_path
         else:
@@ -197,12 +197,12 @@ class BotThread(threading.Thread):
         #   if you did it beforehand then you have to ensure you HAVE a mana...
         #   and if you don't what do you do?  I just thought it better to do
         #   it   all here.
-
-        #global MANA     #needed?
-        #global MAX_MANA  #needed?
         
         MANA_TO_WAIT = self.character_inst.MAX_MANA - 12
-        MANA_TO_GO = self.character_inst.MAX_MANA - 1
+        if(self.character_inst.BLACK_MAGIC): 
+        	MANA_TO_GO = self.character_inst.MAX_MANA 
+        else:
+        	MANA_TO_GO = self.character_inst.MAX_MANA - 1
 
         aura_updated = False
         
@@ -228,18 +228,28 @@ class BotThread(threading.Thread):
             pass
             
 
-        # Full mana, do a heal and one more wait and go.
+        
         if(not aura_updated):
             # if we had no mana upon walking in we still have to do a show aura
             self.update_aura()
     
-        self.heal_up()
-        self.wait_for_mana()  
-        
+        if(self.character_inst.LEVEL > 4):
+            # Full mana, do a heal and one more wait and go.
+            self.heal_up()
+            self.wait_for_mana()  
+        else:
+            # Probably not the greatest logic but low level characters will need 
+            # to gain heal other than healing up.
+            self.rest_for_health()    
         return
+
 
     def rest_for_mana(self):
         MANA_SATISFIED = self.character_inst.MAX_MANA - 1
+        if(self.character_inst.BLACK_MAGIC): 
+        	MANA_SATISFIED = self.character_inst.MAX_MANA 
+        else:
+        	MANA_SATISFIED = self.character_inst.MAX_MANA - 1
         
         if(self.character_inst.MANA < MANA_SATISFIED):
             self.CommandHandler_inst.process("rest")            
@@ -254,11 +264,16 @@ class BotThread(threading.Thread):
             time.sleep(0.1)
         return
 
+
     def wait_for_mana(self):
         # Waits for mana regen.  Issues an enter every few seconds to get the 
         # prompt.  Satisfied with max - 1.
         
         MANA_SATISFIED = self.character_inst.MAX_MANA - 1
+        if(self.character_inst.BLACK_MAGIC): 
+        	MANA_SATISFIED = self.character_inst.MAX_MANA 
+        else:
+        	MANA_SATISFIED = self.character_inst.MAX_MANA - 1
         
         while(self.character_inst.MANA < MANA_SATISFIED and 
               not self.__stopping):
@@ -273,6 +288,24 @@ class BotThread(threading.Thread):
             
         return
     
+    def rest_for_health(self):
+
+        # Copied code (bad)
+        
+        if(self.character_inst.HEALTH < self.character_inst.HEALTH_TO_HEAL):
+            self.CommandHandler_inst.process("rest")            
+
+        while(self.character_inst.HEALTH < self.character_inst.HEALTH_TO_HEAL and 
+              not self.__stopping):            
+            # Be alert if a mob engages us
+            if(self.character_inst.MOBS_ATTACKING != []):
+                self.engage_mobs_who_are_attacking()
+                self.CommandHandler_inst.process("rest")
+                
+            time.sleep(0.1)
+        return
+
+
     def update_aura(self):
         
         if(self.__stopping):
@@ -410,7 +443,9 @@ class BotThread(threading.Thread):
                           # difficult.
                           # Also useful to test mobs who join in.
                           #"prepare", 'e', 'ne', "door", "door", "prepare", 'sw','w',
-                          "ladder", 'cave', 'out', "sw", 'w', 'cave', 'out', 
+                          "ladder", 'cave', 'out', "sw", 'w', 
+                          # Comment out insane kobold (TBD: check level here)
+                          # 'cave', 'out', 
                           "sw", 'se', 'nw', 'w', "out", 'd',
                           "boulder", 'd', 'd', 'e', "open door", 'w', 's', 's',
                           'e', 's', "sw", 's', 's', 's', 's', "gully",

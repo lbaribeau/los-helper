@@ -52,10 +52,10 @@ class Character:
         self.MANA = 0
 
         if(self.LEVEL == 1):
-            self.HEALTH_TO_HEAL = 43
-            self.HEALTH_TO_FLEE = 12 # Note: if the bot flees, it stops forever.
-            self.MAX_MANA = 18
-            self.MANA_TO_ENGAGE = 9
+            self.HEALTH_TO_HEAL = 15
+            self.HEALTH_TO_FLEE = 6 # Note: if the bot flees, it stops forever.
+            self.MAX_MANA = 3
+            self.MANA_TO_ENGAGE = 3
         else:
             self.HEALTH_TO_HEAL = 58
             self.HEALTH_TO_FLEE = 26 # Note: if the bot flees, it stops forever.
@@ -64,9 +64,9 @@ class Character:
 
         self.MONSTER_LIST=[]
 
-        self.__preferred_monsters = ["oaf", "journeyman", "acolyte", "wanderer", "spiv"]
-        self.__red_monsters = ["old kobold", "kobold child", "kobold dam", 
-            "blond hooker",  "kobold", "sultry hooker", "kobold sentry", 
+        self.__preferred_monsters = ["oaf", "journeyman", "acolyte", "wanderer"]
+        self.__red_monsters = ["blond hooker",  
+            "kobold", "sultry hooker", "kobold sentry", 
             "kobold miner", "kobold archer", 'angry hooker',
             "angry kobold"]
         self.__lvl1_monsters = [ "dustman", "small girl", "young boy", "old woman",
@@ -77,8 +77,9 @@ class Character:
             "village elder", "small dog", "tribesman", "searcher", "delivery boy",
             "traveller", "wanderer", "villager", "rich kid", "vagrant",
             "dropout", "tramp", "serf"]     
+        self.__lvl1_red_monsters = ["old kobold", "kobold child", "kobold dam" ]
         self.__lvl2_monsters = ["hawker", "barmaid", "smelly beggar", "black crow"
-            "sheep", "goose", "penitent", "singer", "musician",
+            "sheep", "goose", "penitent", "singer", "musician", "spiv",
             "bidder", "dairy cow", "scholar", "juggler", 
             "shepherd", "gazelle"]
         self.__lvl3_monsters = [
@@ -98,13 +99,19 @@ class Character:
                                 ]
         self.MONSTER_KILL_LIST = []
         
-        self.MONSTER_KILL_LIST.extend(self.__preferred_monsters)
-        self.MONSTER_KILL_LIST.extend(self.__red_monsters)
-        self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
-        self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
-        self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
-        if(self.LEVEL != 1):
-            
+        if(self.LEVEL == 1 or self.LEVEL == 2):
+            self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
+        else:
+            self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
+
+        #self.MONSTER_KILL_LIST.extend(self.__preferred_monsters)
+        #self.MONSTER_KILL_LIST.extend(self.__red_monsters)
+        
+        #self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
+        #self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
+        if(self.LEVEL > 7):
             self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvlx_monsters)
 
@@ -119,7 +126,7 @@ class Character:
                      "ring mail hood", "ring mail gauntlets", "leather collar", 
                      "furry cloak", "white amulet", "white potion", 
                      "stilleto", 'rapier', 'heavy crossbow', 'lion charm', 
-                     'glowing potion', 'war hammer'] 
+                     'glowing potion', 'war hammer', 'top hat'] 
        
         self.MUD_RETURN_ITEM_SOLD = False
 
