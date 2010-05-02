@@ -19,14 +19,21 @@ class BotThread(threading.Thread):
         self.character_inst = character_inst_in
         self.CommandHandler_inst = CommandHandler_in
         self.MudReaderHandler_inst = MudReaderHandler_inst_in
-        if(self.character_inst.LEVEL == 1):
-            self.__TOTALPATHS = 8 # truncate some paths for low level character
+        # Set TOTALPATHS.  Setting it lower than the actual number
+        # of paths in decide_where_to_go is a way to truncate paths
+        # you don't want to send low level characters on.
+        if(self.character_inst.LEVEL <= 2):
+            self.__TOTALPATHS = 8 # Kobolds are level 1 safe.
+        elif(self.character_inst.LEVEL <= 7):
+            self.__TOTALPATHS = 10 # include hookers for level 3            
         else:
-            self.__TOTALPATHS = 12            
+            self.__TOTALPATHS = 14 # start the fort and bandits at lvl 8
+            
         if(isinstance(starting_path, int) and starting_path < self.__TOTALPATHS):
             self.__nextpath = starting_path
         else:
             self.__nextpath = 0
+            
         atexit.register(self.stop)
 
     def stop(self):
@@ -372,7 +379,10 @@ class BotThread(threading.Thread):
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go")
 
-        #n = self.__nextpath
+        # TBD wrap a test around this and then extract out the lists,
+        # maybe even as functions (because they include aura checks)
+        # TBD Initialization is not the best place to set TOTAL PATHS...
+        # Should be set here.
         if(self.__nextpath % 2 == 0):
             # Shop
             path_to_go = ["out", "s", "w", 'w', 'w', 's', 's', "shop",
@@ -391,6 +401,17 @@ class BotThread(threading.Thread):
                           "up", "out", "out", "n", "e",
                           "e", "e", "n", "chapel"]
         elif(self.__nextpath == 3):
+            # Dwarven fieldworkers?  do that some other time.  Do regular
+            # field workers.  Setting above to go back to chapel... Actually
+            # I want to avoid areas that sometimes close for now (the farms
+            # do a lot.)
+
+            # Do the market.
+            path_to_go = ["out", 's', 'e', 'e', 'e', 'n', 'w', 'w', 'n', 'n',
+                          's', 'w', 'e', 's', 'w', 's', 'n', 'w', 'e', 'n',
+                          's', 'e', 'e', "out", 's', 'w', 'w', 'w', 'n',
+                          "chapel"]
+        elif(self.__nextpath == 5):
             # Militia Soldiers
             path_to_go = ["out", "s", "e", "s", "s", "s", "w", "gate",
                           "s", "s", "sw", "sw", "sw", "sw", "s", "s", 's',"sw", "se",
@@ -407,18 +428,6 @@ class BotThread(threading.Thread):
                           's', 's', 's', "se", "s", 'w', 'w', 'w', "nw",
                           "nw", 'n', "gate", 'e', 'n', 'n', 'n', 'w', 'n',
                           "chapel"]
-        elif(self.__nextpath == 5):
-            # Dwarven fieldworkers?  do that some other time.  Do regular
-            # field workers.  Setting above to go back to chapel... Actually
-            # I want to avoid areas that sometimes close for now (the farms
-            # do a lot.)
-
-            # Do the market.
-            path_to_go = ["out", 's', 'e', 'e', 'e', 'n', 'w', 'w', 'n', 'n',
-                          's', 'w', 'e', 's', 'w', 's', 'n', 'w', 'e', 'n',
-                          's', 'e', 'e', "out", 's', 'w', 'w', 'w', 'n',
-                          "chapel"]
-            
         elif(self.__nextpath == 7):
             # Kobolds
             if(self.character_inst.AURA_SCALE >= my_list_search(self.character_inst.AURA_LIST, 'blue') or
@@ -453,15 +462,36 @@ class BotThread(threading.Thread):
                           'w', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
                           'n', "nw", "nw", "nw", 'w', 'w','w', "nw", "nw", 'n',
                           "gate", 'e', 'n', 'n', 'n', 'w', 'n', "chapel"]
-                
+
         elif(self.__nextpath == 9):
+            # hookers ... I would avoid the drunken trouble makers, but I don't
+            # quite remember where they are and don't want to go through Amber
+            # Also I think it's safe enough in the dark... maybe just lvl 4 
+            # there are thugs
+            # lvl2 oafs
+            path_to_go = ["out", "s", 'e', 's', 's', 's', 'w', 'gate',
+                          's', 'se', 'se', 'e', 'e', 'e',
+                          'se', 'se', 'se', 's', 's', 's', 's', 'w',
+                          'alley', 's', 's', 'do', 'stai',
+                          # angry hooker should be avoided unless lvl 5.
+                          #'do 3', 'ou',
+                          'stai', 'out', 's',
+                          #'w', 'e', #for zombies
+                          # noticed drunken troublemakers arrive one east
+                          # not sure what safest exit is... go north.
+                          # red axer lvl 2 dropped studded leather collar
+                          'n', 'n', 'n', 'n',
+                          'e', 'n', 'n', 'n', 'n', 'nw', 'nw', 'nw',
+                          'w', 'w', 'w', 'nw', 'nw', 'n',
+                          'gate', 'e', 'n', 'n', 'n', 'w', 'n', 'chapel']
+        elif(self.__nextpath == 11):
             # Fort 
             path_to_go = ["out", 'n', 'n', 'w', "gate", 'n', 'n', 'n',
                           'n', 'n', "gate", 'n', 'n', 'w', 's', 's', 'e',
                           "gate", 's', 's', 's', 's', 's', 'gate', 'e',
                           's', 's', "chapel"]
             
-        elif(self.__nextpath == 11):
+        elif(self.__nextpath == 13):
             # Need some evil.  Do the northern bandits.
             # Check aura first since its dangerous to go as blue
             if(self.character_inst.AURA_SCALE >= my_list_search(self.character_inst.AURA_LIST, 'blue') or
@@ -472,8 +502,8 @@ class BotThread(threading.Thread):
                 self.__nextpath = self.__nextpath + 1  # increment so we don't
                                                         # go selling.
                 
-            else:
-                path_to_go = ['out', 'n', 'n', 'w', 'gate', 'n', 'n', 'n',
+        else:
+            path_to_go = ['out', 'n', 'n', 'w', 'gate', 'n', 'n', 'n',
                           'n', 'n', 'gate', 'n', 'n', 
                           "gate", 'n',
                           "nw", "nw", "sw", "sw", "sw", "sw", 's', "sw", "sw",
@@ -489,9 +519,6 @@ class BotThread(threading.Thread):
                           "gate", 's', 's', 's', 's', 's', "gate", 'e', 's',
                           's', "chapel"]
                                        
-                          
-                          
-        
         if(self.__nextpath < self.__TOTALPATHS - 1):
             self.__nextpath = self.__nextpath + 1
         else:

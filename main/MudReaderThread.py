@@ -501,7 +501,8 @@ class MudReaderThread ( threading.Thread ):
                 "The" + s_numbered + " (.+?) lashes out and thumps you for (.+?) damage\.",
                 "The" + s_numbered + " (.+?) lashes out at you, but misses\.",               
                 "The" + s_numbered + " (.+?) painfully head-butts you for (.+?) damage\.",
-                "The" + s_numbered + " (.+?) casts a (.+?) on you for (.+?) damage\."]
+                "The" + s_numbered + " (.+?) casts a (.+?) on you for (.+?) damage\.",
+                "The" + s_numbered + " (.+?) casts a (.+?) at you for (.+?) damage\."] #not sure if its 'on' or 'at'
                 # Thought:  We know a mob is attacking also on strings where I attack it, 
                 # but it's doubtfully necessary to add that mob to MOBS_ATTACKING.
             for attacking_regex in mobs_attacking_regexes:

@@ -113,6 +113,8 @@ class CommandHandler:
             magentaprint(self.Character_inst.AURA)        
         elif(re.match("MOBS_ATTACKING", user_input)):
             magentaprint(self.Character_inst.MOBS_ATTACKING)
+        elif(re.match("MONSTER_KILL_LIST", user_input)):
+            magentaprint(str(self.Character_inst.MONSTER_KILL_LIST))            
         else: # Doesn't match any command we are looking for
             self.tn.write(user_input + "\n") # Just shovel to telnet.
 

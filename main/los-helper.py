@@ -1,31 +1,13 @@
 # List of TBDs
 
-# Your x breaks and you have to remove it.
-# Your x shatters.
+#Features
+  # ANSI color
+  # timed attaking and casting
+  #    Stops on MUD output, ie mob dying or spell not exisiting, or trying to move.
+  # automatic haste
+  # internal timers to eliminate "Please wait 1 seconds."
+  # Keeps track of weapon so you can flee.
 
-# Wearing rings
-# Your x falls apart. (armour)
-# bug... why does he run by the penitent?
-
-# mobs attacking you
-# punches you for 8 damage.
-# kicks you for 7 damage.
-# grabs you and gouges you for 6 damage.
-# kicks at you, but fails to hurt you.
-# painfully head-butts you for x damage.
-# lashes out and thumps you for x damage
-# lashes out at you, but misses.
-# kicks at you, but fails to hurt you.
-# tries to gouge you, but you shake him off.
-# (?) casts a x spell at you for x damage.
-# tries to grab you, but you break free of his grasp.
-# throws a wild punch at you, but it misses.
-# 
-
-# crits
-# You knock the wind out of the x!!
-# Your attack knocks the x off balance!!
-# The x is caught off guard by your attack!
 
 # idea for a function:
 #  MUD_output_check(regex_true, regex_false="regex that won't match", timeout=0.8)
@@ -89,7 +71,19 @@
 # TBD combat with circle
 # TBD reverse engineering ticker timings from Piety and maintain current health
 # TBD haste timers and thread.
-# TBD implement MAXHP, MAXMP, 
+# TBD implement MAXHP, MAXMP,
+# TBD removed prints from selling algorithm, handle multiple grey cloaks
+# (add numbers and sell in decreasing order, and not sell 'empty strings if
+# could not fit)
+# TBD do not crash on empty inventory at tip
+# TBD chase monster
+# TBD check mob level before engaging... not need mana for low level mobs etc.
+#  (smarter decide_whether_to_engage, maybe no MONSTER_KILL_LIST, but
+#   better lists to determine difficulty and better intelligence as to whether
+#   to engage mobs from each list level based on mana/health)
+# TBD when bot starts reinitialize things like MOBS_ATTACKING 
+
+
 
 
 # DONE LIST
@@ -110,13 +104,19 @@
 # town guards. Done.  Reworked top level algorithm.
 # make flee stop the bot. 
 
-#Features
-  # ANSI color
-  # timed attaking and casting
-  #    Stops on MUD output, ie mob dying or spell not exisiting, or trying to move.
-  # automatic haste
-  # internal timers to eliminate "Please wait 1 seconds."
-  # Keeps track of weapon so you can flee.
+  # Your x breaks and you have to remove it.
+# Your x shatters.
+
+# Wearing rings
+# Your x falls apart. (armour)
+# bug... why does he run by the penitent?
+
+# crits
+# You knock the wind out of the x!!
+# Your attack knocks the x off balance!!
+# The x is caught off guard by your attack!
+# Your wind magic buffets the x.
+
 import sys
 import getpass
 import telnetlib
