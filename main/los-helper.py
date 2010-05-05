@@ -205,6 +205,9 @@ def main():
     tn.close();
     #That's all, folks!
 
+    time.sleep(8) 
+    
+
 
 
 def connect_to_MUD():

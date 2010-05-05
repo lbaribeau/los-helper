@@ -11,7 +11,7 @@ class Character:
         # values.  
     
 #        self.char_class = ""
-        self.LEVEL = 5
+        self.LEVEL = 6
 #        self.preferred_alignment = "grey"
 #        self.weapon_skills = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
 #        self.magic_skills = [0, 0, 0, 0, 0]
@@ -63,14 +63,19 @@ class Character:
             self.MANA_TO_ENGAGE = 3
         elif(self.LEVEL <= 4):
             self.HEALTH_TO_HEAL = 31
-            self.HEALTH_TO_FLEE = 9
+            self.HEALTH_TO_FLEE = 11
             self.MAX_MANA = 12
             self.MANA_TO_ENGAGE = 9
         elif(self.LEVEL <= 5):
             self.HEALTH_TO_HEAL= 37
-            self.HEALTH_TO_FLEE = 14
+            self.HEALTH_TO_FLEE = 11
             self.MAX_MANA = 15
             self.MANA_TO_ENGAGE = 6           
+        elif(self.LEVEL <= 6):
+            self.HEALTH_TO_HEAL= 43
+            self.HEALTH_TO_FLEE = 17
+            self.MAX_MANA = 18
+            self.MANA_TO_ENGAGE = 12           
         else:
             self.HEALTH_TO_HEAL = 58
             self.HEALTH_TO_FLEE = 26
@@ -79,24 +84,28 @@ class Character:
 
         self.MONSTER_LIST=[]
 
-        self.__preferred_monsters = ["oaf", "journeyman", "wanderer"] 
-        self.__red_monsters = ["blond hooker",  
-            "kobold", "sultry hooker", "kobold sentry", 
+        self.__red_monsters = [
+            "blond hooker",
+            "kobold", "sultry hooker", "kobold sentry",
             "kobold miner", "kobold archer", 'angry hooker',
-            "angry kobold", 'red axer', 'pickpocket']
-        self.__lvl1_monsters = [ "dustman", "small girl", "young boy", "old woman",
+            "angry kobold", 'red axer', 'pickpocket', "thug"]
+        self.__lvl1_monsters = [
+            "dustman", "small girl", "young boy", "old woman",
             "old man", "townsman", "stall holder", "duck", "hedgehog", "piglet",
-            "shopper", "window shopper", 
+            "shopper", "window shopper",
             "waitress", "housewife", "squirrel", "milk maid", "rabbit", "one man band",
-            "heather seller", "irate teenager", 
+            "heather seller", "irate teenager",
             "village elder", "small dog", "tribesman", "searcher", "delivery boy",
             "traveller", "wanderer", "villager", "rich kid", "vagrant",
             "dropout", "tramp", "serf"]     
-        self.__lvl1_red_monsters = ["old kobold", "kobold child", "kobold dam" ]
-        self.__lvl2_monsters = ["hawker", "barmaid", "smelly beggar", "black crow"
+        self.__lvl1_red_monsters = [
+            "old kobold", "kobold child", "kobold dam" ]
+        self.__lvl2_monsters = [
+            "hawker", "barmaid", "smelly beggar", "black crow"
             "sheep", "goose", "penitent", "singer", "musician", "spiv",
-            "bidder", "dairy cow", "scholar", "juggler", # "acolyte",               
-            "shepherd", "gazelle", 'tabby cat'] #cat might be lvl 1 not sure
+            "bidder", "dairy cow", "scholar", "juggler", # "acolyte",
+            "shepherd", "gazelle", "journeyman",
+            'tabby cat'] #cat might be lvl 1 not sure
         # acolytes are good (chalices) but can cause
                                     # some difficulty... they pile up north of the
                                     # chapel and kill you when you least expect
@@ -107,46 +116,53 @@ class Character:
             "thatcher",  "tax inspector", "theatre goer" ]
         # pickpocket is nice for rangers because it drops leather collars and
         # masks.  red axer drops studded leather collar.
-        self.__lvl4_monsters = ["actor", "actress", "grip", "kobold shaman", 
-            "journeyman", "logger", "insane kobold", "kobold scout", "drunken trouble-maker", 
+        self.__lvl4_monsters = [
+            "actor", "actress", "grip", "kobold shaman",
+            "journeyman", "logger", "insane kobold", "kobold scout", "drunken trouble-maker",
             "kobold champion", "butcher", "young knight", "acrobat", "drunken miner",
             "logger", #"auctioneer", # auctioneers are darn annoying, leave them out!
             "militia soldier", "carpenter", "stagehand"]
         self.__lvlx_monsters = [
             "nobleman", #, "kobold priest"
             "fort sentry", "fur trader", "hunter",
-            "bandit swordsman", "large bandit", "bull", "kobold guard" ]
-        # oremaster lvl 7
-        # add tabby cat
+            "bandit swordsman", "large bandit", "bull",
+            "kobold guard", "mugger" ]
+            # kobold guard and mugger will group so high level.
+            # oremaster lvl 7
+        
+        # A list of monsters redundant to the above lists that
+        # I may want to kill even if they are too low of level.
+        # Mostly hostiles and things that don't let you loot.
+        self.__preferred_lvl_1_2_monsters = [
+            "oaf", "journeyman", "wanderer", "acolyte", "angry hooker",
+             "thug", "spiv" ]
+        
+        
         
         self.MONSTER_KILL_LIST = []
         
         if(self.LEVEL < 4):
             self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__preferred_monsters)
         elif(self.LEVEL < 6):
             self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__preferred_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
-        else:
+        elif(self.LEVEL < 8):
             self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
-
-        #self.MONSTER_KILL_LIST.extend(self.__preferred_monsters)
-        #self.MONSTER_KILL_LIST.extend(self.__red_monsters)
-        
-        #self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
-        #self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
-        if(self.LEVEL > 7):
+            self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
+        else:
+            self.MONSTER_KILL_LIST.extend(self.__preferred_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvlx_monsters)
 
         self.INVENTORY_LIST = []
         # should probably depend on level.
         self.KEEP_LIST = ["large bag", "large sack", "silver chalice",
-                          "steel bottle", 
+                          "steel bottle", "bag",
                      "adamantine sword", 'adamantine axe', "claymore", 
                      "poison ring", "spider leg", "scimitar", "small restorative", 
                      "spear", "bolos", 'javelin', "leaf blade", "short bow",
@@ -179,10 +195,12 @@ class Character:
                      'dusty blue', 'pale blue', 'blue',
                      'deep blue', 'bright blue', 'heavenly blue']
         # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
-        self.AURA = "grey"
-        self.AURA_SCALE = 8
-        self.AURA_PREFERRED = "pale blue"
-        self.AURA_PREFERRED_SCALE = 10
+        
+        self.AURA_SCALE = 8 #grey
+        self.AURA = self.AURA_LIST[self.AURA_SCALE]
+        
+        self.AURA_PREFERRED_SCALE = 10 # pale blue
+        self.AURA_PREFERRED = self.AURA_LIST[self.AURA_PREFERRED_SCALE]
         
         self.START_TIME = time.time()
         
