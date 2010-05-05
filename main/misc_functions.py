@@ -60,8 +60,8 @@ def make_list_sellable(inv_list, keep_list):
     # can refer to them uniquely.  Use the second word
     # more often.
 
-    # Note... it assumes that KEEP_LIST removal has already been done.
-    # EDIT:  NO!  it needs a list where with the keepers in it too.
+    # Note: items in keep_list should not yet be removed from the 
+    # inventory list.
     return_list = []
     unusable_words = []
     #inv_list = inv_list_in[:] # make a copy because I want to change around.

@@ -45,8 +45,6 @@ class CastThread(threading.Thread):
         # However delay is automatic (in constructor)
         # Assumption is that it is constructed and started at the same time.
 
-#        global PREV_COMMAND
-#        global CAST_CLK
         self.__stopping = False
         wait_for_cast_ready(self.Character_inst)
         while not self.__stopping:
