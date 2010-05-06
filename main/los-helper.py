@@ -10,13 +10,20 @@
 
 # FEATURES available to user not using bot itself
 
-#   timed attaking and casting
-#      Stops on MUD output, ie mob dying or spell not exisiting, or trying to move.
+#   timed attaking and casting (kk and cc commands)
+#       These commands will continue until certain MUD output including 
+#           mob being killed 
+#           spell not known 
+#           if you move to a new area
 #   timed attacking includes change to hasted attack timing 
 #   internal timers to eliminate "Please wait 1 second."
 #   Keeps track of weapon so you can flee.
-#   Guaranteed-to-work flee function available to user and keeps weapon(s).
-#   Bot can be used to do selling and dropping at tip
+#   Guaranteed-to-work flee function available to user and keeps weapon(s). 
+#       command is "fl"
+#       will wait the exact right amount of time if you cannot yet flee
+#       spams flee command 3 times to ensure you get out :)
+#   Bot can be used to do selling and dropping at tip (put items you want to 
+#       keep that aren't in KEEP_LIST into some bag that IS in KEEP_LIST)
 #   ANSI color
 
 ##########################################################################

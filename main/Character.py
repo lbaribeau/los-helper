@@ -11,7 +11,7 @@ class Character:
         # values.  
     
 #        self.char_class = ""
-        self.LEVEL = 6
+        self.LEVEL = 7
 #        self.preferred_alignment = "grey"
 #        self.weapon_skills = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
 #        self.magic_skills = [0, 0, 0, 0, 0]
@@ -75,7 +75,12 @@ class Character:
             self.HEALTH_TO_HEAL= 43
             self.HEALTH_TO_FLEE = 17
             self.MAX_MANA = 18
-            self.MANA_TO_ENGAGE = 12           
+            self.MANA_TO_ENGAGE = 12     
+        elif(self.LEVEL <= 7):
+            self.HEALTH_TO_HEAL= 50
+            self.HEALTH_TO_FLEE = 20
+            self.MAX_MANA = 21
+            self.MANA_TO_ENGAGE = 15        
         else:
             self.HEALTH_TO_HEAL = 58
             self.HEALTH_TO_FLEE = 26
@@ -113,12 +118,13 @@ class Character:
             "market official", "robed pilgrim", "merchant", "large kobold",
             "street trader", "field worker", "harvester", "horse", "cow",
             "doorman", "stilt walker",  "messenger", "cashier",
-            "thatcher",  "tax inspector", "theatre goer" ]
+            "thatcher",  "tax inspector", "theatre goer", "insane kobold", 
+            "kobold scout" ]
         # pickpocket is nice for rangers because it drops leather collars and
         # masks.  red axer drops studded leather collar.
         self.__lvl4_monsters = [
             "actor", "actress", "grip", "kobold shaman",
-            "journeyman", "logger", "insane kobold", "kobold scout", "drunken trouble-maker",
+            "journeyman", "logger", "drunken trouble-maker",
             "kobold champion", "butcher", "young knight", "acrobat", "drunken miner",
             "logger", #"auctioneer", # auctioneers are darn annoying, leave them out!
             "militia soldier", "carpenter", "stagehand"]
@@ -134,8 +140,10 @@ class Character:
         # I may want to kill even if they are too low of level.
         # Mostly hostiles and things that don't let you loot.
         self.__preferred_lvl_1_2_monsters = [
-            "oaf", "journeyman", "wanderer", "acolyte", "angry hooker",
-             "thug", "spiv" ]
+            "oaf", "journeyman", "wanderer", "acolyte", 
+            "thug", "spiv", "kobold sentry", "tired hooker", 
+            "blond hooker", "angry hooker" ] 
+        # prefer kobold sentry for missile weapon drops (bow/spear)
         
         
         
@@ -148,14 +156,17 @@ class Character:
             self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
-        elif(self.LEVEL < 8):
+        elif(self.LEVEL < 7):
             self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
+        elif(self.LEVEL < 9):
+            self.MONSTER_KILL_LIST.extend(self.__preferred_lvl_1_2_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
         else:
-            self.MONSTER_KILL_LIST.extend(self.__preferred_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__preferred_lvl_1_2_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
 
