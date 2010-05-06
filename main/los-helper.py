@@ -1,61 +1,82 @@
-# List of TBDs
 
-#Features
-  # ANSI color
-  # timed attaking and casting
-  #    Stops on MUD output, ie mob dying or spell not exisiting, or trying to move.
-  # automatic haste
-  # internal timers to eliminate "Please wait 1 seconds."
-  # Keeps track of weapon so you can flee.
+# Top of los-helper file is currently used as a note pad for
+# FEATURES
+# DONE LIST
+# TODO LIST
+# CODING IDEAS
+# STRINGS to save and match later
 
+########################################################################## 
 
-# idea for a function:
-#  MUD_output_check(regex_true, regex_false="regex that won't match", timeout=0.8)
-#    checks the MUD_buffer for the regexes
-#    returns a match object if regex_true is matched
-#    returns null (false) if the regex_false occurs (only purpose is to reduce the amount of time)
-#    returns null (false) if the given timeout expires.
+# FEATURES available to user not using bot itself
 
-# bug... someone else kills my old mob,
-# EDIT: I THINK THIS IS FIXED.  I changed the trigger to the 'overwhelms' one
-# when a mob is killed so I think this is fine.
-# Your enemy, the shepherd had been defeated
-# while I'm healing up and stops the combat threads.
-#  edit the combat thread stopping logic to compare the kk target to the mob
-#  that died.
-# FIX:  (two fixes)
-#  1.  keep track of which mob you are kk ing and cc ing and only stop
-#      kk and cc if the mob that died was your target.
-#  2.  engage mobs that attack you.
+#   timed attaking and casting
+#      Stops on MUD output, ie mob dying or spell not exisiting, or trying to move.
+#   timed attacking includes change to hasted attack timing 
+#   internal timers to eliminate "Please wait 1 second."
+#   Keeps track of weapon so you can flee.
+#   Guaranteed-to-work flee function available to user and keeps weapon(s).
+#   Bot can be used to do selling and dropping at tip
+#   ANSI color
 
-#bug:
-        #Obvious exits: north, south, east.
-        #You see a shopper.
-        #MUD_READ: successful go
-        #Check for successful go, returning True
-        #Inside check_for_monsters
-        #[52 H 21 M]: The shopper just wandered to the north.
-        #Inside decide_which_mob_to_kill
-        #Inside engage_monster... engaging shopper
-        #[52 H 21 M]: You don't see that here.
-        #[52 H 21 M]: Inside get_items
-        #Inside check_weapons.
-        #Inside engage_mobs_who_joined_in
-        #[]
-        #Inside heal_up
-        #Inside decide_which_mob_to_kill
-        #Inside engage_monster... engaging shopper
-        #There's nothing here.
-        #[52 H 21 M]: You don't see that here.
-#FIX ( TBD ):
+##########################################################################
+
+# DONE LIST
+# (copy text here when removed from todo list)
+#
+# aura checks.
+#
+# Bug for kobold guards... won't continue to engage if health is low!
+# blocks your exit
+#  The 'x' attacks you.
+#  You attack the 'x'.
+# Debug:
+#  1. mobs joining in
+#  2. mobs who block
+#  3. not fighting in presence of guard . found one bug (re.match)
+#
+# "sell silver ring" will sell a silver chalice...
+#  Solution... when doing inventory give everything a good enough name.
+#  still needs to avoid all unusable words.  (test: "silver ring", "tiny silver vial")
+# "Small mace" -> "small restorative" ... fixed if mace is removed on
+#     successful sales... this would be very good to do.
+#
+# town guards. Done.  Reworked top level algorithm.
+#
+# make flee stop the bot. 
+#
+# Bot equips weapon on these triggers
+# Your x breaks and you have to remove it.
+# Your x shatters.
+#
+# Wearing rings
+# Your x falls apart. (armour)
+#
 #  Maintain only ONE monster list.  MUD_thread will generally be
-# the only one to add/delete from it.
+# the only one to add/delete from it. DONE
 # The bot will go from this list.
 # However if the bot sees a problem, such as "You don't see that here",
 # then the bot can remove that mob from the list.  However the MUD thread will
 # have to be involved in that anyway.
+#
+# BUG... someone else kills my old mob:
+# "Your enemy, the shepherd had been defeated"
+# while I'm healing up and stops the cast thread,
+# or I'm in combat and stop fighting.
+#  Edit the combat thread stopping logic to compare the kk target to the mob
+#  that died.
+# PLAN:  (two fixes)
+#  1.  keep track of which mob you are kk ing and cc ing and only stop
+#      kk and cc if the mob that died was your target. 
+#  2.  engage mobs that attack you.  (DONE)
+# COMPLETED: I changed the trigger that stops combat and casting to 
+# "Your attack overwhelms the ..."
+# when a mob is killed so that should solves the above bugs.
 
+##########################################################################
 
+# TODO LIST (slash WISH LIST):
+#
 # haste thread (hc and sh), search thread (searchc and ssearch)
 # haste, steel bottles, silver chalices.
 # restoratives
@@ -63,7 +84,7 @@
 # Someone just wandered to the out.  (hidden mobs)
 # The 2nd actress blocks your exit.  (bug: attacks the 1st actress)
 # remove unneccessary __init__s
-
+#
 # TBD... mages cast faster (change timers)
 # TBD... a "set chase" functionality which will automatically chase
 #       mobs that run or chase command
@@ -81,41 +102,59 @@
 #  (smarter decide_whether_to_engage, maybe no MONSTER_KILL_LIST, but
 #   better lists to determine difficulty and better intelligence as to whether
 #   to engage mobs from each list level based on mana/health)
-# TBD when bot starts reinitialize things like MOBS_ATTACKING 
+# TBD when bot starts reinitialize things like MOBS_ATTACKING
+#
+#bug:
+#        #Obvious exits: north, south, east.
+#        #You see a shopper.
+#        #MUD_READ: successful go
+#        #Check for successful go, returning True
+#        #Inside check_for_monsters
+#        #[52 H 21 M]: The shopper just wandered to the north.
+#        #Inside decide_which_mob_to_kill
+#        #Inside engage_monster... engaging shopper
+#        #[52 H 21 M]: You don't see that here.
+#        #[52 H 21 M]: Inside get_items
+#        #Inside check_weapons.
+#        #Inside engage_mobs_who_joined_in
+#        #[]
+#        #Inside heal_up
+#        #Inside decide_which_mob_to_kill
+#        #Inside engage_monster... engaging shopper
+#        #There's nothing here.
+#        #[52 H 21 M]: You don't see that here.
 
+##########################################################################
 
+# IDEAS for how to improve code:
 
+# idea for a function:
+#  MUD_output_check(regex_true, regex_false="regex that won't match", timeout=0.8)
+#    checks the MUD_buffer for the regexes
+#    returns a match object if regex_true is matched
+#    returns null (false) if the regex_false occurs (only purpose is to reduce the amount of time)
+#    returns null (false) if the given timeout expires.
 
-# DONE LIST
-# aura checks.
-# Bug for kobold guards... won't continue to engage if health is low!
-# blocks your exit
-#  The 'x' attacks you.
-#  You attack the 'x'.
-# Debug:
-#  1. mobs joining in
-#  2. mobs who block
-#  3. not fighting in presence of guard . found one bug (re.match)
-# "sell silver ring" will a silver chalice...
-#  Solution... when doing inventory give everything a good enough name.
-#  still needs to avoid all unusable words.  (test: "silver ring", "tiny silver vial")
-# "Small mace" -> "small restorative" ... fixed if mace is removed on
-#     successful sales... this would be very good to do.
-# town guards. Done.  Reworked top level algorithm.
-# make flee stop the bot. 
+# Idea: an "Inventory" object so bot can say "Inventory.getInventoryList()" 
+#  - right now the bot types 'i' and calls MudReaderHandler.wait_for_inventory_match()
+#  which is what Inventory.getInventoryList() would do.  
 
-  # Your x breaks and you have to remove it.
-# Your x shatters.
+# Idea for a driving refactoring pattern: 
+# The pattern would be to 
+# decouple the bot AI from the commands, and eventually the bot AI would never need 
+# to know any commands.  Again: strive to stop bot AI from issueing commands by 
+# creating objects.
 
-# Wearing rings
-# Your x falls apart. (armour)
-# bug... why does he run by the penitent?
+##########################################################################
 
+# STRING NOTEPAD for things we might want to match to later
+# 
 # crits
 # You knock the wind out of the x!!
 # Your attack knocks the x off balance!!
 # The x is caught off guard by your attack!
 # Your wind magic buffets the x.
+
 
 import sys
 import getpass
