@@ -489,6 +489,8 @@ class BotThread(threading.Thread):
                           "gate", 's', 's', 's', 's', 's', "gate", 'e', 's',
                           's', "chapel"]
         
+        PATH_TO_SKIP_WITH = [ 'out', 'chapel' ]
+        
         # TODO list
         # dwarven field workers (good high level content)
         # regular field workers east of Amethyst... however exit 
