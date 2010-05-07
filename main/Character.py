@@ -89,6 +89,7 @@ class Character:
 
         self.MONSTER_LIST=[]
 
+        # All lists are mutually exclusive except for 'preferred' (bottom)
         self.__red_monsters = [
             "blond hooker",
             "kobold", "sultry hooker", "kobold sentry",
@@ -115,19 +116,26 @@ class Character:
                                     # some difficulty... they pile up north of the
                                     # chapel and kill you when you least expect
         self.__lvl3_monsters = [
-            "market official", "robed pilgrim", "merchant", "large kobold",
+            "market official", "robed pilgrim", "merchant", 
             "street trader", "field worker", "harvester", "horse", "cow",
             "doorman", "stilt walker",  "messenger", "cashier",
-            "thatcher",  "tax inspector", "theatre goer", "insane kobold", 
-            "kobold scout" ]
+            "thatcher",  "tax inspector", "theatre goer"
+            ]
+        self.__lvl3_red_monsters = [
+            "large kobold", "insance kobold", "kobold scout"
+            ]
+        
         # pickpocket is nice for rangers because it drops leather collars and
         # masks.  red axer drops studded leather collar.
         self.__lvl4_monsters = [
-            "actor", "actress", "grip", "kobold shaman",
-            "journeyman", "logger", "drunken trouble-maker",
-            "kobold champion", "butcher", "young knight", "acrobat", "drunken miner",
+            "actor", "actress", "grip",
+            "journeyman", "logger", 
+            "butcher", "young knight", "acrobat", "drunken miner",
             "logger", #"auctioneer", # auctioneers are darn annoying, leave them out!
             "militia soldier", "carpenter", "stagehand"]
+        self.__lvl4_red_monsters = [
+            "kobold shaman", "drunken trouble-maker", "kobold champion"]
+        
         self.__lvlx_monsters = [
             "nobleman", #, "kobold priest"
             "fort sentry", "fur trader", "hunter",
@@ -161,14 +169,21 @@ class Character:
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl3_red_monsters)
         elif(self.LEVEL < 9):
             self.MONSTER_KILL_LIST.extend(self.__preferred_lvl_1_2_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl3_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl4_red_monsters)
         else:
             self.MONSTER_KILL_LIST.extend(self.__preferred_lvl_1_2_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl3_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl4_red_monsters)
+
 
         self.INVENTORY_LIST = []
         # should probably depend on level.
