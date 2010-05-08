@@ -547,6 +547,8 @@ class BotThread(threading.Thread):
             self.__nextpath = 0
             
         return path_to_go
+    
+    
             
     def go(self, exit_str):
         #time.sleep(0.8) # sometimes not a good idea to go immediately
@@ -593,9 +595,6 @@ class BotThread(threading.Thread):
         Returns a list of items not sold (so they can be dropped), DROP_LIST.
         """
 
-        #global SELL_LIST
-        #global DROP_LIST
-
         inv_success = self.update_inventory_list()
         
         if(not inv_success):
@@ -608,11 +607,12 @@ class BotThread(threading.Thread):
         #    while(my_list_search(SELL_LIST, item) != -1):
         #        SELL_LIST.remove(item)
                 
-        my_sell_list = make_list_sellable(inv, self.character_inst.KEEP_LIST)
+        my_sell_list = extract_sellable_and_droppable(inv,  
+            self.character_inst.KEEP_LIST)
           # Chooses item names to evade "silver chalice" and "silver ring" collisions
           # Also does not include keepers.
-        self.__drop_list = my_sell_list[:]  # important to copy here
-                                        # also not increased scope of drop list
+        #self.__drop_list = my_sell_list[:]  # important to copy here
+                                        # also note increased scope of drop list
         debug = False
         for item in my_sell_list:
         #for i in range(0, len(my_sell_list)):
@@ -621,12 +621,15 @@ class BotThread(threading.Thread):
             if(self.__stopping):
                 return
             magentaprint("sell " + item)
-            self.CommandHandler_inst.process("sell " + item)
-            if(self.MudReaderHandler_inst.check_if_item_was_sold()):  
+            
+            if(not debug):
+                time.sleep(self.character_inst.MINIMUM_SLEEP_BETWEEN_COMMANDS)
+                self.CommandHandler_inst.process("sell " + item)
+            #if(self.MudReaderHandler_inst.check_if_item_was_sold()):  
                 # function which handshakes with
                 # MudReaderThread to determine
                 # if an item sold.
-                self.__drop_list.remove(item)
+                #self.__drop_list.remove(item)
 
         return 
  # Wish list.
@@ -679,7 +682,7 @@ class BotThread(threading.Thread):
         # Assume its the same sell list... not much should have changed.
         # Sell_list really shouldn't be global but whatevs.
         
-#        my_sell_list = make_list_sellable(SELL_LIST)
+#        my_sell_list = extract_sellable_and_droppable(SELL_LIST)
           # Chooses item names to evade "silver chalice" and "silver ring" collisions
 #        debug = False
 #        for item in my_sell_list:
@@ -696,20 +699,23 @@ class BotThread(threading.Thread):
 #        return
     def drop_items(self):
 
+        self.update_inventory_list()
+        drop_list = extract_sellable_and_droppable(
+            self.character_inst.INVENTORY_LIST[:],
+            self.character_inst.KEEP_LIST[:])
+        
         debug = False
-        for item in self.__drop_list:
-            time.sleep(0.4)  # TBD:  MudReaderHandler function to 
-                            # wait properly although its unnecessary.
+        for item in drop_list:
+        #for item in self.__drop_list:
             
             if(self.__stopping):
                 return
             
-            if(debug):
-                magentaprint("drop " + item)
-            else:
-                magentaprint("drop " + item)
+            magentaprint("drop " + item)
+            if(not debug):
+                time.sleep(self.character_inst.MINIMUM_SLEEP_BETWEEN_COMMANDS)
                 self.CommandHandler_inst.process("drop " + item)
-
+            
         return
 
 
@@ -810,10 +816,6 @@ class BotThread(threading.Thread):
 
 
     def engage_monster(self, monster):
-        #global KillThread_inst
-        #global CastThread_inst
-        #global HEALTH
-        #global HEALTH_TO_HEAL
         
         vigor_cost = 2
         black_magic_spell_cost = 3
@@ -892,8 +894,6 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return
         magentaprint("Inside get_items")
-        #PREV_COMMAND = "get all"
-        #self.CommandHandler_inst.process("get all")      
         self.CommandHandler_inst.process("ga")  
         return
 
@@ -902,7 +902,6 @@ class BotThread(threading.Thread):
         # This function checks the global list maintainted by
         # MUD_read_thread and engages any mobs that had joined in
         # and are therefore still fighting.
-        #global MOBS_JOINED_IN
 
         magentaprint("Inside engage_mobs_who_joined_in")
         magentaprint(self.character_inst.MOBS_JOINED_IN)

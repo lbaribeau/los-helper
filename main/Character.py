@@ -98,7 +98,7 @@ class Character:
         self.__lvl1_monsters = [
             "dustman", "small girl", "young boy", "old woman",
             "old man", "townsman", "stall holder", "duck", "hedgehog", "piglet",
-            "shopper", "window shopper",
+            "shopper", "window shopper", "window cleaner",
             "waitress", "housewife", "squirrel", "milk maid", "rabbit", "one man band",
             "heather seller", "irate teenager",
             "village elder", "small dog", "tribesman", "searcher", "delivery boy",
@@ -110,7 +110,7 @@ class Character:
             "hawker", "barmaid", "smelly beggar", "black crow"
             "sheep", "goose", "penitent", "singer", "musician", "spiv",
             "bidder", "dairy cow", "scholar", "juggler", # "acolyte",
-            "shepherd", "gazelle", "journeyman",
+            "shepherd", "gazelle", "journeyman", 
             'tabby cat'] #cat might be lvl 1 not sure
         # acolytes are good (chalices) but can cause
                                     # some difficulty... they pile up north of the
@@ -119,7 +119,8 @@ class Character:
             "market official", "robed pilgrim", "merchant", 
             "street trader", "field worker", "harvester", "horse", "cow",
             "doorman", "stilt walker",  "messenger", "cashier",
-            "thatcher",  "tax inspector", "theatre goer"
+            "thatcher",  "tax inspector", "theatre goer", 
+            "drunken miner"
             ]
         self.__lvl3_red_monsters = [
             "large kobold", "insance kobold", "kobold scout"
@@ -130,7 +131,7 @@ class Character:
         self.__lvl4_monsters = [
             "actor", "actress", "grip",
             "journeyman", "logger", 
-            "butcher", "young knight", "acrobat", "drunken miner",
+            "butcher", "young knight", "acrobat", 
             "logger", #"auctioneer", # auctioneers are darn annoying, leave them out!
             "militia soldier", "carpenter", "stagehand"]
         self.__lvl4_red_monsters = [
@@ -215,6 +216,8 @@ class Character:
         self.GO_PLEASE_WAIT = False
         self.GO_NO_EXIT = False
         self.GO_TIMEOUT = False
+        
+        self.MINIMUM_SLEEP_BETWEEN_COMMANDS=0.4
 
         self.AURA_LIST = ['demonic red', 'ominous red', 'ghastly red', 'murky red',
                      'red', 'rusty', 'dusty red', 'grey',
