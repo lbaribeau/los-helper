@@ -591,8 +591,8 @@ class BotThread(threading.Thread):
 
     def sell_items(self):
         """
-        Sell everything in inventory list that is not in the keep list.
-        Returns a list of items not sold (so they can be dropped), DROP_LIST.
+        Sell everything in inventory that is not in the keep list.
+        (Updates character_inst.INVENTORY_LIST)
         """
 
         inv_success = self.update_inventory_list()

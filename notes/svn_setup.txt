@@ -1,0 +1,16 @@
+1. Repository Site
+http://code.google.com/p/los-helper/source/checkout
+There is a password here you will need (you must sign in w a google account with write permission).
+
+2. svn downoad 
+http://subversion.tigris.org/servlets/ProjectDocumentList?folderID=91
+
+3. Checkout
+I checked out the empty repository
+$ svn co https://los-helper.googlecode.com/svn/trunk/ los-helper --username laurierbaribeau
+Google told me my password (see step 1)
+
+4. 
+svn add *.py
+svn commit -m "First commit.  LB"
+

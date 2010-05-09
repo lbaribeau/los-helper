@@ -1,0 +1,33 @@
+I found that Pydev Package Explorer -> Rt Click los-helper -> New -> Pydev Module 
+was not working because none of my folders were configured as source folders.
+
+There was no 'package' icon in the main folder.
+
+Perhaps there was a smarter way to import the project.
+
+Anyway, the fix was to add a couple of lines to my .project file in my 
+eclipseworkspace/los-helper 
+directory 
+(which had been created with svn co \
+https://los-helper.googlecode.com/svn/trunk/ los-helper --username laurierbaribeau)
+
+
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?eclipse-pydev version="1.0"?>
+
+<pydev_project>
+	<pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
+	<pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 2.6</pydev_property>
+	<!-- Added the following to allow creation of modules
+	<pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
+		<path>/los-helper/main</path>
+	</pydev_pathproperty>
+	-->
+</pydev_project>
+
+This is done on new projects if you select the check box to add it to the
+python path.  (That is how I figured this out)
+
+Summary: If you want to be able to use Eclipse's Add Pydev Module, you might need 
+to add the above XML segment (pydev_pathproperty element) to your 
+los-helper/.project.

@@ -1,0 +1,3 @@
+http://yuml.me/diagram/scale:70/class/draw
+
+[LosHelper]->[BotThread], [LosHelper]->[CommandHandler], [MudReaderThread]->[Telnet], [BotThread]->[MudReaderHandler], [CommandHandler]->[CommandThreads<Command>], [MudReaderThread]->[CommandHandler], [BotThread]->[Character<Data>], [MudReaderHandler]->[Character<Data>], [MudReaderThread]->[ConsoleHandler], [ConsoleHandler]->[WinConsoleHandler], [ConsoleHandler]->[UnixConsoleHandler], [CommandThreads<Command>]->[Time], [CommandHandler]->[Time], [CommandThreads<Command>]->[Character<Data>], [MudReaderHandler]->[MudReaderThread], [MudReaderThread]->[Character<Data>], [CommandThreads<Command>]->[Telnet], [CommandHandler]->[Telnet], [CommandHandler]->[Character<Data>]
