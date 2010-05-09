@@ -167,14 +167,14 @@ class MudReaderHandler:
 #            timeout_amount = run_time - timeout
 #            magentaprint(("MudReaderHandler: MudReaderThread timed out on check_for_monsters by %f.  Returned: " + str(self.character_inst.MONSTER_LIST)) % timeout_amount) 
             
- #       if(self.MudReaderThread.MONSTER_CHECK_FLAG):
- #           # This shouldn't happen
- #           magentaprint("MudReaderHandler: MONSTER_CHECK_FLAG was still set.")
- #           magentaprint("  Here is what we have... " + str(self.MudReaderThread.MONSTER_LIST))
- #           self.MudReaderThread.MONSTER_CHECK_FLAG = 0      
+#       if(self.MudReaderThread.MONSTER_CHECK_FLAG):
+#           # This shouldn't happen
+#           magentaprint("MudReaderHandler: MONSTER_CHECK_FLAG was still set.")
+#           magentaprint("  Here is what we have... " + str(self.MudReaderThread.MONSTER_LIST))
+#           self.MudReaderThread.MONSTER_CHECK_FLAG = 0      
         
- #       magentaprint("Done parsing, returning list to 'run'")
- #       return self.MudReaderThread.MONSTER_LIST
+#       magentaprint("Done parsing, returning list to 'run'")
+#       return self.MudReaderThread.MONSTER_LIST
 
     
 

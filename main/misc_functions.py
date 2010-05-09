@@ -79,7 +79,7 @@ def my_list_equal(listA, listB):
             # Do nothing.  However every case does that so do nothing.
 #            pass
 #        elif(i > 0 and inv_list[i] == inv_list[i-1]):# and
-           #my_list_search(item_split, return_list[len(return_list)-1]) != -1):
+            #my_list_search(item_split, return_list[len(return_list)-1]) != -1):
 #            print "Appending " + return_list[len(return_list)-1] + " because i am on " + inv_list[i] + " which is the same as " + inv_list[i-1]
 #            return_list.append(return_list[len(return_list)-1])
 #        elif(len(item_split) == 1):

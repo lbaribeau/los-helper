@@ -210,7 +210,7 @@ class BotThread(threading.Thread):
         
         MANA_TO_WAIT = self.character_inst.MAX_MANA - 12
         if(self.character_inst.BLACK_MAGIC): 
-        	MANA_TO_GO = self.character_inst.MAX_MANA 
+            MANA_TO_GO = self.character_inst.MAX_MANA 
         else:
             if(self.character_inst.MAX_MANA % 2 == 1):
                 MANA_TO_GO = self.character_inst.MAX_MANA - 1
@@ -263,9 +263,9 @@ class BotThread(threading.Thread):
     def rest_for_mana(self):
         MANA_SATISFIED = self.character_inst.MAX_MANA - 1
         if(self.character_inst.BLACK_MAGIC): 
-        	MANA_SATISFIED = self.character_inst.MAX_MANA 
+            MANA_SATISFIED = self.character_inst.MAX_MANA 
         else:
-        	MANA_SATISFIED = self.character_inst.MAX_MANA - 1
+            MANA_SATISFIED = self.character_inst.MAX_MANA - 1
         
         if(self.character_inst.MANA < MANA_SATISFIED):
             self.CommandHandler_inst.process("rest")            
@@ -287,9 +287,9 @@ class BotThread(threading.Thread):
         
         MANA_SATISFIED = self.character_inst.MAX_MANA - 1
         if(self.character_inst.BLACK_MAGIC): 
-        	MANA_SATISFIED = self.character_inst.MAX_MANA 
+            MANA_SATISFIED = self.character_inst.MAX_MANA 
         else:
-        	MANA_SATISFIED = self.character_inst.MAX_MANA - 1
+            MANA_SATISFIED = self.character_inst.MAX_MANA - 1
         
         while(self.character_inst.MANA < MANA_SATISFIED and 
               not self.__stopping):
@@ -609,8 +609,8 @@ class BotThread(threading.Thread):
                 
         my_sell_list = extract_sellable_and_droppable(inv,  
             self.character_inst.KEEP_LIST)
-          # Chooses item names to evade "silver chalice" and "silver ring" collisions
-          # Also does not include keepers.
+            # Chooses item names to evade "silver chalice" and "silver ring" collisions
+            # Also does not include keepers.
         #self.__drop_list = my_sell_list[:]  # important to copy here
                                         # also note increased scope of drop list
         debug = False
@@ -632,20 +632,22 @@ class BotThread(threading.Thread):
                 #self.__drop_list.remove(item)
 
         return 
- # Wish list.
- # In selling items, bot should:
- #  be in chapel
- #  check inventory
- #  pick sell list
- #  (then if its empty he doesn't have to go to the shop)
- #  (another reason is to limit the scope of the drop list)
- #  (it would be a function like
- # def clean_inventory():
- #     self.update_inventory()
- #     sell_list = make_things_sellable()
- #     drop_list = go_sell(sell_list)
- #     go_drop(drop_list)
- # Maybe this function can be user accessable :)
+    
+
+# Wish list.
+# In selling items, bot should:
+#  be in chapel
+#  check inventory
+#  pick sell list
+#  (then if its empty he doesn't have to go to the shop)
+#  (another reason is to limit the scope of the drop list)
+#  (it would be a function like
+# def clean_inventory():
+#     self.update_inventory()
+#     sell_list = make_things_sellable()
+#     drop_list = go_sell(sell_list)
+#     go_drop(drop_list)
+# Maybe this function can be user accessable :)
                 
 
     def update_inventory_list(self):
@@ -683,7 +685,7 @@ class BotThread(threading.Thread):
         # Sell_list really shouldn't be global but whatevs.
         
 #        my_sell_list = extract_sellable_and_droppable(SELL_LIST)
-          # Chooses item names to evade "silver chalice" and "silver ring" collisions
+        # Chooses item names to evade "silver chalice" and "silver ring" collisions
 #        debug = False
 #        for item in my_sell_list:
 #            time.sleep(0.8)
@@ -936,7 +938,7 @@ class BotThread(threading.Thread):
         
         while(self.character_inst.MOBS_ATTACKING != []):
             self.engage_monster(self.character_inst.MOBS_ATTACKING[0])
-              # engage monster does removal on MOBS_ATTACKING list
+            # engage monster does removal on MOBS_ATTACKING list
             self.get_items()
         return
     
@@ -971,32 +973,32 @@ class BotThread(threading.Thread):
                         # For now, just pretend it ended well.
 #                        self.get_items()
 
- # Just thinking about changing top level...
+# Just thinking about changing top level...
  
- # I don't like this version because mobs will leave and arrive while in
- # combat.  It makes more sense to recheck list every time I enter combat...
- # right?  That means doing a look between every mob.  I want to avoid the
- # complication of multiple threads, I want the two threads to interact only
- # via flag handshakes... so I don't want MUD_read to edit monster_list.
- # How about MUD_read sets a flag when a mob arrives or leaves and I update
- # monster list only when I have to?  Still doing the unnecessary look although
- # not very often.  Maybe its okay to edit monster_list in the case of
- # arriving mobs... and leaving mobs?  Seems like a bad idea.  However, when
- # do I react to a guard arriving?  I think that I need a list that MUD_read
- # will edit and I need to keep a local copy.  Hey I'm already doing it.
+# I don't like this version because mobs will leave and arrive while in
+# combat.  It makes more sense to recheck list every time I enter combat...
+# right?  That means doing a look between every mob.  I want to avoid the
+# complication of multiple threads, I want the two threads to interact only
+# via flag handshakes... so I don't want MUD_read to edit monster_list.
+# How about MUD_read sets a flag when a mob arrives or leaves and I update
+# monster list only when I have to?  Still doing the unnecessary look although
+# not very often.  Maybe its okay to edit monster_list in the case of
+# arriving mobs... and leaving mobs?  Seems like a bad idea.  However, when
+# do I react to a guard arriving?  I think that I need a list that MUD_read
+# will edit and I need to keep a local copy.  Hey I'm already doing it.
 
- # Okay.  So monster_list is the local copy, and MUD_read will edit
- # MONSTER_LIST relatively freely:
- #   - Full update when MONSTER_CHECK_FLAG is set high by bot.
- #   - one-by-one additions if monsters arrive (no flag)
- # Then I can check for arrived monsters in the bot by checking if the
- # lists are different.
- # However, that is for later.  I wanted to make it possible to implement later
- # fleeing when a guard arrives, but I won't be doing that yet.
+# Okay.  So monster_list is the local copy, and MUD_read will edit
+# MONSTER_LIST relatively freely:
+#   - Full update when MONSTER_CHECK_FLAG is set high by bot.
+#   - one-by-one additions if monsters arrive (no flag)
+# Then I can check for arrived monsters in the bot by checking if the
+# lists are different.
+# However, that is for later.  I wanted to make it possible to implement later
+# fleeing when a guard arrives, but I won't be doing that yet.
 
- # New approach is to keep a mob list up to date (with mob arrivals and
- # departures, ideally,) and then changing logic to say, decide on WHICH
- # mob to kill.  That also doubles as deciding whether to engage.  Its a
- # sensible way to check for guards.
+# New approach is to keep a mob list up to date (with mob arrivals and
+# departures, ideally,) and then changing logic to say, decide on WHICH
+# mob to kill.  That also doubles as deciding whether to engage.  Its a
+# sensible way to check for guards.
  
  

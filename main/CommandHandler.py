@@ -69,8 +69,10 @@ class CommandHandler:
                 re.match("u$",user_input) or re.match("d$", user_input) or 
                 re.match("ou[t]?$", user_input) or re.match("go ",user_input) ):
             #PREV_COMMAND=user_input
-            self.user_move(user_input) # routine which does appropriate waiting,
-                                  # printing, and finally sending command.
+            self.user_move(user_input) 
+            # routine which does appropriate waiting,
+            # printing, and finally sending command.
+        
         # Wielding?  Just do an alias here and do the current weapon maintenance
         # upon reading the MUD.  Reason: I don't know here whether he is
         # wielding a valid weapon and that way I don't have to recover in case

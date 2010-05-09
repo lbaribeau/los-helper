@@ -6,11 +6,8 @@ import time
 import re
 import select
 
-
 from MyBuffer import *
 from misc_functions import *
-
-
 
 
 
@@ -66,7 +63,7 @@ class MudListenerThread ( threading.Thread ):
                 pass    # just keep waiting.
                         # if stopping was set it will exit the loop
             # end loop
-     # end MudListenerThread.run
+    # end MudListenerThread.run
 # end MudListenerThread
                 
                 

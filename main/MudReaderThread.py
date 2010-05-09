@@ -153,8 +153,10 @@ class MudReaderThread ( threading.Thread ):
             # Check for some colors.
                     
             # Print to console.
-            sys.stdout.write(text_out)   # Not using print because
-                                         # it inserts extra spaces.
+            sys.stdout.write(text_out)   
+            # Not using print because
+            # it inserts extra spaces.
+            
             #sys.stdout.write("/"+out_str)  # puts slashes between text fragments
             sys.stdout.flush()
                                         
