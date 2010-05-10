@@ -130,7 +130,15 @@
 #        #Inside engage_monster... engaging shopper
 #        #There's nothing here.
 #        #[52 H 21 M]: You don't see that here.
-
+#
+#BUG:
+# Items picked up on the way to the tip after going to the shop may have 
+# value would be dropped at the tip.
+# Fix: will have to keep track of the state of going to the tip and not 
+# drop items that were dropped on the way.  
+# More comprehensive: A database of items to drop and sell would 
+# deprecate the above fix.
+#
 ##########################################################################
 
 # IDEAS for how to improve code:
@@ -152,6 +160,16 @@
 # to know any commands.  Again: strive to stop bot AI from issueing commands by 
 # creating objects.
 
+# I skimmed the python style guide. 
+# At the time of writing my style preferences are:
+# - CamelCase for class names
+# - camelCase starting with small letter for class instances
+#     (I intend to get rid of all of this _inst for instances...
+# - functions/variables with words separated with underscores
+# - function names will likely be verbs and variables nouns.
+# The whole program doesn't follow this (yet)
+
+
 ##########################################################################
 
 # STRING NOTEPAD for things we might want to match to later
@@ -161,6 +179,17 @@
 # Your attack knocks the x off balance!!
 # The x is caught off guard by your attack!
 # Your wind magic buffets the x.
+#
+# looks
+# (S)?[Hh]e could kill you with a needle.   +4
+# (S)?[Hh]e should be really hard to kill.  +3
+# (S)?[Hh]e should be tough to kill.        +2
+# (S)?[Hh]e is a little better than you.    +1
+# (S)?[Hh]e is a perfect match for you!     0
+# (S)?[Hh]e is not quite as good as you.    -1
+# (S)?[Hh]e shouldn't be too tough to kill. -2
+# (S)?[Hh]e should be easy to kill.         -3
+# You could kill him/her with a needle.     -4
 
 
 import sys
@@ -179,46 +208,52 @@ from MudReaderHandler import MudReaderHandler
 from MudReaderThread import MudReaderThread
 from MudListenerThread import MudListenerThread
 from MyBuffer import MyBuffer
+from Inventory import *
 
-character_inst = None
-CommandHandler_inst = None
-MudReaderThread_inst = None
-MudReaderHandler_inst = None
+character = None
+commandHandler = None
+mudReaderThread = None
+mudReaderHandler = None
+inventory = None
 
 def main():
     global tn
-    global character_inst
-    global CommandHandler_inst
-    global MudReaderThread_inst
-    global MudReaderHandler_inst
+    global character
+    global commandHandler
+    global mudReaderThread
+    global mudReaderHandler
+    global inventory
 
+	### DEPENDENCY INJECTION ###
+	
     tn = connect_to_MUD()  # Sets up telnet object
-
-    character_inst = Character()
-    CommandHandler_inst = CommandHandler(character_inst, tn)
-    
-    magentaprint("creating buffer")
-    MUD_buffer = MyBuffer()
+	
+    character = Character()
+    commandHandler = CommandHandler(character, tn)
+   
+    # Buffer used by MudListener and MudReader
+    # MudListener writes to it and MudReader reads from it
+    MUDBuffer = MyBuffer()
 
     # Thread to listen to telnet socket
-    magentaprint("creating listener")
-    MudListenerThread_inst = MudListenerThread(tn, MUD_buffer, character_inst)
-    MudListenerThread_inst.start()    
-
-    # MudReader: Thread which watches and parses MUD text
-    magentaprint("creating reader")
-    MudReaderThread_inst = MudReaderThread(MUD_buffer, character_inst, CommandHandler_inst)
-    MudReaderThread_inst.start()
+    mudListenerThread = MudListenerThread(tn, MUDBuffer)
+    mudListenerThread.start()
+      
+    mudReaderThread = MudReaderThread(MUDBuffer, character, 
+										   commandHandler)
+    mudReaderThread.start()
     
     # MudReaderHandler: Thread which supplies a couple of 
     # functions in coordinating with the MudReader.  Most 
     # commonly timing related.
-    magentaprint("creating handler")
-    MudReaderHandler_inst = MudReaderHandler(MudReaderThread_inst, character_inst)
+    mudReaderHandler = MudReaderHandler(mudReaderThread, 
+											 character)
+    
+    inventory = Inventory(mudReaderHandler, commandHandler, character)
+
 
     # Now that the MUD thread is going I can trust it to issue the 
     # username/password prompts
-    magentaprint("doing password")
     issue_name_and_password(tn)
 
     # These threads now belong to the CommandHandler
@@ -234,17 +269,17 @@ def main():
     bot_thread_inst = None
 
     # Main thread will go to having raw_input open all the time.
-    watch_user_input(MudReaderHandler_inst, character_inst)   # The MUD_read thread quits if it hits
+    watch_user_input(mudReaderHandler, character)   # The MUD_read thread quits if it hits
                                         # and EOF.  watch_user_input watches for
                                         # that and quits too.
 
     # Clean exit:  watch_user_input sees the "quit" and sends it, then we
-    # get here.  MudReaderThread_inst will quit at the EOF, where we join up.
+    # get here.  mudReaderThread will quit at the EOF, where we join up.
     
-    while (MudReaderThread_inst.is_alive()): 
-        MudReaderThread_inst.join(3)  # Wait 3 sec for the other thread to quit.
-        if (MudReaderThread_inst.is_alive()):
-            MudReaderThread_inst.stop()  # Last resort.
+    while (mudReaderThread.is_alive()): 
+        mudReaderThread.join(3)  # Wait 3 sec for the other thread to quit.
+        if (mudReaderThread.is_alive()):
+            mudReaderThread.stop()  # Last resort.
 
     #Okay, clean exit!  
 
@@ -282,7 +317,7 @@ def issue_name_and_password(tn):
     
 
 
-def watch_user_input(MudReaderHandler_inst, character_inst):
+def watch_user_input(mudReaderHandler, character):
     
     # This thread watches user input.  For now it will shovel everything
     # to the MUD
@@ -309,7 +344,7 @@ def watch_user_input(MudReaderHandler_inst, character_inst):
         # Mass switch on user input to get functionality
         user_input = user_input.lstrip() #Optional
         #PREV_USER_COMMAND = user_input
-        if(not MudReaderThread_inst.is_alive()):
+        if(not mudReaderThread.is_alive()):
             magentaprint("\nWhat happened to read thread?  Time to turf.\n")
             tn.write(user_input + "\n")
             stopping = True
@@ -325,23 +360,23 @@ def watch_user_input(MudReaderHandler_inst, character_inst):
                 bot_thread_inst.stop()
         elif(re.match("bot ?$|bot [0-9]+$", user_input)):
             #PREV_COMMAND = user_input
-            start_bot(user_input, character_inst, CommandHandler_inst) # Code for this at the bottom
+            start_bot(user_input, character, commandHandler) # Code for this at the bottom
         elif(re.match("stop$", user_input)):
             #PREV_COMMAND = user_input
             stop_bot()
         elif(re.match("fle?$|flee$", user_input)):
             stop_bot()
-            CommandHandler_inst.process(user_input)  # CommandHandler does 
+            commandHandler.process(user_input)  # CommandHandler does 
                                                 # everything except the bot.
         else:
-            CommandHandler_inst.process(user_input)
+            commandHandler.process(user_input)
         
 
 
 
 ############################## THE ROBOT ####################################
 
-def start_bot(user_input, character_inst, CommandHandler_inst):
+def start_bot(user_input, character, commandHandler):
     # No idea how I'm gonna do this.
     # Assume I'm in the chapel.
     # Will need to monitor health... do that first in MUD output.
@@ -420,7 +455,8 @@ def start_bot(user_input, character_inst, CommandHandler_inst):
     # Start the bot thread.
 
     global bot_thread_inst
-    global MudReaderHandler_inst
+    global mudReaderHandler
+    global inventory
 
     # Check for an argument
     M_obj = re.search("[0-9]", user_input)
@@ -432,7 +468,9 @@ def start_bot(user_input, character_inst, CommandHandler_inst):
     if (bot_thread_inst != None and bot_thread_inst.is_alive()):
         magentaprint("It's already going, you'll have to stop it.  Use \"stop\".")
     else:
-        bot_thread_inst = BotThread(starting_path, character_inst, CommandHandler_inst, MudReaderHandler_inst)
+        bot_thread_inst = BotThread(starting_path, character, 
+								    commandHandler, mudReaderHandler,
+								    inventory)
             # Constructor arg is which path to start on.
         bot_thread_inst.start()
 

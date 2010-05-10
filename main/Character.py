@@ -90,11 +90,7 @@ class Character:
         self.MONSTER_LIST=[]
 
         # All lists are mutually exclusive except for 'preferred' (bottom)
-        self.__red_monsters = [
-            "blond hooker",
-            "kobold", "sultry hooker", "kobold sentry",
-            "kobold miner", "kobold archer", 'angry hooker',
-            "angry kobold", 'red axer', 'pickpocket', "thug"]
+        # 1-8 exp
         self.__lvl1_monsters = [
             "dustman", "small girl", "young boy", "old woman",
             "old man", "townsman", "stall holder", "duck", "hedgehog", "piglet",
@@ -103,55 +99,87 @@ class Character:
             "heather seller", "irate teenager",
             "village elder", "small dog", "tribesman", "searcher", "delivery boy",
             "traveller", "wanderer", "villager", "rich kid", "vagrant",
-            "dropout", "tramp", "serf"]     
+            "dropout", "tramp", "serf", 'dishwasher']     
         self.__lvl1_red_monsters = [
-            "old kobold", "kobold child", "kobold dam" ]
+            "old kobold", "kobold child", "kobold dam", ]
+        # 8-15 exp
         self.__lvl2_monsters = [
             "hawker", "barmaid", "smelly beggar", "black crow"
             "sheep", "goose", "penitent", "singer", "musician", "spiv",
             "bidder", "dairy cow", "scholar", "juggler", # "acolyte",
-            "shepherd", "gazelle", "journeyman", 
-            'tabby cat'] #cat might be lvl 1 not sure
+            "shepherd", "gazelle", 'dancer', 'jongleur',
+            'tabby cat', 'clerk', 'stablehand' ] 
         # acolytes are good (chalices) but can cause
                                     # some difficulty... they pile up north of the
                                     # chapel and kill you when you least expect
+        self.__lvl2_red_monsters = [ 
+			"kobold sentry", "blond hooker", "sultry hooker", 
+			"kobold", "spiv",
+            "kobold miner", "kobold archer", 'angry hooker',
+            "angry kobold", 'red axer', 'pickpocket', 'thug'
+        	] 
+        # pickpockets drop leather collars and masks
+        # red axer drops studded leather collar
+        # cat might be lvl 1 not sure
+        # thugs hostile
+
+        # 25-35 exp
         self.__lvl3_monsters = [
-            "market official", "robed pilgrim", "merchant", 
+            "market official", "robed pilgrim", 
             "street trader", "field worker", "harvester", "horse", "cow",
             "doorman", "stilt walker",  "messenger", "cashier",
             "thatcher",  "tax inspector", "theatre goer", 
-            "drunken miner"
+            "drunken miner", 'journeyman',
             ]
         self.__lvl3_red_monsters = [
-            "large kobold", "insance kobold", "kobold scout"
+            "large kobold", "insane kobold", "kobold scout"
             ]
-        
-        # pickpocket is nice for rangers because it drops leather collars and
-        # masks.  red axer drops studded leather collar.
+        # 45-60 exp
         self.__lvl4_monsters = [
-            "actor", "actress", "grip",
-            "journeyman", "logger", 
+            "actor", "actress", "grip","merchant", 
+            "journeyman", "logger", 'trader',
             "butcher", "young knight", "acrobat", 
             "logger", #"auctioneer", # auctioneers are darn annoying, leave them out!
-            "militia soldier", "carpenter", "stagehand"]
+            "militia soldier", "carpenter", "stagehand",
+            'hungry spider', 'cook']
+        # hungry spiders are hostile
         self.__lvl4_red_monsters = [
             "kobold shaman", "drunken trouble-maker", "kobold champion"]
         
-        self.__lvlx_monsters = [
-            "nobleman", #, "kobold priest"
-            "fort sentry", "fur trader", "hunter",
-            "bandit swordsman", "large bandit", "bull",
-            "kobold guard", "mugger" ]
-            # kobold guard and mugger will group so high level.
-            # oremaster lvl 7
+        self.__lvl5_monsters = [
+			"dwarven farm hand", "dwarven barmaid", 
+            ]
+        self.__lvl5_red_monsters = [
+            'large bandit',
+			"kobold guard", "mugger", 'large spider'
+			]
+        # kobold guard and mugger are in groups of three and 
+        # aren't actually level 5...
+        self.__lvl6_monsters = [
+			"dwarven field worker", "dwarven bartender", "school teacher",
+			'lyrist', "nobleman", "fort sentry", "fur trader", 
+			"bandit swordsman", "bull", "hunter",
+			]
+            # bull and hunter might be wrong (too high).
+        self.__lvl7_monsters = [
+			"dwarven cook", "swordsman", 'fort sergeant',
+			'oremaster',
+			'giant spider'
+			]
+        # giant spiders are hostile
+        self.__lvl8_monsters = [
+			]
+        self.__lvl9_monsters = [
+			"dwarven blacksmith"
+			]
         
         # A list of monsters redundant to the above lists that
         # I may want to kill even if they are too low of level.
         # Mostly hostiles and things that don't let you loot.
         self.__preferred_lvl_1_2_monsters = [
-            "oaf", "journeyman", "wanderer", "acolyte", 
+            "oaf", "wanderer", #"acolyte", 
             "thug", "spiv", "kobold sentry", "tired hooker", 
-            "blond hooker", "angry hooker" ] 
+            "blond hooker", "angry hooker", "journeyman" ] 
         # prefer kobold sentry for missile weapon drops (bow/spear)
         
         
@@ -165,15 +193,18 @@ class Character:
             self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl2_red_monsters)
         elif(self.LEVEL < 7):
             self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl2_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl3_red_monsters)
         elif(self.LEVEL < 9):
             self.MONSTER_KILL_LIST.extend(self.__preferred_lvl_1_2_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl2_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl3_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)

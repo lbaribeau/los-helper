@@ -10,17 +10,15 @@ from MyBuffer import *
 from misc_functions import *
 
 
-
 class MudListenerThread ( threading.Thread ):
     # This thread watches the the MUD output and appends it 
     # to the buffer for the MudReaderThread to read it.
     
-    def __init__(self, tn_in, MUD_buffer_in, Character_inst_in):
+    def __init__(self, tn_in, MUD_buffer_in):
         Thread.__init__(self)        
         self.tn = tn_in
         
         self.MUD_buffer = MUD_buffer_in
-        self.Character_inst = Character_inst_in
         self.__stopping = False
                                     
         atexit.register(self.stop)
@@ -65,36 +63,4 @@ class MudListenerThread ( threading.Thread ):
             # end loop
     # end MudListenerThread.run
 # end MudListenerThread
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
                 

@@ -1,3 +1,4 @@
+###############################################################################
 
 import threading
 from threading import Thread
@@ -6,26 +7,30 @@ import time
 
 from misc_functions import *
 from CommandHandler import *
+from Inventory import *
+from Exceptions import *
 
 class BotThread(threading.Thread):
 
     ConsoleHandler = newConsoleHandler()
-    def __init__(self, starting_path, character_inst_in, CommandHandler_in, MudReaderHandler_inst_in):   # Constructor
+    def __init__(self, starting_path, character_in, commandHandler, 
+				 mudReaderHandler_in, inventory_in):   
         Thread.__init__(self)
         # Initialize some variables local to this thread
         self.__stopping = False
         
         
-        self.character_inst = character_inst_in
-        self.CommandHandler_inst = CommandHandler_in
-        self.MudReaderHandler_inst = MudReaderHandler_inst_in
+        self.character = character_in
+        self.commandHandler = commandHandler
+        self.mudReaderHandler = mudReaderHandler_in
+        self.inventory = inventory_in
         
         # Set TOTALPATHS.  Setting it lower than the actual number
         # of paths in decide_where_to_go is a way to truncate paths
         # you don't want to send low level characters on.
-        if(self.character_inst.LEVEL <= 2):
+        if(self.character.LEVEL <= 2):
             self.__TOTALPATHS = 8 # Kobolds are level 1 safe.
-        elif(self.character_inst.LEVEL <= 7):
+        elif(self.character.LEVEL <= 7):
             self.__TOTALPATHS = 10 # include hookers for level 3            
         else:
             self.__TOTALPATHS = 14 # start the fort and bandits at lvl 8
@@ -89,8 +94,8 @@ class BotThread(threading.Thread):
                 if(self.go(direction_list[0])):
                     # Successful go.
                     direction_list.pop(0)
-                    self.character_inst.MOBS_JOINED_IN = [] 
-                    self.character_inst.MOBS_ATTACKING = []
+                    self.character.MOBS_JOINED_IN = [] 
+                    self.character.MOBS_ATTACKING = []
                 else:
                     # Go fails... usually something blocked exit.
                     # Also happens on timeout... which happens to me when I
@@ -104,50 +109,50 @@ class BotThread(threading.Thread):
                     
                     # These should all be set by MudReader and unset by the 
                     # MudReaderHandler when we called check_for_successful_go.
-                    if(self.character_inst.GO_BLOCKING_MOB != ""):
+                    if(self.character.GO_BLOCKING_MOB != ""):
                         #MUD_read_thread sets GO_BLOCKING_MOB when go returns false
-                        self.begin_combat(self.character_inst.GO_BLOCKING_MOB)
+                        self.begin_combat(self.character.GO_BLOCKING_MOB)
                         # Error here...  check_for_monsters will clear
                         # MONSTER_LIST at the same time as MUD_read
                         # notices that the street trader is dead and tries to
                         # remove it.
-                        self.character_inst.GO_BLOCKING_MOB = ""
+                        self.character.GO_BLOCKING_MOB = ""
                         continue  # No need to do all that other stuff
                             # if we were trying to leave and were blocked.
                             # Actually it would be buggy because MUD_thread's
                             # gonna want to remove the street trader from
                             # the list, but check_for_monsters might
                             # clear it.
-                    elif(self.character_inst.GO_PLEASE_WAIT):
+                    elif(self.character.GO_PLEASE_WAIT):
                         # Just try again.
                         magentaprint("Bot: Got please wait on a go attempt, retrying.")
                         continue
-                    elif(self.character_inst.GO_TIMEOUT):
+                    elif(self.character.GO_TIMEOUT):
                         magentaprint("Bot: Check go timed out. I will try again, hopefully next one will work.")
                         # This can happen when the system clock makes time.time() inconsistent.
                         # Unless I can fix this I have to ignore this case and hope it worked.
                         direction_list.pop(0)
-                        self.character_inst.MOBS_JOINED_IN = [] 
-                        self.character_inst.MOBS_ATTACKING = []
-                    elif(self.character_inst.GO_NO_EXIT): 
+                        self.character.MOBS_JOINED_IN = [] 
+                        self.character.MOBS_ATTACKING = []
+                    elif(self.character.GO_NO_EXIT): 
                         # This is a tough one.  Hopefully it never 
                         # happens.  I'm gonna assume it happened 
                         # because the last go actually worked and 
                         # was wrongly determined not to.
                         direction_list.pop()
-                        self.character_inst.MOBS_JOINED_IN = []
-                        self.character_inst.MOBS_ATTACKING = []
+                        self.character.MOBS_JOINED_IN = []
+                        self.character.MOBS_ATTACKING = []
                         continue
 
                 # Okay, successful go.  I'm going to assume now that 
                 # MONSTER_LIST is now up to date.
                 
-                #monster_list = MudReaderHandler_inst.check_for_monsters()
+                #monster_list = mudReaderHandler.check_for_monsters()
                     # Updates and returns MONSTER_LIST (its the same reference!)
-                #monster_list = self.character_inst.MONSTER_LIST[:]
+                #monster_list = self.character.MONSTER_LIST[:]
 
                 if(self.ready_for_combat()):
-                    new_target = self.decide_which_mob_to_kill(self.character_inst.MONSTER_LIST)
+                    new_target = self.decide_which_mob_to_kill(self.character.MONSTER_LIST)
                 else:
                     new_target = ""
                     
@@ -189,7 +194,7 @@ class BotThread(threading.Thread):
                     self.begin_combat(new_target)
                     
                     if(self.ready_for_combat()):
-                        new_target = self.decide_which_mob_to_kill(self.character_inst.MONSTER_LIST)
+                        new_target = self.decide_which_mob_to_kill(self.character.MONSTER_LIST)
                     else:
                         new_target = ""
     magentaprint("BotThread: finished now.")
@@ -208,14 +213,14 @@ class BotThread(threading.Thread):
         #   and if you don't what do you do?  I just thought it better to do
         #   it   all here.
         
-        MANA_TO_WAIT = self.character_inst.MAX_MANA - 12
-        if(self.character_inst.BLACK_MAGIC): 
-            MANA_TO_GO = self.character_inst.MAX_MANA 
+        MANA_TO_WAIT = self.character.MAX_MANA - 12
+        if(self.character.BLACK_MAGIC): 
+            MANA_TO_GO = self.character.MAX_MANA 
         else:
-            if(self.character_inst.MAX_MANA % 2 == 1):
-                MANA_TO_GO = self.character_inst.MAX_MANA - 1
+            if(self.character.MAX_MANA % 2 == 1):
+                MANA_TO_GO = self.character.MAX_MANA - 1
             else:
-                MANA_TO_GO = self.character_inst.MAX_MANA
+                MANA_TO_GO = self.character.MAX_MANA
 
         aura_updated = False
         
@@ -228,16 +233,16 @@ class BotThread(threading.Thread):
         # Another exception... try to identify the case for chars with low piety
         # where they don't want to spend thier mana pool vigging a few 
         # health back when they could have got it in one tick 
-        if(self.character_inst.MANA > 0):
-            if(self.character_inst.MANA != self.character_inst.MAX_MANA):
+        if(self.character.MANA > 0):
+            if(self.character.MANA != self.character.MAX_MANA):
                 self.update_aura()
             aura_updated = True
             self.heal_up()
             
         # Get all mana back
-        if(self.character_inst.MANA < MANA_TO_WAIT):
+        if(self.character.MANA < MANA_TO_WAIT):
             self.rest_for_mana()
-        elif(self.character_inst.MANA < MANA_TO_GO):
+        elif(self.character.MANA < MANA_TO_GO):
             self.wait_for_mana()
         else:
             # Here we are either at max or one off of max, just go...
@@ -249,7 +254,7 @@ class BotThread(threading.Thread):
             # if we had no mana upon walking in we still have to do a show aura
             self.update_aura()
     
-        if(self.character_inst.LEVEL > 4):
+        if(self.character.LEVEL > 4):
             # Full mana, do a heal and one more wait and go.
             self.heal_up()
             self.wait_for_mana()  
@@ -261,21 +266,21 @@ class BotThread(threading.Thread):
 
 
     def rest_for_mana(self):
-        MANA_SATISFIED = self.character_inst.MAX_MANA - 1
-        if(self.character_inst.BLACK_MAGIC): 
-            MANA_SATISFIED = self.character_inst.MAX_MANA 
+        MANA_SATISFIED = self.character.MAX_MANA - 1
+        if(self.character.BLACK_MAGIC): 
+            MANA_SATISFIED = self.character.MAX_MANA 
         else:
-            MANA_SATISFIED = self.character_inst.MAX_MANA - 1
+            MANA_SATISFIED = self.character.MAX_MANA - 1
         
-        if(self.character_inst.MANA < MANA_SATISFIED):
-            self.CommandHandler_inst.process("rest")            
-        while(self.character_inst.MANA < MANA_SATISFIED and 
+        if(self.character.MANA < MANA_SATISFIED):
+            self.commandHandler.process("rest")            
+        while(self.character.MANA < MANA_SATISFIED and 
               not self.__stopping):
             
             # Be alert if a mob engages us
-            if(self.character_inst.MOBS_ATTACKING != []):
+            if(self.character.MOBS_ATTACKING != []):
                 self.engage_mobs_who_are_attacking()
-                self.CommandHandler_inst.process("rest")
+                self.commandHandler.process("rest")
                 
             time.sleep(0.1)
         return
@@ -285,21 +290,21 @@ class BotThread(threading.Thread):
         # Waits for mana regen.  Issues an enter every few seconds to get the 
         # prompt.  Satisfied with max - 1.
         
-        MANA_SATISFIED = self.character_inst.MAX_MANA - 1
-        if(self.character_inst.BLACK_MAGIC): 
-            MANA_SATISFIED = self.character_inst.MAX_MANA 
+        MANA_SATISFIED = self.character.MAX_MANA - 1
+        if(self.character.BLACK_MAGIC): 
+            MANA_SATISFIED = self.character.MAX_MANA 
         else:
-            MANA_SATISFIED = self.character_inst.MAX_MANA - 1
+            MANA_SATISFIED = self.character.MAX_MANA - 1
         
-        while(self.character_inst.MANA < MANA_SATISFIED and 
+        while(self.character.MANA < MANA_SATISFIED and 
               not self.__stopping):
             time.sleep(3.5)
             
             # Be alert if a mob engages us
-            if(self.character_inst.MOBS_ATTACKING != []):
+            if(self.character.MOBS_ATTACKING != []):
                 self.engage_mobs_who_are_attacking()
                 
-            self.CommandHandler_inst.process('')
+            self.commandHandler.process('')
             time.sleep(1.2) #Wait for prompt to respond before checking MANA again.
             
         return
@@ -308,15 +313,15 @@ class BotThread(threading.Thread):
 
         # Copied code (bad)
         
-        if(self.character_inst.HEALTH < self.character_inst.HEALTH_TO_HEAL):
-            self.CommandHandler_inst.process("rest")            
+        if(self.character.HEALTH < self.character.HEALTH_TO_HEAL):
+            self.commandHandler.process("rest")            
 
-        while(self.character_inst.HEALTH < self.character_inst.HEALTH_TO_HEAL and 
+        while(self.character.HEALTH < self.character.HEALTH_TO_HEAL and 
               not self.__stopping):            
             # Be alert if a mob engages us
-            if(self.character_inst.MOBS_ATTACKING != []):
+            if(self.character.MOBS_ATTACKING != []):
                 self.engage_mobs_who_are_attacking()
-                self.CommandHandler_inst.process("rest")
+                self.commandHandler.process("rest")
                 
             time.sleep(0.1)
         return
@@ -327,13 +332,13 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return False
 
-        if(self.character_inst.LEVEL != 1):
+        if(self.character.LEVEL != 1):
 
-            wait_for_cast_ready(self.character_inst)
+            wait_for_cast_ready(self.character)
             #tn.write("c show\n")
-            self.CommandHandler_inst.user_ca('c show')
+            self.commandHandler.user_ca('c show')
             
-            self.MudReaderHandler_inst.wait_for_aura_match()
+            self.mudReaderHandler.wait_for_aura_match()
         
         return True
     
@@ -347,24 +352,24 @@ class BotThread(threading.Thread):
             return
         
         magentaprint("Inside heal_up")
-        if(self.character_inst.HEALTH <= self.character_inst.HEALTH_TO_HEAL and 
-           self.character_inst.MANA >= heal_cost):
-            self.CommandHandler_inst.user_cc(heal_spell)  # Easiest way to start casting vig
+        if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
+           self.character.MANA >= heal_cost):
+            self.commandHandler.user_cc(heal_spell)  # Easiest way to start casting vig
             
         # Just wait for MUD_buffer to set HEALTH for us (above 60)
-        while(self.character_inst.HEALTH <= self.character_inst.HEALTH_TO_HEAL and 
-              self.character_inst.MANA >= heal_cost and not self.__stopping):
+        while(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
+              self.character.MANA >= heal_cost and not self.__stopping):
             
             # Be alert if a mob engages us
-            if(self.character_inst.MOBS_ATTACKING != []):
+            if(self.character.MOBS_ATTACKING != []):
                 self.engage_mobs_who_are_attacking()
-                self.CommandHandler_inst.user_cc(heal_spell)
+                self.commandHandler.user_cc(heal_spell)
             
             time.sleep(0.05)     
 
         #if(CastThread_inst != None and CastThread_inst.is_alive()):
         #    CastThread_inst.stop()
-        self.CommandHandler_inst.stop_CastThread()
+        self.commandHandler.stop_CastThread()
         
         magentaprint("Exiting heal_up")
             
@@ -506,8 +511,8 @@ class BotThread(threading.Thread):
         elif(self.__nextpath == 5):
             path_to_go = MILITIA_SOLDIERS_PATH 
         elif(self.__nextpath == 7):
-            if(self.character_inst.AURA_SCALE >= my_list_search(self.character_inst.AURA_LIST, 'blue') or
-               self.character_inst.AURA_SCALE > my_list_search(self.character_inst.AURA_LIST, self.character_inst.AURA_PREFERRED)):
+            if(self.character.AURA_SCALE >= my_list_search(self.character.AURA_LIST, 'blue') or
+               self.character.AURA_SCALE > my_list_search(self.character.AURA_LIST, self.character.AURA_PREFERRED)):
                 magentaprint("Not going to do kobolds (aura not right)")
                 path_to_go = PATH_TO_SKIP_WITH
                 
@@ -520,7 +525,7 @@ class BotThread(threading.Thread):
             # quite remember where they are and don't want to go through Amber
             # Also I think it's safe enough in the dark... maybe just lvl 4 
             # there are thugs
-            if(self.character_inst.LEVEL >= 7):
+            if(self.character.LEVEL >= 7):
                 path_to_go = PATH_TO_SKIP_WITH 
                 # increment so we don't go selling.
                 self.__nextpath = self.__nextpath + 1
@@ -531,8 +536,8 @@ class BotThread(threading.Thread):
         elif(self.__nextpath == 13):
             # Need some evil.  Do the northern bandits.
             # Check aura first since its dangerous to go as blue
-            if(self.character_inst.AURA_SCALE >= my_list_search(self.character_inst.AURA_LIST, 'blue') or
-               self.character_inst.AURA_SCALE > my_list_search(self.character_inst.AURA_LIST, self.character_inst.AURA_PREFERRED)):
+            if(self.character.AURA_SCALE >= my_list_search(self.character.AURA_LIST, 'blue') or
+               self.character.AURA_SCALE > my_list_search(self.character.AURA_LIST, self.character.AURA_PREFERRED)):
                 # If I'm blue or if I'm bluer than my preferred aura, don't go.
                 magentaprint("Not going to do bandits (aura not right)")
                 path_to_go = PATH_TO_SKIP_WITH
@@ -552,9 +557,9 @@ class BotThread(threading.Thread):
             
     def go(self, exit_str):
         #time.sleep(0.8) # sometimes not a good idea to go immediately
-        wait_for_move_ready(self.character_inst)
-        wait_for_attack_ready(self.character_inst)
-        wait_for_cast_ready(self.character_inst)
+        wait_for_move_ready(self.character)
+        wait_for_attack_ready(self.character)
+        wait_for_cast_ready(self.character)
         
         if(self.__stopping):
             return True
@@ -564,20 +569,20 @@ class BotThread(threading.Thread):
         # logic should be fixed to realize that its not in a new area 
         # in these instances.
         
-        magentaprint("Going " + exit_str + (". %f" % (time.time() - self.character_inst.START_TIME)))
+        magentaprint("Going " + exit_str + (". %f" % (time.time() - self.character.START_TIME)))
         # "go sw" doesn't work... check for nw, ne, sw, se, and accommodate
         if(exit_str == "nw" or exit_str == "ne" or
            exit_str == "sw" or exit_str == "se" or
            exit_str == 'n' or exit_str == 'e' or
            exit_str == 's' or exit_str == 'w'):
-            self.CommandHandler_inst.process(exit_str)
-            return self.MudReaderHandler_inst.check_for_successful_go() 
+            self.commandHandler.process(exit_str)
+            return self.mudReaderHandler.check_for_successful_go() 
         elif(re.match("open ", exit_str)):
-            self.CommandHandler_inst.process(exit_str)
-            self.CommandHandler_inst.process("go " + exit_str.split(' ')[1])
-            return self.MudReaderHandler_inst.check_for_successful_go() 
+            self.commandHandler.process(exit_str)
+            self.commandHandler.process("go " + exit_str.split(' ')[1])
+            return self.mudReaderHandler.check_for_successful_go() 
         elif(exit_str == "prepare"):
-            self.CommandHandler_inst.process(exit_str)
+            self.commandHandler.process(exit_str)
             return True
         elif(exit_str == "sell_items"):
             self.sell_items()
@@ -586,29 +591,38 @@ class BotThread(threading.Thread):
             self.drop_items()
             return True
         else:
-            self.CommandHandler_inst.process("go " + exit_str)
-            return self.MudReaderHandler_inst.check_for_successful_go()
+            self.commandHandler.process("go " + exit_str)
+            return self.mudReaderHandler.check_for_successful_go()
 
     def sell_items(self):
         """
         Sell everything in inventory that is not in the keep list.
-        (Updates character_inst.INVENTORY_LIST)
+        (Updates character.INVENTORY_LIST)
         """
-
-        inv_success = self.update_inventory_list()
         
-        if(not inv_success):
-            magentaprint("BotThread: sell_items.  Timeout problem matching inventory")
+        if(self.__stopping):
             return
 
-        inv = self.character_inst.INVENTORY_LIST[:] # create a copy
+        #inv_success = self.update_inventory_list()
+        #
+        #if(not inv_success):
+        #    magentaprint("BotThread: sell_items.  Timeout problem matching inventory")
+        #    return
+
+        #inv = self.character.INVENTORY_LIST[:] # create a copy
+        try:
+            inv = self.inventory.getList()
+        except TimeoutError:
+            magentaprint("BotThread: sell_items.  \
+                Timeout problem matching inventory")
+            return
         
         #for item in KEEP_LIST:
         #    while(my_list_search(SELL_LIST, item) != -1):
         #        SELL_LIST.remove(item)
                 
         my_sell_list = extract_sellable_and_droppable(inv,  
-            self.character_inst.KEEP_LIST)
+            self.character.KEEP_LIST)
             # Chooses item names to evade "silver chalice" and "silver ring" collisions
             # Also does not include keepers.
         #self.__drop_list = my_sell_list[:]  # important to copy here
@@ -623,9 +637,9 @@ class BotThread(threading.Thread):
             magentaprint("sell " + item)
             
             if(not debug):
-                time.sleep(self.character_inst.MINIMUM_SLEEP_BETWEEN_COMMANDS)
-                self.CommandHandler_inst.process("sell " + item)
-            #if(self.MudReaderHandler_inst.check_if_item_was_sold()):  
+                time.sleep(self.character.MINIMUM_SLEEP_BETWEEN_COMMANDS)
+                self.commandHandler.process("sell " + item)
+            #if(self.mudReaderHandler.check_if_item_was_sold()):  
                 # function which handshakes with
                 # MudReaderThread to determine
                 # if an item sold.
@@ -658,25 +672,24 @@ class BotThread(threading.Thread):
         #global INVENTORY_LIST
         #global INVENTORY_CHECK_FLAG
         
-        if(self.__stopping):
-            return
         
-        self.CommandHandler_inst.process("i")
         
-        return self.MudReaderHandler_inst.wait_for_inventory_match()    
+        self.commandHandler.process("i")
+        
+        return self.mudReaderHandler.wait_for_inventory_match()    
     
     def item_was_sold(self):
         #global SELL_CHECK_FLAG
         #global MUD_RETURN_ITEM_SOLD
 
-        self.character_inst.MUD_RETURN_ITEM_SOLD = False
-        self.character_inst.SELL_CHECK_FLAG = 1
+        self.character.MUD_RETURN_ITEM_SOLD = False
+        self.character.SELL_CHECK_FLAG = 1
         now = time.time()
-        while(self.character_inst.SELL_CHECK_FLAG == 1 and time.time() - now < 3.0):
+        while(self.character.SELL_CHECK_FLAG == 1 and time.time() - now < 3.0):
             time.sleep(0.05)
         magentaprint("Bot: Time for sell check was %f." % (time.time()-now))
         
-        return self.character_inst.MUD_RETURN_ITEM_SOLD    
+        return self.character.MUD_RETURN_ITEM_SOLD    
 
 #    def drop_items(self):
 
@@ -696,15 +709,20 @@ class BotThread(threading.Thread):
 #            if(debug):
 #                print "drop " + item
 #            else:
-#                self.CommandHandler_inst.process("drop " + item )
+#                self.commandHandler.process("drop " + item )
 
 #        return
     def drop_items(self):
-
+        
+        # not yet set up for Inv object..
+        
+        if(self.__stopping):
+            return
+        
         self.update_inventory_list()
         drop_list = extract_sellable_and_droppable(
-            self.character_inst.INVENTORY_LIST[:],
-            self.character_inst.KEEP_LIST[:])
+            self.character.INVENTORY_LIST[:],
+            self.character.KEEP_LIST[:])
         
         debug = False
         for item in drop_list:
@@ -715,8 +733,8 @@ class BotThread(threading.Thread):
             
             magentaprint("drop " + item)
             if(not debug):
-                time.sleep(self.character_inst.MINIMUM_SLEEP_BETWEEN_COMMANDS)
-                self.CommandHandler_inst.process("drop " + item)
+                time.sleep(self.character.MINIMUM_SLEEP_BETWEEN_COMMANDS)
+                self.commandHandler.process("drop " + item)
             
         return
 
@@ -761,9 +779,9 @@ class BotThread(threading.Thread):
         monster_list = monster_list_in[:]  # make a copy in case list is volatile
         # First, make sure that we are good to go
         # Check for mana and whether there are any guards.
-        #if (self.character_inst.HEALTH < self.character_inst.HEALTH_TO_HEAL):
+        #if (self.character.HEALTH < self.character.HEALTH_TO_HEAL):
         #    self.heal_up()
-        #if (self.character_inst.MANA <= self.character_inst.MANA_TO_ENGAGE):
+        #if (self.character.MANA <= self.character.MANA_TO_ENGAGE):
         #    return ""
         for mob in monster_list:
             if (re.search("town guard", mob) or re.search("town crier", mob) or
@@ -772,13 +790,13 @@ class BotThread(threading.Thread):
 
         # If a mob is attacking already give that priority.
         # (Note that it's possible that a mob is angry and we don't know it yet)
-        for mob in self.character_inst.MOBS_ATTACKING:
+        for mob in self.character.MOBS_ATTACKING:
             if(my_list_search(monster_list_in, mob) != -1):
                 return mob
         
         # Return the first mob that is in the kill list
         for mob in monster_list:
-            if(my_list_search(self.character_inst.MONSTER_KILL_LIST, mob) != -1):
+            if(my_list_search(self.character.MONSTER_KILL_LIST, mob) != -1):
                 return mob
             
         return ""
@@ -795,7 +813,7 @@ class BotThread(threading.Thread):
         # Here I just check health & mana.  Could add more checks later if
         # necessary.
         
-#        return self.character_inst.HEALTH > self.character_inst.HEALTH_TO_HEAL and self.character_inst.MANA != 0
+#        return self.character.HEALTH > self.character.HEALTH_TO_HEAL and self.character.MANA != 0
 
     def begin_combat(self, monster):
         """ This is a higher level function than engage_monster.
@@ -810,7 +828,7 @@ class BotThread(threading.Thread):
         self.get_items()
         self.engage_mobs_who_joined_in()
         self.engage_mobs_who_are_attacking()
-        if(not self.character_inst.BLACK_MAGIC):
+        if(not self.character.BLACK_MAGIC):
             self.heal_up()
         self.check_weapons()
         return
@@ -832,46 +850,46 @@ class BotThread(threading.Thread):
         # possible in very nice north/south environments.
         # Also TBD: Add a way to stop... however there may be no need.
 
-        self.CommandHandler_inst.user_kk(monster)
+        self.commandHandler.user_kk(monster)
         
         time.sleep(1)  # wait for a sec before casting magic etc. 
                         # for a couple of reasons:  so casting and attacking 
                         # are NOT in sync (not desired so that stray casts 
                         # don't go off when mob dies,) and maybe mob was one-shot.
 
-        while(self.CommandHandler_inst.KillThread_inst != None and self.CommandHandler_inst.KillThread_inst
-              and self.CommandHandler_inst.KillThread_inst.get_stopping() == False):
+        while(self.commandHandler.KillThread_inst != None and self.commandHandler.KillThread_inst
+              and self.commandHandler.KillThread_inst.get_stopping() == False):
             # Just wait around and do stuff until the kk thread is done.
             
-            if(not self.character_inst.BLACK_MAGIC):
+            if(not self.character.BLACK_MAGIC):
                 # HEAL Checks
-                if(self.character_inst.HEALTH <= self.character_inst.HEALTH_TO_HEAL):
-                    if(self.character_inst.MANA >= vigor_cost):
+                if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL):
+                    if(self.character.MANA >= vigor_cost):
                         # Start healing if not already
-                        if(self.CommandHandler_inst.CastThread_inst == None or not self.CommandHandler_inst.CastThread_inst.is_alive()):
-                            self.CommandHandler_inst.user_cc("vig")
+                        if(self.commandHandler.CastThread_inst == None or not self.commandHandler.CastThread_inst.is_alive()):
+                            self.commandHandler.user_cc("vig")
                     else:
                         # Stop the thread if MANA is too low.
                         # This prevents "Cannot meet the casting cost!"
-                        self.CommandHandler_inst.stop_CastThread()
+                        self.commandHandler.stop_CastThread()
                 else: 
-                    self.CommandHandler_inst.stop_CastThread()
+                    self.commandHandler.stop_CastThread()
             else:
                 # Cast black magic
-                if(self.character_inst.MANA >= black_magic_spell_cost):
-                    if(self.CommandHandler_inst.CastThread_inst == None or not self.CommandHandler_inst.CastThread_inst.is_alive()):
-                        self.CommandHandler_inst.user_cc(self.character_inst.FAVOURITE_SPELL + " " + monster)
+                if(self.character.MANA >= black_magic_spell_cost):
+                    if(self.commandHandler.CastThread_inst == None or not self.commandHandler.CastThread_inst.is_alive()):
+                        self.commandHandler.user_cc(self.character.FAVOURITE_SPELL + " " + monster)
                 else:
-                    self.CommandHandler_inst.stop_CastThread()
+                    self.commandHandler.stop_CastThread()
                     
             # TBD: restoratives (use when vig not keeping up or low mana)
             
             # FLEE Checks
-            if(self.character_inst.HEALTH <= self.character_inst.HEALTH_TO_FLEE):
+            if(self.character.HEALTH <= self.character.HEALTH_TO_FLEE):
                 # We're done for!  Trust CommandHandler to get us out.  
                 # It will turn around and stop the bot.
                 self.stop()  # turns on stopping
-                self.CommandHandler_inst.user_flee() # gets our character out!
+                self.commandHandler.user_flee() # gets our character out!
                 
             time.sleep(0.05)
                 
@@ -879,11 +897,11 @@ class BotThread(threading.Thread):
         # Done.  Hopefully the mob is dead.
         #if(CastThread_inst != None and CastThread_inst.is_alive()):
         #    user_sc()
-        self.CommandHandler_inst.stop_CastThread()    
+        self.commandHandler.stop_CastThread()    
         
-        if(my_list_search(self.character_inst.MOBS_ATTACKING, monster) != -1):
+        if(my_list_search(self.character.MOBS_ATTACKING, monster) != -1):
             magentaprint("Bot:engage_monster: Removing " + monster + " from MOBS_ATTACKING.")
-            self.character_inst.MOBS_ATTACKING.remove(monster)
+            self.character.MOBS_ATTACKING.remove(monster)
             
         magentaprint("Leaving engage_monster") 
         
@@ -896,7 +914,7 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return
         magentaprint("Inside get_items")
-        self.CommandHandler_inst.process("ga")  
+        self.commandHandler.process("ga")  
         return
 
 
@@ -906,27 +924,27 @@ class BotThread(threading.Thread):
         # and are therefore still fighting.
 
         magentaprint("Inside engage_mobs_who_joined_in")
-        magentaprint(self.character_inst.MOBS_JOINED_IN)
+        magentaprint(self.character.MOBS_JOINED_IN)
 
         # Don't try to heal up first since they are already fighting!
 
         # Commented code: bad because more mobs can join in when 
         # fighting the currently joined in mobs.
         # Also don't think I should check weapons in a fight!
-#        mobs_joined_in_copy = self.character_inst.MOBS_JOINED_IN[:]
+#        mobs_joined_in_copy = self.character.MOBS_JOINED_IN[:]
 #        for mob in mobs_joined_in_copy:
 
 #            self.engage_monster(mob)
 
-#            self.character_inst.MOBS_JOINED_IN.remove(mob)
+#            self.character.MOBS_JOINED_IN.remove(mob)
 
 #            self.get_items()
                     
 #            self.check_weapons()
 
-        while(self.character_inst.MOBS_JOINED_IN != []):
-            self.engage_monster(self.character_inst.MOBS_JOINED_IN[0])
-            self.character_inst.MOBS_JOINED_IN = self.character_inst.MOBS_JOINED_IN[1:]
+        while(self.character.MOBS_JOINED_IN != []):
+            self.engage_monster(self.character.MOBS_JOINED_IN[0])
+            self.character.MOBS_JOINED_IN = self.character.MOBS_JOINED_IN[1:]
             self.get_items()         
         return
     
@@ -934,17 +952,17 @@ class BotThread(threading.Thread):
         # MudReader not currently matching strings for mobs attacking
         
         magentaprint("Inside engage_mobs_who_are_attacking")
-        magentaprint(self.character_inst.MOBS_ATTACKING)
+        magentaprint(self.character.MOBS_ATTACKING)
         
-        while(self.character_inst.MOBS_ATTACKING != []):
-            self.engage_monster(self.character_inst.MOBS_ATTACKING[0])
+        while(self.character.MOBS_ATTACKING != []):
+            self.engage_monster(self.character.MOBS_ATTACKING[0])
             # engage monster does removal on MOBS_ATTACKING list
             self.get_items()
         return
     
     def ready_for_combat(self):
-        return (self.character_inst.HEALTH > self.character_inst.HEALTH_TO_HEAL and
-                self.character_inst.MANA >= self.character_inst.MANA_TO_ENGAGE)
+        return (self.character.HEALTH > self.character.HEALTH_TO_HEAL and
+                self.character.MANA >= self.character.MANA_TO_ENGAGE)
 
         
 #                monster_list = self.check_for_monsters()

@@ -1,0 +1,24 @@
+I'm trying to pinpoint the complexity that I want to get rid of and helps me to 
+think in writing...
+
+(I am in the middle of writing the Inventory object and need to know how 
+everything should be scoped.)
+
+I think the crux of it is that I don't want BotThread to have to worry at all
+about any of the mechanics of getting information.
+
+I think this means I should decouple the dependency on the Character object, 
+as well as from MudReaderHandler.  It used to be worse (before MudReaderHandler)
+but the bot still has too much to worry about.  His thread needs to wait for 
+the inventory to update but that 'wait' operation should happen within 
+Inventory.getList(), out of the scope of the BotThread.
+
+For now though the bot will still need the character object.  I'm not sure how 
+this will look at the end of time, maybe everything will look like the Inventory
+object will look but maybe not.
+
+Another thought is that dynamic data should be distinguished from constants in 
+the character object.
+
+
+

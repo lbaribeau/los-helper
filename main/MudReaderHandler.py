@@ -11,7 +11,7 @@ class MudReaderHandler:
     # The reason it exits is because you don't want multiple 
     # threads accessing the same buffer so its important for 
     # the MudReader thread to manage that.  This handler 
-    # tells the MudReader thead what needs to happen (ie that 
+    # tells the MudReader thread what needs to happen (ie that 
     # the buffer needs to be cleared).
     
     # The thread has a bunch of flags.  This object is used to set them.
