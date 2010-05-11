@@ -616,10 +616,6 @@ class BotThread(threading.Thread):
             magentaprint("BotThread: sell_items.  \
                 Timeout problem matching inventory")
             return
-        
-        #for item in KEEP_LIST:
-        #    while(my_list_search(SELL_LIST, item) != -1):
-        #        SELL_LIST.remove(item)
                 
         my_sell_list = extract_sellable_and_droppable(inv,  
             self.character.KEEP_LIST)
@@ -629,8 +625,6 @@ class BotThread(threading.Thread):
                                         # also note increased scope of drop list
         debug = False
         for item in my_sell_list:
-        #for i in range(0, len(my_sell_list)):
-            #time.sleep(0.8)
             
             if(self.__stopping):
                 return
@@ -647,7 +641,6 @@ class BotThread(threading.Thread):
 
         return 
     
-
 # Wish list.
 # In selling items, bot should:
 #  be in chapel
@@ -663,24 +656,8 @@ class BotThread(threading.Thread):
 #     go_drop(drop_list)
 # Maybe this function can be user accessable :)
                 
-
-    def update_inventory_list(self):
-        # not tested if he has no inventory
-        # Send the 'i' command to the MUD and let MUD_read_thread get the
-        # response
-
-        #global INVENTORY_LIST
-        #global INVENTORY_CHECK_FLAG
-        
-        
-        
-        self.commandHandler.process("i")
-        
-        return self.mudReaderHandler.wait_for_inventory_match()    
     
     def item_was_sold(self):
-        #global SELL_CHECK_FLAG
-        #global MUD_RETURN_ITEM_SOLD
 
         self.character.MUD_RETURN_ITEM_SOLD = False
         self.character.SELL_CHECK_FLAG = 1
@@ -719,7 +696,13 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return
         
-        self.update_inventory_list()
+        try:
+            inv = self.inventory.getList()
+        except TimeoutError:
+            magentaprint("BotThread: sell_items.  \
+                Timeout problem matching inventory")
+            return
+        
         drop_list = extract_sellable_and_droppable(
             self.character.INVENTORY_LIST[:],
             self.character.KEEP_LIST[:])

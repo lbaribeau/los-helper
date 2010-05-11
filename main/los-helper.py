@@ -110,6 +110,10 @@
 #   better lists to determine difficulty and better intelligence as to whether
 #   to engage mobs from each list level based on mana/health)
 # TBD when bot starts reinitialize things like MOBS_ATTACKING
+# TBD Make aura checking a little better
+# TBD when healing, instead of draining mana pool on vig, 
+#   find a way to only vig until health and mana are the same number 
+#   of ticks from max.
 #
 #bug:
 #        #Obvious exits: north, south, east.
