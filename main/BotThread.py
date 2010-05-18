@@ -541,10 +541,14 @@ class BotThread(threading.Thread):
                 # If I'm blue or if I'm bluer than my preferred aura, don't go.
                 magentaprint("Not going to do bandits (aura not right)")
                 path_to_go = PATH_TO_SKIP_WITH
-                self.__nextpath = self.__nextpath + 1  # increment so we don't
-                                                        # go selling.
+                self.__nextpath = self.__nextpath + 1  
+                # increment so we don't go selling.
+            else:
+                path_to_go = NORTHERN_BANDITS_PATH
         else:
-            path_to_go = NORTHERN_BANDITS_PATH
+            magentaprint("Unexpected case in decide_where_to_go, nextpath==" +
+                         self.__nextpath)
+            path_to_go = PATH_TO_SKIP_WITH
             
         if(self.__nextpath < self.__TOTALPATHS - 1):
             self.__nextpath = self.__nextpath + 1

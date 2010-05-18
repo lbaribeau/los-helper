@@ -1,4 +1,4 @@
-
+################################################################################
 import time
 
 class Character:
@@ -11,7 +11,7 @@ class Character:
         # values.  
     
 #        self.char_class = ""
-        self.LEVEL = 7
+        self.LEVEL = 8
 #        self.preferred_alignment = "grey"
 #        self.weapon_skills = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
 #        self.magic_skills = [0, 0, 0, 0, 0]
@@ -81,6 +81,11 @@ class Character:
             self.HEALTH_TO_FLEE = 20
             self.MAX_MANA = 21
             self.MANA_TO_ENGAGE = 15        
+        elif(self.LEVEL <= 8):
+            self.HEALTH_TO_HEAL= 50
+            self.HEALTH_TO_FLEE = 20
+            self.MAX_MANA = 24
+            self.MANA_TO_ENGAGE = 15        
         else:
             self.HEALTH_TO_HEAL = 58
             self.HEALTH_TO_FLEE = 26
@@ -93,11 +98,14 @@ class Character:
         # 1-8 exp
         self.__lvl1_monsters = [
             "dustman", "small girl", "young boy", "old woman",
-            "old man", "townsman", "stall holder", "duck", "hedgehog", "piglet",
+            "old man", "townsman", "stall holder", "duck", "hedgehog", 
+            "piglet", 'streetsweeper', 
             "shopper", "window shopper", "window cleaner",
-            "waitress", "housewife", "squirrel", "milk maid", "rabbit", "one man band",
-            "heather seller", "irate teenager",
-            "village elder", "small dog", "tribesman", "searcher", "delivery boy",
+            "waitress", "housewife", "squirrel", "milk maid", "rabbit", 
+            "one man band",
+            "heather seller", "irate teenager", 'peasant', 'one-armed beggar',
+            "village elder", "small dog", "tribesman", "searcher", 
+            "delivery boy",
             "traveller", "wanderer", "villager", "rich kid", "vagrant",
             "dropout", "tramp", "serf", 'dishwasher']     
         self.__lvl1_red_monsters = [
@@ -106,12 +114,12 @@ class Character:
         self.__lvl2_monsters = [
             "hawker", "barmaid", "smelly beggar", "black crow"
             "sheep", "goose", "penitent", "singer", "musician", "spiv",
-            "bidder", "dairy cow", "scholar", "juggler", # "acolyte",
+            "bidder", "dairy cow", "scholar", "juggler",  "acolyte",
             "shepherd", "gazelle", 'dancer', 'jongleur',
-            'tabby cat', 'clerk', 'stablehand' ] 
+            'tabby cat', 'clerk', 'stablehand', 'bladesman'] 
         # acolytes are good (chalices) but can cause
-                                    # some difficulty... they pile up north of the
-                                    # chapel and kill you when you least expect
+        # some difficulty... they pile up north of the
+        # chapel and kill you when you least expect
         self.__lvl2_red_monsters = [ 
 			"kobold sentry", "blond hooker", "sultry hooker", 
 			"kobold", "spiv",
@@ -121,7 +129,7 @@ class Character:
         # pickpockets drop leather collars and masks
         # red axer drops studded leather collar
         # cat might be lvl 1 not sure
-        # thugs hostile
+        # thugs hostile.  They drop leather collar
 
         # 25-35 exp
         self.__lvl3_monsters = [
@@ -132,7 +140,8 @@ class Character:
             "drunken miner", 'journeyman',
             ]
         self.__lvl3_red_monsters = [
-            "large kobold", "insane kobold", "kobold scout"
+            "large kobold", "insane kobold", "kobold scout",
+            'drunk'
             ]
         # 45-60 exp
         self.__lvl4_monsters = [
@@ -158,16 +167,21 @@ class Character:
         self.__lvl6_monsters = [
 			"dwarven field worker", "dwarven bartender", "school teacher",
 			'lyrist', "nobleman", "fort sentry", "fur trader", 
-			"bandit swordsman", "bull", "hunter",
+			"bandit swordsman", "bull", "hunter", 'usher',
+            'sword swallower', 'archer'
 			]
+        self.__lvl6_red_monsters = [
+            'gnoll sentry'
+            ]
             # bull and hunter might be wrong (too high).
         self.__lvl7_monsters = [
 			"dwarven cook", "swordsman", 'fort sergeant',
-			'oremaster',
+			'oremaster', 
 			'giant spider'
 			]
         # giant spiders are hostile
         self.__lvl8_monsters = [
+            'owlbear'
 			]
         self.__lvl9_monsters = [
 			"dwarven blacksmith"
@@ -201,6 +215,14 @@ class Character:
             self.MONSTER_KILL_LIST.extend(self.__lvl2_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl3_red_monsters)
+        elif(self.LEVEL < 8):
+            self.MONSTER_KILL_LIST.extend(self.__preferred_lvl_1_2_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl2_red_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl3_red_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl4_red_monsters)
         elif(self.LEVEL < 9):
             self.MONSTER_KILL_LIST.extend(self.__preferred_lvl_1_2_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
@@ -209,33 +231,39 @@ class Character:
             self.MONSTER_KILL_LIST.extend(self.__lvl3_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl4_red_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl5_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl5_red_monsters)
         else:
             self.MONSTER_KILL_LIST.extend(self.__preferred_lvl_1_2_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl2_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl3_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl4_red_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl5_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl5_red_monsters)
 
 
         self.INVENTORY_LIST = []
         # should probably depend on level.
         self.KEEP_LIST = ["large bag", "large sack", "silver chalice",
-                          "steel bottle", "bag",
-                     "adamantine sword", 'adamantine axe', "claymore", 
-                     "poison ring", "spider leg", "scimitar", "small restorative", 
-                     "spear", "bolos", 'javelin', "leaf blade", "short bow",
-                          "heathen amulet",
-                     "hard cap", "hard gloves", "hard boots", "panteloons",
-                     "travellers cross", "leather mask", "leather collar",
-                     "studded leather collar", "mountain boots with crampons",
-                     "mountain gloves",
-                     "chain mail armour", 'chain mail sleeves', 'chain mail leggings', 
-                     'chain mail gloves', 'chain mail hood', 'chain mail boots', 
-                     "ring mail armour", "ring mail sleeves", "ring mail leggings", 
-                     "ring mail hood", "ring mail gauntlets", "leather collar", 
-                     "furry cloak", "white amulet", "white potion", 
-                     "stilleto", 'rapier', 'heavy crossbow', 'lion charm', 
-                     'glowing potion', 'war hammer'] 
+            "steel bottle", 'war hammer'
+            "adamantine sword", 'adamantine axe', "claymore", 
+            "poison ring", "spider leg", "small restorative", 
+            "spear", "bolos", 'javelin', 
+            "heathen amulet",
+            "hard cap", "hard gloves", "hard boots", "panteloons",
+            "travellers cross", "leather mask", "leather collar",
+            "studded leather collar", "mountain boots with crampons",
+            "mountain gloves",
+            "chain mail armour", 'chain mail sleeves', 'chain mail leggings', 
+            'chain mail gloves', 'chain mail hood', 'chain mail boots', 
+            "ring mail armour", "ring mail sleeves", "ring mail leggings", 
+            "ring mail hood", "ring mail gauntlets", "leather collar", 
+            "furry cloak", 
+            'heavy crossbow', 'lion charm', 
+            'glowing potion' ] 
        
         self.MUD_RETURN_ITEM_SOLD = False
 

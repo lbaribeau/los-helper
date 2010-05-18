@@ -114,6 +114,9 @@
 # TBD when healing, instead of draining mana pool on vig, 
 #   find a way to only vig until health and mana are the same number 
 #   of ticks from max.
+# TBD fix parse_inventory_list!!!
+# TBD higher level chars whould not wait for a tick if it won't get the entire 
+#  tick.
 #
 #bug:
 #        #Obvious exits: north, south, east.
@@ -194,6 +197,8 @@
 # (S)?[Hh]e shouldn't be too tough to kill. -2
 # (S)?[Hh]e should be easy to kill.         -3
 # You could kill him/her with a needle.     -4
+
+# The goodness here sickens and repels you!
 
 
 import sys
@@ -463,7 +468,7 @@ def start_bot(user_input, character, commandHandler):
     global inventory
 
     # Check for an argument
-    M_obj = re.search("[0-9]", user_input)
+    M_obj = re.search("[0-9]+", user_input)
     if (M_obj):
         starting_path = int(M_obj.group(0))
     else:
