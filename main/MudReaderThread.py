@@ -605,7 +605,7 @@ class MudReaderThread ( threading.Thread ):
                 self.character_inst.AURA = M_obj.group(1)
                 self.character_inst.AURA_SCALE = my_list_search(self.character_inst.AURA_LIST, self.character_inst.AURA)
                 if(self.character_inst.AURA_SCALE == -1):
-                    magentaprint('Error in reading aura (not in list), came out as ' + AURA + '.')
+                    magentaprint('Error in reading aura (not in list), came out as ' + self.character_inst.AURA + '.')
                 self.CHECK_AURA_FLAG = 0
         
             # Having red aura in chapel.
@@ -750,7 +750,7 @@ class MudReaderThread ( threading.Thread ):
                 elif (M_LIST[i][len(M_LIST[i]) - 1] == 's'):
                     M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 1]
                 elif (M_LIST[i][len(M_LIST[i]) - 8:] == "children"):
-                    M_LIST[i] = M_LIST[i][0:len(M_list[i]) - 3]
+                    M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 3]
                 for j in range(1, 3):
                     M_LIST.append(M_LIST[i])
             elif (re.match("four ", M_LIST[i])):
@@ -760,7 +760,7 @@ class MudReaderThread ( threading.Thread ):
                 elif (M_LIST[i][len(M_LIST[i]) - 1] == 's'):
                     M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 1]
                 elif (M_LIST[i][len(M_LIST[i]) - 8:] == "children"):
-                    M_LIST[i] = M_LIST[i][0:len(M_list[i]) - 3]
+                    M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 3]
                 for j in range(1, 4):
                     M_LIST.append(M_LIST[i])
             commaindex = M_LIST[i].find(',')

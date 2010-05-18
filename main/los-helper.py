@@ -137,6 +137,9 @@
 # TODO fix parse_inventory_list!!!
 # TODO higher level chars whould not wait for a tick if it won't get the entire 
 #  tick.
+# TODO: Fix bug when dual wielding the same weapon... when it breaks he 
+# will try to put it in his off hand every time... i suppose he needs a 
+# way to check which one broke!
 #
 #BUG:
 # Items picked up on the way to the tip after going to the shop may have 
