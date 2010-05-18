@@ -65,6 +65,26 @@
 # However if the bot sees a problem, such as "You don't see that here",
 # then the bot can remove that mob from the list.  However the MUD thread will
 # have to be involved in that anyway.
+#  Example bug:
+#        #Obvious exits: north, south, east.
+#        #You see a shopper.
+#        #MUD_READ: successful go
+#        #Check for successful go, returning True
+#        #Inside check_for_monsters
+#        #[52 H 21 M]: The shopper just wandered to the north.
+#        #Inside decide_which_mob_to_kill
+#        #Inside engage_monster... engaging shopper
+#        #[52 H 21 M]: You don't see that here.
+#        #[52 H 21 M]: Inside get_items
+#        #Inside check_weapons.
+#        #Inside engage_mobs_who_joined_in
+#        #[]
+#        #Inside heal_up
+#        #Inside decide_which_mob_to_kill
+#        #Inside engage_monster... engaging shopper
+#        #There's nothing here.
+#        #[52 H 21 M]: You don't see that here.
+#
 #
 # BUG... someone else kills my old mob:
 # "Your enemy, the shepherd had been defeated"
@@ -117,26 +137,6 @@
 # TBD fix parse_inventory_list!!!
 # TBD higher level chars whould not wait for a tick if it won't get the entire 
 #  tick.
-#
-#bug:
-#        #Obvious exits: north, south, east.
-#        #You see a shopper.
-#        #MUD_READ: successful go
-#        #Check for successful go, returning True
-#        #Inside check_for_monsters
-#        #[52 H 21 M]: The shopper just wandered to the north.
-#        #Inside decide_which_mob_to_kill
-#        #Inside engage_monster... engaging shopper
-#        #[52 H 21 M]: You don't see that here.
-#        #[52 H 21 M]: Inside get_items
-#        #Inside check_weapons.
-#        #Inside engage_mobs_who_joined_in
-#        #[]
-#        #Inside heal_up
-#        #Inside decide_which_mob_to_kill
-#        #Inside engage_monster... engaging shopper
-#        #There's nothing here.
-#        #[52 H 21 M]: You don't see that here.
 #
 #BUG:
 # Items picked up on the way to the tip after going to the shop may have 
