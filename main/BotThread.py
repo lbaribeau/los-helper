@@ -392,7 +392,7 @@ class BotThread(threading.Thread):
 
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go")
-        # TBD Initialization is not the best place to set TOTAL PATHS...
+        # TODO Initialization is not the best place to set TOTAL PATHS...
         # Should be set here.
         
         # Paths.
@@ -448,7 +448,7 @@ class BotThread(threading.Thread):
                           # Also useful to test mobs who join in.
                           #"prepare", 'e', 'ne', "door", "door", "prepare", 'sw','w',
                           "ladder", 'cave', 'out', "sw", 'w', 
-                          # Comment out insane kobold (TBD: check level here)
+                          # Comment out insane kobold (TODO: check level here)
                           # 'cave', 'out', 
                           "sw", 'se', 'nw', 'w', "out", 'd',
                           "boulder", 'd', 'd', 'e', "open door", 'w', 's', 's',
@@ -568,7 +568,7 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return True
         
-        # TBD (sort of a bug).  Sometimes 'go' doesn't 'go' anywhere, 
+        # TODO (sort of a bug).  Sometimes 'go' doesn't 'go' anywhere, 
         # like for dropping or selling or preparing, etc.  The bot's 
         # logic should be fixed to realize that its not in a new area 
         # in these instances.
@@ -832,10 +832,10 @@ class BotThread(threading.Thread):
         
         magentaprint("Inside engage_monster... engaging " + monster)
         # Just start up kk.  Also do heals if I want.
-        # Condition to stop is when kk stops for some reason.  Later (TBD) I
+        # Condition to stop is when kk stops for some reason.  Later (TODO) I
         # should ensure the mob is dead by chasing, however that's only
         # possible in very nice north/south environments.
-        # Also TBD: Add a way to stop... however there may be no need.
+        # Also TODO: Add a way to stop... however there may be no need.
 
         self.commandHandler.user_kk(monster)
         
@@ -869,7 +869,7 @@ class BotThread(threading.Thread):
                 else:
                     self.commandHandler.stop_CastThread()
                     
-            # TBD: restoratives (use when vig not keeping up or low mana)
+            # TODO: restoratives (use when vig not keeping up or low mana)
             
             # FLEE Checks
             if(self.character.HEALTH <= self.character.HEALTH_TO_FLEE):

@@ -9,7 +9,7 @@ class CastThread(threading.Thread):
     # This thread keeps casting time in combat.  There is only one instance
     # of it in the program and it is global.  It can be stopped with the
     # stop function.
-    # TBD: Watch for failed casts?  Recast? 
+    # TODO: Watch for failed casts?  Recast? 
     def __init__(self, Character_inst_in, tn_in, spell, target):   # Constructor
         Thread.__init__(self)
         # Initialize some variables local to this thread
@@ -48,7 +48,7 @@ class CastThread(threading.Thread):
         self.__stopping = False
         wait_for_cast_ready(self.Character_inst)
         while not self.__stopping:
-            # TBD: Monitor current spell and current mana and stop if out
+            # TODO: Monitor current spell and current mana and stop if out
             # of mana.
             self.Character_inst.CAST_CLK = time.time()
             #PREV_COMMAND = "cast " + self.spell + " " + self.target + "\n"

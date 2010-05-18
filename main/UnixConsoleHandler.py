@@ -22,7 +22,7 @@ class UnixConsoleHandler:
 	#TODO: we could use something like bold(\033[1m) for bright, but there's no
 	#way to reset it without also resetting the color
 	#we can get around this by having this class remember it's color and then reset it
-	#but I'll leave that for later -kb
+	#but I'll leave that for later -kb (TODO)
 	def set_bright(self):                      
 		pass
 	def set_dark(self):

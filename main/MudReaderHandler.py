@@ -154,7 +154,7 @@ class MudReaderHandler:
 #        while(self.MudReaderThread.MONSTER_CHECK_FLAG == 1 and 
 #              (run_time < timeout)):
 #            # Set the flag and wait for MUD_read_thread to do some magic.
-#            # (reminds me... TBD make bot check for MUD_read_thread life and
+#            # (reminds me... TODO make bot check for MUD_read_thread life and
 #            # turf if necessary.
 #            time.sleep(0.05)    # Do a short sleep so this busy loop doesn't
 #                                # hog resources.

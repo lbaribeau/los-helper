@@ -200,12 +200,12 @@ class MudReaderThread ( threading.Thread ):
                 self.character_inst.ATTACK_WAIT = self.character_inst.ATTACK_PERIOD_HASTE
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("You're already hastened\.",text_buffer)
-            #TBD: Its still possible that haste state is invalid.  Here user types
+            #TODO: Its still possible that haste state is invalid.  Here user types
             #haste and I trigger on "You're already hastened"... can by improved by
             #doing everything under covers! (maybe send a command to telnet and use
             #the response to update variables but don't print anything!  This could
             #be a thread.  Or I could cover all the cases that invalidate haste,
-            #which is mainly logging in.  TBD: Login_Update() (do with main thread
+            #which is mainly logging in.  TODO: Login_Update() (do with main thread
             #before raw_input call.)
             if(M_obj != None):
                 self.character_inst.HASTING = True
@@ -400,7 +400,7 @@ class MudReaderThread ( threading.Thread ):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 self.character_inst.EXPERIENCE = self.character_inst.EXPERIENCE + int(M_obj.group(1))
             # Monster flees.
-            #TBD chasing function.
+            #TODO chasing function.
             M_obj = re.search("The" + s_numbered + " (.+?) flees to the (.+?)\.", text_buffer)
             if(M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
@@ -700,7 +700,7 @@ class MudReaderThread ( threading.Thread ):
             and returns a parsed list such as
                 ['acolyte', 'amethyst town crier', 'kobold child', 'kobold child']
         """
-        # TBD:  This would be a lot less painful with split!!!
+        # TODO:  This would be a lot less painful with split!!!
         # Good target for the rewrite train!
         # Also it used to be in two functions in different files.
         # Now it's one :)
@@ -883,7 +883,7 @@ class MudReaderThread ( threading.Thread ):
                     #inv_list.insert(inv_list[i], i) # check this
                     return_list.append(inv_list[i])
                 #sys.stdout.write(str(inv_list[i]) + '\n')
-            # TBD go up to fifteen.  Maybe find a more scalable way to
+            # TODO go up to fifteen.  Maybe find a more scalable way to
             # do it.
             else:
                 #print "BIG FAT ELSE"

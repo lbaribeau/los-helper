@@ -112,30 +112,30 @@
 # The 2nd actress blocks your exit.  (bug: attacks the 1st actress)
 # remove unneccessary __init__s
 #
-# TBD... mages cast faster (change timers)
-# TBD... a "set chase" functionality which will automatically chase
+# TODO... mages cast faster (change timers)
+# TODO... a "set chase" functionality which will automatically chase
 #       mobs that run or chase command
-# TBD... a "keep item" list, sell all, drop all.
-# TBD combat with circle
-# TBD reverse engineering ticker timings from Piety and maintain current health
-# TBD haste timers and thread.
-# TBD implement MAXHP, MAXMP,
-# TBD removed prints from selling algorithm, handle multiple grey cloaks
+# TODO... a "keep item" list, sell all, drop all.
+# TODO combat with circle
+# TODO reverse engineering ticker timings from Piety and maintain current health
+# TODO haste timers and thread.
+# TODO implement MAXHP, MAXMP,
+# TODO removed prints from selling algorithm, handle multiple grey cloaks
 # (add numbers and sell in decreasing order, and not sell 'empty strings if
 # could not fit)
-# TBD do not crash on empty inventory at tip
-# TBD chase monster
-# TBD check mob level before engaging... not need mana for low level mobs etc.
+# TODO do not crash on empty inventory at tip
+# TODO chase monster
+# TODO check mob level before engaging... not need mana for low level mobs etc.
 #  (smarter decide_whether_to_engage, maybe no MONSTER_KILL_LIST, but
 #   better lists to determine difficulty and better intelligence as to whether
 #   to engage mobs from each list level based on mana/health)
-# TBD when bot starts reinitialize things like MOBS_ATTACKING
-# TBD Make aura checking a little better
-# TBD when healing, instead of draining mana pool on vig, 
+# TODO when bot starts reinitialize things like MOBS_ATTACKING
+# TODO Make aura checking a little better
+# TODO when healing, instead of draining mana pool on vig, 
 #   find a way to only vig until health and mana are the same number 
 #   of ticks from max.
-# TBD fix parse_inventory_list!!!
-# TBD higher level chars whould not wait for a tick if it won't get the entire 
+# TODO fix parse_inventory_list!!!
+# TODO higher level chars whould not wait for a tick if it won't get the entire 
 #  tick.
 #
 #BUG:
@@ -345,7 +345,7 @@ def watch_user_input(mudReaderHandler, character):
     stopping = False;
     while not stopping:
         try:
-            user_input = raw_input(); # TBD: This is where the prompt will go (?)
+            user_input = raw_input(); # TODO: This is where the prompt will go (?)
         except EOFError:
             magentaprint("Don't try to crash me!  Use 'quit'.")
             user_input = ""
@@ -360,7 +360,7 @@ def watch_user_input(mudReaderHandler, character):
             if(bot_thread_inst != None and bot_thread_inst.is_alive()):
                 bot_thread_inst.stop()                
         elif(user_input == "quit"):
-            # TBD:  correct if MUD prints "Please wait x more seconds"
+            # TODO:  correct if MUD prints "Please wait x more seconds"
             # after quit was sent.
             #PREV_COMMAND=user_input
             tn.write(user_input + "\n")

@@ -137,7 +137,7 @@ class CommandHandler:
             magentaprint("(Python) Wait %.1f more seconds" % time_remaining)
             
     def user_ca(self, user_input):
-        # TBD: Match this to a spell list so I can actually tell if they
+        # TODO: Match this to a spell list so I can actually tell if they
         # issued a valid command.  Then maybe issue quicker feedback
         # than the MUD can!.
         # Casting something... do anything here?  Just set clock.
@@ -249,7 +249,7 @@ class CommandHandler:
         if(argv == ""):
             # Do nothing.
             magentaprint("Usage:  cc <spell> [<target> [<number>]]")
-            tn.write("\n")  # TBD: Keep a prompt up to date so we can print
+            tn.write("\n")  # TODO: Keep a prompt up to date so we can print
                             # immediately instead of sending to mud.
             return        
         elif(re.search(argv, " ")): # If it has one or more spaces
@@ -324,7 +324,7 @@ class CommandHandler:
 
         # Keep it simple.  Wait till ready then flee several times.  (beats
         # failed to escape)
-        # TBD: Print if its more than a second... but I don't think that's
+        # TODO: Print if its more than a second... but I don't think that's
         # necessary
         #wait_for_attack_ready()
         #wait_for_cast_ready()
@@ -344,7 +344,7 @@ class CommandHandler:
         # Alternative is to check on MUD out for flee failures but that's not even
         # necessary!.
         # Note, it might be better in some cases just to flee once.  I think I will
-        # implement "fl1" for that case.  (TBD)
+        # implement "fl1" for that case.  (TODO)
         self.tn.write("fl\n")
         self.tn.write("fl\n")
         self.tn.write("fl\n")
