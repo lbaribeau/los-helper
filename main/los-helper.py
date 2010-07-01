@@ -146,6 +146,7 @@
 # TODO: MOBS_ATTACKING only gets depopulated when the bot is killing mobs.
 # If a human player kills mobs then MOBS_ATTACKING fills up, and when bot 
 # is started it finds a way to empty the list but not a good way.
+# TODO: a Cooldowns data object.
 #
 #BUG:
 # Items picked up on the way to the tip after going to the shop may have 

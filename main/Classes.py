@@ -15,8 +15,10 @@ def abstract():
     raise NotImplementedError(caller + ' must be implemented in subclass')
 
 class CoolAbility:
-    ''' CoolAbilites are things like haste, pray, barkskin, meditate, berserk,
-    wither, touch, turn'''    
+    ''' CoolAbilites are things like haste, barkskin, berserk, meditate, pray,
+    wither, touch, turn.  Things that drastically affect combat such as 
+    circle, bash, backstab, steal, are NOT CoolAbilities.  They are worked 
+    into the CharacterClass a little differently.'''    
     def getCommand(self): 
         abstract()
     def getCooldownInSecondsAfterSuccess(self): 
@@ -28,6 +30,8 @@ class CoolAbility:
         If false, assume it's useful in the chapel (ie. pray)''' 
         abstract()
     def getNeedsTarget(self):
+        abstract()
+    def getNeedsUndeadTarget(self):
         abstract()
     def getMudTextThatMeansSuccess(self):
         abstract()
@@ -46,6 +50,8 @@ class Haste(CoolAbility):
     def getUseForCombat(self):
         return True
     def getNeedsTarget(self):
+        return False
+    def getNeedsUndeadTarget(self):
         return False
     def getMudTextThatMeansSuccess(self):
         return 'You feel yourself moving faster'
@@ -66,6 +72,8 @@ class Pray(CoolAbility):
         return False
     def getNeedsTarget(self):
         return False
+    def getNeedsUndeadTarget(self):
+        return False
     def getMudTextThatMeansSuccess(self):
         return abstract() 
     def getMudTextThatMeansFailure(self):
@@ -84,6 +92,8 @@ class Barkskin(CoolAbility):
     def getUseForCombat(self):
         return True
     def getNeedsTarget(self):
+        return False
+    def getNeedsUndeadTarget(self):
         return False
     def getMudTextThatMeansSuccess(self):
         return abstract() 
@@ -104,6 +114,8 @@ class Berserk(CoolAbility):
         return False
     def getNeedsTarget(self):
         return False
+    def getNeedsUndeadTarget(self):
+        return False
     def getMudTextThatMeansSuccess(self):
         return abstract() 
     def getMudTextThatMeansFailure(self):
@@ -116,12 +128,14 @@ class Meditate(CoolAbility):
     def getCommand(self):
         return 'meditate' 
     def getCoolDownInSecondsAfterSuccess(self):
-        return abstract()  
+        return 600 #guess
     def getCoolDownInSecondsAfterFail(self):
-        return abstract()  
+        return 10 #guess
     def getUseForCombat(self):
         return False
     def getNeedsTarget(self):
+        return False
+    def getNeedsUndeadTarget(self):
         return False
     def getMudTextThatMeansSuccess(self):
         return abstract() 
@@ -129,25 +143,105 @@ class Meditate(CoolAbility):
         return abstract() 
     def getMudTextThatMeansItWoreOff(self):
         return abstract()
+    
+class Wither(CoolAbility):
+    #TODO: finish defining Wither
+    def getCommand(self): 
+        return 'wither'
+    def getCooldownInSecondsAfterSuccess(self): 
+        return 600 #guessed
+    def getCooldownInSecondsAfterFail(self):
+        return 30 #guessed
+    def getUseForCombat(self):
+        return True
+    def getNeedsTarget(self):
+        return True
+    def getNeedsUndeadTarget(self):
+        return False
+    def getMudTextThatMeansSuccess(self):
+        abstract()
+    def getMudTextThatMeansFailure(self):
+        abstract()
+    def getMudTextThatMeansItWoreOff(self):
+        abstract()
+
+class Touch:
+    def getCommand(self): 
+        return 'touch'
+    def getCooldownInSecondsAfterSuccess(self): 
+        return 600 #guessed
+    def getCooldownInSecondsAfterFail(self):
+        return 30 #guessed
+    def getUseForCombat(self):
+        return True
+    def getNeedsTarget(self):
+        return True
+    def getNeedsUndeadTarget(self):
+        return False
+    def getMudTextThatMeansSuccess(self):
+        abstract()
+    def getMudTextThatMeansFailure(self):
+        abstract()
+    def getMudTextThatMeansItWoreOff(self):
+        abstract()
+
+class Turn:
+    def getCommand(self): 
+        return 'turn'
+    def getCooldownInSecondsAfterSuccess(self): 
+        return 600 #guessed
+    def getCooldownInSecondsAfterFail(self):
+        return 30 #guessed
+    def getUseForCombat(self):
+        return True
+    def getNeedsTarget(self):
+        return True
+    def getNeedsUndeadTarget(self):
+        return True
+    def getMudTextThatMeansSuccess(self):
+        abstract()
+    def getMudTextThatMeansFailure(self):
+        abstract()
+    def getMudTextThatMeansItWoreOff(self):
+        abstract()
+
+# Commented because I don't see how this approach (using CombatAbility 
+# classes,) would work.
+# I think the CharacterClass should have canCircle, canBash, canSteal, 
+# and canBackstab, and the bot thread will define the combat algorithm 
+# based on those values.
+#class CombatAbility:
+#    ''' CombatAbilities are things that will affect how a character fights,
+#    like circle, bash, steal, backstab, ''' 
+#    def getCommand(self):
+#        abstract()
+#    def getCombatAlgorithm
 
 class CharacterClass:
     ''' These are objects to store data about the character classes.'''
-    def getHealthTickAmountInChapel(self): abstract()
-    def getManaTickAmountInChapel(self): abstract()
     def getLevelOneMaxHealth(self): abstract()
     def getLevelOneMaxMana(self): abstract()
     def getHealthGainedPerLevel(self): abstract()
     def getManaGainedPerLevel(self): abstract()
+    def getManaTickAmountInChapel(self): abstract()
     def getCanCircle(self): abstract()
     def getCanBash(self): abstract()
-    def getCanBackstab(self): abstract() 
     def getCanSteal(self): abstract() 
-    #TODO: should this be a CoolAbility?
-    #Or should it be worked into the combat
-    #algorithm?
+    def getCanBackstab(self): abstract() 
     def getCoolAbilities(self): abstract()
-    def getUseCoolAbilityForCombat(self): abstract()
-    
+ 
+class Ranger(CharacterClass):   
+    def getLevelOneMaxHealth(self): abstract()
+    def getLevelOneMaxMana(self): abstract()
+    def getHealthGainedPerLevel(self): abstract()
+    def getManaGainedPerLevel(self): abstract()
+    def getManaTickAmount(self): 2
+    def getManaTickAmountInChapel(self): 4
+    def getCanCircle(self): return False
+    def getCanBash(self): return False
+    def getCanSteal(self): return False
+    def getCanBackstab(self): return False
+    def getCoolAbilities(self): return [ Haste() ]
 
 
     
