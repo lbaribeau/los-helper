@@ -293,17 +293,12 @@ class MudReaderThread ( threading.Thread ):
             M_obj = re.search("Your (.*?) breaks and you have to remove it\.", text_buffer)
             if (M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                if(M_obj.group(1) == self.character_inst.WEAPON2):
-                    self.CommandHandler_inst.process("seco " + M_obj.group(1))
-                else:
-                    self.CommandHandler_inst.process("wie " + M_obj.group(1))
+                self.reequip_weapon(M_obj.group(1))
             M_obj = re.search("Your (.*?) shatters\.", text_buffer)
             if (M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                if(M_obj.group(1) == self.character_inst.WEAPON2):
-                    self.CommandHandler_inst.process("seco " + M_obj.group(1))
-                else:
-                    self.CommandHandler_inst.process("wie " + M_obj.group(1)) 
+                self.reequip_weapon(M_obj.group(1))
+                
             # Wearing rings
             M_obj = re.search("You get (.+?)\.", text_buffer)
             if (M_obj):
@@ -890,6 +885,19 @@ class MudReaderThread ( threading.Thread ):
                 pass
 
         return return_list
+    
+    
+    def reequip_weapon(self, weapon_str):
+        if(self.character_inst.WEAPON1 == self.character_inst.WEAPON2):
+            # If weap 1 and weap 2 are the same, not sure how to know 
+            # which broke... so just put in both commands :)
+            self.CommandHandler_inst.process("wie " + weapon_str)
+            self.CommandHandler_inst.process("seco " + weapon_str)
+        else:
+            if(weapon_str == self.character_inst.WEAPON1):
+                self.CommandHandler_inst.process("wie " + weapon_str)
+            else:
+                self.CommandHandler_inst.process("seco " + weapon_str)
         
     
 

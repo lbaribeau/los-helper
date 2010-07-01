@@ -99,6 +99,12 @@
 # COMPLETED: I changed the trigger that stops combat and casting to 
 # "Your attack overwhelms the ..."
 # when a mob is killed so that should solves the above bugs.
+#
+#  Bug: When dual wielding the same weapon... when it breaks he 
+# will try to put it in his off hand every time... i suppose he needs a 
+# way to check which one broke!
+#  Fix: Could not check which weapon broke.  Just enter both commands
+# 'wie' and 'seco' and hope for the best. 
 
 ##########################################################################
 
@@ -137,9 +143,9 @@
 # TODO fix parse_inventory_list!!!
 # TODO higher level chars whould not wait for a tick if it won't get the entire 
 #  tick.
-# TODO: Fix bug when dual wielding the same weapon... when it breaks he 
-# will try to put it in his off hand every time... i suppose he needs a 
-# way to check which one broke!
+# TODO: MOBS_ATTACKING only gets depopulated when the bot is killing mobs.
+# If a human player kills mobs then MOBS_ATTACKING fills up, and when bot 
+# is started it finds a way to empty the list but not a good way.
 #
 #BUG:
 # Items picked up on the way to the tip after going to the shop may have 
