@@ -186,6 +186,11 @@ class MudReaderThread ( threading.Thread ):
                 #self.MUD_buffer.buffer = self.MUD_buffer[L-self.MUD_buffer.size:L]
                 self.__left_off_index = self.__left_off_index - trim_amount
                 self.MUD_buffer.buffer = self.MUD_buffer.buffer[trim_amount:L]
+                #Looks like this is true EVERY TIME
+                #magentaprint("Trimmed MUD_buffer: "+str(trim_amount))
+                #magentaprint("L is "+str(L))
+                #magentaprint("MUD_buffer.size is "+str(self.MUD_buffer.size))
+            
             self.MUD_buffer.access_flag = False
 
             ###### Now match the buffer with some REs  #######

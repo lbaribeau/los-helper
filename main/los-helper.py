@@ -147,6 +147,8 @@
 # If a human player kills mobs then MOBS_ATTACKING fills up, and when bot 
 # is started it finds a way to empty the list but not a good way.
 # TODO: a Cooldowns data object.
+# TODO: Figure out why the info command output isn't always complete...
+# the table prined by the game doesn't get all the way through.
 #
 #BUG:
 # Items picked up on the way to the tip after going to the shop may have 
