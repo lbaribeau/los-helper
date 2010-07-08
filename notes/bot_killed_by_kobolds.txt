@@ -1,0 +1,1037 @@
+[66 H 25 M]: Going out. 30159.219187                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30159.520021                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30159.820851                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30160.121700                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30160.422552                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30160.723394                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30161.024235                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30161.325163                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30161.626012                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30161.926860                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30162.227714                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30162.528575                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30162.829419                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30163.130284                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30163.431145                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30163.731988                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30164.032844                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30164.333686                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Inside rest.                                                     
+You glow with a blue aura.                                                    
+[66 H 24 M]: Inside heal_up                                                   
+Exiting heal_up                                                               
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside check_weapons.                                                         
+Inside check_armour.                                                          
+Inside decide_where_to_go                                                     
+A kobold archer just arrived.                                                 
+[66 H 24 M]: Going out. 30170.639755                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30170.941002                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30171.241922                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30171.542782                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30171.843639                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30172.144485                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30172.445344                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30172.746201                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30173.047041                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30173.347885                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30173.648724                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30173.949573                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30174.250411                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30174.551221                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30174.852084                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30175.152916                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30175.453771                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30175.754639                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30176.055489                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30176.356299                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30176.657155                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30176.957992                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30177.258797                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30177.559642                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30177.860490                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30178.161334                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Inside rest.                                                     
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside check_weapons.                                                         
+Inside check_armour.                                                          
+Inside decide_where_to_go                                                     
+Going out. 30178.462611                                                       
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30178.763386                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30179.064246                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30179.365103                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30179.665936                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30179.966771                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30180.267618                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30180.568452                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30180.869310                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30181.170210                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30181.471026                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30181.771862                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30182.072697                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30182.373544                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30182.674383                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30182.975237                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30183.276097                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30183.576939                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30183.877785                                          
+A kobold miner just arrived.                                                  
+[66 H 24 M]: I don't see that exit.                                           
+[66 H 24 M]: Going out. 30184.228727                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30184.529581                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30184.830421                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30185.131272                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30185.432132                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30185.732973                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30186.033787                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30186.334627                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30186.635464                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30186.936316                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30187.237173                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Inside rest.                                                     
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside check_weapons.                                                         
+Inside check_armour.                                                          
+Inside decide_where_to_go                                                     
+Going out. 30187.538736                                                       
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30187.839654                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30188.140490                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30188.441384                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30188.742245                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30189.043102                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30189.343933                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30189.644710                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30189.945543                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30190.246379                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30190.547237                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30190.848102                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30191.148937                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30191.449771                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30191.750610                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30192.051549                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30192.352383                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30192.653281                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30192.954157                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30193.254990                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30193.555833                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30193.856693                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30194.157543                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30194.458385                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30194.759248                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30195.060114                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Inside rest.                                                     
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside check_weapons.                                                         
+Inside check_armour.                                                          
+Inside decide_where_to_go                                                     
+Going out. 30195.361333                                                       
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30195.662141                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30195.962978                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30196.263816                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30196.564651                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30196.865491                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30197.166338                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30197.467203                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30197.768037                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30198.068866                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30198.369699                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30198.670550                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30198.971391                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30199.272285                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30199.573139                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30199.873977                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30200.174869                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30200.475702                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30200.776553                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30201.077394                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30201.378256                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30201.679120                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30201.979954                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30202.280767                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30202.581618                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30202.882457                                          
+The kobold archer just wandered to the southeast.                             
+[66 H 24 M]: Matched kobold archer                                            
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30203.233472                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30203.534320                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30203.835177                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30204.136012                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30204.436843                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30204.737694                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30205.038554                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30205.339406                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30205.640329                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30205.941204                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30206.242037                                          
+I don't see that exit.                                                        
+Going out. 30206.542877                                                       
+[66 H 24 M]: I don't see that exit.                                           
+[66 H 24 M]: Going out. 30206.893797                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30207.194632                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30207.495465                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30207.796318                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30208.097170                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30208.398005                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30208.698841                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30208.999692                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30209.300548                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30209.601381                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30209.902245                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30210.203101                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30210.503936                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30210.804855                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30211.105705                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30211.406550                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30211.707394                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30212.008266                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30212.309135                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30212.609996                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30212.910845                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30213.211691                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30213.512554                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30213.813400                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30214.114260                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30214.415125                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30214.716103                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30215.016944                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30215.317781                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30215.618624                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30215.919474                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30216.220336                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30216.521229                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30216.822101                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30217.122939                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30217.423774                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30217.724608                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30218.025452                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30218.326355                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30218.627209                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30218.928076                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30219.228911                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30219.529762                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30219.830614                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30220.131448                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30220.432295                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30220.733152                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30221.033996                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30221.334846                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30221.635685                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30221.936521                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30222.237367                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30222.538228                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30222.839083                                          
+The kobold miner just wandered to the southeast.                              
+A kobold archer just arrived.                                                 
+Matched kobold miner                                                          
+[66 H 26 M]: I don't see that exit.                                           
+[66 H 26 M]: Going out. 30223.290142                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30223.590980                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30223.891814                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30224.192647                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30224.493486                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30224.794338                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30225.095202                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30225.396037                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30225.696872                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30225.997707                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30226.298556                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30226.599400                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30226.900301                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30227.201159                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30227.501996                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30227.802829                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30228.103660                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30228.404450                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30228.705305                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30229.006179                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30229.307014                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30229.607849                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30229.908696                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30230.209549                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30230.510407                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30230.811262                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30231.112124                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30231.412963                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30231.713765                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30232.014624                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30232.315501                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30232.616351                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30232.917221                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Going out. 30233.218076                                          
+I don't see that exit.                                                        
+[66 H 26 M]: Inside rest.                                                     
+Your spell fails.                                                             
+[66 H 25 M]: Inside heal_up                                                   
+Exiting heal_up                                                               
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside check_weapons.                                                         
+Inside check_armour.                                                          
+Inside decide_where_to_go                                                     
+Going out. 30234.721241                                                       
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30235.022009                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30235.322843                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30235.623702                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30235.924559                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30236.225395                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30236.526256                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30236.827122                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30237.127961                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30237.428802                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30237.729635                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30238.030469                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30238.331281                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30238.632138                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30238.932989                                          
+A kobold warrior just arrived.                                                
+The kobold warrior attacks you.                                               
+[66 H 25 M]: I don't see that exit.                                           
+[66 H 25 M]: Going out. 30239.333994                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30239.634830                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30239.935664                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30240.236498                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30240.537347                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30240.838206                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30241.139047                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30241.439885                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Going out. 30241.740723                                          
+I don't see that exit.                                                        
+[66 H 25 M]: The kobold warrior tries to grab you, but you break free of his grasp.                                                                         
+Going out. 30242.041573                                                       
+[66 H 25 M]: I don't see that exit.                                           
+[66 H 25 M]: Going out. 30242.392572                                          
+I don't see that exit.                                                        
+[66 H 25 M]: Inside rest.                                                     
+Your spell fails.                                                             
+[66 H 24 M]: The kobold archer just wandered to the northeast.                
+[66 H 24 M]: Matched kobold archer                                            
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside check_weapons.                                                         
+Inside check_armour.                                                          
+Inside decide_where_to_go                                                     
+Not going to do kobolds (aura not right)                                      
+Going out. 30243.895850                                                       
+A kobold archer just arrived.                                                 
+[66 H 24 M]: I don't see that exit.                                           
+[66 H 24 M]: Going out. 30244.197047                                          
+I don't see that exit.                                                        
+[66 H 24 M]: Inside rest.                                                     
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside check_weapons.                                                         
+Inside check_armour.                                                          
+Inside decide_where_to_go                                                     
+Going out. 30244.498259                                                       
+I don't see that exit.                                                        
+[66 H 24 M]: Going out. 30244.799020                                          
+The kobold warrior kicks you for 6 damage.                                    
+[60 H 24 M]: I don't see that exit.                                           
+[60 H 24 M]: Inside rest.                                                     
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside check_weapons.                                                         
+Inside check_armour.                                                          
+Inside decide_where_to_go                                                     
+Going out. 30245.200383                                                       
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30245.501175                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30245.802013                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30246.102846                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30246.403683                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30246.704546                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30247.005351                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30247.306301                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30247.607247                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30247.908152                                          
+The kobold warrior throws a wild punch at you, but it misses.                 
+[60 H 24 M]: I don't see that exit.                                           
+[60 H 24 M]: Going out. 30248.309140                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30248.609982                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30248.910842                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30249.211695                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30249.512545                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30249.813385                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30250.114243                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30250.415105                                          
+I don't see that exit.                                                        
+[60 H 24 M]: Going out. 30250.715937                                          
+I don't see that exit.                                                        
+[60 H 24 M]: The kobold warrior lashes out and thumps you for 3 damage.       
+Going out. 30251.016789                                                       
+[57 H 24 M]: I don't see that exit.                                           
+[57 H 24 M]: Going out. 30251.367736                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30251.668586                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30251.969422                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30252.270276                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30252.571134                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30252.871991                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30253.172829                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30253.473694                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Inside rest.                                                     
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside check_weapons.                                                         
+Inside check_armour.                                                          
+Inside decide_where_to_go                                                     
+Going out. 30253.774919                                                       
+The kobold warrior tries to gouge you, but you shake him off.                 
+[57 H 24 M]: I don't see that exit.                                           
+[57 H 24 M]: Going out. 30254.226063                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30254.526907                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30254.827742                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30255.128591                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30255.429418                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30255.730325                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30256.031200                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30256.332079                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30256.632930                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30256.933776                                          
+The kobold warrior lashes out at you, but misses.                             
+[57 H 24 M]: I don't see that exit.                                           
+[57 H 24 M]: Going out. 30257.284706                                          
+I don't see that exit.                                                        
+[57 H 24Going out. 30257.585565                                               
+ M]: I don't see that exit.                                                   
+[57 H 24 M]: Going out. 30257.986580                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30258.287432                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30258.588428                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30258.889302                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30259.190159                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30259.490962                                          
+I don't see that exit.                                                        
+[57 H 24 M]: Going out. 30259.791798                                          
+The kobold warrior grabs you and gouges you for 5 damage.                     
+[52 H 24 M]: I don't see that exit.                                           
+[52 H 24 M]: Going out. 30260.242907                                          
+I don't see that exit.                                                        
+[52 H 24 M]: Going out. 30260.543761                                          
+I don't see that exit.                                                        
+[52 H 24 M]: Going out. 30260.844614                                          
+A kobold miner just arrived.                                                  
+[52 H 24 M]: I don't see that exit.                                           
+[52 H 24 M]: Going out. 30261.245617                                          
+I don't see that exit.                                                        
+[52 H 24 M]: Going out. 30261.546435                                          
+I don't see that exit.                                                        
+[52 H 24 M]: Going out. 30261.847301                                          
+                                                                              
+Strong winds blow in from the mountains, bringing a chill air.                
+[52 H 24 M]: I don't see that exit.                                           
+[52 H 24 M]: Inside rest.                                                     
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside check_weapons.                                                         
+Inside check_armour.                                                          
+Inside decide_where_to_go                                                     
+Not going to do bandits (aura not right)                                      
+Going out. 30262.248780                                                       
+I don't see that exit.                                                        
+[52 H 24 M]: Going out. 30262.549559                                          
+I don't see that exit.                                                        
+[52 H 24 M]: Inside rest.                                                     
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside heal_up                                                                
+Exiting heal_up                                                               
+Inside check_weapons.                                                         
+Inside check_armour.                                                          
+Inside decide_where_to_go                                                     
+Going out. 30262.850793                                                       
+The kobold warrior punches you for 6 damage.                                  
+[46 H 24 M]: I don't see that exit.                                           
+[46 H 24 M]: Going out. 30263.301797                                          
+I don't see that exit.                                                        
+[46 H 24 M]: Going out. 30263.602639                                          
+I don't see that exit.                                                        
+[46 H 24 M]: Going out. 30263.903476                                          
+I don't see that exit.                                                        
+[46 H 24 M]: Going out. 30264.204343                                          
+I don't see that exit.                                                        
+[46 H 24 M]: Going out. 30264.505208                                          
+I don't see that exit.                                                        
+[46 H 24 M]: Going out. 30264.806069                                          
+I don't see that exit.                                                        
+[46 H 24 M]: Going out. 30265.106908                                          
+I don't see that exit.                                                        
+[46 H 24 M]: Going out. 30265.407761                                          
+I don't see that exit.                                                        
+[46 H 24 M]: Going out. 30265.708609                                          
+I don't see that exit.                                                        
+[46 H 24 M]: The kobold warrior tries to grab you, but you break free of his grasp.                                                                         
+Going out. 30266.009452                                                       
+[46 H 24 M]: I don't see that exit.                                           
+[46 H 24 M]: Going out. 30266.410466                                          
+I don't see that exit.                                                        
+[46 H 24 M]: Going out. 30266.711318                                          
+I don't see that exit.                                                        
+[46 H 24 M]: Going out. 30267.012178                                          
+I don't see that exit.                                                        
+[47 H 26 M]: Going out. 30267.313016                                          
+I don't see that exit.                                                        
+[47 H 26 M]: Going out. 30267.613850                                          
+I don't see that exit.                                                        
+[47 H 26 M]: Going out. 30267.914686                                          
+I don't see that exit.                                                        
+[47 H 26 M]: Going out. 30268.215544                                          
+I don't see that exit.                                                        
+[47 H 26 M]: Going out. 30268.516382                                          
+I don't see that exit.                                                        
+[47 H 26 M]: Going out. 30268.817243                                          
+The kobold warrior punches you for 6 damage.                                  
+[41 H 26 M]: I don't see that exit.                                           
+[41 H 26 M]: Going out. 30269.218254                                          
+I don't see that exit.                                                        
+[41 H 26 M]: Going out. 30269.519107                                          
+I don't see that exit.                                                        
+[41 H 26 M]: Going out. 30269.819944                                          
+The kobold archer just wandered to the west.                                  
+Matched kobold archer                                                         
+[41 H 26 M]: I don't see that exit.                                           
+[41 H 26 M]: Going out. 30270.220971                                          
+I don't see that exit.                                                        
+[41 H 26 M]: Going out. 30270.521806                                          
+I don't see that exit.                                                        
+[41 H 26 M]: Going out. 30270.822643                                          
+I don't see that exit.                                                        
+[41 H 26 M]: Inside rest.                                                     
+Your spell fails.                                                             
+[41 H 25 M]: The kobold warrior throws a wild punch at you, but it misses.    
+[41 H 25 M]: Inside heal_up                                                   
+New instance of cc thread                                                     
+Inside engage_mobs_who_are_attacking                                          
+['kobold warrior']                                                            
+Inside engage_monster... engaging kobold warrior                              
+Vigor spell cast.                                                             
+[44 H 23 M]: You attack the kobold miner.                                     
+You use your javelin to strike the kobold miner for 6 damage.                 
+You attack the kobold miner with your javelin, but miss.                      
+[44 H 23 M]: The kobold miner tries to grab you, but you break free of his grasp.                                                                           
+[44 H 23 M]: The kobold warrior tries to grab you, but you break free of his grasp.                                                                         
+[44 H 23 M]: You use your javelin to strike the kobold miner for 6 damage.    
+You attack the kobold miner with your javelin, striking for 7 damage.         
+Your attack overwhelms the kobold miner and he collapses!                     
+Your enemy, the kobold miner has been defeated.                               
+You gain 11 experience.                                                       
+The kobold miner was carrying: an axe.                                        
+[44 H 23 M]: Removing kobold miner from MONSTER_LIST                          
+Bot:engage_monster: Removing kobold warrior from MOBS_ATTACKING.              
+Leaving engage_monster                                                        
+Inside get_items                                                              
+Inside engage_monster... engaging kobold miner                                
+You get an axe.                                                               
+[44 H 23 M]: The kobold warrior punches you for 5 damage.                     
+[39 H 23 M]: New instance of cc thread                                        
+You attack the kobold warrior with your javelin, but miss.                    
+The kobold warrior is caught off guard by your attack!!                       
+Your missile slams into the kobold warrior for 8 damage.                      
+[39 H 23 M]: You cast a hurt spell on kobold warrior.                         
+The spell did 8 damage.                                                       
+[39 H 20 M]: You attack the kobold warrior with your javelin, but miss.       
+You attack the kobold warrior with your javelin, striking for 6 damage.       
+[39 H 20 M]: You use your javelin to strike the kobold warrior for 9 damage.  
+Your attack overwhelms the kobold warrior and he collapses!                   
+Your enemy, the kobold warrior has been defeated.                             
+You gain 27 experience.                                                       
+The kobold warrior was carrying: 12 gold coins.                               
+[39 H 20 M]: Removing kobold warrior from MONSTER_LIST                        
+Bot:engage_monster: Removing kobold miner from MOBS_ATTACKING.                
+Leaving engage_monster                                                        
+Inside get_items                                                              
+Inside engage_monster... engaging kobold warrior                              
+They are not here.                                                            
+[39 H 20 M]: You get 12 gold coins.                                           
+You now have 90860 gold pieces.                                               
+[39 H 20 M]: You don't see that here.                                         
+[39 H 20 M]: Bot:engage_monster: Removing kobold warrior from MOBS_ATTACKING. 
+Leaving engage_monster                                                        
+Inside get_items                                                              
+Already had an instance... updating it                                        
+There's nothing here.                                                         
+[39 H 20 M]: Your spell fails.                                                
+[39 H 18 M]: A kobold archer just arrived.                                    
+[39 H 18 M]: Your spell fails.                                                
+[39 H 16 M]: Vigor spell cast.                                                
+[41 H 14 M]: Your spell fails.                                                
+[41 H 12 M]: The kobold archer just wandered to the west.                     
+Matched kobold archer                                                         
+[41 H 12 M]: Your spell fails.                                                
+[41 H 10 M]: Vigor spell cast.                                                
+[42 H 8 M]: Vigor spell cast.                                                 
+[43 H 6 M]: Your spell fails.                                                 
+[44 H 6 M]: Vigor spell cast.                                                 
+[45 H 4 M]: Vigor spell cast.                                                 
+[46 H 2 M]: Your spell fails.                                                 
+[46 H 0 M]: Exiting heal_up                                                   
+You lean back to take some rest.                                              
+[46 H 0 M]:                                                                   
+The air feels warm as the sun beams down over the lands.                      
+[46 H 0 M]: A kobold just arrived.                                            
+[46 H 0 M]: The kobold just wandered to the southeast.                        
+Matched kobold                                                                
+[47 H 2 M]: You feel the benefits of resting.                                 
+[49 H 4 M]: A kobold just arrived.                                            
+[49 H 4 M]: The kobold just wandered to the southeast.                        
+Matched kobold                                                                
+[49 H 4 M]: Two kobold warriors just arrived.                                 
+The 2nd kobold warrior attacks you.                                           
+The 1st kobold warrior attacks you.                                           
+[49 H 4 M]: The 2nd kobold warrior painfully head-butts you for 7 damage.     
+Your copper ring fell apart.                                                  
+The 1st kobold warrior kicks you for 7 damage.                                
+A kobold just arrived.                                                        
+Inside engage_mobs_who_are_attacking                                          
+['kobold warrior']                                                            
+Inside engage_monster... engaging kobold warrior                              
+[35 H 4 M]: You stop resting.                                                 
+You attack the kobold.                                                        
+Your missile slams into the kobold for 9 damage.                              
+You use your javelin to strike the kobold for 7 damage.                       
+Your attack overwhelms the kobold and he collapses!                           
+Your enemy, the kobold has been defeated.                                     
+You gain 10 experience.                                                       
+The kobold was carrying: a small stone.                                       
+[35 H 4 M]: Removing kobold from MONSTER_LIST                                 
+Bot:engage_monster: Removing kobold warrior from MOBS_ATTACKING.              
+Leaving engage_monster                                                        
+Inside get_items                                                              
+You get a small stone.                                                        
+[35 H 4 M]: You lean back to take some rest.                                  
+[35 H 4 M]: The 2nd kobold warrior throws a wild punch at you, but it misses. 
+The 1st kobold warrior kicks at you, but fails to hurt you.                   
+Inside engage_mobs_who_are_attacking                                          
+['kobold warrior']                                                            
+Inside engage_monster... engaging kobold warrior                              
+[36 H 6 M]: You stop resting.                                                 
+You use your javelin, but nothing hits the 1st kobold warrior.                
+You use your javelin, but nothing hits the 1st kobold warrior.                
+[36 H 6 M]: New instance of cc thread                                         
+You cast a hurt spell on kobold warrior.                                      
+The spell did 8 damage.                                                       
+[36 H 3 M]: The 2nd kobold warrior lashes out at you, but misses.             
+The 1st kobold warrior grabs you and gouges you for 3 damage.                 
+[33 H 3 M]: You use your javelin, but nothing hits the 1st kobold warrior.    
+Your missile arcs towards the 1st kobold warrior, but fails to hit them.      
+[33 H 3 M]: A kobold miner just arrived.                                      
+[33 H 3 M]: The 2nd kobold warrior tries to grab you, but you break free of his grasp.                                                                      
+The 1st kobold warrior tries to gouge you, but you shake him off.             
+[33 H 3 M]: You attack the kobold miner.                                      
+You attack the kobold miner with your javelin, striking for 7 damage.         
+Your missile arcs towards the kobold miner, but fails to hit them.            
+[33 H 3 M]: The kobold miner grabs you and hurts you for 2 damage.            
+[31 H 3 M]: You cast a hurt spell on kobold miner.                            
+The spell did 11 damage.                                                      
+Your attack overwhelms the kobold miner and he collapses!!                    
+Your enemy, the kobold miner has been defeated.                               
+You gain 11 experience.                                                       
+The kobold miner was carrying: 4 gold coins, an axe.                          
+[31 H 0 M]: Removing kobold miner from MONSTER_LIST                           
+Bot:engage_monster: Removing kobold warrior from MOBS_ATTACKING.              
+Leaving engage_monster                                                        
+Inside get_items                                                              
+You get 4 gold coins, an axe.                                                 
+You now have 90864 gold pieces.                                               
+[31 H 0 M]: You lean back to take some rest.                                  
+[31 H 0 M]: The 2nd kobold warrior lashes out and thumps you for 7 damage.    
+The 1st kobold warrior tries to grab you, but you break free of his grasp.    
+Inside engage_mobs_who_are_attacking                                          
+['kobold warrior']                                                            
+Inside engage_monster... engaging kobold warrior                              
+[24 H 0 M]: You stop resting.                                                 
+You use your javelin, but nothing hits the 1st kobold warrior.                
+You use your javelin to strike the 1st kobold warrior for 7 damage.           
+[24 H 0 M]: The 2nd kobold warrior tries to gouge you, but you shake him off. 
+The 1st kobold warrior grabs you and gouges you for 4 damage.                 
+[20 H 0 M]: Robot: stopping....   Urrrrrchhhchch!!                            
+(Python) Delaying by 2.9 sec ...                                              
+Your missile slams into the 1st kobold warrior for 9 damage.                  
+You attack the 1st kobold warrior with your javelin, striking for 6 damage.   
+Your attack overwhelms the 1st kobold warrior and he collapses!               
+Your enemy, the 1st kobold warrior has been defeated.                         
+You gain 27 experience.                                                       
+The kobold warrior was carrying: 7 gold coins, a silver dagger.               
+[20 H 0 M]: MudReaderThread: Could not remove kobold warrior from MONSTER_LIST
+You removed a javelin.                                                        
+[20 H 0 M]: You removed a javelin.                                            
+[20 H 0 M]: The kobold warrior tries to gouge you, but you shake him off.     
+Sent.                                                                         
+[20 H 0 M]: Bot:engage_monster: Removing kobold warrior from MOBS_ATTACKING.  
+Leaving engage_monster                                                        
+You run like a chicken.                                                       
+                                                                              
+Large Tunnel                                                                  
+                                                                              
+This tunnel is large, it appears to have been enlarged by hand.               
+Obvious exits: out, northeast, east.                                          
+                                                                              
+[20 H 0 M]: Why flee? there are no enemies here!                              
+[20 H 0 M]: Why flee? there are no enemies here!                              
+[20 H 0 M]: You wield a javelin.                                              
+you raise the spear to shoulder height                                        
+[20 H 0 M]: You wield a javelin in your off hand.                             
+you raise the spear to shoulder height                                        
+[20 H 0 M]: You lean back to take some rest.                                  
+[20 H 0 M]: A kobold archer just arrived.                                     
+[20 H 0 M]: A kobold miner just arrived.                                      
+[20 H 0 M]: A kobold archer just arrived.                                     
+[20 H 0 M]: The kobold miner just wandered to the east.                       
+Matched kobold miner                                                          
+[20 H 0 M]: The 2nd kobold archer just wandered to the northeast.             
+Matched kobold archer                                                         
+[20 H 0 M]: A kobold archer just arrived.                                     
+[21 H 2 M]: A kobold miner just arrived.                                      
+[21 H 2 M]: The 1st kobold archer just wandered to the east.                  
+Matched kobold archer                                                         
+[21 H 2 M]: The kobold archer just wandered to the east.                      
+Matched kobold archer                                                         
+[21 H 2 M]: A kobold archer just arrived.                                     
+[21 H 2 M]: You feel the benefits of resting.                                 
+[23 H 4 M]: The kobold archer just wandered to the out.                       
+Matched kobold archer                                                         
+[23 H 4 M]: A kobold miner just arrived.                                      
+[23 H 4 M]: A kobold archer just arrived.                                     
+[23 H 4 M]: The 2nd kobold miner just wandered to the northeast.              
+Matched kobold miner                                                          
+[23 H 4 M]: You feel the benefits of resting.                                 
+[26 H 6 M]: The kobold miner just wandered to the northeast.                  
+Matched kobold miner                                                          
+[26 H 6 M]: The kobold archer just wandered to the out.                       
+Matched kobold archer                                                         
+[26 H 6 M]: A kobold miner just arrived.                                      
+[26 H 6 M]: Two kobold miners just arrived.                                   
+[26 H 6 M]: A kobold sentry just arrived.                                     
+The kobold sentry attacks you.                                                
+[26 H 6 M]: The kobold sentry punches you for 5 damage.                       
+[21 H 6 M]: The kobold sentry punches you for 3 damage.                       
+[18 H 6 M]: The 1st kobold miner just wandered to the out.                    
+A kobold miner just arrived.                                                  
+Matched kobold miner                                                          
+[18 H 6 M]: The kobold sentry kicks you for 6 damage.                         
+[12 H 6 M]: The kobold sentry kicks at you, but fails to hurt you.            
+[12 H 6 M]: The kobold sentry throws a wild punch at you, but it misses.      
+[12 H 6 M]: You feel the benefits of resting.                                 
+[15 H 9 M]: The kobold sentry punches you for 5 damage.                       
+[10 H 9 M]: The kobold sentry punches you for 2 damage.                       
+[8 H 9 M]: A kobold miner just arrived.                                       
+[8 H 9 M]: The kobold sentry grabs you and gouges you for 5 damage.           
+[3 H 9 M]: The kobold sentry lashes out at you, but misses.                   
+[3 H 9 M]: The 3rd kobold miner just wandered to the northeast.               
+Matched kobold miner                                                          
+[3 H 9 M]: The kobold sentry tries to grab you, but you break free of his grasp.                                                                            
+[3 H 9 M]: The kobold sentry kicks at you, but fails to hurt you.             
+[3 H 9 M]: The kobold sentry painfully head-butts you for 1 damage.           
+[2 H 9 M]: The kobold sentry tries to grab you, but you break free of his grasp.                                                                            
+[2 H 9 M]: The kobold sentry punches you for 6 damage.                        
+Your brass ring fell apart.                                                   
+You are overwhelmed by the kobold sentry's attack and you collapse!           
+### Ruorgimorphu was defeated by the kobold sentry.                           
+### Ruorgimorphu's body is teleported away to be healed.                      
+                                                                              
+Limbo                                                                         
+                                                                              
+Eternity looks so boring from this viewpoint, flat and grey forever.          
+Obvious exits: amethyst.                                                      
+                                                                              
+Player saved.                                                                 
+Shucks anyhow                                                                 
+                                                                              

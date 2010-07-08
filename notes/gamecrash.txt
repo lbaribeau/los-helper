@@ -1,0 +1,970 @@
+[laurier@XerxesLinux ~]$ ./scripts/runLosHelper.sh 
+BotThread: finished now.
+
+/---------------------------------------------------------------------------\
+|    The Flint Engine version 1.9.7e          Developed by Shihan, Kaedan   |
+|    Derived from Mordor V4.06 by Brooke Paul & Brett Vickers               |
+|                                                                           |
+|    Website   : www.landsofstone.org                                       |
+|    Game      : mud.landsofstone.org                                       |
+|    Scenarios : type 'help credits' in-game to view details                |
+|    Scenarios : type 'help credits' in-game to view details                |
+|                                                                           |
+|                          lands of stone v(0.86.8)                         |
+|                                                                           |
+|                                 Welcome!                                  |
+|                                                                           |
+\---------------------------------------------------------------------------/
+
+Please enter name: Please enter password: 
+### Ruorgimorphu the Hobbitish Stalker just entered the Lands of Stone.
+
+The Chapel of Healing
+
+The chapel is favoured by all who pass through the town of Amethyst.
+Obvious exits: arched door, out, silver portal, chamber.
+You see an acolyte.
+
+                 ---~~~===Lands of Stone News ===~~~---
+
+  New players : Type in      help visitor
+              : Talk to the immigration officer about levelling
+
+  Forums      : http://losbb.creative-realms.net
+
+  ########################################################################
+
+  A small change was requested, a new social command beckon has been added.
+
+  Please use bugreport for any issues you come across.
+
+  ########################################################################        
+                                                                                  
+  Don't forget to do HELP POLICY every now and again.                             
+  HELP CHANGES lists all recent changes                                           
+                                                                                  
+===> End of News                         (Last updated  9th February 2010)        
+                                                                                  
+[66 H 27 M]: New mail since: Sun Apr 25 20:18:04 2010                             
+                                                                                  
+[66 H 27 M]: eq                                                                   
+On legs:   some shorts                                                            
+On neck:   a cloak                                                                
+On neck:   a grey cloak                                                           
+On face:   some spectacles                                                        
+On finger: a brass ring                                                           
+On finger: a brass ring                                                           
+On finger: a brass ring                                                           
+On finger: a brass ring                                                           
+On finger: a brass ring                                                           
+On finger: a copper ring                                                          
+On finger: a copper ring                                                          
+i[66 H 27 M]:                                                                     
+You have: an awl, a javelin, a large sack, a short bow, a short sword, a small    
+bag, a small knife, thirteen small restoratives, five spears, five steel          
+bottles, a tiny silver vial, five travellers crosses.                             
+[66 H 27 M]: l spe                                                                
+la thin wooden pole with a large metal head                                       
+A spear is a missile weapon.                                                      
+It is in pristine condition.                                                      
+ s[66 H 27 M]: pe 2                                                               
+la thin wooden pole with a large metal head                                       
+A spear is a missile weapon.                                                      
+It is in pristine condition.                                                      
+ s[66 H 27 M]: peA vicar just arrived.                                            
+[66 H 27 M]:  3                                                                   
+a thin wooden pole with a large metal head                                        
+A spear is a missile weapon.                                                      
+It is in fair condition.                                                          
+l s[66 H 27 M]: pe 4                                                              
+la thin wooden pole with a large metal head                                       
+A spear is a missile weapon.                                                      
+It is in fair condition.                                                          
+ s[66 H 27 M]: peThe acolyte just opened the arched door.                         
+The acolyte just wandered to the arched door.                                     
+Matched acolyte                                                                   
+ [66 H 27 M]: 5                                                                   
+a thin wooden pole with a large metal head                                        
+A spear is a missile weapon.                                                      
+It is in fine condition.                                                          
+[66 H 27 M]: wie spe                                                              
+seYou wield a spear.                                                              
+you balance the spear in your hand                                                
+[66 H 27 M]: co spe                                                               
+You wield a spear in your off hand.                                               
+you balance the spear in your hand                                                
+[66 H 27 M]:                                                                      
+[66 H 27 M]: l                                                                    
+i                                                                                 
+The Chapel of Healing                                                             
+                                                                                  
+The chapel is favoured by all who pass through the town of Amethyst.              
+Obvious exits: arched door, out, silver portal, chamber.                          
+You see a vicar.                                                                  
+                                                                                  
+                                                                                  
+[66 H 27 M]: You have: an awl, a javelin, a large sack, a short bow, a short sword, a small                                                                         
+bag, a small knife, thirteen small restoratives, three spears, five steel         
+bottles, a tiny silver vial, five travellers crosses.                             
+[66 H 27 M]: l                                                                    
+                                                                                  
+The Chapel of Healing                                                             
+                                                                                  
+The chapel is favoured by all who pass through the town of Amethyst.              
+Obvious exits: arched door, out, silver portal, chamber.                          
+You see a vicar.                                                                  
+                                                                                  
+[66 H 27 M]: bot                                                                  
+Inside rest.                                                                      
+You glow with a blue aura.                                                        
+[66 H 26 M]: Inside heal_up                                                       
+Exiting heal_up                                                                   
+Inside heal_up                                                                    
+Exiting heal_up                                                                   
+Inside check_weapons.                                                             
+Inside check_armour.                                                              
+Inside decide_where_to_go                                                         
+stop                                                                              
+Robot: stopping....   Urrrrrchhhchch!!                                            
+ou                                                                                
+(Python) Wait 1.3 more seconds                                                    
+ou                                                                                
+(Python) Delaying by 0.2 sec ...                                                  
+Sent.                                                                             
+Inside decide_which_mob_to_kill                                                   
+                                                                                  
+Holly Lane                                                                        
+                                                                                  
+The trees grow a little taller here, the houses in better repair, it is           
+obvious that the church's influence here is improving things.                     
+Obvious exits: north, south, chapel.                                              
+                                                                                  
+[66 H 26 M]: s                                                                    
+                                                                                  
+Main Road / Holly Lane                                                            
+                                                                                  
+This is the market centre of the town. A busy street market is in                 
+operation and there looks to be some good bargains as well!                       
+Obvious exits: north, west, east, townhall.                                       
+You see a dustman, a hawker, a smelly beggar, a stall holder, a vicar.            
+You see a large christmas tree.                                                   
+                                                                                  
+[66 H 26 M]: n                                                                    
+                                                                                  
+Holly Lane                                                                        
+                                                                                  
+The trees grow a little taller here, the houses in better repair, it is           
+obvious that the church's influence here is improving things.                     
+Obvious exits: north, south, chapel.                                              
+                                                                                  
+[66 H 26 M]: n                                                                    
+                                                                                  
+Holly Lane                                                                        
+                                                                                  
+Obvious exits: south, north, west.                                                
+You see an acolyte.                                                               
+                                                                                  
+[66 H 26 M]: kk aco                                                               
+You attack the acolyte.                                                           
+You attack the acolyte with your spear, striking for 5 damage.                    
+Your missile slams into the acolyte for 5 damage.                                 
+[66 H 26 M]: The acolyte grabs you and gouges you for 2 damage.                   
+[64 H 26 M]: c hu aThe acolyte casts a vigor spell on herself.                    
+co[64 H 26 M]:                                                                    
+You cast a hurt spell on acolyte.                                                 
+The spell did 14 damage.                                                          
+Your attack overwhelms the acolyte and she collapses!!                            
+Your enemy, the acolyte has been defeated.                                        
+You gain 10 experience.                                                           
+The acolyte was carrying: 8 gold coins.                                           
+[64 H 23 M]: Removing acolyte from MONSTER_LIST                                   
+ga                                                                                
+You get 8 gold coins.                                                             
+You now have 58000 gold pieces.                                                   
+[64 H 23 M]: l                                                                    
+                                                                                  
+Holly Lane                                                                        
+                                                                                  
+Obvious exits: south, north, west.                                                
+                                                                                  
+[65 H 25 M]: n                                                                    
+(Python) Wait 3.2 more seconds                                                    
+                                                                                  
+[65 H 25 M]: n                                                                    
+(Python) Delaying by 0.9 sec ...                                                  
+Sent.                                                                             
+                                                                                  
+Minden Way / Holly Lane                                                           
+                                                                                  
+A busy route leading south to the town's centre                                   
+Obvious exits: west, east, south.                                                 
+                                                                                  
+[65 H 25 M]: s                                                                    
+                                                                                  
+Holly Lane                                                                        
+                                                                                  
+Obvious exits: south, north, west.                                                
+                                                                                  
+[65 H 25 M]: n                                                                    
+w                                                                                 
+Minden Way / Holly Lane                                                           
+                                                                                  
+A busy route leading south to the town's centre                                   
+Obvious exits: west, east, south.                                                 
+                                                                                  
+                                                                                  
+[65 H 25 M]:                                                                      
+The Black Gate / Minden Way                                                       
+                                                                                  
+The northern exit to the town, leading into the northern wilderness.              
+Obvious exits: west, east, shrine, north gate.                                    
+You see an amethyst town guard.                                                   
+                                                                                  
+[65 H 25 M]: e                                                                    
+s                                                                                 
+Minden Way / Holly Lane                                                           
+                                                                                  
+A busy route leading south to the town's centre                                   
+Obvious exits: west, east, south.                                                 
+                                                                                  
+                                                                                  
+[65 H 25 M]:                                                                      
+Holly Lane                                                                        
+                                                                                  
+Obvious exits: south, north, west.                                                
+                                                                                  
+[65 H 25 M]: w                                                                    
+                                                                                  
+Adventurers Walk                                                                  
+                                                                                  
+The cul-de-sac is in a half finished state with ongoing building work.            
+Obvious exits: east, southwest, villa, tavern.                                    
+You see a vicar.                                                                  
+                                                                                  
+[65 H 25 M]: sw                                                                   
+                                                                                  
+Adventurers Walk                                                                  
+                                                                                  
+There is no building work here yet, it hasn't got this far.                       
+Obvious exits: northeast, south.                                                  
+                                                                                  
+n[65 H 25 M]: e                                                                   
+                                                                                  
+Adventurers Walk                                                                  
+                                                                                  
+The cul-de-sac is in a half finished state with ongoing building work.            
+Obvious exits: east, southwest, villa, tavern.                                    
+You see a vicar.                                                                  
+                                                                                  
+e                                                                                 
+[65 H 25 M]: s                                                                    
+Holly Lane                                                                        
+                                                                                  
+Obvious exits: south, north, west.                                                
+                                                                                  
+                                                                                  
+[65 H 25 M]:                                                                      
+Holly Lane                                                                        
+                                                                                  
+The trees grow a little taller here, the houses in better repair, it is           
+obvious that the church's influence here is improving things.                     
+Obvious exits: north, south, chapel.                                              
+                                                                                  
+[65 H 25 M]: s                                                                    
+                                                                                  
+Main Road / Holly Lane                                                            
+                                                                                  
+This is the market centre of the town. A busy street market is in                 
+operation and there looks to be some good bargains as well!                       
+Obvious exits: north, west, east, townhall.                                       
+You see a dustman, a hawker, a smelly beggar, a stall holder, a vicar.            
+You see a large christmas tree.                                                   
+                                                                                  
+[65 H 25 M]: n                                                                    
+                                                                                  
+Holly Lane                                                                        
+                                                                                  
+The trees grow a little taller here, the houses in better repair, it is           
+obvious that the church's influence here is improving things.                     
+Obvious exits: north, south, chapel.                                              
+                                                                                  
+[65 H 25 M]: go ch                                                                
+                                                                                  
+The Chapel of Healing                                                             
+                                                                                  
+The chapel is favoured by all who pass through the town of Amethyst.              
+Obvious exits: arched door, out, silver portal, chamber.                          
+You see an acolyte.                                                               
+                                                                                  
+[65 H 25 M]: kk aco                                                               
+haYou attack the acolyte.                                                         
+Your missiles slams into the acolyte for 7 damage.                                
+Your missile slams into the acolyte for 5 damage.                                 
+The acolyte flees to the out.                                                     
+[65 H 25 M]: Removing acolyte from MONSTER_LIST                                   
+te                                                                                
+You feel yourself moving faster.                                                  
+[65 H 25 M]: ou                                                                   
+Please wait 1 more second.                                                        
+[65 H 25 M]: ou                                                                   
+k                                                                                 
+Holly Lane                                                                        
+                                                                                  
+The trees grow a little taller here, the houses in better repair, it is           
+obvious that the church's influence here is improving things.                     
+Obvious exits: north, south, chapel.                                              
+You see an acolyte.                                                               
+                                                                                  
+k [65 H 25 M]: acoThe acolyte casts a vigor spell on herself.                     
+[65 H 25 M]:                                                                      
+You attack the acolyte with your spear, striking for 8 damage.                    
+Your attack overwhelms the acolyte and she collapses!                             
+Your enemy, the acolyte has been defeated.                                        
+You gain 10 experience.                                                           
+The acolyte was carrying: 2 gold coins, a silver chalice.                         
+[65 H 25 M]: Removing acolyte from MONSTER_LIST                                   
+ga                                                                                
+You get 2 gold coins, a silver chalice.                                           
+You now have 58002 gold pieces.                                                   
+[65 H 25 M]: drink chal                                                           
+dYou feel holy.                                                                   
+Potion drank.                                                                     
+you feel a strengthening spirit guide you                                         
+A silver chalice disintegrates.                                                   
+[65 H 25 M]: rink ste                                                             
+The sun shines brightly across the lands.                                         
+e                                                                                 
+[65 H 25 M]: You feel watched.                                                    
+Potion drank.                                                                     
+you feel that a protective presence watches over you                              
+A steel bottle disintegrates.                                                     
+[65 H 25 M]: n                                                                    
+                                                                                  
+Holly Lane                                                                        
+                                                                                  
+Obvious exits: south, north, west.                                                
+You see a vicar.                                                                  
+                                                                                  
+[65 H 25 M]: w                                                                    
+                                                                                  
+Adventurers Walk                                                                  
+                                                                                  
+The cul-de-sac is in a half finished state with ongoing building work.            
+Obvious exits: east, southwest, villa, tavern.                                    
+                                                                                  
+[65 H 25 M]: e                                                                    
+                                                                                  
+Holly Lane                                                                        
+                                                                                  
+Obvious exits: south, north, west.                                                
+You see a vicar.                                                                  
+                                                                                  
+[65 H 25 M]: kk vic                                                               
+cYou attack the vicar.                                                            
+You attack the vicar with your spear, striking for 7 damage.                      
+You use your spear to strike the vicar for 3 damage.                              
+[65 H 25 M]: c hThe vicar lashes out and thumps you for 6 damage.                 
+[59 H 25 M]: u viThe vicar casts a vigor spell on himself.                        
+c[59 H 25 M]:                                                                     
+New instance of cc thread                                                         
+You cast a hurt spell on vicar.                                                   
+The spell did 8 damage.                                                           
+[59 H 22 M]: You use your spear to strike the vicar for 9 damage.                 
+You use your spear to strike the vicar for 3 damage.                              
+[59 H 22 M]: The vicar painfully head-butts you for 8 damage.                     
+[51 H 22 M]: You use your spear to strike the vicar for 9 damage.                 
+Your missile slams into the vicar for 5 damage.                                   
+[51 H 22 M]: The vicar casts a vigor spell on himself.                            
+[51 H 22 M]: You attack the vicar with your spear, striking for 9 damage.         
+Your missile slams into the vicar for 3 damage.                                   
+The vicar flees to the south.                                                     
+[51 H 22 M]: Removing vicar from MONSTER_LIST                                     
+s                                                                                 
+(Python) Delaying by 0.6 sec ...                                                  
+Sent.                                                                             
+                                                                                  
+Holly Lane                                                                        
+                                                                                  
+The trees grow a little taller here, the houses in better repair, it is           
+obvious that the church's influence here is improving things.                     
+Obvious exits: north, south, chapel.                                              
+You see a vicar.                                                                  
+                                                                                  
+[51 H 22 M]: kThe vicar grabs you and gouges you for 5 damage.                    
+[46 H 22 M]: k vi                                                                 
+You attack the vicar with your spear, but miss.                                   
+Your missile slams into the vicar for 6 damage.                                   
+The vicar flees to the south.                                                     
+[46 H Removing vicar from MONSTER_LIST                                            
+22 M]: s                                                                          
+                                                                                  
+Main Road / Holly Lane                                                            
+                                                                                  
+This is the market centre of the town. A busy street market is in                 
+operation and there looks to be some good bargains as well!                       
+Obvious exits: north, west, east, townhall.                                       
+You see a dustman, a hawker, a smelly beggar, a stall holder, a vicar.            
+You see a large christmas tree.                                                   
+                                                                                  
+k[46 H 22 M]: k viThe vicar casts a vigor spell on himself.                       
+                                                                                  
+[46 H 22 M]: You use your spear, but nothing hits the vicar.                      
+You attack the vicar with your spear, striking for 5 damage.                      
+The vicar flees to the north.Removing vicar from MONSTER_LIST                     
+                                                                                  
+[46 H 22 M]: n                                                                    
+k                                                                                 
+Holly Lane                                                                        
+                                                                                  
+The trees grow a little taller here, the houses in better repair, it is           
+obvious that the church's influence here is improving things.                     
+Obvious exits: north, south, chapel.                                              
+You see a vicar.                                                                  
+                                                                                  
+k [46 H 22 M]: vi                                                                 
+The vicar casts a vigor spell on himself.                                         
+[46 H 22 M]: Your missile arcs towards the vicar, but fails to hit them.          
+You use your spear to strike the vicar for 4 damage.                              
+[46 H 22 M]: The vicar punches you for 6 damage.                                  
+[40 H 22 M]: c hu vYou use your spear, but nothing hits the vicar.                
+You use your spear to strike the vicar for 7 damage.                              
+The vicar flees to the north.                                                     
+[40 H 22 M]: Removing vicar from MONSTER_LIST                                     
+i                                                                                 
+They are not here.                                                                
+[40 H 22 M]: n                                                                    
+(Python) Wait 4.9 more seconds                                                    
+n                                                                                 
+k                                                                                 
+Holly Lane                                                                        
+                                                                                  
+Obvious exits: south, north, west.                                                
+You see a vicar.                                                                  
+                                                                                  
+k [41 H 24 M]: vi                                                                 
+You use your spear to strike the vicar for 9 damage.                              
+Your attack overwhelms the vicar and he collapses!                                
+Your enemy, the vicar has been defeated.                                          
+You gain 70 experience.                                                           
+The vicar waRemoving vicar from MONSTER_LIST                                      
+s carrying: 44 gold coins, some spectacles, a silver chalice.                     
+[41 H 24 M]: ga                                                                   
+You get 44 gold coins, a silver chalice, some ^ 0�X     cles.                     
+You now have 58046 gold pieces.                                                   
+[41 H 24 M]: l                                                                    
+                                                                                  
+Holly Lane                                                                        
+                                                                                  
+Obvious exits: south, north, west.                                                
+                                                                                  
+[41 H 24 M]: s                                                                    
+                                                                                  
+Holly Lane                                                                        
+                                                                                  
+The trees grow a little taller here, the houses in better repair, it is           
+obvious that the church's influence here is improving things.                     
+Obvious exits: north, south, chapel.                                              
+                                                                                  
+[41 H 24 M]: go ch                                                                
+                                                                                  
+The Chapel of Healing                                                             
+                                                                                  
+The chapel is favoured by all who pass through the town of Amethyst.              
+Obvious exits: arched door, out, silver portal, chamber.                          
+                                                                                  
+[41 H 24 M]: i                                                                    
+You have: some ^        0�X     cles, an awl, a javelin, a large sack, a short bow, a                                                                               
+short sword, a silver chalice, a small bag, a small knife, thirteen small         
+restoratives, three spears, four steel bottles, a tiny silver vial, five          
+travellers crosses.                                                               
+[41 H 24 M]:                                                                      
+[41 H 24 M]: l                                                                    
+                                                                                  
+The Chapel of Healing                                                             
+                                                                                  
+The chapel is favoured by all who pass through the town of Amethyst.              
+Obvious exits: arched door, out, silver portal, chamber.                          
+                                                                                  
+[41 H 24 M]: ou                                                                   
+                                                                                  
+Holly Lane                                                                        
+                                                                                  
+The trees grow a little taller here, the houses in better repair, it is           
+obvious that the church's influence here is improving things.                     
+Obvious exits: north, south, chapel.                                              
+                                                                                  
+[41 H 24 M]: n                                                                    
+                                                                                  
+Holly Lane                                                                        
+                                                                                  
+Obvious exits: south, north, west.                                                
+                                                                                  
+[41 H 24 M]: w                                                                    
+                                                                                  
+Adventurers Walk                                                                  
+                                                                                  
+The cul-de-sac is in a half finished state with ongoing building work.            
+Obvious exits: east, southwest, villa, tavern.                                    
+                                                                                  
+[41 H 24 M]: e                                                                    
+s                                                                                 
+Holly Lane                                                                        
+                                                                                  
+Obvious exits: south, north, west.                                                
+                                                                                  
+                                                                                  
+[41 H 24 M]:                                                                      
+Holly Lane                                                                        
+                                                                                  
+The trees grow a little taller here, the houses in better repair, it is           
+obvious that the church's influence here is improving things.                     
+Obvious exits: north, south, chapel.                                              
+                                                                                  
+[41 H 24 M]: s                                                                    
+                                                                                  
+Main Road / Holly Lane                                                            
+                                                                                  
+This is the market centre of the town. A busy street market is in                 
+operation and there looks to be some good bargains as well!                       
+Obvious exits: north, west, east, townhall.                                       
+You see an acolyte, a dustman, a hawker, a smelly beggar, a stall holder.         
+You see a large christmas tree.                                                   
+                                                                                  
+s                                                                                 
+[41 H 24 M]: You can't go that way.                                               
+[41 H 24 M]: w                                                                    
+                                                                                  
+Main Road                                                                         
+                                                                                  
+This part of the street is almost deserted. It does have a reputation as          
+the favourite spot for thieves to ply their trade and is thus shunned.            
+Obvious exits: west, east.                                                        
+You see a vicar.                                                                  
+                                                                                  
+w                                                                                 
+[41 H 24 M]:                                                                      
+Main Road                                                                         
+                                                                                  
+The traffic seems a little light here and people seem to hurry as if they         
+have reason not to be found here, though you cannot see why this could be.        
+Obvious exits: west, east.                                                        
+                                                                                  
+w[41 H 24 M]:                                                                     
+                                                                                  
+Grey Street / Main Road                                                           
+                                                                                  
+This junction while not busy is not empty. The merchant houses sited here         
+means that there normally tends to be some form of traffic.                       
+Obvious exits: north, south, east.                                                
+                                                                                  
+e                                                                                 
+[41 H 24 M]: e                                                                    
+Main Road                                                                         
+                                                                                  
+The traffic seems a little light here and people seem to hurry as if they         
+have reason not to be found here, though you cannot see why this could be.        
+Obvious exits: west, east.                                                        
+                                                                                  
+[41 H 24 M]:                                                                      
+(Python) Delaying by 0.0 sec ...                                                  
+Sent.                                                                             
+                                                                                  
+Main Road                                                                         
+                                                                                  
+This part of the street is almost deserted. It does have a reputation as          
+the favourite spot for thieves to ply their trade and is thus shunned.            
+Obvious exits: west, east.                                                        
+You see a vicar.                                                                  
+                                                                                  
+[41 H 24 M]: e                                                                    
+                                                                                  
+Main Road / Holly Lane                                                            
+                                                                                  
+This is the market centre of the town. A busy street market is in                 
+operation and there looks to be some good bargains as well!                       
+Obvious exits: north, west, east, townhall.                                       
+You see an acolyte, a dustman, a hawker, a smelly beggar, a stall holder.         
+You see a large christmas tree.                                                   
+                                                                                  
+[41 H 24 M]: kk aco                                                               
+                                                                                  
+The sun disappears over the horizon.                                              
+c[41 H 24 M]: You attack the acolyte.                                             
+The acolyte is caught off guard by your attack!!                                  
+You attack the acolyte with your spear, striking for 15 damage.                   
+Your attack overwhelms the acolyte and she collapses!                             
+Your enemy, the acolyte has been defeated.                                        
+You gain 10 experience.                                                           
+The acolyte was carrying: 2 gold coins, a small restorative.                      
+[41 H 24 M]: Removing acolyte from MONSTER_LIST                                   
+ hu                                                                               
+A sliver of silver can be seen in the night sky.                                  
+[41 H 24 Mga                                                                      
+You get 2 gold coins, a small restorative.                                        
+You now have 58048 gold pieces.                                                   
+[41 H 24 M]: use rest                                                             
+You feel better.                                                                  
+Potion drank.                                                                     
+that feels a little better                                                        
+A small restorative disintegrates.                                                
+[42 H 24 M]: l                                                                    
+                                                                                  
+Main Road / Holly Lane                                                            
+                                                                                  
+This is the market centre of the town. A busy street market is in                 
+operation and there looks to be some good bargains as well!                       
+Obvious exits: north, west, east, townhall.                                       
+You see a dustman, a hawker, a smelly beggar, a stall holder.                     
+You see a large christmas tree.                                                   
+                                                                                  
+[42 H 24 M]: w                                                                    
+                                                                                  
+Main Road                                                                         
+                                                                                  
+This part of the street is almost deserted. It does have a reputation as          
+the favourite spot for thieves to ply their trade and is thus shunned.            
+Obvious exits: west, east.                                                        
+You see a vicar.                                                                  
+                                                                                  
+[42 H 24 M]: kk vic                                                               
+cYou attack the vicar.                                                            
+You attack the vicar with your spear, striking for 9 damage.                      
+Your missile slams into the vicar for 6 damage.                                   
+[42 H 24 M]: c hu vi                                                              
+New instance of cc thread                                                         
+The vicar lashes out at you, but misses.                                          
+[42 H 24 M]: You cast a hurt spell on vicar.                                      
+The spell did 14 damage.                                                          
+[42 H 21 M]: You attack the vicar with your spear, striking for 8 damage.         
+Your attack knocks the vicar off balance!!                                        
+Your missile slams into the vicar for 7 damage.                                   
+The vicar flees to the west.                                                      
+[42 H 21 M]: Removing vicar from MONSTER_LIST                                     
+w                                                                                 
+(Python) Wait 3.4 more seconds                                                    
+w                                                                                 
+(Python) Delaying by 0.2 sec ...                                                  
+kSent.                                                                            
+k                                                                                 
+Main Road                                                                         
+                                                                                  
+The traffic seems a little light here and people seem to hurry as if they         
+have reason not to be found here, though you cannot see why this could be.        
+Obvious exits: west, east.                                                        
+You see a vicar.                                                                  
+                                                                                  
+vi[42 H 21 M]:                                                                    
+You knock the wind out of the vicar!!                                             
+You attack the vicar with your spear, striking for 13 damage.                     
+Your attack overwhelms the vicar and he collapses!                                
+Your enemy, the vicar has been defeated.                                          
+You gain 70 experience.                                                           
+The vicar was carrying: 34 gold coins, a sticky salve.                            
+[42 H 21 M]: Removing vicar from MONSTER_LIST                                     
+ga                                                                                
+You get 34 gold coins, a sticky salve.                                            
+You now have 58082 gold pieces.                                                   
+[42 H 21 M]: w                                                                    
+                                                                                  
+Grey Street / Main Road                                                           
+                                                                                  
+This junction while not busy is not empty. The merchant houses sited here         
+means that there normally tends to be some form of traffic.                       
+Obvious exits: north, south, east.                                                
+                                                                                  
+[42 H 21 M]: w                                                                    
+You can't go that way.                                                            
+[42 H 21 M]: w                                                                    
+You can't go that way.                                                            
+[42 H 21 M]: s                                                                    
+                                                                                  
+The Arcade / Grey Street                                                          
+                                                                                  
+There are few people around at this place.                                        
+Obvious exits: north, south, east, theatre.                                       
+                                                                                  
+s                                                                                 
+[42 H 21 M]:                                                                      
+Grey Street                                                                       
+                                                                                  
+This is the southwest corner of town.                                             
+Obvious exits: north, southeast, shop.                                            
+                                                                                  
+[42 H 21 M]: go sh                                                                
+i                                                                                 
+Willan's Pawn Shop                                                                
+                                                                                  
+This is the only pawnshop in town and as a result it does a rather                
+large amount of business.                                                         
+Obvious exits: out.                                                               
+                                                                                  
+                                                                                  
+[42 H 21 M]: You have: E        ��^      coins, an awl, a javelin, a large sack, a short bow, a short                                                               
+sword, a silver chalice, a small bag, a small knife, thirteen small               
+restoratives, three spears, four steel bottles, a sticky salve, a tiny silver     
+vial, five travellers crosses.                                                    
+[42 H 21 M]: wear all                                                             
+You have nothing you can wear.                                                    
+[42 H 21 M]: l coi                                                                
+they make such music when clinked together                                        
+s[42 H 21 M]: ell coi                                                             
+The shopkeep says, "I won't buy that rubbish from you."                           
+[42 H 21 M]: sell bow                                                             
+The shopkeep gives you 30 gold for a short bow.                                   
+[43 H 23 M]: sell short                                                           
+The shopkeep gives you 20 gold for a short sword.                                 
+[43 H 23 M]: sell stick                                                           
+The shopkeep says, "I won't buy that rubbish from you."                           
+[43 H 23 M]: use sti                                                              
+Your spell fails.                                                                 
+You rub the salve into your temples in the hope it gives some relief              
+[43 H 23 M]: !                                                                    
+a sticky salve is drained.                                                        
+[43 H 23 M]: ou                                                                   
+                                                                                  
+Grey Street                                                                       
+                                                                                  
+This is the southwest corner of town.                                             
+Obvious exits: north, southeast, shop.                                            
+                                                                                  
+se                                                                                
+[43 H 23 M]:                                                                      
+Danestrete / Grey Street                                                          
+                                                                                  
+The buildings here look newer than most of the rest of the town.                  
+Obvious exits: northwest, east.                                                   
+                                                                                  
+e                                                                                 
+[43 H 23 M]:                                                                      
+Danestrete                                                                        
+                                                                                  
+While most of the buildings here are recent, the post office is not and           
+it sticks out quite obviously because of it.                                      
+Obvious exits: west, east, post office.                                           
+                                                                                  
+[43 H 23 M]: e                                                                    
+e                                                                                 
+Amber Gate / Danestrete                                                           
+                                                                                  
+A busy junction, especially with all the commerce between here and Amber.         
+Obvious exits: west, east, gate.                                                  
+You see an amethyst town guard.                                                   
+                                                                                  
+                                                                                  
+[43 H 23 M]: e                                                                    
+                                                                                  
+Danestrete / Wisden Street                                                        
+                                                                                  
+The Amber traffic tends to go north from here to enter the town proper.           
+Obvious exits: north, west, east.                                                 
+                                                                                  
+[43 H 23 M]: n                                                                    
+Danestrete / Warrior's Walk / Dragon Road                                         
+                                                                                  
+This is the southeast corner of town.                                             
+Obvious exits: north, northeast, west.                                            
+You see a dustman, a mime artist, a sword swallower.                              
+You see a large wallposter.                                                       
+                                                                                  
+e                                                                                 
+[43 H 23 M]:                                                                      
+Dragon Road                                                                       
+                                                                                  
+There is little to keep you hear, least of all the tip to the southeast.          
+Obvious exits: north, southwest, tip.                                             
+You see an acolyte.                                                               
+                                                                                  
+[43 H 23 M]: kk aco                                                               
+You attack the acolyte.                                                           
+You use your spear to strike the acolyte for 6 damage.                            
+You attack the acolyte with your spear, striking for 7 damage.                    
+The acolyte flees to the north.                                                   
+[43 H 23 M]: Removing acolyte from MONSTER_LIST                                   
+n                                                                                 
+(Python) Delaying by 0.7 sec ...                                                  
+Sent.                                                                             
+                                                                                  
+Dragon Road                                                                       
+                                                                                  
+The buildings here have never been rebuilt since the dragon's attack.             
+Obvious exits: north, south.                                                      
+You see an acolyte.                                                               
+                                                                                  
+k[43 H 23 M]: k aThe acolyte casts a vigor spell on herself.                      
+c[43 H 23 M]:                                                                     
+You attack the acolyte with your spear, striking for 7 damage.                    
+Your attack overwhelms the acolyte and she collapses!                             
+Your enemy, the acolyte has been defeated.                                        
+You gain 10 experience.                                                           
+The acolyte was carrying: 4 gold coins, a small mace.                             
+[43 H 23 M]: Removing acolyte from MONSTER_LIST                                   
+ga                                                                                
+You get 4 gold coins, a small mace.                                               
+You now have 58136 gold pieces.                                                   
+[43 H 23 M]: s                                                                    
+(Python) Delaying by 0.3 sec ...                                                  
+sSent.                                                                            
+w                                                                                 
+Dragon Road                                                                       
+                                                                                  
+There is little to keep you hear, least of all the tip to the southeast.          
+Obvious exits: north, southwest, tip.                                             
+                                                                                  
+                                                                                  
+[43 H 23 M]: w                                                                    
+Danestrete / Warrior's Walk / Dragon Road                                         
+                                                                                  
+This is the southeast corner of town.                                             
+Obvious exits: north, northeast, west.                                            
+You see a dustman, a mime artist, a sword swallower.                              
+You see a large wallposter.                                                       
+                                                                                  
+[43 H 23 M]:                                                                      
+                                                                                  
+Danestrete / Wisden Street                                                        
+                                                                                  
+The Amber traffic tends to go north from here to enter the town proper.           
+Obvious exits: north, west, east.                                                 
+                                                                                  
+w                                                                                 
+[43 H 23 M]: w                                                                    
+Amber Gate / Danestrete                                                           
+                                                                                  
+A busy junction, especially with all the commerce between here and Amber.         
+Obvious exits: west, east, gate.                                                  
+You see an amethyst town guard.                                                   
+                                                                                  
+[43 H 23 M]:                                                                      
+                                                                                  
+Danestrete                                                                        
+                                                                                  
+While most of the buildings here are recent, the post office is not and           
+it sticks out quite obviously because of it.                                      
+Obvious exits: west, east, post office.                                           
+                                                                                  
+w                                                                                 
+[43 H 23 M]: w                                                                    
+                                                                                  
+Danestrete / Grey Street                                                          
+                                                                                  
+The buildings here look newer than most of the rest of the town.                  
+Obvious exits: northwest, east.                                                   
+                                                                                  
+[43 H 23 M]: nYou can't go that way.                                              
+[43 H 23 M]: w                                                                    
+                                                                                  
+Grey Street                                                                       
+                                                                                  
+This is the southwest corner of town.                                             
+Obvious exits: north, southeast, shop.                                            
+                                                                                  
+n[43 H 23 M]:                                                                     
+                                                                                  
+The Arcade / Grey Street                                                          
+                                                                                  
+There are few people around at this place.                                        
+Obvious exits: north, south, east, theatre.                                       
+                                                                                  
+[43 H 23 M]: s                                                                    
+g                                                                                 
+Grey Street                                                                       
+                                                                                  
+This is the southwest corner of town.                                             
+Obvious exits: north, southeast, shop.                                            
+                                                                                  
+o [43 H 23 M]: sh                                                                 
+sel                                                                               
+Willan's Pawn Shop                                                                
+                                                                                  
+This is the only pawnshop in town and as a result it does a rather                
+large amount of business.                                                         
+Obvious exits: out.                                                               
+                                                                                  
+l[43 H 23 M]:  mace                                                               
+oThe shopkeep gives you 51 gold for a small mace.                                 
+[43 H 23 M]: u                                                                    
+s                                                                                 
+Grey Street                                                                       
+                                                                                  
+This is the southwest corner of town.                                             
+Obvious exits: north, southeast, shop.                                            
+                                                                                  
+                                                                                  
+[43 H 23 M]: You can't go that way.                                               
+[43 H 23 M]: se                                                                   
+s                                                                                 
+Danestrete / Grey Street                                                          
+                                                                                  
+The buildings here look newer than most of the rest of the town.                  
+Obvious exits: northwest, east.                                                   
+                                                                                  
+[43 H 23 M]:e                                                                     
+e                                                                                 
+Danestrete                                                                        
+                                                                                  
+While most of the buildings here are recent, the post office is not and           
+it sticks out quite obviously because of it.                                      
+Obvious exits: west, east, post office.                                           
+                                                                                  
+                                                                                  
+[43 H 23 M]: e                                                                    
+Amber Gate / Danestrete                                                           
+                                                                                  
+A busy junction, especially with all the commerce between here and Amber.         
+Obvious exits: west, east, gate.                                                  
+You see an amethyst town guard.                                                   
+                                                                                  
+[43 H 23 M]:                                                                      
+e                                                                                 
+Danestrete / Wisden Street                                                        
+                                                                                  
+The Amber traffic tends to go north from here to enter the town proper.           
+Obvious exits: north, west, east.                                                 
+                                                                                  
+                                                                                  
+(Python) Delaying by 0.0 sec ...                                                  
+Sent.                                                                             
+[43 H 23 M]: ne                                                                   
+Danestrete / Warrior's Walk / Dragon Road                                         
+                                                                                  
+This is the southeast corner of town.                                             
+Obvious exits: north, northeast, west.                                            
+You see a dustman, a mime artist, a sword swallower.                              
+You see a large wallposter.                                                       
+                                                                                  
+[43 H 23 M]:                                                                      
+g                                                                                 
+Dragon Road                                                                       
+                                                                                  
+There is little to keep you hear, least of all the tip to the southeast.          
+Obvious exits: north, southwest, tip.                                             
+                                                                                  
+o t[43 H 23 M]: ip                                                                
+                                                                                  
+Town Tip                                                                          
+                                                                                  
+This is the edge of town and the site of the town rubbish tip.                    
+Obvious exits: out.                                                               
+                                                                                  
+i                                                                                 
+[43 H 23 M]: You have: `        ��^      coins, an awl, a javelin, a large sack, a silver chalice, a                                                                
+small bag, a small knife, thirteen small restoratives, three spears, four         
+steel bottles, a sticky salve, a tiny silver vial, five travellers crosses.       
+[43 H 23 M]: drop coin                                                            
+You drop `      ��^      coins.                                                   
+###                                                                               
+###     HOST SERVER ADMIN SHUTTING DOWN THE GAME                                  
+                                                                                  
+###                                                                               
+###     This may indicate a hardware outage and the need for repairs              
+                                                                                  
+###                                                                               
+###     Please do not log back in for 30 minutes to give them time to fix         
+things.                                                                           
+                                                                                  
+###                                                                               
+###     Quick shutdown now!                                                       
+###                                                                
+                                                                                                 
+[43 H 23 M]:                                                                      
+                                                                   
