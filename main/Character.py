@@ -1,5 +1,6 @@
 ################################################################################
 import time
+import Classes
 
 class Character:
 
@@ -10,7 +11,11 @@ class Character:
         # character init function sets variables to default (initial)
         # values.  
     
-#        self.char_class = ""
+        self._char_class = Classes.Ranger()
+        
+        def getClass(self):
+            return self._char_class
+        
         self.LEVEL = 8
 #        self.preferred_alignment = "grey"
 #        self.weapon_skills = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
@@ -136,10 +141,9 @@ class Character:
             "market official", "robed pilgrim", 
             "street trader", "field worker", "harvester", "horse", "cow",
             "doorman", "stilt walker",  "messenger", "cashier",
-            "thatcher",  "tax inspector", "theatre goer", 
-            "drunken miner", 'journeyman',
-            ]
-        self.__lvl3_red_monsters = [
+            "thatcher",  "tax inspector", "theatre goer", "drunken miner", 
+		'journeyman' ] 
+	self.__lvl3_red_monsters = [
             "large kobold", "insane kobold", "kobold scout",
             'drunk'
             ]
@@ -191,7 +195,7 @@ class Character:
         # I may want to kill even if they are too low of level.
         # Mostly hostiles and things that don't let you loot.
         self.__preferred_lvl_1_2_monsters = [
-            "oaf", "wanderer", #"acolyte", 
+            "oaf", "wanderer", "acolyte", 
             "thug", "spiv", "kobold sentry", "tired hooker", 
             "blond hooker", "angry hooker", "journeyman" ] 
         # prefer kobold sentry for missile weapon drops (bow/spear)

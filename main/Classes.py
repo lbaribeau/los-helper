@@ -33,6 +33,8 @@ class CoolAbility:
         abstract()
     def getNeedsUndeadTarget(self):
         abstract()
+    def getSharesCooldownWithAttack(self):
+        abstract()
     def getMudTextThatMeansSuccess(self):
         abstract()
     def getMudTextThatMeansFailure(self):
@@ -52,6 +54,8 @@ class Haste(CoolAbility):
     def getNeedsTarget(self):
         return False
     def getNeedsUndeadTarget(self):
+        return False
+    def getSharesCooldownWithAttack(self):
         return False
     def getMudTextThatMeansSuccess(self):
         return 'You feel yourself moving faster'
@@ -74,6 +78,8 @@ class Pray(CoolAbility):
         return False
     def getNeedsUndeadTarget(self):
         return False
+    def getSharesCooldownWithAttack(self):
+        return False
     def getMudTextThatMeansSuccess(self):
         return abstract() 
     def getMudTextThatMeansFailure(self):
@@ -94,6 +100,8 @@ class Barkskin(CoolAbility):
     def getNeedsTarget(self):
         return False
     def getNeedsUndeadTarget(self):
+        return False
+    def getSharesCooldownWithAttack(self):
         return False
     def getMudTextThatMeansSuccess(self):
         return abstract() 
@@ -116,6 +124,8 @@ class Berserk(CoolAbility):
         return False
     def getNeedsUndeadTarget(self):
         return False
+    def getSharesCooldownWithAttack(self):
+        return False #not sure of this 
     def getMudTextThatMeansSuccess(self):
         return abstract() 
     def getMudTextThatMeansFailure(self):
@@ -136,6 +146,8 @@ class Meditate(CoolAbility):
     def getNeedsTarget(self):
         return False
     def getNeedsUndeadTarget(self):
+        return False
+    def getSharesCooldownWithAttack(self):
         return False
     def getMudTextThatMeansSuccess(self):
         return abstract() 
@@ -158,6 +170,8 @@ class Wither(CoolAbility):
         return True
     def getNeedsUndeadTarget(self):
         return False
+    def getSharesCooldownWithAttack(self):
+        return True
     def getMudTextThatMeansSuccess(self):
         abstract()
     def getMudTextThatMeansFailure(self):
@@ -178,6 +192,8 @@ class Touch:
         return True
     def getNeedsUndeadTarget(self):
         return False
+    def getSharesCooldownWithAttack(self):
+        return True
     def getMudTextThatMeansSuccess(self):
         abstract()
     def getMudTextThatMeansFailure(self):
@@ -197,6 +213,8 @@ class Turn:
     def getNeedsTarget(self):
         return True
     def getNeedsUndeadTarget(self):
+        return True
+    def getSharesCooldownWithAttack(self):
         return True
     def getMudTextThatMeansSuccess(self):
         abstract()
@@ -223,7 +241,6 @@ class CharacterClass:
     def getLevelOneMaxMana(self): abstract()
     def getHealthGainedPerLevel(self): abstract()
     def getManaGainedPerLevel(self): abstract()
-    def getManaTickAmountInChapel(self): abstract()
     def getCanCircle(self): abstract()
     def getCanBash(self): abstract()
     def getCanSteal(self): abstract() 
@@ -231,19 +248,28 @@ class CharacterClass:
     def getCoolAbilities(self): abstract()
  
 class Ranger(CharacterClass):   
-    def getLevelOneMaxHealth(self): abstract()
-    def getLevelOneMaxMana(self): abstract()
-    def getHealthGainedPerLevel(self): abstract()
-    def getManaGainedPerLevel(self): abstract()
-    def getManaTickAmount(self): 2
-    def getManaTickAmountInChapel(self): 4
+    def getLevelOneMaxHealth(self): return 18
+    def getLevelOneMaxMana(self): return 3
+    def getHealthGainedPerLevel(self): return 6
+    def getManaGainedPerLevel(self): return 3
+    def getManaTickAmount(self): return 2
+    def getCanCircle(self): return False
+    def getCanBash(self): return False
+    def getCanSteal(self): return False
+    def getCanBackstab(self): return False
+    def getCoolAbilities(self): return [ Meditate(), Touch() ]
+
+class Monk(CharacterClass):   
+    def getLevelOneMaxHealth(self): return 17
+    def getLevelOneMaxMana(self): return 3
+    def getHealthGainedPerLevel(self): return 6
+    def getManaGainedPerLevel(self): return 3
+    def getManaTickAmount(self): return 2
     def getCanCircle(self): return False
     def getCanBash(self): return False
     def getCanSteal(self): return False
     def getCanBackstab(self): return False
     def getCoolAbilities(self): return [ Haste() ]
-
-
     
     
     

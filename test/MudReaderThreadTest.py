@@ -3,8 +3,6 @@ from main.MudReaderThread import MudReaderThread
 class MudReaderThreadTest(unittest.TestCase):
 
 
-    #just pulled this list from Ruorg's current inventory and am keeping the test here to make sure I really
-    #haven't changed anything
     def test_parse_inventory_list_charecterizationTest(self):
         #setup
         input = '''a candy cane, some cleaning rags, three large bags, a lasso, four
@@ -73,7 +71,14 @@ item'''
         #assert
         self.assertEquals(['items', 'items', 'items', 'items', 'items'], result)
 
-
+#    def test_parse_inventory_list_steel_bottle_test(self):
+#        
+#        input =  "a hyena's ear, four javelins, a large sack, a sharp knife, two silver chalices, two small bags, a small knife, eight small restoratives, four spears, fourteen steel bottles, a steel mask."
+#        
+#        result = MudReaderThread().parse_inventory_list(input):
+#        
+#        self.assertEquals([')
+        
 
 
 

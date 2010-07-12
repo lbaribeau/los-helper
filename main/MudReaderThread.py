@@ -623,7 +623,7 @@ class MudReaderThread ( threading.Thread ):
                 #magentaprint("MudReaderThread: Got inventory list.  Parsing now.")
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 self.character_inst.INVENTORY_LIST = self.parse_inventory_list(M_obj.group(1))
-                self.CHECK_INVENTORY_FLAG = 0 
+                self.CHECK_INVENTORY_FLAG = 0  
         
             # Internal check function MUD_output_check
             #if(self.__check_flag):

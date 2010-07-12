@@ -5,7 +5,7 @@ from main.misc_functions import extract_sellable_and_droppable
 
 class misc_functionsTest(unittest.TestCase):
 
-    def test_make_list_sellable_charecterizationTest(self):
+    def test_extract_sellable_and_droppable_characterizationTest(self):
         #setup
         input1 = ['candy cane', 'cleaning rags', 'large bag', 'large bag', 
                   'large bag', 'lasso', 'leaf blade', 'leaf blade', 
@@ -48,7 +48,7 @@ class misc_functionsTest(unittest.TestCase):
                            'lasso', 'cleaning', 'candy'], result)
       
         
-    def test_make_list_sellable_whenTheSecondWordHasANameCollision(self):
+    def test_extract_sellable_and_droppable_whenTheSecondWordHasANameCollision(self):
             
         input1 = ['candy cane', 'cleaning rags', 
                   'small knife', 'hand knife',
@@ -83,7 +83,7 @@ class misc_functionsTest(unittest.TestCase):
                           result)
         
         
-    def test_make_list_sellable_whenAllWordsAreUsedEarlier(self):
+    def test_extract_sellable_and_droppable_whenAllWordsAreUsedEarlier(self):
         
         input1 = ['candy cane', 'cleaning rags', 
                   'large bag', 'small bag', 'hand knife', 'small knife', 
@@ -102,7 +102,7 @@ class misc_functionsTest(unittest.TestCase):
                            'large','cleaning','candy'], 
                            result)    
                 
-    def test_make_list_sellable_whenAllWordsAreUsedLater(self):
+    def test_extract_sellable_and_droppable_whenAllWordsAreUsedLater(self):
         
         input1 = ['candy cane', 'cleaning rags', 
                   'large bag', 'small bag', 'hand knife', 'small knife', 
@@ -122,7 +122,7 @@ class misc_functionsTest(unittest.TestCase):
                             'large','cleaning','candy'], result)
         
         
-    def test_make_list_sellable_whenThereAreManyOfOneItem(self):
+    def test_extract_sellable_and_droppable_whenThereAreManyOfOneItem(self):
         # If there are many (ie. three) of one item we want to do 
         # sell item 3; sell item 2; sell item 1;
         # because (ie. grey cloaks) they are not all guaranteed to sell.
@@ -139,7 +139,7 @@ class misc_functionsTest(unittest.TestCase):
                            'cleaning', 'candy'], result)
         
         
-    def test_make_list_sellable_whenThereAreSixtyFourOfOneItem(self):
+    def test_extract_sellable_and_droppable_whenThereAreSixtyFourOfOneItem(self):
         
         input1 = ['grey cloak']
         for i in range(0,6):
@@ -157,3 +157,5 @@ class misc_functionsTest(unittest.TestCase):
         
         self.assertEquals(desired_result, result)
         
+
+

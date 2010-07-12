@@ -149,14 +149,21 @@
 # TODO: a Cooldowns data object.
 # TODO: Figure out why the info command output isn't always complete...
 # the table prined by the game doesn't get all the way through.
-#
-#BUG:
-# Items picked up on the way to the tip after going to the shop may have 
-# value would be dropped at the tip.
-# Fix: will have to keep track of the state of going to the tip and not 
-# drop items that were dropped on the way.  
-# More comprehensive: A database of items to drop and sell would 
-# deprecate the above fix.
+# TODO: make a Monster object.  Reason: right now the bow decides what 
+#  what monsters to fight by altering his path (not going to kobold cave.)
+#  He should really decide at combat time as well (decide whether to fight 
+#  mob should include an aura check).  This is best done with Monster objects.
+#  Maybe there's a clever way to do their check for equality so that the string 
+#  comparisons can be done in the same way (like if (Monster x == 'acolyte')).  
+# TODO: fix bug:
+#  Items picked up on the way to the tip after going to the shop may have 
+#  value would be dropped at the tip.
+#  Fix: will have to keep track of the state of going to the tip and not 
+#  drop items that were dropped on the way.  
+#  More comprehensive: A database of items to drop and sell would 
+#  deprecate the above fix.
+# TODO: use items.  Keep like 3 each of steel and chalice and like 8 
+# restoratives but otherwise use them up.
 #
 ##########################################################################
 

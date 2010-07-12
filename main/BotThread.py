@@ -13,8 +13,11 @@ from Exceptions import *
 class BotThread(threading.Thread):
 
     ConsoleHandler = newConsoleHandler()
-    def __init__(self, starting_path, character_in, commandHandler, 
-				 mudReaderHandler_in, inventory_in):   
+    def __init__(self, starting_path=None, character_in=None, commandHandler=None, 
+				 mudReaderHandler_in=None, inventory_in=None):
+        if(starting_path==None and character_in==None and commandHandler==None 
+           and mudReaderHandler_in==None and inventory_in==None):
+            return   
         Thread.__init__(self)
         # Initialize some variables local to this thread
         self.__stopping = False
@@ -511,7 +514,7 @@ class BotThread(threading.Thread):
         elif(self.__nextpath == 5):
             path_to_go = MILITIA_SOLDIERS_PATH 
         elif(self.__nextpath == 7):
-            if(self.character.AURA_SCALE >= my_list_search(self.character.AURA_LIST, 'blue') or
+            if(self.character.AURA_SCALE >= my_list_search(self.character.AURA_LIST, 'dusty blue') or
                self.character.AURA_SCALE > my_list_search(self.character.AURA_LIST, self.character.AURA_PREFERRED)):
                 magentaprint("Not going to do kobolds (aura not right)")
                 path_to_go = PATH_TO_SKIP_WITH
@@ -536,7 +539,7 @@ class BotThread(threading.Thread):
         elif(self.__nextpath == 13):
             # Need some evil.  Do the northern bandits.
             # Check aura first since its dangerous to go as blue
-            if(self.character.AURA_SCALE >= my_list_search(self.character.AURA_LIST, 'blue') or
+            if(self.character.AURA_SCALE >= my_list_search(self.character.AURA_LIST, 'dusty blue') or
                self.character.AURA_SCALE > my_list_search(self.character.AURA_LIST, self.character.AURA_PREFERRED)):
                 # If I'm blue or if I'm bluer than my preferred aura, don't go.
                 magentaprint("Not going to do bandits (aura not right)")
