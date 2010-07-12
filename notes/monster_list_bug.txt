@@ -1,0 +1,22 @@
+Obvious exits: north, south, chapel.
+You see an acolyte, a vicar.
+
+The acolyte just wandered to the north.
+Matched acolyte
+MudReaderThread: Could not remove acolyte from MONSTER_LIST
+Inside decide_which_mob_to_kill
+Inside engage_monster... engaging acolyte                                       
+There's nothing here.
+[66 H 21 M]: New instance of cc thread
+They are not here.
+[66 H 21 M]: You don't see that here.
+[66 H 21 M]: Leaving engage_monster
+Inside get_items
+Inside engage_mobs_who_joined_in
+[]
+Inside engage_mobs_who_are_attacking
+[]
+Inside check_weapons.
+Inside decide_which_mob_to_kill
+Inside engage_monster... engaging acolyte
+There's nothing here.                                                          

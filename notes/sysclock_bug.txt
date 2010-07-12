@@ -1,0 +1,109 @@
+Ore Yards
+
+Different ores are mixed up haphazardly here.
+Obvious exits: south, west, north, east.
+
+[23 H 10 M]: Going e. 9367.550885
+
+The Wall.
+
+The wall is designed to stop the kobolds causing problems.
+Obvious exits: south, west, east.
+
+[23 H 10 M]: Going open door. 9367.900852
+
+The Wall.
+
+The wall is designed to stop the kobolds causing problems.
+Obvious exits: south, west, stone door, east.
+You see two sentrys.
+
+[23 H 10 M]: Going w. 9368.208827
+You open the stone door.
+[23 H 10 M]:
+North End of the Valley.
+
+A wall stretches across the valley, blocking access except for a
+Obvious exits: stone door, west.
+
+[23 H 10 M]: Going gully. 9368.658777
+
+North End of the Valley.
+
+Access south into the valley is completely blocked by a massive wall.
+Obvious exits: east, narrow gully.
+
+[23 H 10 M]: MudReaderHandler: MudReadThread timed out on check_go by -1278971696.136263
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Going u. 9369.908814
+
+Narrow Gully
+
+The gully twists around quite a lot, fallen rocks provide good cover.
+Obvious exits: down, up.
+
+[23 H 10 M]: Going boulder. 9370.358607
+
+Narrow Gully
+
+A massive boulder has fallen and blocked the gully.
+Obvious exits: down, boulder.
+
+[23 H 10 M]: Going u. 9370.810606
+
+Narrow Gully
+
+You stand between a boulder to the south and a small clearing to the north.
+Obvious exits: boulder, up.
+You see a kobold sentry.
+
+[23 H 10 M]: Going cave 3. 9371.165574
+
+Small Clearing
+
+A small rocky clearing, there are five cave mouths carved into the rock.
+Obvious exits: down, cave, cave, cave, cave, cave.
+
+[23 H 10 M]: Going ne. 9371.467473
+MudReaderHandler: MudReadThread timed out on check_go by -1278971698.991572
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Going ne. 9372.670551
+MudReaderHandler: MudReadThread timed out on check_go by -1278971700.190618
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Going n. 9373.877528
+MudReaderHandler: MudReadThread timed out on check_go by -1278971701.403749
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Going s. 9375.078308
+
+Large Tunnel
+
+This tunnel is large, it appears to have been enlarged by hand.
+Obvious exits: out, northeast, east.
+
+[23 H 10 M]: Going u. 9375.479099
+
+It's too dark to see.
+Going e. 9375.780054
+[23 H 10 M]:
+It's too dark to see.
+[23 H 10 M]:
+Rough Cave
+
+This cave seems to be used as a general meeting area.
+Obvious exits: south.
+You see two kobold children, a kobold dam, an old kobold.
+
+[23 H 10 M]: Going se. 9376.081010
+Please wait 1 more second.
+[23 H 10 M]: I don't see that exit.
+[23 H 10 M]: Please wait 1 more second.
+[23 H 10 M]: Bot: Got please wait on a go attempt, retrying.
+Please wait 1 more second.
+[23 H 10 M]: Going se. 9376.381985
+You can't go that way.
+[23 H 10 M]: Bot: Got please wait on a go attempt, retrying.
+Going se. 9376.683212
+You can't go that way.
+[23 H 10 M]: Going se. 9377.033957
+You can't go that way.                                                          
+
