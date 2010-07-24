@@ -1,0 +1,102 @@
+Dragon Road
+
+
+There is little to keep you hear, least of all the tip to the southeast.
+Obvious exits: north, southwest, tip.
+
+
+[23 H 5 M]: A mugger just arrived.
+The mugger attacks you.
+[23 H 5 M]: The mugger blocks your exit.
+[23 H 5 M]: You kick at the mugger, but fail to hurt them.
+[23 H 5 M]: The mugger tries to gouge you, but you shake him off.
+[23 H 5 M]: You lash out at the mugger, but miss.
+[23 H 5 M]: The mugger kicks you for 4 damage.
+[19 H 5 M]: Your spell fails.
+[19 H 3 M]: You lash out at the mugger, but miss.
+[19 H 3 M]: The mugger tries to gouge you, but you shake him off.
+[19 H 3 M]: You lash out and thump the mugger for 6 damage.
+[19 H 3 M]: The mugger lashes out and thumps you for 7 damage.
+[12 H 3 M]: Your spell fails.
+[12 H 1 M]: You lash out at the mugger, but miss.
+[12 H 1 M]: The mugger lashes out and thumps you for 7 damage.
+An acolyte just arrived.
+[5 H 1 M]: You grab at the mugger, but he escapes your grasp.
+[5 H 1 M]: A tabby cat just arrived.
+[5 H 1 M]: The mugger kicks at you, but fails to hurt you.
+[5 H 1 M]: You try to gouge the mugger, but can't get a good grip.
+[5 H 1 M]: The mugger throws a wild punch at you, but it misses.
+[5 H 1 M]: You try to gouge the mugger, but can't get a good grip.
+[5 H 1 M]: The mugger lashes out at you, but misses.
+[5 H 1 M]: You lash out and thump the mugger for 5 damage.
+[5 H 1 M]: l muThe mugger lashes out at you, but misses.
+g
+[5 H 1 M]: You see the mugger.
+he isn't going to take no for an answer
+He looks a little the worse for wear.
+He looks very angry at you.
+He is attacking you.
+He is a little better than you.
+[5 H 1 M]: You kick at the mugger, but fail to hurt them.
+[5 H 1 M]: The mugger throws a wild punch at you, but it misses.
+[5 H 1 M]: You try to gouge the mugger, but can't get a good grip.
+[5 H 1 M]: 
+The tabby cat meeoooows
+The mugger tries to grab you, but you break free of his grasp.
+[5 H 1 M]: You grab the mugger and gouge him for 3 damage.
+[5 H 1 M]: The tabby cat just wandered away.
+[8 H 3 M]: Vigor spell cast.
+[11 H 1 M]: The acolyte just wandered to the tip.
+[11 H 1 M]: The mugger throws a wild punch at you, but it misses.
+[11 H 1 M]: You grab the mugger and gouge him for 3 damage.
+[11 H 1 M]: The mugger lashes out at you, but misses.
+[11 H 1 M]: You kick at the mugger, but fail to hurt them.
+[11 H 1 M]: The mugger throws a wild punch at you, but it misses.
+[11 H 1 M]: You lash out at the mugger, but miss.
+[11 H 1 M]: The mugger lashes out at you, but misses.
+[11 H 1 M]: You grab at the mugger, but he escapes your grasp.
+[11 H 1 M]: A streetsweeper just arrived.
+The mugger painfully head-butts you for 1 damage.
+[10 H 1 M]: You grab at the mugger, but he escapes your grasp.
+[10 H 1 M]: The mugger throws a wild punch at you, but it misses.
+[10 H 1 M]: You kick the mugger for 5 damage.
+[10 H 1 M]: The mugger painfully head-butts you for 4 damage.
+[6 H 1 M]: You grab the mugger and gouge him for 5 damage.
+The mugger flees to the north.
+[6 H 1 M]: There's nothing here.
+[6 H 1 M]: 
+Town Tip
+
+
+This is the edge of town and the site of the town rubbish tip.
+Obvious exits: out.
+
+
+[6 H 1 M]: You don't have that.
+[6 H 1 M]: 
+Dragon Road
+
+
+There is little to keep you hear, least of all the tip to the southeast.
+Obvious exits: north, southwest, tip.
+You see a streetsweeper.
+
+
+[6 H 1 M]: 
+Dragon Road
+
+
+The buildings here have never been rebuilt since the dragon's attack.
+Obvious exits: north, south.
+You see a mugger.
+
+
+[6 H 1 M]: The mugger grabs you and gouges you for 5 damage.
+[1 H 1 M]: The mugger blocks your exit.
+[1 H 1 M]: You lash out and thump the mugger for 3 damage.
+Your attack overwhelms the mugger and he collapses!
+Your enemy, the mugger has been defeated.
+You gain 31 experience.
+The mugger was carrying: 22 gold coins, a blue scroll.
+[1 H 1 M]: You get 22 gold coins, a blue scroll.
+You now have 763 gold pieces.
