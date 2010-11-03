@@ -1,0 +1,22 @@
+
+The problem is that the system clock can be set in the background which messes up timeout checks such as the ones in the MudReaderHandler.  
+
+What steps will reproduce the problem?
+
+Try 
+
+import time
+start_time = time.time()
+while(True):
+    run_time = time.time() - start_time
+    print run_time
+    time.sleep(5)
+
+What is the expected output? What do you see instead?
+
+This should print the times increasing by exactly 5 seconds each print.  Any number of things may affect it by on my system it sometimes.  More rarely it changes by 20 seconds or more.  I have seen this with the bot running.  It showed up for me in check_for_successful_go and the bot believed that he could not travel and he began spamming the same exit over and over.  
+
+
+Solutions:
+Turning off auto synchronization with internet time server seems to help.  However it would be nice to have a more robust solution.
+Perhaps a time module which did not depend on the system clock.
