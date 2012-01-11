@@ -6,7 +6,7 @@
 # CODING IDEAS
 # STRINGS to save and match later
 
-########################################################################## 
+##########################################################################
 
 # FEATURES available to user not using bot itself
 
@@ -123,14 +123,13 @@
 #       mobs that run or chase command
 # TODO... a "keep item" list, sell all, drop all.
 # TODO combat with circle
+# TODO implement MAXHP, MAXMP,
 # TODO reverse engineering ticker timings from Piety and maintain current health
 # TODO haste timers and thread.
-# TODO implement MAXHP, MAXMP,
 # TODO removed prints from selling algorithm, handle multiple grey cloaks
 # (add numbers and sell in decreasing order, and not sell 'empty strings if
 # could not fit)
 # TODO do not crash on empty inventory at tip
-# TODO chase monster
 # TODO check mob level before engaging... not need mana for low level mobs etc.
 #  (smarter decide_whether_to_engage, maybe no MONSTER_KILL_LIST, but
 #   better lists to determine difficulty and better intelligence as to whether
@@ -141,15 +140,15 @@
 #   find a way to only vig until health and mana are the same number 
 #   of ticks from max.
 # TODO fix parse_inventory_list!!!
-# TODO higher level chars whould not wait for a tick if it won't get the entire 
+# TODO higher level chars should not wait for a tick if it won't get the entire 
 #  tick.
 # TODO: MOBS_ATTACKING only gets depopulated when the bot is killing mobs.
 # If a human player kills mobs then MOBS_ATTACKING fills up, and when bot 
 # is started it finds a way to empty the list but not a good way.
 # TODO: a Cooldowns data object.
 # TODO: Figure out why the info command output isn't always complete...
-# the table prined by the game doesn't get all the way through.
-# TODO: make a Monster object.  Reason: right now the bow decides what 
+# the table pruned by the game doesn't get all the way through.
+# TODO: make a Monster object.  Reason: right now the bot decides what 
 #  what monsters to fight by altering his path (not going to kobold cave.)
 #  He should really decide at combat time as well (decide whether to fight 
 #  mob should include an aura check).  This is best done with Monster objects.
@@ -252,10 +251,10 @@ def main():
     global mudReaderHandler
     global inventory
 
-	### DEPENDENCY INJECTION ###
-	
+    ### DEPENDENCY INJECTION ###
+
     tn = connect_to_MUD()  # Sets up telnet object
-	
+
     character = Character()
     commandHandler = CommandHandler(character, tn)
    
@@ -268,17 +267,16 @@ def main():
     mudListenerThread.start()
       
     mudReaderThread = MudReaderThread(MUDBuffer, character, 
-										   commandHandler)
+                                        commandHandler)
     mudReaderThread.start()
     
     # MudReaderHandler: Thread which supplies a couple of 
     # functions in coordinating with the MudReader.  Most 
     # commonly timing related.
     mudReaderHandler = MudReaderHandler(mudReaderThread, 
-											 character)
+                                        character)
     
     inventory = Inventory(mudReaderHandler, commandHandler, character)
-
 
     # Now that the MUD thread is going I can trust it to issue the 
     # username/password prompts
@@ -497,8 +495,8 @@ def start_bot(user_input, character, commandHandler):
         magentaprint("It's already going, you'll have to stop it.  Use \"stop\".")
     else:
         bot_thread_inst = BotThread(starting_path, character, 
-								    commandHandler, mudReaderHandler,
-								    inventory)
+                                        commandHandler, mudReaderHandler,
+                                        inventory)
             # Constructor arg is which path to start on.
         bot_thread_inst.start()
 
