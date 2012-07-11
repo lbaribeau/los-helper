@@ -1,0 +1,84 @@
+The South Plains Road
+
+You see a flock of birds take off to the north of you.
+Obvious exits: east, west.
+
+Inside decide_which_mob_to_kill
+Going w. 3181.632000
+[66 H 27 M]:
+The South Plains Road
+
+A broken lance lies off to one side of the road.
+Obvious exits: east, northwest.
+
+[66 H 27 M]: Inside decide_which_mob_to_kill
+Going nw. 3182.090000
+A lion just arrived.
+The lion attacks you.
+[66 H 27 M]: The lion blocks your exit.
+[66 H 27 M]: Inside engage_monster... engaging lion
+Your missile arcs towards the lion, but fails to hit them.
+Your missile arcs towards the lion, but fails to hit them.
+[66 H 27 M]: New instance of cc thread
+You cast a hurt spell on lion.
+The spell did 14 damage.
+[66 H 24 M]: The lion slashes you with his claws, causing 12 damage.
+[54 H 26 M]: You use your spear to strike the lion for 7 damage.
+You attack the lion with your spear, but miss.
+[54 H 26 M]: The lion slashes you with his claws, causing 7 damage.
+[47 H 26 M]: You attack the lion with your spear, striking for 9 damage.
+You attack the lion with your spear, striking for 5 damage.
+[47 H 26 M]: You cast a hurt spell on lion.
+The spell did 12 damage.
+[47 H 23 M]: The lion bites you for 8 damage.
+Your studded leather sleeves fell apart.
+[39 H 23 M]: You use your spear to strike the lion for 7 damage.
+Your missile slams into the lion for 5 damage.
+[39 H 23 M]: The lion pounces on you and mauls you for 8 damage.
+Your copper ring fell apart.
+[31 H 23 M]: Your missile slams into the lion for 8 damage.
+Your missile arcs towards the lion, but fails to hit them.
+[31 H 23 M]: You cast a hurt spell on lion.
+The spell did 14 damage.
+[31 H 20 M]: The lion bites you for 11 damage.
+Your copper ring fell apart.
+[20 H 20 M]: Robot: stopping....   Urrrrrchhhchch!!
+(Python) Delaying by 4.1 sec ...
+You removed a spear.
+[20 H 20 M]: You removed a spear.
+[20 H 20 M]: The lion slashes you with his claws, causing 10 damage.
+[10 H 20 M]: Sent.
+Leaving engage_monster
+Inside engage_mobs_who_joined_in
+[]
+Inside engage_mobs_who_are_attacking
+[]
+You failed to escape!
+[10 H 20 M]: You run like a chicken.
+
+The South Plains Road
+
+You see a flock of birds take off to the north of you.
+Obvious exits: east, west.
+
+[10 H 20 M]: Why flee? there are no enemies here!
+[10 H 20 M]: You wield a spear.
+you balance the spear in your hand
+[10 H 20 M]: You can't. Its broken.
+[10 H 20 M]:
+Strong winds blow in from the mountains, bringing a chill air.
+[11 H 22 M]: A lion just arrived.
+The lion attacks you.
+[12 H 24 M]: The lion bites you for 7 damage.
+[5 H 24 M]: The lion bites you for 9 damage.
+You are overwhelmed by the lion's attack and you collapse!
+### Ruorgimorphu was defeated by the lion.
+### Ruorgimorphu's body is teleported away to be healed.
+
+Limbo
+
+Eternity looks so boring from this viewpoint, flat and grey forever.
+Obvious exits: amethyst.
+
+Player saved.
+Shucks anyhow

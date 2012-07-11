@@ -65,13 +65,12 @@ class Haste(CoolAbility):
         return 'You feel slower.'
     
 class Pray(CoolAbility):
-    #TODO: finish defining Pray (cooldowns, mud text)
     def getCommand(self):
         return 'pray' 
     def getCoolDownInSecondsAfterSuccess(self):
-        return abstract()  
+        return 600
     def getCoolDownInSecondsAfterFail(self):
-        return abstract()  
+        return 10
     def getUseForCombat(self):
         return False
     def getNeedsTarget(self):
@@ -81,20 +80,21 @@ class Pray(CoolAbility):
     def getSharesCooldownWithAttack(self):
         return False
     def getMudTextThatMeansSuccess(self):
-        return abstract() 
+        return 'You feel extremely pious.'
     def getMudTextThatMeansFailure(self):
-        return abstract() 
+        return 'Your prayers were not answered.'
     def getMudTextThatMeansItWoreOff(self):
-        return abstract()
+        return 'You feel less pious.'
+    #Unneeded: You've already prayed.
+    #Duration 5 minutes
     
 class Barkskin(CoolAbility):
-    #TODO: finish defining Barkskin 
     def getCommand(self):
         return 'barkskin' 
     def getCoolDownInSecondsAfterSuccess(self):
-        return abstract()  
+        return 600
     def getCoolDownInSecondsAfterFail(self):
-        return abstract()  
+        return 10 #(?)
     def getUseForCombat(self):
         return True
     def getNeedsTarget(self):
@@ -104,11 +104,14 @@ class Barkskin(CoolAbility):
     def getSharesCooldownWithAttack(self):
         return False
     def getMudTextThatMeansSuccess(self):
-        return abstract() 
+        return 'You feel your skin thickening and hardening.'
     def getMudTextThatMeansFailure(self):
-        return abstract() 
+        return 'Your attempt to invoke barkskin failed.'
     def getMudTextThatMeansItWoreOff(self):
-        return abstract()
+        return 'Your skin softens.'
+    #Unneeded: Your skin is already hardened.
+    #Duration 2 minutes(?)
+    #TODO: Does it conflict with steel bottle?
     
 class Berserk(CoolAbility):
     #TODO: finish defining Berserk 
@@ -257,7 +260,7 @@ class Ranger(CharacterClass):
     def getCanBash(self): return False
     def getCanSteal(self): return False
     def getCanBackstab(self): return False
-    def getCoolAbilities(self): return [ Meditate(), Touch() ]
+    def getCoolAbilities(self): return [ Haste() ]
 
 class Monk(CharacterClass):   
     def getLevelOneMaxHealth(self): return 17
@@ -269,8 +272,29 @@ class Monk(CharacterClass):
     def getCanBash(self): return False
     def getCanSteal(self): return False
     def getCanBackstab(self): return False
-    def getCoolAbilities(self): return [ Haste() ]
+    def getCoolAbilities(self): return [ Meditate(), Touch() ]
     
+#class Paladin(CharacterClass):   
+    #def getLevelOneMaxHealth(self): return 17
+    #def getLevelOneMaxMana(self): return 3
+    #def getHealthGainedPerLevel(self): return 6
+    #def getManaGainedPerLevel(self): return 3
+    #def getManaTickAmount(self): return 2
+    #def getCanCircle(self): return False
+    #def getCanBash(self): return False
+    #def getCanSteal(self): return False
+    #def getCanBackstab(self): return False
+    #def getCoolAbilities(self): return [ Pray(), Turn() ]
     
-    
+#class Druid(CharacterClass):   
+    #def getLevelOneMaxHealth(self): return 15
+    #def getLevelOneMaxMana(self): return 4
+    #def getHealthGainedPerLevel(self): return 6
+    #def getManaGainedPerLevel(self): return 3
+    #def getManaTickAmount(self): return 2
+    #def getCanCircle(self): return False
+    #def getCanBash(self): return False
+    #def getCanSteal(self): return False
+    #def getCanBackstab(self): return False
+    #def getCoolAbilities(self): return [ Barkskin() ]
 

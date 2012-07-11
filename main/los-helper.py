@@ -118,6 +118,10 @@
 # The 2nd actress blocks your exit.  (bug: attacks the 1st actress)
 # remove unneccessary __init__s
 #
+# TODO... implement "wie2" ie. "wie2 spe 4" to wield and second spears.
+# TODO... "You feel slower" mid combat causes bot to miss a swing (registers too late)
+# TODO... try using 'in' operator instead of list searches.
+# TODO... fix rest algorithm not to time out
 # TODO... mages cast faster (change timers)
 # TODO... a "set chase" functionality which will automatically chase
 #       mobs that run or chase command
@@ -217,6 +221,7 @@
 # You could kill him/her with a needle.     -4
 
 # The goodness here sickens and repels you!
+# You currently have no carried inventory.
 
 
 import sys
@@ -295,9 +300,10 @@ def main():
     bot_thread_inst = None
 
     # Main thread will go to having raw_input open all the time.
-    watch_user_input(mudReaderHandler, character)   # The MUD_read thread quits if it hits
-                                        # and EOF.  watch_user_input watches for
-                                        # that and quits too.
+    watch_user_input(mudReaderHandler, character)   
+        # The MUD_read thread quits if it hits
+        # and EOF.  watch_user_input watches for
+        # that and quits too.
 
     # Clean exit:  watch_user_input sees the "quit" and sends it, then we
     # get here.  mudReaderThread will quit at the EOF, where we join up.
@@ -362,7 +368,7 @@ def watch_user_input(mudReaderHandler, character):
     stopping = False;
     while not stopping:
         try:
-            user_input = raw_input(); # TODO: This is where the prompt will go (?)
+            user_input = raw_input(); # TODO: print a prompt?
         except EOFError:
             magentaprint("Don't try to crash me!  Use 'quit'.")
             user_input = ""
@@ -509,6 +515,8 @@ def stop_bot():
 
     return
     
+
+
 
 # All definitions are made, ready to go: call main!!!
 # (Maybe rethink program structure later)

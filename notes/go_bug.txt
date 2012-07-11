@@ -1,0 +1,163 @@
+Dragon Road
+
+The buildings here have never been rebuilt since the dragon's attack.
+Obvious exits: north, south.
+
+Inside decide_which_mob_to_kill
+Going n. 291.215000
+(Python) Delaying by 0.0 sec ...
+Sent.
+[63 H 24 M]:
+Main Road / Dragon Road
+
+People seem to be coming from the north and going west quite frequently.
+Obvious exits: north, west, south.
+
+[63 H 24 M]: Inside decide_which_mob_to_kill
+Going w. 291.674000
+
+Main Road / Warrior's Walk
+
+The inn to the north is certainly busy, a lot of farmer and merchant types
+appear to have made it their favoured watering hole.
+Obvious exits: west, east, south, inn.
+
+Inside decide_which_mob_to_kill
+Going w. 291.975000
+(Python) Delaying by 0.0 sec ...
+Sent.
+[63 H 24 M]:
+Main Road / Wisden Street
+
+There seems to be a lot of activity off to the east.
+Obvious exits: west, east, south, building.
+
+[63 H 24 M]: Inside decide_which_mob_to_kill
+Going w. 292.434000
+
+Main Road / Holly Lane
+
+This is the market centre of the town. A busy street market is in
+operation and there looks to be some good bargains as well!
+Obvious exits: north, west, east, town hall.
+You see an acolyte, a dustman, a hawker, a smelly beggar, a stall holder.
+
+Inside decide_which_mob_to_kill
+Going n. 292.735000
+(Python) Delaying by 0.0 sec ...
+Sent.
+[63 H 24 M]: MudReaderHandler: MudReadThread timed out on check_go by -134197786
+0.950000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going chapel. 293.947000
+MudReaderHandler: MudReadThread timed out on check_go by -1341977862.146000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Inside rest.
+Inside heal_up
+Exiting heal_up
+Inside heal_up
+Exiting heal_up
+Inside check_weapons.
+Inside check_armour.
+Inside decide_where_to_go
+Going out. 295.185000
+MudReaderHandler: MudReadThread timed out on check_go by -1341977863.388000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going s. 296.406000
+MudReaderHandler: MudReadThread timed out on check_go by -1341977864.610000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going e. 297.626000
+MudReaderHandler: MudReadThread timed out on check_go by -1341977865.829000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going e. 298.848000
+MudReaderHandler: MudReadThread timed out on check_go by -1341977867.047000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going e. 300.074000
+MudReaderHandler: MudReadThread timed out on check_go by -1341977868.278000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going n. 301.295000
+MudReaderHandler: MudReadThread timed out on check_go by -1341977869.498000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going w. 302.517000
+MudReaderHandler: MudReadThread timed out on check_go by -1341977870.721000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going w. 303.740000
+MudReaderHandler: MudReadThread timed out on check_go by -1341977871.944000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going n. 304.961000
+MudReaderHandler: MudReadThread timed out on check_go by -1341977873.164000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going n. 306.182000
+MudReaderHandler: MudReadThread timed out on check_go by -1341977874.385000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going s. 307.404000
+MudReaderHandler: MudReadThread timed out on check_go by -1341977875.608000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going w. 308.624000
+MudReaderHandler: MudReadThread timed out on check_go by -1341977876.810000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going e. 309.873000
+MudReaderHandler: MudReadThread timed out on check_go by -1341977878.058000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going s. 311.112000
+MudReaderHandler: MudReadThread timed out on check_go by -1341977879.285000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going w. 312.364000
+Exception in thread Thread-1:
+Traceback (most recent call last):
+  File "C:\Program Files\Python266\lib\threading.py", line 532, in __bootstrap_i
+nner
+    self.run()
+  File "C:\Users\Laurier\Programming\Eclipse\workspace\svn\trunk\main\MudListene
+rThread.py", line 42, in run
+    fragment = self.tn.read_some() # read_eager misses characters
+  File "C:\Program Files\Python266\lib\telnetlib.py", line 340, in read_some
+    self.fill_rawq()
+  File "C:\Program Files\Python266\lib\telnetlib.py", line 516, in fill_rawq
+    buf = self.sock.recv(50)
+error: [Errno 10053] An established connection was aborted by the software in yo
+ur host machine
+
+MudReaderHandler: MudReadThread timed out on check_go by -1341977880.568000
+Bot: Check go timed out. I will try again, hopefully next one will work.
+Inside decide_which_mob_to_kill
+Going s. 313.585000
+Exception in thread Thread-3:
+Traceback (most recent call last):
+  File "C:\Program Files\Python266\lib\threading.py", line 532, in __bootstrap_i
+nner
+    self.run()
+  File "C:\Users\Laurier\Programming\Eclipse\workspace\svn\trunk\main\BotThread.
+py", line 98, in run
+    if(self.go(direction_list[0])):
+  File "C:\Users\Laurier\Programming\Eclipse\workspace\svn\trunk\main\BotThread.
+py", line 586, in go
+    self.commandHandler.process(exit_str)
+  File "C:\Users\Laurier\Programming\Eclipse\workspace\svn\trunk\main\CommandHan
+dler.py", line 72, in process
+    self.user_move(user_input)
+  File "C:\Users\Laurier\Programming\Eclipse\workspace\svn\trunk\main\CommandHan
+dler.py", line 188, in user_move
+    self.tn.write(user_input + "\n")
+  File "C:\Program Files\Python266\lib\telnetlib.py", line 280, in write
+    self.sock.sendall(buffer)
+  File "<string>", line 1, in sendall
+error: [Errno 10053] An established connection was aborted by the software in yo
+ur host machine
+

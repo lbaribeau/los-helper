@@ -39,6 +39,7 @@ class MudReaderThread ( threading.Thread ):
         
         self.CHECK_GO_FLAG = False
         self.CHECK_AURA_FLAG = False
+        self.CHECK_AURA_SUCCESS = False
         self.CHECK_SELL_FLAG = False
         self.CHECK_INVENTORY_FLAG = False
         
@@ -198,7 +199,40 @@ class MudReaderThread ( threading.Thread ):
             in_combat = (self.CommandHandler_inst.KillThread_inst != None and 
                 self.CommandHandler_inst.KillThread_inst.is_alive())
 
-            
+            # INFO screen stuff
+            # Note: First instinct was to parse whole screen at once but that doesn't seem necessary now.
+            # Nor does it seem necessary to even have a flag with the Bot... but the bot may need that.
+            s_numbered = "( 1st| 2nd| 3rd| 4th| 5th| 6th| 7th| 8th| 9th| 10th| 11th| 12th| 13th| 14th| 15th| 16th| 17th| 18th| 19th)?"
+
+            M_obj = re.search("     (.+?) the (.+?), a (.+?) of the" + s_numbered + " level    ",text_buffer)
+            if(M_obj != None):
+                self.character_inst.NAME = M_obj.group(1)
+                self.character_inst.RACE = M_obj.group(2)
+                self.character_inst.TITLE = M_obj.group(3)
+                self.character_inst.LEVEL = re.search("\d+",M_obj.group(4)).group(0)
+                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                #magentaprint("MudReader got name, race, class, level: %s %s %s %s" % 
+                #             (self.character_inst.NAME, self.character_inst.RACE, 
+                #              self.character_inst.TITLE, self.character_inst.LEVEL))
+                
+            M_obj = re.search("Your preferred alignment is (.+?)     ",text_buffer)
+            if(M_obj != None):
+                self.character_inst.AURA_PREFERRED = M_obj.group(1)
+                self.character_inst.AURA_PREFERRED_SCALE = my_list_search(self.character_inst.AURA_LIST, 
+                                                                          self.character_inst.AURA_PREFERRED)
+                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                #magentaprint("MudReader got AURA_PREFERRED and scale: %s %s " % 
+                #             (self.character_inst.AURA_PREFERRED, self.character_inst.AURA_PREFERRED_SCALE)) 
+                
+            #M_obj = re.search("     Sharp   : (\d+) +%  |  |     Earth : (\d+) +%     |",text_buffer)
+            #if(M_obj != None):
+            #    self.character_inst.WEAPON_SKILLS['Sharp'] = M_obj.group(1)
+            #    self.character_inst.MAGIC_SKILLS['Earth'] = M_obj.group(2)
+            #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+            #    magentaprint("MudReader got Sharp and Earth: %s %s " % 
+            #                 (self.character_inst.WEAPON_SKILLS['Sharp'], self.character_inst.MAGIC_SKILLS['Earth'])) 
+                
+                
             M_obj = re.search("You feel yourself moving faster\.",text_buffer)
             if(M_obj != None):
                 self.character_inst.HASTING = True
@@ -266,8 +300,9 @@ class MudReaderThread ( threading.Thread ):
                 #  - spells that should not reset are black magic.  
                     # reset cast clock
                 # Do not kill the cast thread if the spell failed  
-                # Note also that you generally can't try again right after 
-                # a spell failure. 
+                if(self.CHECK_AURA_FLAG):
+                    self.CHECK_AURA_FLAG=0;
+                    self.CHECK_AURA_SUCCESS=0;
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                             
             # Set WEAPON1
@@ -380,7 +415,6 @@ class MudReaderThread ( threading.Thread ):
                 self.CHECK_SELL_FLAG = 0
 
             ########    Do some monster removal.    ######
-            s_numbered = "( 1st| 2nd| 3rd| 4th| 5th| 6th| 7th| 8th| 9th| 10th| 11th| 12th| 13th| 14th| 15th| 16th| 17th| 18th| 19th)?"
             
             # Monster is killed
             #M_obj = re.search("Your enemy, the" + s_numbered + " (.+?) has been defeated\.", MUD_buffer)            
@@ -598,8 +632,7 @@ class MudReaderThread ( threading.Thread ):
 
             # Aura
             M_obj = re.search("You glow with an? (.+?) aura\.", text_buffer)
-            # Interestingly the MUD never says 'an' here
-            # Leave the '?' in though.
+            # Interestingly the MUD never says 'an' here.  Leave the '?' in though.
             if(M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 self.character_inst.AURA = M_obj.group(1)
@@ -607,6 +640,7 @@ class MudReaderThread ( threading.Thread ):
                 if(self.character_inst.AURA_SCALE == -1):
                     magentaprint('Error in reading aura (not in list), came out as ' + self.character_inst.AURA + '.')
                 self.CHECK_AURA_FLAG = 0
+                self.CHECK_AURA_SUCCESS = 1
         
             # Having red aura in chapel.
             # The bot should definitely leave in this case.
@@ -637,7 +671,7 @@ class MudReaderThread ( threading.Thread ):
             #        self.__check_flag = False
             ##### DONE MATCHING RE's  WOOOOOOOO ######
         
-            #sys.stdout.write('"' + MUD_buffer[MUD_buffer_trunc] + '"') #debug.  Shows where last match took place.
+            #sys.stdout.write('"' + MUD_buffer[MUD_buffer_trunc] + '"') #debug.  Shows where last match took place. Gives MUD_buffer not defined error.
             #magentaprint("Clearing text buffer.  len: %d.  trunc: %d.  last matched char: %c." % (
             #           len(text_buffer), text_buffer_trunc, text_buffer[text_buffer_trunc]))
             text_buffer = text_buffer[text_buffer_trunc:]

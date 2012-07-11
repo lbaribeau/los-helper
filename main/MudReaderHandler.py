@@ -22,7 +22,7 @@ class MudReaderHandler:
     # and the thread will UNSET it (on its own time).  The thread spends a 
     # lot of its time waiting for flags.  It also waits for text to come in 
     # on the buffer.  Often a flag will be unset triggered on that text.  
-    # The handlers job is to know what flags to set.
+    # The handler's job is to know what flags to set.
     
     def __init__(self, MudReaderThread, Character_inst_in):        
         
@@ -204,6 +204,7 @@ class MudReaderHandler:
         
     def wait_for_aura_match(self):
         self.MudReaderThread.CHECK_AURA_FLAG = 1
+        self.MudReaderThread.CHECK_AURA_SUCCESS = 0
         start_time = time.time()
         run_time = 0
         timeout = self.good_MUD_timeout
@@ -212,10 +213,38 @@ class MudReaderHandler:
             time.sleep(0.05)
             run_time = time.time() - start_time
             
-        if(run_time < timeout):
+        if(run_time < timeout and self.MudReaderThread.CHECK_AURA_SUCCESS):
             return True
         else:
             return False  
+        # Commented out: Doing too much here.  This function can remain the same when adding
+        # the SUCCESS flag.  BotThread handles it all because, if unsuccessful, it will 
+        # recast and recall this function.  This function shouldn't reloop if the cast
+        # was unsuccessful.
+        ## Set flag;
+        ##  MudReaderThread unsets flag in two cases
+        ##  1) (Success) Aura is updated
+        ##  2) Spell failed (need to recast - return failure to BotThread)
+        ##  Or there can be a timeout.
+        ## Return value
+        #self.MudReaderThread.CHECK_AURA_FLAG = 1
+        #self.MudReaderThread.CHECK_AURA_SUCCESS = 0
+        #while(self.MudReaderThread.CHECK_AURA_FLAG == 1):
+        #    start_time = time.time()
+        #    run_time = 0
+        #    timeout = self.good_MUD_timeout
+        #    # Wait loop
+        #    while(self.MudReaderThread.CHECK_AURA_FLAG == 1 and 
+        #          run_time < timeout):
+        #        time.sleep(0.05)
+        #        run_time = time.time() - start_time
+        #        
+        #    if(self.MudReaderThread.CHECK_AURA_SUCCESS):
+        #        return True
+        #    elif(run_time < timeout):
+        #        continue; #Spell failed
+        #    else:
+        #        return False #timeout
         
     def check_if_item_was_sold(self):
         self.MudReaderThread.CHECK_SELL_FLAG = 1

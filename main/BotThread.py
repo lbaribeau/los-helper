@@ -20,8 +20,7 @@ class BotThread(threading.Thread):
             return   
         Thread.__init__(self)
         # Initialize some variables local to this thread
-        self.__stopping = False
-        
+        self.__stopping = False        
         
         self.character = character_in
         self.commandHandler = commandHandler
@@ -43,16 +42,17 @@ class BotThread(threading.Thread):
         else:
             self.__nextpath = 0
             
-        
-            
         atexit.register(self.stop)
+
 
     def stop(self):
         magentaprint("Robot: stopping....   Urrrrrchhhchch!!")
         self.__stopping = True
 
+
     def keep_going(self):
         self.__stopping = False
+
 
     def run(self):
         # Overall algorithm is:
@@ -220,10 +220,10 @@ class BotThread(threading.Thread):
         if(self.character.BLACK_MAGIC): 
             MANA_TO_GO = self.character.MAX_MANA 
         else:
-            if(self.character.MAX_MANA % 2 == 1):
-                MANA_TO_GO = self.character.MAX_MANA - 1
-            else:
-                MANA_TO_GO = self.character.MAX_MANA
+            if(self.character.MAX_MANA % 2 == 1):        # if odd max...
+                MANA_TO_GO = self.character.MAX_MANA - 1 # just wait for one less than max
+            else:                                        # (because vig takes 2 mana)
+                MANA_TO_GO = self.character.MAX_MANA     # if max is even, wait for full max
 
         aura_updated = False
         
@@ -237,8 +237,8 @@ class BotThread(threading.Thread):
         # where they don't want to spend thier mana pool vigging a few 
         # health back when they could have got it in one tick 
         if(self.character.MANA > 0):
-            if(self.character.MANA != self.character.MAX_MANA):
-                self.update_aura()
+            if(self.character.MANA != self.character.MAX_MANA): # What's the point of this one...
+                self.update_aura() #TODO: Need to add 5 minute timer on update_aura() to reduce aura checks.
             aura_updated = True
             self.heal_up()
             
@@ -331,19 +331,29 @@ class BotThread(threading.Thread):
 
 
     def update_aura(self):
-        
+        # Postcondition: Aura is up to date, except
+        # - lvl1
+        # - out of mana
+        # - recently updated
+         
         if(self.__stopping):
             return False
 
-        if(self.character.LEVEL != 1):
-
+        if(self.character.LEVEL != 1 and time.time() - self.character.AURA_LAST_UPDATE > 300):
             wait_for_cast_ready(self.character)
-            #tn.write("c show\n")
-            self.commandHandler.user_ca('c show')
             
-            self.mudReaderHandler.wait_for_aura_match()
-        
-        return True
+            # Do-while structure
+            self.commandHandler.user_ca('c show')
+            while(not self.mudReaderHandler.wait_for_aura_match() and self.character.MANA > 0): 
+                # Keeps casting until successful cast.  
+                self.commandHandler.user_ca('c show')
+                
+            if(self.character.MANA > 0):
+                self.character.AURA_LAST_UPDATE = time.time()
+        else:
+            magentaprint("Not updating aura because it was recently updated (%f)." % (time.time() - self.character.AURA_LAST_UPDATE))
+                             
+        return True 
     
     def heal_up(self):
         #global CastThread_inst
@@ -501,9 +511,7 @@ class BotThread(threading.Thread):
         
         # TODO list
         # dwarven field workers (good high level content)
-        # regular field workers east of Amethyst... however exit 
-        # is shut during the night.
-
+        # regular field workers east of Amethyst... however exit is shut during the night.
 
         if(self.__nextpath % 2 == 0):
             path_to_go = SHOP_AND_TIP_PATH
@@ -515,8 +523,8 @@ class BotThread(threading.Thread):
             path_to_go = MILITIA_SOLDIERS_PATH 
         elif(self.__nextpath == 7):
             if(self.character.AURA_SCALE >= my_list_search(self.character.AURA_LIST, 'dusty blue') or
-               self.character.AURA_SCALE > my_list_search(self.character.AURA_LIST, self.character.AURA_PREFERRED)):
-                magentaprint("Not going to do kobolds (aura not right)")
+               self.character.AURA_SCALE > self.character.AURA_PREFERRED_SCALE): 
+                magentaprint("Not going to do kobolds (aura too blue)")
                 path_to_go = PATH_TO_SKIP_WITH
                 
                 # increment so we don't go selling.
@@ -537,12 +545,12 @@ class BotThread(threading.Thread):
         elif(self.__nextpath == 11):
             path_to_go = FORT_PATH
         elif(self.__nextpath == 13):
-            # Need some evil.  Do the northern bandits.
-            # Check aura first since its dangerous to go as blue
-            if(self.character.AURA_SCALE >= my_list_search(self.character.AURA_LIST, 'dusty blue') or
-               self.character.AURA_SCALE > my_list_search(self.character.AURA_LIST, self.character.AURA_PREFERRED)):
-                # If I'm blue or if I'm bluer than my preferred aura, don't go.
-                magentaprint("Not going to do bandits (aura not right)")
+            # Do the northern bandits.
+            if(self.character.AURA_SCALE >= my_list_search(self.character.AURA_LIST, 'dusty blue') or # Dangerous to go that blue 
+               self.character.AURA_SCALE > self.character.AURA_PREFERRED_SCALE):
+                # Don't go if too blue (auto attacking mobs or just bluer that preferred)
+                magentaprint("Not going to do bandits. Current aura, and preferred: %s (>) %s" % 
+                             (self.character.AURA_SCALE, self.character.AURA_PREFERRED_SCALE))
                 path_to_go = PATH_TO_SKIP_WITH
                 self.__nextpath = self.__nextpath + 1  
                 # increment so we don't go selling.
@@ -573,7 +581,7 @@ class BotThread(threading.Thread):
         
         # TODO (sort of a bug).  Sometimes 'go' doesn't 'go' anywhere, 
         # like for dropping or selling or preparing, etc.  The bot's 
-        # logic should be fixed to realize that its not in a new area 
+        # logic should be fixed to realize that it's not in a new area 
         # in these instances.
         
         magentaprint("Going " + exit_str + (". %f" % (time.time() - self.character.START_TIME)))

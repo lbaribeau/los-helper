@@ -16,10 +16,27 @@ class Character:
         def getClass(self):
             return self._char_class
         
+        self.RACE = "Hobbit"
+        self.TITLE = "Stalker"
+        
         self.LEVEL = 8
 #        self.preferred_alignment = "grey"
-#        self.weapon_skills = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
-#        self.magic_skills = [0, 0, 0, 0, 0]
+        #self.WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
+        #self.MAGIC_SKILLS= [0, 0, 0, 0, 0]
+        self.AURA_LIST = ['demonic red', 'ominous red', 'ghastly red', 'murky red',
+                     'red', 'rusty', 'dusty red', 'grey',
+                     'dusty blue', 'pale blue', 'blue',
+                     'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue']
+        # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
+        
+        self.AURA_SCALE = 8 #Current aura
+        self.AURA = self.AURA_LIST[self.AURA_SCALE]
+        
+        self.AURA_PREFERRED_SCALE = 10 # pale blue
+        self.AURA_PREFERRED = self.AURA_LIST[self.AURA_PREFERRED_SCALE]
+        
+        self.AURA_LAST_UPDATE = -300
+
         self.EXPERIENCE = 0
         self.GOLD = 0
         
@@ -119,7 +136,7 @@ class Character:
         self.__lvl2_monsters = [
             "hawker", "barmaid", "smelly beggar", "black crow"
             "sheep", "goose", "penitent", "singer", "musician", "spiv",
-            "bidder", "dairy cow", "scholar", "juggler",  "acolyte",
+            "bidder", "dairy cow", "scholar", "juggler",  #"acolyte",
             "shepherd", "gazelle", 'dancer', 'jongleur',
             'tabby cat', 'clerk', 'stablehand', 'bladesman'] 
         # acolytes are good (chalices) but can cause
@@ -138,7 +155,7 @@ class Character:
 
         # 25-35 exp
         self.__lvl3_monsters = [
-            "market official", "robed pilgrim", 
+            "market official", #"robed pilgrim", 
             "street trader", "field worker", "harvester", "horse", "cow",
             "doorman", "stilt walker",  "messenger", "cashier",
             "thatcher",  "tax inspector", "theatre goer", "drunken miner", 
@@ -195,7 +212,7 @@ class Character:
         # I may want to kill even if they are too low of level.
         # Mostly hostiles and things that don't let you loot.
         self.__preferred_lvl_1_2_monsters = [
-            "oaf", "wanderer", "acolyte", 
+            "oaf", "wanderer", #"acolyte", 
             "thug", "spiv", "kobold sentry", "tired hooker", 
             "blond hooker", "angry hooker", "journeyman" ] 
         # prefer kobold sentry for missile weapon drops (bow/spear)
@@ -281,18 +298,6 @@ class Character:
         self.GO_TIMEOUT = False
         
         self.MINIMUM_SLEEP_BETWEEN_COMMANDS=0.4
-
-        self.AURA_LIST = ['demonic red', 'ominous red', 'ghastly red', 'murky red',
-                     'red', 'rusty', 'dusty red', 'grey',
-                     'dusty blue', 'pale blue', 'blue',
-                     'deep blue', 'bright blue', 'heavenly blue']
-        # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
-        
-        self.AURA_SCALE = 8 #grey
-        self.AURA = self.AURA_LIST[self.AURA_SCALE]
-        
-        self.AURA_PREFERRED_SCALE = 10 # pale blue
-        self.AURA_PREFERRED = self.AURA_LIST[self.AURA_PREFERRED_SCALE]
-        
+       
         self.START_TIME = time.time()
         
