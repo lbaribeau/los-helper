@@ -21,6 +21,7 @@ class CoolAbility:
     into the CharacterClass a little differently.'''    
     def getCommand(self): 
         abstract()
+    #TODO: Rename to getSuccessCooldown() and getFailureCooldown()
     def getCooldownInSecondsAfterSuccess(self): 
         abstract()
     def getCooldownInSecondsAfterFail(self):
@@ -225,76 +226,3 @@ class Turn:
         abstract()
     def getMudTextThatMeansItWoreOff(self):
         abstract()
-
-# Commented because I don't see how this approach (using CombatAbility 
-# classes,) would work.
-# I think the CharacterClass should have canCircle, canBash, canSteal, 
-# and canBackstab, and the bot thread will define the combat algorithm 
-# based on those values.
-#class CombatAbility:
-#    ''' CombatAbilities are things that will affect how a character fights,
-#    like circle, bash, steal, backstab, ''' 
-#    def getCommand(self):
-#        abstract()
-#    def getCombatAlgorithm
-
-class CharacterClass:
-    ''' These are objects to store data about the character classes.'''
-    def getLevelOneMaxHealth(self): abstract()
-    def getLevelOneMaxMana(self): abstract()
-    def getHealthGainedPerLevel(self): abstract()
-    def getManaGainedPerLevel(self): abstract()
-    def getCanCircle(self): abstract()
-    def getCanBash(self): abstract()
-    def getCanSteal(self): abstract() 
-    def getCanBackstab(self): abstract() 
-    def getCoolAbilities(self): abstract()
- 
-class Ranger(CharacterClass):   
-    def getLevelOneMaxHealth(self): return 18
-    def getLevelOneMaxMana(self): return 3
-    def getHealthGainedPerLevel(self): return 6
-    def getManaGainedPerLevel(self): return 3
-    def getManaTickAmount(self): return 2
-    def getCanCircle(self): return False
-    def getCanBash(self): return False
-    def getCanSteal(self): return False
-    def getCanBackstab(self): return False
-    def getCoolAbilities(self): return [ Haste() ]
-
-class Monk(CharacterClass):   
-    def getLevelOneMaxHealth(self): return 17
-    def getLevelOneMaxMana(self): return 3
-    def getHealthGainedPerLevel(self): return 6
-    def getManaGainedPerLevel(self): return 3
-    def getManaTickAmount(self): return 2
-    def getCanCircle(self): return False
-    def getCanBash(self): return False
-    def getCanSteal(self): return False
-    def getCanBackstab(self): return False
-    def getCoolAbilities(self): return [ Meditate(), Touch() ]
-    
-#class Paladin(CharacterClass):   
-    #def getLevelOneMaxHealth(self): return 17
-    #def getLevelOneMaxMana(self): return 3
-    #def getHealthGainedPerLevel(self): return 6
-    #def getManaGainedPerLevel(self): return 3
-    #def getManaTickAmount(self): return 2
-    #def getCanCircle(self): return False
-    #def getCanBash(self): return False
-    #def getCanSteal(self): return False
-    #def getCanBackstab(self): return False
-    #def getCoolAbilities(self): return [ Pray(), Turn() ]
-    
-#class Druid(CharacterClass):   
-    #def getLevelOneMaxHealth(self): return 15
-    #def getLevelOneMaxMana(self): return 4
-    #def getHealthGainedPerLevel(self): return 6
-    #def getManaGainedPerLevel(self): return 3
-    #def getManaTickAmount(self): return 2
-    #def getCanCircle(self): return False
-    #def getCanBash(self): return False
-    #def getCanSteal(self): return False
-    #def getCanBackstab(self): return False
-    #def getCoolAbilities(self): return [ Barkskin() ]
-

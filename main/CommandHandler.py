@@ -8,14 +8,20 @@ import re
 from misc_functions import *
 from KillThread import *
 from CastThread import *
+from CoolAbility import *
+from CoolAbilityThread import *
+
 
 class CommandHandler:
 
-    def __init__(self, Character_inst_in, tn_in):
+    def __init__(self, Character_inst_in, MudReaderHandler_in, tn_in):
         self.tn = tn_in
         self.Character_inst = Character_inst_in
+        self.MudReaderHandler = MudReaderHandler_in
         self.KillThread_inst = None
         self.CastThread_inst = None
+        self.CoolAbilityThread_inst1 = None
+        self.CoolAbilityThread_inst2 = None
         pass
 
     def stop_KillThread(self, debug_on=False):
@@ -29,6 +35,10 @@ class CommandHandler:
             self.CastThread_inst.stop()
         elif(debug_on):
             magentaprint("No cc thread to stop.")
+            
+    #TODO: def stop_CoolAbilityThread1(self):
+        
+    #TODO: def stop_CoolAbilityThread2(self):
 
 
     def process(self, user_input):
@@ -80,9 +90,13 @@ class CommandHandler:
         elif(re.match("wie? [a-zA-Z]|wield? [a-zA-Z]", user_input)):
             #Alias
             if(re.match("wi [a-zA-Z]", user_input)):
-                user_input = "wield " + user_input[3:]
+                user_input = "wield " + user_input[3:] 
+                # That doesn't seem right for user entering full 'wield'... 
             #PREV_COMMAND = user_input
             self.tn.write(user_input + "\n")
+        elif(re.match("wie?2 +([a-zA-Z]+ +\d*)", user_input)):
+            # Wie2 for rangers can wield and second the same weapon in one command
+            self.user_wie2(user_input[4:].lstrip())
         elif(re.match("fle?$|flee$", user_input)):
             # Fleeing.  Call routine to stop all combat threads, remove weapons,
             # and flee ASAP
@@ -217,7 +231,7 @@ class CommandHandler:
             self.KillThread_inst.set_target(argv)
             self.KillThread_inst.keep_going()
         else:
-            self.KillThread_inst = KillThread(self.Character_inst, self.tn, argv)
+            self.KillThread_inst = KillThread(self.Character_inst, self.MudReaderHandler, self.tn, argv)
             self.KillThread_inst.start()
 
     
@@ -245,7 +259,7 @@ class CommandHandler:
         #global CastThread_inst
 
         # Get strings spell and target
-        # BUG!! user input "cc "
+        # TODO: BUG!! user input "cc "
         if(argv == ""):
             # Do nothing.
             magentaprint("Usage:  cc <spell> [<target> [<number>]]")
@@ -286,6 +300,35 @@ class CommandHandler:
         self.stop_CastThread(True)
         self.tn.write("\n")  # brings prompt back as if this command were a normal one
         return
+    
+    def user_wie2(self, argv):
+        #TODO: Test.
+        magentaprint("wie2 called with argument %s" % (argv))
+        self.tn.write("wield %s\n" % (argv))
+        self.tn.write("second %s\n" % (argv))        
+        return
+    
+    # COOL ABILITIES
+    def user_hastec(self):        
+        if ((self.CoolAbilityThread_inst1 != None and 
+            self.CoolAbilityThread_inst1.is_alive() and
+            self.CoolAbilityThread_inst1.CoolAbility.getCommand().isequal("haste")) 
+            or
+            (self.CoolAbilityThread_inst2 != None and 
+            self.CoolAbilityThread_inst2.is_alive() and
+            self.CoolAbilityThread_inst2.CoolAbility.getCommand().isequal("haste"))):
+            # Already running a thread
+            magentaprint("Haste thread already going.")
+        else:
+            magentaprint("CommandHandler: new haste thread")
+            if (self.CoolAbilityThread_inst1 == None or not self.CoolAbilityThread_inst1.is_alive()):
+                self.CoolAbilityThread_inst1 = CoolAbilityThread(Haste(), self.MudReaderHandler, self.tn)
+                self.CoolAbilityThread_inst1.start()
+            elif(self.CoolAbilityThread_inst2 == None or not self.CoolAbilityThread_inst2.is_alive()):
+                self.CoolAbilityThread_inst2 = CoolAbilityThread(Haste(), self.MudReaderHandler, self.tn)
+                self.CoolAbilityThread_inst2.start()
+            else: 
+                magentaprint("Error! both CoolAbilityThreads are unavailable!")
 
     
     def user_flee(self):

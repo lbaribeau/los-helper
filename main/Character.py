@@ -23,6 +23,8 @@ class Character:
 #        self.preferred_alignment = "grey"
         #self.WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #self.MAGIC_SKILLS= [0, 0, 0, 0, 0]
+        self.SKILLS={} #Dictionary http://stackoverflow.com/questions/3765533/python-array-with-string-indices
+          # Indices will be sharp, thrust, blunt, pole, missile, earth, water, wind, fire, astral
         self.AURA_LIST = ['demonic red', 'ominous red', 'ghastly red', 'murky red',
                      'red', 'rusty', 'dusty red', 'grey',
                      'dusty blue', 'pale blue', 'blue',

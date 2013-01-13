@@ -4,6 +4,7 @@ import re
 
 from misc_functions import *
 from MyBuffer import *
+from MyMudWaiterFlags import *
 
 
 class MudReaderHandler:
@@ -265,6 +266,78 @@ class MudReaderHandler:
                         # Not that it matters.  It won't time out. 
          
     
+    def watch_attack_combat(self):
+            # Called by KillThread
+            # Algorithm:  Just send to MudReaderHandler.watch_attack_combat(timeout).
+            # MudReaderHandler will wait 'timeout' seconds for the attack to resolve.
+            # The attack will resolve within 0.2 seconds or so.  
+            # Then, however, it will also continue to wait until the attack cooldown 
+            # is over, for any text that should make us quit.
+            # It will return 1 for continue and 0 to quit.
+            
+            # This also works for the case where the player changes the target or 
+            # stops it on his own, because that will cause a different thread 
+            # to change self.target or to set __stopping, niether action of 
+            # which would be undone by this algorithm.
+            
+            # Only call after sending a kill command.
+        
+        # First, wait for the regular attack info
+        self.MudReaderThread.check_kill_flags.waitflag = True
+              
+        return self.poll_flag(self.MudReaderThread.check_kill_flags)
+        
+    
+    def poll_flag(self, check_flags):
+        # Poll_flag function.
+        # MudReaderHandler.poll_flag manages MudReaderThread's flags and returns 
+        # when something was matched.  
+        # Argument: check_flags should be a MyMudWaiterFlags object
+        start_time = time.time()
+        run_time = 0
+        timeout = self.good_MUD_timeout
+        while(check_flags.waitflag == 1 and run_time < timeout):
+            time.sleep(0.05)
+            run_time = time.time() - start_time
+            
+        if(run_time < timeout):
+            #magentaprint("Poll did not time out :)")
+            return check_flags.returnval
+        else:
+            #magentaprint("MudReaderHandler: poll timed out.")
+            # Note: This timeout happens on all successful attacks because MudReader doesn't 
+            # look for those strings.
+            return 2
+        
+        # Great - things are sort of working.
+        # TODO next time, put a lot of combat strings into MudReaderHandler!
+        # (the poll is timing out, and I want it to be deterministic if possible.)
+        # Maybe it would be better to not need to poll, or at least be generic enough
+        # not to need to type out all of the attack strings.
+        # Currently, watch_attack_combat times out on all successful attacks...
+        # Algorithm: KillThread hits command and calls watch_attack_combat, which 
+        # times out because the successful attack strings aren't currently matched, 
+        # but that's ok because nothing needs to happen.  Would it be better to 
+        # make sure every time?  Probably, put that on the todo list I suppose.
+        # Priority, low!
+        
+        # What about something like, wield a weapon if one breaks, or pick up a ring.
+        # Should the managing objects ALWAYS expect that sort of thing and watch 
+        # for it?  No.  Should MudReaderHandler send commands to telnet?  No.
+        # OBSERVER PATTERN:  The bot object should register some methods with 
+        # the MudReaderHandler "If this happens, do this." ie.  
+        #  If "Your weapon broke!" do "wield <weapon>"
+        #  If "The market official dropped a copper ring" do "wear ring"
+        # MudReaderHandler can provide that.  The MudReaderTHREAD  will actually 
+        # go in and execute the notify methods, but they'll still belong to the bot.
+        # Or, should I keep the flagged thread handshake so that the bot thread is 
+        # executing that code?  The only way for that is for the bot thread to poll and 
+        # wait (watch for a ring or a weapon break every single time it's possible...)
+        # Instead (MVC,) it's better to give MudReader a function to call, 
+        # but not require MudReader to know about or have access to CommandHandler.
+        
+        # So, I think I'll do a commit, even though I lost some functionality.
+             
         
 # end MudReaderHandler class
 

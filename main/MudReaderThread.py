@@ -12,6 +12,7 @@ from CommandHandler import *
 from KillThread import *
 from CastThread import *
 from MyBuffer import *
+from MyMudWaiterFlags import *
 
 class MudReaderThread ( threading.Thread ):
     # This thread watches the the MUD output and appends it 
@@ -19,8 +20,8 @@ class MudReaderThread ( threading.Thread ):
     
     ConsoleHandler = newConsoleHandler()
 
-    def __init__(self, MUD_buffer_in=None, character_inst=None, CommandHandler_inst=None):
-        if MUD_buffer_in == None and character_inst == None and CommandHandler_inst == None:
+    def __init__(self, MUD_buffer_in=None, character_inst=None):
+        if MUD_buffer_in == None and character_inst == None:
             return
         Thread.__init__(self)       
         # Constants
@@ -30,18 +31,26 @@ class MudReaderThread ( threading.Thread ):
         
         self.MUD_buffer = MUD_buffer_in
         self.character_inst = character_inst
-        self.CommandHandler_inst = CommandHandler_inst
+        #self.CommandHandler_inst = CommandHandler_inst
             # The MUD output thread needs the CommandHandler in order to stop
             # the combat threads triggered on MUD output.  Epiphany:  it would
             # be better if the combat threads could call a MUD interface object
             # because the relationship now is kind of backwards (the threads are
             # really using the MudHandler and not the other way around.)
         
+        #TODO: change these all to mud waiter flags
         self.CHECK_GO_FLAG = False
         self.CHECK_AURA_FLAG = False
         self.CHECK_AURA_SUCCESS = False
         self.CHECK_SELL_FLAG = False
         self.CHECK_INVENTORY_FLAG = False
+        #self.CHECK_KILL_FLAG = False
+        #self.CHECK_KILL_CONTINUE = False
+        #self.CHECK_KILL_MONSTER_GONE = False # This one isn't used yet, I think it's to react to when a monster flees
+        self.check_kill_flags = MyMudWaiterFlags()
+        self.CHECK_CAST_FLAG = False
+        self.CHECK_CAST_CONTINUE = False
+        self.CHECK_CAST_MONSTER_GONE = False
         
         # Internal Variables
         # variables used for the MUD_output_check function
@@ -196,11 +205,10 @@ class MudReaderThread ( threading.Thread ):
 
             ###### Now match the buffer with some REs  #######
             text_buffer_trunc = 0
-            in_combat = (self.CommandHandler_inst.KillThread_inst != None and 
-                self.CommandHandler_inst.KillThread_inst.is_alive())
 
-            # INFO screen stuff
-            # Note: First instinct was to parse whole screen at once but that doesn't seem necessary now.
+            #### INFO screen stuff ###
+            # Note: First instinct was to parse whole screen at once but that 
+            # doesn't seem necessary now. 
             # Nor does it seem necessary to even have a flag with the Bot... but the bot may need that.
             s_numbered = "( 1st| 2nd| 3rd| 4th| 5th| 6th| 7th| 8th| 9th| 10th| 11th| 12th| 13th| 14th| 15th| 16th| 17th| 18th| 19th)?"
 
@@ -226,11 +234,46 @@ class MudReaderThread ( threading.Thread ):
                 
             #M_obj = re.search("     Sharp   : (\d+) +%  |  |     Earth : (\d+) +%     |",text_buffer)
             #if(M_obj != None):
-            #    self.character_inst.WEAPON_SKILLS['Sharp'] = M_obj.group(1)
-            #    self.character_inst.MAGIC_SKILLS['Earth'] = M_obj.group(2)
+            #    self.character_inst.SKILLS['sharp'] = M_obj.group(1)
+            #    self.character_inst.SKILLS['earth'] = M_obj.group(2)
             #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            #    magentaprint("MudReader got Sharp and Earth: %s %s " % 
-            #                 (self.character_inst.WEAPON_SKILLS['Sharp'], self.character_inst.MAGIC_SKILLS['Earth'])) 
+            #    magentaprint("MudReader got sharp and earth: %s %s " % 
+            #                 (self.character_inst.SKILLS['sharp'], self.character_inst.SKILLS['earth']))
+            
+            #M_obj = re.search("     Thrust  : (\d+) +%  |  |     Water : (\d+) +%     |",text_buffer)
+            #if(M_obj != None):
+            #    self.character_inst.SKILLS['thrust'] = M_obj.group(1)
+            #    self.character_inst.SKILLS['water'] = M_obj.group(2)
+            #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+            #    magentaprint("MudReader got thrust and water: %s %s " % 
+            #                 (self.character_inst.WEAPON_SKILLS['thrust'], self.character_inst.MAGIC_SKILLS['water']))
+
+            #M_obj = re.search("     Blunt   : (\d+) +%  |  |     Fire  : (\d+) +%     |",text_buffer)
+            #if(M_obj != None):
+            #    self.character_inst.SKILLS['blunt'] = M_obj.group(1)
+            #    self.character_inst.SKILLS['fire'] = M_obj.group(2)
+            #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+            #    magentaprint("MudReader got blunt and fire: %s %s " % 
+            #                 (self.character_inst.WEAPON_SKILLS['blunt'], self.character_inst.MAGIC_SKILLS['fire']))
+
+            #M_obj = re.search("     Pole    : (\d+) +%  |  |     Wind  : (\d+) +%     |",text_buffer)
+            #if(M_obj != None):
+            #    self.character_inst.SKILLS['pole'] = M_obj.group(1)
+            #    self.character_inst.SKILLS['wind'] = M_obj.group(2)
+            #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+            #    magentaprint("MudReader got pole and wind: %s %s " % 
+            #                 (self.character_inst.WEAPON_SKILLS['pole'], self.character_inst.MAGIC_SKILLS['wind']))
+
+            #M_obj = re.search("     Missile : (\d+) +%  |  |     Astral: (\d+) +%     |",text_buffer)
+            #if(M_obj != None):
+            #    self.character_inst.SKILLS['missile'] = M_obj.group(1)
+            #    self.character_inst.SKILLS['astral'] = M_obj.group(2)
+            #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+            #    magentaprint("MudReader got missile and astral: %s %s " % 
+            #                 (self.character_inst.WEAPON_SKILLS['missile'], self.character_inst.MAGIC_SKILLS['astral']))
+            
+            #TODO: continue with MAXHP, MAXMP, GOLD, EXP, LEVELGOLD, LEVELEXP, etc.
+
                 
                 
             M_obj = re.search("You feel yourself moving faster\.",text_buffer)
@@ -260,34 +303,49 @@ class MudReaderThread ( threading.Thread ):
             # Note: it's important to keep text_buffer_trunc up to date 
             # because we wouldn't want to leave something in the buffer 
             # to the point that cast threads can't be started up!
+            
+            # Now we are setting flags to tell the Handler that the cast command 
+            # went through (instead of stopping the cast/kill threads ourselves.)
             M_obj = re.search("That spell does not exist\.", text_buffer)
             if(M_obj):
                 # Unset cast wait timer if it turns out no spell was cast
                 self.character_inst.CAST_CLK = time.time() - self.character_inst.CAST_WAIT 
                     # reset cast clock
-                self.CommandHandler_inst.stop_CastThread()
+                #self.CommandHandler_inst.stop_CastThread()
+                self.CHECK_CAST_FLAG = False
+                self.CHECK_CAST_CONTINUE = false
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+
             M_obj = re.search("You don't know that spell\.", text_buffer)
             if(M_obj):
-                self.character_inst.CAST_CLK = time.time() - self.character_inst.CAST_WAIT 
+                self.character_inst.CAST_CLK = time.time() - self.character_inst.CAST_WAIT
+                # Adding CAST flags... why wasn't there a self.CommandHandler_inst.stop_CastThread() here?
+                self.CHECK_CAST_FLAG = False
+                self.CHECK_CAST_CONTINUE = false 
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("You cannot meet the casting cost!", text_buffer)
             if(M_obj):
                 self.character_inst.CAST_CLK = time.time() - self.character_inst.CAST_WAIT 
                     # reset cast clock
-                self.CommandHandler_inst.stop_CastThread()
+                #self.CommandHandler_inst.stop_CastThread()
+                self.CHECK_CAST_FLAG = False
+                self.CHECK_CAST_CONTINUE = false 
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("Spell name is not unique\.", text_buffer)
             if(M_obj):
                 self.character_inst.CAST_CLK = time.time() - self.character_inst.CAST_WAIT 
                     # reset cast clock
-                self.CommandHandler_inst.stop_CastThread()
+                #self.CommandHandler_inst.stop_CastThread()
+                self.CHECK_CAST_FLAG = False
+                self.CHECK_CAST_CONTINUE = false 
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("Cast what\?", text_buffer)
             if(M_obj):
                 self.character_inst.CAST_CLK = time.time() - self.character_inst.CAST_WAIT 
                     # reset cast clock
-                self.CommandHandler_inst.stop_CastThread()
+                #self.CommandHandler_inst.stop_CastThread()
+                self.CHECK_CAST_FLAG = False
+                self.CHECK_CAST_CONTINUE = false
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("Your spell fails\.", text_buffer)
             if(M_obj):
@@ -340,12 +398,13 @@ class MudReaderThread ( threading.Thread ):
                 self.reequip_weapon(M_obj.group(1))
                 
             # Wearing rings
-            M_obj = re.search("You get (.+?)\.", text_buffer)
-            if (M_obj):
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                for item in M_obj.group(1).split(','):
-                    if(re.search("a (.+?) ring", item)):
-                        self.CommandHandler_inst.process("wear ring")
+            # TODO: fix this
+            #M_obj = re.search("You get (.+?)\.", text_buffer)
+            #if (M_obj):
+            #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+            #    for item in M_obj.group(1).split(','):
+            #        if(re.search("a (.+?) ring", item)):
+            ##            self.CommandHandler_inst.process("wear ring")
                      
                 
                 
@@ -417,6 +476,25 @@ class MudReaderThread ( threading.Thread ):
             ########    Do some monster removal.    ######
             
             # Monster is killed
+            # Nov2012:  Ok, the cast/kill threads are unfortunately going to have to 
+            # poll here.  We aren't letting MudReader kill or do anything, and we 
+            # want the cast thread to stop if a monster is attacked and dies, (and 
+            # the kill thread to stop if a monster is casted to death,) so the only 
+            # way I can think to do that is if these threads poll every 0.1s because 
+            # if they wait for their timer to be up to check, the monster could be long 
+            # dead and the user may be frustrated by having his command canceled.  Well...
+            # maybe the thread could differentiate between user issued commands, and only 
+            # cancel thread commands?  Right now, the user command just starts/continues 
+            # a thread.  Can we eliminate polling?  I'm a cast thread, I wait 3 seconds, 
+            # then I check if the monster had died, and if so I stop, unless I was updated, 
+            # because if I get updated, I can check then if the monster had died and reset
+            # Handler's flags if so... basically just check/update the flags every time I do 
+            # _anything_, then I don't have to poll. 
+            # Note: What if the bot provided us a 'notify' method?  That eliminates 
+            # the polling.  Sure, it's my thread that executes the code but it's 
+            # still owned by the bot, so I don't have to be responsible and send 
+            # commands.
+            
             #M_obj = re.search("Your enemy, the" + s_numbered + " (.+?) has been defeated\.", MUD_buffer)            
             M_obj = re.search("Your attack overwhelms the" + s_numbered + " (.+?) and (s?he|it) collapses!", text_buffer)
             if(M_obj != None):
@@ -426,8 +504,14 @@ class MudReaderThread ( threading.Thread ):
                     self.character_inst.MONSTER_LIST.remove(M_obj.group(2))
                 else:
                     magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
-                self.CommandHandler_inst.stop_KillThread()
-                self.CommandHandler_inst.stop_CastThread()
+                #self.CommandHandler_inst.stop_KillThread()
+                #self.CommandHandler_inst.stop_CastThread()
+                self.check_kill_flags.waitflag = False
+                self.check_kill_flags.returnval = False
+                #self.CHECK_KILL_FLAG = False
+                #self.CHECK_KILL_CONTINUE = False
+                self.CHECK_KILL_MONSTER_GONE = True
+                self.CHECK_CAST_MONSTER_GONE = True
             # Experience
             M_obj = re.search("You gain (.+?) experience\.", text_buffer)       
             if(M_obj):
@@ -443,8 +527,12 @@ class MudReaderThread ( threading.Thread ):
                     self.character_inst.MONSTER_LIST.remove(M_obj.group(2))
                 else:
                     magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
-                self.CommandHandler_inst.stop_KillThread()
-                self.CommandHandler_inst.stop_CastThread()
+                #self.CommandHandler_inst.stop_KillThread()
+                #self.CommandHandler_inst.stop_CastThread()
+                # Don't need KILL_FLAG because that got covered by the damage text.
+                # TODO: make sure we're matching damage text for all kinds of attacks.
+                self.CHECK_KILL_MONSTER_GONE = True
+                self.CHECK_CAST_MONSTER_GONE = True
             # Stop combat threads on "You don't see that here"
             M_obj = re.search("You don't see that here\.",text_buffer)
             # I don't like PREV_COMMAND.
@@ -456,19 +544,33 @@ class MudReaderThread ( threading.Thread ):
             #if(M_obj != None and prev_cmd_kill != None):
             if(M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                self.CommandHandler_inst.stop_KillThread()
+                #self.CommandHandler_inst.stop_KillThread()
+                self.check_kill_flags.waitflag = False
+                self.check_kill_flags.returnval = False
+                #self.CHECK_KILL_FLAG = False
+                #self.CHECK_KILL_CONTINUE = False
+                
                 self.character_inst.ATTACK_CLK = time.time()-self.character_inst.ATTACK_WAIT
                         #unset attack timer which would prevent action.
+            
+            M_obj = re.search("Attack what\?", text_buffer)
+            if(M_obj):
+                magentaprint("Matched: Attack what\?")
+                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                self.check_kill_flags.waitflag = False
+                self.CHECK_KILL_CONTINUE = False 
             M_obj = re.search("They are not here\.", text_buffer)
             if(M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                self.CommandHandler_inst.stop_CastThread()
-                self.character_inst.CAST_cLK = time.time() - self.character_inst.CAST_WAIT
+                #self.CommandHandler_inst.stop_CastThread()
+                self.CHECK_CAST_FLAG = False
+                self.CHECK_CAST_CONTINUE = False
+                self.character_inst.CAST_CLK = time.time() - self.character_inst.CAST_WAIT
                                
             # Monster wanders to specific exit
             M_obj = re.search("The" + s_numbered + " (.+?) just wandered to the .+?\.", text_buffer)
             if(M_obj):
-                magentaprint( "Matched " + M_obj.group(2))
+                magentaprint("Matched " + M_obj.group(2))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 if(my_list_search(self.character_inst.MONSTER_LIST, M_obj.group(2)) != -1):
                     self.character_inst.MONSTER_LIST.remove(M_obj.group(2))
@@ -646,10 +748,11 @@ class MudReaderThread ( threading.Thread ):
             # The bot should definitely leave in this case.
             # However I only want to leave if the bot is currently going...
             # Ohwell.  This might inconvenience a human user but I'm putting it in.
-            M_obj = re.search("The goodness here sickens and repels you!", text_buffer)
-            if(M_obj):
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                self.CommandHandler_inst.process("ou")
+            # TODO: fix this.  Perhaps it's low priority if auras are working.
+            #M_obj = re.search("The goodness here sickens and repels you!", text_buffer)
+            #if(M_obj):
+            #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+            ##    self.CommandHandler_inst.process("ou")
             
             # Inventory
             M_obj = re.search("(?s)You have: (.+?)\.", text_buffer)
@@ -925,18 +1028,20 @@ class MudReaderThread ( threading.Thread ):
 
         return return_list
     
-    
+    #TODO (high priority): implement this (observer pattern?  Have some high 
+    # level function implement something that will do this.
     def reequip_weapon(self, weapon_str):
-        if(self.character_inst.WEAPON1 == self.character_inst.WEAPON2):
-            # If weap 1 and weap 2 are the same, not sure how to know 
-            # which broke... so just put in both commands :)
-            self.CommandHandler_inst.process("wie " + weapon_str)
-            self.CommandHandler_inst.process("seco " + weapon_str)
-        else:
-            if(weapon_str == self.character_inst.WEAPON1):
-                self.CommandHandler_inst.process("wie " + weapon_str)
-            else:
-                self.CommandHandler_inst.process("seco " + weapon_str)
+        #if(self.character_inst.WEAPON1 == self.character_inst.WEAPON2):
+        #    # If weap 1 and weap 2 are the same, not sure how to know 
+        #    # which broke... so just put in both commands :)
+        #    self.CommandHandler_inst.process("wie " + weapon_str)
+        #    self.CommandHandler_inst.process("seco " + weapon_str)
+        #else:
+        #    if(weapon_str == self.character_inst.WEAPON1):
+        #        self.CommandHandler_inst.process("wie " + weapon_str)
+        #    else:
+        #        self.CommandHandler_inst.process("seco " + weapon_str)
+        magentaprint("Reequip weapon needs to be reimplemented.")
         
     
 

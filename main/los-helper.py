@@ -111,6 +111,8 @@
 # TODO LIST (slash WISH LIST):
 #
 # haste thread (hc and sh), search thread (searchc and ssearch)
+# - Rewrite KillThread and CastThread to use the MudReader 
+#   instead of the other way around.
 # haste, steel bottles, silver chalices.
 # restoratives
 # ### Someone just flashed,
@@ -130,7 +132,7 @@
 # TODO implement MAXHP, MAXMP,
 # TODO reverse engineering ticker timings from Piety and maintain current health
 # TODO haste timers and thread.
-# TODO removed prints from selling algorithm, handle multiple grey cloaks
+# TODO remove prints from selling algorithm, handle multiple grey cloaks
 # (add numbers and sell in decreasing order, and not sell 'empty strings if
 # could not fit)
 # TODO do not crash on empty inventory at tip
@@ -261,26 +263,24 @@ def main():
     tn = connect_to_MUD()  # Sets up telnet object
 
     character = Character()
-    commandHandler = CommandHandler(character, tn)
    
     # Buffer used by MudListener and MudReader
     # MudListener writes to it and MudReader reads from it
     MUDBuffer = MyBuffer()
 
-    # Thread to listen to telnet socket
     mudListenerThread = MudListenerThread(tn, MUDBuffer)
     mudListenerThread.start()
-      
-    mudReaderThread = MudReaderThread(MUDBuffer, character, 
-                                        commandHandler)
+    
+    mudReaderThread = MudReaderThread(MUDBuffer, character)
     mudReaderThread.start()
     
     # MudReaderHandler: Thread which supplies a couple of 
-    # functions in coordinating with the MudReader.  Most 
+    # functions in coordinating with the MudReader, most 
     # commonly timing related.
-    mudReaderHandler = MudReaderHandler(mudReaderThread, 
-                                        character)
+    mudReaderHandler = MudReaderHandler(mudReaderThread, character)
     
+    commandHandler = CommandHandler(character, mudReaderHandler, tn) 
+
     inventory = Inventory(mudReaderHandler, commandHandler, character)
 
     # Now that the MUD thread is going I can trust it to issue the 

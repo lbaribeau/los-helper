@@ -9,11 +9,12 @@ class KillThread(threading.Thread):
     # This thread keeps attacking time in combat.  There is only one instance
     # of it in the program and it is global.  It can be stopped with the
     # stop function.  
-    def __init__(self, Character_inst_in, tn_in, target):   # Constructor
+    def __init__(self, Character_inst_in, MudReaderHandler_in, tn_in, target):   # Constructor
         Thread.__init__(self)
         # Initialize some variables local to this thread
         self.__stopping = False
         self.Character_inst = Character_inst_in
+        self.MudReaderHandler = MudReaderHandler_in
         self.tn = tn_in
         self.target = target      # the string argument indicating the target.
         if(self.Character_inst.HASTING):
@@ -44,8 +45,6 @@ class KillThread(threading.Thread):
         # However delay is automatic (in constructor)
         # Assumption is that it is constructed and started at the same time.
 
-        #global PREV_COMMAND
-        #global ATTACK_CLK
         self.__stopping = False
         wait_for_attack_ready(self.Character_inst)
         while not self.__stopping:
@@ -53,8 +52,16 @@ class KillThread(threading.Thread):
             #PREV_COMMAND = "k " + self.target + "\n"
             #tn.write(PREV_COMMAND)
             self.tn.write("k " + self.target + "\n")
+            #wait_for_attack_ready(self.Character_inst)
+            
+            # Nov2012.  Maybe what needs to happen here is that I need to ask MudReader to check if the monster died, and stop if so.
+            # Also, check if I got updated during the wait.
+            if(not self.MudReaderHandler.watch_attack_combat()):
+                self.__stopping = True
             wait_for_attack_ready(self.Character_inst)
-            #time.sleep(self.delay)
+            
+
+        
 
 
 
