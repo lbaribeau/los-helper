@@ -17,7 +17,6 @@ BotThread: finished now.
 \---------------------------------------------------------------------------/
 
 Please enter name: Please enter password: 
-### Ruorgimorphu the Hobbitish Stalker just entered the Lands of Stone.
 
 The Chapel of Healing
 

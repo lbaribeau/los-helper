@@ -1024,8 +1024,8 @@ Matched kobold miner
 [2 H 9 M]: The kobold sentry punches you for 6 damage.                        
 Your brass ring fell apart.                                                   
 You are overwhelmed by the kobold sentry's attack and you collapse!           
-### Ruorgimorphu was defeated by the kobold sentry.                           
-### Ruorgimorphu's body is teleported away to be healed.                      
+### xxxx was defeated by the kobold sentry.                           
+### xxxx's body is teleported away to be healed.                      
                                                                               
 Limbo                                                                         
                                                                               
