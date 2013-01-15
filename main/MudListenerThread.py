@@ -32,6 +32,7 @@ class MudListenerThread ( threading.Thread ):
         # First get the file descriptor (no) of the internal telnet socket object
         # so we can watch for input.        
         tn_sno = self.tn.get_socket()
+        fragment=""
         
         # Loop forever, just do stuff when the socket says its ready.
         while (not self.__stopping):
@@ -39,23 +40,27 @@ class MudListenerThread ( threading.Thread ):
             if(sel_out_triple != ([], [], [])):
                 # Read some characters.  
                 try:
-                    fragment = self.tn.read_some() # read_eager misses characters
+                    fragment = fragment + self.tn.read_some() # read_eager misses characters
                 except EOFError:
                     print("MudListenerThread: Exiting (saw EOF)")
                     self.stop()
                     break
                 #magentaprint("MudListener: got a fragment size %d time %f last chars %s." % (len(fragment), time.time()-self.Character_inst.START_TIME, fragment[len(fragment)-8:]))
-                # Tack it on to the buffer.
-                # Wait for the access flag to go down
-                # Hmmm, I hate to have to wait and not watch the socket,
-                # maybe this semaphore could be done better.  However I 
-                # also don't want to interrupt if its used.
-                while(self.MUD_buffer.access_flag == True):
-                    time.sleep(0.05)
+
+                #while(self.MUD_buffer.access_flag == True):
+                    #time.sleep(0.05)
+                if(self.MUD_buffer.access_flag == True):
+                    magentaprint("MudListenerThread couldn't access buffer, will try again after next socket fragment.")
+                    continue 
+                    # This may cause strings to be matched late (if the buffer was being accessed,)
+                    # We'll see if that happens, even at all.  Worst case that I can imagine is that 
+                    # the bot may pause at one node for several seconds until an ambient event happens,
+                    # but I'm not sure if that's even possible.
                     
                 self.MUD_buffer.access_flag = True
                 self.MUD_buffer.buffer = self.MUD_buffer.buffer + fragment
                 self.MUD_buffer.access_flag = False
+                fragment = ""
             else:
                 # Socket timed out.
                 pass    # just keep waiting.

@@ -188,7 +188,7 @@
 # Idea for a driving refactoring pattern: 
 # The pattern would be to 
 # decouple the bot AI from the commands, and eventually the bot AI would never need 
-# to know any commands.  Again: strive to stop bot AI from issueing commands by 
+# to know any commands.  Again: strive to stop bot AI from issuing commands by 
 # creating objects.
 
 # I skimmed the python style guide. 

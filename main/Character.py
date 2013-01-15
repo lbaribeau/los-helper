@@ -52,7 +52,7 @@ class Character:
 
         self.ATTACK_WAIT = self.ATTACK_PERIOD   # Used by timer.  Same as ATTACK_PERIOD.
                                     # Amount of time to wait to walk after attacking
-        self.MOVE_WAIT = 0.3
+        self.MOVE_WAIT = 0.35 
         self.CAST_WAIT = self.CAST_PERIOD
 
         # Game environment variables.
