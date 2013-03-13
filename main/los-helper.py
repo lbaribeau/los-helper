@@ -199,6 +199,8 @@
 # - functions/variables with words separated with underscores
 # - function names will likely be verbs and variables nouns.
 # The whole program doesn't follow this (yet)
+#
+
 
 
 ##########################################################################
@@ -243,6 +245,7 @@ from MudReaderThread import MudReaderThread
 from MudListenerThread import MudListenerThread
 from MyBuffer import MyBuffer
 from Inventory import *
+from BotReactions import *
 
 character = None
 commandHandler = None
@@ -287,15 +290,6 @@ def main():
     # username/password prompts
     issue_name_and_password(tn)
 
-    # These threads now belong to the CommandHandler
-    # Thread which handles continuous kill function 
-    #global user_kk_thread_inst
-    #user_kk_thread_inst = None  # Construct later because start() can't take params
-
-    # Thread which handles continuous cast function
-    #global user_cc_thread_inst
-    #user_cc_thread_inst = None
-
     global bot_thread_inst
     bot_thread_inst = None
 
@@ -318,7 +312,7 @@ def main():
     tn.close();
     #That's all, folks!
 
-    time.sleep(8) 
+    time.sleep(6) 
     
 
 
@@ -355,20 +349,12 @@ def watch_user_input(mudReaderHandler, character):
     # to the MUD
 #    global PREV_USER_COMMAND  # Last command that was typed in.
 #    global PREV_COMMAND # Last command that was sent to telnet.
-#    global MOVE_CLK
-#    global ATTACK_CLK
-#    global CAST_CLK
-    #global user_kk_thread_inst
-    #global user_cc_thread_inst
     global bot_thread_inst
-#    global EXPERIENCE
-#    global GOLD
-#    global MUD_RETURN_ITEM_SOLD
     
     stopping = False;
     while not stopping:
         try:
-            user_input = raw_input(); # TODO: print a prompt?
+            user_input = raw_input(); 
         except EOFError:
             magentaprint("Don't try to crash me!  Use 'quit'.")
             user_input = ""
@@ -500,6 +486,7 @@ def start_bot(user_input, character, commandHandler):
     if (bot_thread_inst != None and bot_thread_inst.is_alive()):
         magentaprint("It's already going, you'll have to stop it.  Use \"stop\".")
     else:
+        register_bot_reactions()
         bot_thread_inst = BotThread(starting_path, character, 
                                         commandHandler, mudReaderHandler,
                                         inventory)
@@ -508,10 +495,25 @@ def start_bot(user_input, character, commandHandler):
 
     return
 
+def register_bot_reactions():
+    global mudReaderHandler
+    global character
+    global commandHandler
+    
+    wield1 = WieldReaction("Your (.*?) breaks and you have to remove it\.", character, commandHandler)
+    wield2 = WieldReaction("Your (.*?) shatters\.", character, commandHandler)
+    mudReaderHandler.register_reaction(wield1)
+    mudReaderHandler.register_reaction(wield2)
+    
+    return
+    
+
 def stop_bot():
     global bot_thread_inst
+    global mudReaderHandler
     if (bot_thread_inst != None) and bot_thread_inst.is_alive():
         bot_thread_inst.stop()
+        mudReaderHandler.unregister_reactions()
 
     return
     

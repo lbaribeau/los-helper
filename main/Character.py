@@ -1,6 +1,6 @@
 ################################################################################
 import time
-import Classes
+import CharacterClass
 
 class Character:
 
@@ -11,7 +11,7 @@ class Character:
         # character init function sets variables to default (initial)
         # values.  
     
-        self._char_class = Classes.Ranger()
+        self._char_class = CharacterClass.Ranger()
         
         def getClass(self):
             return self._char_class

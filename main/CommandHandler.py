@@ -10,6 +10,7 @@ from KillThread import *
 from CastThread import *
 from CoolAbility import *
 from CoolAbilityThread import *
+from ThreadStopper import *
 
 
 class CommandHandler:
@@ -227,12 +228,26 @@ class CommandHandler:
 
         #global user_KillThread_inst
         
+        
         if (self.KillThread_inst != None and self.KillThread_inst.is_alive()):
+            # Commenting... tried doing registering reactions here but maybe 
+            # it's better for KillThread to do it.
+            #if(self.KillThread_inst.get_stopping() == True):
+            #    self.KillThread_inst.keep_going()
+            #    self.KillThread_inst.set_target(argv)
+            #    self._do_kill_reactions() 
+            #      # Assumes that when stop is called the kill reactions were unregistered,
+            #      # so we have to redo the kill reactions.  They would have been undone
+            #      # Or, maybe I could make 'stop' work immediately.  Nah, try having 
+            #      # KillThread do the registering.
+            #else:
+            #    self.KillThread_inst.set_target(argv)                
             self.KillThread_inst.set_target(argv)
             self.KillThread_inst.keep_going()
         else:
             self.KillThread_inst = KillThread(self.Character_inst, self.MudReaderHandler, self.tn, argv)
             self.KillThread_inst.start()
+            #self._do_kill_reactions()
 
     
     def user_sk(self):

@@ -337,6 +337,61 @@ class MudReaderHandler:
         # but not require MudReader to know about or have access to CommandHandler.
         
         # So, I think I'll do a commit, even though I lost some functionality.
+        
+    # Jan 2013
+    # MudReaderHandler should implement register_event(regex, function_pointer)
+    # Man do I ever think in C++, this idea needs to be tweaked a little.
+    # It'd be nice not to have to write a whole bunch of code every time I 
+    # want to match text.
+    # Do I need an object for each task?
+    # May as well I guess.
+    # What about, register_event(regex, telnet command)
+    # That would be quite ideal.  Perhaps that's a bot function though? No.
+    # Since it needs a bunch of flags and stuff I think it needs to be a class 
+    # that I construct for each class.  It could be something that MudReader 
+    # makes.  Then MudReaderThread could loop through each one that's been 
+    # registered and call notify.  So BotThread has to make all these objects.
+    # The flags would belong to the objects?  No, BotThread provides the 
+    # regex and telnet command, and MudReaderHandler makes the objects?  BotThread
+    # should create these little guys and register them, or perhaps a BotMinion?
+    # (BotMinion because it needs the authority of Bot to send commands but doesn't 
+    # fit into my model of how the Bot chooses what it does - I don't want the 
+    # Bot to have to make a bunch of objects...)  
+    # The "function pointer" functionality actually comes from the inheritance structure:
+    # Subject knows to call notify on all of the observers, but unfortunately each has 
+    # to be an object.
+    # So who makes them? MudReaderHandler?  It can't issue commands though.
+    # BotThread has to make them because the notify function has to use CommandHandler.
+    # Well, how about los-helper?  They aren't part of the thread.  
+    # los-helper should make BotRoutines.  BotReactions.
+    # I feel good about that!  
+    # So, BotReactions class will make an object for each reaction.
+    # MudReaderThread will go through a the list of reactions, match each regex in it, 
+    # and call the notify of it.  
+    # Flesh out the idea:
+    #  BotReactions.py creates several BotReaction objects which each have a regex 
+    #  and a notify function which uses CommandHandler.  The objects get registered 
+    #  by MudReaderHandler.register_reaction and get added to a list owned by 
+    #  MudReaderThread.  MudReaderThread doesn't have to know any of the regexes 
+    #  nor notifies, just loops through all of them.
+    # I hope this works!!!
+    
+    def register_reaction(self, BotReaction):
+        """ Registers the reaction in MudReaderThread's list of regexes 
+        to check and call notify on."""
+        self.MudReaderThread.BotReactionList.append(BotReaction)
+        
+    def unregister_reaction(self, BotReaction):
+        """ Removes a specific reaction from the list if it is still there """
+        if(self.MudReaderThread.BotReactionList.__contains__(BotReaction)):
+            self.MudReaderThread.BotReactionList.remove(BotReaction)
+        
+    def unregister_reactions(self):
+        self.MudReaderThread.BotReactionList = []
+        
+
+    
+    
              
         
 # end MudReaderHandler class

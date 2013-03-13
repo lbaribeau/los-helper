@@ -12,7 +12,7 @@ from Exceptions import *
 
 class BotThread(threading.Thread):
 
-    ConsoleHandler = newConsoleHandler()
+    ConsoleHandler = newConsoleHandler() #TODO: I don't understand why this would be here.
     def __init__(self, starting_path=None, character_in=None, commandHandler=None, 
 				 mudReaderHandler_in=None, inventory_in=None):
         if(starting_path==None and character_in==None and commandHandler==None 
@@ -44,6 +44,10 @@ class BotThread(threading.Thread):
             
         atexit.register(self.stop)
 
+#    def _set_up_event_driven_actions(self):
+#        magentaprint("Inside set_up_event_driven_actions")
+#        self.mudReaderHandler.register
+
 
     def stop(self):
         magentaprint("Robot: stopping....   Urrrrrchhhchch!!")
@@ -65,7 +69,7 @@ class BotThread(threading.Thread):
             # Always healed while traveling.
                     
         #global MOBS_JOINED_IN
-        self.__stopping = False
+        self.__stopping = False 
 
         # Here is where the fun begins.
         while(not self.__stopping):

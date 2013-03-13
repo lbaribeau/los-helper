@@ -8,7 +8,7 @@ import sys
 import select
 
 from misc_functions import *
-from CommandHandler import *
+#from CommandHandler import *
 from KillThread import *
 from CastThread import *
 from MyBuffer import *
@@ -51,6 +51,8 @@ class MudReaderThread ( threading.Thread ):
         self.CHECK_CAST_FLAG = False
         self.CHECK_CAST_CONTINUE = False
         self.CHECK_CAST_MONSTER_GONE = False
+        
+        self.BotReactionList = []
         
         # Internal Variables
         # variables used for the MUD_output_check function
@@ -205,8 +207,16 @@ class MudReaderThread ( threading.Thread ):
 
             ###### Now match the buffer with some REs  #######
             text_buffer_trunc = 0
+            
+            #### Bot Reactions ####
+            
+            for reaction in self.BotReactionList:
+                M_obj = re.search(reaction.regex, text_buffer)
+                if(M_obj != None):
+                    reaction.notify(M_obj)
+                    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
-            #### INFO screen stuff ###
+            #### INFO screen stuff ####
             # Note: First instinct was to parse whole screen at once but that 
             # doesn't seem necessary now. 
             # Nor does it seem necessary to even have a flag with the Bot... but the bot may need that.
@@ -313,7 +323,7 @@ class MudReaderThread ( threading.Thread ):
                     # reset cast clock
                 #self.CommandHandler_inst.stop_CastThread()
                 self.CHECK_CAST_FLAG = False
-                self.CHECK_CAST_CONTINUE = false
+                self.CHECK_CAST_CONTINUE = False
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
             M_obj = re.search("You don't know that spell\.", text_buffer)
@@ -321,7 +331,7 @@ class MudReaderThread ( threading.Thread ):
                 self.character_inst.CAST_CLK = time.time() - self.character_inst.CAST_WAIT
                 # Adding CAST flags... why wasn't there a self.CommandHandler_inst.stop_CastThread() here?
                 self.CHECK_CAST_FLAG = False
-                self.CHECK_CAST_CONTINUE = false 
+                self.CHECK_CAST_CONTINUE = False 
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("You cannot meet the casting cost!", text_buffer)
             if(M_obj):
@@ -329,7 +339,7 @@ class MudReaderThread ( threading.Thread ):
                     # reset cast clock
                 #self.CommandHandler_inst.stop_CastThread()
                 self.CHECK_CAST_FLAG = False
-                self.CHECK_CAST_CONTINUE = false 
+                self.CHECK_CAST_CONTINUE = False 
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("Spell name is not unique\.", text_buffer)
             if(M_obj):
@@ -337,7 +347,7 @@ class MudReaderThread ( threading.Thread ):
                     # reset cast clock
                 #self.CommandHandler_inst.stop_CastThread()
                 self.CHECK_CAST_FLAG = False
-                self.CHECK_CAST_CONTINUE = false 
+                self.CHECK_CAST_CONTINUE = False 
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("Cast what\?", text_buffer)
             if(M_obj):
@@ -345,7 +355,7 @@ class MudReaderThread ( threading.Thread ):
                     # reset cast clock
                 #self.CommandHandler_inst.stop_CastThread()
                 self.CHECK_CAST_FLAG = False
-                self.CHECK_CAST_CONTINUE = false
+                self.CHECK_CAST_CONTINUE = False
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("Your spell fails\.", text_buffer)
             if(M_obj):
