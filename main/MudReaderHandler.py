@@ -141,7 +141,7 @@ class MudReaderHandler:
         
     
     
-# Check for monsters not valie at all because we can only check 
+# Check for monsters not valid at all because we can only check 
 # for text that hasn't come yet!
 #    def check_for_monsters(self, timeout=5.0):
         
@@ -266,26 +266,27 @@ class MudReaderHandler:
                         # Not that it matters.  It won't time out. 
          
     
-    def watch_attack_combat(self):
-            # Called by KillThread
-            # Algorithm:  Just send to MudReaderHandler.watch_attack_combat(timeout).
-            # MudReaderHandler will wait 'timeout' seconds for the attack to resolve.
-            # The attack will resolve within 0.2 seconds or so.  
-            # Then, however, it will also continue to wait until the attack cooldown 
-            # is over, for any text that should make us quit.
-            # It will return 1 for continue and 0 to quit.
-            
-            # This also works for the case where the player changes the target or 
-            # stops it on his own, because that will cause a different thread 
-            # to change self.target or to set __stopping, niether action of 
-            # which would be undone by this algorithm.
-            
-            # Only call after sending a kill command.
-        
-        # First, wait for the regular attack info
-        self.MudReaderThread.check_kill_flags.waitflag = True
-              
-        return self.poll_flag(self.MudReaderThread.check_kill_flags)
+    # Deprecated by KillThread's BotReactions
+    #def watch_attack_combat(self):
+    #        # Called by KillThread
+    #        # Algorithm:  Just send to MudReaderHandler.watch_attack_combat(timeout).
+    #        # MudReaderHandler will wait 'timeout' seconds for the attack to resolve.
+    #        # The attack will resolve within 0.2 seconds or so.  
+    #        # Then, however, it will also continue to wait until the attack cooldown 
+    #        # is over, for any text that should make us quit.
+    #        # It will return 1 for continue and 0 to quit.
+    #        
+    #        # This also works for the case where the player changes the target or 
+    #        # stops it on his own, because that will cause a different thread 
+    #        # to change self.target or to set __stopping, niether action of 
+    #        # which would be undone by this algorithm.
+    #        
+    #        # Only call after sending a kill command.
+    #    
+    #    # First, wait for the regular attack info
+    #    self.MudReaderThread.check_kill_flags.waitflag = True
+    #          
+    #    return self.poll_flag(self.MudReaderThread.check_kill_flags)
         
     
     def poll_flag(self, check_flags):

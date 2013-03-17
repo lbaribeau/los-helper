@@ -110,6 +110,7 @@
 
 # TODO LIST (slash WISH LIST):
 #
+# catch "Please wait x more seconds" on quit attempt
 # haste thread (hc and sh), search thread (searchc and ssearch)
 # - Rewrite KillThread and CastThread to use the MudReader 
 #   instead of the other way around.
@@ -264,6 +265,8 @@ def main():
     ### DEPENDENCY INJECTION ###
 
     tn = connect_to_MUD()  # Sets up telnet object
+    
+    ConsoleHandler = newConsoleHandler() 
 
     character = Character()
    
@@ -274,7 +277,7 @@ def main():
     mudListenerThread = MudListenerThread(tn, MUDBuffer)
     mudListenerThread.start()
     
-    mudReaderThread = MudReaderThread(MUDBuffer, character)
+    mudReaderThread = MudReaderThread(MUDBuffer, character, ConsoleHandler)
     mudReaderThread.start()
     
     # MudReaderHandler: Thread which supplies a couple of 
@@ -312,7 +315,7 @@ def main():
     tn.close();
     #That's all, folks!
 
-    time.sleep(6) 
+    time.sleep(10) #ctrl+c during this sleep seems to work for now 
     
 
 

@@ -12,7 +12,6 @@ from Exceptions import *
 
 class BotThread(threading.Thread):
 
-    ConsoleHandler = newConsoleHandler() #TODO: I don't understand why this would be here.
     def __init__(self, starting_path=None, character_in=None, commandHandler=None, 
 				 mudReaderHandler_in=None, inventory_in=None):
         if(starting_path==None and character_in==None and commandHandler==None 
@@ -360,7 +359,7 @@ class BotThread(threading.Thread):
         return True 
     
     def heal_up(self):
-        #global CastThread_inst
+        #global CastThread
         
         heal_spell = "vig"
         heal_cost = 2
@@ -384,8 +383,8 @@ class BotThread(threading.Thread):
             
             time.sleep(0.05)     
 
-        #if(CastThread_inst != None and CastThread_inst.is_alive()):
-        #    CastThread_inst.stop()
+        #if(CastThread != None and CastThread.is_alive()):
+        #    CastThread.stop()
         self.commandHandler.stop_CastThread()
         
         magentaprint("Exiting heal_up")
@@ -859,8 +858,8 @@ class BotThread(threading.Thread):
                         # are NOT in sync (not desired so that stray casts 
                         # don't go off when mob dies,) and maybe mob was one-shot.
 
-        while(self.commandHandler.KillThread_inst != None and self.commandHandler.KillThread_inst
-              and self.commandHandler.KillThread_inst.get_stopping() == False):
+        while(self.commandHandler.KillThread != None and self.commandHandler.KillThread
+              and self.commandHandler.KillThread.get_stopping() == False):
             # Just wait around and do stuff until the kk thread is done.
             
             if(not self.character.BLACK_MAGIC):
@@ -868,7 +867,7 @@ class BotThread(threading.Thread):
                 if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL):
                     if(self.character.MANA >= vigor_cost):
                         # Start healing if not already
-                        if(self.commandHandler.CastThread_inst == None or not self.commandHandler.CastThread_inst.is_alive()):
+                        if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
                             self.commandHandler.user_cc("vig")
                     else:
                         # Stop the thread if MANA is too low.
@@ -879,7 +878,7 @@ class BotThread(threading.Thread):
             else:
                 # Cast black magic
                 if(self.character.MANA >= black_magic_spell_cost):
-                    if(self.commandHandler.CastThread_inst == None or not self.commandHandler.CastThread_inst.is_alive()):
+                    if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
                         self.commandHandler.user_cc(self.character.FAVOURITE_SPELL + " " + monster)
                 else:
                     self.commandHandler.stop_CastThread()
@@ -897,7 +896,7 @@ class BotThread(threading.Thread):
                 
 
         # Done.  Hopefully the mob is dead.
-        #if(CastThread_inst != None and CastThread_inst.is_alive()):
+        #if(CastThread != None and CastThread.is_alive()):
         #    user_sc()
         self.commandHandler.stop_CastThread()    
         

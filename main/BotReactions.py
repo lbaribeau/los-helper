@@ -36,8 +36,6 @@ class GenericBotReaction(BotReaction):
     def notify(self, M_obj):
         for cmd in telnet_commands:
             commandHandler.process(cmd)
-        
-            
             
 # add init with character and commandHandler
 # make a reaction type so that the kill thread can inherit it and define notify
