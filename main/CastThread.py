@@ -24,15 +24,13 @@ class CastThread(CombatThread):
         # BotReactions will be called and used to stop the thread,
         # while character will be written with the usual manual method.
         # As such, the list of regexes causing caststop follows:
-        _s_numbered = "( 1st| 2nd| 3rd| 4th| 5th| 6th| 7th| 8th| 9th| 10th| 11th| 12th| 13th| 14th| 15th| 16th| 17th| 18th| 19th)?"
-        self._reactions.append(ThreadStopper("Your attack overwhelms the" + _s_numbered + " (.+?) and (s?he|it) collapses!",self))  
-        self._reactions.append(ThreadStopper("The" + _s_numbered + " (.+?) flees to the (.+?)\.",self)) 
         self._reactions.append(ThreadStopper("That spell does not exist\.",self))
         self._reactions.append(ThreadStopper("You don't know that spell\.",self))
         self._reactions.append(ThreadStopper("You cannot meet the casting cost!",self))
         self._reactions.append(ThreadStopper("Spell name is not unique\.",self))    
         self._reactions.append(ThreadStopper("Cast what\?",self))  
         self._reactions.append(ThreadStopper("They are not here\.",self))  
+        self._reactions.append(ThreadStopper("Cast at whom\?",self))  
 
         #atexit.register(self.stop)
 
@@ -44,7 +42,9 @@ class CastThread(CombatThread):
         # Called by start().  Need to add a parameter argv.  Didn't work.
         # Assumption is that it is constructed and started at the same time.
         self._stopping = False
+        self._do_reactions()
         wait_for_cast_ready(self.Character)
+
         while not self._stopping:
             # TODO: Monitor current spell and current mana and stop if out
             # of mana.
@@ -53,6 +53,8 @@ class CastThread(CombatThread):
             #tn.write(PREV_COMMAND)
             self.telnet.write("cast " + self.spell + " " + self.target + "\n")
             wait_for_cast_ready(self.Character)
+
+        self._undo_reactions()
 
     def _do_reactions(self):
         """ Makes and registers threadstoppers for a castthread """

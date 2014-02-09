@@ -16,10 +16,10 @@ class Character:
         def getClass(self):
             return self._char_class
         
-        self.RACE = "Hobbit"
-        self.TITLE = "Stalker"
+        self.RACE = "Half-Elf"
+        self.TITLE = "Sonneteer"
         
-        self.LEVEL = 8
+        self.LEVEL = 4
 #        self.preferred_alignment = "grey"
         #self.WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #self.MAGIC_SKILLS= [0, 0, 0, 0, 0]
@@ -34,7 +34,7 @@ class Character:
         self.AURA_SCALE = 8 #Current aura
         self.AURA = self.AURA_LIST[self.AURA_SCALE]
         
-        self.AURA_PREFERRED_SCALE = 10 # pale blue
+        self.AURA_PREFERRED_SCALE = 9  # dusty blue
         self.AURA_PREFERRED = self.AURA_LIST[self.AURA_PREFERRED_SCALE]
         
         self.AURA_LAST_UPDATE = -300
@@ -43,7 +43,7 @@ class Character:
         self.GOLD = 0
         
         self.BLACK_MAGIC = True
-        self.FAVOURITE_SPELL = "hurt"
+        self.FAVOURITE_SPELL = "burn"
         
         self.ATTACK_PERIOD = 3 #sec
         self.ATTACK_PERIOD_HASTE = 2 #sec
@@ -89,7 +89,7 @@ class Character:
             self.HEALTH_TO_HEAL = 31
             self.HEALTH_TO_FLEE = 11
             self.MAX_MANA = 12
-            self.MANA_TO_ENGAGE = 9
+            self.MANA_TO_ENGAGE = 6
         elif(self.LEVEL <= 5):
             self.HEALTH_TO_HEAL= 37
             self.HEALTH_TO_FLEE = 11
@@ -137,16 +137,19 @@ class Character:
         # 8-15 exp
         self.__lvl2_monsters = [
             "hawker", "barmaid", "smelly beggar", "black crow"
-            "sheep", "goose", "penitent", "singer", "musician", "spiv",
+            "sheep", "goose", "singer", "musician", "spiv",
             "bidder", "dairy cow", "scholar", "juggler",  #"acolyte",
             "shepherd", "gazelle", 'dancer', 'jongleur',
-            'tabby cat', 'clerk', 'stablehand', 'bladesman'] 
+            'tabby cat', 'clerk', 'stablehand', 'bladesman',
+            "cook's assistant", "miner's assistant",
+            #"penitent" 
+            ] 
         # acolytes are good (chalices) but can cause
         # some difficulty... they pile up north of the
         # chapel and kill you when you least expect
         self.__lvl2_red_monsters = [ 
 			"kobold sentry", "blond hooker", "sultry hooker", 
-			"kobold", "spiv",
+			"kobold", "spiv", "drunken miner", 
             "kobold miner", "kobold archer", 'angry hooker',
             "angry kobold", 'red axer', 'pickpocket', 'thug'
         	] 
@@ -160,26 +163,34 @@ class Character:
             "market official", #"robed pilgrim", 
             "street trader", "field worker", "harvester", "horse", "cow",
             "doorman", "stilt walker",  "messenger", "cashier",
-            "thatcher",  "tax inspector", "theatre goer", "drunken miner", 
-		'journeyman' ] 
-	self.__lvl3_red_monsters = [
+            "thatcher",  "tax inspector", 
+		    'journeyman', "human miner", "hobbitish miner", "hawk"
+            #"miner's mule"
+            ] 
+
+        self.__lvl3_red_monsters = [
             "large kobold", "insane kobold", "kobold scout",
             'drunk'
             ]
         # 45-60 exp
         self.__lvl4_monsters = [
-            "actor", "actress", "grip","merchant", 
-            "journeyman", "logger", 'trader',
+            "actor", #"actress", 
+            "grip", "theatre goer",
+            "merchant", "journeyman", "logger", 'trader',
             "butcher", "young knight", "acrobat", 
-            "logger", #"auctioneer", # auctioneers are darn annoying, leave them out!
+            #"auctioneer", # auctioneers are darn annoying, leave them out!
             "militia soldier", "carpenter", "stagehand",
-            'hungry spider', 'cook']
+            'hungry spider', 'cook', 'joiner',
+            #'miner'
+            ]
         # hungry spiders are hostile
         self.__lvl4_red_monsters = [
             "kobold shaman", "drunken trouble-maker", "kobold champion"]
         
         self.__lvl5_monsters = [
 			"dwarven farm hand", "dwarven barmaid", 
+            "fort sentry", "fur trader", "aristocrat",
+            "seeker"  # seekers are unfortunately quite difficult
             ]
         self.__lvl5_red_monsters = [
             'large bandit',
@@ -189,12 +200,13 @@ class Character:
         # aren't actually level 5...
         self.__lvl6_monsters = [
 			"dwarven field worker", "dwarven bartender", "school teacher",
-			'lyrist', "nobleman", "fort sentry", "fur trader", 
-			"bandit swordsman", "bull", "hunter", 'usher',
-            'sword swallower', 'archer'
+			'lyrist', "nobleman", 
+			"bull", "hunter", 'usher',
+            'sword swallower', 'archer',
+            #'sentry' stand in pairs...
 			]
         self.__lvl6_red_monsters = [
-            'gnoll sentry'
+            'gnoll sentry', "bandit swordsman"
             ]
             # bull and hunter might be wrong (too high).
         self.__lvl7_monsters = [
@@ -204,7 +216,8 @@ class Character:
 			]
         # giant spiders are hostile
         self.__lvl8_monsters = [
-            'owlbear'
+            'owlbear',
+            #'mine manager' #?
 			]
         self.__lvl9_monsters = [
 			"dwarven blacksmith"
@@ -216,7 +229,8 @@ class Character:
         self.__preferred_lvl_1_2_monsters = [
             "oaf", "wanderer", #"acolyte", 
             "thug", "spiv", "kobold sentry", "tired hooker", 
-            "blond hooker", "angry hooker", "journeyman" ] 
+            "blond hooker", "angry hooker", "sultry hooker", 
+            "journeyman" ] 
         # prefer kobold sentry for missile weapon drops (bow/spear)
         
         
@@ -270,23 +284,29 @@ class Character:
 
         self.INVENTORY_LIST = []
         # should probably depend on level.
-        self.KEEP_LIST = ["large bag", "large sack", "silver chalice",
-            "steel bottle", 'war hammer'
-            "adamantine sword", 'adamantine axe', "claymore", 
-            "poison ring", "spider leg", "small restorative", 
-            "spear", "bolos", 'javelin', 
+        self.KEEP_LIST = ["large bag", "large sack", 
+            "silver chalice", "steel bottle", "small restorative", 'heavy crossbow', 
+            'glowing potion', "chicken soup",
+            # weapons
+            'war hammer', "adamantine sword", 'adamantine axe', "claymore", 
+            "spider leg", 
+            "spear", "bolos", 'javelin', "long bow", 
             "heathen amulet",
-            "hard cap", "hard gloves", "hard boots", "panteloons",
+            "broad sword",
+            # armour
+            "hard cap", "hard gloves", "hard boots", "padded hat",
+            "mountain gloves", "mountain boots", "mountain boots with crampons",
             "travellers cross", "leather mask", "leather collar",
-            "studded leather collar", "mountain boots with crampons",
-            "mountain gloves",
+            "studded leather collar", "studded leather sleeves",
+            "studded leather boots", "studded leather pants",
             "chain mail armour", 'chain mail sleeves', 'chain mail leggings', 
             'chain mail gloves', 'chain mail hood', 'chain mail boots', 
             "ring mail armour", "ring mail sleeves", "ring mail leggings", 
             "ring mail hood", "ring mail gauntlets", "leather collar", 
-            "furry cloak", 
-            'heavy crossbow', 'lion charm', 
-            'glowing potion' ] 
+            "furry cloak", "enchanted indigo cloak",
+            'lion charm', "poison ring", 
+            #'steel mask' # the bot slowly collects these 
+            ] 
        
         self.MUD_RETURN_ITEM_SOLD = False
 

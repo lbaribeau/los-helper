@@ -380,24 +380,57 @@ class MudReaderHandler:
     def register_reaction(self, BotReaction):
         """ Registers the reaction in MudReaderThread's list of regexes 
         to check and call notify on."""
+        BotReaction.unregistered = False
         self.MudReaderThread.BotReactionList.append(BotReaction)
-        
+        # print "registering reaction!"
+        # print self.MudReaderThread.BotReactionList
+
     def unregister_reaction(self, BotReaction):
         """ Removes a specific reaction from the list if it is still there """
         if(self.MudReaderThread.BotReactionList.__contains__(BotReaction)):
-            self.MudReaderThread.BotReactionList.remove(BotReaction)
+            #self.MudReaderThread.BotReactionList.remove(BotReaction) 
+                # Was causing list problem...
+            BotReaction.unregistered = True
+            #magentaprint("Unregistered " + str(BotReaction))  
+            # Should unregister all three killthread reactions... Yup
+        # This ends up occurring while the list is being iterated on.
+        # How about marking it for removal, and letting the removal 
+        # happen outside of the loop.
+        # TODO: Probably don't need the if statement!
         
     def unregister_reactions(self):
         self.MudReaderThread.BotReactionList = []
+
+    #def wait_for_ability_feedback(self, CoolAbility):
+        # Could do a flaggy thing or reacations.  Reactions, obviously.
+        # So, if we see CoolAbility.getSuccessMudText, return 1, and 
+        # CoolAbility.getFailureMudText, 0, and there's also a timeout 
+        # possibility.  
+
+        # We want to generify this use case (print a command and wait for 
+        # feedback,)  so have we done that enough??  MudReaderHandler.
+        # doWholeCommand.  That'd need a command object w/ expected result 
+        # and optional failure text.  Should be do-able.
+        # pass
+
+    def wait_for_feedback(self, success_text, failure_text):
+        # Use a reaction.  It's not really a "Bot" reaction any more... but it's good 
+        # to reuse code.  It should be a MUDReaction.
+        # Ya... implementing notify on 'self' is the way to do this... don't use 
+        # mudReaderHandler at all.
+        # CoolAbilityThread:
+        #  MudReaderThread.BotReactionList.append(self)
+
+        # def notify():
+        #     self.stop()
+        pass
+        # myReaction = GenericBotReaction()
+
+
+
         
 
-    
-    
-             
-        
-# end MudReaderHandler class
-
-
-
+# TODO
+#    def check_for_text(possibility1, possibility2
 
     

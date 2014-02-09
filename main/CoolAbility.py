@@ -19,96 +19,96 @@ class CoolAbility:
     wither, touch, turn.  Things that drastically affect combat such as 
     circle, bash, backstab, steal, are NOT CoolAbilities.  They are worked 
     into the CharacterClass a little differently.'''    
-    def getCommand(self): 
+    def command(self): 
         abstract()
     #TODO: Rename to getSuccessCooldown() and getFailureCooldown()
-    def getCooldownInSecondsAfterSuccess(self): 
+    def cooldown_in_seconds_after_success(self): 
         abstract()
-    def getCooldownInSecondsAfterFail(self):
+    def cooldown_in_seconds_after_failure(self):
         abstract()
-    def getUseForCombat(self):
+    def use_for_combat(self):
         ''' A boolean indicating whether the CoolAbility helps in combat.
         If false, assume it's useful in the chapel (ie. pray)''' 
         abstract()
-    def getNeedsTarget(self):
+    def needs_target(self):
         abstract()
-    def getNeedsUndeadTarget(self):
+    def needs_undead_target(self):
         abstract()
-    def getSharesCooldownWithAttack(self):
+    def shares_cooldown_with_attack(self):
         abstract()
-    def getMudTextThatMeansSuccess(self):
+    def success_mud_text(self):
         abstract()
-    def getMudTextThatMeansFailure(self):
+    def failure_mud_text(self):
         abstract()
-    def getMudTextThatMeansItWoreOff(self):
+    def wear_off_mud_text(self):
         abstract()
         
 class Haste(CoolAbility):
-    def getCommand(self):
+    def command(self):
         return 'haste'
-    def getCoolDownInSecondsAfterSuccess(self):
+    def cooldown_in_seconds_after_success(self):
         return 600
-    def getCoolDownInSecondsAfterFail(self):
+    def cooldown_in_seconds_after_failure(self):
         return 10
-    def getUseForCombat(self):
+    def use_for_combat(self):
         return True
-    def getNeedsTarget(self):
+    def needs_target(self):
         return False
-    def getNeedsUndeadTarget(self):
+    def needs_undead_target(self):
         return False
-    def getSharesCooldownWithAttack(self):
+    def shares_cooldown_with_attack(self):
         return False
-    def getMudTextThatMeansSuccess(self):
+    def success_mud_text(self):
         return 'You feel yourself moving faster'
-    def getMudTextThatMeansFailure(self):
+    def failure_mud_text(self):
         return 'Your attempt to hasten failed.'
-    def getMudTextThatMeansItWoreOff(self):
+    def wear_off_mud_text(self):
         return 'You feel slower.'
     
 class Pray(CoolAbility):
-    def getCommand(self):
+    def command(self):
         return 'pray' 
-    def getCoolDownInSecondsAfterSuccess(self):
+    def cooldown_in_seconds_after_success(self):
         return 600
-    def getCoolDownInSecondsAfterFail(self):
+    def cooldown_in_seconds_after_failure(self):
         return 10
-    def getUseForCombat(self):
+    def use_for_combat(self):
         return False
-    def getNeedsTarget(self):
+    def needs_target(self):
         return False
-    def getNeedsUndeadTarget(self):
+    def needs_undead_target(self):
         return False
-    def getSharesCooldownWithAttack(self):
+    def shares_cooldown_with_attack(self):
         return False
-    def getMudTextThatMeansSuccess(self):
+    def success_mud_text(self):
         return 'You feel extremely pious.'
-    def getMudTextThatMeansFailure(self):
+    def failure_mud_text(self):
         return 'Your prayers were not answered.'
-    def getMudTextThatMeansItWoreOff(self):
+    def wear_off_mud_text(self):
         return 'You feel less pious.'
     #Unneeded: You've already prayed.
     #Duration 5 minutes
     
 class Barkskin(CoolAbility):
-    def getCommand(self):
+    def command(self):
         return 'barkskin' 
-    def getCoolDownInSecondsAfterSuccess(self):
+    def cooldown_in_seconds_after_success(self):
         return 600
-    def getCoolDownInSecondsAfterFail(self):
+    def cooldown_in_seconds_after_failure(self):
         return 10 #(?)
-    def getUseForCombat(self):
+    def use_for_combat(self):
         return True
-    def getNeedsTarget(self):
+    def needs_target(self):
         return False
-    def getNeedsUndeadTarget(self):
+    def needs_undead_target(self):
         return False
-    def getSharesCooldownWithAttack(self):
+    def shares_cooldown_with_attack(self):
         return False
-    def getMudTextThatMeansSuccess(self):
+    def success_mud_text(self):
         return 'You feel your skin thickening and hardening.'
-    def getMudTextThatMeansFailure(self):
+    def failure_mud_text(self):
         return 'Your attempt to invoke barkskin failed.'
-    def getMudTextThatMeansItWoreOff(self):
+    def wear_off_mud_text(self):
         return 'Your skin softens.'
     #Unneeded: Your skin is already hardened.
     #Duration 2 minutes(?)
@@ -116,113 +116,113 @@ class Barkskin(CoolAbility):
     
 class Berserk(CoolAbility):
     #TODO: finish defining Berserk 
-    def getCommand(self):
+    def command(self):
         return 'berserk' 
-    def getCoolDownInSecondsAfterSuccess(self):
+    def cooldown_in_seconds_after_success(self):
         return abstract()  
-    def getCoolDownInSecondsAfterFail(self):
+    def cooldown_in_seconds_after_failure(self):
         return abstract()  
-    def getUseForCombat(self):
+    def use_for_combat(self):
         return False
-    def getNeedsTarget(self):
+    def needs_target(self):
         return False
-    def getNeedsUndeadTarget(self):
+    def needs_undead_target(self):
         return False
-    def getSharesCooldownWithAttack(self):
+    def shares_cooldown_with_attack(self):
         return False #not sure of this 
-    def getMudTextThatMeansSuccess(self):
+    def success_mud_text(self):
         return abstract() 
-    def getMudTextThatMeansFailure(self):
+    def failure_mud_text(self):
         return abstract() 
-    def getMudTextThatMeansItWoreOff(self):
+    def wear_off_mud_text(self):
         return abstract()
     
 class Meditate(CoolAbility):
     #TODO: finish defining Meditate 
-    def getCommand(self):
+    def command(self):
         return 'meditate' 
-    def getCoolDownInSecondsAfterSuccess(self):
+    def cooldown_in_seconds_after_success(self):
         return 600 #guess
-    def getCoolDownInSecondsAfterFail(self):
+    def cooldown_in_seconds_after_failure(self):
         return 10 #guess
-    def getUseForCombat(self):
+    def use_for_combat(self):
         return False
-    def getNeedsTarget(self):
+    def needs_target(self):
         return False
-    def getNeedsUndeadTarget(self):
+    def needs_undead_target(self):
         return False
-    def getSharesCooldownWithAttack(self):
+    def shares_cooldown_with_attack(self):
         return False
-    def getMudTextThatMeansSuccess(self):
+    def success_mud_text(self):
         return abstract() 
-    def getMudTextThatMeansFailure(self):
+    def failure_mud_text(self):
         return abstract() 
-    def getMudTextThatMeansItWoreOff(self):
+    def wear_off_mud_text(self):
         return abstract()
     
 class Wither(CoolAbility):
     #TODO: finish defining Wither
-    def getCommand(self): 
+    def command(self): 
         return 'wither'
-    def getCooldownInSecondsAfterSuccess(self): 
+    def cooldown_in_seconds_after_success(self): 
         return 600 #guessed
-    def getCooldownInSecondsAfterFail(self):
+    def cooldown_in_seconds_after_failure(self):
         return 30 #guessed
-    def getUseForCombat(self):
+    def use_for_combat(self):
         return True
-    def getNeedsTarget(self):
+    def needs_target(self):
         return True
-    def getNeedsUndeadTarget(self):
+    def needs_undead_target(self):
         return False
-    def getSharesCooldownWithAttack(self):
+    def shares_cooldown_with_attack(self):
         return True
-    def getMudTextThatMeansSuccess(self):
+    def success_mud_text(self):
         abstract()
-    def getMudTextThatMeansFailure(self):
+    def failure_mud_text(self):
         abstract()
-    def getMudTextThatMeansItWoreOff(self):
+    def wear_off_mud_text(self):
         abstract()
 
 class Touch:
-    def getCommand(self): 
+    def command(self): 
         return 'touch'
-    def getCooldownInSecondsAfterSuccess(self): 
+    def cooldown_in_seconds_after_success(self): 
         return 600 #guessed
-    def getCooldownInSecondsAfterFail(self):
+    def cooldown_in_seconds_after_failure(self):
         return 30 #guessed
-    def getUseForCombat(self):
+    def use_for_combat(self):
         return True
-    def getNeedsTarget(self):
+    def needs_target(self):
         return True
-    def getNeedsUndeadTarget(self):
+    def needs_undead_target(self):
         return False
-    def getSharesCooldownWithAttack(self):
+    def shares_cooldown_with_attack(self):
         return True
-    def getMudTextThatMeansSuccess(self):
+    def success_mud_text(self):
         abstract()
-    def getMudTextThatMeansFailure(self):
+    def failure_mud_text(self):
         abstract()
-    def getMudTextThatMeansItWoreOff(self):
+    def wear_off_mud_text(self):
         abstract()
 
 class Turn:
-    def getCommand(self): 
+    def command(self): 
         return 'turn'
-    def getCooldownInSecondsAfterSuccess(self): 
+    def cooldown_in_seconds_after_success(self): 
         return 600 #guessed
-    def getCooldownInSecondsAfterFail(self):
+    def cooldown_in_seconds_after_failure(self):
         return 30 #guessed
-    def getUseForCombat(self):
+    def use_for_combat(self):
         return True
-    def getNeedsTarget(self):
+    def needs_target(self):
         return True
-    def getNeedsUndeadTarget(self):
+    def needs_undead_target(self):
         return True
-    def getSharesCooldownWithAttack(self):
+    def shares_cooldown_with_attack(self):
         return True
-    def getMudTextThatMeansSuccess(self):
+    def success_mud_text(self):
         abstract()
-    def getMudTextThatMeansFailure(self):
+    def failure_mud_text(self):
         abstract()
-    def getMudTextThatMeansItWoreOff(self):
+    def wear_off_mud_text(self):
         abstract()

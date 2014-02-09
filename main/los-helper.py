@@ -110,6 +110,7 @@
 
 # TODO LIST (slash WISH LIST):
 #
+# do math on tick/vig amounts to determine when to stop vigging
 # catch "Please wait x more seconds" on quit attempt
 # haste thread (hc and sh), search thread (searchc and ssearch)
 # - Rewrite KillThread and CastThread to use the MudReader 
@@ -267,26 +268,16 @@ def main():
     tn = connect_to_MUD()  # Sets up telnet object
     
     ConsoleHandler = newConsoleHandler() 
-
     character = Character()
-   
     # Buffer used by MudListener and MudReader
     # MudListener writes to it and MudReader reads from it
     MUDBuffer = MyBuffer()
-
     mudListenerThread = MudListenerThread(tn, MUDBuffer)
     mudListenerThread.start()
-    
     mudReaderThread = MudReaderThread(MUDBuffer, character, ConsoleHandler)
     mudReaderThread.start()
-    
-    # MudReaderHandler: Thread which supplies a couple of 
-    # functions in coordinating with the MudReader, most 
-    # commonly timing related.
     mudReaderHandler = MudReaderHandler(mudReaderThread, character)
-    
     commandHandler = CommandHandler(character, mudReaderHandler, tn) 
-
     inventory = Inventory(mudReaderHandler, commandHandler, character)
 
     # Now that the MUD thread is going I can trust it to issue the 
@@ -296,6 +287,10 @@ def main():
     global bot_thread_inst
     bot_thread_inst = None
 
+    # Whenever a weapon breaks, the program will automatically try to wield 
+    # a new one:
+    set_up_auto_wield(character, mudReaderHandler, commandHandler) 
+        
     # Main thread will go to having raw_input open all the time.
     watch_user_input(mudReaderHandler, character)   
         # The MUD_read thread quits if it hits
@@ -344,8 +339,14 @@ def issue_name_and_password(tn):
 
     return
     
-
-
+def set_up_auto_wield(character, mudReaderHandler, commandHandler):
+    wield1 = WieldReaction("Your (.*?) breaks and you have to remove it\.", character, commandHandler)
+    wield2 = WieldReaction("Your (.*?) shatters\.", character, commandHandler)
+    mudReaderHandler.register_reaction(wield1)
+    mudReaderHandler.register_reaction(wield2)
+    return
+    
+    
 def watch_user_input(mudReaderHandler, character):
     
     # This thread watches user input.  For now it will shovel everything
@@ -387,8 +388,7 @@ def watch_user_input(mudReaderHandler, character):
             stop_bot()
         elif(re.match("fle?$|flee$", user_input)):
             stop_bot()
-            commandHandler.process(user_input)  # CommandHandler does 
-                                                # everything except the bot.
+            commandHandler.process(user_input)  
         else:
             commandHandler.process(user_input)
         
@@ -489,7 +489,6 @@ def start_bot(user_input, character, commandHandler):
     if (bot_thread_inst != None and bot_thread_inst.is_alive()):
         magentaprint("It's already going, you'll have to stop it.  Use \"stop\".")
     else:
-        register_bot_reactions()
         bot_thread_inst = BotThread(starting_path, character, 
                                         commandHandler, mudReaderHandler,
                                         inventory)
@@ -497,19 +496,6 @@ def start_bot(user_input, character, commandHandler):
         bot_thread_inst.start()
 
     return
-
-def register_bot_reactions():
-    global mudReaderHandler
-    global character
-    global commandHandler
-    
-    wield1 = WieldReaction("Your (.*?) breaks and you have to remove it\.", character, commandHandler)
-    wield2 = WieldReaction("Your (.*?) shatters\.", character, commandHandler)
-    mudReaderHandler.register_reaction(wield1)
-    mudReaderHandler.register_reaction(wield2)
-    
-    return
-    
 
 def stop_bot():
     global bot_thread_inst

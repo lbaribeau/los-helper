@@ -95,7 +95,7 @@ class CommandHandler:
                 # That doesn't seem right for user entering full 'wield'... 
             #PREV_COMMAND = user_input
             self.tn.write(user_input + "\n")
-        elif(re.match("wie?2 +([a-zA-Z]+ +\d*)", user_input)):
+        elif(re.match("wie?2 +[a-zA-Z]+( +\d+)?", user_input)):
             # Wie2 for rangers can wield and second the same weapon in one command
             self.user_wie2(user_input[4:].lstrip())
         elif(re.match("fle?$|flee$", user_input)):
@@ -131,7 +131,10 @@ class CommandHandler:
         elif(re.match("MOBS_ATTACKING", user_input)):
             magentaprint(self.Character.MOBS_ATTACKING)
         elif(re.match("MONSTER_KILL_LIST", user_input)):
-            magentaprint(str(self.Character.MONSTER_KILL_LIST))            
+            magentaprint(str(self.Character.MONSTER_KILL_LIST))
+        elif(re.match("reactionlist", user_input)):
+            for r in self.MudReaderHandler.MudReaderThread.BotReactionList:
+                magentaprint('    ' + str(r))
         else: # Doesn't match any command we are looking for
             self.tn.write(user_input + "\n") # Just shovel to telnet.
 
@@ -352,18 +355,7 @@ class CommandHandler:
     #    global WEAPON2
     #    global MOVE_WAIT, MOVE_CLK, ATTACK_WAIT, ATTACK_CLK, CAST_WAIT, CAST_CLK
         #global character_inst
-
-
-        # Stop the bot.
-        # NOPE: NOW TRUSTING HIGHER LEVEL TO STOP BOT (NOT IN MY SCOPE)
-        #if(bot_thread_inst != None and bot_thread_inst.is_alive()):
-        #    bot_thread_inst.stop()
         
-        # Stop combat threads.
-        #if(KillThread != None and KillThread.is_alive()):
-        #    KillThread.stop()
-        #if(CastThread != None and CastThread.is_alive()):
-        #    CastThread.stop()
         self.stop_KillThread()
         self.stop_CastThread()
 

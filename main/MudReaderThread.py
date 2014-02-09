@@ -17,8 +17,6 @@ class MudReaderThread ( threading.Thread ):
     """This thread watches the the MUD output and appends it 
     to the buffer for the MudReaderThread to read it."""
     
-    #ConsoleHandler = newConsoleHandler()
-
     def __init__(self, MUD_buffer, Character, ConsoleHandler):
         Thread.__init__(self)       
         # Constants
@@ -45,7 +43,7 @@ class MudReaderThread ( threading.Thread ):
         #self.CHECK_KILL_FLAG = False
         #self.CHECK_KILL_CONTINUE = False
         #self.CHECK_KILL_MONSTER_GONE = False # This one isn't used yet, I think it's to react to when a monster flees
-        self.check_kill_flags = MyMudWaiterFlags()
+        #self.check_kill_flags = MyMudWaiterFlags()
         self.CHECK_CAST_FLAG = False
         self.CHECK_CAST_CONTINUE = False
         self.CHECK_CAST_MONSTER_GONE = False
@@ -82,16 +80,12 @@ class MudReaderThread ( threading.Thread ):
             # order: alphabetical
         
         self.__stopping = False
-
         atexit.register(self.stop)
-    # end __init__
-        
+                
     def stop(self):
         self.__stopping = True
-    # end stop        
     
     def run(self):
-            
         self.__left_off_index = 0  # This is a save point index of the buffer 
                             # so that we know where in the buffer to begin 
                             # printing again.
@@ -207,13 +201,50 @@ class MudReaderThread ( threading.Thread ):
             text_buffer_trunc = 0
             
             #### Bot Reactions ####
-            
+
+            # TODO: create a flag that stops other threads from writing the list
+            # while I'm in here.  (could cause a missed reaction)
+            reactions_to_delete = []
             for reaction in self.BotReactionList:
                 M_obj = re.search(reaction.regex, text_buffer)
+
                 if(M_obj != None):
-                    reaction.notify(M_obj)
+                    # Todo: find out why not all of these get removed and they build up.
+                    # Potentially fix the insert to check for that... or better make sure 
+                    #it gets removed every time.
+                    magentaprint("MudReaderThread: calling notify on " + str(reaction))
+                    reaction.notify(M_obj)  # Bug: This can remove the reaction from the list...
+
                     text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                    
+                    # Maybe I could ASSUME here that it'll be removed?  Or do the removing?
+                    # (they can always add themselves back in notify())
+                    # Doesn't really help, still breaks the loop.
+                    # Try things from here http://stackoverflow.com/questions/1637807/modifying-list-while-iterating
+                
+                if reaction.unregistered:
+                    reactions_to_delete.append(reaction)
+
+            # Commenting following code: not fixing the loop iteration problem.
+            # Try building a list of the reactions to remove, then remove them.
+
+            # for reaction in self.BotReactionList:
+            #     if reaction.unregistered is True:
+            #         self.BotReactionList.remove(reaction)  # Nope.  Edits the list that is being iterated.
+
+            # self.BotReactionList.remove(reaction) for reaction in self.BotReactionList if reaction.unregistered is True
+                
+            reaction_counter = 0  # TODO: delete me and all reaction printing
+            for reaction in reactions_to_delete:
+                self.BotReactionList.remove(reaction)
+                reaction_counter = reaction_counter + 1
+            
+            if (reaction_counter > 0):
+                magentaprint("MudReaderThread removed " + str(reaction_counter) + 
+                             " reactions," + str(len(self.BotReactionList)) + 
+                             " reactions left.")
+                             # Seeing "2 reactions left" here is perfect (means combat threads are getting removed.)
+                             # The two reactions are the ring and wield reactions.
+
             #### Prompt ####
             M_obj = re.search("\[(.*?) H (.*?) M\]", text_buffer)
             if (M_obj):
@@ -225,8 +256,7 @@ class MudReaderThread ( threading.Thread ):
                 except ValueError:
                     # The exception is if there's a glitch in the ANSI code or
                     # character order... happens sometimes.  (Think its the
-                    # MUD's fault)  Its not critical, and I don't know how to
-                    # recover from it anyway.
+                    # MUD's fault)  Its not critical...
                     magentaprint("MudReader: Got exception when reading prompt.")
                     pass
 
@@ -244,8 +274,9 @@ class MudReaderThread ( threading.Thread ):
                 self.Character.LEVEL = re.search("\d+",M_obj.group(4)).group(0)
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 #magentaprint("MudReader got name, race, class, level: %s %s %s %s" % 
-                #             (self.Character.NAME, self.Character.RACE, 
-                #              self.Character.TITLE, self.Character.LEVEL))
+                #            (self.Character.NAME, self.Character.RACE, 
+                #             self.Character.TITLE, self.Character.LEVEL))  
+                # Print checks out.
                 
             M_obj = re.search("Your preferred alignment is (.+?)     ",text_buffer)
             if(M_obj != None):
@@ -255,7 +286,8 @@ class MudReaderThread ( threading.Thread ):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 #magentaprint("MudReader got AURA_PREFERRED and scale: %s %s " % 
                 #             (self.Character.AURA_PREFERRED, self.Character.AURA_PREFERRED_SCALE)) 
-                
+                # Print checks out.
+
             #M_obj = re.search("     Sharp   : (\d+) +%  |  |     Earth : (\d+) +%     |",text_buffer)
             #if(M_obj != None):
             #    self.Character.SKILLS['sharp'] = M_obj.group(1)
@@ -547,6 +579,7 @@ class MudReaderThread ( threading.Thread ):
             if(M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 self.Character.MONSTER_LIST.append(M_obj.group(1))
+            # TODO: handle "Two lay followers just arrived."
             # Monsters joining in
             # Two strings which can occur
             # This one is for when a mob that is present starts fighting

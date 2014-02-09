@@ -69,6 +69,9 @@ class BotThread(threading.Thread):
                     
         #global MOBS_JOINED_IN
         self.__stopping = False 
+        
+        magentaprint("BotThread: run()")
+        self.set_up_automatic_ring_wearing()
 
         # Here is where the fun begins.
         while(not self.__stopping):
@@ -140,6 +143,8 @@ class BotThread(threading.Thread):
                         direction_list.pop(0)
                         self.character.MOBS_JOINED_IN = [] 
                         self.character.MOBS_ATTACKING = []
+                        magentaprint("Bot: Maybe it's lag... sleeping 2 sec")
+                        time.sleep(2)
                     elif(self.character.GO_NO_EXIT): 
                         # This is a tough one.  Hopefully it never 
                         # happens.  I'm gonna assume it happened 
@@ -203,10 +208,15 @@ class BotThread(threading.Thread):
                         new_target = self.decide_which_mob_to_kill(self.character.MONSTER_LIST)
                     else:
                         new_target = ""
-    magentaprint("BotThread: finished now.")
+
+        magentaprint("BotThread: finished now.")
                         
-                    
-                    
+    def set_up_automatic_ring_wearing(self):
+        """ Makes some BotReactions so that when MudReaderHandler sees us 
+        pick up a ring, we'll wear it."""
+        RingReaction = GenericBotReaction("You get .+? an? .+? ring((,.+?\.)|(\.))", self.commandHandler, ["wear ring"])
+        self.mudReaderHandler.register_reaction(RingReaction)
+        #Todo: fix for case where there's ring mail in the inventory or multiple rings are dropped                 
 
     def rest(self):
         # Check current health, rest if necessary.  Return when full health
@@ -408,8 +418,6 @@ class BotThread(threading.Thread):
 
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go")
-        # TODO Initialization is not the best place to set TOTAL PATHS...
-        # Should be set here.
         
         # Paths.
         SHOP_AND_TIP_PATH = ["out", "s", "w", 'w', 'w', 's', 's', "shop",
@@ -462,6 +470,13 @@ class BotThread(threading.Thread):
                           # Priests turn you very blue.  These fights may be 
                           # difficult.
                           # Also useful to test mobs who join in.
+                          # They're commented because kobolds are allowed when you're 
+                          # pale blue, which is one off of blue... and these guards 
+                          # and priests are dangerous unless the bot decides on his 
+                          # own to engage.  Todo: check aura here (if health is 
+                          # high enough,) and go in if all's good.  Even fight the 
+                          # priests - because the more 'good' we can get the 
+                          # more chalices we can farm.
                           #"prepare", 'e', 'ne', "door", "door", "prepare", 'sw','w',
                           "ladder", 'cave', 'out', "sw", 'w', 
                           # Comment out insane kobold (TODO: check level here)
@@ -515,6 +530,7 @@ class BotThread(threading.Thread):
         # TODO list
         # dwarven field workers (good high level content)
         # regular field workers east of Amethyst... however exit is shut during the night.
+        # loggers and sawmill operators (lots of enemies if you hang around ... perhaps add some waiting)
 
         if(self.__nextpath % 2 == 0):
             path_to_go = SHOP_AND_TIP_PATH
@@ -525,7 +541,7 @@ class BotThread(threading.Thread):
         elif(self.__nextpath == 5):
             path_to_go = MILITIA_SOLDIERS_PATH 
         elif(self.__nextpath == 7):
-            if(self.character.AURA_SCALE >= my_list_search(self.character.AURA_LIST, 'dusty blue') or
+            if(self.character.AURA_SCALE >= my_list_search(self.character.AURA_LIST, 'pale blue') or
                self.character.AURA_SCALE > self.character.AURA_PREFERRED_SCALE): 
                 magentaprint("Not going to do kobolds (aura too blue)")
                 path_to_go = PATH_TO_SKIP_WITH
@@ -549,7 +565,7 @@ class BotThread(threading.Thread):
             path_to_go = FORT_PATH
         elif(self.__nextpath == 13):
             # Do the northern bandits.
-            if(self.character.AURA_SCALE >= my_list_search(self.character.AURA_LIST, 'dusty blue') or # Dangerous to go that blue 
+            if(self.character.AURA_SCALE >= my_list_search(self.character.AURA_LIST, 'pale blue') or # Dangerous to go that blue 
                self.character.AURA_SCALE > self.character.AURA_PREFERRED_SCALE):
                 # Don't go if too blue (auto attacking mobs or just bluer that preferred)
                 magentaprint("Not going to do bandits. Current aura, and preferred: %s (>) %s" % 
