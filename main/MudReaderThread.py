@@ -17,14 +17,14 @@ class MudReaderThread ( threading.Thread ):
     """This thread watches the the MUD output and appends it 
     to the buffer for the MudReaderThread to read it."""
     
-    def __init__(self, MUD_buffer, Character, ConsoleHandler):
+    def __init__(self, MUDBuffer, Character, ConsoleHandler):
         Thread.__init__(self)       
         # Constants
         self.ASCII_EOT = 4
         self.ASCII_ESC = 27
         self.ASCII_m = 109
         
-        self.MUD_buffer = MUD_buffer
+        self.MUDBuffer = MUDBuffer
         self.Character = Character
         self.ConsoleHandler = ConsoleHandler
         #self.CommandHandler_inst = CommandHandler_inst
@@ -103,7 +103,7 @@ class MudReaderThread ( threading.Thread ):
             timeout = 3
             start_time = time.time()
             run_time = 0
-            while(self.__left_off_index == len(self.MUD_buffer.buffer) and
+            while(self.__left_off_index == len(self.MUDBuffer.buffer) and
                   run_time < timeout):
                  time.sleep(0.005) 
                  run_time = time.time() - start_time
@@ -120,11 +120,11 @@ class MudReaderThread ( threading.Thread ):
             # currently_escaping may remain false over top of a loop
             # iteration.  They're ANSI escape codes (read wikipedia)
                        
-            MUD_buffer_copy = self.copy_MUD_buffer()
-            new_left_off_index = len(self.MUD_buffer.buffer)            
+            MUDBuffer_copy = self.copy_MUDBuffer()
+            new_left_off_index = len(self.MUDBuffer.buffer)            
             
             # First print the new characters.
-            unparsed_unprinted_characters_from_server = list(MUD_buffer_copy[self.__left_off_index:len(MUD_buffer_copy)])
+            unparsed_unprinted_characters_from_server = list(MUDBuffer_copy[self.__left_off_index:len(MUDBuffer_copy)])
             self.__left_off_index = new_left_off_index
 
             text_out = ""
@@ -176,26 +176,26 @@ class MudReaderThread ( threading.Thread ):
             
             # Trim buffers if they are too long.
             L = len(text_buffer)
-            if(L >= self.MUD_buffer.size):
-                text_buffer = text_buffer[L-self.MUD_buffer.size:L]
+            if(L >= self.MUDBuffer.size):
+                text_buffer = text_buffer[L-self.MUDBuffer.size:L]
             #print "<REPRINT>"+MUD_buffer+"<\REPRINT>"
             
-            while(self.MUD_buffer.access_flag == True):
+            while(self.MUDBuffer.access_flag == True):
                 time.sleep(0.05)
-            self.MUD_buffer.access_flag = True
-            L = len(self.MUD_buffer.buffer)
-            if(L > self.MUD_buffer.size):
-                trim_amount = L - self.MUD_buffer.size
-                #left_off_index = left_off_index - (L - self.MUD_buffer.buffer.size)
-                #self.MUD_buffer.buffer = self.MUD_buffer[L-self.MUD_buffer.size:L]
+            self.MUDBuffer.access_flag = True
+            L = len(self.MUDBuffer.buffer)
+            if(L > self.MUDBuffer.size):
+                trim_amount = L - self.MUDBuffer.size
+                #left_off_index = left_off_index - (L - self.MUDBuffer.buffer.size)
+                #self.MUDBuffer.buffer = self.MUDBuffer[L-self.MUDBuffer.size:L]
                 self.__left_off_index = self.__left_off_index - trim_amount
-                self.MUD_buffer.buffer = self.MUD_buffer.buffer[trim_amount:L]
+                self.MUDBuffer.buffer = self.MUDBuffer.buffer[trim_amount:L]
                 #Looks like this is true EVERY TIME
-                #magentaprint("Trimmed MUD_buffer: "+str(trim_amount))
+                #magentaprint("Trimmed MUDBuffer: "+str(trim_amount))
                 #magentaprint("L is "+str(L))
-                #magentaprint("MUD_buffer.size is "+str(self.MUD_buffer.size))
+                #magentaprint("MUDBuffer.size is "+str(self.MUDBuffer.size))
             
-            self.MUD_buffer.access_flag = False
+            self.MUDBuffer.access_flag = False
 
             ###### Now match the buffer with some REs  #######
             text_buffer_trunc = 0
@@ -512,7 +512,7 @@ class MudReaderThread ( threading.Thread ):
             # still owned by the bot, so I don't have to be responsible and send 
             # commands.
             
-            #M_obj = re.search("Your enemy, the" + s_numbered + " (.+?) has been defeated\.", MUD_buffer)            
+            #M_obj = re.search("Your enemy, the" + s_numbered + " (.+?) has been defeated\.", MUDBuffer)            
             M_obj = re.search("Your attack overwhelms the" + s_numbered + " (.+?) and (s?he|it) collapses!", text_buffer)
             if(M_obj != None):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
@@ -760,7 +760,7 @@ class MudReaderThread ( threading.Thread ):
             #        self.__check_flag = False
             ##### DONE MATCHING RE's  WOOOOOOOO ######
         
-            #sys.stdout.write('"' + MUD_buffer[MUD_buffer_trunc] + '"') #debug.  Shows where last match took place. Gives MUD_buffer not defined error.
+            #sys.stdout.write('"' + MUDBuffer[MUD_buffer_trunc] + '"') #debug.  Shows where last match took place. Gives MUD_buffer not defined error.
             #magentaprint("Clearing text buffer.  len: %d.  trunc: %d.  last matched char: %c." % (
             #           len(text_buffer), text_buffer_trunc, text_buffer[text_buffer_trunc]))
             text_buffer = text_buffer[text_buffer_trunc:]
@@ -771,17 +771,17 @@ class MudReaderThread ( threading.Thread ):
 
     # end run  (congrats!)
 
-    def copy_MUD_buffer(self):
+    def copy_MUDBuffer(self):
         
         # Routine to copy the buffer shared with MudListenerThread.
         # Wait for access flag to go down for the read.
-        while(self.MUD_buffer.access_flag == True):
+        while(self.MUDBuffer.access_flag == True):
             time.sleep(0.05)
             
-        self.MUD_buffer.access_flag = True
-        MUD_buffer_copy = self.MUD_buffer.buffer[:]
-        self.MUD_buffer.access_flag = False
-        return MUD_buffer_copy
+        self.MUDBuffer.access_flag = True
+        MUDBuffer_copy = self.MUDBuffer.buffer[:]
+        self.MUDBuffer.access_flag = False
+        return MUDBuffer_copy
 
     def set_colour(self,ANSI_escape_sequence):
         """ This routine takes an ANSI escape sequence as an argument and
