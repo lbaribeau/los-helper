@@ -14,16 +14,6 @@ class CastThread(CombatThread):
         super(CastThread,self).__init__(Character, MudReaderHandler, telnet, target)
         self.spell = spell
         
-        # Make some ThreadStoppers.  These are BotReactions that are given to 
-        # MudReaderHandler so that we can be stopped based on Mud text.
-        # Logic between me and MudReader...
-        # All the regexes that cause the thread to stop are here.
-        # There are a couple that also cause a change to character.
-        # The ones that require both actions (cast-thread-stop and 
-        # write to character.CAST_CLK,) will just be matched twice.
-        # BotReactions will be called and used to stop the thread,
-        # while character will be written with the usual manual method.
-        # As such, the list of regexes causing caststop follows:
         self._reactions.append(ThreadStopper("That spell does not exist\.",self))
         self._reactions.append(ThreadStopper("You don't know that spell\.",self))
         self._reactions.append(ThreadStopper("You cannot meet the casting cost!",self))
@@ -31,7 +21,10 @@ class CastThread(CombatThread):
         self._reactions.append(ThreadStopper("Cast what\?",self))  
         self._reactions.append(ThreadStopper("They are not here\.",self))  
         self._reactions.append(ThreadStopper("Cast at whom\?",self))  
-
+        # Some of these regexes appear also in MudReader.  In that case, they
+        # will get matched twice - once to do the action we are talking about 
+        # here (to stop CastThread,) and again in MudReader, where they're 
+        # matched in order to reset CAST_CLK if appropriate.  
         #atexit.register(self.stop)
 
     def set_spell(self, new_spell):

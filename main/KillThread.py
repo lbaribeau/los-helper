@@ -13,8 +13,6 @@ class KillThread(CombatThread):
     def __init__(self, Character, MudReaderHandler, telnet, target):   # Constructor
         super(KillThread,self).__init__(Character, MudReaderHandler, telnet, target)
         
-        # Make some ThreadStoppers.  These are BotReactions that are given to 
-        # MudReaderHandler so that we can be stopped based on Mud text.
         self._reactions.append(ThreadStopper("You don't see that here\.",self))
         self._reactions.append(ThreadStopper("Attack what\?",self))
             
@@ -30,11 +28,6 @@ class KillThread(CombatThread):
             #PREV_COMMAND = "k " + self.target + "\n"
             #telnet.write(PREV_COMMAND)
             self.telnet.write("k " + self.target + "\n")
-            #wait_for_attack_ready(self.Character)
-            
-            # OLD (deprecated by BotReactions): 
-            #if(not self.MudReaderHandler.watch_attack_combat()): #TODO: delete watch_attack_combat
-            #    self._stopping = True
                 
             wait_for_attack_ready(self.Character)
 
@@ -55,4 +48,5 @@ class KillThread(CombatThread):
     # next.. have Kill make its own stoppers and register/unregister them.
 
     # Why use a ThreadKiller - just implement notify() on the Threads.  Because there 
-    # are multiple regexes. 
+    # are multiple regexes.  TODO: I think that changing BotReactions to use a list of regexes, 
+    # and having CombatThread inherit BotReactions could deprecate ThreadStopper. 
