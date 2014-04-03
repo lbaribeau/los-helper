@@ -19,7 +19,7 @@ class Character:
         self.RACE = "Human"
         self.TITLE = "Monk"
         
-        self.LEVEL = 4
+        self.LEVEL = 5
 #        self.preferred_alignment = "grey"
         #self.WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #self.MAGIC_SKILLS= [0, 0, 0, 0, 0]
@@ -57,6 +57,8 @@ class Character:
         self.MOVE_WAIT = 0.35 
         self.CAST_WAIT = self.CAST_PERIOD
 
+        self.MOBS_KILLED = 0
+
         # Game environment variables.
         self.HASTING = False 
 
@@ -93,10 +95,10 @@ class Character:
             self.MAX_MANA = 9
             self.MANA_TO_ENGAGE = 3
         elif(self.LEVEL <= 5):
-            self.HEALTH_TO_HEAL= 37
-            self.HEALTH_TO_FLEE = 11
-            self.MAX_MANA = 15
-            self.MANA_TO_ENGAGE = 6           
+            self.HEALTH_TO_HEAL= 31
+            self.HEALTH_TO_FLEE = 8
+            self.MAX_MANA = 6
+            self.MANA_TO_ENGAGE = 0           
         elif(self.LEVEL <= 6):
             self.HEALTH_TO_HEAL= 43
             self.HEALTH_TO_FLEE = 17
@@ -242,7 +244,7 @@ class Character:
         if(self.LEVEL < 4):
             self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
-        elif(self.LEVEL < 6):
+        elif(self.LEVEL < 5):
             self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)

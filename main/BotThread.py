@@ -735,6 +735,7 @@ class BotThread(threading.Thread):
         if(my_list_search(self.character.MOBS_ATTACKING, monster) != -1):
             #magentaprint("Bot:engage_monster: Removing " + monster + " from MOBS_ATTACKING.")
             magentaprint("I totally just killed: " + monster, False)
+            self.character.MOBS_KILLED += 1
             self.character.MOBS_ATTACKING.remove(monster)
             
         return

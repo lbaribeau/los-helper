@@ -119,10 +119,17 @@ class CommandHandler:
         elif(re.match("EXPERIENCE", user_input)):
             exp = self.Character.EXPERIENCE
             expm = str(calculate_vpm(exp))
-            magentaprint(str(exp) + " - EXP / MIN: " + expm, False)
+            magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
             #magentaprint(str(exp), False)
         elif(re.match("GOLD", user_input)):
+            #gold = self.Character.GOLD  #Calculating GMP would require us to store gold differently
+            #gpm = str(calculate_vpm(gold))
+            #magentaprint("Gold this Session: " + str(gold) + " | Gold / MIN: " + gpm, False)
             magentaprint(str(self.Character.GOLD), False)
+        elif(re.match("KILLS", user_input)):
+            kills = self.Character.MOBS_KILLED
+            kpm = str(calculate_vpm(kills))
+            magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
         elif(re.match("MUD_RETURN_ITEM_SOLD", user_input)):
             magentaprint(self.Character.MUD_RETURN_ITEM_SOLD)
         elif(re.match("MOBS_JOINED_IN", user_input)):
