@@ -240,7 +240,7 @@ class MudReaderThread ( threading.Thread ):
                 self.Character.NAME = M_obj.group(1)
                 self.Character.RACE = M_obj.group(2)
                 self.Character.TITLE = M_obj.group(3)
-                self.Character.LEVEL = re.search("\d+",M_obj.group(4)).group(0)
+                self.Character.LEVEL = int(re.search("\d+",M_obj.group(4)).group(0))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 #magentaprint("MudReader got name, race, class, level: %s %s %s %s" % 
                 #            (self.Character.NAME, self.Character.RACE, 
