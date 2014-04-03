@@ -55,9 +55,11 @@ class CoolAbilityThread(threading.Thread):
             self.MudReaderHandler.register_reaction(self)
 
             if(self.CoolAbility.needs_target()):
-                self.tn.write(self.CoolAbility.command() + " " + self.target + "\n")
+                #self.tn.write(self.CoolAbility.command() + " " + self.target + "\n")
+                send_to_telnet(self.tn, self.CoolAbility.command() + " " + self.target)
             else:
-                self.tn.write(self.CoolAbility.command() + "\n")
+                #self.tn.write(self.CoolAbility.command() + "\n")
+                send_to_telnet(self.tn, self.CoolAbility.command())
 
     def notify(self, M_obj):
 

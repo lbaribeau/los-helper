@@ -40,7 +40,7 @@ class MudListenerThread ( threading.Thread ):
             if(sel_out_triple != ([], [], [])):
                 # Read some characters.  
                 try:
-                    fragment = fragment + self.tn.read_some() # read_eager misses characters
+                    fragment = fragment + self.tn.read_some().decode('utf-8') # read_eager misses characters
                 except EOFError:
                     print("MudListenerThread: Exiting (saw EOF)")
                     self.stop()

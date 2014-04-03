@@ -16,10 +16,10 @@ class Character:
         def getClass(self):
             return self._char_class
         
-        self.RACE = "Half-Elf"
-        self.TITLE = "Sonneteer"
+        self.RACE = "Human"
+        self.TITLE = "Monk"
         
-        self.LEVEL = 4
+        self.LEVEL = 1
 #        self.preferred_alignment = "grey"
         #self.WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #self.MAGIC_SKILLS= [0, 0, 0, 0, 0]

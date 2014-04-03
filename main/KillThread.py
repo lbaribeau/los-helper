@@ -29,7 +29,8 @@ class KillThread(CombatThread):
             self.Character.ATTACK_CLK = time.time()
             #PREV_COMMAND = "k " + self.target + "\n"
             #telnet.write(PREV_COMMAND)
-            self.telnet.write("k " + self.target + "\n")
+            #self.telnet.write("k " + self.target + "\n")
+            send_to_telnet(self.telnet, "k " + self.target)
             #wait_for_attack_ready(self.Character)
             
             # OLD (deprecated by BotReactions): 

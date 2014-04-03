@@ -51,7 +51,8 @@ class CastThread(CombatThread):
             self.Character.CAST_CLK = time.time()
             #PREV_COMMAND = "cast " + self.spell + " " + self.target + "\n"
             #tn.write(PREV_COMMAND)
-            self.telnet.write("cast " + self.spell + " " + self.target + "\n")
+            #self.telnet.write("cast " + self.spell + " " + self.target + "\n")
+            send_to_telnet(self.telnet, "cast " + self.spell + " " + self.target)
             wait_for_cast_ready(self.Character)
 
         self._undo_reactions()

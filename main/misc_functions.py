@@ -3,7 +3,12 @@ import time
 from ConsoleHandler import newConsoleHandler
 
 ##################################### MISC FUNCTIONS ########################
-                       
+
+def send_to_telnet(tn, text):
+    text += '\r'
+    tn.write(text.encode('ascii'))
+    return
+
 def wait_for_move_ready(character_inst):
     #global character_inst
     time.sleep(max(0, character_inst.MOVE_WAIT - (time.time() - character_inst.MOVE_CLK)))

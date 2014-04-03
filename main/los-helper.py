@@ -328,14 +328,16 @@ def issue_name_and_password(tn):
     
     if(len(sys.argv) >= 3):
         # Use command line arguments for user name and pass
-        tn.write(sys.argv[1] + '\n')   # User name
-        tn.write(sys.argv[2] + '\n')   # Password
+        send_to_telnet(tn, sys.argv[1])
+        send_to_telnet(tn, sys.argv[2])
     else:
         # With the MUD thread going already, there is no need to prompt here.
-        tn.write(raw_input() + '\n')    # send user name
+        send_to_telnet(tn, input())
+        #tn.write(raw_input() + '\r')    # send user name
         password = getpass.getpass("")  # getpass arg is a prompt string;
-                                        # empty string means don't prompt
-        tn.write(password + '\n')       # send password
+                                    # empty string means don't prompt
+        #tn.write(password + '\r')       # send password
+        send_to_telnet(tn, password)
 
     return
     
@@ -358,7 +360,7 @@ def watch_user_input(mudReaderHandler, character):
     stopping = False;
     while not stopping:
         try:
-            user_input = raw_input(); 
+            user_input = input(); 
         except EOFError:
             magentaprint("Don't try to crash me!  Use 'quit'.")
             user_input = ""
@@ -368,7 +370,8 @@ def watch_user_input(mudReaderHandler, character):
         #PREV_USER_COMMAND = user_input
         if(not mudReaderThread.is_alive()):
             magentaprint("\nWhat happened to read thread?  Time to turf.\n")
-            tn.write(user_input + "\n")
+            #tn.write(user_input + "\n")
+            send_to_telnet(tn, user_input)
             stopping = True
             if(bot_thread_inst != None and bot_thread_inst.is_alive()):
                 bot_thread_inst.stop()                
@@ -376,7 +379,8 @@ def watch_user_input(mudReaderHandler, character):
             # TODO:  correct if MUD prints "Please wait x more seconds"
             # after quit was sent.
             #PREV_COMMAND=user_input
-            tn.write(user_input + "\n")
+            #tn.write(user_input + "\n")
+            send_to_telnet(tn, user_input)
             stopping = True
             if(bot_thread_inst != None and bot_thread_inst.is_alive()):
                 bot_thread_inst.stop()

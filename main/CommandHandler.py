@@ -52,7 +52,8 @@ class CommandHandler:
         handles stopping the bot."""
         if(re.match("ga$", user_input)):
             #PREV_COMMAND = user_input
-            self.tn.write("get all\n")
+            #self.tn.write("get all\n")
+            send_to_telnet(self.tn, "get all")
         elif(re.match("ki? [a-zA-Z]|kill? [a-zA-Z]", user_input)):
             #PREV_COMMAND = user_input
             self.user_ki(user_input) # routine which does appropriate waiting,
@@ -94,7 +95,8 @@ class CommandHandler:
                 user_input = "wield " + user_input[3:] 
                 # That doesn't seem right for user entering full 'wield'... 
             #PREV_COMMAND = user_input
-            self.tn.write(user_input + "\n")
+            #self.tn.write(user_input + "\n")
+            send_to_telnet(self.tn, user_input)
         elif(re.match("wie?2 +[a-zA-Z]+( +\d+)?", user_input)):
             # Wie2 for rangers can wield and second the same weapon in one command
             self.user_wie2(user_input[4:].lstrip())
@@ -136,7 +138,8 @@ class CommandHandler:
             for r in self.MudReaderHandler.MudReaderThread.BotReactionList:
                 magentaprint('    ' + str(r))
         else: # Doesn't match any command we are looking for
-            self.tn.write(user_input + "\n") # Just shovel to telnet.
+            #@self.tn.write(user_input + "\n") # Just shovel to telnet.
+            send_to_telnet(self.tn, user_input)
 
     def user_ki(self, user_input):
         #global ATTACK_CLK, ATTACK_WAIT
@@ -144,13 +147,15 @@ class CommandHandler:
         time_remaining = self.Character.ATTACK_WAIT - (now -self.Character.ATTACK_CLK)
         if (time_remaining < 0):
             self.Character.ATTACK_CLK = now
-            self.tn.write(user_input + "\n")
+            #self.tn.write(user_input + "\n")
+            send_to_telnet(self.tn, user_input)
         elif(time_remaining < 1.0):
             magentaprint("Delaying by %.1f sec ..." % time_remaining)
             time.sleep(time_remaining)
             magentaprint("Sent.")
             self.Character.ATTACK_CLK = now
-            self.tn.write(user_input + "\n")
+            #self.tn.write(user_input + "\n")
+            send_to_telnet(self.tn, user_input)
         else:
             magentaprint("(Python) Wait %.1f more seconds" % time_remaining)
             
@@ -169,13 +174,15 @@ class CommandHandler:
                                                     # failed!
         if (time_remaining < 0):
             self.Character.CAST_CLK = now
-            self.tn.write(user_input + "\n")
+            #self.tn.write(user_input + "\n")
+            send_to_telnet(self.tn, user_input)
         elif (time_remaining < 1.0):
             magentaprint("(Python) Delaying by %.1f sec ... " % time_remaining)
             time.sleep(time_remaining)
             magentaprint("Sent.")
             self.Character.CAST_CLK = now
-            self.tn.write(user_input + "\n")
+            #self.tn.write(user_input + "\n")
+            send_to_telnet(self.tn, user_input)
         else:
             magentaprint("(Python) Wait %.1f more seconds" % time_remaining)
 
@@ -203,14 +210,16 @@ class CommandHandler:
           
         if (time_remaining < 0):
             self.Character.MOVE_CLK = now
-            self.tn.write(user_input + "\n")
+            #self.tn.write(user_input + "\n")
+            send_to_telnet(self.tn, user_input)
         elif(time_remaining < 1.0):
             # Less than a second, just do the delay for them.
             magentaprint("(Python) Delaying by %.1f sec ..." % time_remaining)
             time.sleep(time_remaining)
             magentaprint("Sent.")
             self.Character.MOVE_CLK = now
-            self.tn.write(user_input + "\n")
+            #self.tn.write(user_input + "\n")
+            send_to_telnet(self.tn, user_input)
         else:
             magentaprint("(Python) Wait %.1f more seconds" % time_remaining)
 
@@ -220,7 +229,8 @@ class CommandHandler:
         #if(M_obj != None):
         [command, item] = user_input.split(" ",1)
         user_input = "drop " + item
-        self.tn.write(user_input + "\n")
+        #self.tn.write(user_input + "\n")
+        send_to_telnet(self.tn, user_input)
         return
     
     def user_kk(self, argv):
@@ -264,7 +274,8 @@ class CommandHandler:
 #        tn.write("\n")  # brings prompt back as if this command were a normal one
 #        return
         self.stop_KillThread(True)
-        self.tn.write("\n")  # brings prompt back as if this command were a normal one
+        #self.tn.write("\n")  # brings prompt back as if this command were a normal one
+        send_to_telnet(self.tn, "")
         return
     
 
@@ -316,14 +327,17 @@ class CommandHandler:
 #            magentaprint("Nothing to stop.")   
 #        tn.write("\n")  # brings prompt back as if this command were a normal one
         self.stop_CastThread(True)
-        self.tn.write("\n")  # brings prompt back as if this command were a normal one
+        #self.tn.write("\n")  # brings prompt back as if this command were a normal one
+        send_to_telnet(self.tn, "")
         return
     
     def user_wie2(self, argv):
         #TODO: Test.
         magentaprint("wie2 called with argument %s" % (argv))
-        self.tn.write("wield %s\n" % (argv))
-        self.tn.write("second %s\n" % (argv))        
+        #self.tn.write("wield %s\n" % (argv))
+        #send_to_telnet(self.tn, "wield %s\n" % (argv))
+        #self.tn.write("second %s\n" % (argv)) 
+        #send_to_telnet(self.tn, "second %s\n" % (argv))
         return
     
     # COOL ABILITIES
@@ -361,10 +375,14 @@ class CommandHandler:
 
         # Remove weapons.
         if(self.Character.WEAPON1 != ""):
-            self.tn.write("rm " + self.Character.WEAPON1 + "\n")
+            #self.tn.write("rm " + self.Character.WEAPON1 + "\n")
+            send_to_telnet(self.tn, "rm " + self.Character.WEAPON1)
+
         #    WEAPON1 = ""
         if(self.Character.WEAPON2 != ""):
-            self.tn.write("rm " + self.Character.WEAPON2 + "\n")
+            #self.tn.write("rm " + self.Character.WEAPON2 + "\n")
+            send_to_telnet(self.tn, "rm " + self.Character.WEAPON2)
+
         #    WEAPON2 = ""
 
         # Do the timing dance.
@@ -395,16 +413,21 @@ class CommandHandler:
         # necessary!.
         # Note, it might be better in some cases just to flee once.  I think I will
         # implement "fl1" for that case.  (TODO)
-        self.tn.write("fl\n")
-        self.tn.write("fl\n")
-        self.tn.write("fl\n")
+        #self.tn.write("fl\n")
+        #self.tn.write("fl\n")
+        #self.tn.write("fl\n")
+        send_to_telnet(self.tn, "fl")
+        send_to_telnet(self.tn, "fl")
+        send_to_telnet(self.tn, "fl")
 
         # Put weapons back on.
         time.sleep(0.1)
         if(self.Character.WEAPON1 != ""):
-            self.tn.write("wie " + self.Character.WEAPON1 + "\n")
+            #self.tn.write("wie " + self.Character.WEAPON1 + "\n")
+            send_to_telnet(self.tn, "wie " + self.Character.WEAPON1)
         if(self.Character.WEAPON2 != ""):
-            self.tn.write("seco " + self.Character.WEAPON2 + "\n")
+            #self.tn.write("seco " + self.Character.WEAPON2 + "\n")
+            send_to_telnet(self.tn, "wie " + self.Character.WEAPON2)
 
         return    
         
