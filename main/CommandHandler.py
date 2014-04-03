@@ -5,7 +5,7 @@ import atexit
 import time
 import re
 
-from misc_functions import *
+import misc_functions
 from KillThread import *
 from CastThread import *
 from CoolAbility import *
@@ -133,10 +133,14 @@ class CommandHandler:
         elif(re.match("reactionlist", user_input)):
             for r in self.MudReaderHandler.MudReaderThread.BotReactionList:
                 magentaprint('    ' + str(r))
+        elif(re.match("cackle", user_input)):
+            misc_functions.verboseMode = not misc_functions.verboseMode
+        elif(re.match("defecate", user_input)):
+            misc_functions.debugMode = not misc_functions.debugMode
         else: # Doesn't match any command we are looking for
             #@self.tn.write(user_input + "\n") # Just shovel to telnet.
             send_to_telnet(self.tn, user_input)
-            
+
     def user_ki(self, user_input):
         #global ATTACK_CLK, ATTACK_WAIT
         now = time.time()
@@ -332,7 +336,7 @@ class CommandHandler:
             send_to_telnet(self.tn, "rm " + self.Character.WEAPON2)
         #    WEAPON2 = ""
 
-        time.sleep(second_sleep)
+        time.sleep(math.fabs(second_sleep))
         # Keep it simple.  Wait till ready then flee several times.  (beats
         # failed to escape)
         # TODO: Print if its more than a second... but I don't think that's
@@ -359,6 +363,8 @@ class CommandHandler:
         send_to_telnet(self.tn, "fl")
         send_to_telnet(self.tn, "fl")
         send_to_telnet(self.tn, "fl")
+
+        manage_telnet_output("I had to run - sorry....", False)
 
         # Put weapons back on.
         self.Character.MOVE_CLK = time.time()

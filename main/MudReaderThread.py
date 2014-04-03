@@ -133,7 +133,8 @@ class MudReaderThread ( threading.Thread ):
                     # Print all the stuff in buffer from before the esc
                     # Must be printed here so that the color change occurse 
                     # at the right point.
-                    sys.stdout.write(text_out)
+                    #sys.stdout.write(text_out)
+                    manage_telnet_output(text_out)
                     text_buffer = text_buffer + text_out
                     text_out = ""
                     self.set_colour(escape_sequence);  # Call subroutine to do this.
@@ -145,7 +146,9 @@ class MudReaderThread ( threading.Thread ):
             # Check for some colors.
                     
             # Print to console.
-            sys.stdout.write(text_out)   
+            #sys.stdout.write(text_out)
+            manage_telnet_output(text_out)
+
             # Not using print because it inserts extra spaces.
             
             #sys.stdout.write("/"+out_str)  # puts slashes between text fragments for debugging

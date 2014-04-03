@@ -210,7 +210,7 @@ class BotThread(threading.Thread):
         #Todo: fix for case where there's ring mail in the inventory or multiple rings are dropped                 
 
     def rest_and_check_aura(self):
-        magentaprint("Resting.")
+        magentaprint("Resting until Regen Complete.", False)
      
         MANA_TO_WAIT = self.character.MAX_MANA - 12
         if(self.character.BLACK_MAGIC): 
@@ -729,7 +729,8 @@ class BotThread(threading.Thread):
         self.commandHandler.stop_CastThread()    
         
         if(my_list_search(self.character.MOBS_ATTACKING, monster) != -1):
-            magentaprint("Bot:engage_monster: Removing " + monster + " from MOBS_ATTACKING.")
+            #magentaprint("Bot:engage_monster: Removing " + monster + " from MOBS_ATTACKING.")
+            magentaprint("I totally just killed: " + monster, False)
             self.character.MOBS_ATTACKING.remove(monster)
             
         return

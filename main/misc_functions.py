@@ -1,6 +1,10 @@
 
 import time
+import sys
 from ConsoleHandler import newConsoleHandler
+
+debugMode = True
+verboseMode = True
 
 ##################################### MISC FUNCTIONS ########################
 
@@ -170,16 +174,28 @@ def _item_string_to_reference_string(item_string):
     
     
 #def magentaprint(s, mod_s=""):
-def magentaprint(str):
+def magentaprint(str, isDebugCommand=True):
+    global debugMode
+
     newConsoleHandler().magenta()
 #    if(mod_s != ""):
 #        print s % mod_s
 #    else:
 #        print s
-    debug = True
-    if(debug):
+
+    if (debugMode):
         print (str)
+    elif not (isDebugCommand):
+        print (str)
+
     newConsoleHandler().white()
     return
-    
 
+def manage_telnet_output(text, isVerbose=True):
+    global verboseMode
+
+    if (verboseMode):
+        sys.stdout.write(text)
+    elif not (isVerbose):
+        sys.stdout.write(text)
+    return
