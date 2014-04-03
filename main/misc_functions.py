@@ -4,7 +4,7 @@ import sys
 from ConsoleHandler import newConsoleHandler
 from datetime import datetime
 
-debugMode = True
+debugMode = False
 verboseMode = True
 startTime = datetime.now()
 
@@ -216,8 +216,13 @@ def get_runtime():
 
 def calculate_vpm(value):
     runtime = get_runtime()
-    seconds = runtime.total_seconds() % 1
+    seconds = runtime.total_seconds()
+
     magentaprint(str(value) + " / " + str(seconds))
-    minutes = (seconds / 60) % 1 #at least display 1 minute
-    vpm = value / minutes #no decimals
+
+    if (seconds <= 0):
+        seconds = 60
+
+    minutes = (seconds / 60) #at least display 1 minute
+    vpm = int(value / minutes) #no decimals
     return vpm
