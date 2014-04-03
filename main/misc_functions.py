@@ -165,7 +165,7 @@ def _item_string_to_reference_string(item_string):
     
     
 #def magentaprint(s, mod_s=""):
-def magentaprint(s):
+def magentaprint(str):
     newConsoleHandler().magenta()
 #    if(mod_s != ""):
 #        print s % mod_s
@@ -173,7 +173,7 @@ def magentaprint(s):
 #        print s
     debug = True
     if(debug):
-        print s 
+        print (str)
     newConsoleHandler().white()
     return
     
