@@ -336,7 +336,7 @@ class CommandHandler:
             send_to_telnet(self.tn, "rm " + self.Character.WEAPON2)
         #    WEAPON2 = ""
 
-        time.sleep(math.fabs(second_sleep))
+        time.sleep(abs(second_sleep))
         # Keep it simple.  Wait till ready then flee several times.  (beats
         # failed to escape)
         # TODO: Print if its more than a second... but I don't think that's
