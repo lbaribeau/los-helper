@@ -135,8 +135,10 @@ class CommandHandler:
                 magentaprint('    ' + str(r))
         elif(re.match("cackle", user_input)):
             misc_functions.verboseMode = not misc_functions.verboseMode
+            #magentaprint("Verbose mode changed", False)
         elif(re.match("defecate", user_input)):
             misc_functions.debugMode = not misc_functions.debugMode
+            #magentaprint("Debug Mode changed", False)
         else: # Doesn't match any command we are looking for
             #@self.tn.write(user_input + "\n") # Just shovel to telnet.
             send_to_telnet(self.tn, user_input)

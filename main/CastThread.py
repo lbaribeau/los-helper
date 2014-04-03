@@ -15,7 +15,7 @@ class CastThread(CombatThread):
         self.spell = spell
         
         self._reactions.append(ThreadStopper("That spell does not exist\.",self))
-        self._reactions.append(ThreadStopper("You don't know that spell\.",self))
+        self._reactions.append(ThreadStopper("You don't know that spell\." + spell, self))
         self._reactions.append(ThreadStopper("You cannot meet the casting cost!",self))
         self._reactions.append(ThreadStopper("Spell name is not unique\.",self))    
         self._reactions.append(ThreadStopper("Cast what\?",self))  
