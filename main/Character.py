@@ -292,7 +292,7 @@ class Character:
             "spider leg", 
             "spear", "bolos", 'javelin', "long bow", 
             "heathen amulet",
-            "broad sword",
+            "broad sword", "rapier",
             # armour
             "hard cap", "hard gloves", "hard boots", "padded hat",
             "mountain gloves", "mountain boots", "mountain boots with crampons",

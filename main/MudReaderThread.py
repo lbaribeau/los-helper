@@ -17,22 +17,16 @@ class MudReaderThread ( threading.Thread ):
     """This thread watches the the MUD output and appends it 
     to the buffer for the MudReaderThread to read it."""
     
-    def __init__(self, MUD_buffer, Character, ConsoleHandler):
+    def __init__(self, MUDBuffer, Character, ConsoleHandler):
         Thread.__init__(self)       
         # Constants
         self.ASCII_EOT = 4
         self.ASCII_ESC = 27
         self.ASCII_m = 109
         
-        self.MUD_buffer = MUD_buffer
+        self.MUDBuffer = MUDBuffer
         self.Character = Character
         self.ConsoleHandler = ConsoleHandler
-        #self.CommandHandler_inst = CommandHandler_inst
-            # The MUD output thread needs the CommandHandler in order to stop
-            # the combat threads triggered on MUD output.  Epiphany:  it would
-            # be better if the combat threads could call a MUD interface object
-            # because the relationship now is kind of backwards (the threads are
-            # really using the MudHandler and not the other way around.)
         
         #TODO: change these all to mud waiter flags
         self.CHECK_GO_FLAG = False
@@ -40,13 +34,7 @@ class MudReaderThread ( threading.Thread ):
         self.CHECK_AURA_SUCCESS = False
         self.CHECK_SELL_FLAG = False
         self.CHECK_INVENTORY_FLAG = False
-        #self.CHECK_KILL_FLAG = False
-        #self.CHECK_KILL_CONTINUE = False
         #self.CHECK_KILL_MONSTER_GONE = False # This one isn't used yet, I think it's to react to when a monster flees
-        #self.check_kill_flags = MyMudWaiterFlags()
-        self.CHECK_CAST_FLAG = False
-        self.CHECK_CAST_CONTINUE = False
-        self.CHECK_CAST_MONSTER_GONE = False
         
         self.BotReactionList = []
         
@@ -78,6 +66,8 @@ class MudReaderThread ( threading.Thread ):
             # Typically a flag is set when something calls one of the 
             # MudHandler functions.
             # order: alphabetical
+            # ... the better pattern is for the MudReader (observer) to 
+            # always match the pattern and let things subscribe to notifications.
         
         self.__stopping = False
         atexit.register(self.stop)
@@ -92,9 +82,6 @@ class MudReaderThread ( threading.Thread ):
         currently_escaping = False  # Used to filter escape sequences
         text_buffer = ""
         while(not self.__stopping):
-            # This loop will iterate every time something new enters the buffer, 
-            # or any of the bot communication flags change
-            
             time_loop_start = time.time()
             
             # Do a wait loop.  This means that the main loop will 
@@ -103,8 +90,9 @@ class MudReaderThread ( threading.Thread ):
             timeout = 3
             start_time = time.time()
             run_time = 0
-            while(self.__left_off_index == len(self.MUD_buffer.buffer) and
-                  run_time < timeout):
+
+            while(self.__left_off_index == len(self.MUDBuffer.buffer) and 
+                run_time < timeout):
                  time.sleep(0.005) 
                  run_time = time.time() - start_time
                 
@@ -120,11 +108,11 @@ class MudReaderThread ( threading.Thread ):
             # currently_escaping may remain false over top of a loop
             # iteration.  They're ANSI escape codes (read wikipedia)
                        
-            MUD_buffer_copy = self.copy_MUD_buffer()
-            new_left_off_index = len(self.MUD_buffer.buffer)            
+            MUDBuffer_copy = self.copy_MUDBuffer()
+            new_left_off_index = len(self.MUDBuffer.buffer)            
             
             # First print the new characters.
-            unparsed_unprinted_characters_from_server = list(MUD_buffer_copy[self.__left_off_index:len(MUD_buffer_copy)])
+            unparsed_unprinted_characters_from_server = list(MUDBuffer_copy[self.__left_off_index:len(MUDBuffer_copy)])
             self.__left_off_index = new_left_off_index
 
             text_out = ""
@@ -158,10 +146,9 @@ class MudReaderThread ( threading.Thread ):
                     
             # Print to console.
             sys.stdout.write(text_out)   
-            # Not using print because
-            # it inserts extra spaces.
+            # Not using print because it inserts extra spaces.
             
-            #sys.stdout.write("/"+out_str)  # puts slashes between text fragments
+            #sys.stdout.write("/"+out_str)  # puts slashes between text fragments for debugging
             sys.stdout.flush()
                                         
             # Debug:  Print ascii out!  (doesn't do every character)
@@ -176,26 +163,25 @@ class MudReaderThread ( threading.Thread ):
             
             # Trim buffers if they are too long.
             L = len(text_buffer)
-            if(L >= self.MUD_buffer.size):
-                text_buffer = text_buffer[L-self.MUD_buffer.size:L]
+            if(L >= self.MUDBuffer.size):
+                text_buffer = text_buffer[L-self.MUDBuffer.size:L]
             #print "<REPRINT>"+MUD_buffer+"<\REPRINT>"
             
-            while(self.MUD_buffer.access_flag == True):
+            while(self.MUDBuffer.access_flag == True):
                 time.sleep(0.05)
-            self.MUD_buffer.access_flag = True
-            L = len(self.MUD_buffer.buffer)
-            if(L > self.MUD_buffer.size):
-                trim_amount = L - self.MUD_buffer.size
-                #left_off_index = left_off_index - (L - self.MUD_buffer.buffer.size)
-                #self.MUD_buffer.buffer = self.MUD_buffer[L-self.MUD_buffer.size:L]
+
+            self.MUDBuffer.access_flag = True
+            L = len(self.MUDBuffer.buffer)
+
+            if(L > self.MUDBuffer.size):
+                trim_amount = L - self.MUDBuffer.size
                 self.__left_off_index = self.__left_off_index - trim_amount
-                self.MUD_buffer.buffer = self.MUD_buffer.buffer[trim_amount:L]
-                #Looks like this is true EVERY TIME
-                #magentaprint("Trimmed MUD_buffer: "+str(trim_amount))
+                self.MUDBuffer.buffer = self.MUDBuffer.buffer[trim_amount:L]
+                #magentaprint("Trimmed MUDBuffer: "+str(trim_amount))
                 #magentaprint("L is "+str(L))
-                #magentaprint("MUD_buffer.size is "+str(self.MUD_buffer.size))
+                #magentaprint("MUDBuffer.size is "+str(self.MUDBuffer.size))
             
-            self.MUD_buffer.access_flag = False
+            self.MUDBuffer.access_flag = False
 
             ###### Now match the buffer with some REs  #######
             text_buffer_trunc = 0
@@ -209,31 +195,14 @@ class MudReaderThread ( threading.Thread ):
                 M_obj = re.search(reaction.regex, text_buffer)
 
                 if(M_obj != None):
-                    # Todo: find out why not all of these get removed and they build up.
-                    # Potentially fix the insert to check for that... or better make sure 
-                    #it gets removed every time.
                     magentaprint("MudReaderThread: calling notify on " + str(reaction))
-                    reaction.notify(M_obj)  # Bug: This can remove the reaction from the list...
-
+                    reaction.notify(M_obj)  
                     text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                    # Maybe I could ASSUME here that it'll be removed?  Or do the removing?
-                    # (they can always add themselves back in notify())
-                    # Doesn't really help, still breaks the loop.
-                    # Try things from here http://stackoverflow.com/questions/1637807/modifying-list-while-iterating
                 
                 if reaction.unregistered:
                     reactions_to_delete.append(reaction)
-
-            # Commenting following code: not fixing the loop iteration problem.
-            # Try building a list of the reactions to remove, then remove them.
-
-            # for reaction in self.BotReactionList:
-            #     if reaction.unregistered is True:
-            #         self.BotReactionList.remove(reaction)  # Nope.  Edits the list that is being iterated.
-
-            # self.BotReactionList.remove(reaction) for reaction in self.BotReactionList if reaction.unregistered is True
-                
-            reaction_counter = 0  # TODO: delete me and all reaction printing
+         
+            reaction_counter = 0  # TODO: delete reaction_counter and all reaction printing
             for reaction in reactions_to_delete:
                 self.BotReactionList.remove(reaction)
                 reaction_counter = reaction_counter + 1
@@ -416,32 +385,7 @@ class MudReaderThread ( threading.Thread ):
                 elif(re.match("some ",weap2)):
                     weap2 = weap2[5:]
                 self.Character.WEAPON2 = weap2
-            
-            
-            # TODO: Make BotReactions for weapon break in los-helper and 
-            # for ring wearing in BotThread.
-            # The following few are short term.
-            # Re equipping weapons if there is a replacement in 
-            # inventory (doesn't check for replacement beforehand)
-            M_obj = re.search("Your (.*?) breaks and you have to remove it\.", text_buffer)
-            if (M_obj):
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                self.reequip_weapon(M_obj.group(1))
-            M_obj = re.search("Your (.*?) shatters\.", text_buffer)
-            if (M_obj):
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                self.reequip_weapon(M_obj.group(1))
-                
-            # Wearing rings
-            # TODO: fix this
-            #M_obj = re.search("You get (.+?)\.", text_buffer)
-            #if (M_obj):
-            #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            #    for item in M_obj.group(1).split(','):
-            #        if(re.search("a (.+?) ring", item)):
-            ##            self.CommandHandler_inst.process("wear ring")
-                     
-                
+                      
             #### Shopping stuff ####
             # On gold pickup:
             M_obj = re.search("You now have (.+?) gold coins", text_buffer)
@@ -453,6 +397,7 @@ class MudReaderThread ( threading.Thread ):
             if(M_obj):
                 self.Character.GOLD = int(M_obj.group(1))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+
             # On vendor ... also manage the sell check flag (signal to bot)
             M_obj = re.search("The shopkeep gives you (.+?) gold for (an?|some) (.+?)\.", text_buffer)
             if(M_obj):
@@ -460,8 +405,6 @@ class MudReaderThread ( threading.Thread ):
                 self.Character.MUD_RETURN_ITEM_SOLD = True
                 self.CHECK_SELL_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                
-            # Check the negative cases for the sell check flag.
             M_obj = re.search("The shopkeep won't buy that from you\.", text_buffer)
             if(M_obj):
                 self.Character.MUD_RETURN_ITEM_SOLD = False
@@ -490,29 +433,9 @@ class MudReaderThread ( threading.Thread ):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 self.stop()  # breaks program but allows me to see what happened
 
-            ########    Do some monster removal.    ######
+            ########    Monster Gets Killed    ######
             
-            # Monster is killed
-            # Nov2012:  Ok, the cast/kill threads are unfortunately going to have to 
-            # poll here.  We aren't letting MudReader kill or do anything, and we 
-            # want the cast thread to stop if a monster is attacked and dies, (and 
-            # the kill thread to stop if a monster is casted to death,) so the only 
-            # way I can think to do that is if these threads poll every 0.1s because 
-            # if they wait for their timer to be up to check, the monster could be long 
-            # dead and the user may be frustrated by having his command canceled.  Well...
-            # maybe the thread could differentiate between user issued commands, and only 
-            # cancel thread commands?  Right now, the user command just starts/continues 
-            # a thread.  Can we eliminate polling?  I'm a cast thread, I wait 3 seconds, 
-            # then I check if the monster had died, and if so I stop, unless I was updated, 
-            # because if I get updated, I can check then if the monster had died and reset
-            # Handler's flags if so... basically just check/update the flags every time I do 
-            # _anything_, then I don't have to poll. 
-            # Note: What if the bot provided us a 'notify' method?  That eliminates 
-            # the polling.  Sure, it's my thread that executes the code but it's 
-            # still owned by the bot, so I don't have to be responsible and send 
-            # commands.
-            
-            #M_obj = re.search("Your enemy, the" + s_numbered + " (.+?) has been defeated\.", MUD_buffer)            
+            #M_obj = re.search("Your enemy, the" + s_numbered + " (.+?) has been defeated\.", MUDBuffer)            
             M_obj = re.search("Your attack overwhelms the" + s_numbered + " (.+?) and (s?he|it) collapses!", text_buffer)
             if(M_obj != None):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
@@ -559,7 +482,6 @@ class MudReaderThread ( threading.Thread ):
             # Monster wanders to specific exit
             M_obj = re.search("The" + s_numbered + " (.+?) just wandered to the .+?\.", text_buffer)
             if(M_obj):
-                magentaprint("Matched " + M_obj.group(2))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 if(my_list_search(self.Character.MONSTER_LIST, M_obj.group(2)) != -1):
                     self.Character.MONSTER_LIST.remove(M_obj.group(2))
@@ -568,7 +490,6 @@ class MudReaderThread ( threading.Thread ):
             # Monster wanders away
             M_obj = re.search("The" + s_numbered + " (.+?) just wandered away\.", text_buffer)
             if(M_obj):
-                magentaprint( "Matched " + M_obj.group(2))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 if(my_list_search(self.Character.MONSTER_LIST, M_obj.group(2)) != -1):
                     self.Character.MONSTER_LIST.remove(M_obj.group(2))
@@ -643,51 +564,31 @@ class MudReaderThread ( threading.Thread ):
                     if(my_list_search(self.Character.MOBS_ATTACKING, M_obj.group(2)) == -1):
                         self.Character.MOBS_ATTACKING.append(M_obj.group(2))    
                 
-            # Following regex:
-            #  - conclude successful go
-            #  - Empty MONSTER_LIST
-            # Note that if there are items present but no monsters
-            # I can't detect it and the bot will just have to time out
-            # or something.
             M_obj = re.search("Obvious exits: .+?\.\n\r\n\r", text_buffer)
             if(M_obj):
-                #magentaprint("MudReader: No monsters present, unsetting MONSTER_CHECK_FLAG")
                 self.Character.MONSTER_LIST = []
                 self.Character.SUCCESSFUL_GO = True
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            # Following regex:  If we see it we can
-            #  - conclude successful go
-            #  - populate MONSTER_LIST
-            M_obj = re.search("(?s)Obvious exits: .+?\.\n\r(You see .+?\.)", text_buffer)  # Match multlines
-            # Note.  If there are no monsters but there are items this will also match!
-            # There's no way to determine that.  However, it's not important 
-            # because the bot will never try to engage and item :)                    
+
+            M_obj = re.search("(?s)Obvious exits: .+?\.\n\r(You see .+?\.)", text_buffer)         
             if(M_obj != None):
-                #magentaprint("MudReader: Monsters are seen, need to parse, then unset flag.")
                 self.Character.MONSTER_LIST = self.parse_monster_list(M_obj.group(1))
                 self.Character.SUCCESSFUL_GO = True
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            # On too dark:
-            #    - conclude successful go
-            #    - leave MONSTER_LIST empty
+                # If there are items and no monsters in the room, the above will actually add the 
+                # items to the monster list as if they're monsters.  (The text for You see items, and 
+                # You see monsters, is indistinguishable.)  This is fine because the bot will just 
+                # never engage an item as it won't be in its monster list. 
+
             M_obj = re.search("It's too dark to see\.", text_buffer)
             if(M_obj):
-                #magentaprint("MudReader: Too dark, unsetting MONSTER_CHECK_FLAG")
                 self.Character.MONSTER_LIST = []
                 self.Character.SUCCESSFUL_GO = True
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            # Mob blocking exit:
-            #    - unsuccessful go
-            #    - don't touch MONSTER_LIST 
-            # Note:  Previous versions insisted that I don't clear the buffer 
-            # here.  That is because it used to be two separate operations to 
-            # check for successful go and populate the monster list.  That's 
-            # one of the motivations for revamping.  Now I am doing both 
-            # simultaneously because they use the same text.  So now I want it 
-            # cleared.
+
             M_obj = re.search("The" + s_numbered + " (.+?) blocks your exit\.", text_buffer)
             if(M_obj):
                 #magentaprint("MudReader: unsuccessful go %f" % (time.time()-self.Character.START_TIME))
@@ -695,6 +596,7 @@ class MudReaderThread ( threading.Thread ):
                 self.Character.SUCCESSFUL_GO = False
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+
             M_obj = re.search("Please wait 1 more second\.", text_buffer)
             if(M_obj):
                 magentaprint("MudReader: unsuccessful go (please wait)")
@@ -702,6 +604,7 @@ class MudReaderThread ( threading.Thread ):
                 self.Character.SUCCESSFUL_GO = False
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+
             M_obj = re.search("You can't go that way\.", text_buffer)
             if(M_obj):
                 # This one is pretty problematic... as it should never happen.
@@ -711,6 +614,7 @@ class MudReaderThread ( threading.Thread ):
                 self.Character.SUCCESSFUL_GO = False
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+
             M_obj = re.search("I don't see that exit\.", text_buffer)
             if(M_obj):
                 #magentaprint("MudReader: unsuccessful go (you can't go that way)")
@@ -719,9 +623,7 @@ class MudReaderThread ( threading.Thread ):
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
-            # Aura
             M_obj = re.search("You glow with an? (.+?) aura\.", text_buffer)
-            # Interestingly the MUD never says 'an' here.  Leave the '?' in though.
             if(M_obj):
                 self.Character.AURA = M_obj.group(1)
                 self.Character.AURA_SCALE = my_list_search(self.Character.AURA_LIST, self.Character.AURA)
@@ -731,11 +633,7 @@ class MudReaderThread ( threading.Thread ):
                 self.CHECK_AURA_SUCCESS = 1
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
         
-            # Having red aura in chapel.
-            # The bot should definitely leave in this case.
-            # However I only want to leave if the bot is currently going...
-            # Ohwell.  This might inconvenience a human user but I'm putting it in.
-            # TODO: fix this.  Perhaps it's low priority if auras are working.
+            # TODO: Having a red aura in the chapel will kill the bot.  
             #M_obj = re.search("The goodness here sickens and repels you!", text_buffer)
             #if(M_obj):
             #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
@@ -760,7 +658,7 @@ class MudReaderThread ( threading.Thread ):
             #        self.__check_flag = False
             ##### DONE MATCHING RE's  WOOOOOOOO ######
         
-            #sys.stdout.write('"' + MUD_buffer[MUD_buffer_trunc] + '"') #debug.  Shows where last match took place. Gives MUD_buffer not defined error.
+            #sys.stdout.write('"' + MUDBuffer[MUD_buffer_trunc] + '"') #debug.  Shows where last match took place. Gives MUD_buffer not defined error.
             #magentaprint("Clearing text buffer.  len: %d.  trunc: %d.  last matched char: %c." % (
             #           len(text_buffer), text_buffer_trunc, text_buffer[text_buffer_trunc]))
             text_buffer = text_buffer[text_buffer_trunc:]
@@ -771,17 +669,17 @@ class MudReaderThread ( threading.Thread ):
 
     # end run  (congrats!)
 
-    def copy_MUD_buffer(self):
+    def copy_MUDBuffer(self):
         
         # Routine to copy the buffer shared with MudListenerThread.
         # Wait for access flag to go down for the read.
-        while(self.MUD_buffer.access_flag == True):
+        while(self.MUDBuffer.access_flag == True):
             time.sleep(0.05)
             
-        self.MUD_buffer.access_flag = True
-        MUD_buffer_copy = self.MUD_buffer.buffer[:]
-        self.MUD_buffer.access_flag = False
-        return MUD_buffer_copy
+        self.MUDBuffer.access_flag = True
+        MUDBuffer_copy = self.MUDBuffer.buffer[:]
+        self.MUDBuffer.access_flag = False
+        return MUDBuffer_copy
 
     def set_colour(self,ANSI_escape_sequence):
         """ This routine takes an ANSI escape sequence as an argument and
@@ -1014,23 +912,6 @@ class MudReaderThread ( threading.Thread ):
 
         return return_list
     
-    #TODO (high priority): implement this (observer pattern?  Have some high 
-    # level function implement something that will do this.
-    def reequip_weapon(self, weapon_str):
-        #if(self.Character.WEAPON1 == self.Character.WEAPON2):
-        #    # If weap 1 and weap 2 are the same, not sure how to know 
-        #    # which broke... so just put in both commands :)
-        #    self.CommandHandler_inst.process("wie " + weapon_str)
-        #    self.CommandHandler_inst.process("seco " + weapon_str)
-        #else:
-        #    if(weapon_str == self.Character.WEAPON1):
-        #        self.CommandHandler_inst.process("wie " + weapon_str)
-        #    else:
-        #        self.CommandHandler_inst.process("seco " + weapon_str)
-        magentaprint("Reequip weapon needs to be reimplemented.")
-        
-    
-
 # end MudReaderThread class
 
 
