@@ -1,10 +1,10 @@
 import sys
+from UnixConsoleHandler import *
+from WinConsoleHandler import *
 
 def newConsoleHandler():
 	if sys.platform == 'win32':
-		from WinConsoleHandler import *
 		return WinConsoleHandler()
 	else:
-		from UnixConsoleHandler import *
 		return UnixConsoleHandler()
 
