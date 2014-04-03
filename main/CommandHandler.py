@@ -135,13 +135,12 @@ class CommandHandler:
                 magentaprint('    ' + str(r))
         elif(re.match("cackle", user_input)):
             misc_functions.verboseMode = not misc_functions.verboseMode
-            #magentaprint("Verbose mode changed", False)
+            magentaprint("Verbose mode changed", False)
         elif(re.match("defecate", user_input)):
             misc_functions.debugMode = not misc_functions.debugMode
-            #magentaprint("Debug Mode changed", False)
+            magentaprint("Debug Mode changed", False)
         else: # Doesn't match any command we are looking for
-            #@self.tn.write(user_input + "\n") # Just shovel to telnet.
-            send_to_telnet(self.tn, user_input)
+            send_to_telnet(self.tn, user_input) # Just shovel to telnet.
 
     def user_ki(self, user_input):
         #global ATTACK_CLK, ATTACK_WAIT
@@ -149,14 +148,12 @@ class CommandHandler:
         time_remaining = self.Character.ATTACK_WAIT - (now - self.Character.ATTACK_CLK)
         if (time_remaining < 0):
             self.Character.ATTACK_CLK = now
-            #self.tn.write(user_input + "\n")
             send_to_telnet(self.tn, user_input)
         elif(time_remaining < 1.0):
             magentaprint("Delaying by %.1f sec ..." % time_remaining)
             time.sleep(time_remaining)
             magentaprint("Sent.")
             self.Character.ATTACK_CLK = now
-            #self.tn.write(user_input + "\n")
             send_to_telnet(self.tn, user_input)
         else:
             magentaprint("(Python) Wait %.1f more seconds" % time_remaining)

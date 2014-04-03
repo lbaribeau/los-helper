@@ -210,7 +210,7 @@ class BotThread(threading.Thread):
         #Todo: fix for case where there's ring mail in the inventory or multiple rings are dropped                 
 
     def rest_and_check_aura(self):
-        magentaprint("Resting until Regen Complete.", False)
+        magentaprint("Resting.", False)
      
         MANA_TO_WAIT = self.character.MAX_MANA - 12
         if(self.character.BLACK_MAGIC): 
