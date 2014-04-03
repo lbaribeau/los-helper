@@ -30,7 +30,7 @@ class GenericBotReaction(BotReaction):
     use of M_obj (the command can't use matched text.) """
     
     def __init__(self, regex, commandHandler, telnet_commands):
-        assert not isinstance(telnet_commands, basestring) # telnet_commands MUST be a list, not a string
+        assert not isinstance(telnet_commands, str) # telnet_commands MUST be a list, not a string
         super(GenericBotReaction, self).__init__(regex)
         self.commandHandler = commandHandler
         self.telnet_commands = telnet_commands
