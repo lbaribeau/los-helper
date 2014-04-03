@@ -2,6 +2,7 @@
 import time
 import sys
 from ConsoleHandler import newConsoleHandler
+from datetime import datetime
 
 debugMode = True
 verboseMode = True
@@ -174,7 +175,7 @@ def _item_string_to_reference_string(item_string):
     
     
 #def magentaprint(s, mod_s=""):
-def magentaprint(str, isDebugCommand=True):
+def magentaprint(text, isDebugCommand=True):
     global debugMode
 
     newConsoleHandler().magenta()
@@ -183,10 +184,13 @@ def magentaprint(str, isDebugCommand=True):
 #    else:
 #        print s
 
+    output = str(get_timestamp() + "| " + str(text))
+    #output = text
+
     if (debugMode):
-        print (str)
+        print (output)
     elif not (isDebugCommand):
-        print (str)
+        print (output)
 
     newConsoleHandler().white()
     return
@@ -199,3 +203,6 @@ def manage_telnet_output(text, isVerbose=True):
     elif not (isVerbose):
         sys.stdout.write(text)
     return
+
+def get_timestamp():
+    return time.strftime("%H:%M:%S", time.gmtime())
