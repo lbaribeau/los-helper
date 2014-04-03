@@ -6,6 +6,7 @@ from datetime import datetime
 
 debugMode = True
 verboseMode = True
+startTime = datetime.now()
 
 ##################################### MISC FUNCTIONS ########################
 
@@ -205,4 +206,18 @@ def manage_telnet_output(text, isVerbose=True):
     return
 
 def get_timestamp():
-    return time.strftime("%H:%M:%S", time.gmtime())
+    curtime = datetime.now().time()
+    return curtime.strftime("%H:%M:%S")
+
+def get_runtime():
+    global startTime
+    runtime = datetime.now() - startTime #by not including .time() we're creating a timedelta object
+    return runtime
+
+def calculate_vpm(value):
+    runtime = get_runtime()
+    seconds = runtime.total_seconds() % 1
+    magentaprint(str(value) + " / " + str(seconds))
+    minutes = (seconds / 60) % 1 #at least display 1 minute
+    vpm = value / minutes #no decimals
+    return vpm

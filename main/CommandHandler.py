@@ -117,7 +117,10 @@ class CommandHandler:
         elif(re.match("INVENTORY_LIST", user_input)):
             magentaprint(str(self.Character.INVENTORY_LIST), False)
         elif(re.match("EXPERIENCE", user_input)):
-            magentaprint(str(self.Character.EXPERIENCE), False)
+            exp = self.Character.EXPERIENCE
+            #expm = str(calculate_vpm(exp))
+            #magentaprint(str(exp) + " - EXP / MIN: " + expm, False)
+            magentaprint(str(exp), False)
         elif(re.match("GOLD", user_input)):
             magentaprint(str(self.Character.GOLD), False)
         elif(re.match("MUD_RETURN_ITEM_SOLD", user_input)):
