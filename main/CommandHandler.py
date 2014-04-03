@@ -113,19 +113,19 @@ class CommandHandler:
         elif(re.match("MONSTER_LIST", user_input)):
             magentaprint(str(self.Character.MONSTER_LIST))
         elif(re.match("HEALTH", user_input)):
-            magentaprint(str(self.Character.HEALTH))
+            magentaprint(str(self.Character.HEALTH), False)
         elif(re.match("INVENTORY_LIST", user_input)):
-            magentaprint(str(self.Character.INVENTORY_LIST))
+            magentaprint(str(self.Character.INVENTORY_LIST), False)
         elif(re.match("EXPERIENCE", user_input)):
-            magentaprint(self.Character.EXPERIENCE)
+            magentaprint(str(self.Character.EXPERIENCE), False)
         elif(re.match("GOLD", user_input)):
-            magentaprint(self.Character.GOLD)
+            magentaprint(str(self.Character.GOLD), False)
         elif(re.match("MUD_RETURN_ITEM_SOLD", user_input)):
             magentaprint(self.Character.MUD_RETURN_ITEM_SOLD)
         elif(re.match("MOBS_JOINED_IN", user_input)):
             magentaprint(self.Character.MOBS_JOINED_IN)
         elif(re.match("AURA", user_input)):
-            magentaprint(self.Character.AURA)        
+            magentaprint(str(self.Character.AURA), False)        
         elif(re.match("MOBS_ATTACKING", user_input)):
             magentaprint(self.Character.MOBS_ATTACKING)
         elif(re.match("MONSTER_KILL_LIST", user_input)):
