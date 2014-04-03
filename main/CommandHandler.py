@@ -133,15 +133,10 @@ class CommandHandler:
         elif(re.match("reactionlist", user_input)):
             for r in self.MudReaderHandler.MudReaderThread.BotReactionList:
                 magentaprint('    ' + str(r))
-<<<<<<< HEAD
         else: # Doesn't match any command we are looking for
             #@self.tn.write(user_input + "\n") # Just shovel to telnet.
             send_to_telnet(self.tn, user_input)
-=======
-        else: 
-            self.tn.write(user_input + "\n")
->>>>>>> origin/master
-
+            
     def user_ki(self, user_input):
         #global ATTACK_CLK, ATTACK_WAIT
         now = time.time()
