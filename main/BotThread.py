@@ -331,27 +331,26 @@ class BotThread(threading.Thread):
         heal_spell = "vig"
         heal_cost = 2
 
-        if (self.character.WHITE_MAGIC):
-            magentaprint("healing up with magicks")
-            if(self.__stopping):
-                return
-            
-            if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
-               self.character.MANA >= heal_cost):
+        magentaprint("healing up")
+        if(self.__stopping):
+            return
+        
+        if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
+           self.character.MANA >= heal_cost):
+            if (self.character.WHITE_MAGIC):
                 self.commandHandler.user_cc(heal_spell)  
-            else:
-                return
-                
-            # Just wait for MudReader to set HEALTH for us while the cast thread continues...
-            while(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
-                  self.character.MANA >= heal_cost and not self.__stopping):
-                
-                if(self.engage_any_attacking_mobs()):
-                    self.commandHandler.user_cc(heal_spell)
-                
-                time.sleep(0.05)     
+        else:
+            return
+        
+        # Just wait for MudReader to set HEALTH for us while the cast thread continues...
+        while(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
+              self.character.MANA >= heal_cost and not self.__stopping):
+            if(self.engage_any_attacking_mobs() and self.character.WHITE_MAGIC):
+                self.commandHandler.user_cc(heal_spell)
+            
+            time.sleep(0.05)     
 
-            self.commandHandler.stop_CastThread()
+        self.commandHandler.stop_CastThread()
         
         return
 
@@ -706,19 +705,18 @@ class BotThread(threading.Thread):
                     self.commandHandler.stop_CastThread()
 
             else:
-                if(self.character.WHITE_MAGIC):
-                    magentaprint("healing up with magicks engage")
-                    if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL):
-                        if(self.character.MANA >= vigor_cost):
-                            # Start healing if not already
-                            if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
-                                self.commandHandler.user_cc("vig")
-                        else:
-                            # Stop the thread if MANA is too low.
-                            # This prevents "Cannot meet the casting cost!"
-                            self.commandHandler.stop_CastThread()
-                    else: 
+                if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL):
+                    if(self.character.MANA >= vigor_cost and self.character.WHITE_MAGIC):
+                        magentaprint("healing up")
+                        # Start healing if not already
+                        if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
+                            self.commandHandler.user_cc("vig")
+                    else:
+                        # Stop the thread if MANA is too low.
+                        # This prevents "Cannot meet the casting cost!"
                         self.commandHandler.stop_CastThread()
+                else: 
+                    self.commandHandler.stop_CastThread()
                     
             # TODO: restoratives (use when vig not keeping up or low mana)
             
