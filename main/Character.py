@@ -19,7 +19,7 @@ class Character:
         self.RACE = "Human"
         self.TITLE = "Monk"
         
-        self.LEVEL = 1
+        self.LEVEL = 2
 #        self.preferred_alignment = "grey"
         #self.WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #self.MAGIC_SKILLS= [0, 0, 0, 0, 0]
@@ -78,8 +78,8 @@ class Character:
         if(self.LEVEL <= 2):
             self.HEALTH_TO_HEAL = 15
             self.HEALTH_TO_FLEE = 6
-            self.MAX_MANA = 3
-            self.MANA_TO_ENGAGE = 3
+            self.MAX_MANA = 0
+            self.MANA_TO_ENGAGE = 0
         elif(self.LEVEL <= 3):
             self.HEALTH_TO_HEAL = 27
             self.HEALTH_TO_FLEE = 9
@@ -130,7 +130,7 @@ class Character:
             "heather seller", "irate teenager", 'peasant', 'one-armed beggar',
             "village elder", "small dog", "tribesman", "searcher", 
             "delivery boy",
-            "traveller", "wanderer", "villager", "rich kid", "vagrant",
+            "traveller", "wanderer", "villager", "vagrant",
             "dropout", "tramp", "serf", 'dishwasher']     
         self.__lvl1_red_monsters = [
             "old kobold", "kobold child", "kobold dam", ]
@@ -140,7 +140,7 @@ class Character:
             "sheep", "goose", "singer", "musician", "spiv",
             "bidder", "dairy cow", "scholar", "juggler",  #"acolyte",
             "shepherd", "gazelle", 'dancer', 'jongleur',
-            'tabby cat', 'clerk', 'stablehand', 'bladesman',
+            'tabby cat', 'clerk', 'stablehand', "rich kid", 'bladesman',
             "cook's assistant", "miner's assistant",
             #"penitent" 
             ] 
