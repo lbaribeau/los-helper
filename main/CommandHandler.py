@@ -134,6 +134,12 @@ class CommandHandler:
             exp = self.Character.TOTAL_EXPERIENCE
             gold = self.Character.TOTAL_GOLD
             magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + gold, False)
+            exp = self.Character.EXPERIENCE
+            expm = str(calculate_vpm(exp))
+            magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
+            kills = self.Character.MOBS_KILLED
+            kpm = str(calculate_vpm(kills))
+            magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
         elif(re.match("MUD_RETURN_ITEM_SOLD", user_input)):
             magentaprint(self.Character.MUD_RETURN_ITEM_SOLD)
         elif(re.match("MOBS_JOINED_IN", user_input)):
@@ -351,7 +357,7 @@ class CommandHandler:
 
         if (second_sleep < 0.1):
             second_sleep = 0.1
-        
+
         time.sleep(second_sleep)
         # Keep it simple.  Wait till ready then flee several times.  (beats
         # failed to escape)

@@ -60,6 +60,7 @@ class Character:
         self.CAST_WAIT = self.CAST_PERIOD
 
         self.MOBS_KILLED = 0
+        self.DEATHS = 0
 
         # Game environment variables.
         self.HASTING = False 

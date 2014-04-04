@@ -488,7 +488,8 @@ class BotThread(threading.Thread):
 
         if (self.character.DEAD):
             self.character.DEAD = False
-            magentaprint("Pulling up my bootstraps and starting again")
+            self.character.DEATHS += 1
+            magentaprint("Died; Pulling up my bootstraps and starting again", False)
             path_to_go = LIMBO_TO_CHAPEL
 
         elif(self.__nextpath % 2 == 0):
