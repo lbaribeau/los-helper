@@ -303,28 +303,27 @@ class BotThread(threading.Thread):
 
 
     def update_aura(self):
-        if(self.character.WHITE_MAGIC):
-            magentaprint("casting show aura")
-            if(self.__stopping):
-                return False
+        magentaprint("casting show aura")
+        if(self.__stopping):
+            return False
 
-            if(self.character.LEVEL < 3 or time.time() - self.character.AURA_LAST_UPDATE < 300):
-                magentaprint("Not updating aura because it was recently updated (%f)." % (time.time() - self.character.AURA_LAST_UPDATE))
-                return True   
+        if(self.character.LEVEL < 3 or time.time() - self.character.AURA_LAST_UPDATE < 300):
+            magentaprint("Not updating aura because it was recently updated (%f)." % (time.time() - self.character.AURA_LAST_UPDATE))
+            return True   
 
-            wait_for_cast_ready(self.character)
+        wait_for_cast_ready(self.character)
+        self.commandHandler.user_ca('c show')
+        aura_matched = False
+
+        while(not aura_matched and self.character.MANA > 0): 
             self.commandHandler.user_ca('c show')
-            aura_matched = False
+            aura_matched = self.mudReaderHandler.wait_for_aura_match() 
+            
+        if(aura_matched):
+            self.character.AURA_LAST_UPDATE = time.time()
+            return True
 
-            while(not aura_matched and self.character.MANA > 0): 
-                self.commandHandler.user_ca('c show')
-                aura_matched = self.mudReaderHandler.wait_for_aura_match() 
-                
-            if(aura_matched):
-                self.character.AURA_LAST_UPDATE = time.time()
-                return True
-
-            return False  # Ran out of mana
+        return False  # Ran out of mana
 
     
     def heal_up(self):
