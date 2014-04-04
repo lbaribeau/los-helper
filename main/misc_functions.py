@@ -214,15 +214,16 @@ def get_runtime():
     runtime = datetime.now() - startTime #by not including .time() we're creating a timedelta object
     return runtime
 
-def calculate_vpm(value):
+def get_runtime_in_minutes():
     runtime = get_runtime()
-    seconds = runtime.total_seconds()
-
-    magentaprint(str(value) + " / " + str(seconds))
-
-    if (seconds <= 0):
+    seconds = int(runtime.total_seconds()) #no millisecond nonsense please
+    magentaprint("Seconds run: " + str(seconds))
+    if (seconds <= 1):
         seconds = 60
-
     minutes = (seconds / 60) #at least display 1 minute
+    return minutes
+
+def calculate_vpm(value):
+    minutes = get_runtime_in_minutes()
     vpm = int(value / minutes) #no decimals
     return vpm

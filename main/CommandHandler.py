@@ -142,6 +142,8 @@ class CommandHandler:
             kills = self.Character.MOBS_KILLED
             kpm = str(calculate_vpm(kills))
             magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
+            runtime = get_runtime_in_minutes()
+            magentaprint("Minutes Run: " + str(runtime), False)
         elif(re.match("MUD_RETURN_ITEM_SOLD", user_input)):
             magentaprint(self.Character.MUD_RETURN_ITEM_SOLD)
         elif(re.match("MOBS_JOINED_IN", user_input)):
