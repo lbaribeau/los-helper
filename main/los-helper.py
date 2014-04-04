@@ -277,7 +277,7 @@ def main():
     mudReaderThread = MudReaderThread(MUDBuffer, character, ConsoleHandler)
     mudReaderThread.start()
     mudReaderHandler = MudReaderHandler(mudReaderThread, character)
-    commandHandler = CommandHandler(character, mudReaderHandler, tn) 
+    commandHandler = CommandHandler(character, mudReaderHandler, tn)
     inventory = Inventory(mudReaderHandler, commandHandler, character)
 
     # Now that the MUD thread is going I can trust it to issue the 
@@ -300,11 +300,8 @@ def main():
     # Clean exit:  watch_user_input sees the "quit" and sends it, then we
     # get here.  mudReaderThread will quit at the EOF, where we join up.
     
-    try:
-        manageMudReader(mudReaderThread, tn)
-    except KeyboardInterrupt:
-        print ("Hang on - things are still shutting down!")
-        manageMudReader(mudReaderThread, tn)
+    manageMudReader(mudReaderThread, tn)
+    
 
 
 def manageMudReader(mudReaderThread, tn):
@@ -523,10 +520,3 @@ def stop_bot():
 
 #if __name__ == '__main__':
 main()
-
-if __name__ == '__main__':
-    try:
-        main()
-    except KeyboardInterrupt:
-        print ('Killed by user')
-        sys.exit(0)

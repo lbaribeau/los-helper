@@ -131,9 +131,11 @@ class CommandHandler:
             kpm = str(calculate_vpm(kills))
             magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
         elif(re.match("REPORT", user_input)):
+            self.process("info")
+            time.sleep(1)
             exp = self.Character.TOTAL_EXPERIENCE
             gold = self.Character.TOTAL_GOLD
-            magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + gold, False)
+            magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), False)
             exp = self.Character.EXPERIENCE
             expm = str(calculate_vpm(exp))
             magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
