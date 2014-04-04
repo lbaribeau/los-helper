@@ -244,7 +244,7 @@ class Character:
         if(self.LEVEL < 4):
             self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
-        elif(self.LEVEL < 5):
+        elif(self.LEVEL < 6):
             self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)

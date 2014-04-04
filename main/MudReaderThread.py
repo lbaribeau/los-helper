@@ -434,7 +434,8 @@ class MudReaderThread ( threading.Thread ):
             if(M_obj):
                 print ("Shucks anyhow")
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                self.stop()  # breaks program but allows me to see what happened
+                #self.stop()  # breaks program but allows me to see what happened
+                aaaa
 
             ########    Monster Gets Killed    ######
             
@@ -450,6 +451,7 @@ class MudReaderThread ( threading.Thread ):
             # Experience
             M_obj = re.search("You gain (.+?) experience\.", text_buffer)       
             if(M_obj):
+                self.Character.MOBS_KILLED += 1
                 self.Character.EXPERIENCE = self.Character.EXPERIENCE + int(M_obj.group(1))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             # Monster flees.

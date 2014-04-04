@@ -729,13 +729,13 @@ class BotThread(threading.Thread):
 
             time.sleep(0.05)
 
-        # OK the mob died
+        # OK the mob died or ran or I ran
         self.commandHandler.stop_CastThread()    
         
         if(my_list_search(self.character.MOBS_ATTACKING, monster) != -1):
             #magentaprint("Bot:engage_monster: Removing " + monster + " from MOBS_ATTACKING.")
             magentaprint("I totally just killed: " + monster, False)
-            self.character.MOBS_KILLED += 1
+            #self.character.MOBS_KILLED += 1
             self.character.MOBS_ATTACKING.remove(monster)
             
         return
