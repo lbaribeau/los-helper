@@ -434,8 +434,8 @@ class MudReaderThread ( threading.Thread ):
             if(M_obj):
                 print ("Shucks anyhow")
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                self.Character.DEAD = True
                 #self.stop()  # breaks program but allows me to see what happened
-                aaaa
 
             ########    Monster Gets Killed    ######
             

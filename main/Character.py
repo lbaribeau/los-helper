@@ -61,6 +61,7 @@ class Character:
 
         # Game environment variables.
         self.HASTING = False 
+        self.DEAD = False
 
         self.WEAPON1=""
         self.WEAPON2=""

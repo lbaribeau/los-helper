@@ -372,6 +372,8 @@ class BotThread(threading.Thread):
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go")
         
+        LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
+
         SHOP_AND_TIP_PATH = ["out", "s", "w", 'w', 'w', 's', 's', "shop",
                           "sell_items", 
                           "out", "se", 'e', 'e', 'e', 'e', "ne", "tip",
@@ -484,7 +486,12 @@ class BotThread(threading.Thread):
         # regular field workers east of Amethyst... however exit is shut during the night.
         # loggers and sawmill operators (lots of enemies if you hang around ... perhaps add some waiting)
 
-        if(self.__nextpath % 2 == 0):
+        if (self.character.DEAD):
+            self.character.DEAD = False
+            magentaprint("Pulling up my bootstraps and starting again")
+            path_to_go = LIMBO_TO_CHAPEL
+
+        elif(self.__nextpath % 2 == 0):
             path_to_go = SHOP_AND_TIP_PATH
 
         elif(self.__nextpath == 1):
