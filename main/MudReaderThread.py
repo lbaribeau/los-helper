@@ -301,6 +301,13 @@ class MudReaderThread ( threading.Thread ):
             #                 (self.Character.WEAPON_SKILLS['missile'], self.Character.MAGIC_SKILLS['astral']))
             
             #TODO: continue with MAXHP, MAXMP, GOLD, EXP, LEVELGOLD, LEVELEXP, etc.
+            M_obj = re.search("Exp : (\d+)",text_buffer)
+            if (M_obj != None):
+                self.Character.TOTAL_EXPERIENCE = M_obj.group(1)
+
+            M_obj = re.search("Gold : (\d+)",text_buffer)
+            if (M_obj != None):
+                self.Character.TOTAL_GOLD = M_obj.group(1)
 
             #### Casting regexes ####
             

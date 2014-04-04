@@ -36,13 +36,18 @@ class MudListenerThread ( threading.Thread ):
         
         # Loop forever, just do stuff when the socket says its ready.
         while (not self.__stopping):
-            sel_out_triple = select.select([tn_sno], [], [], 2)
+            try:
+                sel_out_triple = select.select([tn_sno], [], [], 2)
+            except ValueError:
+                #Eat the error
+                continue
+
             if(sel_out_triple != ([], [], [])):
                 # Read some characters.  
                 try:
                     fragment = fragment + self.tn.read_some().decode('ascii') # read_eager misses characters
-                except EOFError:
-                    print("MudListenerThread: Exiting (saw EOF)")
+                except (EOFError, OSError) as e:
+                    print("MudListenerThread: Exiting (saw EOF) or Socket is dead")
                     self.stop()
                     break
                 #magentaprint("MudListener: got a fragment size %d time %f last chars %s." % (len(fragment), time.time()-self.Character_inst.START_TIME, fragment[len(fragment)-8:]))

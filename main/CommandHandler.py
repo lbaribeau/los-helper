@@ -130,6 +130,10 @@ class CommandHandler:
             kills = self.Character.MOBS_KILLED
             kpm = str(calculate_vpm(kills))
             magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
+        elif(re.match("REPORT", user_input)):
+            exp = self.Character.TOTAL_EXPERIENCE
+            gold = self.Character.TOTAL_GOLD
+            magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + gold, False)
         elif(re.match("MUD_RETURN_ITEM_SOLD", user_input)):
             magentaprint(self.Character.MUD_RETURN_ITEM_SOLD)
         elif(re.match("MOBS_JOINED_IN", user_input)):
@@ -345,7 +349,10 @@ class CommandHandler:
             send_to_telnet(self.tn, "rm " + self.Character.WEAPON2)
         #    WEAPON2 = ""
 
-        time.sleep(abs(second_sleep))
+        if (second_sleep < 0.1):
+            second_sleep = 0.1
+        
+        time.sleep(second_sleep)
         # Keep it simple.  Wait till ready then flee several times.  (beats
         # failed to escape)
         # TODO: Print if its more than a second... but I don't think that's

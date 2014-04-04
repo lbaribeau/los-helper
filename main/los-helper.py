@@ -300,20 +300,25 @@ def main():
     # Clean exit:  watch_user_input sees the "quit" and sends it, then we
     # get here.  mudReaderThread will quit at the EOF, where we join up.
     
+    try:
+        manageMudReader(mudReaderThread, tn)
+    except KeyboardInterrupt:
+        print ("Hang on - things are still shutting down!")
+        manageMudReader(mudReaderThread, tn)
+
+
+def manageMudReader(mudReaderThread, tn):
     while (mudReaderThread.is_alive()): 
-        mudReaderThread.join(3)  # Wait 3 sec for the other thread to quit.
-        if (mudReaderThread.is_alive()):
-            mudReaderThread.stop()  # Last resort.
+            mudReaderThread.join(3)  # Wait 3 sec for the other thread to quit.
+            if (mudReaderThread.is_alive()):
+                mudReaderThread.stop()  # Last resort.
 
-    #Okay, clean exit!  
-
+    #Okay, clean exit!
     tn.close();
     #That's all, folks!
 
-    time.sleep(10) #ctrl+c during this sleep seems to work for now 
-    
-
-
+    print ("It should be safe to ctrl + c now")
+    time.sleep(10) #ctrl+c during this sleep seems to work for now
 
 def connect_to_MUD():
     # This function connects to the MUD, returning the telnet object.
@@ -361,7 +366,7 @@ def watch_user_input(mudReaderHandler, character):
     while not stopping:
         try:
             user_input = input(); 
-        except EOFError:
+        except (EOFError, KeyboardInterrupt) as e:
             magentaprint("Don't try to crash me!  Use 'quit'.")
             user_input = ""
 
@@ -518,3 +523,10 @@ def stop_bot():
 
 #if __name__ == '__main__':
 main()
+
+if __name__ == '__main__':
+    try:
+        main()
+    except KeyboardInterrupt:
+        print ('Killed by user')
+        sys.exit(0)

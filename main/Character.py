@@ -41,7 +41,9 @@ class Character:
 
         self.EXPERIENCE = 0
         self.GOLD = 0
-        
+        self.TOTAL_EXPERIENCE = 0
+        self.TOTAL_GOLD = 0
+
         self.BLACK_MAGIC = True
         self.FAVOURITE_SPELL = "burn"
         
