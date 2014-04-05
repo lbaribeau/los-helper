@@ -755,7 +755,7 @@ class BotThread(threading.Thread):
                     
             # TODO: restoratives (use when vig not keeping up or low mana)
             if (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL / 2)):
-                if(self.character.MANA >= vigor_cost and  and self.character.KNOWS_VIGOR and
+                if(self.character.MANA >= vigor_cost and self.character.KNOWS_VIGOR and
                      self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
                     self.commandHandler.user_cc(heal_spell)
                     self.commandHandler.stop_CastThread()
