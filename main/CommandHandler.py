@@ -132,6 +132,8 @@ class CommandHandler:
             magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
         elif(re.match("DUMP", user_input)):
             magentaprint(self.Character.__dict__, False)
+        elif(re.match("VERSION", user_input)):
+            magentaprint("Version: " + str(misc_functions.VERSION), False)
         elif(re.match("REPORT", user_input)):
             self.process("info")
             time.sleep(1)
