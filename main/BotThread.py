@@ -338,7 +338,7 @@ class BotThread(threading.Thread):
             return
 
         if (self.character.TITLE == "Monk"):
-            if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
+            if(self.character.HEALTH <= (self.character.HEALTH_TO_HEAL - 10) and 
                 (time.time() - self.character.LAST_MEDITATE) > 150):
                 self.commandHandler.process('meditate')
                 self.character.LAST_MEDITATE = time.time()
@@ -359,7 +359,7 @@ class BotThread(threading.Thread):
                 elif (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL / 2)):
                     self.use_restorative_items()
 
-            time.sleep(0.05)
+                time.sleep(0.05)
 
         self.commandHandler.stop_CastThread()
         
@@ -747,20 +747,6 @@ class BotThread(threading.Thread):
                     if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
                         self.commandHandler.user_cc(self.character.FAVOURITE_SPELL + " " + monster)
                 else:
-                    self.commandHandler.stop_CastThread()
-
-            else:
-                if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL):
-                    if(self.character.MANA >= vigor_cost and self.character.KNOWS_VIGOR):
-                        magentaprint("healing up")
-                        # Start healing if not already
-                        if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
-                            self.commandHandler.user_cc("vig")
-                    else:
-                        # Stop the thread if MANA is too low.
-                        # This prevents "Cannot meet the casting cost!"
-                        self.commandHandler.stop_CastThread()
-                else: 
                     self.commandHandler.stop_CastThread()
                     
             # TODO: restoratives (use when vig not keeping up or low mana)
