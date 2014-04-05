@@ -38,6 +38,10 @@ class Character:
         self.AURA_PREFERRED = self.AURA_LIST[self.AURA_PREFERRED_SCALE]
         
         self.AURA_LAST_UPDATE = -300
+        self.LAST_BUFF = -150
+
+        self.HAS_BUFF_ITEMS = False
+        self.HAS_RESTORE_ITEMS = False
 
         self.EXPERIENCE = 0
         self.GOLD = 0
@@ -111,8 +115,8 @@ class Character:
         elif(self.LEVEL <= 7):
             self.HEALTH_TO_HEAL= 50
             self.HEALTH_TO_FLEE = 8 #my armor is great so this should never get hit
-            self.MAX_MANA = 15
-            self.MANA_TO_ENGAGE = 6       
+            self.MAX_MANA = 0 #magic damage is pointless with min int
+            self.MANA_TO_ENGAGE = 0       
         elif(self.LEVEL <= 8):
             self.HEALTH_TO_HEAL= 50
             self.HEALTH_TO_FLEE = 20
@@ -316,7 +320,10 @@ class Character:
             "furry cloak", "enchanted indigo cloak",
             'lion charm', "poison ring", 
             #'steel mask' # the bot slowly collects these 
-            ] 
+            ]
+
+        self.RESTORE_ITEM_LIST = ["small restorative", "chicken soup"]
+        self.BUFF_ITEM_LIST = ["steel bottle"]
        
         self.MUD_RETURN_ITEM_SOLD = False
 

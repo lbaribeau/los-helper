@@ -333,7 +333,7 @@ class BotThread(threading.Thread):
         magentaprint("healing up")
         if(self.__stopping):
             return
-        
+
         if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
            self.character.MANA >= heal_cost):
             if (self.character.WHITE_MAGIC):
@@ -341,18 +341,41 @@ class BotThread(threading.Thread):
         else:
             return
         
-        # Just wait for MudReader to set HEALTH for us while the cast thread continues...
-        while(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
-              self.character.MANA >= heal_cost and not self.__stopping):
-            if(self.engage_any_attacking_mobs() and self.character.WHITE_MAGIC):
-                self.commandHandler.user_cc(heal_spell)
-            
-            time.sleep(0.05)     
+        # Just wait for MudReader to set HEALTH for us while the cast thread continues..
+        while(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and not self.__stopping):
+            if (self.engage_any_attacking_mobs()):
+                if(self.character.MANA >= heal_cost and self.character.WHITE_MAGIC):
+                    self.commandHandler.user_cc(heal_spell)
+                elif (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL / 2)):
+                    self.use_restorative_items()
+
+            time.sleep(0.05)
 
         self.commandHandler.stop_CastThread()
+
+        if((time.time() - self.character.LAST_BUFF) > 150):
+            self.use_buff_items()
+            self.character.LAST_BUFF = time.time()
         
         return
 
+    def use_buff_items(self):
+        if (any("steel bottle" in s for s in self.character.INVENTORY_LIST)):
+            magentaprint("drinking steel bottle", False)
+            self.commandHandler.process('drink bottle')
+            self.character.HAS_BUFF_ITEMS = True
+        else:
+            self.character.HAS_BUFF_ITEMS = False
+        return
+
+    def use_restorative_items(self):
+        if (self.character.HAS_RESTORE_ITEMS and any("small restorative" in s for s in self.character.INVENTORY_LIST)):
+            magentaprint("drinking small restorative", False)
+            self.commandHandler.process('drink restorative')
+            self.character.HAS_RESTORE_ITEMS = True
+        else:
+            self.character.HAS_RESTORE_ITEMS = False
+        return
 
     def check_weapons(self):
         
