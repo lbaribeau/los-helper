@@ -334,6 +334,8 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return
 
+
+
         if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
            self.character.MANA >= heal_cost):
             if (self.character.KNOWS_VIGOR):
@@ -357,8 +359,9 @@ class BotThread(threading.Thread):
 
     def buff_up(self):
         if((time.time() - self.character.LAST_BUFF) > 150):
-            #while(self.character.MANA > 0): 
+            while(self.character.MANA > 0): 
                 #self.commandHandler.user_ca('c light')
+                aura_matched = self.mudReaderHandler.wait_for_aura_match() 
 
             self.use_buff_items()
             self.character.LAST_BUFF = time.time()
@@ -761,6 +764,7 @@ class BotThread(threading.Thread):
                     self.commandHandler.stop_CastThread()
                 else:
                     self.use_restorative_items()
+
 
             # FLEE Checks
             if(self.character.HEALTH <= self.character.HEALTH_TO_FLEE):

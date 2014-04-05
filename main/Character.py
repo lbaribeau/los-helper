@@ -39,6 +39,8 @@ class Character:
         
         self.AURA_LAST_UPDATE = -300
         self.LAST_BUFF = -150
+        self.LAST_MEDITATE = -150
+
         self.HAS_BUFF_ITEMS = False
         self.HAS_RESTORE_ITEMS = False
 
