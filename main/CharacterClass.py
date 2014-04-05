@@ -37,6 +37,7 @@ class CharacterClass:
     def getCanSteal(self): abstract() 
     def getCanBackstab(self): abstract() 
     def getCoolAbilities(self): abstract()
+    def getLevelPath(self): return [ ]
  
 class Ranger(CharacterClass):   
     def getLevelOneMaxHealth(self): return 18
@@ -49,6 +50,7 @@ class Ranger(CharacterClass):
     def getCanSteal(self): return False
     def getCanBackstab(self): return False
     def getCoolAbilities(self): return [ Haste() ]
+    def getLevelPath(self): return [ ]
 
 class Monk(CharacterClass):   
     def getLevelOneMaxHealth(self): return 17
@@ -61,7 +63,21 @@ class Monk(CharacterClass):
     def getCanSteal(self): return False
     def getCanBackstab(self): return False
     def getCoolAbilities(self): return [ Meditate(), Touch() ]
-    
+    def getLevelPath(self): return [ ]
+
+class Mage(CharacterClass):
+    def getLevelOneMaxHealth(self): return 17
+    def getLevelOneMaxMana(self): return 3
+    def getHealthGainedPerLevel(self): return 6
+    def getManaGainedPerLevel(self): return 3
+    def getManaTickAmount(self): return 2
+    def getCanCircle(self): return False
+    def getCanBash(self): return False
+    def getCanSteal(self): return False
+    def getCanBackstab(self): return False
+    def getCoolAbilities(self): return [ ]
+    def getLevelPath(self): return [ ["out", "s", "w", "w", "w", "s", "e", "shop", "backroom", "portal"],["door", "out", "out", "w", "n", "e", "e", "e", "n", "cha"]]
+
 #class Paladin(CharacterClass):   
     #def getLevelOneMaxHealth(self): return 17
     #def getLevelOneMaxMana(self): return 3
