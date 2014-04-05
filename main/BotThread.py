@@ -245,7 +245,10 @@ class BotThread(threading.Thread):
         else:
             # Probably not the greatest logic but low level characters will need 
             # to gain heal other than healing up.
-            self.rest_for_health()    
+            self.rest_for_health()
+
+        self.buff_up()
+
         return
 
 
@@ -334,7 +337,12 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return
 
-
+        if (self.character.TITLE == "Monk")
+            if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
+                (time.time() - self.character.LAST_MEDITATE) > 150):
+                self.commandHandler.process('meditate')
+                self.character.LAST_MEDITATE = time.time()
+                return
 
         if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
            self.character.MANA >= heal_cost):
@@ -359,9 +367,8 @@ class BotThread(threading.Thread):
 
     def buff_up(self):
         if((time.time() - self.character.LAST_BUFF) > 150):
-            while(self.character.MANA > 0): 
+            #while(self.character.MANA > 0): 
                 #self.commandHandler.user_ca('c light')
-                aura_matched = self.mudReaderHandler.wait_for_aura_match() 
 
             self.use_buff_items()
             self.character.LAST_BUFF = time.time()
@@ -760,7 +767,7 @@ class BotThread(threading.Thread):
             if (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL / 2)):
                 if(self.character.MANA >= vigor_cost and self.character.KNOWS_VIGOR and
                      self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
-                    self.commandHandler.user_cc(heal_spell)
+                    self.commandHandler.user_cc("vig")
                     self.commandHandler.stop_CastThread()
                 else:
                     self.use_restorative_items()

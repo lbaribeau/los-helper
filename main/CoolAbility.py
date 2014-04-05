@@ -142,7 +142,7 @@ class Meditate(CoolAbility):
     def command(self):
         return 'meditate' 
     def cooldown_in_seconds_after_success(self):
-        return 600 #guess
+        return 125 #roughly 2 minutes
     def cooldown_in_seconds_after_failure(self):
         return 10 #guess
     def use_for_combat(self):
@@ -154,9 +154,9 @@ class Meditate(CoolAbility):
     def shares_cooldown_with_attack(self):
         return False
     def success_mud_text(self):
-        return abstract() 
+        return "You feel at one with the universe."
     def failure_mud_text(self):
-        return abstract() 
+        return "Your spirit is not at peace."
     def wear_off_mud_text(self):
         return abstract()
     
