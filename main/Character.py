@@ -39,7 +39,6 @@ class Character:
         
         self.AURA_LAST_UPDATE = -300
         self.LAST_BUFF = -150
-
         self.HAS_BUFF_ITEMS = False
         self.HAS_RESTORE_ITEMS = False
 
@@ -48,10 +47,10 @@ class Character:
         self.TOTAL_EXPERIENCE = 0
         self.TOTAL_GOLD = 0
 
-        self.BLACK_MAGIC = True
+        self.BLACK_MAGIC = False
         self.FAVOURITE_SPELL = "burn"
         
-        self.WHITE_MAGIC = False
+        self.KNOWS_VIGOR = True
 
         self.ATTACK_PERIOD = 3 #sec
         self.ATTACK_PERIOD_HASTE = 2 #sec

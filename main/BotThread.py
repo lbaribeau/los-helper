@@ -336,7 +336,7 @@ class BotThread(threading.Thread):
 
         if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
            self.character.MANA >= heal_cost):
-            if (self.character.WHITE_MAGIC):
+            if (self.character.KNOWS_VIGOR):
                 self.commandHandler.user_cc(heal_spell)  
         else:
             return
@@ -344,7 +344,7 @@ class BotThread(threading.Thread):
         # Just wait for MudReader to set HEALTH for us while the cast thread continues..
         while(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and not self.__stopping):
             if (self.engage_any_attacking_mobs()):
-                if(self.character.MANA >= heal_cost and self.character.WHITE_MAGIC):
+                if(self.character.MANA >= heal_cost and self.character.KNOWS_VIGOR):
                     self.commandHandler.user_cc(heal_spell)
                 elif (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL / 2)):
                     self.use_restorative_items()
@@ -352,12 +352,17 @@ class BotThread(threading.Thread):
             time.sleep(0.05)
 
         self.commandHandler.stop_CastThread()
-
-        if((time.time() - self.character.LAST_BUFF) > 150):
-            self.use_buff_items()
-            self.character.LAST_BUFF = time.time()
         
         return
+
+    def buff_up(self):
+        if((time.time() - self.character.LAST_BUFF) > 150):
+            #while(self.character.MANA > 0): 
+                #self.commandHandler.user_ca('c light')
+
+            self.use_buff_items()
+            self.character.LAST_BUFF = time.time()
+            return
 
     def use_buff_items(self):
         if (any("steel bottle" in s for s in self.character.INVENTORY_LIST)):
@@ -736,7 +741,7 @@ class BotThread(threading.Thread):
 
             else:
                 if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL):
-                    if(self.character.MANA >= vigor_cost and self.character.WHITE_MAGIC):
+                    if(self.character.MANA >= vigor_cost and self.character.KNOWS_VIGOR):
                         magentaprint("healing up")
                         # Start healing if not already
                         if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
@@ -749,7 +754,14 @@ class BotThread(threading.Thread):
                     self.commandHandler.stop_CastThread()
                     
             # TODO: restoratives (use when vig not keeping up or low mana)
-            
+            if (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL / 2)):
+                if(self.character.MANA >= vigor_cost and  and self.character.KNOWS_VIGOR and
+                     self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
+                    self.commandHandler.user_cc(heal_spell)
+                    self.commandHandler.stop_CastThread()
+                else:
+                    self.use_restorative_items()
+
             # FLEE Checks
             if(self.character.HEALTH <= self.character.HEALTH_TO_FLEE):
                 # We're done for!  Trust CommandHandler to get us out.  
