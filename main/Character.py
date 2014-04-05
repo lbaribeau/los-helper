@@ -19,7 +19,7 @@ class Character:
         self.RACE = "Human"
         self.TITLE = "Monk"
         
-        self.LEVEL = 5
+        self.LEVEL = 7
 #        self.preferred_alignment = "grey"
         #self.WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #self.MAGIC_SKILLS= [0, 0, 0, 0, 0]
@@ -31,10 +31,10 @@ class Character:
                      'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue']
         # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
         
-        self.AURA_SCALE = 8 #Current aura
+        self.AURA_SCALE = 2 #Current aura
         self.AURA = self.AURA_LIST[self.AURA_SCALE]
         
-        self.AURA_PREFERRED_SCALE = 9  # dusty blue
+        self.AURA_PREFERRED_SCALE = 6 # dusty red
         self.AURA_PREFERRED = self.AURA_LIST[self.AURA_PREFERRED_SCALE]
         
         self.AURA_LAST_UPDATE = -300
@@ -105,14 +105,14 @@ class Character:
             self.MANA_TO_ENGAGE = 0           
         elif(self.LEVEL <= 6):
             self.HEALTH_TO_HEAL= 43
-            self.HEALTH_TO_FLEE = 17
-            self.MAX_MANA = 18
-            self.MANA_TO_ENGAGE = 12     
+            self.HEALTH_TO_FLEE = 15
+            self.MAX_MANA = 13
+            self.MANA_TO_ENGAGE = 4     
         elif(self.LEVEL <= 7):
             self.HEALTH_TO_HEAL= 50
-            self.HEALTH_TO_FLEE = 20
-            self.MAX_MANA = 21
-            self.MANA_TO_ENGAGE = 15        
+            self.HEALTH_TO_FLEE = 8 #my armor is great so this should never get hit
+            self.MAX_MANA = 15
+            self.MANA_TO_ENGAGE = 6       
         elif(self.LEVEL <= 8):
             self.HEALTH_TO_HEAL= 50
             self.HEALTH_TO_FLEE = 20
@@ -123,6 +123,8 @@ class Character:
             self.HEALTH_TO_FLEE = 26
             self.MAX_MANA = 27
             self.MANA_TO_ENGAGE = 6
+
+        self.LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096] #Half of this is the gold requirement
 
         self.MONSTER_LIST=[]
 
@@ -156,11 +158,11 @@ class Character:
         # some difficulty... they pile up north of the
         # chapel and kill you when you least expect
         self.__lvl2_red_monsters = [ 
-			"kobold sentry", "blond hooker", "sultry hooker", 
-			"kobold", "spiv", "drunken miner", 
+            "kobold sentry", "blond hooker", "sultry hooker", 
+            "kobold", "spiv", "drunken miner", 
             "kobold miner", "kobold archer", 'angry hooker',
             "angry kobold", 'red axer', 'pickpocket', 'thug'
-        	] 
+            ] 
         # pickpockets drop leather collars and masks
         # red axer drops studded leather collar
         # cat might be lvl 1 not sure
@@ -172,7 +174,7 @@ class Character:
             "street trader", "field worker", "harvester", "horse", "cow",
             "doorman", "stilt walker",  "messenger", "cashier",
             "thatcher",  "tax inspector", 
-		    'journeyman', "human miner", "hobbitish miner", "hawk"
+            'journeyman', "human miner", "hobbitish miner", "hawk"
             #"miner's mule"
             ] 
 
@@ -196,40 +198,40 @@ class Character:
             "kobold shaman", "drunken trouble-maker", "kobold champion"]
         
         self.__lvl5_monsters = [
-			"dwarven farm hand", "dwarven barmaid", 
+            "dwarven farm hand", "dwarven barmaid", 
             "fort sentry", "fur trader", "aristocrat",
             "seeker"  # seekers are unfortunately quite difficult
             ]
         self.__lvl5_red_monsters = [
             'large bandit',
-			"kobold guard", "mugger", 'large spider'
-			]
+            "kobold guard", "mugger", 'large spider'
+            ]
         # kobold guard and mugger are in groups of three and 
         # aren't actually level 5...
         self.__lvl6_monsters = [
-			"dwarven field worker", "dwarven bartender", "school teacher",
-			'lyrist', "nobleman", 
-			"bull", "hunter", 'usher',
+            "dwarven field worker", "dwarven bartender", "school teacher",
+            'lyrist', "nobleman", 
+            "bull", "hunter", 'usher',
             'sword swallower', 'archer',
             #'sentry' stand in pairs...
-			]
+            ]
         self.__lvl6_red_monsters = [
             'gnoll sentry', "bandit swordsman"
             ]
             # bull and hunter might be wrong (too high).
         self.__lvl7_monsters = [
-			"dwarven cook", "swordsman", 'fort sergeant',
-			'oremaster', 
-			'giant spider'
-			]
+            "dwarven cook", "swordsman", 'fort sergeant',
+            'oremaster', 
+            'giant spider'
+            ]
         # giant spiders are hostile
         self.__lvl8_monsters = [
             'owlbear',
             #'mine manager' #?
-			]
+            ]
         self.__lvl9_monsters = [
-			"dwarven blacksmith"
-			]
+            "dwarven blacksmith"
+            ]
         
         # A list of monsters redundant to the above lists that
         # I may want to kill even if they are too low of level.
@@ -248,12 +250,12 @@ class Character:
         if(self.LEVEL < 4):
             self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
-        elif(self.LEVEL < 6):
+        elif(self.LEVEL < 5):
             self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl2_red_monsters)
-        elif(self.LEVEL < 7):
+        elif(self.LEVEL < 6):
             self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
