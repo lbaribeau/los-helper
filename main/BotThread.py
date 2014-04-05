@@ -337,7 +337,7 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return
 
-        if (self.character.TITLE == "Monk")
+        if (self.character.TITLE == "Monk"):
             if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
                 (time.time() - self.character.LAST_MEDITATE) > 150):
                 self.commandHandler.process('meditate')
