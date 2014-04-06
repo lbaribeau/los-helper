@@ -351,15 +351,21 @@ class BotThread(threading.Thread):
         else:
             return
         
+        self.character.HAS_RESTORE_ITEMS = True
+
         # Just wait for MudReader to set HEALTH for us while the cast thread continues..
-        while(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and not self.__stopping):
+        while((self.character.HEALTH <= self.character.HEALTH_TO_HEAL and not self.__stopping) 
+                and (self.character.MANA >= heal_cost or self.character.HAS_RESTORE_ITEMS) ):
             if (self.engage_any_attacking_mobs()):
                 if(self.character.MANA >= heal_cost and self.character.KNOWS_VIGOR):
                     self.commandHandler.user_cc(heal_spell)
                 elif (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL / 2)):
                     self.use_restorative_items()
+                else: #If we end up here our health isn't high enough to use a restorative item
+                    self.character.HAS_RESTORE_ITEMS = False
+            magentaprint("in heal up loop")
 
-                time.sleep(0.05)
+            time.sleep(0.05)
 
         self.commandHandler.stop_CastThread()
         
