@@ -1,0 +1,25 @@
+
+STRING NOTEPAD for things we might want to match to later
+
+crits
+You knock the wind out of the x!!
+Your attack knocks the x off balance!!
+The x is caught off guard by your attack!
+Your wind magic buffets the x.
+Your fire magic explodes into the x.  (to be double checked)
+
+looks
+(S)?[Hh]e could kill you with a needle.   +4
+(S)?[Hh]e should be really hard to kill.  +3
+(S)?[Hh]e should be tough to kill.        +2
+(S)?[Hh]e is a little better than you.    +1
+(S)?[Hh]e is a perfect match for you!     0
+(S)?[Hh]e is not quite as good as you.    -1
+(S)?[Hh]e shouldn't be too tough to kill. -2
+(S)?[Hh]e should be easy to kill.         -3
+You could kill h[ie][mr] with a needle.     -4
+
+The goodness here sickens and repels you!
+You currently have no carried inventory.
+
+
