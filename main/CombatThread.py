@@ -14,12 +14,12 @@ class CombatThread(threading.Thread):
         caller = inspect.getouterframes(inspect.currentframe())[1][3]
         raise NotImplementedError(caller + ' must be implemented in subclass')
         
-    def __init__(self, Character, MudReaderHandler, telnet, target):   
+    def __init__(self, character, mudReaderHandler, telnetHandler, target):   
         Thread.__init__(self)
         self._stopping = False
-        self.Character = Character
-        self.MudReaderHandler = MudReaderHandler
-        self.telnet = telnet
+        self.character = character
+        self.mudReaderHandler = mudReaderHandler
+        self.telnetHandler = telnetHandler
         self.target = target      
         self._reactions = []
         _s_numbered = "( 1st| 2nd| 3rd| 4th| 5th| 6th| 7th| 8th| 9th| 10th| 11th| 12th| 13th| 14th| 15th| 16th| 17th| 18th| 19th)?"        
@@ -30,11 +30,11 @@ class CombatThread(threading.Thread):
     def _do_reactions(self):
         """ Makes and registers threadstoppers for a killthread """
         for reaction in self._reactions:
-            self.MudReaderHandler.register_reaction(reaction)
+            self.mudReaderHandler.register_reaction(reaction)
     
     def _undo_reactions(self):
         for reaction in self._reactions:
-            self.MudReaderHandler.unregister_reaction(reaction)
+            self.mudReaderHandler.unregister_reaction(reaction)
 
     def stop(self):
         self._stopping = True

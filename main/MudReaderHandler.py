@@ -25,10 +25,10 @@ class MudReaderHandler:
     # on the buffer.  Often a flag will be unset triggered on that text.  
     # The handler's job is to know what flags to set.
     
-    def __init__(self, MudReaderThread, Character_inst_in):        
+    def __init__(self, MudReaderThread, character):        
         
         self.MudReaderThread = MudReaderThread
-        self.Character_inst = Character_inst_in
+        self.character = character
         self.good_MUD_timeout = 1.2  
             # A good amount of time to wait for the MUD to spit out 
             # any given text.  My goal however is to never timeout :)
@@ -42,12 +42,12 @@ class MudReaderHandler:
 #        return a match object (or null if there was no match) when compared to 
 #        the recent MUD buffer.  This is useful if you are expecting some kind 
 #        of output.  
-#        Example:    tn.write("cast show-aura")
+#        Example:    telnetHandler.write("cast show-aura")
 #                    M_obj = MUD_output_check("You glow with a (.+?) aura\.")
 #                    aura = M_obj.group(1)
 #        The second regex can be used to speed up the process if there is a regex 
 #        you can use to tell if regex_true will not occur, ie:
-#                    tn.write("sell grey")
+#                    telnetHandler.write("sell grey")
 #                    M_obj = MUD_output_check(
 #                        "The shopkeep gives you (.+?) gold for an? (.+?)\.",
 #                        "The shopkeep says, \"I won't buy that rubbish from you")
@@ -71,11 +71,11 @@ class MudReaderHandler:
     
     
 #    def wait_for_aura_match(self, timeout=self.good_MUD_timeout):               
-#        if(self.character_inst.MANA >= SHOW_AURA_COST):
+#        if(self.character.MANA >= SHOW_AURA_COST):
 #            M_obj = self.MUD_output_check("You glow with a (.+?) aura\.")
 #            if(M_obj):
-#                self.character_inst.AURA = M_obj.group(1)
-#                self.character_inst.AURA_SCALE = my_list_search(self.character_inst.AURA_LIST, self.character_inst.AURA)
+#                self.character.AURA = M_obj.group(1)
+#                self.character.AURA_SCALE = my_list_search(self.character.AURA_LIST, self.character.AURA)
 #                return True
 #            else:
 #                return False
@@ -104,11 +104,11 @@ class MudReaderHandler:
         # The reader thread will set its SUCCESSFUL_GO variable which we will
         # read and return.
         
-        self.Character_inst.GO_BLOCKING_MOB = ""
-        self.Character_inst.GO_PLEASE_WAIT = False
-        self.Character_inst.GO_NO_EXIT = False
-        self.Character_inst.GO_TIMEOUT = False
-        self.Character_inst.SUCCESSFUL_GO = False  
+        self.character.GO_BLOCKING_MOB = ""
+        self.character.GO_PLEASE_WAIT = False
+        self.character.GO_NO_EXIT = False
+        self.character.GO_TIMEOUT = False
+        self.character.SUCCESSFUL_GO = False  
 
         self.MudReaderThread.CHECK_GO_FLAG = 1
             # This is like the return value.
@@ -129,10 +129,10 @@ class MudReaderHandler:
         # too much :(.
         if(run_time < timeout):
             #magentaprint("Check for successful go, returning " + str(self.MudReaderThread.SUCCESSFUL_GO))
-            return self.Character_inst.SUCCESSFUL_GO
+            return self.character.SUCCESSFUL_GO
         else:
             magentaprint("MudReaderHandler: MudReadThread timed out on check_go by %f" % (run_time-start_time))
-            self.Character_inst.GO_TIMEOUT = True
+            self.character.GO_TIMEOUT = True
             return False
 
         #magentaprint(self.MudReaderThread_inst.MUD_buffer.buffer)
@@ -149,7 +149,7 @@ class MudReaderHandler:
         
 #        self.MudReaderThread.MONSTER_LIST = []
 #        self.MudReaderThread.MONSTER_CHECK_FLAG = 1
-#        magentaprint("MudReaderHandler: Setting flag to do monster check %f" % (time.time()-self.character_inst.START_TIME))
+#        magentaprint("MudReaderHandler: Setting flag to do monster check %f" % (time.time()-self.character.START_TIME))
 #        start_time = time.time()
 #        run_time = 0
 #        while(self.MudReaderThread.MONSTER_CHECK_FLAG == 1 and 
@@ -166,7 +166,7 @@ class MudReaderHandler:
 
 #        if(run_time >= timeout):
 #            timeout_amount = run_time - timeout
-#            magentaprint(("MudReaderHandler: MudReaderThread timed out on check_for_monsters by %f.  Returned: " + str(self.character_inst.MONSTER_LIST)) % timeout_amount) 
+#            magentaprint(("MudReaderHandler: MudReaderThread timed out on check_for_monsters by %f.  Returned: " + str(self.character.MONSTER_LIST)) % timeout_amount) 
             
 #       if(self.MudReaderThread.MONSTER_CHECK_FLAG):
 #           # This shouldn't happen
@@ -180,15 +180,15 @@ class MudReaderHandler:
     
 
         
-        #self.character_inst.AURA_CHECK_FLAG = 1
+        #self.character.AURA_CHECK_FLAG = 1
         #now = time.time()
-        #while(self.character_inst.AURA_CHECK_FLAG == 1 and time.time() - now < 0.8):
+        #while(self.character.AURA_CHECK_FLAG == 1 and time.time() - now < 0.8):
         #    time.sleep(0.05)
         
-        #tn.write("cast show-aura")
+        #telnetHandler.write("cast show-aura")
         
     def wait_for_inventory_match(self):
-        #self.character_inst.INVENTORY_LIST = []
+        #self.character.INVENTORY_LIST = []
         self.MudReaderThread.CHECK_INVENTORY_FLAG = 1
         start_time = time.time()
         run_time = 0
@@ -258,7 +258,7 @@ class MudReaderHandler:
             run_time = time.time() - start_time
             
         if(run_time < timeout):
-            return self.Character_inst.MUD_RETURN_ITEM_SOLD
+            return self.character.MUD_RETURN_ITEM_SOLD
         else:
             magentaprint("MudReaderHandler: Sell check timed out")
             return True # Return true if it timed out

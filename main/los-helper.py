@@ -232,7 +232,6 @@
 
 import sys
 import getpass
-import telnetlib
 import threading
 from threading import Thread
 import atexit 
@@ -240,223 +239,210 @@ import re
 import time
 from misc_functions import *
 from Character import *
-from BotThread import BotThread
-from CommandHandler import CommandHandler
-from MudReaderHandler import MudReaderHandler
-from MudReaderThread import MudReaderThread
-from MudListenerThread import MudListenerThread
-from MyBuffer import MyBuffer
+from BotThread import *
+from CommandHandler import *
+from MudReaderHandler import *
+from MudReaderThread import *
+from MudListenerThread import *
+from MyBuffer import *
 from Inventory import *
 from BotReactions import *
+from TelnetHandler import *
 
-character = None
-commandHandler = None
-mudReaderThread = None
-mudReaderHandler = None
-inventory = None
 
-def main():
-    global tn
-    global character
-    global commandHandler
-    global mudReaderThread
-    global mudReaderHandler
-    global inventory
+class LosHelper(object):
 
-    ### DEPENDENCY INJECTION ###
+    def __init__(self):
+        ### DEPENDENCY INJECTION ###
+        self.telnetHandler = TelnetHandler()
+        self.consoleHandler = newConsoleHandler() 
+        self.character = Character()
+        self.MUDBuffer = MyBuffer()
+        self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
+        self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
+        self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
+        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
+        self.inventory = Inventory(self.mudReaderHandler, self.commandHandler, self.character)
+        self.botThread = None
 
-    tn = connect_to_MUD()  # Sets up telnet object
-    
-    ConsoleHandler = newConsoleHandler() 
-    character = Character()
-    # Buffer used by MudListener and MudReader
-    # MudListener writes to it and MudReader reads from it
-    MUDBuffer = MyBuffer()
-    mudListenerThread = MudListenerThread(tn, MUDBuffer)
-    mudListenerThread.start()
-    mudReaderThread = MudReaderThread(MUDBuffer, character, ConsoleHandler)
-    mudReaderThread.start()
-    mudReaderHandler = MudReaderHandler(mudReaderThread, character)
-    commandHandler = CommandHandler(character, mudReaderHandler, tn)
-    inventory = Inventory(mudReaderHandler, commandHandler, character)
 
-    # Now that the MUD thread is going I can trust it to issue the 
-    # username/password prompts
-    issue_name_and_password(tn)
+    def main(self):
+        self.mudListenerThread.start()
+        self.mudReaderThread.start()
 
-    global bot_thread_inst
-    bot_thread_inst = None
-
-    # Whenever a weapon breaks, the program will automatically try to wield 
-    # a new one:
-    set_up_auto_wield(character, mudReaderHandler, commandHandler) 
-        
-    # Main thread will go to having raw_input open all the time.
-    watch_user_input(mudReaderHandler, character)   
-        # The MUD_read thread quits if it hits
+        # With the MUDReaderThread going, we have the server's text and prompts now showing
+        self.write_username_and_pass()
+        self.set_up_auto_wield()
+        self.watch_user_input()   
+            
+        # Quitting cleanly: The MUD_read thread quits if it hits
         # and EOF.  watch_user_input watches for
         # that and quits too.
 
-    # Clean exit:  watch_user_input sees the "quit" and sends it, then we
-    # get here.  mudReaderThread will quit at the EOF, where we join up.
-    
-    manageMudReader(mudReaderThread, tn)
-    
+        while(self.mudReaderThread.is_alive()): 
+            self.mudReaderThread.join(3)  
+            if (self.mudReaderThread.is_alive()):
+                self.mudReaderThread.stop()  # Last resort.
+
+        #Okay, clean exit!
+        self.telnetHandler.close();
+        print ("It should be safe to ctrl + c now")
+        time.sleep(10) 
 
 
-def manageMudReader(mudReaderThread, tn):
-    while (mudReaderThread.is_alive()): 
-            mudReaderThread.join(3)  # Wait 3 sec for the other thread to quit.
-            if (mudReaderThread.is_alive()):
-                mudReaderThread.stop()  # Last resort.
+    def write_username_and_pass(self):
 
-    #Okay, clean exit!
-    tn.close();
-    #That's all, folks!
-
-    print ("It should be safe to ctrl + c now")
-    time.sleep(10) #ctrl+c during this sleep seems to work for now
-
-def connect_to_MUD():
-    # This function connects to the MUD, returning the telnet object.
-    
-    HOST = "mud.landsofstone.org"
-    PORT = 4801
-    tn = telnetlib.Telnet(HOST,PORT)  #No need to call open (http://www.python.org/doc/2.5.2/lib/module-telnetlib.html)
-
-    return tn
-
-def issue_name_and_password(tn):
-    
-    if(len(sys.argv) >= 3):
-        # Use command line arguments for user name and pass
-        send_to_telnet(tn, sys.argv[1])
-        send_to_telnet(tn, sys.argv[2])
-    else:
-        # With the MUD thread going already, there is no need to prompt here.
-        send_to_telnet(tn, input())
-        #tn.write(raw_input() + '\r')    # send user name
-        password = getpass.getpass("")  # getpass arg is a prompt string;
-                                    # empty string means don't prompt
-        #tn.write(password + '\r')       # send password
-        send_to_telnet(tn, password)
-
-    return
-    
-def set_up_auto_wield(character, mudReaderHandler, commandHandler):
-    wield1 = WieldReaction("Your (.*?) breaks and you have to remove it\.", character, commandHandler)
-    wield2 = WieldReaction("Your (.*?) shatters\.", character, commandHandler)
-    mudReaderHandler.register_reaction(wield1)
-    mudReaderHandler.register_reaction(wield2)
-    return
-    
-    
-def watch_user_input(mudReaderHandler, character):
-    
-    # This thread watches user input.  For now it will shovel everything
-    # to the MUD
-#    global PREV_USER_COMMAND  # Last command that was typed in.
-#    global PREV_COMMAND # Last command that was sent to telnet.
-    global bot_thread_inst
-    
-    stopping = False;
-    while not stopping:
-        try:
-            user_input = input(); 
-        except (EOFError, KeyboardInterrupt) as e:
-            magentaprint("Don't try to crash me!  Use 'quit'.")
-            user_input = ""
-
-        # Mass switch on user input to get functionality
-        user_input = user_input.lstrip() #Optional
-        #PREV_USER_COMMAND = user_input
-        if(not mudReaderThread.is_alive()):
-            magentaprint("\nWhat happened to read thread?  Time to turf.\n")
-            #tn.write(user_input + "\n")
-            send_to_telnet(tn, user_input)
-            stopping = True
-            if(bot_thread_inst != None and bot_thread_inst.is_alive()):
-                bot_thread_inst.stop()                
-        elif(user_input == "quit"):
-            # TODO:  correct if MUD prints "Please wait x more seconds"
-            # after quit was sent.
-            #PREV_COMMAND=user_input
-            #tn.write(user_input + "\n")
-            send_to_telnet(tn, user_input)
-            stopping = True
-            if(bot_thread_inst != None and bot_thread_inst.is_alive()):
-                bot_thread_inst.stop()
-        elif(re.match("bot ?$|bot [0-9]+$", user_input)):
-            #PREV_COMMAND = user_input
-            start_bot(user_input, character, commandHandler) # Code for this at the bottom
-        elif(re.match("stop$", user_input)):
-            #PREV_COMMAND = user_input
-            stop_bot()
-        elif(re.match("fle?$|flee$", user_input)):
-            stop_bot()
-            commandHandler.process(user_input)  
+        if(len(sys.argv) >= 3):
+            self.telnetHandler.write(sys.argv[1])
+            self.telnetHandler.write(sys.argv[2])
         else:
-            commandHandler.process(user_input)
+            # With the MUD thread going already, there is no need to prompt here.
+            self.telnetHandler.write(input())
+            password = getpass.getpass("")
+            self.telnetHandler.write(password)
+
         
+    def set_up_auto_wield(self):
+        wield1 = WieldReaction("Your (.*?) breaks and you have to remove it\.", 
+                               self.character, 
+                               self.commandHandler)
+        wield2 = WieldReaction("Your (.*?) shatters\.", 
+                               self.character, 
+                               self.commandHandler)
+        self.mudReaderHandler.register_reaction(wield1)
+        self.mudReaderHandler.register_reaction(wield2)
+        
+        
+    def watch_user_input(self):
+        stopping = False;
+
+        while not stopping:
+
+            try:
+                user_input = input(); 
+            except (EOFError, KeyboardInterrupt) as e:
+                magentaprint("Don't try to crash me!  Use 'quit'.")
+                user_input = ""
+
+            user_input = user_input.lstrip()
+
+            if(not self.mudReaderThread.is_alive()):
+                magentaprint("\nWhat happened to read thread?  Time to turf.\n")
+                self.telnetHandler.write(user_input)
+                stopping = True
+
+                if(self.botThread != None and self.botThread.is_alive()):
+                    self.botThread.stop()
+
+            elif(user_input == "quit"):
+                # TODO:  correct if MUD prints "Please wait x more seconds"
+                # after quit was sent.
+                self.telnetHandler.write(user_input)
+                stopping = True
+
+                if(self.botThread != None and self.botThread.is_alive()):
+                    self.botThread.stop()
+
+            elif(re.match("bot ?$|bot [0-9]+$", user_input)):
+                self.start_bot(user_input)
+            elif(re.match("stop$", user_input)):
+                self.stop_bot()
+            elif(re.match("fle?$|flee$", user_input)):
+                self.stop_bot()
+                self.commandHandler.process(user_input)  
+            else:
+                self.commandHandler.process(user_input)
+
+
+    def start_bot(self, user_input):
+        M_obj = re.search("[0-9]+", user_input)
+
+        if (M_obj):
+            starting_path = int(M_obj.group(0))
+        else:
+            starting_path = 0
+
+            if (self.botThread != None and self.botThread.is_alive()):
+                magentaprint("It's already going, you'll have to stop it.  Use \"stop\".")
+            else:
+                self.botThread = BotThread(starting_path, 
+                                           self.character, 
+                                           self.commandHandler, 
+                                           self.mudReaderHandler,
+                                           self.inventory)
+                self.botThread.start()
+
+
+    def stop_bot(self):
+        if (self.botThread != None and self.botThread.is_alive()):
+            self.botThread.stop()
+            self.mudReaderHandler.unregister_reactions()
+
+#if __name__ == '__main__':
+LosHelper().main()
 
 
 
-############################## THE ROBOT ####################################
 
-def start_bot(user_input, character, commandHandler):
-    # No idea how I'm gonna do this.
-    # Assume I'm in the chapel.
-    # Will need to monitor health... do that first in MUD output.
-    # Will need things to be fairly top-down, ie things like go_to_theatre.
 
-    # Maybe a fairly easy approach would be to walk around, and at every step
-    # make a list of mobs in the room.  Compare to a list of known mobs and
-    # combat the ones we can take.
 
-    # I still want to keep raw_input... so this should be a thread.  Plus
-    # its likely good programming practice.
 
-    # Fundamental problem is that all the reading takes place in another
-    # thread.  What will happen is I'll start the combat threads and then
-    # I will want to wait until the thing is dead, along with other things
-    # (likely also act on low health... but later)  I suppose I could have
-    # that thread set global flags...  but there has to be a better way!
-    # I can only read the telnet object in one place for many reasons.  Should
-    # I take it over? It would be really nice to get this bot as one thread!
 
-    # Well... maybe the flag way would be least overhead.  I wouldn't need very
-    # many.  Everything that the bot should react to.  Stuff like:
-    #   Health (not a flag, just a global... bot can decide when rest)
-    #   Mob death
-    #   Full health (for resting... however its just like the other health)
-    #   Inventory full?  Can probably do without it by selling often.
-    #   Mob fleeing.  This is probably necessary because it will happen a lot.
-    #       Not right away but I will need a function which can hopefully chase
-    #       down mobs... however not so easy because the way back is hard unless
-    #       its 100% north/south/east/west.  (way back through door "door" or
-    #       "out"?
-    #       So its probably fine to have first version of bot not chase
-    #       monsters.
-    #   Mob attacking you will then happen often - need to react.
-    #   Ah here's the big one I have to read for:  Mobs in the room.
-    #       It might be worthwhile, every time the bot moves, to stop the
-    #       MUD thread and assemble its list itself, then start the MUD
-    #       thread again...  might.  The advantage would be that I
-    #       know the list is coming.  Can I reliably parse a mob list?
-    #           You see a dustman, a mime artist, a sword swallower.
-    #           You see a large wallposter.
-    #       Not really.  On the other hand it wouldn't hurt to have "large
-    #       wallposter" in the list of mobs that I read so long as I never
-    #       try to hurt it.
-    #   Looking at mobs to see if they are stronger.
-    #       That might also be easier if I take over the telnet object briefly.
-    #       The problem is that it renders ALL of the text recognition there
-    #       unreliable.  Right now all that is there is haste, spellcast checks,
+# EARLY PLANNING
+
+# No idea how I'm gonna do this.
+# Assume I'm in the chapel.
+# Will need to monitor health... do that first in MUD output.
+# Will need things to be fairly top-down, ie things like go_to_theatre.
+
+# Maybe a fairly easy approach would be to walk around, and at every step
+# make a list of mobs in the room.  Compare to a list of known mobs and
+# combat the ones we can take.
+
+# I still want to keep raw_input... so this should be a thread.  Plus
+# its likely good programming practice.
+
+# Fundamental problem is that all the reading takes place in another
+# thread.  What will happen is I'll start the combat threads and then
+# I will want to wait until the thing is dead, along with other things
+# (likely also act on low health... but later)  I suppose I could have
+# that thread set global flags...  but there has to be a better way!
+# I can only read the telnet object in one place for many reasons.  Should
+# I take it over? It would be really nice to get this bot as one thread!
+
+# Well... maybe the flag way would be least overhead.  I wouldn't need very
+# many.  Everything that the bot should react to.  Stuff like:
+#   Health (not a flag, just a global... bot can decide when rest)
+#   Mob death
+#   Full health (for resting... however its just like the other health)
+#   Inventory full?  Can probably do without it by selling often.
+#   Mob fleeing.  This is probably necessary because it will happen a lot.
+#       Not right away but I will need a function which can hopefully chase
+#       down mobs... however not so easy because the way back is hard unless
+#       its 100% north/south/east/west.  (way back through door "door" or
+#       "out"?
+#       So its probably fine to have first version of bot not chase
+#       monsters.
+#   Mob attacking you will then happen often - need to react.
+#   Ah here's the big one I have to read for:  Mobs in the room.
+#       It might be worthwhile, every time the bot moves, to stop the
+#       MUD thread and assemble its list itself, then start the MUD
+#       thread again...  might.  The advantage would be that I
+#       know the list is coming.  Can I reliably parse a mob list?
+#           You see a dustman, a mime artist, a sword swallower.
+#           You see a large wallposter.
+#       Not really.  On the other hand it wouldn't hurt to have "large
+#       wallposter" in the list of mobs that I read so long as I never
+#       try to hurt it.
+#   Looking at mobs to see if they are stronger.
+#       That might also be easier if I take over the telnet object briefly.
+#       The problem is that it renders ALL of the text recognition there
+#       unreliable.  Right now all that is there is haste, spellcast checks,
     #       wield checks, and checks to stop stray "kk" threads.  It would be
     #       a real shame to miss a "You feel slower."  I should monitor that
     #       myself.  Could I figure whether something is stronger without
     #       interrupting that thread?  Maybe
-    #           tn.write("l\n")
+    #           telnetHandler.write("l\n")
     #           time.sleep(0.5)  # Wait for MUD thread to set a flag
     #           if(mob is weak):  engage.
     #       Messy, messy, messy.
@@ -481,42 +467,4 @@ def start_bot(user_input, character, commandHandler):
 
     # Start the bot thread.
 
-    global bot_thread_inst
-    global mudReaderHandler
-    global inventory
-
     # Check for an argument
-    M_obj = re.search("[0-9]+", user_input)
-    if (M_obj):
-        starting_path = int(M_obj.group(0))
-    else:
-        starting_path = 0
-    
-    if (bot_thread_inst != None and bot_thread_inst.is_alive()):
-        magentaprint("It's already going, you'll have to stop it.  Use \"stop\".")
-    else:
-        bot_thread_inst = BotThread(starting_path, character, 
-                                        commandHandler, mudReaderHandler,
-                                        inventory)
-            # Constructor arg is which path to start on.
-        bot_thread_inst.start()
-
-    return
-
-def stop_bot():
-    global bot_thread_inst
-    global mudReaderHandler
-    if (bot_thread_inst != None) and bot_thread_inst.is_alive():
-        bot_thread_inst.stop()
-        mudReaderHandler.unregister_reactions()
-
-    return
-    
-
-
-
-# All definitions are made, ready to go: call main!!!
-# (Maybe rethink program structure later)
-
-#if __name__ == '__main__':
-main()
