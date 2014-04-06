@@ -241,6 +241,7 @@ import time
 from misc_functions import *
 from Character import *
 from BotThread import BotThread
+from CrawlThread import CrawlThread
 from CommandHandler import CommandHandler
 from MudReaderHandler import MudReaderHandler
 from MudReaderThread import MudReaderThread
@@ -286,6 +287,8 @@ def main():
 
     global bot_thread_inst
     bot_thread_inst = None
+    global crawl_thread_inst
+    crawl_thread_inst = None
 
     # Whenever a weapon breaks, the program will automatically try to wield 
     # a new one:
@@ -358,6 +361,7 @@ def watch_user_input(mudReaderHandler, character):
 #    global PREV_USER_COMMAND  # Last command that was typed in.
 #    global PREV_COMMAND # Last command that was sent to telnet.
     global bot_thread_inst
+    global crawl_thread_inst
     
     stopping = False;
     while not stopping:
@@ -375,8 +379,10 @@ def watch_user_input(mudReaderHandler, character):
             #tn.write(user_input + "\n")
             send_to_telnet(tn, user_input)
             stopping = True
-            if(bot_thread_inst != None and bot_thread_inst.is_alive()):
+            if(is_bot_running()):
                 bot_thread_inst.stop()                
+            elif(is_crawl_running()):
+                crawl_thread_inst.stop()
         elif(user_input == "quit"):
             # TODO:  correct if MUD prints "Please wait x more seconds"
             # after quit was sent.
@@ -384,11 +390,15 @@ def watch_user_input(mudReaderHandler, character):
             #tn.write(user_input + "\n")
             send_to_telnet(tn, user_input)
             stopping = True
-            if(bot_thread_inst != None and bot_thread_inst.is_alive()):
+            if(is_bot_running()):
                 bot_thread_inst.stop()
+            elif(is_crawl_running()):
+                crawl_thread_inst.stop()
         elif(re.match("bot ?$|bot [0-9]+$", user_input)):
             #PREV_COMMAND = user_input
             start_bot(user_input, character, commandHandler) # Code for this at the bottom
+        elif(re.match("crawl", user_input)):
+            start_crawl(character, commandHandler)
         elif(re.match("stop$", user_input)):
             #PREV_COMMAND = user_input
             stop_bot()
@@ -482,6 +492,7 @@ def start_bot(user_input, character, commandHandler):
     # Start the bot thread.
 
     global bot_thread_inst
+    global crawl_thread_inst
     global mudReaderHandler
     global inventory
 
@@ -492,8 +503,8 @@ def start_bot(user_input, character, commandHandler):
     else:
         starting_path = 0
     
-    if (bot_thread_inst != None and bot_thread_inst.is_alive()):
-        magentaprint("It's already going, you'll have to stop it.  Use \"stop\".")
+    if (is_script_running()):
+        magentaprint("A script is already running, you'll have to stop it.  Use \"stop\".")
     else:
         bot_thread_inst = BotThread(starting_path, character, 
                                         commandHandler, mudReaderHandler,
@@ -505,15 +516,42 @@ def start_bot(user_input, character, commandHandler):
 
 def stop_bot():
     global bot_thread_inst
+    global crawl_thread_inst
     global mudReaderHandler
-    if (bot_thread_inst != None) and bot_thread_inst.is_alive():
+    if (is_bot_running()):
         bot_thread_inst.stop()
+        mudReaderHandler.unregister_reactions()
+    if (is_crawl_running()):
+        crawl_thread_inst.stop()
         mudReaderHandler.unregister_reactions()
 
     return
     
 
+def start_crawl(character, commandHandler):
+    global bot_thread_inst
+    global crawl_thread_inst
+    global mudReaderHandler
 
+    if (is_script_running()):
+        magentaprint("A script is already running, you'll have to stop it.  Use \"stop\".")
+    else:
+        crawl_thread_inst = CrawlThread(character, commandHandler, mudReaderHandler)
+        crawl_thread_inst.start()
+
+    return
+
+def is_script_running():
+    return is_crawl_running() or is_bot_running()
+
+def is_crawl_running():
+    global crawl_thread_inst
+    return((crawl_thread_inst != None) and crawl_thread_inst.is_alive())
+
+def is_bot_running():
+    global bot_thread_inst
+    return (((bot_thread_inst != None) and bot_thread_inst.is_alive()))
+    
 
 # All definitions are made, ready to go: call main!!!
 # (Maybe rethink program structure later)
