@@ -144,7 +144,7 @@ class Meditate(CoolAbility):
     def cooldown_in_seconds_after_success(self):
         return 125 #roughly 2 minutes
     def cooldown_in_seconds_after_failure(self):
-        return 10 #guess
+        return 5 #guess
     def use_for_combat(self):
         return False
     def needs_target(self):
