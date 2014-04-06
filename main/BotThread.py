@@ -239,7 +239,7 @@ class BotThread(threading.Thread):
         if(not aura_updated):
             self.update_aura()
     
-        if(self.character.LEVEL > 4):
+        if(self.character.LEVEL > 3):
             self.heal_up()
             self.wait_for_mana()  
         else:
@@ -338,18 +338,15 @@ class BotThread(threading.Thread):
             return
 
         if (self.character.TITLE == "Monk"):
-            if(self.character.HEALTH <= (self.character.HEALTH_TO_HEAL - 10) and 
+            if(self.character.HEALTH <= (self.character.HEALTH_TO_HEAL) and 
                 (time.time() - self.character.LAST_MEDITATE) > 150):
                 self.commandHandler.process('meditate')
                 self.character.LAST_MEDITATE = time.time()
-                return
 
         if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
            self.character.MANA >= heal_cost):
             if (self.character.KNOWS_VIGOR):
-                self.commandHandler.user_cc(heal_spell)  
-        else:
-            return
+                self.commandHandler.user_cc(heal_spell)
         
         self.character.HAS_RESTORE_ITEMS = True
 
@@ -363,7 +360,6 @@ class BotThread(threading.Thread):
                     self.use_restorative_items()
                 else: #If we end up here our health isn't high enough to use a restorative item
                     self.character.HAS_RESTORE_ITEMS = False
-            magentaprint("in heal up loop")
 
             time.sleep(0.05)
 

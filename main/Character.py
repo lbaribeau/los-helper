@@ -19,7 +19,7 @@ class Character:
         self.RACE = "Human"
         self.TITLE = "Monk"
         
-        self.LEVEL = 7
+        self.LEVEL = 8
 #        self.preferred_alignment = "grey"
         #self.WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #self.MAGIC_SKILLS= [0, 0, 0, 0, 0]
@@ -114,15 +114,15 @@ class Character:
             self.MAX_MANA = 13
             self.MANA_TO_ENGAGE = 4     
         elif(self.LEVEL <= 7):
-            self.HEALTH_TO_HEAL= 50
+            self.HEALTH_TO_HEAL= 45
             self.HEALTH_TO_FLEE = 8 #my armor is great so this should never get hit
-            self.MAX_MANA = 0 #magic damage is pointless with min int
-            self.MANA_TO_ENGAGE = 0       
+            self.MAX_MANA = 6 #magic damage is pointless with min int
+            self.MANA_TO_ENGAGE = 0
         elif(self.LEVEL <= 8):
-            self.HEALTH_TO_HEAL= 50
-            self.HEALTH_TO_FLEE = 20
-            self.MAX_MANA = 24
-            self.MANA_TO_ENGAGE = 15        
+            self.HEALTH_TO_HEAL= 45
+            self.HEALTH_TO_FLEE = 8
+            self.MAX_MANA = 4
+            self.MANA_TO_ENGAGE = 0        
         else:
             self.HEALTH_TO_HEAL = 58
             self.HEALTH_TO_FLEE = 26
@@ -204,8 +204,8 @@ class Character:
         
         self.__lvl5_monsters = [
             "dwarven farm hand", "dwarven barmaid", 
-            "fort sentry", "fur trader", "aristocrat",
-            "seeker"  # seekers are unfortunately quite difficult
+            "fort sentry", "fur trader", "aristocrat"
+            #"seeker"  # seekers are unfortunately quite difficult
             ]
         self.__lvl5_red_monsters = [
             'large bandit',
