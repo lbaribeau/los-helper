@@ -31,9 +31,9 @@ class Inventory(object):
         # Have mudReader use me instead of character.
         
         if(retval):
-        	return self.character.INVENTORY_LIST[:]
+            return self.character.INVENTORY_LIST[:]
         else:
-        	raise TimeoutError
+            raise TimeoutError
             
 
 

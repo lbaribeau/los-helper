@@ -16,13 +16,13 @@ https://los-helper.googlecode.com/svn/trunk/ los-helper --username laurierbaribe
 <?eclipse-pydev version="1.0"?>
 
 <pydev_project>
-	<pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
-	<pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 2.6</pydev_property>
-	<!-- Added the following to allow creation of modules
-	<pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
-		<path>/los-helper/main</path>
-	</pydev_pathproperty>
-	-->
+    <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">Default</pydev_property>
+    <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 2.6</pydev_property>
+    <!-- Added the following to allow creation of modules
+    <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
+        <path>/los-helper/main</path>
+    </pydev_pathproperty>
+    -->
 </pydev_project>
 
 This is done on new projects if you select the check box to add it to the

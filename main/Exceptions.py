@@ -8,5 +8,5 @@ class TimeoutError(Error):
         return
        
     def __str__(self):
-    	print("Something timed out!")
-    	return
+        print("Something timed out!")
+        return

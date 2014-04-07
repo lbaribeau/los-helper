@@ -249,6 +249,7 @@ from MudListenerThread import MudListenerThread
 from MyBuffer import MyBuffer
 from Inventory import *
 from BotReactions import *
+import Database
 
 character = None
 commandHandler = None

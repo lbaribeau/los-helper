@@ -13,7 +13,7 @@ from Exceptions import *
 class BotThread(threading.Thread):
 
     def __init__(self, starting_path=None, character_in=None, commandHandler=None, 
-				 mudReaderHandler_in=None, inventory_in=None):
+                 mudReaderHandler_in=None, inventory_in=None):
         if(starting_path==None and character_in==None and commandHandler==None 
            and mudReaderHandler_in==None and inventory_in==None):
             return   
