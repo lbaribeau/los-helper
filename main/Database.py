@@ -4,7 +4,6 @@ See: http://peewee.readthedocs.org/en/latest/peewee/installation.html
 from peewee import *
 
 global db
-db = None
 
 class LOSDatabase():
     def __init__(self, dbfile):
@@ -14,25 +13,27 @@ class LOSDatabase():
     def get_db(self):
         return self.db
 
+db = LOSDatabase("los-test.db").get_db()
+
 class BaseModel(Model):
     class Meta:
         database = db
 
-class Area(Model):
+class Area(BaseModel):
     name = CharField() #Chapel
     description = CharField() #This will only be used for crawler comparisons
 
     def toString(self):
         return str(self.id) + ", " + self.name + ", " + str(self.description)
 
-class DirectionType(Model):
+class DirectionType(BaseModel):
     name = CharField() #ex. n, out, door
     primer = CharField(null=True) #ex. open %s, unlock %s key
 
     def toString(self):
         return str(self.id) + ", " + self.name + ", " + str(self.primer)
 
-class AreaLink(Model):
+class AreaLink(BaseModel):
     areaFrom = ForeignKeyField(Area, related_name='areaFrom') #id is a default attribute
     areaTo = ForeignKeyField(Area, related_name='areaTo') #id is a default attribute
     directionType = ForeignKeyField(DirectionType)

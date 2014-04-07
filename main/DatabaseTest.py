@@ -1,42 +1,9 @@
 import sys
 from Database import *
 
-global db
-db = LOSDatabase("los-test.db").get_db()
-
-
 def main():
     #drop_tables()
-    #create_tables()
-
-    dirOut = DirectionType(name='out')
-    dirChapel = DirectionType(name='chapel')
-    dirNorth = DirectionType(name='n')
-    dirSouth = DirectionType(name='s')
-
-    dirOut.save()
-    dirChapel.save()
-    dirNorth.save()
-    dirSouth.save()
-
-    areaChapel = Area(name='Chapel', description='Pithy Chapel of sorts')
-    areaHollyLane = Area(name='Holly Lane', description='Here be Acolytes')
-
-    areaChapel.save()
-    areaHollyLane.save()
-
-    areaHollyLane2 = Area(name='Holly Lane', description='Here be MORE Acolytes')
-    areaHollyLane2.save()
-
-    alChapelToHolly = AreaLink(areaFrom=areaChapel, areaTo=areaHollyLane, directionType=dirOut)
-    alHollyToChapel = AreaLink(areaFrom=areaHollyLane, areaTo=areaChapel, directionType=dirChapel)
-    alHollyToHolly = AreaLink(areaFrom=areaHollyLane, areaTo=areaHollyLane2, directionType=dirNorth)
-    alHollyToHolly2 = AreaLink(areaFrom=areaHollyLane2, areaTo=areaHollyLane, directionType=dirSouth)
-
-    alChapelToHolly.save()
-    alHollyToChapel.save()
-    alHollyToHolly.save()
-    alHollyToHolly2.save()
+    create_tables()
 
     print ("Outputting Direction Types in the Database")
 
@@ -53,13 +20,58 @@ def main():
     for aLink in AreaLink.select():
         print ("    " + aLink.toString())
 
-    print ("\n\nSelecting the areas from alHollyToChapel")
+    print ("\nSelecting the areas from alHollyToChapel")
+
+    alHollyToChapel = AreaLink.select().where(AreaLink.id == 2).get()
 
     Area1 = Area.select().where(Area.id == alHollyToChapel.areaFrom).get()
     Area2 = Area.select().where(Area.id == alHollyToChapel.areaTo).get()
 
     print ("   Area From: " + Area1.toString() + "\n   Area To: " + Area2.toString())
 
-    print ("\n\nListing directions")
+def create_tables():
+    try:
+        Area.create_table()
+        AreaLink.create_table()
+        DirectionType.create_table()
+
+        dirOut = DirectionType(name='out')
+        dirChapel = DirectionType(name='chapel')
+        dirNorth = DirectionType(name='n')
+        dirSouth = DirectionType(name='s')
+
+        dirOut.save()
+        dirChapel.save()
+        dirNorth.save()
+        dirSouth.save()
+
+        areaChapel = Area(name='Chapel', description='Pithy Chapel of sorts')
+        areaHollyLane = Area(name='Holly Lane 1', description='Here be Acolytes')
+
+        areaChapel.save()
+        areaHollyLane.save()
+
+        areaHollyLane2 = Area(name='Holly Lane 2', description='Here be MORE Acolytes')
+        areaHollyLane2.save()
+
+        alChapelToHolly = AreaLink(areaFrom=areaChapel, areaTo=areaHollyLane, directionType=dirOut)
+        alHollyToChapel = AreaLink(areaFrom=areaHollyLane, areaTo=areaChapel, directionType=dirChapel)
+        alHollyToHolly = AreaLink(areaFrom=areaHollyLane, areaTo=areaHollyLane2, directionType=dirNorth)
+        alHollyToHolly2 = AreaLink(areaFrom=areaHollyLane2, areaTo=areaHollyLane, directionType=dirSouth)
+
+        alChapelToHolly.save()
+        alHollyToChapel.save()
+        alHollyToHolly.save()
+        alHollyToHolly2.save()
+    except:
+        pass
+
+def drop_tables():
+    try:
+        Area.drop_table()
+        AreaLink.drop_table()
+        DirectionType.drop_table()
+    except:
+        pass
 
 main()
