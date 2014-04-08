@@ -25,24 +25,24 @@ It might be too hard to make that format.  It'd be easier if each line were one 
 
 Maybe I will have to generate A from B.
 
-	import networkx as nx
-	g=nx.Graph()
-	g.add_node("Immigration Office")
-	g.add_node("Adventurer's Training Hall")
-	g.add_edge("Immigration Office","Adventurer's Training Hall", name="staircase")
-	print(g.nodes())
-	#['Immigration Office', "Adventurer's Training Hall"]
-	print(g.edges())
-	#[('Immigration Office', "Adventurer's Training Hall")]
-	g.edges()[0]
-	#('Immigration Office', "Adventurer's Training Hall")
-	g["Immigration Office"]["Adventurer's Training Hall"]
-	#{'name': 'staircase'}
-	g["Immigration Office"]["Adventurer's Training Hall"]["name"]
-	#'staircase'
-	g.neighbors("Adventurer's Training Hall")
-	#['Immigration Office']
-	import code; code.interact(local=locals())
+    import networkx as nx
+    g=nx.Graph()
+    g.add_node("Immigration Office")
+    g.add_node("Adventurer's Training Hall")
+    g.add_edge("Immigration Office","Adventurer's Training Hall", name="staircase")
+    print(g.nodes())
+    #['Immigration Office', "Adventurer's Training Hall"]
+    print(g.edges())
+    #[('Immigration Office', "Adventurer's Training Hall")]
+    g.edges()[0]
+    #('Immigration Office', "Adventurer's Training Hall")
+    g["Immigration Office"]["Adventurer's Training Hall"]
+    #{'name': 'staircase'}
+    g["Immigration Office"]["Adventurer's Training Hall"]["name"]
+    #'staircase'
+    g.neighbors("Adventurer's Training Hall")
+    #['Immigration Office']
+    import code; code.interact(local=locals())
 
 No it looks like the A format will be just fine.  I wonder if I can add edges before I know where they go (parse Obvious Exits.)  If not, it could be that I never parse Obvious Exits.  
 
