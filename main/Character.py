@@ -19,7 +19,7 @@ class Character:
         self.RACE = "Human"
         self.TITLE = "Monk"
         
-        self.LEVEL = 8
+        self.LEVEL = 9
 #        self.preferred_alignment = "grey"
         #self.WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #self.MAGIC_SKILLS= [0, 0, 0, 0, 0]
@@ -124,13 +124,14 @@ class Character:
             self.MAX_MANA = 4
             self.MANA_TO_ENGAGE = 0        
         else:
-            self.HEALTH_TO_HEAL = 58
-            self.HEALTH_TO_FLEE = 26
-            self.MAX_MANA = 27
-            self.MANA_TO_ENGAGE = 6
+            self.HEALTH_TO_HEAL = 54
+            self.HEALTH_TO_FLEE = 8
+            self.MAX_MANA = 4
+            self.MANA_TO_ENGAGE = 0
 
         self.LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096] #Half of this is the gold requirement
 
+        self.EXIT_LIST=[]
         self.MONSTER_LIST=[]
 
         # All lists are mutually exclusive except for 'preferred' (bottom)
@@ -303,11 +304,11 @@ class Character:
             "silver chalice", "steel bottle", "small restorative", 'heavy crossbow', 
             'glowing potion', "chicken soup",
             # weapons
-            'war hammer', "adamantine sword", 'adamantine axe', "claymore", 
-            "spider leg", 
-            "spear", "bolos", 'javelin', "long bow", 
-            "heathen amulet",
-            "broad sword", "rapier",
+            #'war hammer', "adamantine sword", 'adamantine axe', "claymore", 
+            #"spider leg", 
+            #"spear", "bolos", 'javelin', "long bow", 
+            #"heathen amulet",
+            #"broad sword", "rapier",
             # armour
             "hard cap", "hard gloves", "hard boots", "padded hat",
             "mountain gloves", "mountain boots", "mountain boots with crampons",

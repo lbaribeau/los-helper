@@ -578,6 +578,7 @@ class MudReaderThread ( threading.Thread ):
                 
             M_obj = re.search("Obvious exits: .+?\.\n\r\n\r", text_buffer)
             if(M_obj):
+                self.Character.EXIT_LIST = self.parse_exit_list(M_obj.group(0))
                 self.Character.MONSTER_LIST = []
                 self.Character.SUCCESSFUL_GO = True
                 self.CHECK_GO_FLAG = 0
@@ -585,6 +586,7 @@ class MudReaderThread ( threading.Thread ):
 
             M_obj = re.search("(?s)Obvious exits: .+?\.\n\r(You see .+?\.)", text_buffer)         
             if(M_obj != None):
+                self.Character.EXIT_LIST = self.parse_exit_list(M_obj.group(0))
                 self.Character.MONSTER_LIST = self.parse_monster_list(M_obj.group(1))
                 self.Character.SUCCESSFUL_GO = True
                 self.CHECK_GO_FLAG = 0
@@ -726,7 +728,28 @@ class MudReaderThread ( threading.Thread ):
             # Do nothing (don't know this ANSI code)
             pass
                 
-    
+    def parse_exit_list(self, MUD_exit_str):
+        num_commas = MUD_mob_str.count(',')
+        num_exits = num_commas + 1
+        MUD_mob_str = self.replace_newlines_with_spaces(MUD_mob_str)
+        my_exit_regex = "Obvious exits: "
+        for i in range(1,num_commas+1):
+            # Add a regex group for each mob, and nab the comma
+            # and space afterwards too.
+            my_exit_regex = my_exit_regex + "(.+?), "
+        my_exit_regex = my_exit_regex + "(.+?)\."
+        #print "my_monster_regex: " + my_monster_regex
+        match_exits = re.match(my_exit_regex, MUD_exit_str)
+
+        E_LIST = []
+        for i in range(1, num_exits+1):
+            E_LIST.append(num_exits.group(i))
+
+        for i in range(0, len(E_LIST)):
+            #M_LIST[i].ljust(0)  # this isn't doing what I thought.
+            E_LIST[i].lstrip()  # remove the space.
+
+
     def parse_monster_list(self, MUD_mob_str):
         """ This function takes a LOS formatted string list of monsters such as:
                 'You see an acolyte, an amethyst town crier, two kobold children.'
