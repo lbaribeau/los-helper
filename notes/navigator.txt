@@ -1,0 +1,50 @@
+How will I create the networkx graph.
+
+What gets committed, and how is it loaded on startup.  
+
+Database seems too heavyweight.  I'd rather run a script against a file every time.  But that's too messy.  
+How about I run a script against a file, producing an output that more easily will build the graph.  
+I can commit that output.  It can be like,
+
+---A---
+"Amber Road 2" [(southwest, "Amber Road 1"),  (northwest, "Amber Road 3")]
+A list of duples for exits.
+
+The program should create a log file every time that you can run through the script to get more 
+entries on the map.
+
+There will need to be a naming convention.  Will a person need to be involved in the names?  
+Can I get it to do its own unique names?  The first can be "Amber Road" then the next "Amber Road 2" 
+and so on.  (No Amber Road 1.)    
+
+It might be too hard to make that format.  It'd be easier if each line were one exit...
+
+---B---
+"Amber Road 2", sw, "Amber Road 1"
+"Amber Road 1", nw, "Amber Road 2" 
+
+Maybe I will have to generate A from B.
+
+	import networkx as nx
+	g=nx.Graph()
+	g.add_node("Immigration Office")
+	g.add_node("Adventurer's Training Hall")
+	g.add_edge("Immigration Office","Adventurer's Training Hall", name="staircase")
+	print(g.nodes())
+	#['Immigration Office', "Adventurer's Training Hall"]
+	print(g.edges())
+	#[('Immigration Office', "Adventurer's Training Hall")]
+	g.edges()[0]
+	#('Immigration Office', "Adventurer's Training Hall")
+	g["Immigration Office"]["Adventurer's Training Hall"]
+	#{'name': 'staircase'}
+	g["Immigration Office"]["Adventurer's Training Hall"]["name"]
+	#'staircase'
+	g.neighbors("Adventurer's Training Hall")
+	#['Immigration Office']
+	import code; code.interact(local=locals())
+
+No it looks like the A format will be just fine.  I wonder if I can add edges before I know where they go (parse Obvious Exits.)  If not, it could be that I never parse Obvious Exits.  
+
+The logfile would be a good things anyway.  Perhaps I'll have to add a layer to tn.write so all commands get logged.  (Hey, we have telnetHandler now!)
+

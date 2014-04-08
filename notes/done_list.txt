@@ -1,0 +1,76 @@
+
+DONE LIST
+(copy text here when removed from todo list)
+aura checks.
+
+Bug for kobold guards... won't continue to engage if health is low!
+blocks your exit
+ The 'x' attacks you.
+ You attack the 'x'.
+Debug:
+ 1. mobs joining in
+ 2. mobs who block
+ 3. not fighting in presence of guard . found one bug (re.match)
+
+"sell silver ring" will sell a silver chalice...
+ Solution... when doing inventory give everything a good enough name.
+ still needs to avoid all unusable words.  (test: "silver ring", "tiny silver vial")
+"Small mace" -> "small restorative" ... fixed if mace is removed on
+    successful sales... this would be very good to do.
+
+town guards. Done.  Reworked top level algorithm.
+
+make flee stop the bot. 
+
+Bot equips weapon on these triggers
+Your x breaks and you have to remove it.
+Your x shatters.
+
+Wearing rings
+Your x falls apart. (armour)
+
+Maintain only ONE monster list.  MUD_thread will generally be
+the only one to add/delete from it. DONE
+The bot will go from this list.
+However if the bot sees a problem, such as "You don't see that here",
+then the bot can remove that mob from the list.  However the MUD thread will
+have to be involved in that anyway.
+Example bug:
+       #Obvious exits: north, south, east.
+       #You see a shopper.
+       #MUD_READ: successful go
+       #Check for successful go, returning True
+       #Inside check_for_monsters
+       #[52 H 21 M]: The shopper just wandered to the north.
+       #Inside decide_which_mob_to_kill
+       #Inside engage_monster... engaging shopper
+       #[52 H 21 M]: You don't see that here.
+       #[52 H 21 M]: Inside get_items
+       #Inside check_weapons.
+       #Inside engage_mobs_who_joined_in
+       #[]
+       #Inside heal_up
+       #Inside decide_which_mob_to_kill
+       #Inside engage_monster... engaging shopper
+       #There's nothing here.
+       #[52 H 21 M]: You don't see that here.
+#
+BUG... someone else kills my old mob:
+"Your enemy, the shepherd had been defeated"
+while I'm healing up and stops the cast thread,
+or I'm in combat and stop fighting.
+ Edit the combat thread stopping logic to compare the kk target to the mob
+ that died.
+PLAN:  (two fixes)
+ 1.  keep track of which mob you are kk ing and cc ing and only stop
+     kk and cc if the mob that died was your target. 
+ 2.  engage mobs that attack you.  (DONE)
+COMPLETED: I changed the trigger that stops combat and casting to 
+"Your attack overwhelms the ..."
+when a mob is killed so that should solves the above bugs.
+   
+Bug: When dual wielding the same weapon... when it breaks he 
+will try to put it in his off hand every time... i suppose he needs a 
+way to check which one broke!
+Fix: Could not check which weapon broke.  Just enter both commands
+wie' and 'seco' and hope for the best. 

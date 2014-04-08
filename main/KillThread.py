@@ -10,8 +10,8 @@ class KillThread(CombatThread):
     command every few seconds.  It reads Character to determine the attack 
     period """
     
-    def __init__(self, Character, MudReaderHandler, telnet, target):   # Constructor
-        super(KillThread,self).__init__(Character, MudReaderHandler, telnet, target)
+    def __init__(self, character, mudReaderHandler, telnetHandler, target):
+        super(KillThread,self).__init__(character, mudReaderHandler, telnetHandler, target)
         
         self._reactions.append(ThreadStopper("You don't see that here\.",self))
         self._reactions.append(ThreadStopper("Attack what\?",self))
@@ -21,20 +21,17 @@ class KillThread(CombatThread):
     def run(self):
         self._stopping = False
         self._do_reactions()
-        wait_for_attack_ready(self.Character)
+        wait_for_attack_ready(self.character)
 
         while not self._stopping:
-            self.Character.ATTACK_CLK = time.time()
-            #PREV_COMMAND = "k " + self.target + "\n"
-            #telnet.write(PREV_COMMAND)
-            #self.telnet.write("k " + self.target + "\n")
-            send_to_telnet(self.telnet, "k " + self.target)
-            #wait_for_attack_ready(self.Character)
+            self.character.ATTACK_CLK = time.time()
+            self.telnetHandler.write("k " + self.target)
+            #wait_for_attack_ready(self.character)
             
             # OLD (deprecated by BotReactions): 
-            #if(not self.MudReaderHandler.watch_attack_combat()): #TODO: delete watch_attack_combat
+            #if(not self.mudReaderHandler.watch_attack_combat()): #TODO: delete watch_attack_combat
             #    self._stopping = True     
-            wait_for_attack_ready(self.Character)
+            wait_for_attack_ready(self.character)
 
         self._undo_reactions()
         # end thread

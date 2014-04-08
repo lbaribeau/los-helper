@@ -1,0 +1,28 @@
+
+IDEAS for how to improve code:
+
+idea for a function:
+ MUD_output_check(regex_true, regex_false="regex that won't match", timeout=0.8)
+   checks the MUD_buffer for the regexes
+   returns a match object if regex_true is matched
+   returns null (false) if the regex_false occurs (only purpose is to reduce the amount of time)
+   returns null (false) if the given timeout expires.
+
+Idea: an "Inventory" object so bot can say "Inventory.getInventoryList()" 
+  - right now the bot types 'i' and calls MudReaderHandler.wait_for_inventory_match()
+  which is what Inventory.getInventoryList() would do.  
+
+Idea for a driving refactoring pattern: 
+The pattern would be to 
+decouple the bot AI from the commands, and eventually the bot AI would never need 
+to know any commands.  Again: strive to stop bot AI from issuing commands by 
+creating objects.
+
+I skimmed the python style guide. 
+At the time of writing my style preferences are:
+- CamelCase for class names
+- camelCase starting with small letter for class instances
+    (I intend to get rid of all of this _inst for instances...
+- functions/variables with words separated with underscores
+- function names will likely be verbs and variables nouns.
+The whole program doesn't follow this (yet)
