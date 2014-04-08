@@ -575,19 +575,23 @@ class MudReaderThread ( threading.Thread ):
                     text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                     if(my_list_search(self.Character.MOBS_ATTACKING, M_obj.group(2)) == -1):
                         self.Character.MOBS_ATTACKING.append(M_obj.group(2))    
-                
-            M_obj = re.search("Obvious exits: .+?\.\n\r\n\r", text_buffer)
+            
+
+            '''"\n\r(.?+)\n\r\n\rObvious exits: (.+?)\.\n\r"  group(1) is the area name, group(2) is an exit list which will have to be parsed for commas
+            "(?s)\n\r(.?+)\n\r\n\r(.+?)\n\rObvious exits: (.+?)\.\n\r(You see .+?\.)?" and group(2) is now the description.'''
+
+            M_obj = re.search("(?s)\n\r(.?+)\n\r\n\r(.+?)\n\rObvious exits: (.+?)\.\n\r\n\r", text_buffer)
             if(M_obj):
-                self.Character.EXIT_LIST = self.parse_exit_list(M_obj.group(0))
+                self.Character.EXIT_LIST = self.parse_exit_list(M_obj.group(3))
                 self.Character.MONSTER_LIST = []
                 self.Character.SUCCESSFUL_GO = True
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
-            M_obj = re.search("(?s)Obvious exits: .+?\.\n\r(You see .+?\.)", text_buffer)         
+            M_obj = re.search("(?s)\n\r(.?+)\n\r\n\r(.+?)\n\rObvious exits: (.+?)\.\n\r(You see .+?\.)", text_buffer)         
             if(M_obj != None):
-                self.Character.EXIT_LIST = self.parse_exit_list(M_obj.group(0))
-                self.Character.MONSTER_LIST = self.parse_monster_list(M_obj.group(1))
+                self.Character.EXIT_LIST = self.parse_exit_list(M_obj.group(3))
+                self.Character.MONSTER_LIST = self.parse_monster_list(M_obj.group(4))
                 self.Character.SUCCESSFUL_GO = True
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
@@ -748,7 +752,7 @@ class MudReaderThread ( threading.Thread ):
         for i in range(0, len(E_LIST)):
             #M_LIST[i].ljust(0)  # this isn't doing what I thought.
             E_LIST[i].lstrip()  # remove the space.
-        
+
         return E_LIST
 
 
