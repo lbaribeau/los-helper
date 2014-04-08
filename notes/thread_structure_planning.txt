@@ -1,0 +1,76 @@
+
+No idea how I'm gonna do this.
+Assume I'm in the chapel.
+Will need to monitor health... do that first in MUD output.
+Will need things to be fairly top-down, ie things like go_to_theatre.
+
+Maybe a fairly easy approach would be to walk around, and at every step
+make a list of mobs in the room.  Compare to a list of known mobs and
+combat the ones we can take.
+
+I still want to keep raw_input... so this should be a thread.  Plus
+its likely good programming practice.
+
+Fundamental problem is that all the reading takes place in another
+thread.  What will happen is I'll start the combat threads and then
+I will want to wait until the thing is dead, along with other things
+(likely also act on low health... but later)  I suppose I could have
+that thread set global flags...  but there has to be a better way!
+I can only read the telnet object in one place for many reasons.  Should
+I take it over? It would be really nice to get this bot as one thread!
+
+Well... maybe the flag way would be least overhead.  I wouldn't need very
+many.  Everything that the bot should react to.  Stuff like:
+  Health (not a flag, just a global... bot can decide when rest)
+  Mob death
+  Full health (for resting... however its just like the other health)
+  Inventory full?  Can probably do without it by selling often.
+  Mob fleeing.  This is probably necessary because it will happen a lot.
+      Not right away but I will need a function which can hopefully chase
+      down mobs... however not so easy because the way back is hard unless
+      its 100% north/south/east/west.  (way back through door "door" or
+      "out"?
+      So its probably fine to have first version of bot not chase
+      monsters.
+  Mob attacking you will then happen often - need to react.
+  Ah here's the big one I have to read for:  Mobs in the room.
+      It might be worthwhile, every time the bot moves, to stop the
+      MUD thread and assemble its list itself, then start the MUD
+      thread again...  might.  The advantage would be that I
+      know the list is coming.  Can I reliably parse a mob list?
+          You see a dustman, a mime artist, a sword swallower.
+          You see a large wallposter.
+      Not really.  On the other hand it wouldn't hurt to have "large
+      wallposter" in the list of mobs that I read so long as I never
+      try to hurt it.
+  Looking at mobs to see if they are stronger.
+      That might also be easier if I take over the telnet object briefly.
+      The problem is that it renders ALL of the text recognition there
+      unreliable.  Right now all that is there is haste, spellcast checks,
+          wield checks, and checks to stop stray "kk" threads.  It would be
+          a real shame to miss a "You feel slower."  I should monitor that
+          myself.  Could I figure whether something is stronger without
+          interrupting that thread?  Maybe
+              telnetHandler.write("l\n")
+              time.sleep(0.5)  # Wait for MUD thread to set a flag
+              if(mob is weak):  engage.
+          Messy, messy, messy.
+          Although, that won't be necessary if I permanently just have a mob
+          list.  So, leave that as a future project - a bot who can look
+          at mobs and decide...
+      Checking equipment
+          Will probably need a little sleep for this too.  However it isn't
+          worth the trouble to stop the MUD thread just to do this little
+          operation.  As much as I hate it I think I'll have to interact
+          with the other thread.
+    So from that brainstorming it looks like I can do this just by adding
+    to the MUD thread and not having to control it.  Again, I don't really
+    want to stop it because it would make all my actions off text unreliable.
+    Unfortunately my bot will then have lots of sleeps in it... which is really
+    really sucky.  Argh!!  Maybe its better for the bot to have its own access
+    to telnet out!  However that would still have sleeps.  I really want to
+    avoid sleeps.  Maybe I can do whiles and probe global flags.
+   
+    For better or for worse, I'm going to do this with MUD thread still going
+    and I'm going to interact with that thread.
+

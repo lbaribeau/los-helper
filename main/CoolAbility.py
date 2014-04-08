@@ -14,7 +14,7 @@ def abstract():
     caller = inspect.getouterframes(inspect.currentframe())[1][3]
     raise NotImplementedError(caller + ' must be implemented in subclass')
 
-class CoolAbility:
+class CoolAbility(object):
     ''' CoolAbilites are things like haste, barkskin, berserk, meditate, pray,
     wither, touch, turn.  Things that drastically affect combat such as 
     circle, bash, backstab, steal, are NOT CoolAbilities.  They are worked 

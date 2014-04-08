@@ -1,0 +1,65 @@
+
+TODO LIST (WISH LIST):
+
+A hud showing cooldowns for attack, cast, and all coolabilities
+
+do math on tick/vig amounts to determine when to stop vigging
+catch "Please wait x more seconds" on quit attempt
+haste thread (hc and sh), search thread (searchc and ssearch)
+- Rewrite KillThread and CastThread to use the MudReader 
+  instead of the other way around.
+haste, steel bottles, silver chalices.
+restoratives
+### Someone just flashed,
+Someone just wandered to the out.  (hidden mobs)
+The 2nd actress blocks your exit.  (bug: attacks the 1st actress)
+remove unneccessary __init__s
+
+TODO... "You feel slower" mid combat causes bot to miss a swing (registers too late)
+TODO... try using 'in' operator instead of list searches.
+TODO... fix rest algorithm not to time out
+TODO... mages cast faster (change timers)
+TODO... a "set chase" functionality which will automatically chase
+        mobs that run or chase command
+TODO... a "keep item" list, sell all, drop all.
+TODO combat with circle
+TODO implement MAXHP, MAXMP,
+TODO reverse engineering ticker timings from Piety and maintain current health
+TODO haste timers and thread.
+TODO remove prints from selling algorithm, handle multiple grey cloaks
+(add numbers and sell in decreasing order, and not sell 'empty strings if
+could not fit)
+TODO do not crash on empty inventory at tip
+TODO check mob level before engaging... not need mana for low level mobs etc.
+ (smarter decide_whether_to_engage, maybe no MONSTER_KILL_LIST, but
+  better lists to determine difficulty and better intelligence as to whether
+  to engage mobs from each list level based on mana/health)
+TODO when bot starts reinitialize things like MOBS_ATTACKING
+TODO Make aura checking a little better
+TODO when healing, instead of draining mana pool on vig, 
+  find a way to only vig until health and mana are the same number 
+  of ticks from max.
+TODO fix parse_inventory_list!!!
+TODO higher level chars should not wait for a tick if it won't get the entire 
+ tick.
+TODO: MOBS_ATTACKING only gets depopulated when the bot is killing mobs.
+If a human player kills mobs then MOBS_ATTACKING fills up, and when bot 
+is started it finds a way to empty the list but not a good way.
+TODO: a Cooldowns data object.
+TODO: Figure out why the info command output isn't always complete...
+the table pruned by the game doesn't get all the way through.
+TODO: make a Monster object.  Reason: right now the bot decides what 
+  what monsters to fight by altering his path (not going to kobold cave.)
+  He should really decide at combat time as well (decide whether to fight 
+  mob should include an aura check).  This is best done with Monster objects.
+  Maybe there's a clever way to do their check for equality so that the string 
+  comparisons can be done in the same way (like if (Monster x == 'acolyte')).  
+TODO: fix bug:
+  Items picked up on the way to the tip after going to the shop may have 
+  value would be dropped at the tip.
+  Fix: will have to keep track of the state of going to the tip and not 
+  drop items that were dropped on the way.  
+  More comprehensive: A database of items to drop and sell would 
+  deprecate the above fix.
+TODO: use items.  Keep like 3 each of steel and chalice and like 8 
+restoratives but otherwise use them up.

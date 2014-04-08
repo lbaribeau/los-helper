@@ -338,8 +338,9 @@ class BotThread(threading.Thread):
             return
 
         if (self.character.TITLE == "Monk"):
-            if(self.character.HEALTH <= (self.character.HEALTH_TO_HEAL) and 
-                (time.time() - self.character.LAST_MEDITATE) > 150):
+            magentaprint("Last Meditate Check: " + str(time.time() - self.character.LAST_MEDITATE))
+            if((time.time() - self.character.LAST_MEDITATE) > 150 and
+                self.character.HEALTH <= self.character.HEALTH_TO_HEAL):
                 self.commandHandler.process('meditate')
                 self.character.LAST_MEDITATE = time.time()
 
@@ -348,18 +349,17 @@ class BotThread(threading.Thread):
             if (self.character.KNOWS_VIGOR):
                 self.commandHandler.user_cc(heal_spell)
         
-        self.character.HAS_RESTORE_ITEMS = True
+        self.character.HAS_RESTORE_ITEMS = False
 
         # Just wait for MudReader to set HEALTH for us while the cast thread continues..
         while((self.character.HEALTH <= self.character.HEALTH_TO_HEAL and not self.__stopping) 
                 and (self.character.MANA >= heal_cost or self.character.HAS_RESTORE_ITEMS) ):
+
             if (self.engage_any_attacking_mobs()):
                 if(self.character.MANA >= heal_cost and self.character.KNOWS_VIGOR):
                     self.commandHandler.user_cc(heal_spell)
-                elif (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL / 2)):
-                    self.use_restorative_items()
-                else: #If we end up here our health isn't high enough to use a restorative item
-                    self.character.HAS_RESTORE_ITEMS = False
+            
+            #self.use_restorative_items() #spam them!!!
 
             time.sleep(0.05)
 
@@ -380,16 +380,14 @@ class BotThread(threading.Thread):
         if (any("steel bottle" in s for s in self.character.INVENTORY_LIST)):
             magentaprint("drinking steel bottle", False)
             self.commandHandler.process('drink bottle')
-            self.character.HAS_BUFF_ITEMS = True
         else:
             self.character.HAS_BUFF_ITEMS = False
         return
 
     def use_restorative_items(self):
-        if (self.character.HAS_RESTORE_ITEMS and any("small restorative" in s for s in self.character.INVENTORY_LIST)):
+        if (any("small restorative" in s for s in self.character.INVENTORY_LIST)):
             magentaprint("drinking small restorative", False)
             self.commandHandler.process('drink restorative')
-            self.character.HAS_RESTORE_ITEMS = True
         else:
             self.character.HAS_RESTORE_ITEMS = False
         return
@@ -752,9 +750,14 @@ class BotThread(threading.Thread):
                     self.commandHandler.stop_CastThread()
                     
             # TODO: restoratives (use when vig not keeping up or low mana)
-            if (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL / 2)):
+            if (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL)):
+                if (self.character.TITLE == "Monk"): #meditate
+                    magentaprint("Last Meditate Check: " + str(time.time() - self.character.LAST_MEDITATE))
+                    if((time.time() - self.character.LAST_MEDITATE) > 150):
+                        self.commandHandler.process('meditate')
+                        self.character.LAST_MEDITATE = time.time()
                 if(self.character.MANA >= vigor_cost and self.character.KNOWS_VIGOR and
-                     self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
+                    self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
                     self.commandHandler.user_cc("vig")
                     self.commandHandler.stop_CastThread()
                 else:
@@ -775,8 +778,8 @@ class BotThread(threading.Thread):
         
         if(my_list_search(self.character.MOBS_ATTACKING, monster) != -1):
             #magentaprint("Bot:engage_monster: Removing " + monster + " from MOBS_ATTACKING.")
-            magentaprint("I totally just killed: " + monster, False)
-            #self.character.MOBS_KILLED += 1
+            magentaprint("I believe the following is dead or gone: " + monster, False)
+            self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
             self.character.MOBS_ATTACKING.remove(monster)
             
         return

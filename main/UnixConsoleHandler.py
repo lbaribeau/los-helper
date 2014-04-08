@@ -1,6 +1,5 @@
-from __future__ import print_function
 
-class UnixConsoleHandler:
+class UnixConsoleHandler(object):
 
     def black(self):
         print("\033[30m", end='')

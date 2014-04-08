@@ -1,31 +1,25 @@
-
+# This thread is used to time retries for cool abilities (haste, pray, berserk, etc.).  
+# Construct it with a CoolAbility.
+  
 from misc_functions import *
 import threading
 from threading import Thread
 import atexit 
 import time
-#from BotReaction import BotReaction
+# from BotReaction import *
 
-# class CoolAbilityThread(threading.Thread, BotReaction):
 class CoolAbilityThread(threading.Thread):
-    # This thread is used to time retries for cool abilities (haste, pray, berserk, etc.).  
-    # Construct it with a CoolAbility.
-    # (Not taking Character in - shouldn't be necessary)
-    def __init__(self, CoolAbility, MudReaderHandler, tn_in):   # Constructor
+
+    def __init__(self, coolAbility, mudReaderHandler, telnetHandler): 
         Thread.__init__(self)
-        
-        # Input objects
-        self.CoolAbility = CoolAbility # Not doing _inst notation
-        self.MudReaderHandler = MudReaderHandler
+        self.coolAbility = coolAbility 
+        self.mudReaderHandler = mudReaderHandler
 
-        # BotReaction stuff
-        #super(BotReaction, self).__init__(CoolAbility.) #TODO
-          # Use a reaction for success_mud_text and one for failure_mud_text
+        # TODO: Use a botReaction for success_mud_text and one for failure_mud_text
 
-        # Initialize some variables local to this thread
         self.__stopping = False
-        self.__CLOCK = -CoolAbility.getCoolDownInSecondsAfterSuccess()
-        self.tn = tn_in
+        self.__CLOCK = -coolAbility.getCoolDownInSecondsAfterSuccess()
+        self.telnetHandler = telnetHandler
         self.target = target      
         atexit.register(self.stop)
 
@@ -45,31 +39,28 @@ class CoolAbilityThread(threading.Thread):
     def get_timer(self):
         return time.time() - self.__CLOCK
 
-
     def run(self):
         self.__stopping = False
 
         while not self.__stopping:
             self.__CLOCK = time.time()
 
-            self.MudReaderHandler.register_reaction(self)
+            self.mudReaderHandler.register_reaction(self)
 
-            if(self.CoolAbility.needs_target()):
-                #self.tn.write(self.CoolAbility.command() + " " + self.target + "\n")
-                send_to_telnet(self.tn, self.CoolAbility.command() + " " + self.target)
+            if(self.coolAbility.needs_target()):
+                self.telnetHandler.write(self.coolAbility.command() + " " + self.target)
             else:
-                #self.tn.write(self.CoolAbility.command() + "\n")
-                send_to_telnet(self.tn, self.CoolAbility.command())
+                self.telnetHandler.write(self.coolAbility.command())
 
     def notify(self, M_obj):
 
-        self.MudReaderHandler.unregister_reaction(self)
+        self.mudReaderHandler.unregister_reaction(self)
         self.stop()
 
-            # if(self.CoolAbility.needs_target()):
-            #     self.tn.write(self.CoolAbility.command() + " " + self.target + "\n")
+            # if(self.coolAbility.needs_target()):
+            #     self.telnetHandler.write(self.coolAbility.command() + " " + self.target + "\n")
             # else:
-            #     self.tn.write(self.CoolAbility.command() + "\n")
+            #     self.telnetHandler.write(self.coolAbility.command() + "\n")
 
             # # if(self.mudreaderhandler.wait_for_ability_feedback(coolability)):
             # # if(self.mudreaderhandler.do_whole_command(coolability.)):
@@ -85,7 +76,7 @@ class CoolAbilityThread(threading.Thread):
             #     #fail.  wait cooldown then let loop reiterate. 
             #     # todo: be robust for "please wait one second."
             #     time.sleep(max(0,
-            #         self.CoolAbility.failure_cooldown() - (time.time() - self.__CLOCK)))
+            #         self.coolAbility.failure_cooldown() - (time.time() - self.__CLOCK)))
                
     #         # (Thinking comments:)     
     #         # I think I need to use MudReaderHandler to determine whether 
@@ -107,28 +98,28 @@ class CoolAbilityThread(threading.Thread):
         # while not self.__stiopping:
         #     self.__CLOCK = time.time()
 
-        #     if (! self.CoolAbility.needsTarget):
-        #         success = self.MudReaderHandler.do_whole_command(
-        #             self.CoolAbility.command(),
-        #             self.CoolAbility.success_mud_text(),
-        #             self.CoolAbility.failure_mud_text())
+        #     if (! self.coolAbility.needsTarget):
+        #         success = self.mudReaderHandler.do_whole_command(
+        #             self.coolAbility.command(),
+        #             self.coolAbility.success_mud_text(),
+        #             self.coolAbility.failure_mud_text())
         #     else:
-        #         success = self.MudReaderHandler.do_whole_command(
-        #             self.CoolAbility.command() + " " + self.target,
-        #             self.CoolAbility.success_mud_text(),
-        #             self.CoolAbility.failure_mud_text())
+        #         success = self.mudReaderHandler.do_whole_command(
+        #             self.coolAbility.command() + " " + self.target,
+        #             self.coolAbility.success_mud_text(),
+        #             self.coolAbility.failure_mud_text())
 
         #     if (success):
         #         # Go to sleep and notify when cooldown is back up
         #         time.sleep(max(0,
-        #             self.CoolAbility.success_cooldown() - (time.time() - self.__CLOCK)))
-        #         magentaprint("--- " + CoolAbility.command() + " cooldown is up!");
+        #             self.coolAbility.success_cooldown() - (time.time() - self.__CLOCK)))
+        #         magentaprint("--- " + coolAbility.command() + " cooldown is up!");
         #         self.stop()
         #     else:
         #         # Wait cooldown and try again after
         #         # TODO: Be robust for "Please wait one second."
         #         time.sleep(max(0,
-        #             self.CoolAbility.failure_cooldown() - (time.time() - self.__CLOCK)))
+        #             self.coolAbility.failure_cooldown() - (time.time() - self.__CLOCK)))
                 
                            
             

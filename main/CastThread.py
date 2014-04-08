@@ -10,8 +10,8 @@ class CastThread(CombatThread):
     command every few seconds.  It reads Character to determine the attack 
     period """
     # TODO: Watch for failed casts and recast, especially for vigging.
-    def __init__(self, Character, MudReaderHandler, telnet, spell, target):   # Constructor
-        super(CastThread,self).__init__(Character, MudReaderHandler, telnet, target)
+    def __init__(self, character, mudReaderHandler, telnetHandler, spell, target):
+        super(CastThread,self).__init__(character, mudReaderHandler, telnetHandler, target)
         self.spell = spell
         
         self._reactions.append(ThreadStopper("That spell does not exist\.",self))
@@ -36,27 +36,24 @@ class CastThread(CombatThread):
         # Assumption is that it is constructed and started at the same time.
         self._stopping = False
         self._do_reactions()
-        wait_for_cast_ready(self.Character)
+        wait_for_cast_ready(self.character)
 
         while not self._stopping:
             # TODO: Monitor current spell and current mana and stop if out
             # of mana.
-            self.Character.CAST_CLK = time.time()
-            #PREV_COMMAND = "cast " + self.spell + " " + self.target + "\n"
-            #tn.write(PREV_COMMAND)
-            #self.telnet.write("cast " + self.spell + " " + self.target + "\n")
-            send_to_telnet(self.telnet, "cast " + self.spell + " " + self.target)
-            wait_for_cast_ready(self.Character)
+            self.character.CAST_CLK = time.time()
+            self.telnetHandler.write("cast " + self.spell + " " + self.target)
+            wait_for_cast_ready(self.character)
 
         self._undo_reactions()
 
     def _do_reactions(self):
         """ Makes and registers threadstoppers for a castthread """
         for reaction in self._reactions:
-            self.MudReaderHandler.register_reaction(reaction)
+            self.mudReaderHandler.register_reaction(reaction)
     
     def _undo_reactions(self):
         for reaction in self._reactions:
-            self.MudReaderHandler.unregister_reaction(reaction)
+            self.mudReaderHandler.unregister_reaction(reaction)
 
 

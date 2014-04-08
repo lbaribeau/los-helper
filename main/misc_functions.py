@@ -1,4 +1,3 @@
-
 import time
 import sys
 from ConsoleHandler import newConsoleHandler
@@ -6,15 +5,9 @@ from datetime import datetime
 
 debugMode = False
 verboseMode = True
-VERSION = 1.3
 startTime = datetime.now()
 
 ##################################### MISC FUNCTIONS ########################
-
-def send_to_telnet(tn, text):
-    text += '\r'
-    tn.write(text.encode('ascii'))
-    return
 
 def wait_for_move_ready(character_inst):
     #global character_inst

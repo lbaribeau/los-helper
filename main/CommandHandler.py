@@ -13,17 +13,16 @@ from CoolAbilityThread import *
 from ThreadStopper import *
 
 
-class CommandHandler:
+class CommandHandler(object):
 
-    def __init__(self, Character, MudReaderHandler, tn_in):
-        self.tn = tn_in
-        self.Character = Character
-        self.MudReaderHandler = MudReaderHandler
+    def __init__(self, character, mudReaderHandler, telnetHandler):
+        self.telnetHandler = telnetHandler
+        self.character = character
+        self.mudReaderHandler = mudReaderHandler
         self.KillThread = None
         self.CastThread = None
         self.CoolAbilityThread1 = None
         self.CoolAbilityThread2 = None
-        pass
 
     def stop_KillThread(self, debug_on=False):
         if(self.KillThread != None and self.KillThread.is_alive()):
@@ -51,9 +50,7 @@ class CommandHandler:
         commands.  Also, when the bot is stopped on a flee, the calling layer
         handles stopping the bot."""
         if(re.match("ga$", user_input)):
-            #PREV_COMMAND = user_input
-            #self.tn.write("get all\n")
-            send_to_telnet(self.tn, "get all")
+            self.telnetHandler.write("get all")
         elif(re.match("ki? [a-zA-Z]|kill? [a-zA-Z]", user_input)):
             #PREV_COMMAND = user_input
             self.user_ki(user_input) # routine which does appropriate waiting,
@@ -93,73 +90,71 @@ class CommandHandler:
             #Alias
             if(re.match("wi [a-zA-Z]", user_input)):
                 user_input = "wield " + user_input[3:] 
-            #PREV_COMMAND = user_input
-            #self.tn.write(user_input + "\n")
-            send_to_telnet(self.tn, user_input)
+            self.telnetHandler.write(user_input)
         elif(re.match("wie?2 +[a-zA-Z]+( +\d+)?", user_input)):
             self.user_wie2(user_input[4:].lstrip())
         elif(re.match("fle?$|flee$", user_input)):
-            #PREV_COMMAND = user_input
             self.user_flee()
         elif(re.match("HASTING", user_input)):  # Debug
             #user_hk(user_input[3:].lstrip()) Deprecated!
-            magentaprint(str(self.Character.HASTING))
+            magentaprint(str(self.character.HASTING))
         elif(re.match("WEAPON1", user_input)):
-            magentaprint(self.Character.WEAPON1)
+            magentaprint(self.character.WEAPON1)
         elif(re.match("WEAPON2", user_input)):
-            magentaprint(self.Character.WEAPON2)
+            magentaprint(self.character.WEAPON2)
         elif(re.match("MONSTER_CHECK_FLAG", user_input)):
-            magentaprint(str(self.Character.MONSTER_CHECK_FLAG))
+            magentaprint(str(self.character.MONSTER_CHECK_FLAG))
         elif(re.match("MONSTER_LIST", user_input)):
-            magentaprint(str(self.Character.MONSTER_LIST))
+            magentaprint(str(self.character.MONSTER_LIST))
         elif(re.match("HEALTH", user_input)):
-            magentaprint(str(self.Character.HEALTH), False)
+            magentaprint(str(self.character.HEALTH), False)
         elif(re.match("INVENTORY_LIST", user_input)):
-            magentaprint(str(self.Character.INVENTORY_LIST), False)
+            magentaprint(str(self.character.INVENTORY_LIST), False)
         elif(re.match("EXPERIENCE", user_input)):
-            exp = self.Character.EXPERIENCE
+            exp = self.character.EXPERIENCE
             expm = str(calculate_vpm(exp))
             magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
             #magentaprint(str(exp), False)
         elif(re.match("GOLD", user_input)):
-            #gold = self.Character.GOLD  #Calculating GMP would require us to store gold differently
+            #gold = self.character.GOLD  #Calculating GMP would require us to store gold differently
             #gpm = str(calculate_vpm(gold))
             #magentaprint("Gold this Session: " + str(gold) + " | Gold / MIN: " + gpm, False)
-            magentaprint(str(self.Character.GOLD), False)
+            magentaprint(str(self.character.GOLD), False)
         elif(re.match("KILLS", user_input)):
-            kills = self.Character.MOBS_KILLED
+            kills = self.character.MOBS_KILLED
             kpm = str(calculate_vpm(kills))
             magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
         elif(re.match("DUMP", user_input)):
             magentaprint(self.Character.__dict__, False)
         elif(re.match("VERSION", user_input)):
             magentaprint("Version: " + str(misc_functions.VERSION), False)
+            magentaprint(self.character.__dict__, False)
         elif(re.match("REPORT", user_input)):
             self.process("info")
             time.sleep(1)
-            exp = self.Character.TOTAL_EXPERIENCE
-            gold = self.Character.TOTAL_GOLD
+            exp = self.character.TOTAL_EXPERIENCE
+            gold = self.character.TOTAL_GOLD
             magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), False)
-            exp = self.Character.EXPERIENCE
+            exp = self.character.EXPERIENCE
             expm = str(calculate_vpm(exp))
             magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
-            kills = self.Character.MOBS_KILLED
+            kills = self.character.MOBS_KILLED
             kpm = str(calculate_vpm(kills))
             magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
             runtime = get_runtime_in_minutes()
             magentaprint("Minutes Run: " + str(runtime), False)
         elif(re.match("MUD_RETURN_ITEM_SOLD", user_input)):
-            magentaprint(self.Character.MUD_RETURN_ITEM_SOLD)
+            magentaprint(self.character.MUD_RETURN_ITEM_SOLD)
         elif(re.match("MOBS_JOINED_IN", user_input)):
-            magentaprint(self.Character.MOBS_JOINED_IN)
+            magentaprint(self.character.MOBS_JOINED_IN)
         elif(re.match("AURA", user_input)):
-            magentaprint(str(self.Character.AURA), False)        
+            magentaprint(str(self.character.AURA), False)        
         elif(re.match("MOBS_ATTACKING", user_input)):
-            magentaprint(self.Character.MOBS_ATTACKING)
+            magentaprint(self.character.MOBS_ATTACKING)
         elif(re.match("MONSTER_KILL_LIST", user_input)):
-            magentaprint(str(self.Character.MONSTER_KILL_LIST))
+            magentaprint(str(self.character.MONSTER_KILL_LIST))
         elif(re.match("reactionlist", user_input)):
-            for r in self.MudReaderHandler.MudReaderThread.BotReactionList:
+            for r in self.mudReaderHandler.MudReaderThread.BotReactionList:
                 magentaprint('    ' + str(r))
         elif(re.match("cackle", user_input)):
             misc_functions.verboseMode = not misc_functions.verboseMode
@@ -168,23 +163,25 @@ class CommandHandler:
             misc_functions.debugMode = not misc_functions.debugMode
             magentaprint("Debug Mode changed", False)
         else: # Doesn't match any command we are looking for
-            send_to_telnet(self.tn, user_input) # Just shovel to telnet.
+            self.telnetHandler.write(user_input) # Just shovel to telnet.
+
 
     def user_ki(self, user_input):
         #global ATTACK_CLK, ATTACK_WAIT
         now = time.time()
-        time_remaining = self.Character.ATTACK_WAIT - (now - self.Character.ATTACK_CLK)
+        time_remaining = self.character.ATTACK_WAIT - (now - self.character.ATTACK_CLK)
         if (time_remaining < 0):
-            self.Character.ATTACK_CLK = now
-            send_to_telnet(self.tn, user_input)
+            self.character.ATTACK_CLK = now
+            self.telnetHandler.write(user_input)
         elif(time_remaining < 1.0):
             magentaprint("Delaying by %.1f sec ..." % time_remaining)
             time.sleep(time_remaining)
             magentaprint("Sent.")
-            self.Character.ATTACK_CLK = now
-            send_to_telnet(self.tn, user_input)
+            self.character.ATTACK_CLK = now
+            self.telnetHandler.write(user_input)
         else:
             magentaprint("(Python) Wait %.1f more seconds" % time_remaining)
+
             
     def user_ca(self, user_input):
         # TODO: Match this to a spell list so I can actually tell if they
@@ -194,19 +191,17 @@ class CommandHandler:
         # Check if you can cast.
 
         now = time.time()
-        time_remaining = self.Character.CAST_WAIT - (now - self.Character.CAST_CLK) # cast time only depends
+        time_remaining = self.character.CAST_WAIT - (now - self.character.CAST_CLK) # cast time only depends
                                                     # on last cast (even if it failed!)
         if (time_remaining < 0):
-            self.Character.CAST_CLK = now
-            #self.tn.write(user_input + "\n")
-            send_to_telnet(self.tn, user_input)
+            self.character.CAST_CLK = now
+            self.telnetHandler.write(user_input)
         elif (time_remaining < 1.0):
             magentaprint("(Python) Delaying by %.1f sec ... " % time_remaining)
             time.sleep(time_remaining)
             magentaprint("Sent.")
-            self.Character.CAST_CLK = now
-            #self.tn.write(user_input + "\n")
-            send_to_telnet(self.tn, user_input)
+            self.character.CAST_CLK = now
+            self.telnetHandler.write(user_input)
         else:
             magentaprint("(Python) Wait %.1f more seconds" % time_remaining)
 
@@ -217,9 +212,9 @@ class CommandHandler:
 
         now = time.time()
         
-        wait_from_move = self.Character.MOVE_WAIT - (now - self.Character.MOVE_CLK)
-        wait_from_ATTACK = self.Character.ATTACK_WAIT - (now - self.Character.ATTACK_CLK)
-        wait_from_CAST = self.Character.CAST_WAIT - (now - self.Character.CAST_CLK)
+        wait_from_move = self.character.MOVE_WAIT - (now - self.character.MOVE_CLK)
+        wait_from_ATTACK = self.character.ATTACK_WAIT - (now - self.character.ATTACK_CLK)
+        wait_from_CAST = self.character.CAST_WAIT - (now - self.character.CAST_CLK)
         
         time_remaining = max(wait_from_move, wait_from_ATTACK, wait_from_CAST);
         
@@ -228,15 +223,14 @@ class CommandHandler:
         #magentaprint("CAST wait time: %f" % wait_from_CAST)
           
         if (time_remaining < 0):
-            self.Character.MOVE_CLK = now
-            send_to_telnet(self.tn, user_input)
+            self.character.MOVE_CLK = now
+            self.telnetHandler.write(user_input)
         elif(time_remaining < 1.0):
             magentaprint("(Python) Delaying by %.1f sec ..." % time_remaining)
             time.sleep(time_remaining)
             magentaprint("Sent.")
-            self.Character.MOVE_CLK = now
-            #self.tn.write(user_input + "\n")
-            send_to_telnet(self.tn, user_input)
+            self.character.MOVE_CLK = now
+            self.telnetHandler.write(user_input)
         else:
             magentaprint("Wait %.1f more seconds" % time_remaining)
 
@@ -244,9 +238,7 @@ class CommandHandler:
     def user_dr(self, user_input):
         [command, item] = user_input.split(" ", 1)
         user_input = "drop " + item
-        #self.tn.write(user_input + "\n")
-        send_to_telnet(self.tn, user_input)
-        return
+        self.telnetHandler.write(user_input)
     
     def user_kk(self, argv):
         if (self.KillThread != None and self.KillThread.is_alive()):
@@ -265,24 +257,22 @@ class CommandHandler:
             self.KillThread.set_target(argv)
             self.KillThread.keep_going()
         else:
-            self.KillThread = KillThread(self.Character, self.MudReaderHandler, self.tn, argv)
+            self.KillThread = KillThread(self.character, self.mudReaderHandler, self.telnetHandler, argv)
             self.KillThread.start()
             #self._do_kill_reactions()
 
     
     def user_sk(self):
         self.stop_KillThread(True)
-        #self.tn.write("\n")  # brings prompt back as if this command were a normal one
-        send_to_telnet(self.tn, "")
-        return
+        self.telnetHandler.write("")
     
 
     def user_cc(self, argv):
         # TODO: Bug for user input "cc "
         if(argv == ""):
             magentaprint("Usage:  cc <spell> [<target> [<number>]]")
-            tn.write("\n")  # TODO: Keep a prompt up to date so we can print
-                            # immediately instead of sending to mud.
+            self.telnetHandler.write("") # TODO: Keep a prompt up to date so we can print
+                                    # immediately instead of sending to mud.
             return        
         elif(re.search(argv, " ")):
             [spell, target] = argv.split(" ",1)
@@ -297,23 +287,24 @@ class CommandHandler:
             self.CastThread.keep_going()
         else:
             magentaprint("New instance of cc thread")
-            self.CastThread = CastThread(self.Character, self.MudReaderHandler, self.tn, spell, target)
+            self.CastThread = CastThread(self.character, 
+                                         self.mudReaderHandler, 
+                                         self.telnetHandler, 
+                                         spell, 
+                                         target)
             self.CastThread.start()      
 
 
     def user_sc(self):
         self.stop_CastThread(True)
-        #self.tn.write("\n")  # brings prompt back as if this command were a normal one
-        send_to_telnet(self.tn, "")
-        return
+        self.telnetHandler.write("")
+
     
     def user_wie2(self, argv):
         magentaprint("wie2 called with argument %s" % (argv))
-        #self.tn.write("wield %s\n" % (argv))
-        #send_to_telnet(self.tn, "wield %s\n" % (argv))
-        #self.tn.write("second %s\n" % (argv)) 
-        #send_to_telnet(self.tn, "second %s\n" % (argv))
-        return
+        self.telnetHandler.write("wield %s\n" % (argv))
+        self.telnetHandler.write("second %s\n" % (argv))
+
     
     # COOL ABILITIES
     def user_hastec(self):        
@@ -329,10 +320,10 @@ class CommandHandler:
         else:
             magentaprint("CommandHandler: new haste thread")
             if (self.CoolAbilityThread1 == None or not self.CoolAbilityThread1.is_alive()):
-                self.CoolAbilityThread1 = CoolAbilityThread(Haste(), self.MudReaderHandler, self.tn)
+                self.CoolAbilityThread1 = CoolAbilityThread(Haste(), self.mudReaderHandler, self.telnetHandler)
                 self.CoolAbilityThread1.start()
             elif(self.CoolAbilityThread2 == None or not self.CoolAbilityThread2.is_alive()):
-                self.CoolAbilityThread2 = CoolAbilityThread(Haste(), self.MudReaderHandler, self.tn)
+                self.CoolAbilityThread2 = CoolAbilityThread(Haste(), self.mudReaderHandler, self.telnetHandler)
                 self.CoolAbilityThread2.start()
             else: 
                 magentaprint("Error! both CoolAbilityThreads are unavailable!")
@@ -341,11 +332,11 @@ class CommandHandler:
     def user_flee(self):
         self.stop_CastThread()
         now = time.time()
-        time_remaining = max(self.Character.MOVE_WAIT - (now - self.Character.MOVE_CLK),
-                             self.Character.ATTACK_WAIT - (now - self.Character.ATTACK_CLK),
-                             self.Character.CAST_WAIT - (now - self.Character.CAST_CLK))
+        time_remaining = max(self.character.MOVE_WAIT - (now - self.character.MOVE_CLK),
+                             self.character.ATTACK_WAIT - (now - self.character.ATTACK_CLK),
+                             self.character.CAST_WAIT - (now - self.character.CAST_CLK))
         magentaprint("Fleeing in %.1f sec ..." % time_remaining)
-        first_sleep = max(time_remaining - self.Character.ATTACK_WAIT - 0.2, 0)
+        first_sleep = max(time_remaining - self.character.ATTACK_WAIT - 0.2, 0)
         second_sleep = time_remaining - first_sleep 
         time.sleep(first_sleep)
 
@@ -354,13 +345,11 @@ class CommandHandler:
         self.stop_KillThread()
         magentaprint("KillThread is stopped, %.1f until escape." % time_remaining)
 
-        if(self.Character.WEAPON1 != ""):
-            #self.tn.write("rm " + self.Character.WEAPON1 + "\n")
-            send_to_telnet(self.tn, "rm " + self.Character.WEAPON1)
+        if(self.character.WEAPON1 != ""):
+            self.telnetHandler.write("rm " + self.character.WEAPON1)
         #    WEAPON1 = ""
-        if(self.Character.WEAPON2 != ""):
-            #self.tn.write("rm " + self.Character.WEAPON2 + "\n")
-            send_to_telnet(self.tn, "rm " + self.Character.WEAPON2)
+        if(self.character.WEAPON2 != ""):
+            self.telnetHandler.write("rm " + self.character.WEAPON2)
         #    WEAPON2 = ""
 
         if (second_sleep < 0.1):
@@ -375,37 +364,34 @@ class CommandHandler:
         #wait_for_cast_ready()
         
         now = time.time()
-        time_remaining = max(self.Character.MOVE_WAIT - (now - self.Character.MOVE_CLK),
-                             self.Character.ATTACK_WAIT - (now - self.Character.ATTACK_CLK),
-                             self.Character.CAST_WAIT - (now - self.Character.CAST_CLK))
+        time_remaining = max(self.character.MOVE_WAIT - (now - self.character.MOVE_CLK),
+                             self.character.ATTACK_WAIT - (now - self.character.ATTACK_CLK),
+                             self.character.CAST_WAIT - (now - self.character.CAST_CLK))
+
         if (time_remaining < 0):
-            self.Character.MOVE_CLK = now
+            self.character.MOVE_CLK = now
         else:
             magentaprint("(Python) Delaying by %.1f sec ..." % time_remaining)
             time.sleep(time_remaining)
             magentaprint("Sent.")
-            self.Character.MOVE_CLK = now
+            self.character.MOVE_CLK = now
             
         # Alternative is to check on MUD out for flee failures but that's not even
         # necessary!.
         # Note, it might be better in some cases just to flee once.  I think I will
         # implement "fl1" for that case.  (TODO)
-        send_to_telnet(self.tn, "fl")
-        send_to_telnet(self.tn, "fl")
-        send_to_telnet(self.tn, "fl")
+        self.telnetHandler.write("fl")
+        self.telnetHandler.write("fl")
+        self.telnetHandler.write("fl")
 
         manage_telnet_output("I had to run - sorry....", False)
 
         # Put weapons back on.
-        self.Character.MOVE_CLK = time.time()
+        self.character.MOVE_CLK = time.time()
         time.sleep(0.1)
 
-        if(self.Character.WEAPON1 != ""):
-            #self.tn.write("wie " + self.Character.WEAPON1 + "\n")
-            send_to_telnet(self.tn, "wie " + self.Character.WEAPON1)
-        if(self.Character.WEAPON2 != ""):
-            #self.tn.write("seco " + self.Character.WEAPON2 + "\n")
-            send_to_telnet(self.tn, "wie " + self.Character.WEAPON2)
-
-        return    
+        if(self.character.WEAPON1 != ""):
+            self.telnetHandler.write("wie " + self.character.WEAPON1)
+        if(self.character.WEAPON2 != ""):
+            self.telnetHandler.write("wie " + self.character.WEAPON2)
 
