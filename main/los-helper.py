@@ -26,7 +26,6 @@ import re
 import time
 from misc_functions import *
 from Character import *
-#import Database
 from BotThread import *
 from CommandHandler import *
 from MudReaderHandler import *
@@ -79,6 +78,7 @@ class LosHelper(object):
 
 
     def write_username_and_pass(self):
+
         if(len(sys.argv) >= 3):
             self.telnetHandler.write(sys.argv[1])
             self.telnetHandler.write(sys.argv[2])
@@ -159,19 +159,6 @@ class LosHelper(object):
                                            self.inventory)
                 self.botThread.start()
 
-    return
-
-def is_script_running():
-    return is_crawl_running() or is_bot_running()
-
-def is_crawl_running():
-    global crawl_thread_inst
-    return((crawl_thread_inst != None) and crawl_thread_inst.is_alive())
-
-def is_bot_running():
-    global bot_thread_inst
-    return (((bot_thread_inst != None) and bot_thread_inst.is_alive()))
-    
 
     def stop_bot(self):
         if (self.botThread != None and self.botThread.is_alive()):
