@@ -729,9 +729,9 @@ class MudReaderThread ( threading.Thread ):
             pass
                 
     def parse_exit_list(self, MUD_exit_str):
-        num_commas = MUD_mob_str.count(',')
+        num_commas = MUD_exit_str.count(',')
         num_exits = num_commas + 1
-        MUD_mob_str = self.replace_newlines_with_spaces(MUD_mob_str)
+        MUD_exit_str = self.replace_newlines_with_spaces(MUD_exit_str)
         my_exit_regex = "Obvious exits: "
         for i in range(1,num_commas+1):
             # Add a regex group for each mob, and nab the comma
@@ -743,11 +743,13 @@ class MudReaderThread ( threading.Thread ):
 
         E_LIST = []
         for i in range(1, num_exits+1):
-            E_LIST.append(num_exits.group(i))
+            E_LIST.append(match_exits.group(i))
 
         for i in range(0, len(E_LIST)):
             #M_LIST[i].ljust(0)  # this isn't doing what I thought.
             E_LIST[i].lstrip()  # remove the space.
+        
+        return E_LIST
 
 
     def parse_monster_list(self, MUD_mob_str):
