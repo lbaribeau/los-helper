@@ -735,7 +735,7 @@ class MudReaderThread ( threading.Thread ):
     def parse_exit_list(self, MUD_exit_str):
         num_commas = MUD_exit_str.count(',')
         num_exits = num_commas + 1
-        MUD_exit_str = self.replace_newlines_with_spaces(MUD_exit_str)
+        MUD_exit_str = replace_newlines_with_spaces(MUD_exit_str)
         my_exit_regex = "" #removed obvious exits because it isn't pulled in
         for i in range(1,num_commas+1):
             # Add a regex group for each mob, and nab the comma
