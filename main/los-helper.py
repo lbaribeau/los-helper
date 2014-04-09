@@ -49,7 +49,7 @@ class LosHelper(object):
         self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
         self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
         self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
-        self.inventory = Inventory(self.mudReaderHandler, self.commandHandler, self.character)
+        self.inventory = Inventory(self.mudReaderHandler, self.commandHandler)
         self.botThread = None
 
 
@@ -60,6 +60,7 @@ class LosHelper(object):
         # With the MUDReaderThread going, we have the server's text and prompts now showing
         self.write_username_and_pass()
         self.set_up_auto_wield()
+        self.check_inventory()
         self.watch_user_input()   
             
         # Quitting cleanly: The MUD_read thread quits if it hits
@@ -90,14 +91,13 @@ class LosHelper(object):
 
         
     def set_up_auto_wield(self):
-        wield1 = WieldReaction("Your (.*?) breaks and you have to remove it\.", 
-                               self.character, 
-                               self.commandHandler)
-        wield2 = WieldReaction("Your (.*?) shatters\.", 
-                               self.character, 
-                               self.commandHandler)
-        self.mudReaderHandler.register_reaction(wield1)
-        self.mudReaderHandler.register_reaction(wield2)
+        self.mudReaderHandler.register_reaction(WieldReaction(self.character, self.commandHandler))
+
+
+    def check_inventory(self):
+        # This prints the inventory.  I like that.  
+        # Inventory needs this to be up to date.
+        self.inventory.getInventory()
         
         
     def watch_user_input(self):

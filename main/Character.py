@@ -296,38 +296,9 @@ class Character:
             self.MONSTER_KILL_LIST.extend(self.__lvl5_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl5_red_monsters)
 
-
-        self.INVENTORY_LIST = []
-        # should probably depend on level.
-        self.KEEP_LIST = ["large bag", "large sack", 
-            "silver chalice", "steel bottle", "small restorative", 'heavy crossbow', 
-            'glowing potion', "chicken soup",
-            # weapons
-            'war hammer', "adamantine sword", 'adamantine axe', "claymore", 
-            "spider leg", 
-            "spear", "bolos", 'javelin', "long bow", 
-            "heathen amulet",
-            "broad sword", "rapier",
-            # armour
-            "hard cap", "hard gloves", "hard boots", "padded hat",
-            "mountain gloves", "mountain boots", "mountain boots with crampons",
-            "travellers cross", "leather mask", "leather collar",
-            "studded leather collar", "studded leather sleeves",
-            "studded leather boots", "studded leather pants",
-            "chain mail armour", 'chain mail sleeves', 'chain mail leggings', 
-            'chain mail gloves', 'chain mail hood', 'chain mail boots', 
-            "ring mail armour", "ring mail sleeves", "ring mail leggings", 
-            "ring mail hood", "ring mail gauntlets", "leather collar", 
-            "furry cloak", "enchanted indigo cloak",
-            'lion charm', "poison ring", 
-            #'steel mask' # the bot slowly collects these 
-            ]
-
         self.RESTORE_ITEM_LIST = ["small restorative", "chicken soup"]
         self.BUFF_ITEM_LIST = ["steel bottle"]
        
-        self.MUD_RETURN_ITEM_SOLD = False
-
         self.MOBS_JOINED_IN = []
         self.MOBS_ATTACKING = []
 
@@ -337,7 +308,5 @@ class Character:
         self.GO_NO_EXIT = False
         self.GO_TIMEOUT = False
         
-        self.MINIMUM_SLEEP_BETWEEN_COMMANDS=0.4
-       
         self.START_TIME = time.time()
         
