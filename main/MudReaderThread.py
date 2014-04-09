@@ -488,6 +488,7 @@ class MudReaderThread ( threading.Thread ):
 
             M_obj = re.search("They are not here\.", text_buffer)
             if(M_obj):
+                self.Character.MONSTER_LIST = []
                 self.Character.CAST_CLK = time.time() - self.Character.CAST_WAIT
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                                
@@ -599,6 +600,7 @@ class MudReaderThread ( threading.Thread ):
             if(M_obj != None and not AreaMatched):
                 self.Character.AREA_TITLE = str(M_obj.group(1)) #title
                 self.Character.EXIT_LIST = self.parse_exit_list(M_obj.group(3)) #exits
+                self.Character.MONSTER_LIST = []
 
                 self.Character.SUCCESSFUL_GO = True
                 self.CHECK_GO_FLAG = 0
