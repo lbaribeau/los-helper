@@ -4,16 +4,8 @@ See: http://peewee.readthedocs.org/en/latest/peewee/installation.html
 from peewee import *
 import misc_functions
 
-class LOSDatabase():
-    def __init__(self, dbfile):
-        self.db = SqliteDatabase(dbfile)
-        self.db.connect()
-
-    def get_db(self):
-        return self.db
-
-
-db = LOSDatabase("los" + str(misc_functions.VERSION) + ".db").get_db()
+db = SqliteDatabase("los" + str(misc_functions.VERSION) + ".db")
+db.connect()
 
 class BaseModel(Model):
     class Meta:
@@ -27,7 +19,8 @@ class Area(BaseModel):
         return str(self.id) + ", " + self.name + ", " + str(self.description)
 
 class DirectionType(BaseModel):
-    name = CharField() #ex. n, out, door
+    name = CharField() #ex. north, out, door
+    shorthand = CharField(null=True) #user input alternative North == n
     primer = CharField(null=True) #ex. open %s, unlock %s key
     opposite = ForeignKeyField('self', null=True)
 
@@ -48,7 +41,7 @@ class AreaLink(BaseModel):
     def toString(self):
         return str(self.id) + ", " + str(self.areaFrom.name) + ", " + str(self.getAreaToName()) + ", " + str(self.directionType.name)
 
-def mapArea(area, directions):
+def mapArea(area, directions, areaFrom=None, directionFrom=None):
     #first things first - we want to get the ids of these directions
     #this way we can compare the AreaLinks of the given Area
     #also if we discover a brand new direction we've guaranteed the area is new
@@ -56,7 +49,7 @@ def mapArea(area, directions):
     dTypes, includesNewDirection = mapDirections(directions)
 
     output = None
-    obj = getArea(area, dTypes)
+    obj = getAreaByNameAndDirections(area, dTypes)
 
     if (obj is None or includesNewDirection): #we're definitely creating a new area
         area.save()
@@ -67,6 +60,10 @@ def mapArea(area, directions):
         aLinks, includesNewLinks = mapLinks(output, dTypes)
     else: #this area seems to already exist
         output = obj
+
+    #if (areaFrom is not None and directionFrom is not None):
+    #update the AreaLink with the correct areaTo id
+    #mapAreaLink(areaFrom, directionFrom, output) #outputIsOurArea to :)
 
     return output
 
@@ -85,7 +82,7 @@ def mapDirections(directions):
 
 def mapDirectionType(directionType):
     isNew = False
-    obj = getDirectionTypeByName(directionType)
+    obj = getDirectionTypeByName(directionType.name)
 
     if (obj is None):
         directionType.save()
@@ -109,7 +106,7 @@ def mapLinks(areaFrom, directions):
 
 def mapAreaLink(areaFrom, direction, areaTo=None):
     isNew = False
-    temp = AreaLink(areaFrom=areaFrom, areaTo=areaTo, directionType=direction)
+    temp = genAreaLink(areaFrom, direction, areaTo)
 
     obj = getAreaLink(temp, direction)
 
@@ -119,44 +116,55 @@ def mapAreaLink(areaFrom, direction, areaTo=None):
     else:
         temp = obj
 
+        if (areaTo is not None and temp.areaTo is None):
+            temp.areaTo = areaTo
+            temp.save() #update the area :)
+
     return (temp, isNew)
 
-def getArea(area, dTypes):
+def genAreaLink(areaFrom, direction, areaTo=None):
+    return AreaLink(areaFrom=areaFrom, areaTo=areaTo, directionType=direction)
+
+def getAreaByNameAndDirections(area, dTypes):
     try:
         temp = Area.select().where(Area.name == area.name)
         tempDirectionsMatch = False #I'm an optimist
+        output = None
 
         #if we see more than one area returned from this search we need to loop through
         for curArea in temp:
-            tempDirectionsMatch = areaHasDirections(temp, dTypes)
-            if (tempDirectionsMatch):
-                temp = curArea #this is kind of evil since I'm replacing a big list of Area's with a single area but SHUTUP
+            tempBool = areaHasDirections(curArea, dTypes)
 
-        if (not tempDirectionsMatch):
-            temp = None #hooray we found a new area with the same name as another one that is going to be a pain in the ass later
+            print(curArea.toString() + " == " + area.toString() + " == " + str(tempBool))
+
+            tempDirectionsMatch = areaHasDirections(curArea, dTypes)
+            if (tempDirectionsMatch):
+                return curArea #this is kind of evil since I'm replacing a big list of Area's with a single area but SHUTUP
 
     except Area.DoesNotExist:
-        temp = None
+        output = None
 
-    return temp
+    return output
 
 def areaHasDirections(area, directions):
     tempDirections = getAreaDirections(area)
     #check to see if the number of directions in both lists are the same
     hasDirections = (len(tempDirections) == len(directions))
 
+    #print("hasDirections: " + str(hasDirections) + " area: " + str(area.toString()))
+
     if (hasDirections):
         dNameAInListB = False
         for dTypeA in directions:
             dNameAInListB = False
             for dTypeB in tempDirections:
-                if (dTypeA.id == dTypeB.id):
+                if (dTypeA.name == dTypeB.name):
                     dNameAInListB = True
             if not dNameAInListB:
                 return False
         hasDirections = dNameAInListB
 
-    return True #hasDirections
+    return hasDirections
 
 def getAreaDirections(area):
     areaDirections = []
@@ -186,9 +194,9 @@ def getDirectionsFromAreaLinks(areaLinks):
 
     return directions
 
-def getDirectionTypeByName(direction):
+def getDirectionTypeByName(directionTypeName):
     try:
-        temp = DirectionType.select().where(DirectionType.name == direction.name).get()
+        temp = DirectionType.select().where(DirectionType.name == directionTypeName).get()
     except DirectionType.DoesNotExist:
         temp = None
 
