@@ -6,6 +6,7 @@ from datetime import datetime
 debugMode = False
 verboseMode = True
 startTime = datetime.now()
+VERSION = "1"
 
 ##################################### MISC FUNCTIONS ########################
 
