@@ -131,6 +131,7 @@ class Character:
 
         self.LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096] #Half of this is the gold requirement
 
+        self.AREA_TITLE=""
         self.EXIT_LIST=[]
         self.MONSTER_LIST=[]
 
