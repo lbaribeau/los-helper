@@ -215,3 +215,4 @@ pip-log.txt
 .mr.developer.cfg
 
 main/__pycache__/*
+main/los1.db
