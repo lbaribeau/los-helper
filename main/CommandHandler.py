@@ -114,6 +114,7 @@ class CommandHandler(object):
             magentaprint(str(self.character.HEALTH), False)
         elif(re.match("INVENTORY_LIST", user_input)):
             #magentaprint(str(self.character.INVENTORY_LIST), False)
+            magentaprint(str("You got socks, right?  Socks?  Can't have an empty if clause"), False)
         elif(re.match("EXPERIENCE", user_input)):
             exp = self.character.EXPERIENCE
             expm = str(calculate_vpm(exp))

@@ -712,7 +712,7 @@ class BotThread(threading.Thread):
                     self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
                     self.commandHandler.user_cc("vig")
                     self.commandHandler.stop_CastThread()
-                else:
+                #else:
                     #self.use_restorative_items()
 
 
