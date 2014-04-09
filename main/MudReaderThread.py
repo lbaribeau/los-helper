@@ -195,15 +195,16 @@ class MudReaderThread ( threading.Thread ):
             # while I'm in here.  (could cause a missed reaction)
             reactions_to_delete = []
             for reaction in self.BotReactionList:
-                M_obj = re.search(reaction.regex, text_buffer)
+                for regex in reaction.regexes:
+                    M_obj = re.search(regex, text_buffer)
 
-                if(M_obj != None):
-                    magentaprint("MudReaderThread: calling notify on " + str(reaction))
-                    reaction.notify(M_obj)  
-                    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                
-                if reaction.unregistered:
-                    reactions_to_delete.append(reaction)
+                    if(M_obj != None):
+                        # magentaprint("MudReaderThread: calling notify on " + str(reaction))
+                        reaction.notify(regex, M_obj)  
+                        text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                    
+                    if reaction.unregistered:
+                        reactions_to_delete.append(reaction)
          
             reaction_counter = 0  # TODO: delete reaction_counter and all reaction printing
             for reaction in reactions_to_delete:
@@ -651,13 +652,6 @@ class MudReaderThread ( threading.Thread ):
             #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             ##    self.CommandHandler_inst.process("ou")
             
-            # Inventory
-            M_obj = re.search("(?s)You have: (.+?)\.", text_buffer)
-            if(M_obj):
-                self.Character.INVENTORY_LIST = self.parse_inventory_list(M_obj.group(1))
-                self.CHECK_INVENTORY_FLAG = 0  
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-        
             # Internal check function MUD_output_check
             #if(self.__check_flag):
             #    M_obj = re.search(self.__check_regex_true, text_buffer)
@@ -744,7 +738,7 @@ class MudReaderThread ( threading.Thread ):
         num_monsters = num_commas + 1
         # Take out \n's and \r's
         #print MUD_mob_str
-        MUD_mob_str = self.replace_newlines_with_spaces(MUD_mob_str)
+        MUD_mob_str = replace_newlines_with_spaces(MUD_mob_str)
         my_monster_regex = "You see "
         for i in range(1,num_commas+1):
             # Add a regex group for each mob, and nab the comma
@@ -801,129 +795,4 @@ class MudReaderThread ( threading.Thread ):
                 M_LIST = M_LIST[:commaindex]
         return M_LIST
     
-    def replace_newlines_with_spaces(self, s):
-        return_string = s[:]     
-        for removechar in ["\r", "\n"]:
-            Nindex = return_string.find(removechar)
-            while(Nindex != -1):
-                if(removechar == '\r'):
-                    return_string = return_string[0:Nindex] + return_string[Nindex+1:]
-                else:
-                    return_string = return_string[0:Nindex] + ' ' + return_string[Nindex+1:]
-                Nindex = return_string.find(removechar)
-        return return_string
     
-    def parse_inventory_list(self, inv_string):
-        # Now match it.  Have to do the same as MONSTER_LIST
-        # where I count commas...
-        # I won't have to worry about You have: if I take the group
-        # already obtained in M_obj... actually I might even be able
-        # to get off really easy with a split!!
-        return_list = []
-        # Replace newlines with spaces
-        inv_string = self.replace_newlines_with_spaces(inv_string)
-        # Use split to break into a list of strings
-        #print inv_string
-        inv_list = inv_string.split(',')
-        #print inv_list
-        for i in range(0, len(inv_list)):
-            inv_list[i] = inv_list[i].lstrip()
-            inv_list[i] = inv_list[i].rstrip()
-            #print inv_list[i]
-            #print i
-            #sys.stdout.write("Appending... ")
-            # How should I do quantities?  It probably makes sense
-            # just to have duplicate items in the actual list
-            if(inv_list[i][0:2] == "a "):
-                inv_list[i] = inv_list[i][2:]
-                return_list.append(inv_list[i])
-                #sys.stdout.write(inv_list[i] + '\n')
-            elif(inv_list[i][0:3] == "an "):
-                inv_list[i] = inv_list[i][3:]
-                return_list.append(inv_list[i])
-                #sys.stdout.write(inv_list[i] + '\n')
-            elif(inv_list[i][0:5] == "some "):
-                inv_list[i] = inv_list[i][5:]
-                return_list.append(inv_list[i])
-                #sys.stdout.write(inv_list[i] + '\n')
-            # In doing quantities, may as well use insert and keep
-            # the list ordered.
-            elif(inv_list[i][0:4] == "two "):
-                #sys.stdout.write("   In two...   ")
-                if(inv_list[i][0:12] == "two sets of "):
-                    inv_list[i] = inv_list[i][12:]
-                else:
-                    inv_list[i] = inv_list[i][4:]
-                    # Remove the 's' if its there
-                    if(inv_list[i][len(inv_list[i])-1] == 's'):
-                        if(inv_list[i][len(inv_list[i])-3:] == "ses" or
-                           inv_list[i][len(inv_list[i])-3:] == "xes"):
-                            inv_list[i] = inv_list[i][:len(inv_list[i])-2]
-                        else:
-                            inv_list[i] = inv_list[i][:len(inv_list[i])-1]
-                for j in range(0,2):
-                    return_list.append(inv_list[i])
-                #sys.stdout.write(str(inv_list[i]) + '\n')
-                #inv_list.insert(i, inv_list[i]) # check this
-            elif(inv_list[i][0:6] == "three "):
-                #sys.stdout.write("   In three...   ")
-                if(inv_list[i][0:14] == "three sets of "):
-                    inv_list[i] = inv_list[i][14:]
-                else:
-                    inv_list[i] = inv_list[i][6:]
-                    # Remove the 's' if its there
-                    if(inv_list[i][len(inv_list[i])-1] == 's'):
-                        if(inv_list[i][len(inv_list[i])-3:] == "ses" or
-                           inv_list[i][len(inv_list[i])-3:] == "xes"):
-                            inv_list[i] = inv_list[i][:len(inv_list[i])-2]
-                        else:
-                            inv_list[i] = inv_list[i][:len(inv_list[i])-1]
-                for j in range(0,3):
-                    #inv_list.insert(inv_list[i], i) # check this
-                    return_list.append(inv_list[i])
-                #sys.stdout.write(str(inv_list[i]) + '\n')
-            elif(inv_list[i][0:5] == "four "):
-                #sys.stdout.write("   In four...   ")
-                if(inv_list[i][0:13] == "four sets of "):
-                    inv_list[i] = inv_list[i][13:]
-                else:
-                    inv_list[i] = inv_list[i][5:]
-                    # Remove the 's' if its there
-                    if(inv_list[i][len(inv_list[i])-1] == 's'):
-                        if(inv_list[i][len(inv_list[i])-3:] == "ses" or
-                           inv_list[i][len(inv_list[i])-3:] == "xes"):
-                            inv_list[i] = inv_list[i][:len(inv_list[i])-2]
-                        else:
-                            inv_list[i] = inv_list[i][:len(inv_list[i])-1]
-                for j in range(0,4):
-                    #inv_list.insert(inv_list[i], i) # check this
-                    return_list.append(inv_list[i])
-                #sys.stdout.write(str(inv_list[i]) + "\n")
-            elif(inv_list[i][0:5] == "five "):
-                #sys.stdout.write("   In five...   ")
-                if(inv_list[i][0:13] == "five sets of "):
-                    inv_list[i] = inv_list[i][13:]
-                else:
-                    inv_list[i] = inv_list[i][5:]
-                    # Remove the 's' if its there
-                    if(inv_list[i][len(inv_list[i])-1] == 's'):
-                        if(inv_list[i][len(inv_list[i])-3:] == "ses" or
-                           inv_list[i][len(inv_list[i])-3:] == "xes"):
-                            inv_list[i] = inv_list[i][:len(inv_list[i])-2]
-                        else:
-                            inv_list[i] = inv_list[i][:len(inv_list[i])-1]
-                for j in range(0,5):
-                    #inv_list.insert(inv_list[i], i) # check this
-                    return_list.append(inv_list[i])
-                #sys.stdout.write(str(inv_list[i]) + '\n')
-            # TODO go up to fifteen.  Maybe find a more scalable way to
-            # do it.
-            else:
-                #print "BIG FAT ELSE"
-                pass
-
-        return return_list
-    
-# end MudReaderThread class
-
-
