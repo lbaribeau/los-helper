@@ -250,7 +250,7 @@ class BotThread(threading.Thread):
             # to gain heal other than healing up.
             self.rest_for_health()
 
-        self.buff_up()
+        #self.buff_up()
 
         return
 
@@ -370,7 +370,7 @@ class BotThread(threading.Thread):
         
         return
 
-    def buff_up(self):
+    '''def buff_up(self):
         if((time.time() - self.character.LAST_BUFF) > 150):
             #while(self.character.MANA > 0): 
                 #self.commandHandler.user_ca('c light')
@@ -380,7 +380,7 @@ class BotThread(threading.Thread):
             return
 
     def use_buff_items(self):
-        if (any("steel bottle" in s for s in self.character.INVENTORY_LIST)):
+        if (any("steel bottle" in s for s in self.inventory_in)):
             magentaprint("drinking steel bottle", False)
             self.commandHandler.process('drink bottle')
         else:
@@ -388,12 +388,12 @@ class BotThread(threading.Thread):
         return
 
     def use_restorative_items(self):
-        if (any("small restorative" in s for s in self.character.INVENTORY_LIST)):
+        if (any("small restorative" in s for s in self.inventory_in)):
             magentaprint("drinking small restorative", False)
             self.commandHandler.process('drink restorative')
         else:
             self.character.HAS_RESTORE_ITEMS = False
-        return
+        return'''
 
     def check_weapons(self):
         
@@ -713,7 +713,7 @@ class BotThread(threading.Thread):
                     self.commandHandler.user_cc("vig")
                     self.commandHandler.stop_CastThread()
                 else:
-                    self.use_restorative_items()
+                    #self.use_restorative_items()
 
 
             # FLEE Checks

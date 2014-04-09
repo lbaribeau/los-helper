@@ -113,7 +113,7 @@ class CommandHandler(object):
         elif(re.match("HEALTH", user_input)):
             magentaprint(str(self.character.HEALTH), False)
         elif(re.match("INVENTORY_LIST", user_input)):
-            magentaprint(str(self.character.INVENTORY_LIST), False)
+            #magentaprint(str(self.character.INVENTORY_LIST), False)
         elif(re.match("EXPERIENCE", user_input)):
             exp = self.character.EXPERIENCE
             expm = str(calculate_vpm(exp))
