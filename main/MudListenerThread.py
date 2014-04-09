@@ -42,7 +42,7 @@ class MudListenerThread(threading.Thread):
             if(sel_out_triple != ([], [], [])):
                 # Read some characters.  
                 try:
-                    fragment = fragment + self.telnetHandler.read_some().decode('ascii') # read_eager misses characters
+                    fragment = fragment + self.telnetHandler.read_some().decode('ascii')
                 except (EOFError, OSError) as e:
                     print("MudListenerThread: Exiting (saw EOF) or Socket is dead")
                     self.stop()

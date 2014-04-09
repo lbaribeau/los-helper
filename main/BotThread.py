@@ -35,7 +35,9 @@ class BotThread(threading.Thread):
             self.__TOTALPATHS = 10 # include hookers for level 3            
         else:
             self.__TOTALPATHS = 14 # start the fort and bandits at lvl 8
-            
+
+        self.loot_threshold = 5  # the amount of loot to collect before selling
+
         if(isinstance(starting_path, int) and starting_path < self.__TOTALPATHS):
             self.__nextpath = starting_path
         else:
@@ -49,8 +51,9 @@ class BotThread(threading.Thread):
 
 
     def stop(self):
-        magentaprint("Robot: stopping....   Urrrrrchhhchch!!")
+        magentaprint("Stopping bot.", False)
         self.__stopping = True
+        self.inventory.stop()  # applicable if we're selling/dropping a list
 
 
     def keep_going(self):
@@ -205,8 +208,8 @@ class BotThread(threading.Thread):
     def set_up_automatic_ring_wearing(self):
         """ Makes some BotReactions so that when MudReaderHandler sees us 
         pick up a ring, we'll wear it."""
-        RingReaction = GenericBotReaction("You get .+? an? .+? ring((,.+?\.)|(\.))", self.commandHandler, ["wear ring"])
-        self.mudReaderHandler.register_reaction(RingReaction)
+        ringReaction = GenericBotReaction("You get .+? an? .+? ring((,.+?\.)|(\.))", self.commandHandler, "wear ring")
+        self.mudReaderHandler.register_reaction(ringReaction)
         #Todo: fix for case where there's ring mail in the inventory or multiple rings are dropped                 
 
     def rest_and_check_aura(self):
@@ -527,29 +530,35 @@ class BotThread(threading.Thread):
             self.character.DEAD = False
             self.character.DEATHS += 1
             magentaprint("Died; Pulling up my bootstraps and starting again", False)
-            path_to_go = LIMBO_TO_CHAPEL
+            return LIMBO_TO_CHAPEL
 
-        elif(self.__nextpath % 2 == 0):
-            path_to_go = SHOP_AND_TIP_PATH
+        self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
 
-        elif(self.__nextpath == 1):
-            path_to_go = THEATRE_PATH
+        if (self.__nextpath % 2 == 0):
+            self.inventory.getInventory()
+            if len(self.inventory.sellable()) > self.loot_threshold:
+                return SHOP_AND_TIP_PATH
+            else:
+                self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
+
+        if(self.__nextpath == 1):
+            return THEATRE_PATH
 
         elif(self.__nextpath == 3):
-            path_to_go = MARKET_PATH 
+            return MARKET_PATH 
 
         elif(self.__nextpath == 5):
-            path_to_go = MILITIA_SOLDIERS_PATH 
+            return MILITIA_SOLDIERS_PATH 
 
         elif(self.__nextpath == 7):
-            if(self.character.AURA_SCALE < my_list_search(self.character.AURA_LIST, 'pale blue') and
-               self.character.AURA_SCALE <= self.character.AURA_PREFERRED_SCALE): 
-                path_to_go = KOBOLD_PATH
+            if self.character.AURA_SCALE < self.character.AURA_LIST.index('pale blue') and \
+               self.character.AURA_SCALE <= self.character.AURA_PREFERRED_SCALE: 
+                return KOBOLD_PATH
             else:
                 magentaprint("Not going to do kobolds. Current aura, and preferred: %s,  %s" % 
                              (self.character.AURA_SCALE, self.character.AURA_PREFERRED_SCALE))
-                path_to_go = PATH_TO_SKIP_WITH
                 self.__nextpath = self.__nextpath + 1  # So that we don't go selling
+                return PATH_TO_SKIP_WITH
 
         elif(self.__nextpath == 9):
             # hookers ... I would avoid the drunken trouble makers, but I don't
@@ -557,33 +566,29 @@ class BotThread(threading.Thread):
             # Also I think it's safe enough in the dark... maybe just lvl 4 
             # there are thugs
             if(self.character.LEVEL <= 6):
-                path_to_go = CORAL_ALLEY_PATH
+                return CORAL_ALLEY_PATH
             else:            
-                path_to_go = PATH_TO_SKIP_WITH 
                 self.__nextpath = self.__nextpath + 1  # So that we don't go selling
+                return PATH_TO_SKIP_WITH 
 
         elif(self.__nextpath == 11):
-            path_to_go = FORT_PATH
+            return FORT_PATH
 
         elif(self.__nextpath == 13):
-            if(self.character.AURA_SCALE < my_list_search(self.character.AURA_LIST, 'pale blue') or 
-               self.character.AURA_SCALE <= self.character.AURA_PREFERRED_SCALE):
-                path_to_go = NORTHERN_BANDITS_PATH
+            if self.character.AURA_SCALE < self.character.AURA_LIST.index('pale blue') or \
+               self.character.AURA_SCALE <= self.character.AURA_PREFERRED_SCALE:
+                return NORTHERN_BANDITS_PATH
             else:
                 magentaprint("Not going to do bandits. Current aura, and preferred: %s,  %s" % 
                              (self.character.AURA_SCALE, self.character.AURA_PREFERRED_SCALE))
-                path_to_go = PATH_TO_SKIP_WITH
                 self.__nextpath = self.__nextpath + 1   # So that we don't go selling
-
+                return PATH_TO_SKIP_WITH
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" +
                          self.__nextpath)
-            path_to_go = PATH_TO_SKIP_WITH
+            return PATH_TO_SKIP_WITH
+        return PATH_TO_SKIP_WITH
             
-        self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
-            
-        return path_to_go
-    
             
     def go(self, exit_str):
         #time.sleep(0.8) # sometimes not a good idea to go immediately
@@ -630,45 +635,13 @@ class BotThread(threading.Thread):
             return self.mudReaderHandler.check_for_successful_go()
 
     def sell_items(self):
-        """
-        Sell everything in inventory that is not in the keep list.
-        (Updates character.INVENTORY_LIST)
-        """
-        
+
         if(self.__stopping):
             return
 
-        try:
-            inv = self.inventory.getList()
-        except TimeoutError:
-            magentaprint("BotThread: sell_items.  \
-                Timeout problem matching inventory")
-            return
-                
-        my_sell_list = extract_sellable_and_droppable(inv, self.character.KEEP_LIST)
-        magentaprint("Sell list: " + str(my_sell_list))
-
-        for item in my_sell_list:
-            
-            if(self.__stopping):
-                return
-
-            time.sleep(self.character.MINIMUM_SLEEP_BETWEEN_COMMANDS)
-            self.commandHandler.process("sell " + item)
-
-            #if(self.mudReaderHandler.check_if_item_was_sold()):  
-                # function which handshakes with MudReaderThread to determine if an item sold.
-                #self.__drop_list.remove(item)
-
-        return 
-    
-# Wish list (after graph map is done)
-# In selling items, bot should:
-#  be in chapel
-#  check inventory for things to sell
-#  (then if its empty he doesn't have to go to the shop)
-# Maybe this function can be user accessable :)
-    
+        self.inventory.sell_stuff()
+        
+        
     def item_was_sold(self):
         self.character.MUD_RETURN_ITEM_SOLD = False
         self.character.SELL_CHECK_FLAG = 1
@@ -685,29 +658,8 @@ class BotThread(threading.Thread):
         
         if(self.__stopping):
             return
-        
-        try:
-            inv = self.inventory.getList()
-        except TimeoutError:
-            magentaprint("BotThread: drop_items.  \
-                Timeout problem matching inventory")
-            return
-        
-        drop_list = extract_sellable_and_droppable(
-            self.character.INVENTORY_LIST[:],
-            self.character.KEEP_LIST[:])
-        magentaprint("Drop list: " + str(drop_list))
 
-        for item in drop_list:
-            
-            if(self.__stopping):
-                return
-            
-            time.sleep(self.character.MINIMUM_SLEEP_BETWEEN_COMMANDS)
-            self.commandHandler.process("drop " + item)
-            
-        return
-
+        self.inventory.drop_stuff()
 
     def decide_which_mob_to_kill(self, monster_list_in):
         magentaprint("Inside decide_which_mob_to_kill")
@@ -719,11 +671,11 @@ class BotThread(threading.Thread):
                 return ""
 
         for mob in self.character.MOBS_ATTACKING:
-            if(my_list_search(monster_list_in, mob) != -1):
+            if mob in monster_list_in:
                 return mob
         
         for mob in monster_list:
-            if(my_list_search(self.character.MONSTER_KILL_LIST, mob) != -1):
+            if mob in self.character.MONSTER_KILL_LIST:
                 return mob
             
         return ""
@@ -776,7 +728,7 @@ class BotThread(threading.Thread):
         # OK the mob died or ran or I ran
         self.commandHandler.stop_CastThread()    
         
-        if(my_list_search(self.character.MOBS_ATTACKING, monster) != -1):
+        if monster in self.character.MOBS_ATTACKING:
             #magentaprint("Bot:engage_monster: Removing " + monster + " from MOBS_ATTACKING.")
             magentaprint("I believe the following is dead or gone: " + monster, False)
             self.commandHandler.process('l') #look around to stop the "you don't see that here bug"

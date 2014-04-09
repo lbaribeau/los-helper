@@ -9,7 +9,7 @@ class ThreadStopper(BotReaction):
         super(ThreadStopper, self).__init__(regex) #*
         self.thread = thread
         
-    def notify(self, M_obj):    
+    def notify(self, regex, M_obj):    
         self.thread.stop()
         # M_obj is an argument because we have to conform to BotReaction
         # MudReader expects to be able to give M_obj and BotReactions
@@ -17,3 +17,6 @@ class ThreadStopper(BotReaction):
         # need it, we have to accept it.
         
 #* http://stackoverflow.com/questions/1713038/super-fails-with-error-typeerror-argument-1-must-be-type-not-classobj
+
+# TODO: I believe that now that BotReacions can be made with a LIST of regexes, we don't need this class at all.
+# Combat threads should be able to pass themselves in and implement notify themselves.

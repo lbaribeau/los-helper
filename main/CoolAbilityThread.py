@@ -52,7 +52,7 @@ class CoolAbilityThread(threading.Thread):
             else:
                 self.telnetHandler.write(self.coolAbility.command())
 
-    def notify(self, M_obj):
+    def notify(self, regex, M_obj):
 
         self.mudReaderHandler.unregister_reaction(self)
         self.stop()
