@@ -2,6 +2,7 @@
 import time
 import sys
 
+from collections import Counter
 from Exceptions import *
 from BotReactions import *
 from misc_functions import replace_newlines_with_spaces, my_list_search
@@ -76,12 +77,31 @@ class Cartography(BotReaction):
             E_LIST = [x.strip() for x in match_exits.group(1).split(',')]
             #technique above is referred to as list comprehension see:
             #http://stackoverflow.com/questions/501308/problem-in-understanding-python-list-comprehensions/501323#501323
+
+            E_LIST = self.number_exits(E_LIST)
         except Exception:
             E_LIST = []
             magentaprint("Parse exit Exception: " + str(sys.exc_info()[0]), False)
+            raise
 
         return E_LIST
 
+    def number_exits(self, E_LIST):
+        exit_count = Counter(E_LIST) #collections function for finding duplicates
+        exit_list = E_LIST
+
+        for key, value in exit_count.items():
+            #magentaprint(str(key) + " : " + str(value), False)
+            if (value > 1):
+                count = 1
+                for i,s in enumerate(exit_list):
+                    if (exit_list[i] == key):
+                        if count is not 1:
+                            exit_list[i] += " " + str(count)
+                            #magentaprint(exit_list[i], False)
+                        count += 1 #I miss my i++
+
+        return exit_list 
 
     def parse_monster_list(self, MUD_mob_str):
         try:

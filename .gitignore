@@ -216,3 +216,4 @@ pip-log.txt
 
 main/__pycache__/*
 main/los1.db
+main/map.db
