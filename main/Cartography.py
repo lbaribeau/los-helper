@@ -12,7 +12,8 @@ import re
 class Cartography(BotReaction):
 
     def __init__(self, mudReaderHandler, commandHandler, character):
-        self.area_with_mobs = "(.*\n\r)(\n\rObvious exits: .*)\n\r(You see .*)?"
+        #                      Title        Exit list               Monsters (opt)  Items (opt)
+        self.area_with_mobs = "(.*\n\r)(\n\rObvious exits: .*\.)\n\r(You see .*\.)?(You see .*\.)?"
         self.db = db
 
         database = SqliteDatabase('map.db', check_same_thread=False)
@@ -40,6 +41,7 @@ class Cartography(BotReaction):
             area_description = None
             exit_list = self.parse_exit_list(matched_groups[1])
             monster_list = self.parse_monster_list(matched_groups[2])
+            #item_list
 
             self.Character.AREA_TITLE = area_title #title
             self.Character.EXIT_LIST = exit_list #exits
@@ -71,8 +73,12 @@ class Cartography(BotReaction):
 
     def parse_exit_list(self, MUD_exit_str):
         try:
+            if (MUD_exit_str is None):
+                magentaprint("Exit match: " + str(MUD_mob_str))
+                return []
+
             MUD_exit_str = MUD_exit_str.strip()
-            my_exit_regex = r"Obvious exits: (.*)\."
+            my_exit_regex = r"Obvious exits: (.*[\n\r]?.*)\." #added clause if the exits break onto two lines - likely this will ahve to happen for mobs too
             match_exits = re.match(my_exit_regex, MUD_exit_str)
             E_LIST = [x.strip() for x in match_exits.group(1).split(',')]
             #technique above is referred to as list comprehension see:
