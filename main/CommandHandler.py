@@ -78,7 +78,9 @@ class CommandHandler(object):
                 re.match("u$",user_input) or re.match("d$", user_input) or 
                 re.match("ou[t]?$", user_input) or re.match("go ",user_input) ):
             #PREV_COMMAND=user_input
-            self.user_move(user_input) 
+            self.character.TRYING_TO_MOVE = True
+            self.character.LAST_DIRECTION = user_input.replace("go ", "")
+            self.user_move(user_input)
             # routine which does appropriate waiting,
             # printing, and finally sending command.
         
@@ -106,6 +108,10 @@ class CommandHandler(object):
             magentaprint(str(self.character.MONSTER_CHECK_FLAG))
         elif(re.match("MONSTER_LIST", user_input)):
             magentaprint(str(self.character.MONSTER_LIST), False)
+        elif(re.match("AREA_ID", user_input)):
+            magentaprint("<" + str(self.character.AREA_ID) + ">", False)
+        elif(re.match("LAST_DIR", user_input)):
+            magentaprint("<" + str(self.character.LAST_DIRECTION) + ">", False)
         elif(re.match("AREA_TITLE", user_input)):
             magentaprint("<" + str(self.character.AREA_TITLE) + ">", False)
         elif(re.match("EXIT_LIST", user_input)):
@@ -167,6 +173,10 @@ class CommandHandler(object):
         elif(re.match("defecate", user_input)):
             misc_functions.debugMode = not misc_functions.debugMode
             magentaprint("Debug Mode changed", False)
+        elif(re.match(str(self.character.EXIT_REGEX), user_input)):
+            self.character.LAST_DIRECTION = user_input.replace("go ", "")
+            self.character.TRYING_TO_MOVE = True
+            self.user_move("go " + self.character.LAST_DIRECTION)
         else: # Doesn't match any command we are looking for
             self.telnetHandler.write(user_input) # Just shovel to telnet.
 

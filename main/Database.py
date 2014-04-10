@@ -24,36 +24,52 @@ class Area(BaseModel):
     is_restorative = BooleanField(default=False)
 
     '''Private Area Functions'''
-    def map(self, directions, area_from=None, direction_from=None):
-        is_new_mapping = False
+    def map(self, directions, cur_area_from=None, cur_direction_from=None):
+        is_new_mapping = True
 
         mapped_directions = []
-
         for direction in directions:
             direction.map() # this will update our direction objects with their corresponding ids
             mapped_directions.append(direction)
 
-        matching_areas = Area.get_areas_by_name_and_description(self.name, self.description)
+        if (cur_area_from is None):
+            is_new_mapping = self.search_for_area(mapped_directions)
+        elif (cur_area_from.name is not self.name): #if the names are the same then this is a new area since we have moved
+            is_new_mapping = self.search_for_area(mapped_directions)
 
+        if is_new_mapping: #this means the search has found the matching area and our Area.ID is set
+            super(Area, self).save()
+
+            #now we map our area links
+            for direction in mapped_directions:
+                #magentaprint("Direction " + str(direction.to_string()), False)
+                area_link = AreaLink(area_from=self.id, area_to=None, direction_type=direction)
+
+                '''if (direction_from.opposite is None):
+                    if (direction.id == direction_from.opposite.id):
+                        area_link.map(area_from, direction_from)
+                    else:'''
+
+                area_link.map()
+
+        #last but not least we want to try to update our area_from with it's area_to value :)
+        if cur_area_from is not None and cur_direction_from is not None:
+            area_from_link = AreaLink.get_area_link_by_area_from_and_direction_type(cur_area_from, cur_direction_from)
+            if (area_from_link is not None):
+                area_from_link.area_to = self
+                area_from_link.save()
+                magentaprint("Updating AreaLink with: \n" + area_from_link.to_string(), False)
+
+        return is_new_mapping
+
+    def search_for_area(self, mapped_directions):
+        is_new_mapping = True
+        matching_areas = Area.get_areas_by_name_and_description(self.name, self.description)
         for area in matching_areas: #we selected based on name / description so we know they match but just in case or if our descriptions are null
             if (area.has_directions(mapped_directions)):
                 self.id = area.id
-                return is_new_mapping
-
-        is_new_mapping = True
-        super(Area, self).save()
-
-        #now we map our area links
-        for direction in mapped_directions:
-            #magentaprint("Direction " + str(direction.to_string()), False)
-            area_link = AreaLink(area_from=self.id, area_to=None, direction_type=direction)
-
-            '''if (direction_from.opposite is None):
-                if (direction.id == direction_from.opposite.id):
-                    area_link.map(area_from, direction_from)
-                else:'''
-
-            area_link.map()
+                is_new_mapping = False
+                return is_new_mapping #we want to stop the search if we've found a match
 
         return is_new_mapping
 
@@ -61,14 +77,12 @@ class Area(BaseModel):
         area_links = AreaLink.get_area_links_from_area(self)
         has_directions = (area_links.count() == len(directions))
 
-        #print("has_directions: " + str(has_directions) + " area: " + str(area.to_string()))
-
-        if (has_directions):
+        if (has_directions): #if the number of directions we have is the same
             direction_found = False
             for direction_type in directions:
                 direction_found = False
                 for area_link in area_links:
-                    if (direction_type == area_link.direction_type):
+                    if (direction_type.id == area_link.direction_type.id):
                         direction_found = True
                 if not direction_found:
                     return False
@@ -90,6 +104,17 @@ class Area(BaseModel):
             areas = []
 
         return areas
+
+    def get_area_by_id(area_id):
+        area = []
+
+        try:
+            area = Area.select().where(Area.id == area_id).get()
+        except Area.DoesNotExist:
+            area = None
+
+        return area
+
 
 class DirectionType(BaseModel):
     name = CharField() #ex. north, out, door
@@ -135,6 +160,17 @@ class DirectionType(BaseModel):
 
         return direction_types
 
+    def get_direction_type_by_name_or_shorthand(name):
+        direction_types = None
+
+        try:
+            direction_types = DirectionType.select().where((DirectionType.name == name) | (DirectionType.shorthand == name) ).get()
+        except DirectionType.DoesNotExist:
+            #magentaprint("Could not find Direction Type with name: " + name, False)
+            direction_types = None
+
+        return direction_types
+
     def get_direction_type_by_name_and_opposite(name, direction_id): #this should always be unique
         direction_types = None
 
@@ -158,9 +194,10 @@ class AreaLink(BaseModel):
         is_new_mapping = False
 
         if area_from is not None and direction_from is not None:
-            if self.direction_type == direction_from.opposite:
-                area_link.area_to = area_from
-            else:
+            if direction_from.opposite is not None:
+                if self.direction_type.id == direction_from.opposite.id:
+                    area_link.area_to = area_from
+            #else:
                 '''code a case to handle this direction issue on opposites (west opposite out)
                 since most of the direction types are likely going to have hardcoded opposite at first
                 and then especially for exceptions like this it might not be worth the effort
@@ -180,6 +217,14 @@ class AreaLink(BaseModel):
         return str(self.id) + ", " + str(self.area_from.name) + ", " + str(self.get_area_to_name()) + ", " + str(self.direction_type.name)
 
     '''Static AreaLink Functions'''
+    def get_area_link_by_area_from_and_direction_type(cur_area_from, cur_direction_type):
+        try:
+            area_link = AreaLink.select().where((AreaLink.area_from == cur_area_from.id) & (AreaLink.direction_type == cur_direction_type.id)).get()
+        except AreaLink.DoesNotExist:
+            area_link = None
+
+        return area_link
+
     def get_area_links_from_area(area):
         try:
             area_links = AreaLink.select().where((AreaLink.area_from == area.id))

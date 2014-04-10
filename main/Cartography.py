@@ -40,21 +40,27 @@ class Cartography(BotReaction):
             area_title = str(matched_groups[0]).strip()
             area_description = None
             exit_list = self.parse_exit_list(matched_groups[1])
+            self.Character.EXIT_REGEX = self.create_exit_regex_for_character(exit_list)
+
             monster_list = self.parse_monster_list(matched_groups[2])
             #item_list
 
             self.Character.AREA_TITLE = area_title #title
             self.Character.EXIT_LIST = exit_list #exits
             self.Character.MONSTER_LIST = monster_list#monster_list #mob list
-            self.Character.SUCCESSFUL_GO = True
 
-            if (exit_list is not []):
-                db.connect()
-                area = self.draw_map(area_title, exit_list)
-                self.catalog_monsters(area, monster_list)
-                db.close()
+            self.Character.SUCCESSFUL_GO = True #successful go should be true everytime the area parses
+            if (self.Character.TRYING_TO_MOVE): #we only want to map when user input to move has been registered
+                self.Character.TRYING_TO_MOVE = False #we've moved so we're not trying anymore
+                if (exit_list is not []):
+                    db.connect()
+                    area = self.draw_map(area_title, exit_list)
+                    self.catalog_monsters(area, monster_list)
+                    db.close()
 
-            self.Character.CURRENT_AREA = area.id
+                    self.Character.AREA_ID = area.id
+                else:
+                    self.Character.AREA_ID = None
 
     def draw_map(self, area_title, exit_list):
         direction_list = []
@@ -65,7 +71,16 @@ class Cartography(BotReaction):
             direction.map()
             direction_list.append(direction)
 
-        area.map(direction_list)#self.Character.CURRENT_AREA, self.Character.LAST_DIRECTION_MOVED
+        area_from = self.Character.AREA_ID
+        direction_from = self.Character.LAST_DIRECTION
+
+        if area_from is not None and direction_from is not None: #if we have an area we're coming from
+            magentaprint(str(area_from) + " " + str(direction_from), False)
+            area_from = Area.get_area_by_id(self.Character.AREA_ID)
+            direction_from = DirectionType.get_direction_type_by_name_or_shorthand(direction_from)
+            area.map(direction_list, area_from, direction_from)
+        else:
+            area.map(direction_list)
 
         return area
 
@@ -109,6 +124,21 @@ class Cartography(BotReaction):
                         count += 1 #I miss my i++
 
         return exit_list 
+
+    def create_exit_regex_for_character(self, E_LIST):
+        exit_regex = ""
+        if (E_LIST is not None):
+            exit_regex += "(!?"
+
+            for i,s in enumerate(E_LIST):
+                exit_regex += "(" + str(s) + ")"
+
+                if (i < len(E_LIST) - 1):
+                    exit_regex += "|"
+
+            exit_regex +=")"
+
+        return exit_regex
 
     def parse_monster_list(self, MUD_mob_str):
         try:

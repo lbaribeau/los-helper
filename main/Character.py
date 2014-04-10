@@ -31,7 +31,6 @@ class Character:
                      'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue']
         # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
         
-        self.CURRENT_AREA = None
         self.AURA_SCALE = 2 #Current aura
         self.AURA = self.AURA_LIST[self.AURA_SCALE]
         
@@ -310,6 +309,11 @@ class Character:
         self.GO_PLEASE_WAIT = False
         self.GO_NO_EXIT = False
         self.GO_TIMEOUT = False
-        
+
+        self.TRYING_TO_MOVE = False
+        self.EXIT_REGEX=""
+        self.AREA_ID = None
+        self.LAST_DIRECTION = None
+
         self.START_TIME = time.time()
         

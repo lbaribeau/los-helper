@@ -3,22 +3,26 @@ from Database import *
 
 def main():
     #create_database()
-    create_dataset()
+    #create_dataset()
 
-    print ("Outputting Direction Types in the Database")
+    
 
-    for directionType in DirectionType.select():
-        print ("    " + directionType.to_string())
 
-    print ("\nOutputting Areas in the Database")
 
-    for area in Area.select():
-        print ("    " + area.to_string())
+    database = SqliteDatabase('map.db', check_same_thread=False)
+    db.initialize(database)
 
-    print ("\nOutputting Area Links in the Database")
+    dirNorth = DirectionType(name='north')
+    dirSouth = DirectionType(name='south')
+    dirEast = DirectionType(name='east')
 
-    for aLink in AreaLink.select():
-        print ("    " + aLink.to_string())
+    areaHollyLane = Area(name='Holly Lane')
+    areaHollyLane.map([dirNorth, dirSouth, dirEast])
+
+    links = AreaLink.get_area_links_from_area(areaHollyLane)
+
+    for link in links:
+        print ("    " + link.to_string())
 
     #print ("   Area From: " + Area1.to_string() + "\n   Area To: " + Area2.to_string())
 
