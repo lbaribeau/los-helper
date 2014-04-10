@@ -56,9 +56,10 @@ class Area(BaseModel):
         if cur_area_from is not None and cur_direction_from is not None:
             area_from_link = AreaLink.get_area_link_by_area_from_and_direction_type(cur_area_from, cur_direction_from)
             if (area_from_link is not None):
-                area_from_link.area_to = self
-                area_from_link.save()
-                magentaprint("Updating AreaLink with: \n" + area_from_link.to_string(), False)
+                if (area_from_link.area_to is None): #don't overwrite values that have been
+                    area_from_link.area_to = self
+                    area_from_link.save()
+                    magentaprint("Updating AreaLink with: \n" + area_from_link.to_string())
 
         return is_new_mapping
 
