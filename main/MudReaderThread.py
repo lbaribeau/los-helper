@@ -607,8 +607,13 @@ class MudReaderThread ( threading.Thread ):
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])'''
 
+            #This should be moved to the cartographer
             M_obj = re.search("It's too dark to see\.", text_buffer)
             if(M_obj):
+                self.Character.AREA_TITLE = ""
+                self.Character.AREA_ID = ""
+                self.Character.LAST_DIRECTION = ""
+                self.Character.EXIT_LIST = []
                 self.Character.MONSTER_LIST = []
                 self.Character.SUCCESSFUL_GO = True
                 self.CHECK_GO_FLAG = 0
