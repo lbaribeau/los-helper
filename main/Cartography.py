@@ -13,7 +13,8 @@ class Cartography(BotReaction):
 
     def __init__(self, mudReaderHandler, commandHandler, character):
         #                      Title        Exit list               Monsters (opt)  Items (opt)
-        self.area_with_mobs = "(.*\n\r)(\n\rObvious exits: .*\.)\n\r(You see .*\.)?(You see .*\.)?"
+        #(\n\rObvious exits: .+?[\n\r]?.+?\.)(\n\rYou see .+?[\n\r]?.+?\.)?(\n\rYou see .+?[\n\r]?.+?\.)?
+        self.area_with_mobs = "(.*\n\r)(\n\rObvious exits: .+?[\n\r]?.+?\.)\n\r(You see .+?[\n\r]?.+?\.)?[\n\r]?(You see .+?[\n\r]?.+?\.)?"
         self.db = db
 
         database = SqliteDatabase('map.db', check_same_thread=False)
