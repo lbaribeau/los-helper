@@ -48,10 +48,11 @@ class Cartography(BotReaction):
             self.Character.MONSTER_LIST = monster_list#monster_list #mob list
             self.Character.SUCCESSFUL_GO = True
 
-            db.connect()
-            area = self.draw_map(area_title, exit_list)
-            self.catalog_monsters(area, monster_list)
-            db.close()
+            if (exit_list is not []):
+                db.connect()
+                area = self.draw_map(area_title, exit_list)
+                self.catalog_monsters(area, monster_list)
+                db.close()
 
             self.Character.CURRENT_AREA = area.id
 
