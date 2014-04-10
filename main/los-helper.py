@@ -33,6 +33,7 @@ from MudReaderThread import *
 from MudListenerThread import *
 from MyBuffer import *
 from Inventory import *
+from Cartography import *
 from BotReactions import *
 from TelnetHandler import *
 
@@ -50,6 +51,7 @@ class LosHelper(object):
         self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
         self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
         self.inventory = Inventory(self.mudReaderHandler, self.commandHandler)
+        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
         self.botThread = None
 
 

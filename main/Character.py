@@ -31,6 +31,7 @@ class Character:
                      'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue']
         # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
         
+        self.CURRENT_AREA = None
         self.AURA_SCALE = 2 #Current aura
         self.AURA = self.AURA_LIST[self.AURA_SCALE]
         

@@ -580,7 +580,7 @@ class MudReaderThread ( threading.Thread ):
             
 
             '''"\n\r(.?+)\n\r\n\rObvious exits: (.+?)\.\n\r"  group(1) is the area name, group(2) is an exit list which will have to be parsed for commas
-            "(?s)\n\r(.+?)\n\r\n\r(.+?)\n\rObvious exits: (.+?)\.\n\r(You see .+?\.)?" and group(2) is now the description.'''
+            "(?s)\n\r(.+?)\n\r\n\r(.+?)\n\rObvious exits: (.+?)\.\n\r(You see .+?\.)?" and group(2) is now the description.
 
             AreaMatched = False
             M_obj = re.search("(?s)\n\r(.+?)\n\r\n\r(.+?)\n\rObvious exits: (.+?)\n\r(You see .+?\.)", text_buffer)
@@ -605,7 +605,7 @@ class MudReaderThread ( threading.Thread ):
 
                 self.Character.SUCCESSFUL_GO = True
                 self.CHECK_GO_FLAG = 0
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])'''
 
             M_obj = re.search("It's too dark to see\.", text_buffer)
             if(M_obj):
@@ -731,106 +731,5 @@ class MudReaderThread ( threading.Thread ):
         else:
             # Do nothing (don't know this ANSI code)
             pass
-                
-    def parse_exit_list(self, MUD_exit_str):
-        num_commas = MUD_exit_str.count(',')
-        num_exits = num_commas + 1
-        MUD_exit_str = replace_newlines_with_spaces(MUD_exit_str)
-        my_exit_regex = "" #removed obvious exits because it isn't pulled in
-        for i in range(1,num_commas+1):
-            # Add a regex group for each mob, and nab the comma
-            # and space afterwards too.
-            my_exit_regex = my_exit_regex + "(.+?), "
-        my_exit_regex = my_exit_regex + "(.+?)\."
-
-        match_exits = re.match(my_exit_regex, MUD_exit_str)
-
-        E_LIST = []
-
-        for i in range(1, num_exits+1):
-            E_LIST.append(match_exits.group(i))
-
-        for i in range(0, len(E_LIST)):
-            #M_LIST[i].ljust(0)  # this isn't doing what I thought.
-            E_LIST[i].lstrip()  # remove the space.
-
-        return E_LIST
-
-
-    def parse_monster_list(self, MUD_mob_str):
-        """ This function takes a LOS formatted string list of monsters such as:
-                'You see an acolyte, an amethyst town crier, two kobold children.'
-            and returns a parsed list such as
-                ['acolyte', 'amethyst town crier', 'kobold child', 'kobold child']
-        """
-        # TODO:  This would be a lot less painful with split!!!
-        # Good target for the rewrite train!
-        # Also it used to be in two functions in different files.
-        # Now it's one :)
-
-        #print "Got a match!"
-        num_commas = MUD_mob_str.count(',')
-        #print "num_commas" + str(num_commas)
-        num_monsters = num_commas + 1
-        # Take out \n's and \r's
-        #print MUD_mob_str
-        MUD_mob_str = replace_newlines_with_spaces(MUD_mob_str)
-        my_monster_regex = "You see "
-        for i in range(1,num_commas+1):
-            # Add a regex group for each mob, and nab the comma
-            # and space afterwards too.
-            my_monster_regex = my_monster_regex + "(.+?), "
-        my_monster_regex = my_monster_regex + "(.+?)\."
-        #print "my_monster_regex: " + my_monster_regex
-        match_monsters = re.match(my_monster_regex, MUD_mob_str)
-
-        M_LIST = []
-
-        if (match_monsters is not None):
-            for i in range(1, num_monsters+1):
-                M_LIST.append(match_monsters.group(i))
-
-            # Trim the preceding "a" or "some" or "two," s well as the
-            # trailing comma, and the 's' if it was plural and there's an 's'
-            for i in range(0, len(M_LIST)):
-                #M_LIST[i].ljust(0)  # this isn't doing what I thought.
-                M_LIST[i].lstrip()  # remove the space.
-                if (re.match("a ", M_LIST[i])):
-                    M_LIST[i] = M_LIST[i][2:]
-                elif (re.match("an ", M_LIST[i])):
-                    M_LIST[i] = M_LIST[i][3:]
-                elif (re.match("two ", M_LIST[i])):
-                    M_LIST[i] = M_LIST[i][4:]
-                    if (M_LIST[i][len(M_LIST[i]) - 3:] == "ses"):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 2]
-                    elif (M_LIST[i][len(M_LIST[i]) - 1] == 's'):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 1]
-                    elif (M_LIST[i][len(M_LIST[i]) - 8:] == "children"):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 3]
-                    M_LIST.append(M_LIST[i])
-                elif (re.match("three ", M_LIST[i])):
-                    M_LIST[i] = M_LIST[i][6:]
-                    if (M_LIST[i][len(M_LIST[i]) - 3:] == "ses"):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 2]
-                    elif (M_LIST[i][len(M_LIST[i]) - 1] == 's'):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 1]
-                    elif (M_LIST[i][len(M_LIST[i]) - 8:] == "children"):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 3]
-                    for j in range(1, 3):
-                        M_LIST.append(M_LIST[i])
-                elif (re.match("four ", M_LIST[i])):
-                    M_LIST[i] = M_LIST[i][5:]
-                    if (M_LIST[i][len(M_LIST[i]) - 3:] == "ses"):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 2]
-                    elif (M_LIST[i][len(M_LIST[i]) - 1] == 's'):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 1]
-                    elif (M_LIST[i][len(M_LIST[i]) - 8:] == "children"):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 3]
-                    for j in range(1, 4):
-                        M_LIST.append(M_LIST[i])
-                commaindex = M_LIST[i].find(',')
-                if (commaindex != -1):
-                    M_LIST = M_LIST[:commaindex]
-        return M_LIST
     
     

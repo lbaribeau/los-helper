@@ -105,9 +105,9 @@ class CommandHandler(object):
         elif(re.match("MONSTER_CHECK_FLAG", user_input)):
             magentaprint(str(self.character.MONSTER_CHECK_FLAG))
         elif(re.match("MONSTER_LIST", user_input)):
-            magentaprint(str(self.character.MONSTER_LIST))
+            magentaprint(str(self.character.MONSTER_LIST), False)
         elif(re.match("AREA_TITLE", user_input)):
-            magentaprint(str(self.character.AREA_TITLE), False)
+            magentaprint("<" + str(self.character.AREA_TITLE) + ">", False)
         elif(re.match("EXIT_LIST", user_input)):
             magentaprint(str(self.character.EXIT_LIST), False)
         elif(re.match("HEALTH", user_input)):

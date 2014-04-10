@@ -2,10 +2,9 @@
 See: http://peewee.readthedocs.org/en/latest/peewee/installation.html
 '''
 from peewee import *
-import misc_functions
+from misc_functions import *
 
-db = SqliteDatabase("los" + str(misc_functions.VERSION) + ".db")
-db.connect()
+db = Proxy()
 
 class BaseModel(Model):
     def __eq__(self, other): #simple type check
@@ -28,21 +27,25 @@ class Area(BaseModel):
     def map(self, directions, area_from=None, direction_from=None):
         is_new_mapping = False
 
+        mapped_directions = []
+
         for direction in directions:
             direction.map() # this will update our direction objects with their corresponding ids
+            mapped_directions.append(direction)
 
         matching_areas = Area.get_areas_by_name_and_description(self.name, self.description)
 
         for area in matching_areas: #we selected based on name / description so we know they match but just in case or if our descriptions are null
-            if (area.has_directions(directions)):
-                self = area
+            if (area.has_directions(mapped_directions)):
+                self.id = area.id
                 return is_new_mapping
 
         is_new_mapping = True
         super(Area, self).save()
 
         #now we map our area links
-        for direction in directions:
+        for direction in mapped_directions:
+            #magentaprint("Direction " + str(direction.to_string()), False)
             area_link = AreaLink(area_from=self.id, area_to=None, direction_type=direction)
 
             '''if (direction_from.opposite is None):
@@ -97,15 +100,23 @@ class DirectionType(BaseModel):
     '''Private Area Functions'''
     def map(self):
         is_new_mapping = False
+        direction_type = None
 
-        direction_type = DirectionType.get_direction_type_by_name_and_opposite(self)
+        if (self.opposite is None):
+            direction_type = DirectionType.get_direction_type_by_name(self.name)
+        else: 
+            direction_type = DirectionType.get_direction_type_by_name_and_opposite(self.name, self.opposite)
 
-        if (direction_type is not None): #in this case we've discovered a new direction
-            self = direction_type
+        if (direction_type is None): #in this case we've discovered a new direction
+            super(DirectionType, self).save()
+            direction_type = self
+            is_new_mapping = True
             return is_new_mapping
-
-        super(DirectionType, self).save()
-        is_new_mapping = True
+        else:
+            self.id = direction_type.id
+            self.shorthand = direction_type.shorthand
+            self.primer = direction_type.primer
+            self.opposite = direction_type.opposite
 
         return is_new_mapping
 
@@ -113,12 +124,23 @@ class DirectionType(BaseModel):
         return str(self.id) + ", " + self.name + ", " + str(self.primer) + ", " + str(self.opposite)
 
     '''Static DirectionType Functions'''
-    def get_direction_type_by_name_and_opposite(direction_type): #this should always be unique
+    def get_direction_type_by_name(name): #this should always be unique
         direction_types = None
 
         try:
-            direction_types = DirectionType.select().where((DirectionType.name == direction_type.name) &
-             (DirectionType.opposite == direction_type.opposite)).get()
+            direction_types = DirectionType.select().where((DirectionType.name == name)).get()
+        except DirectionType.DoesNotExist:
+            #magentaprint("Could not find Direction Type with name: " + name, False)
+            direction_types = None
+
+        return direction_types
+
+    def get_direction_type_by_name_and_opposite(name, direction_id): #this should always be unique
+        direction_types = None
+
+        try:
+            direction_types = DirectionType.select().where((DirectionType.name == name) &
+             (DirectionType.opposite == direction_id)).get()
 
         except DirectionType.DoesNotExist:
             direction_types = None
@@ -145,7 +167,6 @@ class AreaLink(BaseModel):
                 A github issue will be made'''
 
         super(AreaLink, self).save()
-
 
         return is_new_mapping
 
