@@ -3,7 +3,7 @@ import time
 
 from Exceptions import *
 from BotReactions import *
-from misc_functions import replace_newlines_with_spaces
+from misc_functions import *
 
 class Inventory(BotReaction):
 
@@ -32,12 +32,17 @@ class Inventory(BotReaction):
             self.parse_inventory_list(M_obj.group(1))
         elif regex == self.sold:
             self.gold = self.gold + int(M_obj.group(1))
-            if (M_obj.group(2) is not None):
+            try:
                 self.inventory.remove(self.remove_a_an_some(M_obj.group(2)))
+            except Exception:
+                magentaprint("Error selling item", False)
         elif regex == self.dropped:
-            if (M_obj.group(1) is not None):
+            try:
                 self.inventory.remove(self.remove_a_an_some(M_obj.group(1)))
-            self.gold = int(M_obj.group(2))
+                self.gold = int(M_obj.group(2))
+            except Exception:
+                magentaprint("Error dropping item", False)
+
         elif regex == self.you_now_have:
             self.gold = int(M_obj.group(1))
 

@@ -51,6 +51,7 @@ class Cartography(BotReaction):
             self.Character.MONSTER_LIST = monster_list#monster_list #mob list
 
             self.Character.SUCCESSFUL_GO = True #successful go should be true everytime the area parses
+            self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
             if (self.Character.TRYING_TO_MOVE): #we only want to map when user input to move has been registered
                 self.Character.TRYING_TO_MOVE = False #we've moved so we're not trying anymore
                 if (exit_list is not []):
@@ -76,7 +77,7 @@ class Cartography(BotReaction):
         direction_from = self.Character.LAST_DIRECTION
 
         if area_from is not None and direction_from is not None: #if we have an area we're coming from
-            magentaprint(str(area_from) + " " + str(direction_from), False)
+            magentaprint(str(area_from) + " " + str(direction_from))
             area_from = Area.get_area_by_id(self.Character.AREA_ID)
             direction_from = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
             area.map(direction_list, area_from, direction_from)
@@ -127,7 +128,7 @@ class Cartography(BotReaction):
         return exit_list 
 
     def create_exit_regex_for_character(self, E_LIST):
-        exit_regex = ""
+        exit_regex = "(NEVERMATCHTHISEVEREVER)"
         if (E_LIST is not None):
             exit_regex += "(!?"
 

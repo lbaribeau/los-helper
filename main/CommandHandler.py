@@ -136,7 +136,7 @@ class CommandHandler(object):
             kpm = str(calculate_vpm(kills))
             magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
         elif(re.match("DUMP", user_input)):
-            magentaprint(self.Character.__dict__, False)
+            magentaprint(self.character.__dict__, False)
         elif(re.match("VERSION", user_input)):
             magentaprint("Version: " + str(misc_functions.VERSION), False)
             magentaprint(self.character.__dict__, False)
@@ -177,6 +177,7 @@ class CommandHandler(object):
             self.character.LAST_DIRECTION = user_input.replace("go ", "")
             self.character.TRYING_TO_MOVE = True
             self.user_move("go " + self.character.LAST_DIRECTION)
+            magentaprint("Running go on EXIT_REGEX: " + str(self.character.EXIT_REGEX), False)
         else: # Doesn't match any command we are looking for
             self.telnetHandler.write(user_input) # Just shovel to telnet.
 

@@ -311,7 +311,7 @@ class Character:
         self.GO_TIMEOUT = False
 
         self.TRYING_TO_MOVE = False
-        self.EXIT_REGEX=""
+        self.EXIT_REGEX="self.character.EXIT_REGEX"
         self.AREA_ID = None
         self.LAST_DIRECTION = None
 
