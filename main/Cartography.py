@@ -68,9 +68,9 @@ class Cartography(BotReaction):
         area = Area(name=str(area_title))
 
         for exit in exit_list:
-            direction = DirectionType(name=str(exit))
-            direction.map()
-            direction_list.append(direction)
+            exit_type = ExitType(name=str(exit))
+            exit_type.map()
+            direction_list.append(exit_type)
 
         area_from = self.Character.AREA_ID
         direction_from = self.Character.LAST_DIRECTION

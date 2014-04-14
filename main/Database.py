@@ -24,72 +24,72 @@ class Area(BaseModel):
     is_restorative = BooleanField(default=False)
 
     '''Private Area Functions'''
-    def map(self, directions, cur_area_from=None, cur_direction_from=None):
+    def map(self, exits, cur_area_from=None, cur_exit_from=None):
         is_new_mapping = True
 
-        mapped_directions = []
-        for direction in directions:
-            direction.map() # this will update our direction objects with their corresponding ids
-            mapped_directions.append(direction)
+        mapped_exits = []
+        for exit in exits:
+            exit.map() # this will update our exit objects with their corresponding ids
+            mapped_exits.append(exit)
 
         if (cur_area_from is None):
-            is_new_mapping = self.search_for_area(mapped_directions)
+            is_new_mapping = self.search_for_area(mapped_exits)
         elif (cur_area_from.name is not self.name): #if the names are the same then this is a new area since we have moved
-            is_new_mapping = self.search_for_area(mapped_directions)
+            is_new_mapping = self.search_for_area(mapped_exits)
 
         if is_new_mapping: #this means the search has found the matching area and our Area.ID is set
             super(Area, self).save()
 
-            #now we map our area links
-            for direction in mapped_directions:
-                #magentaprint("Direction " + str(direction.to_string()), False)
-                area_link = AreaLink(area_from=self.id, area_to=None, direction_type=direction)
+            #now we map our area exits
+            for exit in mapped_exits:
+                #magentaprint("exit " + str(exit.to_string()), False)
+                area_exit = AreaExit(area_from=self.id, area_to=None, exit_type=exit)
 
-                '''if (direction_from.opposite is None):
-                    if (direction.id == direction_from.opposite.id):
-                        area_link.map(area_from, direction_from)
+                '''if (exit_from.opposite is None):
+                    if (exit.id == exit_from.opposite.id):
+                        area_exit.map(area_from, exit_from)
                     else:'''
 
-                area_link.map()
+                area_exit.map()
 
         #last but not least we want to try to update our area_from with it's area_to value :)
-        if cur_area_from is not None and cur_direction_from is not None:
-            area_from_link = AreaLink.get_area_link_by_area_from_and_direction_type(cur_area_from, cur_direction_from)
-            if (area_from_link is not None):
-                if (area_from_link.area_to is None): #don't overwrite values that have been
-                    area_from_link.area_to = self
-                    area_from_link.save()
-                    magentaprint("Updating AreaLink with: \n" + area_from_link.to_string())
+        if cur_area_from is not None and cur_exit_from is not None:
+            area_exit_from = AreaExit.get_area_exit_by_area_from_and_exit_type(cur_area_from, cur_exit_from)
+            if (area_exit_from is not None):
+                if (area_exit_from.area_to is None): #don't overwrite values that have been
+                    area_exit_from.area_to = self
+                    area_exit_from.save()
+                    magentaprint("Updating AreaExit with: \n" + area_exit_from.to_string())
 
         return is_new_mapping
 
-    def search_for_area(self, mapped_directions):
+    def search_for_area(self, mapped_exits):
         is_new_mapping = True
         matching_areas = Area.get_areas_by_name_and_description(self.name, self.description)
         for area in matching_areas: #we selected based on name / description so we know they match but just in case or if our descriptions are null
-            if (area.has_directions(mapped_directions)):
+            if (area.has_exits(mapped_exits)):
                 self.id = area.id
                 is_new_mapping = False
                 return is_new_mapping #we want to stop the search if we've found a match
 
         return is_new_mapping
 
-    def has_directions(self, directions): #receiving mapped directions with IDs so we just do a compare on the Area Links
-        area_links = AreaLink.get_area_links_from_area(self)
-        has_directions = (area_links.count() == len(directions))
+    def has_exits(self, exits): #receiving mapped exits with IDs so we just do a compare on the Area Links
+        area_exits = AreaExit.get_area_exits_from_area(self)
+        has_exits = (area_exits.count() == len(exits))
 
-        if (has_directions): #if the number of directions we have is the same
-            direction_found = False
-            for direction_type in directions:
-                direction_found = False
-                for area_link in area_links:
-                    if (direction_type.id == area_link.direction_type.id):
-                        direction_found = True
-                if not direction_found:
+        if (has_exits): #if the number of exits we have is the same
+            exit_found = False
+            for exit_type in exits:
+                exit_found = False
+                for area_exit in area_exits:
+                    if (exit_type.id == area_exit.exit_type.id):
+                        exit_found = True
+                if not exit_found:
                     return False
-            has_directions = direction_found
+            has_exits = exit_found
 
-        return has_directions
+        return has_exits
 
     def to_string(self):
         return str(self.id) + ", " + self.name + ", " + str(self.description)
@@ -117,94 +117,97 @@ class Area(BaseModel):
         return area
 
 
-class DirectionType(BaseModel):
+class ExitType(BaseModel):
     name = CharField() #ex. north, out, door
-    shorthand = CharField(null=True) #user input alternative North == n
-    primer = CharField(null=True) #ex. open %s, unlock %s key
-    opposite = ForeignKeyField('self', null=True)
 
     '''Private Area Functions'''
     def map(self):
         is_new_mapping = False
-        direction_type = None
+        exit_type = None
 
         if (self.opposite is None):
-            direction_type = DirectionType.get_direction_type_by_name(self.name)
+            exit_type = ExitType.get_exit_type_by_name(self.name)
         else: 
-            direction_type = DirectionType.get_direction_type_by_name_and_opposite(self.name, self.opposite)
+            exit_type = ExitType.get_exit_type_by_name_and_opposite(self.name, self.opposite)
 
-        if (direction_type is None): #in this case we've discovered a new direction
-            super(DirectionType, self).save()
-            direction_type = self
+        if (exit_type is None): #in this case we've discovered a new exit
+            super(ExitType, self).save()
+            exit_type = self
             is_new_mapping = True
             return is_new_mapping
         else:
-            self.id = direction_type.id
-            self.shorthand = direction_type.shorthand
-            self.primer = direction_type.primer
-            self.opposite = direction_type.opposite
+            self.id = exit_type.id
+            self.primer = exit_type.primer
 
         return is_new_mapping
 
     def to_string(self):
         return str(self.id) + ", " + self.name + ", " + str(self.primer) + ", " + str(self.opposite)
 
-    '''Static DirectionType Functions'''
-    def get_direction_type_by_name(name): #this should always be unique
-        direction_types = None
+    '''Static ExitType Functions'''
+    def get_exit_type_by_name(name): #this should always be unique
+        exit_types = None
 
         try:
-            direction_types = DirectionType.select().where((DirectionType.name == name)).get()
-        except DirectionType.DoesNotExist:
-            #magentaprint("Could not find Direction Type with name: " + name, False)
-            direction_types = None
+            exit_types = ExitType.select().where((ExitType.name == name)).get()
+        except ExitType.DoesNotExist:
+            #magentaprint("Could not find exit Type with name: " + name, False)
+            exit_types = None
 
-        return direction_types
+        return exit_types
 
-    def get_direction_type_by_name_or_shorthand(name):
-        direction_types = None
-
-        try:
-            direction_types = DirectionType.select().where((DirectionType.name == name) | (DirectionType.shorthand == name) ).get()
-        except DirectionType.DoesNotExist:
-            #magentaprint("Could not find Direction Type with name: " + name, False)
-            direction_types = None
-
-        return direction_types
-
-    def get_direction_type_by_name_and_opposite(name, direction_id): #this should always be unique
-        direction_types = None
+    def get_exit_type_by_name_or_shorthand(name):
+        exit_types = None
 
         try:
-            direction_types = DirectionType.select().where((DirectionType.name == name) &
-             (DirectionType.opposite == direction_id)).get()
+            exit_types = ExitType.select().where((ExitType.name == name) | (ExitType.shorthand == name) ).get()
+        except ExitType.DoesNotExist:
+            #magentaprint("Could not find exit Type with name: " + name, False)
+            exit_types = None
 
-        except DirectionType.DoesNotExist:
-            direction_types = None
+        return exit_types
 
-        return direction_types
+    def get_exit_type_by_name_and_opposite(name, exit_id): #this should always be unique
+        exit_types = None
 
-class AreaLink(BaseModel):
+        try:
+            exit_types = ExitType.select().where((ExitType.name == name) &
+             (ExitType.opposite == exit_id)).get()
+
+        except ExitType.DoesNotExist:
+            exit_types = None
+
+        return exit_types
+
+class ExitOpposite(BaseModel):
+    name = CharField()
+    exit = ForeignKeyField('parent_exit', null=True)
+
+class ExitSynonym(BaseModel):
+    name = CharField()
+    exit = ForeignKeyField('parent_exit', null=True)
+
+class AreaExit(BaseModel):
     area_from = ForeignKeyField(Area, related_name='area_from') #id is a default attribute
     area_to = ForeignKeyField(Area, related_name='area_to', null=True) #id is a default attribute
-    direction_type = ForeignKeyField(DirectionType)
+    exit_type = ForeignKeyField(ExitType)
     is_useable = BooleanField(default=True) #if the link is broken or potentially harzardous we don't want to use it
 
     '''Private Area Functions'''
-    def map(self, area_from=None, direction_from=None):
+    def map(self, area_from=None, exit_from=None):
         is_new_mapping = False
 
-        if area_from is not None and direction_from is not None:
-            if direction_from.opposite is not None:
-                if self.direction_type.id == direction_from.opposite.id:
-                    area_link.area_to = area_from
+        if area_from is not None and exit_from is not None:
+            if exit_from.opposite is not None:
+                if self.exit_type.id == exit_from.opposite.id:
+                    area_exit.area_to = area_from
             #else:
-                '''code a case to handle this direction issue on opposites (west opposite out)
-                since most of the direction types are likely going to have hardcoded opposite at first
+                '''code a case to handle this exit issue on opposites (west opposite out)
+                since most of the exit types are likely going to have hardcoded opposite at first
                 and then especially for exceptions like this it might not be worth the effort
                 A github issue will be made'''
 
-        super(AreaLink, self).save()
+        super(AreaExit, self).save()
 
         return is_new_mapping
 
@@ -215,24 +218,24 @@ class AreaLink(BaseModel):
             return None
 
     def to_string(self):
-        return str(self.id) + ", " + str(self.area_from.name) + ", " + str(self.get_area_to_name()) + ", " + str(self.direction_type.name)
+        return str(self.id) + ", " + str(self.area_from.name) + ", " + str(self.get_area_to_name()) + ", " + str(self.exit_type.name)
 
-    '''Static AreaLink Functions'''
-    def get_area_link_by_area_from_and_direction_type(cur_area_from, cur_direction_type):
+    '''Static AreaExit Functions'''
+    def get_area_exit_by_area_from_and_exit_type(cur_area_from, cur_exit_type):
         try:
-            area_link = AreaLink.select().where((AreaLink.area_from == cur_area_from.id) & (AreaLink.direction_type == cur_direction_type.id)).get()
-        except AreaLink.DoesNotExist:
-            area_link = None
+            area_exit = AreaExit.select().where((AreaExit.area_from == cur_area_from.id) & (AreaExit.exit_type == cur_exit_type.id)).get()
+        except AreaExit.DoesNotExist:
+            area_exit = None
 
-        return area_link
+        return area_exit
 
-    def get_area_links_from_area(area):
+    def get_area_exits_from_area(area):
         try:
-            area_links = AreaLink.select().where((AreaLink.area_from == area.id))
-        except AreaLink.DoesNotExist:
-            area_links = []
+            area_exits = AreaExit.select().where((AreaExit.area_from == area.id))
+        except AreaExit.DoesNotExist:
+            area_exits = []
 
-        return area_links
+        return area_exits
 
 class Mob(BaseModel):
     name = CharField()
@@ -253,7 +256,7 @@ class Mob(BaseModel):
 
     '''Static Mob Functions'''
 
-class AreaMobs(BaseModel):
+class MobLocation(BaseModel):
     area = ForeignKeyField(Area)
     mob = ForeignKeyField(Mob)
 
@@ -269,17 +272,23 @@ class AreaMobs(BaseModel):
 def create_tables():
     try:
         Area.create_table()
-        AreaLink.create_table()
-        DirectionType.create_table()
-        #Mob.create_table()
+        AreaExit.create_table()
+        ExitType.create_table()
+        ExitOpposite.create_table()
+        ExitSynonym.create_table()
+        Mob.create_table()
+        MobLocation.create_table()
     except:
         pass
 
 def drop_tables():
     try:
         Area.drop_table()
-        AreaLink.drop_table()
-        DirectionType.drop_table()
-        #Mob.drop_table()
+        AreaExit.drop_table()
+        ExitType.drop_table()
+        ExitOpposite.drop_table()
+        ExitSynonym.drop_table()
+        Mob.drop_table()
+        MobLocation.drop_table()
     except:
         pass
