@@ -32,9 +32,11 @@ class Inventory(BotReaction):
             self.parse_inventory_list(M_obj.group(1))
         elif regex == self.sold:
             self.gold = self.gold + int(M_obj.group(1))
-            self.inventory.remove(self.remove_a_an_some(M_obj.group(2)))
+            if (M_obj.group(2) is not None):
+                self.inventory.remove(self.remove_a_an_some(M_obj.group(2)))
         elif regex == self.dropped:
-            self.inventory.remove(self.remove_a_an_some(M_obj.group(1)))
+            if (M_obj.group(1) is not None):
+                self.inventory.remove(self.remove_a_an_some(M_obj.group(1)))
             self.gold = int(M_obj.group(2))
         elif regex == self.you_now_have:
             self.gold = int(M_obj.group(1))
