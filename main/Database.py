@@ -229,11 +229,11 @@ class AreaExit(BaseModel):
 
 class ExitOpposite(BaseModel):
     name = CharField()
-    exit = ForeignKeyField(AreaExit, null=True)
+    exit = ForeignKeyField(ExitType, null=True)
 
 class ExitSynonym(BaseModel):
     name = CharField()
-    exit = ForeignKeyField(AreaExit, null=True)
+    exit = ForeignKeyField(ExitType, null=True)
 
 class Mob(BaseModel):
     name = CharField()
