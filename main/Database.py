@@ -125,7 +125,8 @@ class ExitType(BaseModel):
         is_new_mapping = False
         exit_type = None
 
-        #if (self.opposite is None):
+        #exit_opposites = ExitOpposite.get_exit_opposites(self)
+        #if (exit_opposites opposite is None):
         exit_type = ExitType.get_exit_type_by_name(self.name)
         #else: 
         #    exit_type = ExitType.get_exit_type_by_name_and_opposite(self.name, self.opposite)
@@ -170,7 +171,7 @@ class ExitType(BaseModel):
         exit_types = None
 
         try:
-            exit_types = ExitType.select().join(ExitOpposite).where((ExitType.name == name) & (ExitOpposite.name == name)).get()
+            exit_types = ExitType.select().join(ExitOpposite).where((ExitType.name == name) & (ExitOpposite.exit.name == name)).get()
 
         except ExitType.DoesNotExist:
             exit_types = None
@@ -228,7 +229,6 @@ class AreaExit(BaseModel):
         return area_exits
 
 class ExitOpposite(BaseModel):
-    name = CharField()
     exit = ForeignKeyField(ExitType, null=True)
 
 class ExitSynonym(BaseModel):
