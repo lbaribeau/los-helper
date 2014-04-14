@@ -17,7 +17,7 @@ class Cartography(BotReaction):
         self.dark_area = "It's too dark to see\."
         self.db = db
 
-        database = SqliteDatabase('map.db', check_same_thread=False)
+        database = SqliteDatabase('map2.db', check_same_thread=False)
         db.initialize(database)
         db.connect()
         create_tables()
@@ -78,7 +78,7 @@ class Cartography(BotReaction):
         if area_from is not None and direction_from is not None: #if we have an area we're coming from
             magentaprint(str(area_from) + " " + str(direction_from), False)
             area_from = Area.get_area_by_id(self.Character.AREA_ID)
-            direction_from = DirectionType.get_direction_type_by_name_or_shorthand(direction_from)
+            direction_from = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
             area.map(direction_list, area_from, direction_from)
         else:
             area.map(direction_list)

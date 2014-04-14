@@ -125,10 +125,10 @@ class ExitType(BaseModel):
         is_new_mapping = False
         exit_type = None
 
-        if (self.opposite is None):
-            exit_type = ExitType.get_exit_type_by_name(self.name)
-        else: 
-            exit_type = ExitType.get_exit_type_by_name_and_opposite(self.name, self.opposite)
+        #if (self.opposite is None):
+        exit_type = ExitType.get_exit_type_by_name(self.name)
+        #else: 
+        #    exit_type = ExitType.get_exit_type_by_name_and_opposite(self.name, self.opposite)
 
         if (exit_type is None): #in this case we've discovered a new exit
             super(ExitType, self).save()
@@ -137,12 +137,11 @@ class ExitType(BaseModel):
             return is_new_mapping
         else:
             self.id = exit_type.id
-            self.primer = exit_type.primer
 
         return is_new_mapping
 
     def to_string(self):
-        return str(self.id) + ", " + self.name + ", " + str(self.primer) + ", " + str(self.opposite)
+        return str(self.id) + ", " + self.name
 
     '''Static ExitType Functions'''
     def get_exit_type_by_name(name): #this should always be unique
@@ -160,7 +159,7 @@ class ExitType(BaseModel):
         exit_types = None
 
         try:
-            exit_types = ExitType.select().where((ExitType.name == name) | (ExitType.shorthand == name) ).get()
+            exit_types = ExitType.select().join(ExitSynonym).where((ExitType.name == name) | (ExitSynonym.name == name) ).get()
         except ExitType.DoesNotExist:
             #magentaprint("Could not find exit Type with name: " + name, False)
             exit_types = None
@@ -171,21 +170,12 @@ class ExitType(BaseModel):
         exit_types = None
 
         try:
-            exit_types = ExitType.select().where((ExitType.name == name) &
-             (ExitType.opposite == exit_id)).get()
+            exit_types = ExitType.select().join(ExitOpposite).where((ExitType.name == name) & (ExitOpposite.name == name)).get()
 
         except ExitType.DoesNotExist:
             exit_types = None
 
         return exit_types
-
-class ExitOpposite(BaseModel):
-    name = CharField()
-    exit = ForeignKeyField('parent_exit', null=True)
-
-class ExitSynonym(BaseModel):
-    name = CharField()
-    exit = ForeignKeyField('parent_exit', null=True)
 
 class AreaExit(BaseModel):
     area_from = ForeignKeyField(Area, related_name='area_from') #id is a default attribute
@@ -236,6 +226,14 @@ class AreaExit(BaseModel):
             area_exits = []
 
         return area_exits
+
+class ExitOpposite(BaseModel):
+    name = CharField()
+    exit = ForeignKeyField(AreaExit, null=True)
+
+class ExitSynonym(BaseModel):
+    name = CharField()
+    exit = ForeignKeyField(AreaExit, null=True)
 
 class Mob(BaseModel):
     name = CharField()
