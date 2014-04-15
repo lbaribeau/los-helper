@@ -28,6 +28,7 @@ class Cartography(BotReaction):
         self.not_open_during_night = "That exit is closed for the night\."
         self.no_items_allowed = "You cannot bring anything through that exit\."
         self.door_locked = "It's locked\."
+        self.no_right = "You have not earned the right to pass this way!"
         
         self.db = db
 
@@ -49,7 +50,8 @@ class Cartography(BotReaction):
             self.not_open_during_day,
             self.not_open_during_night,
             self.no_items_allowed,
-            self.door_locked])
+            self.door_locked,
+            self.no_right])
 
         self.mudReaderHandler = mudReaderHandler
         self.commandHandler = commandHandler
@@ -112,7 +114,7 @@ class Cartography(BotReaction):
             # This one is pretty problematic... as it should never happen.
             # Means we're off course.
             #magentaprint("MudReader: unsuccessful go (you can't go that way)")
-            self.set_area_exit_as_unusable()
+            self.set_area_exit_as_unusable(regex)
 
         elif (regex == self.class_prohibited or
                 regex == self.level_too_low or
@@ -120,7 +122,8 @@ class Cartography(BotReaction):
                 regex == self.not_open_during_day or
                 regex == self.not_open_during_night or
                 regex == self.no_items_allowed,
-                regex == self.door_locked):
+                regex == self.door_locked,
+                regex == self.no_right):
             self.set_area_exit_as_unusable(regex)
 
     def draw_map(self, area_title, area_description, exit_list):

@@ -77,6 +77,9 @@ class CrawlThread(threading.Thread):
             self.commandHandler.process("c light")
             time.sleep(2)
             self.commandHandler.process("l")
+        elif self.character.DEAD:
+            time.sleep(12) #wait in Limbo
+            self.character.DEAD = False
         
         time.sleep(0.5)
         curArea = Area.get_area_by_id(self.character.AREA_ID)
