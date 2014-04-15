@@ -27,6 +27,7 @@ import time
 from misc_functions import *
 from Character import *
 from BotThread import *
+from CrawlThread import *
 from CommandHandler import *
 from MudReaderHandler import *
 from MudReaderThread import *
@@ -53,6 +54,7 @@ class LosHelper(object):
         self.inventory = Inventory(self.mudReaderHandler, self.commandHandler)
         self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
         self.botThread = None
+        self.crawlThread = None
 
 
     def main(self):
@@ -123,6 +125,9 @@ class LosHelper(object):
                 if(self.botThread != None and self.botThread.is_alive()):
                     self.botThread.stop()
 
+                if(self.crawlThread != None and self.crawlThread.is_alive()):
+                    self.crawlThread.stop()
+
             elif(user_input == "quit"):
                 # TODO:  correct if MUD prints "Please wait x more seconds"
                 # after quit was sent.
@@ -132,10 +137,16 @@ class LosHelper(object):
                 if(self.botThread != None and self.botThread.is_alive()):
                     self.botThread.stop()
 
+                if(self.crawlThread != None and self.crawlThread.is_alive()):
+                    self.crawlThread.stop()
+
             elif(re.match("bot ?$|bot [0-9]+$", user_input)):
                 self.start_bot(user_input)
+            elif(re.match("crawl", user_input)):
+                self.start_crawl()
             elif(re.match("stop$", user_input)):
                 self.stop_bot()
+                self.stop_crawl()
             elif(re.match("fle?$|flee$", user_input)):
                 self.stop_bot()
                 self.commandHandler.process(user_input)  
@@ -161,11 +172,25 @@ class LosHelper(object):
                                            self.inventory)
                 self.botThread.start()
 
+    def start_crawl(self):
+        if (self.crawlThread != None and self.crawlThread.is_alive()):
+            magentaprint("It's already going, you'll have to stop it.  Use \"stop\".")
+        else:
+            self.crawlThread = CrawlThread(self.character, 
+                                       self.commandHandler, 
+                                       self.mudReaderHandler)
+            self.crawlThread.start()
+
+
+    def stop_crawl(self):
+        if (self.crawlThread != None and self.crawlThread.is_alive()):
+            self.crawlThread.stop()
+            #self.mudReaderHandler.unregister_reactions()
 
     def stop_bot(self):
         if (self.botThread != None and self.botThread.is_alive()):
             self.botThread.stop()
-            self.mudReaderHandler.unregister_reactions()
+            #self.mudReaderHandler.unregister_reactions()
 
 #if __name__ == '__main__':
 LosHelper().main()

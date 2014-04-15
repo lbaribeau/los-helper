@@ -7,6 +7,7 @@ debugMode = False
 verboseMode = True
 startTime = datetime.now()
 VERSION = "2"
+databaseFile = "maplos.db"
 
 ##################################### MISC FUNCTIONS ########################
 

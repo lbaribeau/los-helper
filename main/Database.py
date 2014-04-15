@@ -32,10 +32,12 @@ class Area(BaseModel):
             exit.map() # this will update our exit objects with their corresponding ids
             mapped_exits.append(exit)
 
-        if (cur_area_from is None):
-            is_new_mapping = self.search_for_area(mapped_exits)
-        elif (cur_area_from.name is not self.name): #if the names are the same then this is a new area since we have moved
-            is_new_mapping = self.search_for_area(mapped_exits)
+        is_new_mapping = self.search_for_area(mapped_exits)
+
+        #if (cur_area_from is None):
+            
+        #elif (cur_area_from.name != self.name): #if the names are the same then this is a new area since we have moved
+        #    is_new_mapping = self.search_for_area(mapped_exits)
 
         if is_new_mapping: #this means the search has found the matching area and our Area.ID is set
             super(Area, self).save()
@@ -179,6 +181,7 @@ class AreaExit(BaseModel):
     area_to = ForeignKeyField(Area, related_name='area_to', null=True) #id is a default attribute
     exit_type = ForeignKeyField(ExitType)
     is_useable = BooleanField(default=True) #if the link is broken or potentially harzardous we don't want to use it
+    note = CharField(default="")
 
     '''Private Area Functions'''
     def map(self, area_from=None, exit_from=None):

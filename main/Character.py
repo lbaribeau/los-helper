@@ -302,7 +302,7 @@ class Character:
         self.MOBS_JOINED_IN = []
         self.MOBS_ATTACKING = []
 
-        self.SUCCESSFUL_GO = False
+        self.SUCCESSFUL_GO = True
         self.GO_BLOCKING_MOB = ""
         self.GO_PLEASE_WAIT = False
         self.GO_NO_EXIT = False
@@ -315,7 +315,7 @@ class Character:
         self.EXIT_LIST=[]
         self.MONSTER_LIST=[]
 
-        self.TRYING_TO_MOVE = False
+        self.TRYING_TO_MOVE = True
         self.EXIT_REGEX="self.character.EXIT_REGEX"
         self.AREA_ID = None
         self.LAST_DIRECTION = None

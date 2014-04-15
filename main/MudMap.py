@@ -1,13 +1,14 @@
 import networkx as nx
 from Database import *
+from misc_functions import *
 
 class MudArea():
 	area = None
 	area_exits = []
 
-	def __init__(self, area, exits):
+	def __init__(self, area, area_exits):
 		self.area = area
-		self.exits = exits
+		self.area_exits = area_exits
 
 class MudMap():
 	los_map = None
@@ -18,7 +19,7 @@ class MudMap():
 
 	def populate_map(self):
 		areas = Area.select()
-		area_exits = AreaExit.select()
+		area_exits = AreaExit.select().where(AreaExit.is_useable == 1)
 
 		for area in areas:
 			self.los_map.add_node(area.id)
@@ -30,11 +31,11 @@ class MudMap():
 				area_to_id = area_exit.area_to.id
 				area_is_useable = area_exit.is_useable
 
+				#magentaprint("area useable: " + str(area_is_useable) + " " + str(area_exit.is_useable), False)
+
 			if area_is_useable: #don't add unusable areas to the graph
 				name = area_exit.exit_type.name
-				self.los_map.add_edge(area_exit.area_from.id,
-					area_to_id,
-					name=name)
+				self.los_map.add_edge(area_exit.area_from.id, area_to_id, name=name)
 
 	def to_string(self):
 		return str(self.los_map.nodes()) + "\n\n" + str(self.los_map.edges())
@@ -49,6 +50,8 @@ class MudMap():
 
 			edge_path.append(cur_edge['name'])
 			i += 1
+
+		magentaprint("Got path: " + str(edge_path), False)
 
 		return edge_path
 

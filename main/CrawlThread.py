@@ -6,7 +6,6 @@ import time
 from misc_functions import *
 from CommandHandler import *
 from Exceptions import *
-from Cartography import *
 from Database import *
 from MudMap import *
 
@@ -23,6 +22,9 @@ class CrawlThread(threading.Thread):
         self.mudReaderHandler = mudReaderHandler_in
             
         atexit.register(self.stop)
+
+        database = SqliteDatabase(databaseFile, threadlocals=True, check_same_thread=False)
+        db.initialize(database)
 
 
     def stop(self):
@@ -48,6 +50,7 @@ class CrawlThread(threading.Thread):
             direction_list = self.decide_where_to_go()
 
             while(direction_list != [] and not self.__stopping):
+                #breathe deep
                 # Note that go returns a success value.  We have to be aware 
                 # of what text has gone by to keep track of MONSTER_LIST
                 # So since we know go was successful we know that 
@@ -56,36 +59,61 @@ class CrawlThread(threading.Thread):
                     direction_list.pop(0)
                 else:
                     if(self.character.GO_BLOCKING_MOB != ""):
+                        #set the mob as a blocker then attack the mob
                         continue
                     elif(self.character.GO_PLEASE_WAIT):
                         continue
                     elif(self.character.GO_TIMEOUT):
                         direction_list.pop(0)
-                        time.sleep(2)
                     elif(self.character.GO_NO_EXIT):
                         direction_list.pop()
                         continue
+                time.sleep(1)
 
 
     def decide_where_to_go(self):
         if (not self.character.CAN_SEE):
             magentaprint("I'm bliiiiiinnddddd!!!", False)
-            #cast light - wait a couple seconds and continue
+            self.commandHandler.process("c light")
+            time.sleep(2)
+            self.commandHandler.process("l")
         
-        curArea = self.character.AREA_ID
+        time.sleep(0.5)
+        curArea = Area.get_area_by_id(self.character.AREA_ID)
         curAreaExits = AreaExit.get_area_exits_from_area(curArea)
         chosen_exit = self.pick_exit(curAreaExits)
-        directions = [chosen_exit.name]
+        directions = chosen_exit
 
         return directions
 
     def pick_exit(self, area_exit_list):
         #find a null exit
         for area_exit in area_exit_list:
-            if (area_exit.to_area is None and area_exit.is_useable):
-                return area_exit
+            if (area_exit.area_to is None and area_exit.is_useable):
+                return [area_exit.exit_type.name]
 
         #if we didn't find a null exit we end up here and the magic starts
         mud_map = MudMap()
 
-        return mud_map.get_unexplored_path(self.character.AREA_ID)
+        return mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
+
+    def go(self, exit_str):
+        #time.sleep(0.8) # sometimes not a good idea to go immediately
+        
+        if(self.__stopping):
+            return True
+        
+        magentaprint("Going " + str(exit_str))
+        wait_for_move_ready(self.character)
+        wait_for_attack_ready(self.character)
+        wait_for_cast_ready(self.character)
+
+        magentaprint(str(exit_str), False)
+
+        if(re.match("(.*?door)", exit_str)):
+            self.commandHandler.process("open " + exit_str)
+            self.commandHandler.process("go " + exit_str)
+            return self.mudReaderHandler.check_for_successful_go()
+        else:
+            self.commandHandler.process("go " + exit_str)
+            return self.mudReaderHandler.check_for_successful_go()

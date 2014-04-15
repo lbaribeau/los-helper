@@ -617,7 +617,7 @@ class MudReaderThread ( threading.Thread ):
                 self.Character.MONSTER_LIST = []
                 self.Character.SUCCESSFUL_GO = True
                 self.CHECK_GO_FLAG = 0
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])'''
+                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
             M_obj = re.search("The" + s_numbered + " (.+?) blocks your exit\.", text_buffer)
             if(M_obj):
@@ -651,7 +651,7 @@ class MudReaderThread ( threading.Thread ):
                 self.Character.GO_NO_EXIT = True
                 self.Character.SUCCESSFUL_GO = False
                 self.CHECK_GO_FLAG = 0
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])'''
 
             M_obj = re.search("You glow with an? (.+?) aura\.", text_buffer)
             if(M_obj):
