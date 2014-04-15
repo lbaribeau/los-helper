@@ -82,6 +82,7 @@ class Inventory(BotReaction):
 
     def drop(self, item):
         self.commandHandler.process("drop " + item)
+        magentaprint("dropped: " + str(item))
         self.wait_for_flag()
 
     def drop_fast(self):

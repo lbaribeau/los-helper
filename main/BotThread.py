@@ -341,7 +341,7 @@ class BotThread(threading.Thread):
             return
 
         if (self.character.TITLE == "Monk"):
-            magentaprint("Last Meditate Check: " + str(time.time() - self.character.LAST_MEDITATE), False)
+            magentaprint("Last Meditate Check: " + str(time.time() - self.character.LAST_MEDITATE))
             if((time.time() - self.character.LAST_MEDITATE) > 150 and
                 self.character.HEALTH <= self.character.HEALTH_TO_HEAL):
                 self.commandHandler.process('meditate')

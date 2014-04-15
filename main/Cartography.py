@@ -12,9 +12,9 @@ import re
 class Cartography(BotReaction):
 
     def __init__(self, mudReaderHandler, commandHandler, character):
-        #                      Title        Exit list               Monsters (opt)  Items (opt)
-        self.area_with_mobs = "(.*\n\r)(\n\rObvious exits: .+?[\n\r]?.+?\.)\n\r(You see .+?[\n\r]?.+?\.)?[\n\r]?(You see .+?[\n\r]?.+?\.)?"
-        self.dark_area = "It's too dark to see\."
+        #             Title     Description        Exit list                    Monsters (opt)                    Items (opt)
+        self.area = "(.+?\n\r)(\n\r.+)*?(\n\rObvious exits: .+?[\n\r]?.+?\.)\n\r(You see .+?[\n\r]?.+?\.)?[\n\r]?(You see .+?[\n\r]?.+?\.)?"
+        self.too_dark = "It's too dark to see\."
         self.db = db
 
         database = SqliteDatabase('map2.db', check_same_thread=False)
@@ -23,7 +23,7 @@ class Cartography(BotReaction):
         create_tables()
         db.close()
 
-        super(Cartography, self).__init__([self.area_with_mobs])
+        super(Cartography, self).__init__([self.area, self.too_dark])
 
         self.mudReaderHandler = mudReaderHandler
         self.commandHandler = commandHandler
@@ -35,16 +35,16 @@ class Cartography(BotReaction):
         self.mudReaderHandler.register_reaction(self)
 
     def notify(self, regex, M_obj):
-        if regex == self.area_with_mobs:
+        if regex == self.area:
             matched_groups = M_obj.groups()
 
             area_title = str(matched_groups[0]).strip()
-            area_description = None
-            exit_list = self.parse_exit_list(matched_groups[1])
+            area_description = None #matched_groups[1] - eat the description - doesn't give the full text
+            exit_list = self.parse_exit_list(matched_groups[2])
             self.Character.EXIT_REGEX = self.create_exit_regex_for_character(exit_list)
 
-            monster_list = self.parse_monster_list(matched_groups[2])
-            #item_list
+            monster_list = self.parse_monster_list(matched_groups[3])
+            #item_list matched_groups[3]
 
             self.Character.AREA_TITLE = area_title #title
             self.Character.EXIT_LIST = exit_list #exits
@@ -63,6 +63,14 @@ class Cartography(BotReaction):
                     self.Character.AREA_ID = area.id
                 else:
                     self.Character.AREA_ID = None
+        elif regex == self.too_dark:
+            self.Character.AREA_TITLE = ""
+            self.Character.AREA_ID = None
+            self.Character.LAST_DIRECTION = None
+            self.Character.EXIT_LIST = []
+            self.Character.MONSTER_LIST = []
+            self.Character.SUCCESSFUL_GO = True
+            self.CHECK_GO_FLAG = 0
 
     def draw_map(self, area_title, exit_list):
         direction_list = []
@@ -76,13 +84,14 @@ class Cartography(BotReaction):
         area_from = self.Character.AREA_ID
         direction_from = self.Character.LAST_DIRECTION
 
-        if area_from is not None and direction_from is not None: #if we have an area we're coming from
-            magentaprint(str(area_from) + " " + str(direction_from))
-            area_from = Area.get_area_by_id(self.Character.AREA_ID)
-            direction_from = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
-            area.map(direction_list, area_from, direction_from)
-        else:
-            area.map(direction_list)
+        if area_from is not "":
+            if area_from is not None and direction_from is not None: #if we have an area we're coming from
+                magentaprint(str(area_from) + " " + str(direction_from))
+                area_from = Area.get_area_by_id(self.Character.AREA_ID)
+                direction_from = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
+                area.map(direction_list, area_from, direction_from)
+            else:
+                area.map(direction_list)
 
         return area
 
@@ -145,7 +154,6 @@ class Cartography(BotReaction):
     def parse_monster_list(self, MUD_mob_str):
         try:
             if (MUD_mob_str is None):
-                magentaprint("Mob match: " + str(MUD_mob_str))
                 return []
 
             MUD_mob_str = replace_newlines_with_spaces(MUD_mob_str)
@@ -200,7 +208,7 @@ class Cartography(BotReaction):
                 if (commaindex != -1):
                     M_LIST = M_LIST[:commaindex]
         except Exception:
-            magentaprint("Parse exit Exception: " + str(sys.exc_info()[0]), False)
+            magentaprint("Parse monster Exception: " + str(sys.exc_info()[0]), False)
             M_LIST = []
 
         return M_LIST
