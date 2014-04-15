@@ -6,6 +6,9 @@ import time
 from misc_functions import *
 from CommandHandler import *
 from Exceptions import *
+from Cartography import *
+from Database import *
+from MudMap import *
 
 class CrawlThread(threading.Thread):
     def __init__(self, character_in=None, commandHandler=None, mudReaderHandler_in=None):
@@ -34,7 +37,7 @@ class CrawlThread(threading.Thread):
     def run(self):
         self.__stopping = False 
         
-        magentaprint("BotThread: run()")
+        magentaprint("CrawlThread: run()")
 
         # Here is where the fun begins.
         while(not self.__stopping):
@@ -65,4 +68,24 @@ class CrawlThread(threading.Thread):
 
 
     def decide_where_to_go(self):
-        return []
+        if (not self.character.CAN_SEE):
+            magentaprint("I'm bliiiiiinnddddd!!!", False)
+            #cast light - wait a couple seconds and continue
+        
+        curArea = self.character.AREA_ID
+        curAreaExits = AreaExit.get_area_exits_from_area(curArea)
+        chosen_exit = self.pick_exit(curAreaExits)
+        directions = [chosen_exit.name]
+
+        return directions
+
+    def pick_exit(self, area_exit_list):
+        #find a null exit
+        for area_exit in area_exit_list:
+            if (area_exit.to_area is None and area_exit.is_useable):
+                return area_exit
+
+        #if we didn't find a null exit we end up here and the magic starts
+        mud_map = MudMap()
+
+        return mud_map.get_unexplored_path(self.character.AREA_ID)

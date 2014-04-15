@@ -1,39 +1,25 @@
 import sys
 from Database import *
+from MudMap import *
 
 def main():
     #create_database()
     #create_dataset()
 
-    database = SqliteDatabase('map2.db', check_same_thread=False)
+    database = SqliteDatabase('map3.db', check_same_thread=False)
     db.initialize(database)
     db.connect()
-    create_tables()
+    #create_tables()
+
+    mud_map = MudMap()
+
+    #print(mud_map.to_string()) #print everything
+    print(str(mud_map.get_path(2,24))) #chapel to tip path
+
+    print(str(mud_map.get_nearest_unexplored_path(2))) #nearest unexplored path from chapel
+
     db.close()
 
-    ExitOpposite.drop_table()
-    ExitOpposite.create_table()
-
-    '''
-
-
-
-    database = SqliteDatabase('map.db', check_same_thread=False)
-    db.initialize(database)
-
-    dirNorth = DirectionType(name='north')
-    dirSouth = DirectionType(name='south')
-    dirEast = DirectionType(name='east')
-
-    areaHollyLane = Area(name='Holly Lane')
-    areaHollyLane.map([dirNorth, dirSouth, dirEast])
-
-    links = AreaLink.get_area_links_from_area(areaHollyLane)
-
-    for link in links:
-        print ("    " + link.to_string())'''
-
-    #print ("   Area From: " + Area1.to_string() + "\n   Area To: " + Area2.to_string())
 
 def create_database():
     drop_tables()

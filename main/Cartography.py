@@ -6,6 +6,7 @@ from collections import Counter
 from Exceptions import *
 from BotReactions import *
 from misc_functions import replace_newlines_with_spaces, my_list_search
+from MudMap import *
 from Database import *
 import re
 
@@ -17,7 +18,7 @@ class Cartography(BotReaction):
         self.too_dark = "It's too dark to see\."
         self.db = db
 
-        database = SqliteDatabase('map2.db', check_same_thread=False)
+        database = SqliteDatabase('map3.db', check_same_thread=False)
         db.initialize(database)
         db.connect()
         create_tables()
@@ -35,7 +36,16 @@ class Cartography(BotReaction):
         self.mudReaderHandler.register_reaction(self)
 
     def notify(self, regex, M_obj):
-        if regex == self.area:
+        if regex == self.too_dark:
+            self.Character.AREA_TITLE = ""
+            self.Character.AREA_ID = None
+            self.Character.LAST_DIRECTION = None
+            self.Character.EXIT_LIST = []
+            self.Character.MONSTER_LIST = []
+            self.Character.SUCCESSFUL_GO = True
+            self.CHECK_GO_FLAG = 0
+            self.Character.CAN_SEE = False
+        elif regex == self.area:
             matched_groups = M_obj.groups()
 
             area_title = str(matched_groups[0]).strip()
@@ -44,7 +54,6 @@ class Cartography(BotReaction):
             self.Character.EXIT_REGEX = self.create_exit_regex_for_character(exit_list)
 
             monster_list = self.parse_monster_list(matched_groups[3])
-            #item_list matched_groups[3]
 
             self.Character.AREA_TITLE = area_title #title
             self.Character.EXIT_LIST = exit_list #exits
@@ -52,6 +61,7 @@ class Cartography(BotReaction):
 
             self.Character.SUCCESSFUL_GO = True #successful go should be true everytime the area parses
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
+            self.Character.CAN_SEE = True
             if (self.Character.TRYING_TO_MOVE): #we only want to map when user input to move has been registered
                 self.Character.TRYING_TO_MOVE = False #we've moved so we're not trying anymore
                 if (exit_list is not []):
@@ -61,16 +71,10 @@ class Cartography(BotReaction):
                     db.close()
 
                     self.Character.AREA_ID = area.id
+
+                    self.catalog_monsters(area, monster_list)
                 else:
                     self.Character.AREA_ID = None
-        elif regex == self.too_dark:
-            self.Character.AREA_TITLE = ""
-            self.Character.AREA_ID = None
-            self.Character.LAST_DIRECTION = None
-            self.Character.EXIT_LIST = []
-            self.Character.MONSTER_LIST = []
-            self.Character.SUCCESSFUL_GO = True
-            self.CHECK_GO_FLAG = 0
 
     def draw_map(self, area_title, exit_list):
         direction_list = []
@@ -93,10 +97,20 @@ class Cartography(BotReaction):
             else:
                 area.map(direction_list)
 
+            area_exits = AreaExit.get_area_exits_from_area(area)
+            self.Character.MUD_AREA = MudArea(area, area_exits)
+
         return area
 
     def catalog_monsters(self, area, monster_list):
-        return
+        try:
+            for monster in monster_list:
+                mob = Mob(name=monster)
+                mob.map()
+                mob_location = MobLocation(area=area, mob=mob)
+                mob_location.map()
+        except Exception:
+            magentaprint("Problem cataloging monsters", False)
 
     def parse_exit_list(self, MUD_exit_str):
         try:

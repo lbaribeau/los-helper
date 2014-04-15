@@ -1,5 +1,5 @@
 import networkx as nx
-g=nx.Graph()
+g=nx.DiGraph()
 
 g.add_node("Holly Lane 1")
 g.add_node("Minden Way / Holly Lane 2")
@@ -389,3 +389,16 @@ g.add_edge("The South Plains Road 152", "The South Plains Road 150", name="north
 g.add_edge("Secret Trail 153", "The South Plains Road 142", name="north")
 g.add_edge("Secret Trail 153", "Bandit Camp 154", name="south")
 g.add_edge("Bandit Camp 154", "Secret Trail 153", name="north")
+
+#print(str(nx.shortest_path(g,source="The Chapel of Healing 4",target="Town Tip 46")))
+
+shortpath = nx.shortest_path(g,source="The Chapel of Healing 4",target="Town Tip 46")
+
+i = 0
+while i < (len(shortpath) - 1):
+	cur_edge = g.get_edge_data(shortpath[i], shortpath[i+1])
+
+	print(cur_edge['name'])
+	i += 1
+
+#print(str(g.edges(data=True)))

@@ -19,7 +19,7 @@ class Character:
         self.RACE = "Human"
         self.TITLE = "Monk"
         
-        self.LEVEL = 9
+        self.LEVEL = 10
 #        self.preferred_alignment = "grey"
         #self.WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #self.MAGIC_SKILLS= [0, 0, 0, 0, 0]
@@ -130,10 +130,6 @@ class Character:
             self.MANA_TO_ENGAGE = 0
 
         self.LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096] #Half of this is the gold requirement
-
-        self.AREA_TITLE=""
-        self.EXIT_LIST=[]
-        self.MONSTER_LIST=[]
 
         # All lists are mutually exclusive except for 'preferred' (bottom)
         # 1-8 exp
@@ -297,6 +293,8 @@ class Character:
             self.MONSTER_KILL_LIST.extend(self.__lvl4_red_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl5_monsters)
             self.MONSTER_KILL_LIST.extend(self.__lvl5_red_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl6_monsters)
+            self.MONSTER_KILL_LIST.extend(self.__lvl6_red_monsters)
 
         self.RESTORE_ITEM_LIST = ["small restorative", "chicken soup"]
         self.BUFF_ITEM_LIST = ["steel bottle"]
@@ -309,6 +307,13 @@ class Character:
         self.GO_PLEASE_WAIT = False
         self.GO_NO_EXIT = False
         self.GO_TIMEOUT = False
+
+        self.CAN_SEE = True
+
+        self.MUD_AREA = None
+        self.AREA_TITLE=""
+        self.EXIT_LIST=[]
+        self.MONSTER_LIST=[]
 
         self.TRYING_TO_MOVE = False
         self.EXIT_REGEX="self.character.EXIT_REGEX"

@@ -123,17 +123,11 @@ class ExitType(BaseModel):
     '''Private Area Functions'''
     def map(self):
         is_new_mapping = False
-        exit_type = None
 
-        #exit_opposites = ExitOpposite.get_exit_opposites(self)
-        #if (exit_opposites opposite is None):
         exit_type = ExitType.get_exit_type_by_name(self.name)
-        #else: 
-        #    exit_type = ExitType.get_exit_type_by_name_and_opposite(self.name, self.opposite)
 
         if (exit_type is None): #in this case we've discovered a new exit
             super(ExitType, self).save()
-            exit_type = self
             is_new_mapping = True
             return is_new_mapping
         else:
@@ -160,7 +154,9 @@ class ExitType(BaseModel):
         exit_types = None
 
         try:
-            exit_types = ExitType.select().join(ExitSynonym).where((ExitType.name == name) | (ExitSynonym.name == name) ).get()
+            #magentaprint("matching exit to: " + str(name))
+            exit_types = ExitType.select().join(ExitSynonym, JOIN_LEFT_OUTER).where((ExitType.name == name) | (ExitSynonym.name == name) ).get()
+            #magentaprint("matched exit to: " + exit_types.to_string())
         except ExitType.DoesNotExist:
             #magentaprint("Could not find exit Type with name: " + name, False)
             exit_types = None
@@ -248,12 +244,28 @@ class Mob(BaseModel):
 
     '''Private Mob Functions'''
     def map(self):
-        return
+        is_new_mapping = False
+        mob = Mob.get_mob_by_name(self.name)
+
+        if mob is None:
+            super(Mob, self).save()
+        else:
+            self.id = mob.id
+            #update other fields if you want
+
+        return is_new_mapping
 
     def to_string(self):
         return str(self.id) + ", " + str(self.name) + ", " + str(self.level)
 
     '''Static Mob Functions'''
+    def get_mob_by_name(name):
+        try:
+            mob = Mob.select().where((Mob.name == name)).get()
+        except Mob.DoesNotExist:
+            mob = None
+
+        return mob
 
 class MobLocation(BaseModel):
     area = ForeignKeyField(Area)
@@ -261,12 +273,28 @@ class MobLocation(BaseModel):
 
     '''Private Mob Functions'''
     def map(self):
-        return
+        is_new_mapping = False
+        mob_locations = MobLocation.is_mob_in_area(self.mob.id, self.area.id)
+
+        if mob_locations is None:
+            super(MobLocation, self).save()
+        else:
+            self.id = mob_locations.id
+            #update other fields if you want
+
+        return is_new_mapping
 
     def to_string(self):
         return str(self.id) + ", " + str(self.area.name) + ", " + str(self.mob.name)
 
     '''Static Mob Functions'''
+    def is_mob_in_area(mob_id, area_id):
+        try:
+            mob_locations = MobLocation.select().where((MobLocation.area == area_id) & (MobLocation.mob == mob_id)).get()
+        except MobLocation.DoesNotExist:
+            mob_locations = None
+
+        return mob_locations
 
 def create_tables():
     try:
