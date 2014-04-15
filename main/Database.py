@@ -229,7 +229,8 @@ class AreaExit(BaseModel):
         return area_exits
 
 class ExitOpposite(BaseModel):
-    exit = ForeignKeyField(ExitType, null=True)
+    exit = ForeignKeyField(ExitType, related_name='exit_to')
+    opposite = ForeignKeyField(ExitType, related_name='exit_from')
 
 class ExitSynonym(BaseModel):
     name = CharField()

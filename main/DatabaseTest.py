@@ -5,7 +5,16 @@ def main():
     #create_database()
     #create_dataset()
 
-    
+    database = SqliteDatabase('map2.db', check_same_thread=False)
+    db.initialize(database)
+    db.connect()
+    create_tables()
+    db.close()
+
+    ExitOpposite.drop_table()
+    ExitOpposite.create_table()
+
+    '''
 
 
 
@@ -22,7 +31,7 @@ def main():
     links = AreaLink.get_area_links_from_area(areaHollyLane)
 
     for link in links:
-        print ("    " + link.to_string())
+        print ("    " + link.to_string())'''
 
     #print ("   Area From: " + Area1.to_string() + "\n   Area To: " + Area2.to_string())
 
