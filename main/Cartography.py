@@ -18,17 +18,19 @@ class Cartography(BotReaction):
         self.too_dark = "It's too dark to see\."
         s_numbered = "( 1st| 2nd| 3rd| 4th| 5th| 6th| 7th| 8th| 9th| 10th| 11th| 12th| 13th| 14th| 15th| 16th| 17th| 18th| 19th)?"
         self.blocked_path = "The" + s_numbered + " (.+?) blocks your exit\."
-        self.please_wait = "Please wait 1 more second\."
+        self.please_wait = "Please wait [\d]* more second\."
         self.cant_go = "You can't go that way\."
         self.no_exit = "I don't see that exit\."
         self.class_prohibited = "Your class prohibits you from entering there\."
-        self.level_too_low = "You must be at least level 2 to go that way\."
+        self.level_too_low = "You must be at least level [\d]* to go that way\."
         self.not_invited = "You have not been invited in\."
         self.not_open_during_day = "That exit is not open during the day\."
         self.not_open_during_night = "That exit is closed for the night\."
         self.no_items_allowed = "You cannot bring anything through that exit\."
         self.door_locked = "It's locked\."
         self.no_right = "You have not earned the right to pass this way!"
+        self.not_authorized = "You are not authorised to enter here\."
+        self.no_force = "You cannot force yourself to go through there\."
         
         self.db = db
 
@@ -51,7 +53,9 @@ class Cartography(BotReaction):
             self.not_open_during_night,
             self.no_items_allowed,
             self.door_locked,
-            self.no_right])
+            self.no_right,
+            self.not_authorized,
+            self.no_force])
 
         self.mudReaderHandler = mudReaderHandler
         self.commandHandler = commandHandler
@@ -123,7 +127,9 @@ class Cartography(BotReaction):
                 regex == self.not_open_during_night or
                 regex == self.no_items_allowed,
                 regex == self.door_locked,
-                regex == self.no_right):
+                regex == self.no_right,
+                regex == self.not_authorized,
+                regex == self.no_force):
             self.set_area_exit_as_unusable(regex)
 
     def draw_map(self, area_title, area_description, exit_list):
