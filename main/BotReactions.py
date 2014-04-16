@@ -1,30 +1,56 @@
+
 from misc_functions import magentaprint 
+import time
 
 class BotReaction(object):
     """ This type of object has a list of regexes and defines notify.  
     It gets registered with the MudReader and the notify 
-    gets executed when the Mud sends text matching any regex.
-    """
-    def abstract():
-        import inspect
-        caller = inspect.getouterframes(inspect.currentframe())[1][3]
-        raise NotImplementedError(caller + ' must be implemented in subclass')
-    
+    gets executed when the Mud sends text matching any regex. """
+
+    unregistered = False # MudReaderHandler uses this variable as part of the unregister procedure
+
     def __init__(self, regexes):
+
         if isinstance(regexes, str):
             regexes = [regexes]
 
         self.regexes = regexes
-        self.unregistered = False # MudReaderHandler uses this variable as part of the unregister procedure
-        self.good_MUD_timeout = 1.2 
-    
+
     def notify(self, regex, M_obj):
         """ This function is called by MudReaderThread when regex was 
         matched.  MudReaderThread gives the regex back so that the Reaction 
-        can know which was matched, and M-obj is given so that the matching 
+        can know which was matched, and M_obj is given so that the matching 
         text can be used.  
         """
-        abstract()
+        raise NotImplementedError()
+
+
+class BotReactionWithFlag(BotReaction):
+    """ wait_for_flag() is useful when you send a telnet command and 
+    want to wait for the server's response to that command. """
+
+    __waiter_flag = True
+    good_MUD_timeout = 1.2 
+
+    def notify(self, regex, M_obj):
+        """ Subclasses should implement notify and also ensure that __waiter_flag
+        gets set."""
+        self.__waiter_flag = True
+
+    def wait_for_flag(self):
+        self.__waiter_flag = False
+        start_time = time.time()
+        run_time = 0
+
+        while not self.__waiter_flag and run_time < self.good_MUD_timeout:
+            time.sleep(0.05)
+            run_time = time.time() - start_time
+
+        if not self.__waiter_flag:
+            return False  # Timed out
+        else:
+            self.__waiter_flag = False
+            return True
 
 
 class GenericBotReaction(BotReaction):

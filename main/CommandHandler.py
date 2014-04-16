@@ -8,8 +8,8 @@ import re
 import misc_functions
 from KillThread import *
 from CastThread import *
-from CoolAbility import *
-from CoolAbilityThread import *
+# from CoolAbility import *
+# from CoolAbilityThread import *
 from ThreadStopper import *
 
 

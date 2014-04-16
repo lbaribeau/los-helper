@@ -1,4 +1,3 @@
-###############################################################################
 
 import threading
 from threading import Thread
@@ -13,7 +12,7 @@ from Exceptions import *
 class BotThread(threading.Thread):
 
     def __init__(self, starting_path=None, character_in=None, commandHandler=None, 
-				 mudReaderHandler_in=None, inventory_in=None):
+                 mudReaderHandler_in=None, inventory_in=None):
         if(starting_path==None and character_in==None and commandHandler==None 
            and mudReaderHandler_in==None and inventory_in==None):
             return   
@@ -497,7 +496,7 @@ class BotThread(threading.Thread):
         self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
 
         if (self.__nextpath % 2 == 0):
-            self.inventory.getInventory()
+            self.inventory.get_inventory()
             if len(self.inventory.sellable()) > self.loot_threshold:
                 return SHOP_AND_TIP_PATH
             else:

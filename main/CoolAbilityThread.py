@@ -8,6 +8,7 @@ import atexit
 import time
 # from BotReaction import *
 
+
 class CoolAbilityThread(threading.Thread):
 
     def __init__(self, coolAbility, mudReaderHandler, telnetHandler): 

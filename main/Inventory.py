@@ -5,7 +5,8 @@ from Exceptions import *
 from BotReactions import *
 from misc_functions import replace_newlines_with_spaces
 
-class Inventory(BotReaction):
+
+class Inventory(BotReactionWithFlag):
 
     def __init__(self, mudReaderHandler, commandHandler):
         self.you_have = "(?s)You have: (.+?)\."
@@ -22,41 +23,41 @@ class Inventory(BotReaction):
         self.commandHandler = commandHandler
         self.inventory = []
         self.gold = 0
-        self.good_MUD_timeout = 1.2
-        self.__waiter_flag = False
         self.__stopping = False
         self.mudReaderHandler.register_reaction(self)
 
     def notify(self, regex, M_obj):
-        if regex == self.you_have:
+        if regex is self.you_have:
             self.parse_inventory_list(M_obj.group(1))
-        elif regex == self.sold:
+        elif regex is self.sold:
             self.gold = self.gold + int(M_obj.group(1))
             self.inventory.remove(self.remove_a_an_some(M_obj.group(2)))
-        elif regex == self.dropped:
+        elif regex is self.dropped:
+            magentaprint("removing " + M_obj.group(1) + " from inventory.")
+            magentaprint("inventory:" + str(self.inventory))
             self.inventory.remove(self.remove_a_an_some(M_obj.group(1)))
             self.gold = int(M_obj.group(2))
-        elif regex == self.you_now_have:
+        elif regex is self.you_now_have:
             self.gold = int(M_obj.group(1))
 
-        self.__waiter_flag = True
+        super(Inventory, self).notify(regex, M_obj)
 
-    def getInventory(self):
+    def get_inventory(self):
         self.commandHandler.process("i")
         self.wait_for_flag()
         return self.inventory
 
-    def getNumberOfItems(self, item):
+    def get_number_of_items(self, item):
         return self.inventory.count(item)
 
     def sell_stuff(self):
-        self.getInventory()  # Unnecessary if inventory is well tracked
+        self.get_inventory()  # Unnecessary if inventory is well tracked
 
         for item in self.sellable():
-            if self.__stopping:
+            if not self.__stopping:
+                self.sell(item)
+            else:
                 return
-
-            self.sell(item)
 
     def sell(self, item):
         self.commandHandler.process("sell " + item)
@@ -65,13 +66,13 @@ class Inventory(BotReaction):
     # def sell_fast(self):
 
     def drop_stuff(self):
-        self.getInventory()  # Unnecessary if sell manages to match everything.
+        self.get_inventory()  # Unnecessary if sell manages to match everything.
 
         for item in self.sellable():
-            if self.__stopping:
+            if not self.__stopping:
+                self.drop(item)
+            else:
                 return
-
-            self.drop(item)
 
     def drop(self, item):
         self.commandHandler.process("drop " + item)
@@ -85,20 +86,6 @@ class Inventory(BotReaction):
 
     def put_in_sack(self, item, sack):
         pass
-
-    def wait_for_flag(self):
-        self.__waiter_flag = False
-        start_time = time.time()
-        run_time = 0
-
-        while not self.__waiter_flag and not self.__stopping and run_time < self.good_MUD_timeout:
-            time.sleep(0.05)
-            run_time = time.time() - start_time
-
-        #if not self.__waiter_flag:
-        #    raise TimeoutError
-
-        self.__waiter_flag = False
 
     def stop(self):
         self.__stopping = True
@@ -122,7 +109,7 @@ class Inventory(BotReaction):
         numbers = ["a ", "an ", "some ", "two ", "three ", "four ", "five ", "six ", "seven ", 
                    "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ", "fourteen ", 
                    "fifteen" , "sixteen ", "seventeen ", "eighteen ", "nineteen ", "twenty "]
-        numbers.append([str(i) for i in range(21, 60)])
+        numbers.extend([str(i) for i in range(21, 100)])
 
         for item in inv_list:
             for n in range(0, len(numbers)):
@@ -147,7 +134,7 @@ class Inventory(BotReaction):
                         for _ in range(0, n-1):
                             self.inventory.append(item)
 
-                    continue;
+                    continue
 
 
 
@@ -233,6 +220,7 @@ class Inventory(BotReaction):
 # Ok I am ready for a regex list in BotReactions.
 
 # Your brass ring fell apart.
+# You are not yet adept enough to use this!
 
 
 

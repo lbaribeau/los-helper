@@ -11,13 +11,12 @@ from misc_functions import *
 from KillThread import *
 from CastThread import *
 from MyBuffer import *
-from MyMudWaiterFlags import *
 
-class MudReaderThread ( threading.Thread ):
+class MudReaderThread(threading.Thread):
     """This thread watches the the MUD output and appends it 
     to the buffer for the MudReaderThread to read it."""
     
-    def __init__(self, MUDBuffer, Character, ConsoleHandler):
+    def __init__(self, MUDBuffer, character, consoleHander):
         Thread.__init__(self)       
         # Constants
         self.ASCII_EOT = 4
@@ -25,8 +24,8 @@ class MudReaderThread ( threading.Thread ):
         self.ASCII_m = 109
         
         self.MUDBuffer = MUDBuffer
-        self.Character = Character
-        self.ConsoleHandler = ConsoleHandler
+        self.character = character
+        self.consoleHander = consoleHander
         
         #TODO: change these all to mud waiter flags
         self.CHECK_GO_FLAG = False
@@ -224,8 +223,8 @@ class MudReaderThread ( threading.Thread ):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])                
                 try:
                     #magentaprint("MudReader: Got health %s mana %s." % (health, mana))
-                    self.Character.HEALTH = int(M_obj.group(1))
-                    self.Character.MANA = int(M_obj.group(2))
+                    self.character.HEALTH = int(M_obj.group(1))
+                    self.character.MANA = int(M_obj.group(2))
                 except ValueError:
                     # The exception is if there's a glitch in the ANSI code or
                     # character order... happens sometimes.  (Think its the
@@ -241,74 +240,74 @@ class MudReaderThread ( threading.Thread ):
 
             M_obj = re.search("     (.+?) the (.+?), a (.+?) of the" + s_numbered + " level    ",text_buffer)
             if(M_obj != None):
-                self.Character.NAME = M_obj.group(1)
-                self.Character.RACE = M_obj.group(2)
-                self.Character.TITLE = M_obj.group(3)
-                self.Character.LEVEL = int(re.search("\d+",M_obj.group(4)).group(0))
+                self.character.NAME = M_obj.group(1)
+                self.character.RACE = M_obj.group(2)
+                self.character.TITLE = M_obj.group(3)
+                self.character.LEVEL = int(re.search("\d+",M_obj.group(4)).group(0))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 #magentaprint("MudReader got name, race, class, level: %s %s %s %s" % 
-                #            (self.Character.NAME, self.Character.RACE, 
-                #             self.Character.TITLE, self.Character.LEVEL))  
+                #            (self.character.NAME, self.character.RACE, 
+                #             self.character.TITLE, self.character.LEVEL))  
                 # Print checks out.
                 
             M_obj = re.search("Your preferred alignment is (.+?)     ",text_buffer)
             if(M_obj != None):
-                self.Character.AURA_PREFERRED = M_obj.group(1)
-                self.Character.AURA_PREFERRED_SCALE = my_list_search(self.Character.AURA_LIST, 
-                                                                          self.Character.AURA_PREFERRED)
+                self.character.AURA_PREFERRED = M_obj.group(1)
+                self.character.AURA_PREFERRED_SCALE = my_list_search(self.character.AURA_LIST, 
+                                                                          self.character.AURA_PREFERRED)
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 #magentaprint("MudReader got AURA_PREFERRED and scale: %s %s " % 
-                #             (self.Character.AURA_PREFERRED, self.Character.AURA_PREFERRED_SCALE)) 
+                #             (self.character.AURA_PREFERRED, self.character.AURA_PREFERRED_SCALE)) 
                 # Print checks out.
 
             #M_obj = re.search("     Sharp   : (\d+) +%  |  |     Earth : (\d+) +%     |",text_buffer)
             #if(M_obj != None):
-            #    self.Character.SKILLS['sharp'] = M_obj.group(1)
-            #    self.Character.SKILLS['earth'] = M_obj.group(2)
+            #    self.character.SKILLS['sharp'] = M_obj.group(1)
+            #    self.character.SKILLS['earth'] = M_obj.group(2)
             #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             #    magentaprint("MudReader got sharp and earth: %s %s " % 
-            #                 (self.Character.SKILLS['sharp'], self.Character.SKILLS['earth']))
+            #                 (self.character.SKILLS['sharp'], self.character.SKILLS['earth']))
             
             #M_obj = re.search("     Thrust  : (\d+) +%  |  |     Water : (\d+) +%     |",text_buffer)
             #if(M_obj != None):
-            #    self.Character.SKILLS['thrust'] = M_obj.group(1)
-            #    self.Character.SKILLS['water'] = M_obj.group(2)
+            #    self.character.SKILLS['thrust'] = M_obj.group(1)
+            #    self.character.SKILLS['water'] = M_obj.group(2)
             #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             #    magentaprint("MudReader got thrust and water: %s %s " % 
-            #                 (self.Character.WEAPON_SKILLS['thrust'], self.Character.MAGIC_SKILLS['water']))
+            #                 (self.character.WEAPON_SKILLS['thrust'], self.character.MAGIC_SKILLS['water']))
 
             #M_obj = re.search("     Blunt   : (\d+) +%  |  |     Fire  : (\d+) +%     |",text_buffer)
             #if(M_obj != None):
-            #    self.Character.SKILLS['blunt'] = M_obj.group(1)
-            #    self.Character.SKILLS['fire'] = M_obj.group(2)
+            #    self.character.SKILLS['blunt'] = M_obj.group(1)
+            #    self.character.SKILLS['fire'] = M_obj.group(2)
             #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             #    magentaprint("MudReader got blunt and fire: %s %s " % 
-            #                 (self.Character.WEAPON_SKILLS['blunt'], self.Character.MAGIC_SKILLS['fire']))
+            #                 (self.character.WEAPON_SKILLS['blunt'], self.character.MAGIC_SKILLS['fire']))
 
             #M_obj = re.search("     Pole    : (\d+) +%  |  |     Wind  : (\d+) +%     |",text_buffer)
             #if(M_obj != None):
-            #    self.Character.SKILLS['pole'] = M_obj.group(1)
-            #    self.Character.SKILLS['wind'] = M_obj.group(2)
+            #    self.character.SKILLS['pole'] = M_obj.group(1)
+            #    self.character.SKILLS['wind'] = M_obj.group(2)
             #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             #    magentaprint("MudReader got pole and wind: %s %s " % 
-            #                 (self.Character.WEAPON_SKILLS['pole'], self.Character.MAGIC_SKILLS['wind']))
+            #                 (self.character.WEAPON_SKILLS['pole'], self.character.MAGIC_SKILLS['wind']))
 
             #M_obj = re.search("     Missile : (\d+) +%  |  |     Astral: (\d+) +%     |",text_buffer)
             #if(M_obj != None):
-            #    self.Character.SKILLS['missile'] = M_obj.group(1)
-            #    self.Character.SKILLS['astral'] = M_obj.group(2)
+            #    self.character.SKILLS['missile'] = M_obj.group(1)
+            #    self.character.SKILLS['astral'] = M_obj.group(2)
             #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             #    magentaprint("MudReader got missile and astral: %s %s " % 
-            #                 (self.Character.WEAPON_SKILLS['missile'], self.Character.MAGIC_SKILLS['astral']))
+            #                 (self.character.WEAPON_SKILLS['missile'], self.character.MAGIC_SKILLS['astral']))
             
             #TODO: continue with MAXHP, MAXMP, GOLD, EXP, LEVELGOLD, LEVELEXP, etc.
             M_obj = re.search("Exp : (\d+)",text_buffer)
             if (M_obj != None):
-                self.Character.TOTAL_EXPERIENCE = M_obj.group(1)
+                self.character.TOTAL_EXPERIENCE = M_obj.group(1)
 
             M_obj = re.search("Gold : (\d+)",text_buffer)
             if (M_obj != None):
-                self.Character.TOTAL_GOLD = M_obj.group(1)
+                self.character.TOTAL_GOLD = M_obj.group(1)
 
             #### Casting regexes ####
             
@@ -318,27 +317,27 @@ class MudReaderThread ( threading.Thread ):
             M_obj = re.search("That spell does not exist\.", text_buffer)
             if(M_obj):
                 # refresh cast clock (cooldown wasn't used)
-                self.Character.CAST_CLK = time.time() - self.Character.CAST_WAIT 
+                self.character.CAST_CLK = time.time() - self.character.CAST_WAIT 
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("You don't know that spell\.", text_buffer)
             if(M_obj):
-                self.Character.CAST_CLK = time.time() - self.Character.CAST_WAIT
+                self.character.CAST_CLK = time.time() - self.character.CAST_WAIT
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("You cannot meet the casting cost!", text_buffer)
             if(M_obj):
-                self.Character.CAST_CLK = time.time() - self.Character.CAST_WAIT 
+                self.character.CAST_CLK = time.time() - self.character.CAST_WAIT 
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("Spell name is not unique\.", text_buffer)
             if(M_obj):
-                self.Character.CAST_CLK = time.time() - self.Character.CAST_WAIT 
+                self.character.CAST_CLK = time.time() - self.character.CAST_WAIT 
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("Cast what\?", text_buffer)
             if(M_obj):
-                self.Character.CAST_CLK = time.time() - self.Character.CAST_WAIT 
+                self.character.CAST_CLK = time.time() - self.character.CAST_WAIT 
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("Your spell fails\.", text_buffer)
             if(M_obj):
-                self.Character.CAST_CLK = time.time() - self.Character.CAST_WAIT
+                self.character.CAST_CLK = time.time() - self.character.CAST_WAIT
                 # TODO: BUG
                 #  - some spells can be cast again immediately if they fail and some cannot
                 #  - equivalently you can move or not move immediately after failing a spell
@@ -355,8 +354,8 @@ class MudReaderThread ( threading.Thread ):
             #### Haste ####
             M_obj = re.search("You feel yourself moving faster\.",text_buffer)
             if(M_obj != None):
-                self.Character.HASTING = True
-                self.Character.ATTACK_WAIT = self.Character.ATTACK_PERIOD_HASTE
+                self.character.HASTING = True
+                self.character.ATTACK_WAIT = self.character.ATTACK_PERIOD_HASTE
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("You're already hastened\.",text_buffer)
             #TODO: Its still possible that haste state is invalid.  Here user types
@@ -367,13 +366,13 @@ class MudReaderThread ( threading.Thread ):
             #which is mainly logging in.  TODO: Login_Update() (do with main thread
             #before raw_input call.)
             if(M_obj != None):
-                self.Character.HASTING = True
-                self.Character.ATTACK_WAIT = self.Character.ATTACK_PERIOD_HASTE
+                self.character.HASTING = True
+                self.character.ATTACK_WAIT = self.character.ATTACK_PERIOD_HASTE
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("You feel slower\.",text_buffer)
             if(M_obj != None):
-                self.Character.HASTING = False
-                self.Character.ATTACK_WAIT = self.Character.ATTACK_PERIOD
+                self.character.HASTING = False
+                self.character.ATTACK_WAIT = self.character.ATTACK_PERIOD
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                             
             #### Set weapon strings ####
@@ -386,7 +385,7 @@ class MudReaderThread ( threading.Thread ):
                     weap1 = weap1[2:]
                 elif(re.match("some ", weap1)):
                     weap1 = weap1[5:]
-                self.Character.WEAPON1 = weap1
+                self.character.WEAPON1 = weap1
             M_obj = re.search("You wield (.*?) in your off hand\.", text_buffer)
             if (M_obj != None):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
@@ -395,45 +394,45 @@ class MudReaderThread ( threading.Thread ):
                     weap2 = weap2[2:]
                 elif(re.match("some ",weap2)):
                     weap2 = weap2[5:]
-                self.Character.WEAPON2 = weap2
+                self.character.WEAPON2 = weap2
                       
             #### Shopping stuff ####
             # On gold pickup:
             M_obj = re.search("You now have (.+?) gold coins", text_buffer)
             if(M_obj):
-                self.Character.GOLD = int(M_obj.group(1))
+                self.character.GOLD = int(M_obj.group(1))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             # On tip drop:                    
             M_obj = re.search("You have (.+?) gold\.", text_buffer)
             if(M_obj):
-                self.Character.GOLD = int(M_obj.group(1))
+                self.character.GOLD = int(M_obj.group(1))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
             # On vendor ... also manage the sell check flag (signal to bot)
             M_obj = re.search("The shopkeep gives you (.+?) gold for (an?|some) (.+?)\.", text_buffer)
             if(M_obj):
-                self.Character.GOLD = self.Character.GOLD + int(M_obj.group(1))
-                self.Character.MUD_RETURN_ITEM_SOLD = True
+                self.character.GOLD = self.character.GOLD + int(M_obj.group(1))
+                self.character.MUD_RETURN_ITEM_SOLD = True
                 self.CHECK_SELL_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("The shopkeep won't buy that from you\.", text_buffer)
             if(M_obj):
-                self.Character.MUD_RETURN_ITEM_SOLD = False
+                self.character.MUD_RETURN_ITEM_SOLD = False
                 self.CHECK_SELL_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("It isn't empty!", text_buffer)
             if(M_obj):
-                self.Character.MUD_RETURN_ITEM_SOLD = False
+                self.character.MUD_RETURN_ITEM_SOLD = False
                 self.CHECK_SELL_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("The shopkeep says, \"I won't buy that rubbish from you\.\"", text_buffer)
             if(M_obj):
-                self.Character.MUD_RETURN_ITEM_SOLD = False
+                self.character.MUD_RETURN_ITEM_SOLD = False
                 self.CHECK_SELL_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("Sell what\?", text_buffer)
             if(M_obj):
-                self.Character.MUD_RETURN_ITEM_SOLD = False
+                self.character.MUD_RETURN_ITEM_SOLD = False
                 self.CHECK_SELL_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 
@@ -442,7 +441,7 @@ class MudReaderThread ( threading.Thread ):
             if(M_obj):
                 print ("Shucks anyhow")
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                self.Character.DEAD = True
+                self.character.DEAD = True
                 #self.stop()  # breaks program but allows me to see what happened
 
             ########    Monster Gets Killed    ######
@@ -451,25 +450,25 @@ class MudReaderThread ( threading.Thread ):
             M_obj = re.search("Your attack overwhelms the" + s_numbered + " (.+?) and (s?he|it) collapses!", text_buffer)
             if(M_obj != None):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                if(my_list_search(self.Character.MONSTER_LIST, M_obj.group(2)) != -1):
+                if(my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1):
                     magentaprint( "Removing " + M_obj.group(2) + " from MONSTER_LIST")
-                    self.Character.MONSTER_LIST.remove(M_obj.group(2))
+                    self.character.MONSTER_LIST.remove(M_obj.group(2))
                 else:
                     magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
             # Experience
             M_obj = re.search("You gain (.+?) experience\.", text_buffer)       
             if(M_obj):
-                self.Character.MOBS_KILLED += 1
-                self.Character.EXPERIENCE = self.Character.EXPERIENCE + int(M_obj.group(1))
+                self.character.MOBS_KILLED += 1
+                self.character.EXPERIENCE = self.character.EXPERIENCE + int(M_obj.group(1))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             # Monster flees.
             #TODO chasing function.
             M_obj = re.search("The" + s_numbered + " (.+?) flees to the (.+?)\.", text_buffer)
             if(M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                if(my_list_search(self.Character.MONSTER_LIST, M_obj.group(2)) != -1):
+                if(my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1):
                     magentaprint("Removing " + M_obj.group(2) + " from MONSTER_LIST")
-                    self.Character.MONSTER_LIST.remove(M_obj.group(2))
+                    self.character.MONSTER_LIST.remove(M_obj.group(2))
                 else:
                     magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
                 # TODO: make sure we're matching damage text for all kinds of attacks.
@@ -484,35 +483,35 @@ class MudReaderThread ( threading.Thread ):
             #prev_cmd_kill = re.match("k ",PREV_COMMAND)
             #if(M_obj != None and prev_cmd_kill != None):
             if(M_obj):
-                self.Character.ATTACK_CLK = time.time()-self.Character.ATTACK_WAIT
+                self.character.ATTACK_CLK = time.time()-self.character.ATTACK_WAIT
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
             M_obj = re.search("They are not here\.", text_buffer)
             if(M_obj):
-                self.Character.CAST_CLK = time.time() - self.Character.CAST_WAIT
+                self.character.CAST_CLK = time.time() - self.character.CAST_WAIT
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                                
             # Monster wanders to specific exit
             M_obj = re.search("The" + s_numbered + " (.+?) just wandered to the .+?\.", text_buffer)
             if(M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                if(my_list_search(self.Character.MONSTER_LIST, M_obj.group(2)) != -1):
-                    self.Character.MONSTER_LIST.remove(M_obj.group(2))
+                if(my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1):
+                    self.character.MONSTER_LIST.remove(M_obj.group(2))
                 else:
                     magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
             # Monster wanders away
             M_obj = re.search("The" + s_numbered + " (.+?) just wandered away\.", text_buffer)
             if(M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                if(my_list_search(self.Character.MONSTER_LIST, M_obj.group(2)) != -1):
-                    self.Character.MONSTER_LIST.remove(M_obj.group(2))
+                if(my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1):
+                    self.character.MONSTER_LIST.remove(M_obj.group(2))
                 else:
                     magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
             # Monster arrival
             M_obj = re.search("An? (.+?) just arrived\.", text_buffer)
             if(M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                self.Character.MONSTER_LIST.append(M_obj.group(1))
+                self.character.MONSTER_LIST.append(M_obj.group(1))
             # TODO: handle "Two lay followers just arrived."
             # Monsters joining in
             # Two strings which can occur
@@ -530,7 +529,7 @@ class MudReaderThread ( threading.Thread ):
             while(M_obj):
                 new_trunc = new_trunc + M_obj.end()
                 text_buffer_trunc = max([text_buffer_trunc, new_trunc])
-                self.Character.MOBS_JOINED_IN.append(M_obj.group(2))
+                self.character.MOBS_JOINED_IN.append(M_obj.group(2))
                     # Note... this thread just appends... let the bot
                     # remove stuff.  I can't differentiate between 
                     # any mob and one that joined in!
@@ -546,7 +545,7 @@ class MudReaderThread ( threading.Thread ):
             while(M_obj):
                 new_trunc = new_trunc + M_obj.end()
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                self.Character.MOBS_JOINED_IN.append(M_obj.group(2))
+                self.character.MOBS_JOINED_IN.append(M_obj.group(2))
                 temp_buf = temp_buf[new_trunc:]
                 M_obj = re.search(second_join_in_regex, temp_buf)
                 
@@ -574,20 +573,20 @@ class MudReaderThread ( threading.Thread ):
                 M_obj = re.search(attacking_regex, text_buffer)
                 if(M_obj):
                     text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                    if(my_list_search(self.Character.MOBS_ATTACKING, M_obj.group(2)) == -1):
-                        self.Character.MOBS_ATTACKING.append(M_obj.group(2))    
+                    if(my_list_search(self.character.MOBS_ATTACKING, M_obj.group(2)) == -1):
+                        self.character.MOBS_ATTACKING.append(M_obj.group(2))    
                 
             M_obj = re.search("Obvious exits: .+?\.\n\r\n\r", text_buffer)
             if(M_obj):
-                self.Character.MONSTER_LIST = []
-                self.Character.SUCCESSFUL_GO = True
+                self.character.MONSTER_LIST = []
+                self.character.SUCCESSFUL_GO = True
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
             M_obj = re.search("(?s)Obvious exits: .+?\.\n\r(You see .+?\.)", text_buffer)         
             if(M_obj != None):
-                self.Character.MONSTER_LIST = self.parse_monster_list(M_obj.group(1))
-                self.Character.SUCCESSFUL_GO = True
+                self.character.MONSTER_LIST = self.parse_monster_list(M_obj.group(1))
+                self.character.SUCCESSFUL_GO = True
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 # If there are items and no monsters in the room, the above will actually add the 
@@ -597,24 +596,24 @@ class MudReaderThread ( threading.Thread ):
 
             M_obj = re.search("It's too dark to see\.", text_buffer)
             if(M_obj):
-                self.Character.MONSTER_LIST = []
-                self.Character.SUCCESSFUL_GO = True
+                self.character.MONSTER_LIST = []
+                self.character.SUCCESSFUL_GO = True
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
             M_obj = re.search("The" + s_numbered + " (.+?) blocks your exit\.", text_buffer)
             if(M_obj):
-                #magentaprint("MudReader: unsuccessful go %f" % (time.time()-self.Character.START_TIME))
-                self.Character.GO_BLOCKING_MOB = M_obj.group(2)  
-                self.Character.SUCCESSFUL_GO = False
+                #magentaprint("MudReader: unsuccessful go %f" % (time.time()-self.character.START_TIME))
+                self.character.GO_BLOCKING_MOB = M_obj.group(2)  
+                self.character.SUCCESSFUL_GO = False
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
             M_obj = re.search("Please wait 1 more second\.", text_buffer)
             if(M_obj):
                 magentaprint("MudReader: unsuccessful go (please wait)")
-                self.Character.GO_PLEASE_WAIT = True
-                self.Character.SUCCESSFUL_GO = False
+                self.character.GO_PLEASE_WAIT = True
+                self.character.SUCCESSFUL_GO = False
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
@@ -623,25 +622,25 @@ class MudReaderThread ( threading.Thread ):
                 # This one is pretty problematic... as it should never happen.
                 # Means we're off course.
                 #magentaprint("MudReader: unsuccessful go (you can't go that way)")
-                self.Character.GO_NO_EXIT = True
-                self.Character.SUCCESSFUL_GO = False
+                self.character.GO_NO_EXIT = True
+                self.character.SUCCESSFUL_GO = False
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
             M_obj = re.search("I don't see that exit\.", text_buffer)
             if(M_obj):
                 #magentaprint("MudReader: unsuccessful go (you can't go that way)")
-                self.Character.GO_NO_EXIT = True
-                self.Character.SUCCESSFUL_GO = False
+                self.character.GO_NO_EXIT = True
+                self.character.SUCCESSFUL_GO = False
                 self.CHECK_GO_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
             M_obj = re.search("You glow with an? (.+?) aura\.", text_buffer)
             if(M_obj):
-                self.Character.AURA = M_obj.group(1)
-                self.Character.AURA_SCALE = my_list_search(self.Character.AURA_LIST, self.Character.AURA)
-                if(self.Character.AURA_SCALE == -1):
-                    magentaprint('Error in reading aura (not in list), came out as ' + self.Character.AURA + '.')
+                self.character.AURA = M_obj.group(1)
+                self.character.AURA_SCALE = my_list_search(self.character.AURA_LIST, self.character.AURA)
+                if(self.character.AURA_SCALE == -1):
+                    magentaprint('Error in reading aura (not in list), came out as ' + self.character.AURA + '.')
                 self.CHECK_AURA_FLAG = 0
                 self.CHECK_AURA_SUCCESS = 1
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
@@ -693,29 +692,29 @@ class MudReaderThread ( threading.Thread ):
         bright_char = ANSI_escape_sequence[2]
         colour_char = ANSI_escape_sequence[3]
         if(bright_char == '3'):
-            self.ConsoleHandler.set_dark()
+            self.consoleHander.set_dark()
         elif(bright_char == '4'):
-            self.ConsoleHandler.set_bright()
+            self.consoleHander.set_bright()
         else:
             pass # do nothing
         # Maybe check if character 2 is a '3' or '4' which designate colour
         # commands but I'm too lazy.
         if(colour_char == '0'):
-            self.ConsoleHandler.black()
+            self.consoleHander.black()
         elif(colour_char == '1'):
-            self.ConsoleHandler.red()
+            self.consoleHander.red()
         elif(colour_char == '2'):
-            self.ConsoleHandler.green()
+            self.consoleHander.green()
         elif(colour_char == '3'):
-            self.ConsoleHandler.yellow()
+            self.consoleHander.yellow()
         elif(colour_char == '4'):
-            self.ConsoleHandler.blue()
+            self.consoleHander.blue()
         elif(colour_char == '5'):
-            self.ConsoleHandler.magenta()
+            self.consoleHander.magenta()
         elif(colour_char == '6'):
-            self.ConsoleHandler.cyan()
+            self.consoleHander.cyan()
         elif(colour_char == '7' or colour_char == '9'):
-            self.ConsoleHandler.white()
+            self.consoleHander.white()
         else:
             # Do nothing (don't know this ANSI code)
             pass
