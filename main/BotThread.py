@@ -1,4 +1,3 @@
-###############################################################################
 
 import threading
 from threading import Thread
@@ -535,7 +534,7 @@ class BotThread(threading.Thread):
         self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
 
         if (self.__nextpath % 2 == 0):
-            self.inventory.getInventory()
+            self.inventory.get_inventory()
             if len(self.inventory.sellable()) > self.loot_threshold:
                 return SHOP_AND_TIP_PATH
             else:

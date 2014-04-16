@@ -24,6 +24,7 @@ from threading import Thread
 import atexit 
 import re
 import time
+
 from misc_functions import *
 from Character import *
 from BotThread import *
@@ -101,7 +102,7 @@ class LosHelper(object):
     def check_inventory(self):
         # This prints the inventory.  I like that.  
         # Inventory needs this to be up to date.
-        self.inventory.getInventory()
+        self.inventory.get_inventory()
         
         
     def watch_user_input(self):

@@ -4,10 +4,8 @@ import re
 
 from misc_functions import *
 from MyBuffer import *
-from MyMudWaiterFlags import *
 
-
-class MudReaderHandler:
+class MudReaderHandler(object):
     # This object tells the MudReaderThread what to do.
     # The reason it exits is because you don't want multiple 
     # threads accessing the same buffer so its important for 

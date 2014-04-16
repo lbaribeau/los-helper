@@ -11,22 +11,22 @@ databaseFile = "maplos.db"
 
 ##################################### MISC FUNCTIONS ########################
 
-def wait_for_move_ready(character_inst):
+def wait_for_move_ready(character):
     #global character_inst
-    time.sleep(max(0, character_inst.MOVE_WAIT - (time.time() - character_inst.MOVE_CLK)))
-    wait_for_attack_ready(character_inst)
-    wait_for_cast_ready(character_inst)
+    time.sleep(max(0, character.MOVE_WAIT - (time.time() - character.MOVE_CLK)))
+    wait_for_attack_ready(character)
+    wait_for_cast_ready(character)
     return
 
-def wait_for_attack_ready(character_inst):
-    if(character_inst.HASTING):
-        time.sleep(max(0, character_inst.ATTACK_PERIOD_HASTE - (time.time() - character_inst.ATTACK_CLK)))
+def wait_for_attack_ready(character):
+    if(character.HASTING):
+        time.sleep(max(0, character.ATTACK_PERIOD_HASTE - (time.time() - character.ATTACK_CLK)))
     else:
-        time.sleep(max(0, character_inst.ATTACK_PERIOD - (time.time() - character_inst.ATTACK_CLK)))        
+        time.sleep(max(0, character.ATTACK_PERIOD - (time.time() - character.ATTACK_CLK)))        
     return
 
-def wait_for_cast_ready(character_inst):
-    time.sleep(max(0, character_inst.CAST_WAIT - (time.time() - character_inst.CAST_CLK)))
+def wait_for_cast_ready(character):
+    time.sleep(max(0, character.CAST_WAIT - (time.time() - character.CAST_CLK)))
     return
 
 def my_list_search(thelist, item):

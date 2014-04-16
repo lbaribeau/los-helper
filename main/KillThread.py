@@ -5,6 +5,7 @@ from CombatThread import *
 from ThreadStopper import *
 from misc_functions import *
 
+
 class KillThread(CombatThread):
     """ This thread is used to keep time for attacks and can send an attack 
     command every few seconds.  It reads Character to determine the attack 

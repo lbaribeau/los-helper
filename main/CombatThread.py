@@ -4,6 +4,7 @@ from threading import Thread
 import atexit 
 from ThreadStopper import *
 
+
 class CombatThread(threading.Thread):
     """ Parent to KillThread and CastThread.
     Implements common functions (init, stop, keep_going, set_target, 

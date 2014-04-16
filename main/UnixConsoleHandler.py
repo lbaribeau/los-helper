@@ -26,4 +26,3 @@ class UnixConsoleHandler(object):
         pass
     def set_dark(self):
         pass
-
