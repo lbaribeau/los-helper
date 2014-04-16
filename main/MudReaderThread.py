@@ -575,8 +575,8 @@ class MudReaderThread(threading.Thread):
                 if(M_obj):
                     text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
-                    if(my_list_search(self.Character.MOBS_ATTACKING, M_obj.group(2)) == -1):
-                        self.Character.MOBS_ATTACKING.append(M_obj.group(2))
+                    if(my_list_search(self.character.MOBS_ATTACKING, M_obj.group(2)) == -1):
+                        self.character.MOBS_ATTACKING.append(M_obj.group(2))
 
             M_obj = re.search("You glow with an? (.+?) aura\.", text_buffer)
             if(M_obj):
