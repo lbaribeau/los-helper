@@ -6,7 +6,7 @@ class Error(Exception):
 class TimeoutError(Error):
     def __init__(self):
         return
-       
+
     def __str__(self):
-    	print("Something timed out!")
-    	return
+        print("Something timed out!")
+        return
