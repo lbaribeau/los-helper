@@ -730,7 +730,6 @@ class BotThread(threading.Thread):
         if monster in self.character.MOBS_ATTACKING:
             #magentaprint("Bot:engage_monster: Removing " + monster + " from MOBS_ATTACKING.")
             magentaprint("I believe the following is dead or gone: " + monster, False)
-            self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
             self.character.MOBS_ATTACKING.remove(monster)
             
         return

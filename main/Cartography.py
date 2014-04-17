@@ -158,26 +158,27 @@ class Cartography(BotReaction):
         return area
 
     def set_area_exit_as_unusable(self, regex):
-        try:
-            self.Character.GO_NO_EXIT = True
-            self.Character.SUCCESSFUL_GO = False
-            self.CHECK_GO_FLAG = 0
+        if self.Character.ACTIVELY_MAPPING:
+            try:
+                self.Character.GO_NO_EXIT = True
+                self.Character.SUCCESSFUL_GO = False
+                self.CHECK_GO_FLAG = 0
 
-            area_from = self.Character.AREA_ID
-            exit_type = self.Character.LAST_DIRECTION
+                area_from = self.Character.AREA_ID
+                exit_type = self.Character.LAST_DIRECTION
 
-            magentaprint("setting from & direction as unusable" + str(area_from) + " " + str(exit_type), False)
-            if area_from is not None and exit_type is not None:
-                area_from = Area.get_area_by_id(area_from)
-                exit_type = ExitType.get_exit_type_by_name_or_shorthand(exit_type)
-                area_exit = AreaExit.get_area_exit_by_area_from_and_exit_type(area_from, exit_type)
+                magentaprint("setting from & direction as unusable" + str(area_from) + " " + str(exit_type))
+                if area_from is not None and exit_type is not None:
+                    area_from = Area.get_area_by_id(area_from)
+                    exit_type = ExitType.get_exit_type_by_name_or_shorthand(exit_type)
+                    area_exit = AreaExit.get_area_exit_by_area_from_and_exit_type(area_from, exit_type)
 
-                if area_exit is not None:
-                    area_exit.is_useable = False
-                    area_exit.note = str(regex)
-                    area_exit.save()
-        except Exception:
-            magentaprint("Tried to make an area exit unusuable but failed", False)
+                    if area_exit is not None:
+                        area_exit.is_useable = False
+                        area_exit.note = str(regex)
+                        area_exit.save()
+            except Exception:
+                magentaprint("Tried to make an area exit unusuable but failed", False)
 
     def catalog_monsters(self, area, monster_list):
         try:

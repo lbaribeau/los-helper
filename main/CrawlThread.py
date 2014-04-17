@@ -20,7 +20,8 @@ class CrawlThread(threading.Thread):
         self.character = character_in
         self.commandHandler = commandHandler
         self.mudReaderHandler = mudReaderHandler_in
-            
+        self.character.ACTIVELY_MAPPING = True
+
         atexit.register(self.stop)
 
         database = SqliteDatabase(databaseFile, threadlocals=True, check_same_thread=False)
@@ -29,6 +30,7 @@ class CrawlThread(threading.Thread):
 
     def stop(self):
         magentaprint("Crawl: stopping....   Urrrrrchhhchch!!")
+        self.character.ACTIVELY_MAPPING = False
         self.__stopping = True
 
 

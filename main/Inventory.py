@@ -35,7 +35,10 @@ class Inventory(BotReactionWithFlag):
         elif regex is self.dropped:
             magentaprint("removing " + M_obj.group(1) + " from inventory.")
             magentaprint("inventory:" + str(self.inventory))
-            self.inventory.remove(self.remove_a_an_some(M_obj.group(1)))
+            try:
+                self.inventory.remove(self.remove_a_an_some(M_obj.group(1)))
+            except Exception:
+                magentaprint("Inventory removal exception - did you drop all or something?")          
             self.gold = int(M_obj.group(2))
         elif regex is self.you_now_have:
             self.gold = int(M_obj.group(1))
@@ -172,29 +175,7 @@ class Inventory(BotReactionWithFlag):
 
 
     # should probably depend on level.
-    keep_list = ["large bag", "large sack", 
-        "silver chalice", "steel bottle", "small restorative", 'heavy crossbow', 
-        'glowing potion', "chicken soup",
-        # weapons
-        'war hammer', "adamantine sword", 'adamantine axe', "claymore", 
-        "spider leg", 
-        "spear", "bolos", 'javelin', "long bow", 
-        "heathen amulet",
-        "broad sword", "rapier",
-        # armour
-        "hard cap", "hard gloves", "hard boots", "padded hat",
-        "mountain gloves", "mountain boots", "mountain boots with crampons",
-        "travellers cross", "leather mask", "leather collar",
-        "studded leather collar", "studded leather sleeves",
-        "studded leather boots", "studded leather pants",
-        "chain mail armour", 'chain mail sleeves', 'chain mail leggings', 
-        'chain mail gloves', 'chain mail hood', 'chain mail boots', 
-        "ring mail armour", "ring mail sleeves", "ring mail leggings", 
-        "ring mail hood", "ring mail gauntlets", "leather collar", 
-        "furry cloak", "enchanted indigo cloak",
-        'lion charm', "poison ring"
-        #'steel mask' # the bot slowly collects these 
-        ] 
+    keep_list = [] 
    
     MUD_RETURN_ITEM_SOLD = False
 

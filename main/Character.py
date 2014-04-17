@@ -309,6 +309,7 @@ class Character:
         self.GO_TIMEOUT = False
 
         self.CAN_SEE = True
+        self.ACTIVELY_MAPPING = False
 
         self.MUD_AREA = None
         self.AREA_TITLE=""

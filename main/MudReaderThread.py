@@ -486,6 +486,9 @@ class MudReaderThread(threading.Thread):
                 self.character.ATTACK_CLK = time.time()-self.character.ATTACK_WAIT
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
+                self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
+                time.sleep(0.05)
+
             M_obj = re.search("They are not here\.", text_buffer)
             if(M_obj):
                 self.Character.MONSTER_LIST = []
