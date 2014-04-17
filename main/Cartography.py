@@ -31,6 +31,7 @@ class Cartography(BotReaction):
         self.no_right = "You have not earned the right to pass this way!"
         self.not_authorized = "You are not authorised to enter here\."
         self.no_force = "You cannot force yourself to go through there\."
+        self.not_here = "You don't see that here\."
         
         self.db = db
 
@@ -55,7 +56,8 @@ class Cartography(BotReaction):
             self.door_locked,
             self.no_right,
             self.not_authorized,
-            self.no_force])
+            self.no_force,
+            self.not_here])
 
         self.mudReaderHandler = mudReaderHandler
         self.commandHandler = commandHandler
@@ -131,6 +133,9 @@ class Cartography(BotReaction):
                 regex == self.not_authorized,
                 regex == self.no_force):
             self.set_area_exit_as_unusable(regex)
+        elif regex == self.not_here:
+            self.character.ATTACK_CLK = time.time()-self.character.ATTACK_WAIT
+            self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
 
     def draw_map(self, area_title, area_description, exit_list):
         direction_list = []

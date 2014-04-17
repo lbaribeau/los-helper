@@ -473,22 +473,6 @@ class MudReaderThread(threading.Thread):
                     magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
                 # TODO: make sure we're matching damage text for all kinds of attacks.
                 
-            # Stop combat threads on "You don't see that here"
-            M_obj = re.search("You don't see that here\.",text_buffer)
-            # I don't like PREV_COMMAND.
-            # "You don't see that here" needs to terminate kk because
-            # MONSTER_LIST can be wrong if a mob arrives at the same time
-            # as I leave an area.  So I'm removing prev command and
-            # combat will always be stopped on "You don't see that here
-            #prev_cmd_kill = re.match("k ",PREV_COMMAND)
-            #if(M_obj != None and prev_cmd_kill != None):
-            if(M_obj):
-                self.character.ATTACK_CLK = time.time()-self.character.ATTACK_WAIT
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-
-                self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
-                time.sleep(0.05)
-
             M_obj = re.search("They are not here\.", text_buffer)
             if(M_obj):
                 self.Character.MONSTER_LIST = []
