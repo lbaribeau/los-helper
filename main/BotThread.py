@@ -33,7 +33,7 @@ class BotThread(threading.Thread):
         elif(self.character.LEVEL <= 7):
             self.__TOTALPATHS = 10 # include hookers for level 3            
         else:
-            self.__TOTALPATHS = 14 # start the fort and bandits at lvl 8
+            self.__TOTALPATHS = 16 # start the fort and bandits at lvl 8
 
         self.loot_threshold = 5  # the amount of loot to collect before selling
 
@@ -517,12 +517,33 @@ class BotThread(threading.Thread):
                           's', "gate", 's', 'w', 'e', 's',
                           "gate", 's', 's', 's', 's', 's', "gate", 'e', 's',
                           's', "chapel"]
-        
+
+        DWARVEN_FIELD_WORKERS_PATH = ['out', 'south', 'east', 'south', 'south',
+                            'south', 'west', 'gate', 'south', 'southeast', 'southeast',
+                            'east', 'east', 'east', 'pathway', 'northwest', 'north', 'north',
+                            'north', 'southeast', 'east', 'east', 'gate', 'east', 'building',
+                            'out', 'east', 'east', 'southeast', 'field', 'road', 'southeast',
+                            'southeast', 'southeast', 'field', 'stile', 'stile', 'road',
+                            'northwest', 'northwest', 'northwest', 'northwest', 'west', 'west',
+                            'west', 'gate', 'west', 'west', 'northwest', 'south', 'south', 'south',
+                            'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest',
+                            'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
+
+        #both gates close at night unforunately...
+        FIELD_WORKERS_PATH = ['out', 'south', 'east', 'south', 'south', 'south','west',
+                            'gate', 'south', 'southeast', 'southeast', 'east', 'east',
+                            'east', 'pathway', 'northwest', 'north', 'north', 'north',
+                            'northwest', 'northwest', 'north', 'north', 'gate', 'west',
+                            'north', 'northwest', 'northwest', 'north', 'gate', 'west',
+                            'west', 'southwest', 'southwest', 'west', 'west', 'west',
+                            'southwest', 'southwest', 'southeast', 'southeast', 'south',
+                            'gate', 'stile', 'northwest', 'southeast', 'southwest',
+                            'northeast', 'stile', 'gate', 'north', 'northwest', 'northwest',
+                            'west', 'west', 'gate', 'south', 'west', 'west', 'west', 'north', 'chapel']
+
         PATH_TO_SKIP_WITH = [ 'out', 'chapel' ]
         
         # TODO list
-        # dwarven field workers (good high level content)
-        # regular field workers east of Amethyst... however exit is shut during the night.
         # loggers and sawmill operators (lots of enemies if you hang around ... perhaps add some waiting)
 
         if (self.character.DEAD):
@@ -582,6 +603,8 @@ class BotThread(threading.Thread):
                              (self.character.AURA_SCALE, self.character.AURA_PREFERRED_SCALE))
                 self.__nextpath = self.__nextpath + 1   # So that we don't go selling
                 return PATH_TO_SKIP_WITH
+        elif(self.__nextpath == 15):
+            return DWARVEN_FIELD_WORKERS_PATH
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" +
                          self.__nextpath)
