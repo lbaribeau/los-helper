@@ -11,11 +11,12 @@ from CastThread import *
 # from CoolAbility import *
 # from CoolAbilityThread import *
 from ThreadStopper import *
-
+from Database import *
+from MudMap import *
 
 class CommandHandler(object):
 
-    def __init__(self, character, mudReaderHandler, telnetHandler):
+    def __init__(self, character, mudReaderHandler, telnetHandler, database_file, mud_map):
         self.telnetHandler = telnetHandler
         self.character = character
         self.mudReaderHandler = mudReaderHandler
@@ -23,6 +24,13 @@ class CommandHandler(object):
         self.CastThread = None
         self.CoolAbilityThread1 = None
         self.CoolAbilityThread2 = None
+
+        database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
+        db.initialize(database)
+        db.connect()
+        self.mud_map = mud_map
+        create_tables()
+        db.close()
 
     def stop_KillThread(self, debug_on=False):
         if(self.KillThread != None and self.KillThread.is_alive()):
@@ -83,7 +91,19 @@ class CommandHandler(object):
             self.user_move(user_input)
             # routine which does appropriate waiting,
             # printing, and finally sending command.
-        
+        elif(re.match("find (.+)", user_input)):
+            M_obj = re.search("find (.+)", user_input)
+            magentaprint("Finding: " + str(M_obj.group(1)))
+            MudMap.find(str(M_obj.group(1)))
+        elif(re.match("showto (\d+)", user_input)):
+            M_obj = re.search("showto (\d+)", user_input)
+            magentaprint("Showing directions to: " + str(M_obj.group(1)))
+            magentaprint(self.get_directions_from_where_we_are_to_area_id(M_obj.group(1)), False)
+        elif(re.match("goto (\d+)", user_input)):
+            M_obj = re.search("goto (\d+)", user_input)
+            magentaprint("Going to: " + str(M_obj.group(1)))
+            directions = self.get_directions_from_where_we_are_to_area_id(M_obj.group(1))
+            self.walk_path(directions)
         # Wielding?  Just do an alias here and do the current weapon maintenance
         # upon reading the MUD.  Reason: I don't know here whether he is
         # wielding a valid weapon and that way I don't have to recover in case
@@ -411,3 +431,46 @@ class CommandHandler(object):
         if(self.character.WEAPON2 != ""):
             self.telnetHandler.write("wie " + self.character.WEAPON2)
 
+    def get_directions_from_where_we_are_to_area_id(self, to_area_id):
+        directions = []
+        try:
+            if self.character.AREA_ID is not None:
+                directions = self.mud_map.get_path(int(self.character.AREA_ID), int(to_area_id))
+            else:
+                magentaprint("I'm not sure where I am (CurAreaID: " + str(self.character.AREA_ID) + ")", False)
+        except Exception:
+            magentaprint("I couldn't find a way there (" + str(self.character.AREA_ID) + ") to (" + str(to_area_id) + ")",False)
+        return directions
+
+    def walk_path(self, direction_list):
+        stopping = False
+        while(direction_list != [] and not stopping):
+            if(self.go(direction_list[0])):
+                direction_list.pop(0)
+            else:
+                if(self.character.GO_BLOCKING_MOB != ""):
+                    stopping = True
+                    magentaprint("A blocking mob has stopped me from walking", False)
+                    continue
+                elif(self.character.GO_PLEASE_WAIT):
+                    continue
+                elif(self.character.GO_TIMEOUT):
+                    direction_list.pop(0)
+                elif(self.character.GO_NO_EXIT):
+                    stopping = True
+                    magentaprint("Something was wrong with the path - exit missing", False)
+                    continue
+
+
+    def go(self, exit_str):
+        wait_for_move_ready(self.character)
+        wait_for_attack_ready(self.character)
+        wait_for_cast_ready(self.character)
+
+        if(re.match("(.*?door)", exit_str)):
+            self.process("open " + exit_str)
+            self.process("go " + exit_str)
+            return self.mudReaderHandler.check_for_successful_go()
+        else:
+            self.process("go " + exit_str)
+            return self.mudReaderHandler.check_for_successful_go()

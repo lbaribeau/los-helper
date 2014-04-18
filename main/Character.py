@@ -49,7 +49,7 @@ class Character:
         self.TOTAL_EXPERIENCE = 0
         self.TOTAL_GOLD = 0
 
-        self.BLACK_MAGIC = False
+        self.BLACK_MAGIC = True
         self.FAVOURITE_SPELL = "burn"
         
         self.KNOWS_VIGOR = True
@@ -187,7 +187,7 @@ class Character:
             ]
         # 45-60 exp
         self.__lvl4_monsters = [
-            "actor", #"actress", 
+            "actor", "actress", 
             "grip", "theatre goer",
             "merchant", "journeyman", "logger", 'trader',
             "butcher", "young knight", "acrobat", 
@@ -202,7 +202,7 @@ class Character:
         
         self.__lvl5_monsters = [
             "dwarven farm hand", "dwarven barmaid", 
-            "fort sentry", "fur trader", "aristocrat"
+            "fort sentry", "fur trader", "aristocrat", "vicar"
             #"seeker"  # seekers are unfortunately quite difficult
             ]
         self.__lvl5_red_monsters = [
@@ -215,7 +215,7 @@ class Character:
             "dwarven field worker", "dwarven bartender", "school teacher",
             'lyrist', "nobleman", 
             "bull", "hunter", 'usher',
-            'sword swallower', 'archer',
+            'sword swallower', 'archer', "vicar"
             #'sentry' stand in pairs...
             ]
         self.__lvl6_red_monsters = [
@@ -233,14 +233,14 @@ class Character:
             #'mine manager' #?
             ]
         self.__lvl9_monsters = [
-            "dwarven blacksmith"
+            "dwarven blacksmith", "dwarven shepherd"
             ]
         
         # A list of monsters redundant to the above lists that
         # I may want to kill even if they are too low of level.
         # Mostly hostiles and things that don't let you loot.
         self.__preferred_lvl_1_2_monsters = [
-            "oaf", "wanderer", #"acolyte", 
+            "oaf", "wanderer", "acolyte", 
             "thug", "spiv", "kobold sentry", "tired hooker", 
             "blond hooker", "angry hooker", "sultry hooker", 
             "journeyman" ] 

@@ -6,13 +6,13 @@ from collections import Counter
 from Exceptions import *
 from BotReactions import *
 from misc_functions import replace_newlines_with_spaces, my_list_search
-from MudMap import *
 from Database import *
+from MudMap import *
 import re
 
 class Cartography(BotReaction):
 
-    def __init__(self, mudReaderHandler, commandHandler, character):
+    def __init__(self, mudReaderHandler, commandHandler, character, database_file, mud_map):
         #             Title     Description        Exit list                    Monsters (opt)                    Items (opt)
         self.area = "(.+?\n\r)(\n\r.+)*?(\n\rObvious exits: .+?[\n\r]?.+?\.)\n\r(You see .+?[\n\r]?.+?\.)?[\n\r]?(You see .+?[\n\r]?.+?\.)?"
         self.too_dark = "It's too dark to see\."
@@ -33,11 +33,11 @@ class Cartography(BotReaction):
         self.no_force = "You cannot force yourself to go through there\."
         self.not_here = "You don't see that here\."
         
-        self.db = db
 
-        database = SqliteDatabase(databaseFile, threadlocals=True, check_same_thread=False)
+        database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
         db.initialize(database)
         db.connect()
+        self.mud_map = mud_map
         create_tables()
         db.close()
 

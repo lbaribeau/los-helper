@@ -38,22 +38,39 @@ from Inventory import *
 from Cartography import *
 from BotReactions import *
 from TelnetHandler import *
+from Database import *
+from MudMap import *
 
 
 class LosHelper(object):
 
     def __init__(self):
         ### DEPENDENCY INJECTION ###
+        print("LOSHelper initializing....")
         self.telnetHandler = TelnetHandler()
         self.consoleHandler = newConsoleHandler() 
         self.character = Character()
         self.MUDBuffer = MyBuffer()
+
+        print("Connecting to database....")
+
+        self.database_file = "maplos.db"
+
+        self.database = SqliteDatabase(self.database_file, threadlocals=True, check_same_thread=False)
+        db.initialize(self.database)
+
+        print("Generating the mapfile....")
+
+        self.mud_map = MudMap()
+
+        print("Hooking up reactions....")
+
         self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
         self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
         self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
-        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
+        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler, self.database_file, self.mud_map)
         self.inventory = Inventory(self.mudReaderHandler, self.commandHandler)
-        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
+        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character, self.database_file, self.mud_map)
         self.botThread = None
         self.crawlThread = None
 
@@ -66,7 +83,7 @@ class LosHelper(object):
         self.write_username_and_pass()
         self.set_up_auto_wield()
         self.check_inventory()
-        self.watch_user_input()   
+        self.watch_user_input()
             
         # Quitting cleanly: The MUD_read thread quits if it hits
         # and EOF.  watch_user_input watches for
@@ -179,7 +196,9 @@ class LosHelper(object):
         else:
             self.crawlThread = CrawlThread(self.character, 
                                        self.commandHandler, 
-                                       self.mudReaderHandler)
+                                       self.mudReaderHandler,
+                                       self.database,
+                                       self.mud_map)
             self.crawlThread.start()
 
 

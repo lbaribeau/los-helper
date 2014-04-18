@@ -51,7 +51,7 @@ class MudMap():
 			edge_path.append(cur_edge['name'])
 			i += 1
 
-		magentaprint("Got path: " + str(edge_path), False)
+		#magentaprint("Got path: " + str(edge_path), False)
 
 		return edge_path
 
