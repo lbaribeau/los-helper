@@ -13,16 +13,22 @@ def main():
     db.connect()
     create_tables()
 
-    MudMap.find("bull")
-    MudMap.find("ranch")
+    #MudMap.find("bull")
+    #MudMap.find("ranch")
 
-    #mud_map = MudMap()
+    mud_map = MudMap()
 
-    #mud_map.get_path(45, 68)
-    #mud_map.get_path(68, 71)
-    #mud_map.get_path(71, 72)
-    #mud_map.get_path(72, 35)
-    #mud_map.get_path(35, 45)
+    path = []
+
+    path.extend(mud_map.get_path(45, 1426))
+    path.extend(mud_map.get_path(1426, 1429))
+    path.extend(mud_map.get_path(1429, 1427))
+    path.extend(mud_map.get_path(1427, 1430))
+    path.extend(mud_map.get_path(1430, 1428))
+    path.extend(mud_map.get_path(1428, 1431))
+    path.extend(mud_map.get_path(1431, 45))
+
+    print (str(path))
 
     db.close()
 

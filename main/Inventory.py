@@ -38,7 +38,7 @@ class Inventory(BotReactionWithFlag):
             try:
                 self.inventory.remove(self.remove_a_an_some(M_obj.group(1)))
             except Exception:
-                magentaprint("Inventory removal exception - did you drop all or something?")          
+                magentaprint("Inventory removal exception - did you drop all or something?", False)          
             self.gold = int(M_obj.group(2))
         elif regex is self.you_now_have:
             self.gold = int(M_obj.group(1))
@@ -175,7 +175,7 @@ class Inventory(BotReactionWithFlag):
 
 
     # should probably depend on level.
-    keep_list = [] 
+    keep_list = ["small restorative"] 
    
     MUD_RETURN_ITEM_SOLD = False
 

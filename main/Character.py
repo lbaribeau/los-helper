@@ -154,7 +154,7 @@ class Character:
             "bidder", "dairy cow", "scholar", "juggler",  #"acolyte",
             "shepherd", "gazelle", 'dancer', 'jongleur',
             'tabby cat', 'clerk', 'stablehand', "rich kid", 'bladesman',
-            "cook's assistant", "miner's assistant",
+            "cook's assistant", "miner's assistant", "furniture maker"
             #"penitent" 
             ] 
         # acolytes are good (chalices) but can cause
@@ -177,7 +177,7 @@ class Character:
             "street trader", "field worker", "harvester", "horse", "cow",
             "doorman", "stilt walker",  "messenger", "cashier",
             "thatcher",  "tax inspector", 
-            'journeyman', "human miner", "hobbitish miner", "hawk"
+            'journeyman', "human miner", "hobbitish miner", "hawk", "sawmill operator", "stacker", "mill worker"
             #"miner's mule"
             ] 
 
@@ -215,7 +215,7 @@ class Character:
             "dwarven field worker", "dwarven bartender", "school teacher",
             'lyrist', "nobleman", 
             "bull", "hunter", 'usher',
-            'sword swallower', 'archer', "vicar"
+            'sword swallower', 'archer', "vicar", "yard supervisor", "sawmill supervisor"
             #'sentry' stand in pairs...
             ]
         self.__lvl6_red_monsters = [
@@ -309,6 +309,7 @@ class Character:
         self.GO_TIMEOUT = False
 
         self.CAN_SEE = True
+        self.PASSIVELY_MAPPING = False
         self.ACTIVELY_MAPPING = False
 
         self.MUD_AREA = None

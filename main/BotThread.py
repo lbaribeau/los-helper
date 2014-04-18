@@ -33,7 +33,7 @@ class BotThread(threading.Thread):
         elif(self.character.LEVEL <= 7):
             self.__TOTALPATHS = 10 # include hookers for level 3            
         else:
-            self.__TOTALPATHS = 16 # start the fort and bandits at lvl 8
+            self.__TOTALPATHS = 18 # start the fort and bandits at lvl 8
 
         self.loot_threshold = 5  # the amount of loot to collect before selling
 
@@ -541,16 +541,25 @@ class BotThread(threading.Thread):
                             'northeast', 'stile', 'gate', 'north', 'northwest', 'northwest',
                             'west', 'west', 'gate', 'south', 'west', 'west', 'west', 'north', 'chapel']
 
+        #Contains lvl 2&3 mobs (stacker, furniture maker, sawmill operator, mill worker) and lvl 6 mobs (sawmill / mill supervisors)
+        MILL_WORKERS = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate',
+                        'south', 'south', 'south', 'south', 'south', 'southwest', 'south',
+                        'southeast', 'southwest', 'south', 'south', 'southeast', 'south',
+                        'south', 'southwest', 'bridge', 'south', 'southwest', 'west', 'canal',
+                        'south', 'south', 'south', 'east', 'east', 'west', 'south', 'east',
+                        'west', 'north', 'north', 'east', 'south', 'south', 'southwest', 'out',
+                        'west', 'north', 'north', 'north', 'north', 'north', 'northwest',
+                        'northeast', 'north', 'north', 'north', 'northeast', 'northeast',
+                        'northeast', 'northeast', 'north', 'north', 'gate', 'east', 'north',
+                        'north', 'north', 'west', 'north', 'chapel']
+
         PATH_TO_SKIP_WITH = [ 'out', 'chapel' ]
-        
-        # TODO list
-        # loggers and sawmill operators (lots of enemies if you hang around ... perhaps add some waiting)
 
         if (self.character.DEAD):
             self.character.DEAD = False
             self.character.DEATHS += 1
             magentaprint("Died; Pulling up my bootstraps and starting again", False)
-            return LIMBO_TO_CHAPEL
+            return THEATRE_PATH
 
         self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
 
@@ -605,6 +614,8 @@ class BotThread(threading.Thread):
                 return PATH_TO_SKIP_WITH
         elif(self.__nextpath == 15):
             return DWARVEN_FIELD_WORKERS_PATH
+        elif(self.__nextpath == 17):
+            return MILL_WORKERS
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" +
                          self.__nextpath)

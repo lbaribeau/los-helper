@@ -475,8 +475,8 @@ class MudReaderThread(threading.Thread):
                 
             M_obj = re.search("They are not here\.", text_buffer)
             if(M_obj):
-                self.Character.MONSTER_LIST = []
-                self.Character.CAST_CLK = time.time() - self.Character.CAST_WAIT
+                self.character.MONSTER_LIST = []
+                self.character.CAST_CLK = time.time() - self.character.CAST_WAIT
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                                
             # Monster wanders to specific exit
