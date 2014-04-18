@@ -13,11 +13,16 @@ def main():
     db.connect()
     create_tables()
 
-    mud_map = MudMap()
+    MudMap.find("bull")
+    MudMap.find("ranch")
 
-    plt.axis('off')
-    nx.draw_networkx(mud_map.los_map,pos=None,with_label=True)
-    plt.savefig("maplos3.png")
+    #mud_map = MudMap()
+
+    #mud_map.get_path(45, 68)
+    #mud_map.get_path(68, 71)
+    #mud_map.get_path(71, 72)
+    #mud_map.get_path(72, 35)
+    #mud_map.get_path(35, 45)
 
     db.close()
 

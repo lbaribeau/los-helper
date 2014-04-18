@@ -118,6 +118,19 @@ class Area(BaseModel):
 
         return area
 
+    def get_areas_by_partial_name(area_name_part):
+        areas = []
+
+        area_name = "*" + area_name_part + "*"
+
+        try:
+            areas = Area.select().where((Area.name % area_name))
+
+        except Area.DoesNotExist:
+            areas = []
+
+        return areas
+
 
 class ExitType(BaseModel):
     name = CharField() #ex. north, out, door
@@ -296,6 +309,19 @@ class MobLocation(BaseModel):
             mob_locations = MobLocation.select().where((MobLocation.area == area_id) & (MobLocation.mob == mob_id)).get()
         except MobLocation.DoesNotExist:
             mob_locations = None
+
+        return mob_locations
+
+    def get_locations_by_partial_mob_name(mob_name_part):
+        mob_locations = []
+
+        mob_name = "*" + mob_name_part + "*"
+
+        try:
+            mob_locations = MobLocation.select().join(Mob).where(Mob.name % mob_name).order_by(Mob.id.desc())
+
+        except MobLocation.DoesNotExist:
+            mob_locations = []
 
         return mob_locations
 
