@@ -202,7 +202,7 @@ class Character:
         
         self.__lvl5_monsters = [
             "dwarven farm hand", "dwarven barmaid", 
-            "fort sentry", "fur trader", "aristocrat", "vicar"
+            "fort sentry", "fur trader", "aristocrat"
             #"seeker"  # seekers are unfortunately quite difficult
             ]
         self.__lvl5_red_monsters = [
@@ -215,7 +215,7 @@ class Character:
             "dwarven field worker", "dwarven bartender", "school teacher",
             'lyrist', "nobleman", 
             "bull", "hunter", 'usher',
-            'sword swallower', 'archer', "vicar", "yard supervisor", "sawmill supervisor"
+            'sword swallower', 'archer'#, "yard supervisor", "sawmill supervisor"
             #'sentry' stand in pairs...
             ]
         self.__lvl6_red_monsters = [
