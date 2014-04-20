@@ -113,7 +113,7 @@ class LosHelper(object):
             try:
                 user_input = input(); 
             except (EOFError, KeyboardInterrupt) as e:
-                magentaprint("Don't try to crash me!  Use 'quit'.")
+                magentaprint("Don't try to crash me!  Use 'quit'.", False)
                 user_input = ""
 
             user_input = user_input.lstrip()
@@ -163,19 +163,19 @@ class LosHelper(object):
         else:
             starting_path = 0
 
-            if (self.botThread != None and self.botThread.is_alive()):
-                magentaprint("It's already going, you'll have to stop it.  Use \"stop\".")
-            else:
-                self.botThread = BotThread(starting_path, 
-                                           self.character, 
-                                           self.commandHandler, 
-                                           self.mudReaderHandler,
-                                           self.inventory)
-                self.botThread.start()
+        if (self.botThread != None and self.botThread.is_alive()):
+            magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
+        else:
+            self.botThread = BotThread(starting_path, 
+                                       self.character, 
+                                       self.commandHandler, 
+                                       self.mudReaderHandler,
+                                       self.inventory)
+            self.botThread.start()
 
     def start_crawl(self):
         if (self.crawlThread != None and self.crawlThread.is_alive()):
-            magentaprint("It's already going, you'll have to stop it.  Use \"stop\".")
+            magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
             self.crawlThread = CrawlThread(self.character, 
                                        self.commandHandler, 
