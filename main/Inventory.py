@@ -63,6 +63,7 @@ class Inventory(BotReactionWithFlag):
                 return
 
     def sell(self, item):
+        magentaprint("selling " + str(item))
         self.commandHandler.process("sell " + item)
         self.wait_for_flag()
 
@@ -153,11 +154,14 @@ class Inventory(BotReactionWithFlag):
         references = []
         numbered_references = []
 
+
         for i in range(0, len(self.inventory)):
             reference = self._item_string_to_reference(self.inventory[i])
-            references.append(reference)
 
-            if self.inventory[i] not in self.keep_list:
+            #magentaprint(str(self.inventory[i]) + " " + str(reference), False)
+
+            if self.inventory[i].strip() not in self.keep_list:
+                references.append(reference)
                 prev_items_with_same_reference = references.count(reference) - 1
                 if(prev_items_with_same_reference == 0):
                     numbered_references.append(reference)
@@ -171,11 +175,12 @@ class Inventory(BotReactionWithFlag):
     def _item_string_to_reference(self, item_string):
         # 'grey cloak' will change to 'grey'
         # It just takes the first word.
-        return item_string.split(" ")[0].split(".")[0]
+        #magentaprint("item_string: " + item_string.strip(), False)
+        return item_string.strip().split(" ")[0].split(".")[0]
 
 
     # should probably depend on level.
-    keep_list = ["small restorative"] 
+    keep_list = ["small restorative", "small chalice", "steel bottle"] 
    
     MUD_RETURN_ITEM_SOLD = False
 
