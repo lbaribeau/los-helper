@@ -60,7 +60,7 @@ class Inventory(BotReactionWithFlag):
             self.add(item)
         elif regex is self.you_wear or regex is self.you_give or regex is self.you_put_in_bag:
             self.remove(M_obj.group(1))
-        elif regex is self.you_remove or regex is self.you_get_from_bag:
+        elif regex is self.you_remove:
             self.add(M_obj.group(1))
         elif regex is self.bought:
             self.get_inventory()  # There are some notes about this at the bottom
@@ -76,6 +76,7 @@ class Inventory(BotReactionWithFlag):
         return self.inventory.count(item)
 
     def sell_stuff(self):
+        self.__stopping = False
         self.get_inventory()  # Unnecessary if inventory is well tracked
 
         for item in self.sellable():
@@ -91,6 +92,7 @@ class Inventory(BotReactionWithFlag):
     # def sell_fast(self):
 
     def drop_stuff(self):
+        self.__stopping = False
         self.get_inventory()  # Unnecessary if sell manages to match everything.
 
         for item in self.sellable():
