@@ -110,7 +110,8 @@ class Cartography(BotReaction):
             self.Character.SUCCESSFUL_GO = False
             self.CHECK_GO_FLAG = 0
         elif regex == self.please_wait:
-            magentaprint("MudReader: unsuccessful go (please wait)")
+            magentaprint("Cartography: unsuccessful go (please wait)")  
+            # TODO: fix this message which prints on every Please wait 1
             self.Character.GO_PLEASE_WAIT = True
             self.Character.SUCCESSFUL_GO = False
             self.CHECK_GO_FLAG = 0

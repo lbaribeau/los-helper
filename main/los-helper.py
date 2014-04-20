@@ -52,7 +52,7 @@ class LosHelper(object):
         self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
         self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
         self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
-        self.inventory = Inventory(self.mudReaderHandler, self.commandHandler)
+        self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler)
         self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
         self.botThread = None
         self.crawlThread = None
