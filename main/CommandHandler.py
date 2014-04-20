@@ -95,15 +95,6 @@ class CommandHandler(object):
             M_obj = re.search("find (.+)", user_input)
             magentaprint("Finding: " + str(M_obj.group(1)))
             MudMap.find(str(M_obj.group(1)))
-        elif(re.match("showto (\d+)", user_input)):
-            M_obj = re.search("showto (\d+)", user_input)
-            magentaprint("Showing directions to: " + str(M_obj.group(1)))
-            magentaprint(self.get_directions_from_where_we_are_to_area_id(M_obj.group(1)), False)
-        elif(re.match("goto (\d+)", user_input)):
-            M_obj = re.search("goto (\d+)", user_input)
-            magentaprint("Going to: " + str(M_obj.group(1)))
-            directions = self.get_directions_from_where_we_are_to_area_id(M_obj.group(1))
-            self.walk_path(directions)
         # Wielding?  Just do an alias here and do the current weapon maintenance
         # upon reading the MUD.  Reason: I don't know here whether he is
         # wielding a valid weapon and that way I don't have to recover in case
@@ -441,36 +432,3 @@ class CommandHandler(object):
         except Exception:
             magentaprint("I couldn't find a way there (" + str(self.character.AREA_ID) + ") to (" + str(to_area_id) + ")",False)
         return directions
-
-    def walk_path(self, direction_list):
-        stopping = False
-        while(direction_list != [] and not stopping):
-            if(self.go(direction_list[0])):
-                direction_list.pop(0)
-            else:
-                if(self.character.GO_BLOCKING_MOB != ""):
-                    stopping = True
-                    magentaprint("A blocking mob has stopped me from walking", False)
-                    continue
-                elif(self.character.GO_PLEASE_WAIT):
-                    continue
-                elif(self.character.GO_TIMEOUT):
-                    direction_list.pop(0)
-                elif(self.character.GO_NO_EXIT):
-                    stopping = True
-                    magentaprint("Something was wrong with the path - exit missing", False)
-                    continue
-
-
-    def go(self, exit_str):
-        wait_for_move_ready(self.character)
-        wait_for_attack_ready(self.character)
-        wait_for_cast_ready(self.character)
-
-        if(re.match("(.*?door)", exit_str)):
-            self.process("open " + exit_str)
-            self.process("go " + exit_str)
-            return self.mudReaderHandler.check_for_successful_go()
-        else:
-            self.process("go " + exit_str)
-            return self.mudReaderHandler.check_for_successful_go()
