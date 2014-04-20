@@ -798,3 +798,4 @@ class BotThread(threading.Thread):
 # sensible way to check for guards.
  
  
+# You can't.  Its broken.  (Means the bot ran out of weapons.)

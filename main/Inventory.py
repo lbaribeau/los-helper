@@ -1,5 +1,6 @@
 
 import time
+import re
 
 from Exceptions import *
 from BotReactions import *
@@ -18,19 +19,19 @@ class Inventory(BotReactionWithFlag):
         self.not_empty = "It isn't empty!"
         self.you_wear= "(?s)You wear (.+?)\."
         self.nothing_to_wear = "You have nothing you can wear\."
+        self.you_get = "You get (.+?)\."
         self.you_remove = "(?s)You removed? (.+?)\."
         self.nothing_to_remove = "You aren't wearing anything that can be removed\."
         self.you_wield = "You wield (.+?)\."
         self.you_give = "You give (.+?) to (.+?)\."
         self.bought = "Bought\."  
         self.you_put_in_bag = "You put (.+?) into (.+?)\."
-        self.you_get_from_bag = "You get (.+?) from (.+?)\." 
 
-        super(Inventory, self).__init__([self.you_have, self.wont_buy, self.sold, self.dropped, 
-            self.not_a_pawn_shop, self.you_now_have,
+        super(Inventory, self).__init__([self.you_have, self.you_get, self.wont_buy, self.sold, 
+            self.dropped, self.not_a_pawn_shop, self.you_now_have,
             self.not_empty, self.you_wear, self.nothing_to_wear, self.you_remove,  
             self.nothing_to_remove, self.you_wield, self.you_give, self.bought,
-            self.you_put_in_bag, self.you_get_from_bag])
+            self.you_put_in_bag])
 
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
@@ -54,6 +55,9 @@ class Inventory(BotReactionWithFlag):
         elif regex is self.you_wield:
             weapon = self.clip_in_your_off_hand(M_obj.group(1))
             self.remove(weapon)
+        elif regex is self.you_get:
+            item = self.clip_from_a_container(M_obj.group(1))
+            self.add(item)
         elif regex is self.you_wear or regex is self.you_give or regex is self.you_put_in_bag:
             self.remove(M_obj.group(1))
         elif regex is self.you_remove or regex is self.you_get_from_bag:
@@ -146,6 +150,17 @@ class Inventory(BotReactionWithFlag):
             return wield_string[:length-17]
         else:
             return wield_string
+
+    def clip_from_a_container(self, get_string):
+        M_obj = re.search("(.+?) from (.+?)", get_string)
+
+        if M_obj != None:
+            magentaprint("returning: " + M_obj.group(1))
+            return M_obj.group(1)
+        else:
+            magentaprint("returning: " + get_string)
+            return get_string
+
 
     def parse_inventory_list(self, inventory_string):
         return_list = []
