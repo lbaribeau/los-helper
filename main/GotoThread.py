@@ -73,10 +73,10 @@ class GotoThread(threading.Thread):
                         elif(self.character.GO_NO_EXIT):
                             direction_list.pop()
                             continue
+                self.stop()
         else:
             magentaprint(str(direction_list),False)
-
-        self.stop()
+            self.stop()
 
 
     def decide_where_to_go(self):
