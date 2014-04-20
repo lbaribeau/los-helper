@@ -85,7 +85,7 @@ class Area(BaseModel):
             for exit_type in exits:
                 exit_found = False
                 for area_exit in area_exits:
-                    if (exit_type.id == area_exit.exit_type.id):
+                    if (exit_type.id == area_exit.exit_type.id or area_exit.is_hidden):
                         exit_found = True
                 if not exit_found:
                     return False
@@ -194,6 +194,7 @@ class AreaExit(BaseModel):
     area_to = ForeignKeyField(Area, related_name='area_to', null=True) #id is a default attribute
     exit_type = ForeignKeyField(ExitType)
     is_useable = BooleanField(default=True) #if the link is broken or potentially harzardous we don't want to use it
+    is_hidden = BooleanField(default=False) #these will be manually set for now
     note = CharField(default="")
 
     '''Private Area Functions'''

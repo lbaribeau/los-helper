@@ -10,8 +10,8 @@ from Database import *
 from MudMap import *
 
 class CrawlThread(threading.Thread):
-    def __init__(self, character_in=None, commandHandler=None, mudReaderHandler_in=None, database_file=None, mudMap=None):
-        if(character_in==None and commandHandler==None and mudReaderHandler_in==None and database_file==None and mudMap==None):
+    def __init__(self, character_in=None, commandHandler=None, mudReaderHandler_in=None, database=None, mud_map=None):
+        if(character_in==None and commandHandler==None and mudReaderHandler_in==None and database==None and mud_map==None):
             return   
         Thread.__init__(self)
         # Initialize some variables local to this thread
@@ -21,12 +21,10 @@ class CrawlThread(threading.Thread):
         self.commandHandler = commandHandler
         self.mudReaderHandler = mudReaderHandler_in
         self.character.ACTIVELY_MAPPING = True
-        self.database = database
-        self.mudMap = mudMap
 
         atexit.register(self.stop)
 
-        database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
+        self.database = database
         db.initialize(database)
         db.connect()
         self.mud_map = mud_map
