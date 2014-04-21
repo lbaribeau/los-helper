@@ -37,20 +37,19 @@ class MudListenerThread(threading.Thread):
                 sel_out_triple = select.select([socket_number], [], [], 2)
             except ValueError:
                 #Eat the error
-                # TODO:  Hmmm, this gets SPAMMED BIGTIME on exit... 
-                # (Do not print here.)
+                # TODO:  Hmmm, this gets SPAMMED BIGTIME on exit...  (Do not print here)
                 continue
 
             if sel_out_triple != ([], [], []):
-                # Read some characters.  
                 try:
-                    fragment = fragment + self.telnetHandler.read_some().decode('unicode_escape')
+                    fragment = fragment + self.telnetHandler.read_some().decode('ascii', errors='ignore')
                 except (EOFError, OSError) as e:
+                    # These can be thrown by read_some()
                     magentaprint("MudListenerThread: Exiting (saw EOF) or Socket is dead")
                     self.stop()
                     break
 
-                #magentaprint("MudListener: got a fragment size %d time %f last chars %s." % (len(fragment), time.time()-self.Character_inst.START_TIME, fragment[len(fragment)-8:]))
+                #magentaprint("MudListener: got a fragment size %d time %.1f last chars %s." % (len(fragment), round(time.time()-self.Character_inst.START_TIME, 1), fragment[len(fragment)-8:]))
 
                 #while(self.MUDBuffer.access_flag == True):
                     #time.sleep(0.05)
