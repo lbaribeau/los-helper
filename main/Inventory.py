@@ -172,7 +172,7 @@ class Inventory(BotReactionWithFlag):
         numbers = ["a ", "an ", "some ", "two ", "three ", "four ", "five ", "six ", "seven ", 
                    "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ", "fourteen ", 
                    "fifteen" , "sixteen ", "seventeen ", "eighteen ", "nineteen ", "twenty "]
-        numbers.extend([str(i) for i in range(21, 100)])
+        numbers.extend([str(i) + " " for i in range(21, 100)])
 
         for item in inv_list:
             for n in range(0, len(numbers)):
