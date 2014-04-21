@@ -26,12 +26,13 @@ class Inventory(BotReactionWithFlag):
         self.you_give = "You give (.+?) to (.+?)\."
         self.bought = "Bought\."  
         self.you_put_in_bag = "You put (.+?) into (.+?)\."
+        self.gave_you = ".+? gave a (.+?) to you\."
 
         super(Inventory, self).__init__([self.you_have, self.you_get, self.wont_buy, self.sold, 
             self.dropped, self.not_a_pawn_shop, self.you_now_have,
             self.not_empty, self.you_wear, self.nothing_to_wear, self.you_remove,  
             self.nothing_to_remove, self.you_wield, self.you_give, self.bought,
-            self.you_put_in_bag])
+            self.you_put_in_bag, self.gave_you])
 
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
@@ -60,7 +61,7 @@ class Inventory(BotReactionWithFlag):
             self.add(item)
         elif regex is self.you_wear or regex is self.you_give or regex is self.you_put_in_bag:
             self.remove(M_obj.group(1))
-        elif regex is self.you_remove:
+        elif regex is self.you_remove or regex is self.gave_you:
             self.add(M_obj.group(1))
         elif regex is self.bought:
             self.get_inventory()  # There are some notes about this at the bottom
@@ -157,10 +158,8 @@ class Inventory(BotReactionWithFlag):
         M_obj = re.search("(.+?) from (.+?)", get_string)
 
         if M_obj != None:
-            magentaprint("returning: " + M_obj.group(1))
             return M_obj.group(1)
         else:
-            magentaprint("returning: " + get_string)
             return get_string
 
 
