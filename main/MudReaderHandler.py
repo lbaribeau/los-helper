@@ -129,7 +129,7 @@ class MudReaderHandler(object):
             #magentaprint("Check for successful go, returning " + str(self.MudReaderThread.SUCCESSFUL_GO))
             return self.character.SUCCESSFUL_GO
         else:
-            magentaprint("MudReaderHandler: MudReadThread timed out on check_go by %f" % (run_time-start_time))
+            magentaprint("MudReaderHandler: check_go timed out by %.1fs." % round(run_time-start_time, 1))
             self.character.GO_TIMEOUT = True
             return False
 
