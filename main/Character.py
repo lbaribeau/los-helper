@@ -38,7 +38,7 @@ class Character:
         self.AURA_PREFERRED = self.AURA_LIST[self.AURA_PREFERRED_SCALE]
         
         self.AURA_LAST_UPDATE = -300
-        self.LAST_BUFF = -150
+        self.LAST_BUFF = -180
         self.LAST_MEDITATE = -150
 
         self.HAS_BUFF_ITEMS = False
@@ -61,7 +61,7 @@ class Character:
 
         self.ATTACK_WAIT = self.ATTACK_PERIOD   # Used by timer.  Same as ATTACK_PERIOD.
                                     # Amount of time to wait to walk after attacking
-        self.MOVE_WAIT = 0.35 
+        self.MOVE_WAIT = 0.25 
         self.CAST_WAIT = self.CAST_PERIOD
 
         self.MOBS_KILLED = 0

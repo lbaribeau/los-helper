@@ -76,7 +76,7 @@ class Cartography(BotReaction):
             self.Character.EXIT_LIST = []
             self.Character.MONSTER_LIST = []
             self.Character.SUCCESSFUL_GO = True
-            self.CHECK_GO_FLAG = 0
+            self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
             self.Character.CAN_SEE = False
         elif regex == self.area:
             matched_groups = M_obj.groups()
@@ -110,12 +110,12 @@ class Cartography(BotReaction):
         elif regex == self.blocked_path:
             self.Character.GO_BLOCKING_MOB = M_obj.group(2)
             self.Character.SUCCESSFUL_GO = False
-            self.CHECK_GO_FLAG = 0
+            self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
         elif regex == self.please_wait:
             magentaprint("MudReader: unsuccessful go (please wait)")
             self.Character.GO_PLEASE_WAIT = True
             self.Character.SUCCESSFUL_GO = False
-            self.CHECK_GO_FLAG = 0
+            self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
         elif regex == self.cant_go:
             # This one is pretty problematic... as it should never happen.
             # Means we're off course.
