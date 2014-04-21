@@ -71,7 +71,6 @@ class BotThread(threading.Thread):
                     
         self.__stopping = False 
         
-        magentaprint("BotThread: run()")
         self.set_up_automatic_ring_wearing()
 
         # Here is where the fun begins.
@@ -140,7 +139,7 @@ class BotThread(threading.Thread):
                         magentaprint("Bot: Got please wait on a go attempt, retrying.")
                         continue
                     elif(self.character.GO_TIMEOUT):
-                        magentaprint("Bot: Check go timed out.  Could be lag.  Will try agian in 2 sec.")
+                        magentaprint("Bot: Check go timed out.  Could be lag.  Will try again in 2 sec.")
                         # This can happen when the system clock makes time.time() inconsistent.
                         # Unless I can fix this I have to ignore this case and hope it worked.
                         direction_list.pop(0)
@@ -211,8 +210,6 @@ class BotThread(threading.Thread):
         #Todo: fix for case where there's ring mail in the inventory or multiple rings are dropped                 
 
     def rest_and_check_aura(self):
-        magentaprint("Resting.", False)
-     
         MANA_TO_WAIT = self.character.MAX_MANA - 12
         if(self.character.BLACK_MAGIC): 
             MANA_TO_GO = self.character.MAX_MANA 
@@ -307,12 +304,11 @@ class BotThread(threading.Thread):
 
 
     def update_aura(self):
-        magentaprint("casting show aura")
         if(self.__stopping):
             return False
 
-        if(self.character.LEVEL < 3 or time.time() - self.character.AURA_LAST_UPDATE < 300):
-            magentaprint("Not updating aura because it was recently updated (%f)." % (time.time() - self.character.AURA_LAST_UPDATE))
+        if(self.character.LEVEL < 3 or time.time() - self.character.AURA_LAST_UPDATE < 480):
+            magentaprint("Last aura update: %d seconds ago." % round(time.time() - self.character.AURA_LAST_UPDATE))
             return True   
 
         wait_for_cast_ready(self.character)
@@ -331,10 +327,10 @@ class BotThread(threading.Thread):
 
     
     def heal_up(self):
+        magentaprint("In heal_up.")
         heal_spell = "vig"
         heal_cost = 2
 
-        magentaprint("healing up")
         if(self.__stopping):
             return
 
@@ -408,8 +404,6 @@ class BotThread(threading.Thread):
         return
 
     def decide_where_to_go(self):
-        magentaprint("Inside decide_where_to_go")
-        
         LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
         SHOP_AND_TIP_PATH = ["out", "s", "w", 'w', 'w', 's', 's', "shop",
@@ -599,7 +593,7 @@ class BotThread(threading.Thread):
         # logic should be fixed to realize that it's not in a new area 
         # in these instances.
         
-        magentaprint("Going " + exit_str + (". %f" % (time.time() - self.character.START_TIME)))
+        # magentaprint("Going " + exit_str + (". %d" % round(time.time() - self.character.START_TIME)))
         wait_for_move_ready(self.character)
         wait_for_attack_ready(self.character)
         wait_for_cast_ready(self.character)
@@ -648,7 +642,7 @@ class BotThread(threading.Thread):
         while(self.character.SELL_CHECK_FLAG == 1 and time.time() - now < 3.0):
             time.sleep(0.05)
 
-        magentaprint("Bot: Time for sell check was %f." % (time.time()-now))
+        magentaprint("Bot: Time for sell check was %.1f." % round(time.time()-now, 1))
         return self.character.MUD_RETURN_ITEM_SOLD    
 
 
@@ -660,7 +654,6 @@ class BotThread(threading.Thread):
         self.inventory.drop_stuff()
 
     def decide_which_mob_to_kill(self, monster_list_in):
-        magentaprint("Inside decide_which_mob_to_kill")
         monster_list = monster_list_in[:]
 
         for mob in monster_list:
@@ -685,7 +678,6 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return
         
-        magentaprint("Engaging " + monster)
         self.commandHandler.user_kk(monster)
         time.sleep(0.5)  # Keeps attacking and magic out of sync
 
@@ -743,9 +735,6 @@ class BotThread(threading.Thread):
         return
 
     def engage_mobs_who_joined_in(self):
-        magentaprint("Inside engage_mobs_who_joined_in")
-        magentaprint(self.character.MOBS_JOINED_IN)
-
         while(self.character.MOBS_JOINED_IN != []):
             self.engage_monster(self.character.MOBS_JOINED_IN[0])
             self.character.MOBS_JOINED_IN = self.character.MOBS_JOINED_IN[1:]

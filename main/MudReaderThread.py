@@ -210,12 +210,10 @@ class MudReaderThread(threading.Thread):
                 self.BotReactionList.remove(reaction)
                 reaction_counter = reaction_counter + 1
             
-            if (reaction_counter > 0):
-                magentaprint("MudReaderThread removed " + str(reaction_counter) + 
-                             " reactions," + str(len(self.BotReactionList)) + 
-                             " reactions left.")
-                             # Seeing "2 reactions left" here is perfect (means combat threads are getting removed.)
-                             # The two reactions are the ring and wield reactions.
+            # if (reaction_counter > 0):
+            #     magentaprint("MudReaderThread removed " + str(reaction_counter) + 
+            #                  " reactions," + str(len(self.BotReactionList)) + 
+            #                  " reactions left.")
 
             #### Prompt ####
             M_obj = re.search("\[(.*?) H (.*?) M\]", text_buffer)
@@ -451,7 +449,6 @@ class MudReaderThread(threading.Thread):
             if(M_obj != None):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 if(my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1):
-                    magentaprint( "Removing " + M_obj.group(2) + " from MONSTER_LIST")
                     self.character.MONSTER_LIST.remove(M_obj.group(2))
                 else:
                     magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
@@ -467,7 +464,6 @@ class MudReaderThread(threading.Thread):
             if(M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 if(my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1):
-                    magentaprint("Removing " + M_obj.group(2) + " from MONSTER_LIST")
                     self.character.MONSTER_LIST.remove(M_obj.group(2))
                 else:
                     magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
