@@ -88,6 +88,7 @@ class Inventory(BotReactionWithFlag):
 
     def drop_stuff(self):
         self.__stopping = False
+        self.get_inventory()  # Maybe unnecessary, except I see "You don't have that" if removed
 
         for item_ref in self.sellable():
             if not self.__stopping:
@@ -245,6 +246,7 @@ class Inventory(BotReactionWithFlag):
     keep_list = ["large bag", "large sack", 
         "silver chalice", "steel bottle", "small restorative", 'heavy crossbow', 
         'glowing potion', "chicken soup",
+        'scarlet potion',
         # weapons
         'war hammer', "adamantine sword", 'adamantine axe', "claymore", 
         "spider leg", 
@@ -263,8 +265,7 @@ class Inventory(BotReactionWithFlag):
         "ring mail hood", "ring mail gauntlets", "leather collar", 
         "furry cloak", "enchanted indigo cloak",
         'lion charm', "poison ring",
-        'scarlet potion',
-        'fine elven cloak'
+        'fine elven cloak', "iron shield"
         #'steel mask' # the bot slowly collects these 
         ] 
 

@@ -205,7 +205,7 @@ class BotThread(threading.Thread):
     def set_up_automatic_ring_wearing(self):
         """ Makes some BotReactions so that when MudReaderHandler sees us 
         pick up a ring, we'll wear it."""
-        ringReaction = GenericBotReaction("You get .+? an? .+? ring((,.+?\.)|(\.))", self.commandHandler, "wear ring")
+        ringReaction = GenericBotReaction("(?s)You get .+? an? .+? ring((,.+?\.)|(\.))", self.commandHandler, "wear ring")
         self.mudReaderHandler.register_reaction(ringReaction)
         #Todo: fix for case where there's ring mail in the inventory or multiple rings are dropped                 
 
