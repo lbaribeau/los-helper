@@ -100,13 +100,19 @@ def calculate_vpm(value):
     return vpm
 
 def replace_newlines_with_spaces(s):
-    return_string = s[:]     
-    for removechar in ["\r", "\n"]:
-        Nindex = return_string.find(removechar)
-        while(Nindex != -1):
-            if(removechar == '\r'):
-                return_string = return_string[0:Nindex] + return_string[Nindex+1:]
-            else:
-                return_string = return_string[0:Nindex] + ' ' + return_string[Nindex+1:]
-            Nindex = return_string.find(removechar)
-    return return_string
+    # TODO: remove this function
+    s = s.replace('\n\r', ' ')
+    return s
+
+    # return_string = s[:]     
+    # for removechar in ["\r", "\n"]:
+    #     Nindex = return_string.find(removechar)
+
+    #     while Nindex != -1:
+    #         if removechar == '\r':
+    #             return_string = return_string[0:Nindex] + return_string[Nindex+1:]
+    #         else:
+    #             return_string = return_string[0:Nindex] + ' ' + return_string[Nindex+1:]
+    #         Nindex = return_string.find(removechar)
+
+    # return return_string

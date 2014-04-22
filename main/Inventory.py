@@ -13,23 +13,24 @@ class Inventory(BotReactionWithFlag):
         self.you_have = "(?s)You have: (.+?)\."
         self.wont_buy = "The shopkeep says, \"I won't buy that rubbish from you\.\""
         self.sold = "The shopkeep gives you (.+?) gold for (.+?)\."
-        self.dropped = "(?s)You drop (.+?)\.\n\rThanks for recycling\.\n\rYou have (.+?) gold\."
+        self.you_drop = "(?s)You drop (.+?)\."
+        self.gold_from_tip = "You have (.+?) gold\."
         self.not_a_pawn_shop = "This is not a pawn shoppe\."
         self.you_now_have = "You now have (.+?) gold pieces\."
         self.not_empty = "It isn't empty!"
         self.you_wear= "(?s)You wear (.+?)\."
         self.nothing_to_wear = "You have nothing you can wear\."
-        self.you_get = "You get (.+?)\."
+        self.you_get = "(?s)You get (.+?)\."
         self.you_remove = "(?s)You removed? (.+?)\."
         self.nothing_to_remove = "You aren't wearing anything that can be removed\."
         self.you_wield = "You wield (.+?)\."
-        self.you_give = "You give (.+?) to (.+?)\."
+        self.you_give = "(?s)You give (.+?) to (.+?)\."
         self.bought = "Bought\."  
-        self.you_put_in_bag = "You put (.+?) into (.+?)\."
-        self.gave_you = ".+? gave a (.+?) to you\."
+        self.you_put_in_bag = "(?s)You put (.+?) in(to)? (.+?)\."
+        self.gave_you = "(?s).+? gave (.+?) to you\."
 
         super(Inventory, self).__init__([self.you_have, self.you_get, self.wont_buy, self.sold, 
-            self.dropped, self.not_a_pawn_shop, self.you_now_have,
+            self.you_drop, self.not_a_pawn_shop, self.you_now_have, self.gold_from_tip,
             self.not_empty, self.you_wear, self.nothing_to_wear, self.you_remove,  
             self.nothing_to_remove, self.you_wield, self.you_give, self.bought,
             self.you_put_in_bag, self.gave_you])
@@ -44,14 +45,10 @@ class Inventory(BotReactionWithFlag):
     def notify(self, regex, M_obj):
         if regex is self.you_have:
             self.set_inventory(M_obj.group(1))
-            # magentaprint(str(self.inventory))
         elif regex is self.sold:
             self.gold = self.gold + int(M_obj.group(1))
             self.remove(M_obj.group(2))
-        elif regex is self.dropped:
-            self.remove(M_obj.group(1))
-            self.gold = int(M_obj.group(2))
-        elif regex is self.you_now_have:
+        elif regex is self.you_now_have or regex is self.gold_from_tip:
             self.gold = int(M_obj.group(1))
         elif regex is self.you_wield:
             weapon = self.clip_in_your_off_hand(M_obj.group(1))
@@ -59,7 +56,7 @@ class Inventory(BotReactionWithFlag):
         elif regex is self.you_get:
             item = self.clip_from_a_container(M_obj.group(1))
             self.add(item)
-        elif regex is self.you_wear or regex is self.you_give or regex is self.you_put_in_bag:
+        elif regex is self.you_drop or regex is self.you_wear or regex is self.you_give or regex is self.you_put_in_bag:
             self.remove(M_obj.group(1))
         elif regex is self.you_remove or regex is self.gave_you:
             self.add(M_obj.group(1))
@@ -73,80 +70,84 @@ class Inventory(BotReactionWithFlag):
         self.wait_for_flag()
         return self.inventory
 
-    def get_number_of_items(self, item):
-        return self.inventory.count(item)
-
     def sell_stuff(self):
         self.__stopping = False
         self.get_inventory()  # Unnecessary if inventory is well tracked
 
-        for item in self.sellable():
+        for item_ref in self.sellable():
             if not self.__stopping:
-                self.sell(item)
+                self.sell(item_ref)
             else:
                 return
 
-    def sell(self, item):
-        self.telnetHandler.write("sell " + item)
+    def sell(self, item_ref):
+        self.telnetHandler.write("sell " + item_ref)
         self.wait_for_flag()
 
     # def sell_fast(self):
 
     def drop_stuff(self):
         self.__stopping = False
-        self.get_inventory()  # Unnecessary if sell manages to match everything.
 
-        for item in self.sellable():
+        for item_ref in self.sellable():
             if not self.__stopping:
-                self.drop(item)
+                self.drop(item_ref)
             else:
                 return
 
-    def drop(self, item):
-        self.telnetHandler.write("drop " + item)
+    def drop(self, item_ref):
+        self.telnetHandler.write("drop " + item_ref)
         self.wait_for_flag()
-
-    def drop_fast(self):
-        pass
-
-    def give(self, item, target):
-        pass
-
-    def put_in_sack(self, item, sack):
-        pass
 
     def stop(self):
         self.__stopping = True
 
     def set_inventory(self, item_string):
-        self.inventory = self.parse_inventory_list(item_string)
+        self.inventory = self.parse_item_list(item_string)
 
     def add(self, item_string):
-        self.inventory.extend(self.parse_inventory_list(item_string))
-        self.inventory.sort()
+        items = self.parse_item_list(item_string)
+
+        for item, qty in items.items():
+            if item != 'gold coin':
+                Inventory.add_to_qty_dict(self.inventory, (item, qty)) 
+
+    @staticmethod
+    def add_to_qty_dict(d, duple):
+        ''' For (key, qty) pairs. '''
+        if duple[0] in d:
+            d[duple[0]] += duple[1]
+        else:
+            d[duple[0]] = duple[1]
 
     def remove(self, item_string):
-        for i in self.parse_inventory_list(item_string):
-            try: 
-                self.inventory.remove(i)
-            except ValueError:
-                magentaprint("Couldn't remove " + i + " from inventory.", False)
-                magentaprint("inventory:" + str(self.inventory), False)
-                magentaprint("item_string: " + item_string, False)
-                magentaprint("parse output:" + str(self.parse_inventory_list(item_string)), False)
-                magentaprint("problem item: " + i, False)
+        items = self.parse_item_list(item_string)
 
-    def remove_a_an_some(self, aString):
-        if aString[0:2] == "a ":
-            aString = aString[2:]
-        elif aString[0:3] == "an ":
-            aString = aString[3:]
-        elif aString[0:5] == "some ":
-            aString = aString[5:]
+        for item, qty in items.items():
+            if item != 'gold coin':
+                try:
+                    # self.remove((item, qty))
+                    Inventory.remove_from_qty_dict(self.inventory, (item, qty))
+                except ValueError:
+                    magentaprint("Couldn't remove '" + item + "' from inventory.")
+                    magentaprint("inventory:" + str(self.inventory))
+                    magentaprint("item_string: " + item_string)
+                    magentaprint("parse output:" + str(items))
 
-        return aString
+    @staticmethod
+    def remove_from_qty_dict(d, duple):
+        ''' For (key, qty) pairs. '''
+        if duple[0] in d:
+            if duple[1] >= d[duple[0]]:
+                del d[duple[0]]
+            else:
+                d[duple[0]] -= duple[1]
+        else:
+            raise ValueError
 
     def clip_in_your_off_hand(self, wield_string):
+        # Example wield_string: a spear in your off hand
+        wield_string = wield_string.replace('\n\r', ' ')
         length = len(wield_string)
 
         if wield_string[length-17:length] == " in your off hand":
@@ -155,6 +156,8 @@ class Inventory(BotReactionWithFlag):
             return wield_string
 
     def clip_from_a_container(self, get_string):
+        # Example get_string: some chicken soup from a sack
+        get_string = get_string.replace('\n\r', ' ')
         M_obj = re.search("(.+?) from (.+?)", get_string)
 
         if M_obj != None:
@@ -162,13 +165,12 @@ class Inventory(BotReactionWithFlag):
         else:
             return get_string
 
-
-    def parse_inventory_list(self, inventory_string):
-        return_list = []
-        inventory_string = replace_newlines_with_spaces(inventory_string)
+    def parse_item_list(self, inventory_string):
+        ''' Returns a dict {item: quantity} ie. {"chicken soup": 5, steel bottle: 1} '''
+        return_dict = {}
+        inventory_string = inventory_string.replace("\n\r", ' ')
         inv_list = inventory_string.split(',')
-        inv_list = [item.lstrip() for item in inv_list]
-        inv_list = [item.rstrip() for item in inv_list]
+        inv_list = [item.strip() for item in inv_list]
         numbers = ["a ", "an ", "some ", "two ", "three ", "four ", "five ", "six ", "seven ", 
                    "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ", "fourteen ", 
                    "fifteen" , "sixteen ", "seventeen ", "eighteen ", "nineteen ", "twenty "]
@@ -180,7 +182,7 @@ class Inventory(BotReactionWithFlag):
                 if item[0:len(number)] == number:
                     if n < 3:
                         item = item[len(number):]
-                        return_list.append(item)
+                        return_dict[item] = 1
                     else:
                         sets_of = "sets of "
                         if item[len(number):len(number)+len(sets_of)] == sets_of:
@@ -194,14 +196,11 @@ class Inventory(BotReactionWithFlag):
                                 else:
                                     item = item[:len(item)-1]
 
-                        for _ in range(0, n-1):
-                            return_list.append(item)
+                        return_dict[item] = n - 1
 
                     continue
 
-        return return_list
-
-
+        return return_dict
 
     def sellable(self):
         # Go backwards through the list because we want to sell in reverse order
@@ -211,29 +210,36 @@ class Inventory(BotReactionWithFlag):
         # The word "reference" is used as a more generic term for the word "item" in case you 
         # have a large axe and a large knife, their references are both "large" 
 
-        references = []
+        # This is O(like a gazillion) but that's fine with me.  It's pretty darn complicated.  
+        # I dare you to come up with a better algorithm.  I bet python list operations are 
+        # pretty quick.
+
+        references = {}
         numbered_references = []
 
-        for i in range(0, len(self.inventory)):
-            reference = self._item_string_to_reference(self.inventory[i])
-            references.append(reference)
+        for item in self.inventory:
+            reference = self._item_string_to_reference(item)
 
-            if self.inventory[i] not in self.keep_list:
-                prev_items_with_same_reference = references.count(reference) - 1
-                if(prev_items_with_same_reference == 0):
+            if item not in self.keep_list:
+                prev_items_with_same_reference = references[reference] if reference in references else 0
+
+                if prev_items_with_same_reference == 0:
                     numbered_references.append(reference)
+                    numbered_references.extend([reference + " " + str(n) for n in range(1, self.inventory[item])])
                 else:
-                    numbered_references.append(reference + " " + str(prev_items_with_same_reference + 1))
+                    numbered_references.extend([reference + " " + str(n) for n in range(prev_items_with_same_reference, prev_items_with_same_reference + self.inventory[item])])
+
+            Inventory.add_to_qty_dict(references, (item, self.inventory[item]))
+
+            # TODO: have quantities in keep_list
 
         numbered_references.reverse()
         return numbered_references
       
-
     def _item_string_to_reference(self, item_string):
         # 'grey cloak' will change to 'grey'
         # It just takes the first word.
         return item_string.split(" ")[0].split(".")[0]
-
 
     # should probably depend on level.
     keep_list = ["large bag", "large sack", 
@@ -257,12 +263,12 @@ class Inventory(BotReactionWithFlag):
         "ring mail hood", "ring mail gauntlets", "leather collar", 
         "furry cloak", "enchanted indigo cloak",
         'lion charm', "poison ring",
-        'scarlet potion'
+        'scarlet potion',
+        'fine elven cloak'
         #'steel mask' # the bot slowly collects these 
         ] 
 
     MUD_RETURN_ITEM_SOLD = False
-   
 
 
 # Ok I want to set up reactions to keep myself up to date.
@@ -297,3 +303,10 @@ class Inventory(BotReactionWithFlag):
 # oooff that doesn't even work because we don't have the full name of what we bought
 # Maybe printing the inventory won't be too annoying... 
 
+# NEWLINES
+
+# I wonder if there's a bug whenever a newline occurs outside of the (.+?).  
+# That would probably be MudReader's job to fix on a global level.
+# No, the mud doesn't put newlines there.  The console will wrap it but 
+# that doesn't constitute a newline.  The mud always puts them between words.
+# so s = s.replace('\r\n', ' ') is always a good move.
