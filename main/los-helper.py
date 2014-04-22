@@ -69,9 +69,11 @@ class LosHelper(object):
         self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
         self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
         self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
+
         self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler, self.database_file, self.mud_map)
         self.inventory = Inventory(self.mudReaderHandler, self.commandHandler)
         self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character, self.database_file, self.mud_map)
+
         self.botThread = None
         self.crawlThread = None
         self.gotoThread = None
@@ -132,7 +134,7 @@ class LosHelper(object):
             try:
                 user_input = input(); 
             except (EOFError, KeyboardInterrupt) as e:
-                magentaprint("Don't try to crash me!  Use 'quit'.")
+                magentaprint("Don't try to crash me!  Use 'quit'.", False)
                 user_input = ""
 
             user_input = user_input.lstrip()
@@ -194,7 +196,7 @@ class LosHelper(object):
             starting_path = 0
 
         if (self.botThread != None and self.botThread.is_alive()):
-            magentaprint("It's already going, you'll have to stop it.  Use \"stop\".")
+            magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
             self.botThread = BotThread(starting_path, 
                                        self.character, 
@@ -205,7 +207,7 @@ class LosHelper(object):
 
     def start_crawl(self):
         if (self.crawlThread != None and self.crawlThread.is_alive()):
-            magentaprint("It's already going, you'll have to stop it.  Use \"stop\".")
+            magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
             self.crawlThread = CrawlThread(self.character, 
                                        self.commandHandler, 
@@ -223,7 +225,7 @@ class LosHelper(object):
             starting_path = None
 
         if (self.gotoThread != None and self.gotoThread.is_alive()):
-            magentaprint("It's already going, you'll have to stop it.  Use \"stop\".")
+            magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
             self.gotoThread = GotoThread(self.character, 
                                        self.commandHandler, 

@@ -140,13 +140,12 @@ class BotThread(threading.Thread):
                         magentaprint("Bot: Got please wait on a go attempt, retrying.")
                         continue
                     elif(self.character.GO_TIMEOUT):
-                        magentaprint("Bot: Check go timed out. I will try again, hopefully next one will work.")
+                        magentaprint("Bot: Check go timed out.  Could be lag.  Will try agian in 2 sec.")
                         # This can happen when the system clock makes time.time() inconsistent.
                         # Unless I can fix this I have to ignore this case and hope it worked.
                         direction_list.pop(0)
                         self.character.MOBS_JOINED_IN = [] 
                         self.character.MOBS_ATTACKING = []
-                        magentaprint("Bot: Maybe it's lag... sleeping 2 sec")
                         time.sleep(2)
                     elif(self.character.GO_NO_EXIT): 
                         # This is a tough one.  Hopefully it never 
@@ -848,3 +847,4 @@ class BotThread(threading.Thread):
 # sensible way to check for guards.
  
  
+# You can't.  Its broken.  (Means the bot ran out of weapons.)
