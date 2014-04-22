@@ -89,10 +89,11 @@ class CommandHandler(object):
             M_obj = re.search("find (.+)", user_input)
             magentaprint("Finding: " + str(M_obj.group(1)))
             MudMap.find(str(M_obj.group(1)))
-                user_input = "wield " + user_input[3:] 
-            self.telnetHandler.write(user_input)
+
         elif re.match("wie?2 +[a-zA-Z]+( +\d+)?", user_input):
-            self.user_wie2(user_input[4:].lstrip())
+            user_input = "wield " + user_input[3:] 
+            self.telnetHandler.write(user_input)
+            #self.user_wie2(user_input[4:].lstrip())
         elif re.match("fle?$|flee$", user_input):
             self.user_flee()
         elif re.match("HASTING", user_input):  # Debug
