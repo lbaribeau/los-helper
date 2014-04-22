@@ -193,7 +193,9 @@ class Character:
             "butcher", "young knight", "acrobat", 
             #"auctioneer", # auctioneers are darn annoying, leave them out!
             "militia soldier", "carpenter", "stagehand",
-            'hungry spider', 'cook', 'joiner',
+            'hungry spider', 'cook', 'joiner', "ranch hand",
+            "old rancher", "tired ranch hand", "drinking ranch hand",
+            "busy ranch hand"
             #'miner'
             ]
         # hungry spiders are hostile
@@ -202,7 +204,7 @@ class Character:
         
         self.__lvl5_monsters = [
             "dwarven farm hand", "dwarven barmaid", 
-            "fort sentry", "fur trader", "aristocrat"
+            "fort sentry", "fur trader", "aristocrat", "rancher sentry"
             #"seeker"  # seekers are unfortunately quite difficult
             ]
         self.__lvl5_red_monsters = [

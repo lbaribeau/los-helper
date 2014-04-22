@@ -180,7 +180,7 @@ class Inventory(BotReactionWithFlag):
 
 
     # should probably depend on level.
-    keep_list = ["small restorative", "small chalice", "steel bottle"] 
+    keep_list = ["small restorative", "silver chalice", "steel bottle", "milky potion"] 
    
     MUD_RETURN_ITEM_SOLD = False
 
