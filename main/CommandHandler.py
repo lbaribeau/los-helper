@@ -184,13 +184,13 @@ class CommandHandler(object):
             self.character.ATTACK_CLK = now
             self.telnetHandler.write(user_input)
         elif time_remaining < 1.0:
-            magentaprint("Delaying by %.1f sec ..." % time_remaining, False)
+            magentaprint("Delaying by %.1f sec ..." % time_remaining)
             time.sleep(time_remaining)
             magentaprint("Sent.", False)
             self.character.ATTACK_CLK = now
             self.telnetHandler.write(user_input)
         else:
-            magentaprint("(Python) Wait %.1f more seconds" % time_remaining, False)
+            magentaprint("(Python) Wait %.1f more seconds" % time_remaining)
 
             
     def user_ca(self, user_input):
@@ -207,13 +207,13 @@ class CommandHandler(object):
             self.character.CAST_CLK = now
             self.telnetHandler.write(user_input)
         elif time_remaining < 1.0:
-            magentaprint("(Python) Delaying by %.1f sec ... " % time_remaining, False)
+            magentaprint("(Python) Delaying by %.1f sec ... " % time_remaining)
             time.sleep(time_remaining)
             magentaprint("Sent.", False)
             self.character.CAST_CLK = now
             self.telnetHandler.write(user_input)
         else:
-            magentaprint("(Python) Wait %.1f more seconds" % time_remaining, False)
+            magentaprint("(Python) Wait %.1f more seconds" % time_remaining)
 
 
     def user_move(self, user_input):
@@ -236,13 +236,13 @@ class CommandHandler(object):
             self.character.MOVE_CLK = now
             self.telnetHandler.write(user_input)
         elif time_remaining < 1.0:
-            magentaprint("(Python) Delaying by %.1f sec ..." % time_remaining, False)
+            magentaprint("(Python) Delaying by %.1f sec ..." % time_remaining)
             time.sleep(time_remaining)
-            magentaprint("Sent.", False)
+            magentaprint("Sent.")
             self.character.MOVE_CLK = now
             self.telnetHandler.write(user_input)
         else:
-            magentaprint("Wait %.1f more seconds" % time_remaining, False)
+            magentaprint("Wait %.1f more seconds" % time_remaining)
         
     def stop_KillThread(self):
         if self.KillThread != None and self.KillThread.is_alive():
@@ -287,7 +287,7 @@ class CommandHandler(object):
     def user_cc(self, argv):
         # TODO: Bug for user input "cc "
         if argv == "":
-            magentaprint("Usage:  cc <spell> [<target> [<number>]]", False)
+            magentaprint("Usage:  cc <spell> [<target> [<number>]]")
             self.telnetHandler.write("") # TODO: Keep a prompt up to date so we can print
                                     # immediately instead of sending to mud.
             return        
@@ -351,7 +351,7 @@ class CommandHandler(object):
         time_remaining = max(self.character.MOVE_WAIT - (now - self.character.MOVE_CLK),
                              self.character.ATTACK_WAIT - (now - self.character.ATTACK_CLK),
                              self.character.CAST_WAIT - (now - self.character.CAST_CLK))
-        magentaprint("Fleeing in %.1f sec ..." % time_remaining, False)
+        magentaprint("Fleeing in %.1f sec ..." % time_remaining)
         first_sleep = max(time_remaining - self.character.ATTACK_WAIT - 0.2, 0)
         second_sleep = time_remaining - first_sleep 
         time.sleep(first_sleep)

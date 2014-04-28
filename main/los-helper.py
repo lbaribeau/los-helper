@@ -71,7 +71,7 @@ class LosHelper(object):
         self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
 
         self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler, self.database_file, self.mud_map)
-        self.inventory = Inventory(self.mudReaderHandler, self.commandHandler)
+        self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler)
         self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character, self.database_file, self.mud_map)
 
         self.botThread = None

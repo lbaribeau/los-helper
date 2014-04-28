@@ -50,22 +50,17 @@ def my_list_equal(listA, listB):
 def magentaprint(text, isDebugCommand=True):
     global debugMode
 
+    if (debugMode or not isDebugCommand):
+        do_magentaprint (text)
+
+def do_magentaprint(text):
     newConsoleHandler().magenta()
-#    if(mod_s != ""):
-#        print s % mod_s
-#    else:
-#        print s
 
     output = str(get_timestamp() + "| " + str(text))
-    #output = text
 
-    if (debugMode):
-        print (output)
-    elif not (isDebugCommand):
-        print (output)
+    print (output)
 
     newConsoleHandler().white()
-    return
 
 def manage_telnet_output(text, isVerbose=True):
     global verboseMode

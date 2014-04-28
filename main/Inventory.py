@@ -53,7 +53,7 @@ class Inventory(BotReactionWithFlag):
             try:
                 self.inventory.remove(self.remove_a_an_some(M_obj.group(1)))
             except Exception:
-                magentaprint("Inventory removal exception - did you drop all or something?", False)          
+                magentaprint("Inventory removal exception - did you drop all or something?")          
             self.remove(M_obj.group(1))
             self.gold = int(M_obj.group(2))
         elif regex is self.you_now_have:
@@ -135,11 +135,11 @@ class Inventory(BotReactionWithFlag):
             try: 
                 self.inventory.remove(i)
             except ValueError:
-                magentaprint("Couldn't remove " + i + " from inventory.", False)
-                magentaprint("inventory:" + str(self.inventory), False)
-                magentaprint("item_string: " + item_string, False)
-                magentaprint("parse output:" + str(self.parse_inventory_list(item_string)), False)
-                magentaprint("problem item: " + i, False)
+                magentaprint("Couldn't remove " + i + " from inventory.")
+                magentaprint("inventory:" + str(self.inventory))
+                magentaprint("item_string: " + item_string)
+                magentaprint("parse output:" + str(self.parse_inventory_list(item_string)))
+                magentaprint("problem item: " + i)
 
     def remove_a_an_some(self, aString):
         if aString[0:2] == "a ":
@@ -225,7 +225,7 @@ class Inventory(BotReactionWithFlag):
         for i in range(0, len(self.inventory)):
             reference = self._item_string_to_reference(self.inventory[i])
 
-            #magentaprint(str(self.inventory[i]) + " " + str(reference), False)
+            #magentaprint(str(self.inventory[i]) + " " + str(reference))
 
             if self.inventory[i].strip() not in self.keep_list:
                 references.append(reference)
@@ -242,7 +242,7 @@ class Inventory(BotReactionWithFlag):
     def _item_string_to_reference(self, item_string):
         # 'grey cloak' will change to 'grey'
         # It just takes the first word.
-        #magentaprint("item_string: " + item_string.strip(), False)
+        #magentaprint("item_string: " + item_string.strip())
         return item_string.strip().split(" ")[0].split(".")[0]
 
 
@@ -250,28 +250,27 @@ class Inventory(BotReactionWithFlag):
     #keep_list = ["small restorative", "silver chalice", "steel bottle", "milky potion"] 
 
     keep_list = ["large bag", "large sack", 
-        "silver chalice", "steel bottle", "small restorative", 'heavy crossbow', 
-        'glowing potion', "chicken soup",
+        "silver chalice", "steel bottle", "small restorative", 'glowing potion', "chicken soup", 'scarlet potion'
         # weapons
-        'war hammer', "adamantine sword", 'adamantine axe', "claymore", 
-        "spider leg", 
-        "spear", "bolos", 'javelin', "long bow", 
-        "heathen amulet",
-        "broad sword", "rapier",
+        #'war hammer', "adamantine sword", 'adamantine axe', "claymore", 
+        #"spider leg", 
+        #"spear", "bolos", 'javelin', "long bow", 
+        #"heathen amulet",
+        #"broad sword", "rapier",
+        #'heavy crossbow', 
         # armour
-        "hard cap", "hard gloves", "hard boots", "padded hat",
-        "mountain gloves", "mountain boots", "mountain boots with crampons",
-        "travellers cross", "leather mask", "leather collar",
-        "studded leather collar", "studded leather sleeves",
-        "studded leather boots", "studded leather pants",
-        "chain mail armour", 'chain mail sleeves', 'chain mail leggings', 
-        'chain mail gloves', 'chain mail hood', 'chain mail boots', 
-        "ring mail armour", "ring mail sleeves", "ring mail leggings", 
-        "ring mail hood", "ring mail gauntlets", "leather collar", 
-        "furry cloak", "enchanted indigo cloak",
-        'lion charm', "poison ring",
-        'scarlet potion'
-        #'steel mask' # the bot slowly collects these 
+        #"hard cap", "hard gloves", "hard boots", "padded hat",
+        #"mountain gloves", "mountain boots", "mountain boots with crampons",
+        #"travellers cross", "leather mask", "leather collar",
+        #"studded leather collar", "studded leather sleeves",
+        #"studded leather boots", "studded leather pants",
+        #"chain mail armour", 'chain mail sleeves', 'chain mail leggings', 
+        #'chain mail gloves', 'chain mail hood', 'chain mail boots', 
+        #"ring mail armour", "ring mail sleeves", "ring mail leggings", 
+        #"ring mail hood", "ring mail gauntlets", "leather collar", 
+        #"furry cloak", "enchanted indigo cloak",
+        #'lion charm', "poison ring",
+        #'steel mask' # the bot slowly collects these
         ] 
 
     MUD_RETURN_ITEM_SOLD = False
