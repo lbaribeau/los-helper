@@ -2,21 +2,21 @@
 class UnixConsoleHandler(object):
 
     def black(self):
-        print("\033[30m", end='')
+        print("\033[30m")
     def blue(self):
-        print("\033[34m", end='')
+        print("\033[34m")
     def green(self):
-        print("\033[32m", end='')
+        print("\033[32m")
     def cyan(self):
-        print("\033[36m", end='')
+        print("\033[36m")
     def red(self):
-        print("\033[31m", end='')
+        print("\033[31m")
     def magenta(self):
-        print("\033[35m", end='')
+        print("\033[35m")
     def yellow(self):
-        print("\033[33m", end='')
+        print("\033[33m")
     def white(self):
-        print("\033[37m", end='')
+        print("\033[37m")
 
     #TODO: we could use something like bold(\033[1m) for bright, but there's no
     #way to reset it without also resetting the color
