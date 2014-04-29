@@ -193,5 +193,4 @@ class LosHelper(object):
             self.botThread.stop()
             #self.mudReaderHandler.unregister_reactions()
 
-#if __name__ == '__main__':
 LosHelper().main()

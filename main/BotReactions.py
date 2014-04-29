@@ -29,7 +29,7 @@ class BotReactionWithFlag(BotReaction):
     want to wait for the server's response to that command. """
 
     __waiter_flag = True
-    good_MUD_timeout = 1.2 
+    good_MUD_timeout = 8.0  #* (see footnote)
 
     def notify(self, regex, M_obj):
         """ Subclasses should implement notify and also ensure that __waiter_flag
@@ -50,6 +50,12 @@ class BotReactionWithFlag(BotReaction):
         else:
             self.__waiter_flag = False
             return True
+
+    # * A high MUD_timeout allows for big lag, which is nice. 
+    # You can get stuck on the road if you get impatient and send extra commands.
+    # Remember that commands don't timeout unless there's lag or a regex is 
+    # missing, so having this high shouldn't slow anything down.  If it does, 
+    # a regex can be handled better.
 
 
 class GenericBotReaction(BotReaction):
