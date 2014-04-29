@@ -29,11 +29,11 @@ class Inventory(BotReactionWithFlag):
         self.you_put_in_bag = "(?s)You put (.+?) in(to)? (.+?)\."
         self.gave_you = "(?s).+? gave (.+?) to you\."
 
-        super(Inventory, self).__init__([self.you_have, self.you_get, self.wont_buy, self.sold, 
+        self.regexes = [self.you_have, self.you_get, self.wont_buy, self.sold, 
             self.you_drop, self.not_a_pawn_shop, self.you_now_have, self.gold_from_tip,
             self.not_empty, self.you_wear, self.nothing_to_wear, self.you_remove,  
             self.nothing_to_remove, self.you_wield, self.you_give, self.bought,
-            self.you_put_in_bag, self.gave_you])
+            self.you_put_in_bag, self.gave_you]
 
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
@@ -62,6 +62,7 @@ class Inventory(BotReactionWithFlag):
             self.add(M_obj.group(1))
         elif regex is self.bought:
             self.get_inventory()  # There are some notes about this at the bottom
+            # I don't like this very much! I can't use ! to buy a lot of a thing.
 
         super(Inventory, self).notify(regex, M_obj)  # sets __waiter_flag
 
@@ -69,6 +70,43 @@ class Inventory(BotReactionWithFlag):
         self.telnetHandler.write("i")
         self.wait_for_flag()
         return self.inventory
+
+    def has_restorative(self):
+        return self.has(self.restoratives)
+
+    def use_restorative(self):
+        self.use(self.restoratives)
+
+    def has(self, item_or_list):
+        if type(item) is list:
+            return any([i in self.inventory for i in item])
+        else:
+            return item_or_list in self.inventory
+
+    def use(self, item_or_list):
+        item = ""
+        if type(item) is list:
+            for i in item_or_list:
+                if i in self.inventory:
+                    item = i
+                    break
+        else:
+            item = item_or_list
+
+        self.telnetHandler.write("use " + item)
+        Inventory.remove_from_qty_dict(self.inventory, (item, 1))
+    # commented: this version has 'usable' error checking
+    # def use(self, item, target=None):
+    #     if item in self.usable:
+    #         if target:
+    #             self.telnetHandler.write("use " + item + " " + target)
+    #         else:
+    #             self.telnetHandler.write("use " + item)
+    #     else:
+    #         magentaprint("Inventory: Error: " + item + " not usable.")
+    #             self.telnetHandler.write("use " + item)
+
+
 
     def sell_stuff(self):
         self.__stopping = False
@@ -242,14 +280,22 @@ class Inventory(BotReactionWithFlag):
         # It just takes the first word.
         return item_string.split(" ")[0].split(".")[0]
 
+    restoratives = ["chicken soup", "small restorative", "small flask", 
+                    "large restorative", "scarlet potion"]
+    # usable = ["small retorative", "large restorative", "chicken soup", "scarlet potion", 
+    #           "steel bottle", "silver chalice", "milky potion",
+    #           "glowing potion",
+    #           "adamantine rod", "granite rod", "zinc wand"]
+
     # should probably depend on level.
     keep_list = ["large bag", "large sack", 
-        "silver chalice", "steel bottle", "small restorative", 'heavy crossbow', 
-        'glowing potion', "chicken soup",
-        'scarlet potion',
+        "silver chalice", "steel bottle", 
+        'glowing potion', 
+        "chicken soup", "small restorative", "small flask", 
+        "large restorative", "scarlet potion",
         # weapons
         'war hammer', "adamantine sword", 'adamantine axe', "claymore", 
-        "spider leg", 
+        "spider leg", 'heavy crossbow', 
         "spear", "bolos", 'javelin', "long bow", 
         "heathen amulet",
         "broad sword", "rapier",
@@ -263,9 +309,9 @@ class Inventory(BotReactionWithFlag):
         'chain mail gloves', 'chain mail hood', 'chain mail boots', 
         "ring mail armour", "ring mail sleeves", "ring mail leggings", 
         "ring mail hood", "ring mail gauntlets", "leather collar", 
-        "furry cloak", "enchanted indigo cloak",
+        "enchanted indigo cloak", "fine elven cloak", "light elven cloak",
         'lion charm', "poison ring",
-        'fine elven cloak', "iron shield"
+        "iron shield"
         #'steel mask' # the bot slowly collects these 
         ] 
 
@@ -311,3 +357,6 @@ class Inventory(BotReactionWithFlag):
 # No, the mud doesn't put newlines there.  The console will wrap it but 
 # that doesn't constitute a newline.  The mud always puts them between words.
 # so s = s.replace('\r\n', ' ') is always a good move.
+
+# Would be nice to keep track of white amulet usages
+# It'd be good to consider the weight when deciding whether to sell.

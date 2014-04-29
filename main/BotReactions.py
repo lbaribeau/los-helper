@@ -9,12 +9,11 @@ class BotReaction(object):
 
     unregistered = False # MudReaderHandler uses this variable as part of the unregister procedure
 
-    def __init__(self, regexes):
-
-        if isinstance(regexes, str):
-            regexes = [regexes]
-
-        self.regexes = regexes
+    # Not defining init to allow for multiple inheritance
+    # def __init__(self, regexes):
+    #     if isinstance(regexes, str):
+    #         regexes = [regexes]
+    #     self.regexes = regexes
 
     def notify(self, regex, M_obj):
         """ This function is called by MudReaderThread when regex was 
@@ -59,14 +58,17 @@ class GenericBotReaction(BotReaction):
     use of M_obj."""
     
     def __init__(self, regexes, commandHandler, telnet_commands):
-        super(GenericBotReaction, self).__init__(regexes)
+
+        if isinstance(regexes, str):
+            regexes = [regexes]
+
+        self.regexes = regexes
+        self.commandHandler = commandHandler
 
         if isinstance(telnet_commands, str):
             self.telnet_commands = [telnet_commands]
         else:
             self.telnet_commands = telnet_commands
-
-        self.commandHandler = commandHandler
         
     def notify(self, regex, M_obj):
         for cmd in self.telnet_commands:
@@ -80,10 +82,8 @@ class WieldReaction(BotReaction):
     
     def __init__(self, character, commandHandler):
         # Note: regex should specify the weapon string in a group.
-        super(WieldReaction, self).__init__([
-            "Your (.*?) breaks and you have to remove it\.",
-            "Your (.*?) shatters\."]
-            )
+        self.regexes = [ "Your (.+?) breaks and you have to remove it\.",
+                         "Your (.+?) shatters\."]
         self.character = character
         self.commandHandler = commandHandler
 
@@ -92,11 +92,11 @@ class WieldReaction(BotReaction):
         self.reequip_weapon(M_obj.group(1))
         
     def reequip_weapon(self, weapon):        
-        if(self.character.WEAPON1 == self.character.WEAPON2):
+        if self.character.WEAPON1 == self.character.WEAPON2:
             self.commandHandler.process("wie " + weapon)
             self.commandHandler.process("seco " + weapon)
         else:
-            if(weapon == self.character.WEAPON1):
+            if weapon == self.character.WEAPON1:
                 self.commandHandler.process("wie " + weapon)
             else:
                 self.commandHandler.process("seco " + weapon)

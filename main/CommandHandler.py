@@ -10,8 +10,6 @@ from KillThread import *
 from CastThread import *
 # from CoolAbility import *
 # from CoolAbilityThread import *
-from ThreadStopper import *
-
 
 class CommandHandler(object):
 

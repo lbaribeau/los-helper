@@ -18,7 +18,7 @@ class Cartography(BotReaction):
         self.too_dark = "It's too dark to see\."
         s_numbered = "( 1st| 2nd| 3rd| 4th| 5th| 6th| 7th| 8th| 9th| 10th| 11th| 12th| 13th| 14th| 15th| 16th| 17th| 18th| 19th)?"
         self.blocked_path = "The" + s_numbered + " (.+?) blocks your exit\."
-        self.please_wait = "Please wait [\d]* more second\."
+        self.please_wait = "Please wait [\d]* more seconds?\."
         self.cant_go = "You can't go that way\."
         self.no_exit = "I don't see that exit\."
         self.class_prohibited = "Your class prohibits you from entering there\."
@@ -40,7 +40,7 @@ class Cartography(BotReaction):
         create_tables()
         db.close()
 
-        super(Cartography, self).__init__([self.area,
+        self.regexes = [self.area,
             self.too_dark,
             self.blocked_path,
             self.please_wait,
@@ -55,7 +55,7 @@ class Cartography(BotReaction):
             self.door_locked,
             self.no_right,
             self.not_authorized,
-            self.no_force])
+            self.no_force]
 
         self.mudReaderHandler = mudReaderHandler
         self.commandHandler = commandHandler

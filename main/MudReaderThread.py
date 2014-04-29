@@ -194,6 +194,9 @@ class MudReaderThread(threading.Thread):
             # while I'm in here.  (could cause a missed reaction)
             reactions_to_delete = []
             for reaction in self.BotReactionList:
+                if reaction.unregistered:
+                    reactions_to_delete.append(reaction)
+                    continue
                 for regex in reaction.regexes:
                     M_obj = re.search(regex, text_buffer)
 
@@ -201,15 +204,20 @@ class MudReaderThread(threading.Thread):
                         # magentaprint("MudReaderThread: calling notify on " + str(reaction))
                         reaction.notify(regex, M_obj)  
                         text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                    
-                    if reaction.unregistered:
-                        reactions_to_delete.append(reaction)
-         
-            reaction_counter = 0  # TODO: delete reaction_counter and all reaction printing
+
+            # reaction_counter = 0  # TODO: delete reaction_counter and all reaction printing
             for reaction in reactions_to_delete:
-                self.BotReactionList.remove(reaction)
-                reaction_counter = reaction_counter + 1
-            
+                try:
+                    self.BotReactionList.remove(reaction)
+                except ValueError:
+                    magentaprint("MudReaderHandler could not unregister reaction!")
+                    magentaprint("Reaction: " + str(reaction))
+                    magentaprint("ReactionList: " + str(self.BotReactionList))
+                    magentaprint("Reaction regexes: " + str(reaction.regexes))
+                else:
+                    magentaprint("Removed a reaction.")
+
+                # reaction_counter = reaction_counter + 1
             # if (reaction_counter > 0):
             #     magentaprint("MudReaderThread removed " + str(reaction_counter) + 
             #                  " reactions," + str(len(self.BotReactionList)) + 

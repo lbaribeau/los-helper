@@ -11,23 +11,54 @@ databaseFile = "maplos.db"
 
 ##################################### MISC FUNCTIONS ########################
 
-def wait_for_move_ready(character):
-    #global character_inst
-    time.sleep(max(0, character.MOVE_WAIT - (time.time() - character.MOVE_CLK)))
-    wait_for_attack_ready(character)
-    wait_for_cast_ready(character)
-    return
+def wait_amount(time_triggered, period):
+    return max(time_triggered + period - time.time(), 0)
+
+def attack_wait(character):
+    attack_period = character.ATTACK_PERIOD_HASTE if character.HASTING else character.ATTACK_PERIOD
+
+    return wait_amount(character.ATTACK_CLK, attack_period)
 
 def wait_for_attack_ready(character):
-    if(character.HASTING):
-        time.sleep(max(0, character.ATTACK_PERIOD_HASTE - (time.time() - character.ATTACK_CLK)))
-    else:
-        time.sleep(max(0, character.ATTACK_PERIOD - (time.time() - character.ATTACK_CLK)))        
-    return
+    # if character.HASTING:
+    #     time.sleep(max(0, character.ATTACK_PERIOD_HASTE - (time.time() - character.ATTACK_CLK)))
+    # else:
+    #     time.sleep(max(0, character.ATTACK_PERIOD - (time.time() - character.ATTACK_CLK)))        
+    time.sleep(attack_wait(character))
+
+def attack_ready(character):
+    # attack_period = character.ATTACK_PERIOD_HASTE if character.HASTING else character.ATTACK_PERIOD
+
+    # return time.time() - character.ATTACK_CLK > attack_period
+    return attack_wait() <= 0
+
+def cast_wait(character):
+    return wait_amount(character.CAST_CLK, character.CAST_WAIT)
 
 def wait_for_cast_ready(character):
-    time.sleep(max(0, character.CAST_WAIT - (time.time() - character.CAST_CLK)))
-    return
+    # time.sleep(max(0, character.CAST_WAIT - (time.time() - character.CAST_CLK)))
+    time.sleep(cast_wait(character))
+
+def cast_ready(character):
+    # return time.time() - character.CAST_CLK > character.ATTACK_PERIOD
+    return cast_wait() <= 0
+
+def wait_for_move_ready(character):
+    wait_for_attack_ready(character)
+    wait_for_cast_ready(character)
+    time.sleep(max(0, character.MOVE_WAIT - (time.time() - character.MOVE_CLK)))
+
+def move_ready(character):
+    return cast_ready(character) and \
+           attack_ready(character) and \
+           time.time() > character.MOVE_CLK + character.MOVE_WAIT
+
+def busy_loop(flag):
+    flag = False
+    while not flag:
+        time.sleep(0.02)
+
+###
 
 def my_list_search(thelist, item):
     """ Searches the list for the item and returns the index of the item.

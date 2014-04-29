@@ -139,13 +139,16 @@ class BotThread(threading.Thread):
                         magentaprint("Bot: Got please wait on a go attempt, retrying.")
                         continue
                     elif(self.character.GO_TIMEOUT):
-                        magentaprint("Bot: Check go timed out.  Could be lag.  Will try again in 2 sec.")
+                        magentaprint("Bot: Check go timed out.  Could be lag.  Will try again in 7 sec.")
                         # This can happen when the system clock makes time.time() inconsistent.
                         # Unless I can fix this I have to ignore this case and hope it worked.
                         direction_list.pop(0)
                         self.character.MOBS_JOINED_IN = [] 
                         self.character.MOBS_ATTACKING = []
-                        time.sleep(2)
+                        time.sleep(7)  # Bot can stop in the road randomly after lag...
+                                       # I believe it's because the server registers two of the same go command
+                                       # due to resending it.
+                                       # There could also be slowness caused by MudReaderThread's matching.
                     elif(self.character.GO_NO_EXIT): 
                         # This is a tough one.  Hopefully it never 
                         # happens.  I'm gonna assume it happened 
@@ -597,6 +600,7 @@ class BotThread(threading.Thread):
         wait_for_move_ready(self.character)
         wait_for_attack_ready(self.character)
         wait_for_cast_ready(self.character)
+        magentaprint("BotThread going " + exit_str)
 
         if(exit_str == "nw" or exit_str == "ne" or
            exit_str == "sw" or exit_str == "se" or
@@ -682,7 +686,7 @@ class BotThread(threading.Thread):
         time.sleep(0.5)  # Keeps attacking and magic out of sync
 
         while(self.commandHandler.KillThread != None and self.commandHandler.KillThread
-              and self.commandHandler.KillThread.get_stopping() == False):
+              and self.commandHandler.KillThread.stopping == False):
             
             if(self.character.BLACK_MAGIC):
                 if(self.character.MANA >= black_magic_spell_cost):
