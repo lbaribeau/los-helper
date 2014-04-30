@@ -217,7 +217,8 @@ class Character:
             "dwarven field worker", "dwarven bartender", "school teacher",
             'lyrist', "nobleman", 
             "bull", "hunter", 'usher',
-            'sword swallower', 'archer'#, "yard supervisor", "sawmill supervisor"
+            'sword swallower', 'archer',
+            "yard supervisor", "sawmill supervisor" #these can be tough - make sure health_to_heal is high enough
             #'sentry' stand in pairs...
             ]
         self.__lvl6_red_monsters = [
