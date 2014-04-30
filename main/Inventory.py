@@ -27,7 +27,7 @@ class Inventory(BotReactionWithFlag):
         self.you_give = "(?s)You give (.+?) to (.+?)\."
         self.bought = "Bought\."  
         self.you_put_in_bag = "(?s)You put (.+?) in(to)? (.+?)\."
-        self.gave_you = "(?s).+? gave (.+?) to you\."
+        self.gave_you = ".+? gave (.+?) to you\."
 
         self.regexes = [self.you_have, self.you_get, self.wont_buy, self.sold, 
             self.you_drop, self.not_a_pawn_shop, self.you_now_have, self.gold_from_tip,
@@ -95,7 +95,7 @@ class Inventory(BotReactionWithFlag):
 
         self.telnetHandler.write("use " + item)
         Inventory.remove_from_qty_dict(self.inventory, (item, 1))
-    # commented: this version has 'usable' error checking
+    # the following version has 'usable' error checking
     # def use(self, item, target=None):
     #     if item in self.usable:
     #         if target:
@@ -105,8 +105,6 @@ class Inventory(BotReactionWithFlag):
     #     else:
     #         magentaprint("Inventory: Error: " + item + " not usable.")
     #             self.telnetHandler.write("use " + item)
-
-
 
     def sell_stuff(self):
         self.__stopping = False
@@ -276,8 +274,7 @@ class Inventory(BotReactionWithFlag):
         return numbered_references
       
     def _item_string_to_reference(self, item_string):
-        # 'grey cloak' will change to 'grey'
-        # It just takes the first word.
+        # 'grey cloak' will be "grey", it just takes the first word.
         return item_string.split(" ")[0].split(".")[0]
 
     restoratives = ["chicken soup", "small restorative", "small flask", 

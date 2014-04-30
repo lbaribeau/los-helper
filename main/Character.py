@@ -22,8 +22,8 @@ class Character(object):
                  'dusty blue', 'pale blue', 'blue',
                  'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue']
 
-      # Indices will be sharp, thrust, blunt, pole, missile, earth, water, wind, fire, astral
-      # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
+    # Indices will be sharp, thrust, blunt, pole, missile, earth, water, wind, fire, astral
+    # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
         
     AURA_SCALE = 2 #Current aura
     AURA = AURA_LIST[AURA_SCALE]
@@ -96,6 +96,8 @@ class Character(object):
     AREA_ID = None
     LAST_DIRECTION = None
 
+    LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096] #Half of this is the gold requirement
+
     def __init__(self):
         self.START_TIME = time.time()
         self.set_level_health_mana_variables()
@@ -142,7 +144,6 @@ class Character(object):
             self.HEALTH_TO_FLEE = 35
             self.MAX_MANA = 24  # well actually 27... he waits for max at the chap.
             self.MANA_TO_ENGAGE = 18
-
     
     ### Monster stuff ###
 
