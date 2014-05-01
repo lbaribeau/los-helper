@@ -395,7 +395,7 @@ class CommandHandler(object):
         if self.character.WEAPON1 != "":
             self.telnetHandler.write("wie " + self.character.WEAPON1)
         if self.character.WEAPON2 != "":
-            self.telnetHandler.write("wie " + self.character.WEAPON2)
+            self.telnetHandler.write("seco " + self.character.WEAPON2)
 
     def get_directions_from_where_we_are_to_area_id(self, to_area_id):
         directions = []
