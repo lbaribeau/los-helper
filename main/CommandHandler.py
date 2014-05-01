@@ -10,7 +10,6 @@ from KillThread import *
 from CastThread import *
 # from CoolAbility import *
 # from CoolAbilityThread import *
-from ThreadStopper import *
 from Database import *
 from MudMap import *
 

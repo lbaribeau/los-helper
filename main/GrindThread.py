@@ -398,5 +398,4 @@ class GrindThread(BotThread):
 # mob to kill.  That also doubles as deciding whether to engage.  Its a
 # sensible way to check for guards.
  
- 
 # You can't.  Its broken.  (Means the bot ran out of weapons.)

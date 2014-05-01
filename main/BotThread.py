@@ -172,7 +172,7 @@ class BotThread(threading.Thread):
     def set_up_automatic_ring_wearing(self):
         """ Makes some BotReactions so that when MudReaderHandler sees us 
         pick up a ring, we'll wear it."""
-        ringReaction = GenericBotReaction("You get .+? an? .+? ring((,.+?\.)|(\.))", self.commandHandler, "wear ring")
+        ringReaction = GenericBotReaction("(?s)You get .+? an? .+? ring((,.+?\.)|(\.))", self.commandHandler, "wear ring")
         self.mudReaderHandler.register_reaction(ringReaction)
         #Todo: fix for case where there's ring mail in the inventory or multiple rings are dropped
 
@@ -423,7 +423,7 @@ class BotThread(threading.Thread):
         time.sleep(0.5)  # Keeps attacking and magic out of sync
 
         while(self.commandHandler.KillThread != None and self.commandHandler.KillThread
-              and self.commandHandler.KillThread.get_stopping() == False):
+              and self.commandHandler.KillThread.stopping == False):
             
             if(self.character.BLACK_MAGIC):
                 if(self.character.MANA >= black_magic_spell_cost):

@@ -1,329 +1,280 @@
-################################################################################
+
 import time
 import CharacterClass
 
-class Character:
+class Character(object):
 
     # This is a class that holds a bunch of data,
     # mostly obtained by the MUD read thread.
+    RACE = "Human"
+    TITLE = "Ranger"
+    #adam.TITLE = "Monk"
+    character_class = CharacterClass.Ranger()
+    #adam.character_class = CharacterClass.Monk()
+    LEVEL = 9
+    #adam.LEVEL = 13        
+    #adam.preferred_alignment = "dusty red"
+    preferred_alignment = "dusty blue"
+    BLACK_MAGIC = True
+    FAVOURITE_SPELL = "hurt"
+    KNOWS_VIGOR = True
+    #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
+    #MAGIC_SKILLS= [0, 0, 0, 0, 0]
+    SKILLS = {} 
+    AURA_LIST = ['demonic red', 'ominous red', 'ghastly red', 'murky red',
+                 'red', 'rusty', 'dusty red', 'grey',
+                 'dusty blue', 'pale blue', 'blue',
+                 'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue']
+
+    # Indices will be sharp, thrust, blunt, pole, missile, earth, water, wind, fire, astral
+    # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
+
+    AURA_SCALE = 2 #Current aura
+    #adam.AURA_SCALE = 2 #dusty red
+    AURA = AURA_LIST[AURA_SCALE]
+    
+    AURA_PREFERRED_SCALE = AURA_LIST.index(preferred_alignment)
+    AURA_PREFERRED = AURA_LIST[AURA_PREFERRED_SCALE]
+    
+    AURA_LAST_UPDATE = -300
+    LAST_BUFF = -150
+    LAST_MEDITATE = -150
+
+    HAS_BUFF_ITEMS = False
+    HAS_RESTORE_ITEMS = False
+
+    EXPERIENCE = 0
+    GOLD = 0
+    TOTAL_EXPERIENCE = 0
+    TOTAL_GOLD = 0
+
+    ATTACK_PERIOD = 3 #sec
+    ATTACK_PERIOD_HASTE = 2 #sec
+    CAST_PERIOD = 6
+
+    ATTACK_WAIT = ATTACK_PERIOD   # Used by timer.  Same as ATTACK_PERIOD.
+                                # Amount of time to wait to walk after attacking
+    MOVE_WAIT = 0.29
+    CAST_WAIT = CAST_PERIOD
+
+    MOBS_KILLED = 0
+    DEATHS = 0
+
+    HASTING = False 
+    DEAD = False
+
+    WEAPON1=""
+    WEAPON2=""
+                            
+    ATTACK_CLK = -ATTACK_WAIT
+    MOVE_CLK = -MOVE_WAIT
+    CAST_CLK = -CAST_WAIT # Last successful cast
+
+    HEALTH = 0
+    MANA = 0
+
+    LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096]
+
+    # MONSTER LISTS
+    # All lists are mutually exclusive except for "preferred."
+    # Monsters may be placed in a higher level group if they are 
+    # difficult to kill.
+
+    MOBS_JOINED_IN = []
+    MOBS_ATTACKING = []
+
+    SUCCESSFUL_GO = True
+    GO_BLOCKING_MOB = ""
+    GO_PLEASE_WAIT = False
+    GO_NO_EXIT = False
+    GO_TIMEOUT = False
+
+    CAN_SEE = True
+    ACTIVELY_MAPPING = False
+
+    MUD_AREA = None
+    AREA_TITLE=""
+    EXIT_LIST=[]
+    MONSTER_LIST=[]
+
+    TRYING_TO_MOVE = True
+    EXIT_REGEX="self.character.EXIT_REGEX"
+    AREA_ID = None
+    LAST_DIRECTION = None
+
+    LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096] #Half of this is the gold requirement
 
     def __init__(self):
-        # character init function sets variables to default (initial)
-        # values.  
-    
-        self._char_class = CharacterClass.Ranger()
-        
-        def getClass(self):
-            return self._char_class
-        
-        self.RACE = "Human"
-        self.TITLE = "Monk"
-        
-        self.LEVEL = 13
-#        self.preferred_alignment = "grey"
-        #self.WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
-        #self.MAGIC_SKILLS= [0, 0, 0, 0, 0]
-        self.SKILLS={} #Dictionary http://stackoverflow.com/questions/3765533/python-array-with-string-indices
-          # Indices will be sharp, thrust, blunt, pole, missile, earth, water, wind, fire, astral
-        self.AURA_LIST = ['demonic red', 'ominous red', 'ghastly red', 'murky red',
-                     'red', 'rusty', 'dusty red', 'grey',
-                     'dusty blue', 'pale blue', 'blue',
-                     'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue']
-        # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
-        
-        self.AURA_SCALE = 2 #Current aura
-        self.AURA = self.AURA_LIST[self.AURA_SCALE]
-        
-        self.AURA_PREFERRED_SCALE = 6 # dusty red
-        self.AURA_PREFERRED = self.AURA_LIST[self.AURA_PREFERRED_SCALE]
-        
-        self.AURA_LAST_UPDATE = -300
-        self.LAST_BUFF = -180
-        self.LAST_MEDITATE = -150
+        self.START_TIME = time.time()
+        self.set_level_health_mana_variables()
+        self.set_monster_kill_list()
 
-        self.HAS_BUFF_ITEMS = False
-        self.HAS_RESTORE_ITEMS = False
-
-        self.EXPERIENCE = 0
-        self.GOLD = 0
-        self.TOTAL_EXPERIENCE = 0
-        self.TOTAL_GOLD = 0
-
-        self.BLACK_MAGIC = True
-        self.FAVOURITE_SPELL = "burn"
-        
-        self.KNOWS_VIGOR = True
-
-        self.ATTACK_PERIOD = 3 #sec
-        self.ATTACK_PERIOD_HASTE = 2 #sec
-        self.CAST_PERIOD = 6
-        #self.CAST_PERIOD_MAGE = 3
-
-        self.ATTACK_WAIT = self.ATTACK_PERIOD   # Used by timer.  Same as ATTACK_PERIOD.
-                                    # Amount of time to wait to walk after attacking
-        self.MOVE_WAIT = 0.25 
-        self.CAST_WAIT = self.CAST_PERIOD
-
-        self.MOBS_KILLED = 0
-        self.DEATHS = 0
-
-        # Game environment variables.
-        self.HASTING = False 
-        self.DEAD = False
-
-        self.WEAPON1=""
-        self.WEAPON2=""
-                                
-        # These variables is a floating point seconds variable used
-        # to monitor when the next move can be made.  The idea is
-        # to prevent "Please wait 1 second." and instead delay the
-        # user's command by exactly the right amount.  Assume this
-        # is what the user wants if it is less than a second.
-
-        # Up to date time.time() value of last action.
-        self.ATTACK_CLK = -self.ATTACK_WAIT
-        self.MOVE_CLK = -self.MOVE_WAIT
-        self.CAST_CLK = -self.CAST_WAIT # Last successful cast
-
-        self.HEALTH = 0
-        self.MANA = 0
-
-        if(self.LEVEL <= 2):
+    def set_level_health_mana_variables(self):
+        if self.LEVEL <= 2:
             self.HEALTH_TO_HEAL = 20
             self.HEALTH_TO_FLEE = 8
             self.MAX_MANA = 3
             self.MANA_TO_ENGAGE = 3
-        elif(self.LEVEL <= 3):
+        elif self.LEVEL <= 3:
             self.HEALTH_TO_HEAL = 27
             self.HEALTH_TO_FLEE = 9
             self.MAX_MANA = 7
             self.MANA_TO_ENGAGE = 3
-        elif(self.LEVEL <= 4):
+        elif self.LEVEL <= 4:
             self.HEALTH_TO_HEAL = 31
             self.HEALTH_TO_FLEE = 11
             self.MAX_MANA = 9
             self.MANA_TO_ENGAGE = 3
-        elif(self.LEVEL <= 5):
+        elif self.LEVEL <= 5:
             self.HEALTH_TO_HEAL= 31
             self.HEALTH_TO_FLEE = 8
-            self.MAX_MANA = 6
-            self.MANA_TO_ENGAGE = 0           
-        elif(self.LEVEL <= 6):
-            self.HEALTH_TO_HEAL= 43
+            self.MAX_MANA = 12
+            self.MANA_TO_ENGAGE = 6           
+        elif self.LEVEL <= 6:
+            self.HEALTH_TO_HEAL = 35 # 43
             self.HEALTH_TO_FLEE = 15
-            self.MAX_MANA = 13
-            self.MANA_TO_ENGAGE = 4     
-        elif(self.LEVEL <= 7):
+            self.MAX_MANA = 18
+            self.MANA_TO_ENGAGE = 9     
+        elif self.LEVEL <= 7:
             self.HEALTH_TO_HEAL= 45
-            self.HEALTH_TO_FLEE = 8 #my armor is great so this should never get hit
-            self.MAX_MANA = 6 #magic damage is pointless with min int
-            self.MANA_TO_ENGAGE = 0
-        elif(self.LEVEL <= 8):
+            self.HEALTH_TO_FLEE = 8 
+            self.MAX_MANA = 21
+            self.MANA_TO_ENGAGE = 12
+        elif self.LEVEL <= 8:
             self.HEALTH_TO_HEAL= 45
-            self.HEALTH_TO_FLEE = 8
-            self.MAX_MANA = 4
-            self.MANA_TO_ENGAGE = 0        
+            self.HEALTH_TO_FLEE = 30
+            self.MAX_MANA = 24
+            self.MANA_TO_ENGAGE = 15        
         else:
-            self.HEALTH_TO_HEAL = 65
-            self.HEALTH_TO_FLEE = 15
-            self.MAX_MANA = 4
-            self.MANA_TO_ENGAGE = 0
+            self.HEALTH_TO_HEAL = 54
+            self.HEALTH_TO_FLEE = 35
+            self.MAX_MANA = 27 - 4 + 1
+            self.MANA_TO_ENGAGE = 18
+            #adam.HEALTH_TO_HEAL = 65
+            #adam.HEALTH_TO_FLEE = 15
+            #adam.MAX_MANA = 4
+            #adam.MANA_TO_ENGAGE = 0
+    
+    ### Monster stuff ###
 
-        self.LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096] #Half of this is the gold requirement
+    lvl1_monsters = [ # 1-8 exp
+        "dustman", "small girl", "young boy", "old woman", "old man", 
+        "townsman", "stall holder", "duck", "hedgehog", "piglet", 
+        'streetsweeper', "shopper", "window shopper", "window cleaner", 
+        "waitress", "housewife", "squirrel", "milk maid", "rabbit", 
+        "one man band", "heather seller", "irate teenager", 'peasant', 
+        'one-armed beggar', "village elder", "small dog", "tribesman", 
+        "searcher", "delivery boy", "traveller", "wanderer", "villager", 
+        "vagrant", "dropout", "tramp", "serf", 'dishwasher']     
+    lvl1_red_monsters = [ # 8-15 exp
+        "old kobold", "kobold child", "kobold dam"]
+    lvl2_monsters = [
+        "hawker", "barmaid", "smelly beggar", "black crow", "sheep", "goose", 
+        "singer", "musician", "spiv", "bidder", "dairy cow", "scholar", 
+        "juggler", "shepherd", "gazelle", 'dancer', 'jongleur', 'tabby cat', 
+        'clerk', 'stablehand', "rich kid", 'bladesman', "cook's assistant", 
+        "miner's assistant"
+        #"acolyte"  # Problem: clumps up on holly lane
+        #"penitent"  # Removed for red/blue balance
+        ] 
+    lvl2_red_monsters = [ 
+        "kobold sentry", "blond hooker", "sultry hooker", "kobold", "spiv", 
+        "drunken miner", "kobold miner", "kobold archer", 'angry hooker',
+        "angry kobold", 'red axer', 'pickpocket', 'thug'
+        ] 
+    # pickpockets drop leather collars and masks
+    # red axer drops studded leather collar
+    # cat might be lvl 1 not sure
+    # thugs hostile.  They drop leather collar
+    lvl3_monsters = [ # 25-35 exp
+        "market official", "street trader", "field worker", "harvester", 
+        "horse", "cow", "doorman", "stilt walker",  "messenger", "cashier",
+        "thatcher",  "tax inspector", 'journeyman', "human miner", 
+        "hobbitish miner", "hawk"
+        #"robed pilgrim",  # Removed for red/blue balance
+        #"miner's mule"
+        ]
+    lvl3_red_monsters = [
+        "large kobold", "insane kobold", "kobold scout", 'drunk'
+        ]
+    lvl4_monsters = [ # 45-60 exp
+        "actor", "grip", "theatre goer", "merchant", "journeyman", "logger", 
+        'trader', "butcher", "young knight", "acrobat", "militia soldier", 
+        "carpenter", "stagehand", 'hungry spider', 'cook', 'joiner', "ranch hand",
+        "old rancher", "tired ranch hand", "drinking ranch hand",
+        "busy ranch hand"
+        #"auctioneer", # They pile up so bad!  
+        # Definitely need smart chasing or a path that runs extra around the 
+        # market (after healing)
+        #"actress", # For blue balance
+        #'miner'
+        ]
+    # hungry spiders are hostile
+    lvl4_red_monsters = [
+        "kobold shaman", "drunken trouble-maker", "kobold champion"]
+    lvl5_monsters = [
+        "dwarven farm hand", "dwarven barmaid", "fort sentry", "fur trader", 
+        "aristocrat", "rancher sentry"]
+    lvl5_red_monsters = [
+        'large bandit', "kobold guard", "mugger", 'large spider'
+        ]
+    lvl6_monsters = [
+        "dwarven field worker", "dwarven bartender", "school teacher",
+        'lyrist', "nobleman", "seeker", "bull", "hunter", 'usher',
+        'sword swallower', 'archer',
+        "yard supervisor", "sawmill supervisor"
+        #'sentry' stand in pairs unfortunately...
+        ] # bull and hunter might be wrong (too high).
+    lvl6_red_monsters = [
+        'gnoll sentry', "bandit swordsman"
+        ]
+    lvl7_monsters = [
+        "dwarven cook", "swordsman", 'fort sergeant', 'oremaster', 
+        'giant spider'
+        ] # giant spiders are hostile
+    lvl8_monsters = [
+        'owlbear',
+        #'mine manager'
+        ]
+    lvl9_monsters = [
+        "dwarven blacksmith"
+        ]
+    # A list of monsters redundant to the above lists that
+    # I may want to kill even if they are too low of level.
+    # Mostly hostiles and things that don't let you loot.
+    preferred_lvl_1_2_monsters = [
+        "oaf", "wanderer", #"acolyte", 
+        "thug", "spiv", "kobold sentry", "tired hooker", 
+        "blond hooker", "angry hooker", "sultry hooker", 
+        "journeyman" ] 
 
-        # All lists are mutually exclusive except for 'preferred' (bottom)
-        # 1-8 exp
-        self.__lvl1_monsters = [
-            "dustman", "small girl", "young boy", "old woman",
-            "old man", "townsman", "stall holder", "duck", "hedgehog", 
-            "piglet", 'streetsweeper', 
-            "shopper", "window shopper", "window cleaner",
-            "waitress", "housewife", "squirrel", "milk maid", "rabbit", 
-            "one man band",
-            "heather seller", "irate teenager", 'peasant', 'one-armed beggar',
-            "village elder", "small dog", "tribesman", "searcher", 
-            "delivery boy",
-            "traveller", "wanderer", "villager", "vagrant",
-            "dropout", "tramp", "serf", 'dishwasher']     
-        self.__lvl1_red_monsters = [
-            "old kobold", "kobold child", "kobold dam", ]
-        # 8-15 exp
-        self.__lvl2_monsters = [
-            "hawker", "barmaid", "smelly beggar", "black crow"
-            "sheep", "goose", "singer", "musician", "spiv",
-            "bidder", "dairy cow", "scholar", "juggler",  #"acolyte",
-            "shepherd", "gazelle", 'dancer', 'jongleur',
-            'tabby cat', 'clerk', 'stablehand', "rich kid", 'bladesman',
-            "cook's assistant", "miner's assistant", "furniture maker"
-            #"penitent" 
-            ] 
-        # acolytes are good (chalices) but can cause
-        # some difficulty... they pile up north of the
-        # chapel and kill you when you least expect
-        self.__lvl2_red_monsters = [ 
-            "kobold sentry", "blond hooker", "sultry hooker", 
-            "kobold", "spiv", "drunken miner", 
-            "kobold miner", "kobold archer", 'angry hooker',
-            "angry kobold", 'red axer', 'pickpocket', 'thug'
-            ] 
-        # pickpockets drop leather collars and masks
-        # red axer drops studded leather collar
-        # cat might be lvl 1 not sure
-        # thugs hostile.  They drop leather collar
 
-        # 25-35 exp
-        self.__lvl3_monsters = [
-            "market official", #"robed pilgrim", 
-            "street trader", "field worker", "harvester", "horse", "cow",
-            "doorman", "stilt walker",  "messenger", "cashier",
-            "thatcher",  "tax inspector", 
-            'journeyman', "human miner", "hobbitish miner", "hawk", "sawmill operator", "stacker", "mill worker"
-            #"miner's mule"
-            ] 
-
-        self.__lvl3_red_monsters = [
-            "large kobold", "insane kobold", "kobold scout",
-            'drunk'
-            ]
-        # 45-60 exp
-        self.__lvl4_monsters = [
-            "actor", "actress", 
-            "grip", "theatre goer",
-            "merchant", "journeyman", "logger", 'trader',
-            "butcher", "young knight", "acrobat", 
-            #"auctioneer", # auctioneers are darn annoying, leave them out!
-            "militia soldier", "carpenter", "stagehand",
-            'hungry spider', 'cook', 'joiner', "ranch hand",
-            "old rancher", "tired ranch hand", "drinking ranch hand",
-            "busy ranch hand"
-            #'miner'
-            ]
-        # hungry spiders are hostile
-        self.__lvl4_red_monsters = [
-            "kobold shaman", "drunken trouble-maker", "kobold champion"]
-        
-        self.__lvl5_monsters = [
-            "dwarven farm hand", "dwarven barmaid", 
-            "fort sentry", "fur trader", "aristocrat", "rancher sentry"
-            #"seeker"  # seekers are unfortunately quite difficult
-            ]
-        self.__lvl5_red_monsters = [
-            'large bandit',
-            "kobold guard", "mugger", 'large spider'
-            ]
-        # kobold guard and mugger are in groups of three and 
-        # aren't actually level 5...
-        self.__lvl6_monsters = [
-            "dwarven field worker", "dwarven bartender", "school teacher",
-            'lyrist', "nobleman", 
-            "bull", "hunter", 'usher',
-            'sword swallower', 'archer',
-            "yard supervisor", "sawmill supervisor" #these can be tough - make sure health_to_heal is high enough
-            #'sentry' stand in pairs...
-            ]
-        self.__lvl6_red_monsters = [
-            'gnoll sentry', "bandit swordsman"
-            ]
-            # bull and hunter might be wrong (too high).
-        self.__lvl7_monsters = [
-            "dwarven cook", "swordsman", 'fort sergeant',
-            'oremaster', 
-            'giant spider'
-            ]
-        # giant spiders are hostile
-        self.__lvl8_monsters = [
-            'owlbear',
-            #'mine manager' #?
-            ]
-        self.__lvl9_monsters = [
-            "dwarven blacksmith", "dwarven shepherd"
-            ]
-        
-        # A list of monsters redundant to the above lists that
-        # I may want to kill even if they are too low of level.
-        # Mostly hostiles and things that don't let you loot.
-        self.__preferred_lvl_1_2_monsters = [
-            "oaf", "wanderer", "acolyte", 
-            "thug", "spiv", "kobold sentry", "tired hooker", 
-            "blond hooker", "angry hooker", "sultry hooker", 
-            "journeyman" ] 
-        # prefer kobold sentry for missile weapon drops (bow/spear)
-        
-        
-        
+    def set_monster_kill_list(self):
         self.MONSTER_KILL_LIST = []
-        
-        if(self.LEVEL < 4):
-            self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
-        elif(self.LEVEL < 5):
-            self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl2_red_monsters)
-        elif(self.LEVEL < 6):
-            self.MONSTER_KILL_LIST.extend(self.__lvl1_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl2_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl2_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl3_red_monsters)
-        elif(self.LEVEL < 8):
-            self.MONSTER_KILL_LIST.extend(self.__preferred_lvl_1_2_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl2_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl3_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl4_red_monsters)
-        elif(self.LEVEL < 9):
-            self.MONSTER_KILL_LIST.extend(self.__preferred_lvl_1_2_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl2_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl3_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl4_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl5_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl5_red_monsters)
-        else:
-            self.MONSTER_KILL_LIST.extend(self.__preferred_lvl_1_2_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl1_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl2_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl3_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl3_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl4_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl4_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl5_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl5_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl6_monsters)
-            self.MONSTER_KILL_LIST.extend(self.__lvl6_red_monsters)
+        self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
+        self.MONSTER_KILL_LIST.extend(self.lvl1_red_monsters)
 
-        self.RESTORE_ITEM_LIST = ["small restorative", "chicken soup"]
-        self.BUFF_ITEM_LIST = ["steel bottle"]
-       
-        self.MOBS_JOINED_IN = []
-        self.MOBS_ATTACKING = []
+        if self.LEVEL > 3:
+            self.MONSTER_KILL_LIST.extend(self.lvl2_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl2_red_monsters)
+        if self.LEVEL > 4:
+            self.MONSTER_KILL_LIST.extend(self.lvl3_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl3_red_monsters)
+        if self.LEVEL > 5:
+            self.MONSTER_KILL_LIST = [m for m in self.MONSTER_KILL_LIST \
+                                      if m not in self.lvl1_monsters    \
+                                      and m not in self.lvl2_monsters]
+            self.MONSTER_KILL_LIST.extend(self.preferred_lvl_1_2_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl4_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl4_red_monsters)
+        if self.LEVEL > 7:
+            self.MONSTER_KILL_LIST.extend(self.lvl5_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl5_red_monsters)
+        if self.LEVEL > 8:
+            self.MONSTER_KILL_LIST.extend(self.lvl6_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl6_red_monsters)
 
-        self.SUCCESSFUL_GO = True
-        self.GO_BLOCKING_MOB = ""
-        self.GO_PLEASE_WAIT = False
-        self.GO_NO_EXIT = False
-        self.GO_TIMEOUT = False
 
-        self.CAN_SEE = True
-        self.PASSIVELY_MAPPING = False
-        self.ACTIVELY_MAPPING = False
-
-        self.MUD_AREA = None
-        self.AREA_TITLE=""
-        self.EXIT_LIST=[]
-        self.MONSTER_LIST=[]
-
-        self.TRYING_TO_MOVE = True
-        self.EXIT_REGEX="self.character.EXIT_REGEX"
-        self.AREA_ID = None
-        self.LAST_DIRECTION = None
-
-        self.START_TIME = time.time()
-        
+# todo: I don't like caps anymore
+# I think that's because these don't feel like global settings anymore, since 
+# the program is bigger.
