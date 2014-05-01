@@ -19,7 +19,7 @@ class Character:
         self.RACE = "Human"
         self.TITLE = "Monk"
         
-        self.LEVEL = 10
+        self.LEVEL = 13
 #        self.preferred_alignment = "grey"
         #self.WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #self.MAGIC_SKILLS= [0, 0, 0, 0, 0]
@@ -124,8 +124,8 @@ class Character:
             self.MAX_MANA = 4
             self.MANA_TO_ENGAGE = 0        
         else:
-            self.HEALTH_TO_HEAL = 54
-            self.HEALTH_TO_FLEE = 8
+            self.HEALTH_TO_HEAL = 65
+            self.HEALTH_TO_FLEE = 15
             self.MAX_MANA = 4
             self.MANA_TO_ENGAGE = 0
 
