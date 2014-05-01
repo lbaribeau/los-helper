@@ -91,9 +91,7 @@ class CommandHandler(object):
             MudMap.find(str(M_obj.group(1)))
 
         elif re.match("wie?2 +[a-zA-Z]+( +\d+)?", user_input):
-            user_input = "wield " + user_input[3:] 
-            self.telnetHandler.write(user_input)
-            #self.user_wie2(user_input[4:].lstrip())
+            self.user_wie2(user_input[4:].lstrip())
         elif re.match("fle?$|flee$", user_input):
             self.user_flee()
         elif re.match("HASTING", user_input):
