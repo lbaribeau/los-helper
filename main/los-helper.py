@@ -29,6 +29,7 @@ from misc_functions import *
 from Character import *
 from BotThread import *
 from CrawlThread import *
+from GotoThread import *
 from CommandHandler import *
 from MudReaderHandler import *
 from MudReaderThread import *
@@ -38,24 +39,44 @@ from Inventory import *
 from Cartography import *
 from BotReactions import *
 from TelnetHandler import *
+from Database import *
+from MudMap import *
 
 
 class LosHelper(object):
 
     def __init__(self):
         ### DEPENDENCY INJECTION ###
+        print("LOSHelper initializing....")
         self.telnetHandler = TelnetHandler()
         self.consoleHandler = newConsoleHandler() 
         self.character = Character()
         self.MUDBuffer = MyBuffer()
+
+        print("Connecting to database....")
+
+        self.database_file = "maplos.db"
+
+        self.database = SqliteDatabase(self.database_file, threadlocals=True, check_same_thread=False)
+        db.initialize(self.database)
+
+        print("Generating the mapfile....")
+
+        self.mud_map = MudMap()
+
+        print("Hooking up reactions....")
+
         self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
         self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
         self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
-        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
+
+        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler, self.database_file, self.mud_map)
         self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler)
-        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
+        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character, self.database_file, self.mud_map)
+
         self.botThread = None
         self.crawlThread = None
+        self.gotoThread = None
 
 
     def main(self):
@@ -66,7 +87,7 @@ class LosHelper(object):
         self.write_username_and_pass()
         self.set_up_auto_wield()
         self.check_inventory()
-        self.watch_user_input()   
+        self.watch_user_input()
             
         # Quitting cleanly: The MUD_read thread quits if it hits
         # and EOF.  watch_user_input watches for
@@ -129,6 +150,9 @@ class LosHelper(object):
                 if(self.crawlThread != None and self.crawlThread.is_alive()):
                     self.crawlThread.stop()
 
+                if(self.gotoThread != None and self.gotoThread.is_alive()):
+                    self.gotoThread.stop()
+
             elif(user_input == "quit"):
                 # TODO:  correct if MUD prints "Please wait x more seconds"
                 # after quit was sent.
@@ -141,13 +165,21 @@ class LosHelper(object):
                 if(self.crawlThread != None and self.crawlThread.is_alive()):
                     self.crawlThread.stop()
 
+                if(self.gotoThread != None and self.gotoThread.is_alive()):
+                    self.gotoThread.stop()
+
             elif(re.match("bot ?$|bot [0-9]+$", user_input)):
                 self.start_bot(user_input)
             elif(re.match("crawl", user_input)):
                 self.start_crawl()
+            elif(re.match("goto [0-9]+$", user_input)):
+                self.start_goto(user_input)
+            elif(re.match("showto [0-9]+$", user_input)):
+                self.start_goto(user_input, True)
             elif(re.match("stop$", user_input)):
                 self.stop_bot()
                 self.stop_crawl()
+                self.stop_goto()
             elif(re.match("fle?$|flee$", user_input)):
                 self.stop_bot()
                 self.commandHandler.process(user_input)  
@@ -179,9 +211,36 @@ class LosHelper(object):
         else:
             self.crawlThread = CrawlThread(self.character, 
                                        self.commandHandler, 
-                                       self.mudReaderHandler)
+                                       self.mudReaderHandler,
+                                       self.database,
+                                       self.mud_map)
             self.crawlThread.start()
 
+    def start_goto(self, user_input, is_show_to=False):
+        M_obj = re.search("[0-9]+", user_input)
+
+        if (M_obj):
+            starting_path = int(M_obj.group(0))
+        else:
+            starting_path = None
+
+        if (self.gotoThread != None and self.gotoThread.is_alive()):
+            magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
+        else:
+            self.gotoThread = GotoThread(self.character, 
+                                       self.commandHandler, 
+                                       self.mudReaderHandler,
+                                       self.database,
+                                       self.mud_map,
+                                       starting_path,
+                                       is_show_to)
+            self.gotoThread.start()
+
+
+    def stop_goto(self):
+        if (self.gotoThread != None and self.gotoThread.is_alive()):
+            self.gotoThread.stop()
+            #self.mudReaderHandler.unregister_reactions()
 
     def stop_crawl(self):
         if (self.crawlThread != None and self.crawlThread.is_alive()):

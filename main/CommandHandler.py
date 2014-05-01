@@ -10,10 +10,12 @@ from KillThread import *
 from CastThread import *
 # from CoolAbility import *
 # from CoolAbilityThread import *
+from Database import *
+from MudMap import *
 
 class CommandHandler(object):
 
-    def __init__(self, character, mudReaderHandler, telnetHandler):
+    def __init__(self, character, mudReaderHandler, telnetHandler, database_file, mud_map):
         self.telnetHandler = telnetHandler
         self.character = character
         self.mudReaderHandler = mudReaderHandler
@@ -21,6 +23,30 @@ class CommandHandler(object):
         self.CastThread = None
         self.CoolAbilityThread1 = None
         self.CoolAbilityThread2 = None
+
+        database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
+        db.initialize(database)
+        db.connect()
+        self.mud_map = mud_map
+        create_tables()
+        db.close()
+
+    def stop_KillThread(self, debug_on=False):
+        if(self.KillThread != None and self.KillThread.is_alive()):
+            self.KillThread.stop()
+        elif(debug_on):
+            magentaprint("No kk thread to stop.")
+
+    def stop_CastThread(self, debug_on=False):
+        if(self.CastThread != None and self.CastThread.is_alive()):
+            self.CastThread.stop()
+        elif(debug_on):
+            magentaprint("No cc thread to stop.")
+            
+    #TODO: def stop_CoolAbilityThread1(self):
+        
+    #TODO: def stop_CoolAbilityThread2(self):
+
 
     def process(self, user_input):
         """ This CommandHandler function is the filter for user input that
@@ -56,10 +82,13 @@ class CommandHandler(object):
             self.character.TRYING_TO_MOVE = True
             self.character.LAST_DIRECTION = user_input.replace("go ", "")
             self.user_move(user_input)
-        elif re.match("wie? [a-zA-Z]|wield? [a-zA-Z]", user_input):
-            if re.match("wi [a-zA-Z]", user_input):
-                user_input = "wield " + user_input[3:] 
-            self.telnetHandler.write(user_input)
+            # routine which does appropriate waiting,
+            # printing, and finally sending command.
+        elif(re.match("find (.+)", user_input)):
+            M_obj = re.search("find (.+)", user_input)
+            magentaprint("Finding: " + str(M_obj.group(1)))
+            MudMap.find(str(M_obj.group(1)))
+
         elif re.match("wie?2 +[a-zA-Z]+( +\d+)?", user_input):
             self.user_wie2(user_input[4:].lstrip())
         elif re.match("fle?$|flee$", user_input):
@@ -368,6 +397,13 @@ class CommandHandler(object):
         if self.character.WEAPON2 != "":
             self.telnetHandler.write("wie " + self.character.WEAPON2)
 
-        # I got a funny "Please wait 3 more seconds" spammed 3 times...
-        # but the bot escaped, so I dunno what happened.
-
+    def get_directions_from_where_we_are_to_area_id(self, to_area_id):
+        directions = []
+        try:
+            if self.character.AREA_ID is not None:
+                directions = self.mud_map.get_path(int(self.character.AREA_ID), int(to_area_id))
+            else:
+                magentaprint("I'm not sure where I am (CurAreaID: " + str(self.character.AREA_ID) + ")", False)
+        except Exception:
+            magentaprint("I couldn't find a way there (" + str(self.character.AREA_ID) + ") to (" + str(to_area_id) + ")",False)
+        return directions

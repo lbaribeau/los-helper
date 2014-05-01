@@ -7,7 +7,7 @@ class Character(object):
     # This is a class that holds a bunch of data,
     # mostly obtained by the MUD read thread.
     RACE = "Human"
-    TITLE = "Stalker"
+    TITLE = "Ranger"
     character_class = CharacterClass.Ranger()
     LEVEL = 9
     preferred_alignment = "dusty blue"
@@ -85,6 +85,7 @@ class Character(object):
     GO_TIMEOUT = False
 
     CAN_SEE = True
+    ACTIVELY_MAPPING = False
 
     MUD_AREA = None
     AREA_TITLE=""
@@ -142,7 +143,7 @@ class Character(object):
         else:
             self.HEALTH_TO_HEAL = 54
             self.HEALTH_TO_FLEE = 35
-            self.MAX_MANA = 24  # well actually 27... he waits for max at the chap.
+            self.MAX_MANA = 27 - 4 + 1
             self.MANA_TO_ENGAGE = 18
     
     ### Monster stuff ###
@@ -259,7 +260,6 @@ class Character(object):
         if self.LEVEL > 8:
             self.MONSTER_KILL_LIST.extend(self.lvl6_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl6_red_monsters)
-
 
 
 # todo: I don't like caps anymore

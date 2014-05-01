@@ -51,9 +51,26 @@ class MudMap():
 			edge_path.append(cur_edge['name'])
 			i += 1
 
-		magentaprint("Got path: " + str(edge_path), False)
+		#magentaprint("Got path: " + str(edge_path), False)
 
 		return edge_path
 
 	def get_nearest_unexplored_path(self, start_area_id):
 		return self.get_path(start_area_id, -1)
+
+
+	#static functions
+	def find(text):
+		areas = Area.get_areas_by_partial_name(text)
+		mob_locations = MobLocation.get_locations_by_partial_mob_name(text)
+
+		magentaprint("Areas found:", False)
+
+		for area in areas:
+			magentaprint("<" + str(area.id) + "> - " + area.name, False)
+
+		magentaprint("Mobs found:", False)
+
+		for mob_location in mob_locations:
+			magentaprint("<" + str(mob_location.area.id) + "> - " + mob_location.mob.name, False)
+

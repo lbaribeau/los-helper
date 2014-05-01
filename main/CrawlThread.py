@@ -10,8 +10,8 @@ from Database import *
 from MudMap import *
 
 class CrawlThread(threading.Thread):
-    def __init__(self, character_in=None, commandHandler=None, mudReaderHandler_in=None):
-        if(character_in==None and commandHandler==None and mudReaderHandler_in==None):
+    def __init__(self, character_in=None, commandHandler=None, mudReaderHandler_in=None, database=None, mud_map=None):
+        if(character_in==None and commandHandler==None and mudReaderHandler_in==None and database==None and mud_map==None):
             return   
         Thread.__init__(self)
         # Initialize some variables local to this thread
@@ -20,15 +20,21 @@ class CrawlThread(threading.Thread):
         self.character = character_in
         self.commandHandler = commandHandler
         self.mudReaderHandler = mudReaderHandler_in
-            
+        self.character.ACTIVELY_MAPPING = True
+
         atexit.register(self.stop)
 
-        database = SqliteDatabase(databaseFile, threadlocals=True, check_same_thread=False)
+        self.database = database
         db.initialize(database)
+        db.connect()
+        self.mud_map = mud_map
+        create_tables()
+        db.close()
 
 
     def stop(self):
         magentaprint("Crawl: stopping....   Urrrrrchhhchch!!")
+        self.character.ACTIVELY_MAPPING = False
         self.__stopping = True
 
 
@@ -96,9 +102,9 @@ class CrawlThread(threading.Thread):
                 return [area_exit.exit_type.name]
 
         #if we didn't find a null exit we end up here and the magic starts
-        mud_map = MudMap()
+        self.mud_map = MudMap() #if we actively update the map in Cartography then we wouldn't have to re-create it here
 
-        return mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
+        return self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
 
     def go(self, exit_str):
         #time.sleep(0.8) # sometimes not a good idea to go immediately

@@ -85,7 +85,7 @@ class Area(BaseModel):
             for exit_type in exits:
                 exit_found = False
                 for area_exit in area_exits:
-                    if (exit_type.id == area_exit.exit_type.id):
+                    if (exit_type.id == area_exit.exit_type.id or area_exit.is_hidden):
                         exit_found = True
                 if not exit_found:
                     return False
@@ -117,6 +117,19 @@ class Area(BaseModel):
             area = None
 
         return area
+
+    def get_areas_by_partial_name(area_name_part):
+        areas = []
+
+        area_name = "*" + area_name_part + "*"
+
+        try:
+            areas = Area.select().where((Area.name % area_name))
+
+        except Area.DoesNotExist:
+            areas = []
+
+        return areas
 
 
 class ExitType(BaseModel):
@@ -181,6 +194,7 @@ class AreaExit(BaseModel):
     area_to = ForeignKeyField(Area, related_name='area_to', null=True) #id is a default attribute
     exit_type = ForeignKeyField(ExitType)
     is_useable = BooleanField(default=True) #if the link is broken or potentially harzardous we don't want to use it
+    is_hidden = BooleanField(default=False) #these will be manually set for now
     note = CharField(default="")
 
     '''Private Area Functions'''
@@ -296,6 +310,19 @@ class MobLocation(BaseModel):
             mob_locations = MobLocation.select().where((MobLocation.area == area_id) & (MobLocation.mob == mob_id)).get()
         except MobLocation.DoesNotExist:
             mob_locations = None
+
+        return mob_locations
+
+    def get_locations_by_partial_mob_name(mob_name_part):
+        mob_locations = []
+
+        mob_name = "*" + mob_name_part + "*"
+
+        try:
+            mob_locations = MobLocation.select().join(Mob).where(Mob.name % mob_name).order_by(Mob.id.desc())
+
+        except MobLocation.DoesNotExist:
+            mob_locations = []
 
         return mob_locations
 

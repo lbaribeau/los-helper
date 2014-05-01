@@ -33,9 +33,9 @@ class BotThread(threading.Thread):
         elif(self.character.LEVEL <= 7):
             self.__TOTALPATHS = 10 # include hookers for level 3            
         else:
-            self.__TOTALPATHS = 14 # start the fort and bandits at lvl 8
+            self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
 
-        self.loot_threshold = 5  # the amount of loot to collect before selling
+        self.loot_threshold = 15  # the amount of loot to collect before selling
 
         if(isinstance(starting_path, int) and starting_path < self.__TOTALPATHS):
             self.__nextpath = starting_path
@@ -367,8 +367,8 @@ class BotThread(threading.Thread):
         
         return
 
-    '''def buff_up(self):
-        if((time.time() - self.character.LAST_BUFF) > 150):
+    def buff_up(self):
+        if((time.time() - self.character.LAST_BUFF) > 180):
             #while(self.character.MANA > 0): 
                 #self.commandHandler.user_ca('c light')
 
@@ -377,9 +377,10 @@ class BotThread(threading.Thread):
             return
 
     def use_buff_items(self):
-        if (any("steel bottle" in s for s in self.inventory_in)):
-            magentaprint("drinking steel bottle", False)
-            self.commandHandler.process('drink bottle')
+        #self.commandHandler.process('drink milky')
+        if (any("milky potion" in s for s in self.inventory_in)):
+            #magentaprint("drinking steel bottle", False)
+            self.commandHandler.process('drink milky')
         else:
             self.character.HAS_BUFF_ITEMS = False
         return
@@ -390,7 +391,7 @@ class BotThread(threading.Thread):
             self.commandHandler.process('drink restorative')
         else:
             self.character.HAS_RESTORE_ITEMS = False
-        return'''
+        return
 
     def check_weapons(self):
         
@@ -513,13 +514,57 @@ class BotThread(threading.Thread):
                           's', "gate", 's', 'w', 'e', 's',
                           "gate", 's', 's', 's', 's', 's', "gate", 'e', 's',
                           's', "chapel"]
-        
+
+        DWARVEN_FIELD_WORKERS_PATH = ['out', 'south', 'east', 'south', 'south',
+                            'south', 'west', 'gate', 'south', 'southeast', 'southeast',
+                            'east', 'east', 'east', 'pathway', 'northwest', 'north', 'north',
+                            'north', 'southeast', 'east', 'east', 'gate', 'east', 'building',
+                            'out', 'east', 'east', 'southeast', 'field', 'road', 'southeast',
+                            'southeast', 'southeast', 'field', 'stile', 'stile', 'road',
+                            'northwest', 'northwest', 'northwest', 'northwest', 'west', 'west',
+                            'west', 'gate', 'west', 'west', 'northwest', 'south', 'south', 'south',
+                            'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest',
+                            'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
+
+        #both gates close at night unforunately...
+        FIELD_WORKERS_PATH = ['out', 'south', 'east', 'south', 'south', 'south','west',
+                            'gate', 'south', 'southeast', 'southeast', 'east', 'east',
+                            'east', 'pathway', 'northwest', 'north', 'north', 'north',
+                            'northwest', 'northwest', 'north', 'north', 'gate', 'west',
+                            'north', 'northwest', 'northwest', 'north', 'gate', 'west',
+                            'west', 'southwest', 'southwest', 'west', 'west', 'west',
+                            'southwest', 'southwest', 'southeast', 'southeast', 'south',
+                            'gate', 'stile', 'northwest', 'southeast', 'southwest',
+                            'northeast', 'stile', 'gate', 'north', 'northwest', 'northwest',
+                            'west', 'west', 'gate', 'south', 'west', 'west', 'west', 'north', 'chapel']
+
+        #Contains lvl 2&3 mobs (stacker, furniture maker, sawmill operator, mill worker) and lvl 6 mobs (sawmill / mill supervisors)
+        MILL_WORKERS = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate',
+                        'south', 'south', 'south', 'south', 'south', 'southwest', 'south',
+                        'southeast', 'southwest', 'south', 'south', 'southeast', 'south',
+                        'south', 'southwest', 'bridge', 'south', 'southwest', 'west', 'canal',
+                        'south', 'south', 'south', 'east', 'east', 'west', 'south', 'east',
+                        'west', 'north', 'north', 'east', 'south', 'south', 'southwest', 'out',
+                        'west', 'north', 'north', 'north', 'north', 'north', 'northwest',
+                        'northeast', 'north', 'north', 'north', 'northeast', 'northeast',
+                        'northeast', 'northeast', 'north', 'north', 'gate', 'east', 'north',
+                        'north', 'north', 'west', 'north', 'chapel']
+
+        RANCHER_SENTRY = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate',
+                        'south', 'southeast', 'southeast', 'east', 'east', 'east', 'pathway',
+                        'northwest', 'north','north', 'north', 'northwest', 'northwest', 'north',
+                        'north', 'gate', 'northeast', 'north', 'northeast', 'north', 'gate',
+                        'east', 'east', 'east', 'north', 'north', 'northeast', 'north',
+                        'northeast', 'gate', 'arch', 'north', 'east', 'north', 'northwest',
+                        'gate', 'north', 'east', 'east', 'south', 'east', 'north', 'south',
+                        'west', 'west', 'west', 'gate', 'southwest', 'south', 'east', 'south',
+                        'arch', 'gate', 'southwest', 'south', 'southwest', 'south', 'south', 'west',
+                        'west', 'west', 'gate', 'south', 'southwest', 'south', 'southwest', 'gate',
+                        'south', 'south', 'southeast', 'southeast', 'south', 'south', 'south',
+                        'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest',
+                        'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
+
         PATH_TO_SKIP_WITH = [ 'out', 'chapel' ]
-        
-        # TODO list
-        # dwarven field workers (good high level content)
-        # regular field workers east of Amethyst... however exit is shut during the night.
-        # loggers and sawmill operators (lots of enemies if you hang around ... perhaps add some waiting)
 
         if (self.character.DEAD):
             self.character.DEAD = False
@@ -578,6 +623,12 @@ class BotThread(threading.Thread):
                              (self.character.AURA_SCALE, self.character.AURA_PREFERRED_SCALE))
                 self.__nextpath = self.__nextpath + 1   # So that we don't go selling
                 return PATH_TO_SKIP_WITH
+        elif(self.__nextpath == 15):
+            return DWARVEN_FIELD_WORKERS_PATH
+        elif(self.__nextpath == 17):
+            return MILL_WORKERS
+        elif(self.__nextpath == 19):
+            return RANCHER_SENTRY
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" +
                          self.__nextpath)
@@ -725,7 +776,6 @@ class BotThread(threading.Thread):
         if monster in self.character.MOBS_ATTACKING:
             #magentaprint("Bot:engage_monster: Removing " + monster + " from MOBS_ATTACKING.")
             magentaprint("I believe the following is dead or gone: " + monster, False)
-            self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
             self.character.MOBS_ATTACKING.remove(monster)
             
         return

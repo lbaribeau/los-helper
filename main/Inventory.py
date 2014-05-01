@@ -12,6 +12,7 @@ class Inventory(BotReactionWithFlag):
     def __init__(self, mudReaderHandler, telnetHandler):
         self.you_have = "(?s)You have: (.+?)\."
         self.wont_buy = "The shopkeep says, \"I won't buy that rubbish from you\.\""
+        self.wont_buy2 = "The shopkeep won't buy that from you\."
         self.sold = "The shopkeep gives you (.+?) gold for (.+?)\."
         self.you_drop = "(?s)You drop (.+?)\."
         self.gold_from_tip = "You have (.+?) gold\."
@@ -29,7 +30,7 @@ class Inventory(BotReactionWithFlag):
         self.you_put_in_bag = "(?s)You put (.+?) in(to)? (.+?)\."
         self.gave_you = ".+? gave (.+?) to you\."
 
-        self.regexes = [self.you_have, self.you_get, self.wont_buy, self.sold, 
+        self.regexes = [self.you_have, self.you_get, self.wont_buy, self.wont_buy2, self.sold, 
             self.you_drop, self.not_a_pawn_shop, self.you_now_have, self.gold_from_tip,
             self.not_empty, self.you_wear, self.nothing_to_wear, self.you_remove,  
             self.nothing_to_remove, self.you_wield, self.you_give, self.bought,
@@ -285,6 +286,8 @@ class Inventory(BotReactionWithFlag):
     #           "adamantine rod", "granite rod", "zinc wand"]
 
     # should probably depend on level.
+    #keep_list = ["small restorative", "silver chalice", "steel bottle", "milky potion"] 
+
     keep_list = ["large bag", "large sack", 
         "silver chalice", "steel bottle", 
         'glowing potion', 
