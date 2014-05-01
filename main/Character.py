@@ -190,7 +190,7 @@ class Character(object):
         "market official", "street trader", "field worker", "harvester", 
         "horse", "cow", "doorman", "stilt walker",  "messenger", "cashier",
         "thatcher",  "tax inspector", 'journeyman', "human miner", 
-        "hobbitish miner", "hawk"
+        "hobbitish miner", "hawk", "stacker", "mill worker"
         #"robed pilgrim",  # Removed for red/blue balance
         #"miner's mule"
         ]
