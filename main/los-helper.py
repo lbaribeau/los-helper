@@ -165,8 +165,6 @@ class LosHelper(object):
                 self.start_goto(user_input, True)
             elif(re.match("stop$", user_input)):
                 self.stop_bot()
-                self.stop_crawl()
-                self.stop_goto()
             elif(re.match("fle?$|flee$", user_input)):
                 self.stop_bot()
                 self.commandHandler.process(user_input)  
