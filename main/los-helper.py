@@ -28,6 +28,7 @@ import time
 from misc_functions import *
 from Character import *
 from BotThread import *
+from GrindThread import *
 from CrawlThread import *
 from GotoThread import *
 from CommandHandler import *
@@ -75,8 +76,6 @@ class LosHelper(object):
         self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character, self.database_file, self.mud_map)
 
         self.botThread = None
-        self.crawlThread = None
-        self.gotoThread = None
 
 
     def main(self):
@@ -147,12 +146,6 @@ class LosHelper(object):
                 if(self.botThread != None and self.botThread.is_alive()):
                     self.botThread.stop()
 
-                if(self.crawlThread != None and self.crawlThread.is_alive()):
-                    self.crawlThread.stop()
-
-                if(self.gotoThread != None and self.gotoThread.is_alive()):
-                    self.gotoThread.stop()
-
             elif(user_input == "quit"):
                 # TODO:  correct if MUD prints "Please wait x more seconds"
                 # after quit was sent.
@@ -161,12 +154,6 @@ class LosHelper(object):
 
                 if(self.botThread != None and self.botThread.is_alive()):
                     self.botThread.stop()
-
-                if(self.crawlThread != None and self.crawlThread.is_alive()):
-                    self.crawlThread.stop()
-
-                if(self.gotoThread != None and self.gotoThread.is_alive()):
-                    self.gotoThread.stop()
 
             elif(re.match("bot ?$|bot [0-9]+$", user_input)):
                 self.start_bot(user_input)
@@ -198,23 +185,26 @@ class LosHelper(object):
         if (self.botThread != None and self.botThread.is_alive()):
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
-            self.botThread = BotThread(starting_path, 
-                                       self.character, 
+            self.botThread = GrindThread(self.character, 
                                        self.commandHandler, 
                                        self.mudReaderHandler,
-                                       self.inventory)
+                                       self.inventory,
+                                       self.database,
+                                       self.mud_map,
+                                       starting_path)
             self.botThread.start()
 
     def start_crawl(self):
-        if (self.crawlThread != None and self.crawlThread.is_alive()):
+        if (self.botThread != None and self.botThread.is_alive()):
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
-            self.crawlThread = CrawlThread(self.character, 
+            self.botThread = CrawlThread(self.character, 
                                        self.commandHandler, 
                                        self.mudReaderHandler,
+                                       self.inventory,
                                        self.database,
                                        self.mud_map)
-            self.crawlThread.start()
+            self.botThread.start()
 
     def start_goto(self, user_input, is_show_to=False):
         M_obj = re.search("[0-9]+", user_input)
@@ -224,28 +214,19 @@ class LosHelper(object):
         else:
             starting_path = None
 
-        if (self.gotoThread != None and self.gotoThread.is_alive()):
+        if (self.botThread != None and self.botThread.is_alive()):
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
-            self.gotoThread = GotoThread(self.character, 
+            self.botThread = GotoThread(self.character, 
                                        self.commandHandler, 
                                        self.mudReaderHandler,
+                                       self.inventory,
                                        self.database,
                                        self.mud_map,
                                        starting_path,
                                        is_show_to)
-            self.gotoThread.start()
+            self.botThread.start()
 
-
-    def stop_goto(self):
-        if (self.gotoThread != None and self.gotoThread.is_alive()):
-            self.gotoThread.stop()
-            #self.mudReaderHandler.unregister_reactions()
-
-    def stop_crawl(self):
-        if (self.crawlThread != None and self.crawlThread.is_alive()):
-            self.crawlThread.stop()
-            #self.mudReaderHandler.unregister_reactions()
 
     def stop_bot(self):
         if (self.botThread != None and self.botThread.is_alive()):

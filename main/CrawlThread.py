@@ -1,81 +1,12 @@
-import threading
-from threading import Thread
-import atexit 
-import time
-
 from misc_functions import *
-from CommandHandler import *
-from Exceptions import *
+from BotThread import *
 from Database import *
 from MudMap import *
 
-class CrawlThread(threading.Thread):
-    def __init__(self, character_in=None, commandHandler=None, mudReaderHandler_in=None, database=None, mud_map=None):
-        if(character_in==None and commandHandler==None and mudReaderHandler_in==None and database==None and mud_map==None):
-            return   
-        Thread.__init__(self)
-        # Initialize some variables local to this thread
-        self.__stopping = False        
-        
-        self.character = character_in
-        self.commandHandler = commandHandler
-        self.mudReaderHandler = mudReaderHandler_in
-        self.character.ACTIVELY_MAPPING = True
-
-        atexit.register(self.stop)
-
-        self.database = database
-        db.initialize(database)
-        db.connect()
-        self.mud_map = mud_map
-        create_tables()
-        db.close()
-
-
-    def stop(self):
-        magentaprint("Crawl: stopping....   Urrrrrchhhchch!!")
-        self.character.ACTIVELY_MAPPING = False
-        self.__stopping = True
-
-
-    def keep_going(self):
-        self.__stopping = False
-
-
-    def run(self):
-        self.__stopping = False 
-        
-        magentaprint("CrawlThread: run()")
-
-        # Here is where the fun begins.
-        while(not self.__stopping):
-
-            if(self.__stopping):
-                break
-
-            direction_list = self.decide_where_to_go()
-
-            while(direction_list != [] and not self.__stopping):
-                #breathe deep
-                # Note that go returns a success value.  We have to be aware 
-                # of what text has gone by to keep track of MONSTER_LIST
-                # So since we know go was successful we know that 
-                # MONSTER_LIST is good to go by now.
-                if(self.go(direction_list[0])):
-                    direction_list.pop(0)
-                else:
-                    if(self.character.GO_BLOCKING_MOB != ""):
-                        #set the mob as a blocker then attack the mob
-                        continue
-                    elif(self.character.GO_PLEASE_WAIT):
-                        continue
-                    elif(self.character.GO_TIMEOUT):
-                        direction_list.pop(0)
-                    elif(self.character.GO_NO_EXIT):
-                        direction_list.pop()
-                        continue
-                time.sleep(1)
-
+class CrawlThread(BotThread):
+    def __init__(self, character_in=None, commandHandler=None, mudReaderHandler_in=None,
+                inventory_in=None, database=None, mud_map=None):
+        super(CrawlThread, self).__init__(character_in, commandHandler, mudReaderHandler_in, inventory_in, database, mud_map)
 
     def decide_where_to_go(self):
         if (not self.character.CAN_SEE):
@@ -105,24 +36,3 @@ class CrawlThread(threading.Thread):
         self.mud_map = MudMap() #if we actively update the map in Cartography then we wouldn't have to re-create it here
 
         return self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
-
-    def go(self, exit_str):
-        #time.sleep(0.8) # sometimes not a good idea to go immediately
-        
-        if(self.__stopping):
-            return True
-        
-        magentaprint("Going " + str(exit_str))
-        wait_for_move_ready(self.character)
-        wait_for_attack_ready(self.character)
-        wait_for_cast_ready(self.character)
-
-        magentaprint(str(exit_str), False)
-
-        if(re.match("(.*?door)", exit_str)):
-            self.commandHandler.process("open " + exit_str)
-            self.commandHandler.process("go " + exit_str)
-            return self.mudReaderHandler.check_for_successful_go()
-        else:
-            self.commandHandler.process("go " + exit_str)
-            return self.mudReaderHandler.check_for_successful_go()
