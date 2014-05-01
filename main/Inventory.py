@@ -12,6 +12,7 @@ class Inventory(BotReactionWithFlag):
     def __init__(self, mudReaderHandler, telnetHandler):
         self.you_have = "(?s)You have: (.+?)\."
         self.wont_buy = "The shopkeep says, \"I won't buy that rubbish from you\.\""
+        self.wont_buy2 = "The shopkeep won't buy that from you\."
         self.sold = "The shopkeep gives you (.+?) gold for (.+?)\."
         self.dropped = "(?s)You drop (.+?)\.\n\rThanks for recycling\.\n\rYou have (.+?) gold\."
         self.not_a_pawn_shop = "This is not a pawn shoppe\."
@@ -27,11 +28,11 @@ class Inventory(BotReactionWithFlag):
         self.bought = "Bought\."  
         self.you_put_in_bag = "You put (.+?) into (.+?)\."
 
-        super(Inventory, self).__init__([self.you_have, self.you_get, self.wont_buy, self.sold, 
-            self.dropped, self.not_a_pawn_shop, self.you_now_have,
-            self.not_empty, self.you_wear, self.nothing_to_wear, self.you_remove,  
-            self.nothing_to_remove, self.you_wield, self.you_give, self.bought,
-            self.you_put_in_bag])
+        super(Inventory, self).__init__([self.you_have, self.you_get, self.sold, 
+            self.dropped, self.not_a_pawn_shop, self.you_now_have, self.wont_buy, 
+            self.wont_buy2, self.not_empty, self.you_wear, self.nothing_to_wear,  
+            self.you_remove, self.nothing_to_remove, self.you_wield, self.you_give,
+            self.bought, self.you_put_in_bag])
 
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler

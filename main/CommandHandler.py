@@ -91,19 +91,17 @@ class CommandHandler(object):
             MudMap.find(str(M_obj.group(1)))
 
         elif re.match("wie?2 +[a-zA-Z]+( +\d+)?", user_input):
-            user_input = "wield " + user_input[3:] 
-            self.telnetHandler.write(user_input)
-            #self.user_wie2(user_input[4:].lstrip())
+            self.user_wie2(user_input[4:].lstrip())
         elif re.match("fle?$|flee$", user_input):
             self.user_flee()
-        elif re.match("HASTING", user_input):  # Debug
-            magentaprint(str(self.character.HASTING))
+        elif re.match("HASTING", user_input):
+            magentaprint(str(self.character.HASTING), False)
         elif re.match("WEAPON1", user_input):
-            magentaprint(self.character.WEAPON1)
+            magentaprint(self.character.WEAPON1, False)
         elif re.match("WEAPON2", user_input):
-            magentaprint(self.character.WEAPON2)
+            magentaprint(self.character.WEAPON2, False)
         elif re.match("MONSTER_CHECK_FLAG", user_input):
-            magentaprint(str(self.character.MONSTER_CHECK_FLAG))
+            magentaprint(str(self.character.MONSTER_CHECK_FLAG), False)
         elif re.match("MONSTER_LIST", user_input):
             magentaprint(str(self.character.MONSTER_LIST), False)
         elif re.match("AREA_ID", user_input):
@@ -149,19 +147,17 @@ class CommandHandler(object):
             magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
             runtime = get_runtime_in_minutes()
             magentaprint("Minutes Run: " + str(runtime), False)
-        elif re.match("MUD_RETURN_ITEM_SOLD", user_input):
-            magentaprint(self.character.MUD_RETURN_ITEM_SOLD)
         elif re.match("MOBS_JOINED_IN", user_input):
-            magentaprint(self.character.MOBS_JOINED_IN)
+            magentaprint(self.character.MOBS_JOINED_IN, False)
         elif re.match("AURA", user_input):
             magentaprint(str(self.character.AURA), False)        
         elif re.match("MOBS_ATTACKING", user_input):
-            magentaprint(self.character.MOBS_ATTACKING)
+            magentaprint(self.character.MOBS_ATTACKING, False)
         elif re.match("MONSTER_KILL_LIST", user_input):
-            magentaprint(str(self.character.MONSTER_KILL_LIST))
+            magentaprint(str(self.character.MONSTER_KILL_LIST), False)
         elif re.match("reactionlist", user_input):
             for r in self.mudReaderHandler.MudReaderThread.BotReactionList:
-                magentaprint('    ' + str(r))
+                magentaprint('    ' + str(r), False)
         elif re.match("cackle", user_input):
             misc_functions.verboseMode = not misc_functions.verboseMode
             magentaprint("Verbose mode changed", False)
@@ -180,7 +176,12 @@ class CommandHandler(object):
     def user_ki(self, user_input):
         now = time.time()
         time_remaining = self.character.ATTACK_WAIT - (now - self.character.ATTACK_CLK)
+
         if time_remaining < 0:
+            self.character.ATTACK_CLK = now
+            self.telnetHandler.write(user_input)
+        elif time_remaining < 0.1:
+            time.sleep(time_remaining)
             self.character.ATTACK_CLK = now
             self.telnetHandler.write(user_input)
         elif time_remaining < 1.0:
@@ -190,20 +191,18 @@ class CommandHandler(object):
             self.character.ATTACK_CLK = now
             self.telnetHandler.write(user_input)
         else:
-            magentaprint("(Python) Wait %.1f more seconds" % time_remaining)
+            magentaprint("Please wait %.1f more seconds." % time_remaining, False)
 
             
     def user_ca(self, user_input):
-        # TODO: Match this to a spell list so I can actually tell if they
-        # issued a valid command.  Then maybe issue quicker feedback
-        # than the MUD can!.
-        # Casting something... do anything here?  Just set clock.
-        # Check if you can cast.
-
         now = time.time()
-        time_remaining = self.character.CAST_WAIT - (now - self.character.CAST_CLK) # cast time only depends
-                                                    # on last cast (even if it failed!)
+        time_remaining = self.character.CAST_WAIT - (now - self.character.CAST_CLK) 
+
         if time_remaining < 0:
+            self.character.CAST_CLK = now
+            self.telnetHandler.write(user_input)
+        elif time_remaining < 0.1:
+            time.sleep(time_remaining)
             self.character.CAST_CLK = now
             self.telnetHandler.write(user_input)
         elif time_remaining < 1.0:
@@ -228,11 +227,15 @@ class CommandHandler(object):
         
         time_remaining = max(wait_from_move, wait_from_ATTACK, wait_from_CAST);
         
-        #magentaprint("MOVE wait time: %f" % wait_from_move)
-        #magentaprint("ATTACK wait time: %f" % wait_from_ATTACK)
-        #magentaprint("CAST wait time: %f" % wait_from_CAST)
+        #magentaprint("MOVE wait time: %.2f" % round(wait_from_move, 2))
+        #magentaprint("ATTACK wait time: %.2f" % round(wait_from_ATTACK, 2))
+        #magentaprint("CAST wait time: %.2f" % round(wait_from_CAST, 2))
           
         if time_remaining < 0:
+            self.character.MOVE_CLK = now
+            self.telnetHandler.write(user_input)
+        elif time_remaining < 0.1:
+            time.sleep(time_remaining)
             self.character.MOVE_CLK = now
             self.telnetHandler.write(user_input)
         elif time_remaining < 1.0:
@@ -303,7 +306,6 @@ class CommandHandler(object):
             self.CastThread.set_target(target)
             self.CastThread.keep_going()
         else:
-            magentaprint("New instance of cc thread")
             self.CastThread = CastThread(self.character, 
                                          self.mudReaderHandler, 
                                          self.telnetHandler, 
