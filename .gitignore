@@ -1,3 +1,7 @@
+networkx
+nx
+*.db-journal
+
 #################
 ## Eclipse
 #################
