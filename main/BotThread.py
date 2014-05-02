@@ -91,7 +91,7 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return True
         
-        magentaprint("Going " + exit_str + (". %f" % (time.time() - self.character.START_TIME)))
+        magentaprint("Going " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)))
         wait_for_move_ready(self.character)
         wait_for_attack_ready(self.character)
         wait_for_cast_ready(self.character)
