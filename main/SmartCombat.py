@@ -35,13 +35,6 @@ class SmartCombat(CombatThread, BotReactionWithFlag):
                            ]
         self.spell_fail = []
 
-        # self.regexes.extend([a.success_regex for a in self.heal_abilities])
-        # self.regexes.extend([a.failure_regex for a in self.heal_abilities_that_fail])
-        # self.regexes.extend([a.success_regex for a in self.fast_combat_abilities])
-        # self.regexes.extend([a.failure_regex for a in self.fast_combat_abilities])
-        # self.regexes.extend([a.success_regex for a in self.combat_abilities])
-        # self.regexes.extend([a.failure_regex for a in self.combat_abilities])
-
         self.regexes.extend([a.success_regex for a in abilities])
         self.regexes.extend([a.failure_regex for a in self.heal_abilities_that_fail])
         self.regexes.extend([a.failure_regex for a in self.fast_combat_abilities])

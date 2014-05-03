@@ -246,15 +246,14 @@ class MudReaderThread(threading.Thread):
 
             M_obj = re.search("     (.+?) the (.+?), a (.+?) of the" + s_numbered + " level    ",text_buffer)
             if(M_obj != None):
-                self.character.NAME = M_obj.group(1)
-                self.character.RACE = M_obj.group(2)
-                self.character.TITLE = M_obj.group(3)
-                self.character.LEVEL = int(re.search("\d+",M_obj.group(4)).group(0))
+                self.character.name = M_obj.group(1)
+                self.character.race = M_obj.group(2)
+                self.character.title = M_obj.group(3)
+                self.character.level = int(re.search("\d+",M_obj.group(4)).group(0))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 #magentaprint("MudReader got name, race, class, level: %s %s %s %s" % 
                 #            (self.character.NAME, self.character.RACE, 
                 #             self.character.TITLE, self.character.LEVEL))  
-                # Print checks out.
                 
             M_obj = re.search("Your preferred alignment is (.+?)     ",text_buffer)
             if(M_obj != None):
