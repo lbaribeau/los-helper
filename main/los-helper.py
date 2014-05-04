@@ -37,6 +37,7 @@ from MudReaderThread import MudReaderThread
 from MudListenerThread import MudListenerThread 
 from MyBuffer import MyBuffer 
 from Inventory import Inventory 
+from Info import Info 
 from Whois import Whois
 from Cartography import Cartography 
 from BotReactions import *
@@ -78,6 +79,7 @@ class LosHelper(object):
         self.set_up_auto_wield()
         self.check_inventory()
         self.check_class_and_level()
+        self.check_info()
         self.watch_user_input()
             
         # Quitting cleanly: The MUD_read thread quits if it hits
@@ -124,7 +126,11 @@ class LosHelper(object):
         self.character.race = whois.race
         self.character.configure_health_and_mana_variables()
         self.character.set_monster_kill_list()
-        
+
+    def check_info(self):
+        info = Info(self.mudReaderHandler, self.telnetHandler, self.character)
+        info.execute()
+
     def watch_user_input(self):
         stopping = False;
 

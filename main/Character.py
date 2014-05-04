@@ -10,8 +10,7 @@ class Character(object):
     title = None
     _class = None
     level = None
-    #adam.preferred_alignment = "dusty red"
-    preferred_alignment = "dusty blue"
+    preferred_alignment = None
     BLACK_MAGIC = True
     FAVOURITE_SPELL = "hurt"
     KNOWS_VIGOR = True
@@ -26,12 +25,11 @@ class Character(object):
     # Indices will be sharp, thrust, blunt, pole, missile, earth, water, wind, fire, astral
     # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
 
-    AURA_SCALE = 2 #Current aura
-    #adam.AURA_SCALE = 2 #dusty red
+    AURA_SCALE = 6
     AURA = AURA_LIST[AURA_SCALE]
     
-    AURA_PREFERRED_SCALE = AURA_LIST.index(preferred_alignment)
-    AURA_PREFERRED = AURA_LIST[AURA_PREFERRED_SCALE]
+    AURA_PREFERRED_SCALE = None
+    AURA_PREFERRED = None
     
     AURA_LAST_UPDATE = -300
     LAST_BUFF = -150
