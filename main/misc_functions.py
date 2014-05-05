@@ -2,6 +2,11 @@ import time
 import sys
 from ConsoleHandler import newConsoleHandler
 from datetime import datetime
+from Database import *
+
+database_file = "maplos.db"
+database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
+db.initialize(database)
 
 debugMode = False
 verboseMode = True
@@ -72,11 +77,16 @@ def my_list_equal(listA, listB):
 
     return True
     
-def magentaprint(text, isDebugCommand=True):
+def magentaprint(text, is_debug_command=True, log_output=False):
     global debugMode
 
-    if (debugMode or not isDebugCommand):
+    if (debugMode or not is_debug_command):
         do_magentaprint (text)
+
+    if (debugMode or log_output):
+        log = Log()
+        log.data = text
+        log.save()
 
 def do_magentaprint(text):
     newConsoleHandler().magenta()
@@ -119,3 +129,6 @@ def calculate_vpm(value):
 def replace_newlines_with_spaces(s):
     s = s.replace('\n\r', ' ')
     return s
+
+def get_last_word(s):
+    return s.rsplit(None, 1)[-1]

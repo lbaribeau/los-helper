@@ -3,6 +3,8 @@ See: http://peewee.readthedocs.org/en/latest/peewee/installation.html
 '''
 from peewee import *
 from misc_functions import *
+import time
+from datetime import datetime
 
 db = Proxy()
 
@@ -326,8 +328,16 @@ class MobLocation(BaseModel):
 
         return mob_locations
 
+class Log(BaseModel):
+    timestamp = DateTimeField(default=datetime.now)
+    data = TextField()
+
+    def to_string(self):
+        return str(self.timestamp) + ", " + str(self.data)
+
 def create_tables():
     try:
+        Log.create_table()
         Area.create_table()
         AreaExit.create_table()
         ExitType.create_table()
@@ -340,6 +350,7 @@ def create_tables():
 
 def drop_tables():
     try:
+        Log.drop_table()
         Area.drop_table()
         AreaExit.drop_table()
         ExitType.drop_table()
