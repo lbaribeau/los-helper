@@ -276,7 +276,9 @@ class Inventory(BotReactionWithFlag):
       
     def _item_string_to_reference(self, item_string):
         # 'grey cloak' will be "grey", it just takes the first word.
-        return item_string.split(" ")[0].split(".")[0]
+        s = get_last_word(item_string)
+        #magentaprint("Reference: " + s, False)
+        return get_last_word(item_string)#item_string.split(" ")[0].split(".")[0]
 
     restoratives = ["chicken soup", "small restorative", "small flask", 
                     "large restorative", "scarlet potion"]
@@ -288,9 +290,10 @@ class Inventory(BotReactionWithFlag):
     # should probably depend on level.
     #keep_list = ["small restorative", "silver chalice", "steel bottle", "milky potion"] 
 
+    #thick liquid silences you !!!
 
-    adam_keep_list = ["large bag", "large sack", 
-        "silver chalice", "steel bottle", "small restorative", 'glowing potion', "chicken soup", 'scarlet potion'
+    keep_list = ["large bag", "large sack", 
+        "silver chalice", "steel bottle", "small restorative", 'glowing potion', "chicken soup", 'scarlet potion', 'white potion'
         # weapons
         #'war hammer', "adamantine sword", 'adamantine axe', "claymore", 
         #"spider leg", 
@@ -313,7 +316,7 @@ class Inventory(BotReactionWithFlag):
         #'steel mask' # the bot slowly collects these
         ]
 
-    keep_list = ["large bag", "large sack", 
+    '''keep_list = ["large bag", "large sack", 
        "silver chalice", "steel bottle", 
         'glowing potion', 
         "chicken soup", "small restorative", "small flask", 
@@ -338,7 +341,7 @@ class Inventory(BotReactionWithFlag):
         'lion charm', "poison ring",
         "iron shield"
         #'steel mask' # the bot slowly collects these 
-        ] 
+        ] '''
 
     MUD_RETURN_ITEM_SOLD = False
 
