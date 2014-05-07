@@ -5,7 +5,7 @@ import sys
 from collections import Counter
 from Exceptions import *
 from BotReactions import *
-from misc_functions import replace_newlines_with_spaces, my_list_search
+from misc_functions import *
 from Database import *
 from MudMap import *
 import re
@@ -32,6 +32,7 @@ class Cartography(BotReaction):
         self.not_authorized = "You are not authorised to enter here\."
         self.no_force = "You cannot force yourself to go through there\."
         self.not_here = "You don't see that here\."
+        self.loot_blocked = "The" + s_numbered + " (.+?) won't let you take anything\."#The spiv won't let you take anything.
         
 
         database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
@@ -57,11 +58,13 @@ class Cartography(BotReaction):
             self.no_right,
             self.not_authorized,
             self.no_force,
-            self.not_here]
+            self.not_here,
+            self.loot_blocked
+            ]
 
         self.mudReaderHandler = mudReaderHandler
         self.commandHandler = commandHandler
-        self.Character = character
+        self.character = character
 
         self.good_MUD_timeout = 1.5
         self.__waiter_flag = False
@@ -70,73 +73,81 @@ class Cartography(BotReaction):
 
     def notify(self, regex, M_obj):
         if regex == self.too_dark:
-            self.Character.AREA_TITLE = ""
-            self.Character.AREA_ID = None
-            self.Character.LAST_DIRECTION = None
-            self.Character.EXIT_LIST = []
-            self.Character.MONSTER_LIST = []
-            self.Character.SUCCESSFUL_GO = True
+            self.character.AREA_TITLE = ""
+            self.character.AREA_ID = None
+            self.character.LAST_DIRECTION = None
+            self.character.EXIT_LIST = []
+            self.character.MONSTER_LIST = []
+            self.character.SUCCESSFUL_GO = True
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
-            self.Character.CAN_SEE = False
+            self.character.CAN_SEE = False
         elif regex == self.area:
             matched_groups = M_obj.groups()
 
             area_title = str(matched_groups[0]).strip()
             area_description = matched_groups[1] #eat the description - doesn't give the full text
             exit_list = self.parse_exit_list(matched_groups[2])
-            self.Character.EXIT_REGEX = self.create_exit_regex_for_character(exit_list)
+            self.character.EXIT_REGEX = self.create_exit_regex_for_character(exit_list)
 
             monster_list = self.parse_monster_list(matched_groups[3])
 
-            self.Character.AREA_TITLE = area_title #title
-            self.Character.EXIT_LIST = exit_list #exits
-            self.Character.MONSTER_LIST = monster_list#monster_list #mob list
+            self.character.AREA_TITLE = area_title #title
+            self.character.EXIT_LIST = exit_list #exits
+            self.character.MONSTER_LIST = monster_list#monster_list #mob list
 
-            self.Character.SUCCESSFUL_GO = True #successful go should be true everytime the area parses
+            self.character.SUCCESSFUL_GO = True #successful go should be true everytime the area parses
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
-            self.Character.CAN_SEE = True
-            if (self.Character.TRYING_TO_MOVE): #we only want to map when user input to move has been registered
-                self.Character.TRYING_TO_MOVE = False #we've moved so we're not trying anymore
+            self.character.CAN_SEE = True
+            if (self.character.TRYING_TO_MOVE): #we only want to map when user input to move has been registered
+                self.character.TRYING_TO_MOVE = False #we've moved so we're not trying anymore
                 if (exit_list is not []):
                     area = self.draw_map(area_title, area_description, exit_list)
                     self.catalog_monsters(area, monster_list)
 
-                    self.Character.AREA_ID = area.id
+                    self.character.AREA_ID = area.id
 
                     self.catalog_monsters(area, monster_list)
                 else:
-                    self.Character.AREA_ID = None
+                    self.character.AREA_ID = None
 #self.blocked_path, self.please_wait, self.cant_go, self.no_exit
         elif regex == self.blocked_path:
-            self.Character.GO_BLOCKING_MOB = M_obj.group(2)
-            self.Character.SUCCESSFUL_GO = False
+            mob_name = M_obj.group(2)
+            self.character.GO_BLOCKING_MOB = mob_name
+            self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
+            magentaprint("Path blocked by: " + mob_name)
+            self.catalog_path_blocker(mob_name)
+        elif regex == self.loot_blocked:
+            loot_blocker = M_obj.group(2)
+            magentaprint("loot blocker blocking pickup by: " + loot_blocker)
+            self.catalog_loot_blocker(loot_blocker)
         elif regex == self.please_wait:
             magentaprint("Cartography: unsuccessful go (please wait)")  
             # TODO: fix this message which prints on every Please wait 1
-            self.Character.GO_PLEASE_WAIT = True
-            self.Character.SUCCESSFUL_GO = False
+            self.character.GO_PLEASE_WAIT = True
+            self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
         elif regex == self.cant_go:
             # This one is pretty problematic... as it should never happen.
             # Means we're off course.
             #magentaprint("MudReader: unsuccessful go (you can't go that way)")
             self.set_area_exit_as_unusable(regex)
-
         elif (regex == self.class_prohibited or
                 regex == self.level_too_low or
                 regex == self.not_invited or
                 regex == self.not_open_during_day or
                 regex == self.not_open_during_night or
-                regex == self.no_items_allowed,
-                regex == self.door_locked,
-                regex == self.no_right,
-                regex == self.not_authorized,
+                regex == self.no_items_allowed or
+                regex == self.door_locked or
+                regex == self.no_right or
+                regex == self.not_authorized or
                 regex == self.no_force):
             self.set_area_exit_as_unusable(regex)
         elif regex == self.not_here:
             self.character.ATTACK_CLK = time.time()-self.character.ATTACK_WAIT
             self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
+        else:
+            magentaprint("Cartography case missing for regex: " + str(regex), False)
 
     def draw_map(self, area_title, area_description, exit_list):
         direction_list = []
@@ -147,31 +158,31 @@ class Cartography(BotReaction):
             exit_type.map()
             direction_list.append(exit_type)
 
-        area_from = self.Character.AREA_ID
-        direction_from = self.Character.LAST_DIRECTION
+        area_from = self.character.AREA_ID
+        direction_from = self.character.LAST_DIRECTION
 
         if area_from is not None and direction_from is not None: #if we have an area we're coming from
             magentaprint(str(area_from) + " " + str(direction_from))
-            area_from = Area.get_area_by_id(self.Character.AREA_ID)
+            area_from = Area.get_area_by_id(self.character.AREA_ID)
             direction_from = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
             area.map(direction_list, area_from, direction_from)
         else:
             area.map(direction_list)
 
         area_exits = AreaExit.get_area_exits_from_area(area)
-        self.Character.MUD_AREA = MudArea(area, area_exits)
+        self.character.MUD_AREA = MudArea(area, area_exits)
 
         return area
 
     def set_area_exit_as_unusable(self, regex):
-        if self.Character.ACTIVELY_MAPPING:
+        if self.character.ACTIVELY_MAPPING:
             try:
-                self.Character.GO_NO_EXIT = True
-                self.Character.SUCCESSFUL_GO = False
+                self.character.GO_NO_EXIT = True
+                self.character.SUCCESSFUL_GO = False
                 self.CHECK_GO_FLAG = 0
 
-                area_from = self.Character.AREA_ID
-                exit_type = self.Character.LAST_DIRECTION
+                area_from = self.character.AREA_ID
+                exit_type = self.character.LAST_DIRECTION
 
                 magentaprint("setting from & direction as unusable" + str(area_from) + " " + str(exit_type))
                 if area_from is not None and exit_type is not None:
@@ -195,6 +206,24 @@ class Cartography(BotReaction):
                 mob_location.map()
         except Exception:
             magentaprint("Problem cataloging monsters", False)
+
+    def catalog_path_blocker(self, path_blocker_name):
+        mob = Mob(name=path_blocker_name)
+        mob.map()
+
+        if not mob.blocks_exit:
+            magentaprint("Catalogged new path blocker", False)
+            mob.blocks_exit = True
+            mob.save()
+
+    def catalog_loot_blocker(self, loot_blocker_name):
+        mob = Mob(name=loot_blocker_name)
+        mob.map()
+
+        if not mob.blocks_pickup:
+            magentaprint("Catalogged new loot blocker", False)
+            mob.blocks_pickup = True
+            mob.save()
 
     def parse_exit_list(self, MUD_exit_str):
         try:
@@ -261,7 +290,7 @@ class Cartography(BotReaction):
 
             if (match_monsters is None):
                 magentaprint("Match monsers: " + str(match_monsters), False)
-                return self.Character.MONSTER_LIST
+                return self.character.MONSTER_LIST
 
             M_LIST = [x.strip() for x in match_monsters.group(1).split(',')]
 

@@ -270,6 +270,8 @@ class Mob(BaseModel):
             super(Mob, self).save()
         else:
             self.id = mob.id
+            self.blocks_pickup = mob.blocks_pickup
+            self.blocks_exit = mob.blocks_exit
             #update other fields if you want
 
         return is_new_mapping
