@@ -26,20 +26,22 @@ import re
 import time
 
 from misc_functions import *
-from Character import *
-from BotThread import *
-from GrindThread import *
-from CrawlThread import *
-from GotoThread import *
-from CommandHandler import *
-from MudReaderHandler import *
-from MudReaderThread import *
-from MudListenerThread import *
-from MyBuffer import *
-from Inventory import *
-from Cartography import *
+from Character import Character
+from CharacterClass import CharacterClass
+from GrindThread import GrindThread
+from CrawlThread import CrawlThread
+from GotoThread import GotoThread
+from CommandHandler import CommandHandler
+from MudReaderHandler import MudReaderHandler 
+from MudReaderThread import MudReaderThread 
+from MudListenerThread import MudListenerThread 
+from MyBuffer import MyBuffer 
+from Inventory import Inventory 
+from Info import Info 
+from Whois import Whois
+from Cartography import Cartography 
 from BotReactions import *
-from TelnetHandler import *
+from TelnetHandler import TelnetHandler 
 from Database import *
 from MudMap import *
 
@@ -47,36 +49,26 @@ from MudMap import *
 class LosHelper(object):
 
     def __init__(self):
-        ### DEPENDENCY INJECTION ###
-        print("LOSHelper initializing....")
-        self.telnetHandler = TelnetHandler()
-        self.consoleHandler = newConsoleHandler() 
-        self.character = Character()
-        self.MUDBuffer = MyBuffer()
-
-        print("Connecting to database....")
-
-        self.database_file = "maplos.db"
-
-        self.database = SqliteDatabase(self.database_file, threadlocals=True, check_same_thread=False)
+        magentaprint("LOSHelper connecting to database....", False)
+        database_file = "maplos.db"
+        self.database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
         db.initialize(self.database)
 
-        print("Generating the mapfile....")
-
-        self.mud_map = MudMap()
-
-        print("Hooking up reactions....")
-
+        magentaprint("Connecting to MUD and initializing....", False)
+        self.character = Character()
+        self.telnetHandler = TelnetHandler()
+        self.consoleHandler = newConsoleHandler() 
+        self.MUDBuffer = MyBuffer()
         self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
         self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
         self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
-
-        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler, self.database_file, self.mud_map)
         self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler)
-        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character, self.database_file, self.mud_map)
 
+        magentaprint("Generating the mapfile....", False)
+        self.mud_map = MudMap() 
+        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler, database_file, self.mud_map)
+        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character, database_file, self.mud_map)
         self.botThread = None
-
 
     def main(self):
         self.mudListenerThread.start()
@@ -86,6 +78,8 @@ class LosHelper(object):
         self.write_username_and_pass()
         self.set_up_auto_wield()
         self.check_inventory()
+        self.check_class_and_level()
+        self.check_info()
         self.watch_user_input()
             
         # Quitting cleanly: The MUD_read thread quits if it hits
@@ -102,29 +96,41 @@ class LosHelper(object):
         print ("It should be safe to ctrl + c now")
         time.sleep(10) 
 
-
     def write_username_and_pass(self):
-
-        if(len(sys.argv) >= 3):
-            self.telnetHandler.write(sys.argv[1])
+        if len(sys.argv) >= 3:
+            self.character.name = sys.argv[1].title()
+            self.telnetHandler.write(self.character.name)
             self.telnetHandler.write(sys.argv[2])
         else:
             # With the MUD thread going already, there is no need to prompt here.
-            self.telnetHandler.write(input())
+            self.character.name = input()
+            self.telnetHandler.write(self.character.name)
             password = getpass.getpass("")
             self.telnetHandler.write(password)
 
-        
     def set_up_auto_wield(self):
         self.mudReaderHandler.register_reaction(WieldReaction(self.character, self.commandHandler))
-
 
     def check_inventory(self):
         # This prints the inventory.  I like that.  
         # Inventory needs this to be up to date.
         self.inventory.get_inventory()
-        
-        
+
+    def check_class_and_level(self):
+        whois = Whois(self.mudReaderHandler, self.telnetHandler)
+        whois.execute(self.character.name)
+        self.character._class = CharacterClass(whois.character_class, self.telnetHandler)
+        self.character.gender = whois.gender
+        self.character.level = whois.level
+        self.character.title = whois.title
+        self.character.race = whois.race
+        self.character.configure_health_and_mana_variables()
+        self.character.set_monster_kill_list()
+
+    def check_info(self):
+        info = Info(self.mudReaderHandler, self.telnetHandler, self.character)
+        info.execute()
+
     def watch_user_input(self):
         stopping = False;
 

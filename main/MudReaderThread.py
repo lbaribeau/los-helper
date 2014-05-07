@@ -200,7 +200,8 @@ class MudReaderThread(threading.Thread):
                 for regex in reaction.regexes:
                     M_obj = re.search(regex, text_buffer)
 
-                    if(M_obj != None):
+                    # if(M_obj != None):
+                    if M_obj:
                         # magentaprint("MudReaderThread: calling notify on " + str(reaction))
                         reaction.notify(regex, M_obj)  
                         text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
@@ -238,73 +239,7 @@ class MudReaderThread(threading.Thread):
                     magentaprint("MudReader: Got exception when reading prompt.")
                     pass
 
-            #### INFO screen stuff ####
-            # Note: First instinct was to parse whole screen at once but that 
-            # doesn't seem necessary now. 
-            # Nor does it seem necessary to even have a flag with the Bot... but the bot may need that.
-            s_numbered = "( 1st| 2nd| 3rd| 4th| 5th| 6th| 7th| 8th| 9th| 10th| 11th| 12th| 13th| 14th| 15th| 16th| 17th| 18th| 19th)?"
 
-            M_obj = re.search("     (.+?) the (.+?), a (.+?) of the" + s_numbered + " level    ",text_buffer)
-            if(M_obj != None):
-                self.character.NAME = M_obj.group(1)
-                self.character.RACE = M_obj.group(2)
-                self.character.TITLE = M_obj.group(3)
-                self.character.LEVEL = int(re.search("\d+",M_obj.group(4)).group(0))
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                #magentaprint("MudReader got name, race, class, level: %s %s %s %s" % 
-                #            (self.character.NAME, self.character.RACE, 
-                #             self.character.TITLE, self.character.LEVEL))  
-                # Print checks out.
-                
-            M_obj = re.search("Your preferred alignment is (.+?)     ",text_buffer)
-            if(M_obj != None):
-                self.character.AURA_PREFERRED = M_obj.group(1)
-                self.character.AURA_PREFERRED_SCALE = my_list_search(self.character.AURA_LIST, 
-                                                                          self.character.AURA_PREFERRED)
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                #magentaprint("MudReader got AURA_PREFERRED and scale: %s %s " % 
-                #             (self.character.AURA_PREFERRED, self.character.AURA_PREFERRED_SCALE)) 
-                # Print checks out.
-
-            #M_obj = re.search("     Sharp   : (\d+) +%  |  |     Earth : (\d+) +%     |",text_buffer)
-            #if(M_obj != None):
-            #    self.character.SKILLS['sharp'] = M_obj.group(1)
-            #    self.character.SKILLS['earth'] = M_obj.group(2)
-            #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            #    magentaprint("MudReader got sharp and earth: %s %s " % 
-            #                 (self.character.SKILLS['sharp'], self.character.SKILLS['earth']))
-            
-            #M_obj = re.search("     Thrust  : (\d+) +%  |  |     Water : (\d+) +%     |",text_buffer)
-            #if(M_obj != None):
-            #    self.character.SKILLS['thrust'] = M_obj.group(1)
-            #    self.character.SKILLS['water'] = M_obj.group(2)
-            #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            #    magentaprint("MudReader got thrust and water: %s %s " % 
-            #                 (self.character.WEAPON_SKILLS['thrust'], self.character.MAGIC_SKILLS['water']))
-
-            #M_obj = re.search("     Blunt   : (\d+) +%  |  |     Fire  : (\d+) +%     |",text_buffer)
-            #if(M_obj != None):
-            #    self.character.SKILLS['blunt'] = M_obj.group(1)
-            #    self.character.SKILLS['fire'] = M_obj.group(2)
-            #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            #    magentaprint("MudReader got blunt and fire: %s %s " % 
-            #                 (self.character.WEAPON_SKILLS['blunt'], self.character.MAGIC_SKILLS['fire']))
-
-            #M_obj = re.search("     Pole    : (\d+) +%  |  |     Wind  : (\d+) +%     |",text_buffer)
-            #if(M_obj != None):
-            #    self.character.SKILLS['pole'] = M_obj.group(1)
-            #    self.character.SKILLS['wind'] = M_obj.group(2)
-            #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            #    magentaprint("MudReader got pole and wind: %s %s " % 
-            #                 (self.character.WEAPON_SKILLS['pole'], self.character.MAGIC_SKILLS['wind']))
-
-            #M_obj = re.search("     Missile : (\d+) +%  |  |     Astral: (\d+) +%     |",text_buffer)
-            #if(M_obj != None):
-            #    self.character.SKILLS['missile'] = M_obj.group(1)
-            #    self.character.SKILLS['astral'] = M_obj.group(2)
-            #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            #    magentaprint("MudReader got missile and astral: %s %s " % 
-            #                 (self.character.WEAPON_SKILLS['missile'], self.character.MAGIC_SKILLS['astral']))
             
             #TODO: continue with MAXHP, MAXMP, GOLD, EXP, LEVELGOLD, LEVELEXP, etc.
             M_obj = re.search("Exp : (\d+)",text_buffer)
@@ -451,6 +386,7 @@ class MudReaderThread(threading.Thread):
                 #self.stop()  # breaks program but allows me to see what happened
 
             ########    Monster Gets Killed    ######
+            s_numbered = "( 1st| 2nd| 3rd| 4th| 5th| 6th| 7th| 8th| 9th| 10th| 11th| 12th| 13th| 14th| 15th| 16th| 17th| 18th| 19th)?"
             
             #M_obj = re.search("Your enemy, the" + s_numbered + " (.+?) has been defeated\.", MUDBuffer)            
             M_obj = re.search("Your attack overwhelms the" + s_numbered + " (.+?) and (s?he|it) collapses!", text_buffer)

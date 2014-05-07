@@ -2,83 +2,79 @@
 from Ability import *
 
 class CharacterClass(object):
-    ''' These are objects to store data about the character classes.'''
-    @property
-    def lvl1_maxHP(self): raise NotImplementedError("Subclasses should implement this!")
-    @property
-    def lvl1_maxMP(self): raise NotImplementedError("Subclasses should implement this!")
-    @property
-    def HP_gained_per_level(self): raise NotImplementedError("Subclasses should implement this!")
-    @property
-    def MP_gained_per_level(self): raise NotImplementedError("Subclasses should implement this!")
-    @property
-    def mana_tick_amount(self): raise NotImplementedError("Subclasses should implement this!")
-    @property
-    def can_circle(self): raise NotImplementedError("Subclasses should implement this!")
-    @property
-    def can_bash(self): raise NotImplementedError("Subclasses should implement this!")
-    @property
-    def can_steal(self): raise NotImplementedError("Subclasses should implement this!")
-    @property
-    def can_backstab(self): raise NotImplementedError("Subclasses should implement this!")
-    @property
-    def abilities(self): raise NotImplementedError("Subclasses should implement this!")
-    @property
-    def level_path(self): raise NotImplementedError("Subclasses should implement this!")
 
-dummyTelnet = 1
+    def __init__(self, class_string, telnetHandler):
+        self.id = class_string
 
-class Ranger(CharacterClass):   
-    lvl1_maxHP = 18 
-    lvl1_maxMP = 3
-    HP_gained_per_level = 6
-    MP_gained_per_level = 3
-    mana_tick_amount = 2 
-    can_circle = False
-    can_bash = False
-    can_steal = False
-    can_backstab = False
-    abilities = [ Haste(dummyTelnet) ]
-    # level_path
+        if class_string == "Ass":
+            self.lvl1_maxHP = 19 
+            self.lvl1_maxMP = 2
+            self.abilities = [ Backstab(telnetHandler) ]
+        elif class_string == "Bar":
+            self.lvl1_maxHP = 24 
+            self.lvl1_maxMP = 0
+            self.mana_tick = 0
+            self.mana_tick_chapel = 0
+            self.abilities = [ Bash(telnetHandler), Circle(telnetHandler), Berserk(telnetHandler) ]
+        elif class_string == "Cle":
+            self.lvl1_maxHP = 16 
+            self.lvl1_maxMP = 4
+            self.mana_tick = 2
+            self.abilities = [ Pray(telnetHandler), Turn(telnetHandler) ]
+        elif class_string == "Fig":
+            self.lvl1_maxHP = 22 
+            self.lvl1_maxMP = 2
+            self.abilities = [ Bash(telnetHandler), Circle(telnetHandler) ]
+        elif class_string == "Brd":
+            self.lvl1_maxHP = 15 
+            self.lvl1_maxMP = 3
+            self.abilities = [ AestersTears(telnetHandler), DanceOfTheCobra(telnetHandler) ]
+        elif class_string == "Mag":
+            self.lvl1_maxHP = 14 
+            self.lvl1_maxMP = 5
+            self.levelPath = [ ["out", "s", "w", "w", "w", "s", "e", "shop", "backroom", "portal"],
+                          ["door", "out", "out", "w", "n", "e", "e", "e", "n", "cha"]]
+        elif class_string == "Pal":
+            self.lvl1_maxHP = 19 
+            self.lvl1_maxMP = 3
+            self.abilities = [ Pray(telnetHandler), Turn(telnetHandler) ]
+        elif class_string == "Ran":
+            self.lvl1_maxHP = 18 
+            self.lvl1_maxMP = 3
+            self.HP_gained_per_level = 6
+            self.MP_gained_per_level = 3
+            self.mana_tick = 2 
+            self.mana_tick_chapel = 4 
+            self.abilities = [ Haste(telnetHandler) ]
+        elif class_string == "Thi":
+            self.lvl1_maxHP = 18 
+            self.lvl1_maxMP = 3
+            self.abilities = [ Backstab(telnetHandler), Steal(telnetHandler) ]
+        elif class_string == "Mon":
+            self.lvl1_maxHP = 17 
+            self.lvl1_maxMP = 3
+            self.HP_gained_per_level = 6
+            self.MP_gained_per_level = 3
+            self.abilities = [ Meditate(telnetHandler), Touch(telnetHandler) ]
+        elif class_string == "Dru":
+            self.lvl1_maxHP = 15
+            self.lvl1_maxMP = 4
+            self.abilities = [ Barkskin(telnetHandler) ]
+        elif class_string == "Alc":
+            self.lvl1_maxHP = 15 
+            lvl1_maxMP = 4
+        elif class_string == "Dar":
+            lvl1_maxHP = 19 
+            lvl1_maxMP = 4
+            abilities = [ Berserk(telnetHandler), Wither(telnetHandler) ]
+        else:
+            magentaprint("CharacterClass error: could not recognize class string.")
 
-class Monk(CharacterClass):   
-    lvl1_maxHP = 17 
-    lvl1_maxMP = 3
-    HP_gained_per_level = 6
-    MP_gained_per_level = 3
-    mana_tick_amount = 2 
-    can_circle = False
-    can_bash = False
-    can_steal = False
-    can_backstab = False
-    abilities = [ Meditate(dummyTelnet), Touch(dummyTelnet) ]
-    # level_path
 
-class Mage(CharacterClass):
-    # Todo: fill in correct numbers
-    lvl1_maxHP = 17 
-    lvl1_maxMP = 3
-    HP_gained_per_level = 6
-    MP_gained_per_level = 3
-    mana_tick_amount = 2 
-    can_circle = False
-    can_bash = False
-    can_steal = False
-    can_backstab = False
-    abilities = [ Meditate(dummyTelnet), Touch(dummyTelnet) ]
-    levelPath = [ ["out", "s", "w", "w", "w", "s", "e", "shop", "backroom", "portal"],
-                  ["door", "out", "out", "w", "n", "e", "e", "e", "n", "cha"]]
 
-#class Paladin(CharacterClass):   
-    #lvl1_maxHP = 17
-    #lvl1_maxMP = 3
-    #abilities = [ Pray(), Turn() ]
-    
-#class Druid(CharacterClass):   
-    #lvl1_maxHP = 15
-    #lvl1_maxMP = 4
-    #abilities  = [ Barkskin() ]
 
+
+# OLD IDEAS
 
 # CombatAbility class?
 #class CombatAbility:
@@ -91,3 +87,18 @@ class Mage(CharacterClass):
 # that approach would work for BotThread.  Instead use this CharacterClass 
 # structure (canCircle, canBash, canSteal, etc.)
 
+
+    # @property
+    # def lvl1_maxHP(self): raise NotImplementedError("Subclasses should implement this!")
+    # @property
+    # def lvl1_maxMP(self): raise NotImplementedError("Subclasses should implement this!")
+    # @property
+    # def HP_gained_per_level(self): raise NotImplementedError("Subclasses should implement this!")
+    # @property
+    # def MP_gained_per_level(self): raise NotImplementedError("Subclasses should implement this!")
+    # @property
+    # def mana_tick_amount(self): raise NotImplementedError("Subclasses should implement this!")
+    # @property
+    # def abilities(self): raise NotImplementedError("Subclasses should implement this!")
+    # @property
+    # def level_path(self): raise NotImplementedError("Subclasses should implement this!")

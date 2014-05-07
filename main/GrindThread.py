@@ -1,28 +1,30 @@
+
 from BotThread import *
 from misc_functions import *
 from CommandHandler import *
 from Inventory import *
 from Exceptions import *
 
+
 class GrindThread(BotThread):
 
-    def __init__(self, character_in=None, commandHandler=None, mudReaderHandler_in=None,
-                inventory_in=None, database=None, mud_map=None, starting_path=None): 
-        super(GrindThread, self).__init__(character_in, commandHandler, mudReaderHandler_in, inventory_in, database, mud_map)
+    def __init__(self, character, commandHandler, mudReaderHandler,
+                inventory, database, mud_map, starting_path=None): 
+        super(GrindThread, self).__init__(character, commandHandler, mudReaderHandler, inventory, database, mud_map)
         # Set TOTALPATHS.  Setting it lower than the actual number
         # of paths in decide_where_to_go is a way to truncate paths
         # you don't want to send low level characters on.
 
-        if(self.character.LEVEL <= 2):
+        if self.character.level <= 2:
             self.__TOTALPATHS = 8 # Kobolds are level 1 safe.
-        elif(self.character.LEVEL <= 7):
+        elif self.character.level <= 7:
             self.__TOTALPATHS = 10 # include hookers for level 3            
         else:
             self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
 
         self.loot_threshold = 15  # the amount of loot to collect before selling
 
-        if(isinstance(starting_path, int) and starting_path < self.__TOTALPATHS):
+        if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
             self.__nextpath = starting_path
         else:
             self.__nextpath = 0
@@ -237,7 +239,7 @@ class GrindThread(BotThread):
             # quite remember where they are and don't want to go through Amber
             # Also I think it's safe enough in the dark... maybe just lvl 4 
             # there are thugs
-            if(self.character.LEVEL <= 6):
+            if(self.character.level <= 6):
                 return CORAL_ALLEY_PATH
             else:            
                 self.__nextpath = self.__nextpath + 1  # So that we don't go selling

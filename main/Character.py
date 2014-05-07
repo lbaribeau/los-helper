@@ -6,15 +6,11 @@ class Character(object):
 
     # This is a class that holds a bunch of data,
     # mostly obtained by the MUD read thread.
-    RACE = "Human"
-    TITLE = "Ranger"
-    #adam.TITLE = "Monk"
-    character_class = CharacterClass.Ranger()
-    #adam.character_class = CharacterClass.Monk()
-    LEVEL = 9
-    #adam.LEVEL = 13        
-    #adam.preferred_alignment = "dusty red"
-    preferred_alignment = "dusty blue"
+    race = None
+    title = None
+    _class = None
+    level = None
+    preferred_alignment = None
     BLACK_MAGIC = True
     FAVOURITE_SPELL = "hurt"
     KNOWS_VIGOR = True
@@ -29,12 +25,11 @@ class Character(object):
     # Indices will be sharp, thrust, blunt, pole, missile, earth, water, wind, fire, astral
     # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
 
-    AURA_SCALE = 2 #Current aura
-    #adam.AURA_SCALE = 2 #dusty red
+    AURA_SCALE = 6
     AURA = AURA_LIST[AURA_SCALE]
     
-    AURA_PREFERRED_SCALE = AURA_LIST.index(preferred_alignment)
-    AURA_PREFERRED = AURA_LIST[AURA_PREFERRED_SCALE]
+    AURA_PREFERRED_SCALE = None
+    AURA_PREFERRED = None
     
     AURA_LAST_UPDATE = -300
     LAST_BUFF = -150
@@ -104,50 +99,51 @@ class Character(object):
 
     LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096] #Half of this is the gold requirement
 
-    def __init__(self):
-        self.START_TIME = time.time()
-        self.set_level_health_mana_variables()
-        self.set_monster_kill_list()
+    START_TIME = time.time()
 
-    def set_level_health_mana_variables(self):
-        if self.LEVEL <= 2:
+    # def __init__(self):
+    #     self.set_level_health_mana_variables()
+    #     self.set_monster_kill_list()
+
+    def configure_health_and_mana_variables(self):
+        if self.level <= 2:
             self.HEALTH_TO_HEAL = 20
             self.HEALTH_TO_FLEE = 8
             self.MAX_MANA = 3
             self.MANA_TO_ENGAGE = 3
-        elif self.LEVEL <= 3:
+        elif self.level <= 3:
             self.HEALTH_TO_HEAL = 27
             self.HEALTH_TO_FLEE = 9
             self.MAX_MANA = 7
             self.MANA_TO_ENGAGE = 3
-        elif self.LEVEL <= 4:
+        elif self.level <= 4:
             self.HEALTH_TO_HEAL = 31
             self.HEALTH_TO_FLEE = 11
             self.MAX_MANA = 9
             self.MANA_TO_ENGAGE = 3
-        elif self.LEVEL <= 5:
+        elif self.level <= 5:
             self.HEALTH_TO_HEAL= 31
             self.HEALTH_TO_FLEE = 8
             self.MAX_MANA = 12
             self.MANA_TO_ENGAGE = 6           
-        elif self.LEVEL <= 6:
+        elif self.level <= 6:
             self.HEALTH_TO_HEAL = 35 # 43
             self.HEALTH_TO_FLEE = 15
             self.MAX_MANA = 18
             self.MANA_TO_ENGAGE = 9     
-        elif self.LEVEL <= 7:
+        elif self.level <= 7:
             self.HEALTH_TO_HEAL= 45
             self.HEALTH_TO_FLEE = 8 
             self.MAX_MANA = 21
             self.MANA_TO_ENGAGE = 12
-        elif self.LEVEL <= 8:
+        elif self.level <= 8:
             self.HEALTH_TO_HEAL= 45
             self.HEALTH_TO_FLEE = 30
             self.MAX_MANA = 24
             self.MANA_TO_ENGAGE = 15        
         else:
-            self.HEALTH_TO_HEAL = 54
-            self.HEALTH_TO_FLEE = 35
+            self.HEALTH_TO_HEAL = 62
+            self.HEALTH_TO_FLEE = 27
             self.MAX_MANA = 27 - 4 + 1
             self.MANA_TO_ENGAGE = 18
             #adam.HEALTH_TO_HEAL = 65
@@ -202,7 +198,7 @@ class Character(object):
         'trader', "butcher", "young knight", "acrobat", "militia soldier", 
         "carpenter", "stagehand", 'hungry spider', 'cook', 'joiner', "ranch hand",
         "old rancher", "tired ranch hand", "drinking ranch hand",
-        "busy ranch hand"
+        "busy ranch hand", "sawmill operator"
         #"auctioneer", # They pile up so bad!  
         # Definitely need smart chasing or a path that runs extra around the 
         # market (after healing)
@@ -222,7 +218,7 @@ class Character(object):
         "dwarven field worker", "dwarven bartender", "school teacher",
         'lyrist', "nobleman", "seeker", "bull", "hunter", 'usher',
         'sword swallower', 'archer',
-        "yard supervisor", "sawmill supervisor"
+        "yard supervisor", #"sawmill supervisor"
         #'sentry' stand in pairs unfortunately...
         ] # bull and hunter might be wrong (too high).
     lvl6_red_monsters = [
@@ -248,29 +244,28 @@ class Character(object):
         "blond hooker", "angry hooker", "sultry hooker", 
         "journeyman" ] 
 
-
     def set_monster_kill_list(self):
         self.MONSTER_KILL_LIST = []
         self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
         self.MONSTER_KILL_LIST.extend(self.lvl1_red_monsters)
 
-        if self.LEVEL > 3:
+        if self.level > 3:
             self.MONSTER_KILL_LIST.extend(self.lvl2_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl2_red_monsters)
-        if self.LEVEL > 4:
+        if self.level > 4:
             self.MONSTER_KILL_LIST.extend(self.lvl3_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl3_red_monsters)
-        if self.LEVEL > 5:
+        if self.level > 5:
             self.MONSTER_KILL_LIST = [m for m in self.MONSTER_KILL_LIST \
                                       if m not in self.lvl1_monsters    \
                                       and m not in self.lvl2_monsters]
             self.MONSTER_KILL_LIST.extend(self.preferred_lvl_1_2_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl4_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl4_red_monsters)
-        if self.LEVEL > 7:
+        if self.level > 7:
             self.MONSTER_KILL_LIST.extend(self.lvl5_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl5_red_monsters)
-        if self.LEVEL > 8:
+        if self.level > 8:
             self.MONSTER_KILL_LIST.extend(self.lvl6_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl6_red_monsters)
 

@@ -3,27 +3,27 @@ import threading
 from threading import Thread
 import atexit 
 import time
+import re
 
 from misc_functions import *
-from CommandHandler import *
-from Inventory import *
+from BotReactions import GenericBotReaction
+from CommandHandler import CommandHandler
+from Inventory import Inventory
 from Exceptions import *
 from Database import *
-from MudMap import *
+from MudMap import MudMap
 
 class BotThread(threading.Thread):
 
-    def __init__(self, character_in=None, commandHandler=None, mudReaderHandler_in=None, inventory_in=None, database=None, mud_map=None):
-        if(character_in==None and commandHandler==None and mudReaderHandler_in==None and inventory_in==None):
-            return   
+    def __init__(self, character, commandHandler, mudReaderHandler, inventory, database, mud_map):
         Thread.__init__(self)
         # Initialize some variables local to this thread
         self.__stopping = False        
         
-        self.character = character_in
+        self.character = character
         self.commandHandler = commandHandler
-        self.mudReaderHandler = mudReaderHandler_in
-        self.inventory = inventory_in
+        self.mudReaderHandler = mudReaderHandler
+        self.inventory = inventory
         self.direction_list = []
 
         self.database = database
@@ -34,7 +34,6 @@ class BotThread(threading.Thread):
         db.close()
 
         atexit.register(self.stop)
-
 
     def stop(self):
         magentaprint("Stopping bot.")
@@ -48,7 +47,6 @@ class BotThread(threading.Thread):
 
     def run(self):                    
         self.__stopping = False 
-        
         self.do_run_startup()
 
         # Here is where the fun begins.
@@ -91,10 +89,10 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return True
         
-        magentaprint("Going " + exit_str + (". %f" % (time.time() - self.character.START_TIME)))
         wait_for_move_ready(self.character)
         wait_for_attack_ready(self.character)
         wait_for_cast_ready(self.character)
+        magentaprint("Going " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)))
 
         if(re.match("(.*?door)", exit_str)):
             self.commandHandler.process("open " + exit_str)
@@ -178,10 +176,10 @@ class BotThread(threading.Thread):
 
     def rest_and_check_aura(self):
         MANA_TO_WAIT = self.character.MAX_MANA - 12
-        if(self.character.BLACK_MAGIC): 
+        if self.character.BLACK_MAGIC: 
             MANA_TO_GO = self.character.MAX_MANA 
         else:
-            if(self.character.MAX_MANA % 2 == 1):        
+            if self.character.MAX_MANA % 2 == 1:
                 MANA_TO_GO = self.character.MAX_MANA - 1 
             else:                                        
                 MANA_TO_GO = self.character.MAX_MANA     
@@ -194,22 +192,22 @@ class BotThread(threading.Thread):
         aura_updated = self.update_aura()  # Most reasonable reason to fail is if we have no mana
         self.heal_up()
             
-        if(self.character.MANA < MANA_TO_WAIT):
+        if self.character.MANA < MANA_TO_WAIT:
             self.rest_for_mana()
-        elif(self.character.MANA < MANA_TO_GO):
+        elif self.character.MANA < MANA_TO_GO:
             self.wait_for_mana()
         else:
             pass
                    
-        if(not aura_updated):
+        if not aura_updated:
             self.update_aura()
     
-        if(self.character.LEVEL > 3):
+        if self.character.level > 3:
             self.heal_up()
             self.wait_for_mana()  
         else:
             # Probably not the greatest logic but low level characters will need 
-            # to gain heal other than healing up.
+            # to gain health other than healing up.
             self.rest_for_health()
 
         #self.buff_up()
@@ -274,7 +272,7 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return False
 
-        if(self.character.LEVEL < 3 or time.time() - self.character.AURA_LAST_UPDATE < 480):
+        if(self.character.level < 3 or time.time() - self.character.AURA_LAST_UPDATE < 480):
             magentaprint("Last aura update: %d seconds ago." % round(time.time() - self.character.AURA_LAST_UPDATE))
             return True   
 
@@ -301,7 +299,7 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return
 
-        if (self.character.TITLE == "Monk"):
+        if (self.character._class.id == "Mon"):
             magentaprint("Last Meditate Check: " + str(time.time() - self.character.LAST_MEDITATE))
             if((time.time() - self.character.LAST_MEDITATE) > 150 and
                 self.character.HEALTH <= self.character.HEALTH_TO_HEAL):
@@ -342,7 +340,7 @@ class BotThread(threading.Thread):
 
     def use_buff_items(self):
         #self.commandHandler.process('drink milky')
-        if (any("milky potion" in s for s in self.inventory_in)):
+        if (any("milky potion" in s for s in self.inventory)):
             #magentaprint("drinking steel bottle", False)
             self.commandHandler.process('drink milky')
         else:
@@ -350,7 +348,7 @@ class BotThread(threading.Thread):
         return
 
     def use_restorative_items(self):
-        if (any("small restorative" in s for s in self.inventory_in)):
+        if (any("small restorative" in s for s in self.inventory)):
             magentaprint("drinking small restorative", False)
             self.commandHandler.process('drink restorative')
         else:
@@ -394,8 +392,8 @@ class BotThread(threading.Thread):
 
         self.inventory.drop_stuff()
 
-    def decide_which_mob_to_kill(self, monster_list_in):
-        monster_list = monster_list_in[:]
+    def decide_which_mob_to_kill(self, monster_list):
+        monster_list = monster_list[:]
 
         for mob in monster_list:
             if (re.search("town guard", mob) or re.search("town crier", mob) or
@@ -403,7 +401,7 @@ class BotThread(threading.Thread):
                 return ""
 
         for mob in self.character.MOBS_ATTACKING:
-            if mob in monster_list_in:
+            if mob in monster_list:
                 return mob
         
         for mob in monster_list:
@@ -436,7 +434,7 @@ class BotThread(threading.Thread):
                     
             # TODO: restoratives (use when vig not keeping up or low mana)
             if (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL)):
-                if (self.character.TITLE == "Monk"): #meditate
+                if (self.character._class.id == "Mon"):
                     magentaprint("Last Meditate Check: " + str(time.time() - self.character.LAST_MEDITATE))
                     if((time.time() - self.character.LAST_MEDITATE) > 150):
                         self.commandHandler.process('meditate')
