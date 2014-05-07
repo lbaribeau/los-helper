@@ -419,16 +419,18 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return
         
+        magentaprint("Engage: " + monster)
+
         self.commandHandler.user_kk(monster)
         time.sleep(0.5)  # Keeps attacking and magic out of sync
 
         while(self.commandHandler.KillThread != None and self.commandHandler.KillThread
               and self.commandHandler.KillThread.stopping == False):
             
-            if(self.character.BLACK_MAGIC):
-                if(self.character.MANA >= black_magic_spell_cost):
-                    if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
-                        self.commandHandler.user_cc(self.character.FAVOURITE_SPELL + " " + monster)
+            if(self.character.BLACK_MAGIC and self.character.MANA >= black_magic_spell_cost):
+                if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
+                    magentaprint("Starting black magic cast thread: " + monster)
+                    self.commandHandler.user_cc(self.character.FAVOURITE_SPELL + " " + monster)
                 else:
                     self.commandHandler.stop_CastThread()
                     
@@ -441,7 +443,9 @@ class BotThread(threading.Thread):
                         self.character.LAST_MEDITATE = time.time()
                 if(self.character.MANA >= vigor_cost and self.character.KNOWS_VIGOR and
                     self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
+                    magentaprint("Starting vigor cast thread")
                     self.commandHandler.user_cc("vig")
+                else:
                     self.commandHandler.stop_CastThread()
                 #else:
                     #self.use_restorative_items()

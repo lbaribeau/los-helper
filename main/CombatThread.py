@@ -2,6 +2,7 @@
 import threading
 from threading import Thread
 import atexit 
+from misc_functions import *
 
 class CombatThread(threading.Thread):
     stopping = False
@@ -13,7 +14,7 @@ class CombatThread(threading.Thread):
         self.telnetHandler = telnetHandler
         self.target = target      
         numbers = "(1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th|11th|12th|13th|14th|15th|16th|17th|18th|19th)" 
-        self.it_collapsed = "Your attack overwhelms the (" + numbers + " )?(.+?) and (s?he|it) collapses!"
+        self.it_collapsed = "Your attack overwhelms the (" + numbers + " )?" + target + " and (s?he|it) collapses!"
         self.it_fled = "The (" + numbers + " )?(.+?) flees to the (.+?)\."
         self.regexes = [self.it_collapsed,
                         self.it_fled]
@@ -23,11 +24,17 @@ class CombatThread(threading.Thread):
         raise NotImplementedError("Subclasses must implement this!")
 
     def notify(self, regex, M_obj):
-        self.stop()
+        magentaprint(" <" + str(self.target) + "> : " + str(self.character.MONSTER_LIST))
+        magentaprint(regex)
+
+        if not self.stopping:
+            self.stop()
         
     def stop(self):
-        self.stopping = True
-        self.mudReaderHandler.unregister_reaction(self)
+        if not self.stopping:
+            self.stopping = True
+            self.mudReaderHandler.unregister_reaction(self)
+            magentaprint("Stopping '" + self.class_name() + "' thread " + self.target)
         
     def keep_going(self):
         if self.stopping is True:
@@ -36,5 +43,9 @@ class CombatThread(threading.Thread):
 
     def set_target(self, new_target):
         self.target = new_target
+
+    @classmethod
+    def class_name(cls):  
+        return cls.__name__
 
 # This thread isn't getting stopped when someone in your party kills the mob...

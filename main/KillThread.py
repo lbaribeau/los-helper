@@ -12,16 +12,19 @@ class KillThread(CombatThread):
         super(KillThread, self).__init__(character, mudReaderHandler, 
                                          telnetHandler, target)
         self.regexes.extend(["You don't see that here\.",
-                             "Attack what\?"])
+                             "Attack what\?"
+                             ])
 
     def run(self):
         self.stopping = False
         self.mudReaderHandler.register_reaction(self)
         wait_for_attack_ready(self.character)
-
+        
         while not self.stopping:
+            cur_target = get_last_word(self.target)
             self.character.ATTACK_CLK = time.time()
-            self.telnetHandler.write("k " + self.target)
+            self.telnetHandler.write("k " + cur_target)
+            magentaprint(str("k " + cur_target))
             wait_for_attack_ready(self.character)
 
         # This code is really similar to castThread, there's likely a way 

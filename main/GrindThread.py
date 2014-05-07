@@ -310,6 +310,8 @@ class GrindThread(BotThread):
             # The higher priority mobs were in the other lists 
             # and will also have been removed from MONSTER_LIST
             
+            magentaprint("Targeting: " + new_target)
+
             self.engage_monster(new_target)
             self.get_items()
             self.engage_mobs_who_joined_in()
@@ -320,11 +322,12 @@ class GrindThread(BotThread):
                 self.heal_up()
             
             if(self.ready_for_combat()):
+                magentaprint("Picking a new target since " + new_target + " was defeated")
                 new_target = self.decide_which_mob_to_kill(self.character.MONSTER_LIST)
             else:
                 new_target = ""
         return
-    
+
     def go(self, exit_str):
         #time.sleep(0.8) # sometimes not a good idea to go immediately
         

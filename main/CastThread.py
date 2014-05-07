@@ -18,7 +18,11 @@ class CastThread(CombatThread):
                              "Spell name is not unique\.",
                              "Cast what\?",
                              "They are not here\.",
-                             "Cast at whom\?"])  
+                             "Cast at whom\?",
+                             "You don't see that here\."
+                             ])
+
+        #add case for silenced!
 
     def set_spell(self, new_spell):
         self.spell = new_spell
@@ -28,9 +32,17 @@ class CastThread(CombatThread):
         self.mudReaderHandler.register_reaction(self)
         wait_for_cast_ready(self.character)
 
+        cur_target = self.target
+
         while not self.stopping:
             # TODO: Monitor current spell and current mana and stop if out
             # of mana.
+            cur_target = self.target
+            try:
+                cur_target = get_last_word(self.target)
+            except Exception:
+                magentaprint("get_last_word exception in cast thread: " + str("c <" + self.spell + "> <" + self.target + ">"), False)
             self.character.CAST_CLK = time.time()
-            self.telnetHandler.write("cast " + self.spell + " " + self.target)
+            magentaprint("cast " + self.spell + " " + cur_target)
+            self.telnetHandler.write("cast " + self.spell + " " + cur_target)
             wait_for_cast_ready(self.character)

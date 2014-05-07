@@ -289,29 +289,28 @@ class CommandHandler(object):
     def user_cc(self, argv):
         # TODO: Bug for user input "cc "
         if argv == "":
-            magentaprint("Usage:  cc <spell> [<target> [<number>]]")
+            magentaprint("Usage:  cc <spell> [<target> [<number>]]" + str(argv))
             self.telnetHandler.write("") # TODO: Keep a prompt up to date so we can print
                                     # immediately instead of sending to mud.
             return        
-        elif re.search(argv, " "):
+        elif re.search(" ", argv):
             [spell, target] = argv.split(" ",1)
         else:
             spell = argv
             target = ""
         
         if self.CastThread != None and self.CastThread.is_alive():
-            magentaprint("Updating existing cast thread.")
+            magentaprint("Updating existing cast thread| t:" + target + " s: " + spell)
             self.CastThread.set_spell(spell)
             self.CastThread.set_target(target)
-            self.CastThread.keep_going()
         else:
             self.CastThread = CastThread(self.character, 
                                          self.mudReaderHandler, 
                                          self.telnetHandler, 
                                          spell, 
                                          target)
-            self.CastThread.start()      
-
+            self.CastThread.start()
+        self.CastThread.keep_going()
 
     def user_sc(self):
         self.stop_CastThread()
