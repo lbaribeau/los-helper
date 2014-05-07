@@ -106,3 +106,38 @@ class WieldReaction(BotReaction):
                 self.commandHandler.process("wie " + weapon)
             else:
                 self.commandHandler.process("seco " + weapon)
+
+class ReactiveTimer(BotReaction):
+    def __init__(self, timer_regexes, command_handler):
+        if isinstance(regexes, str):
+            regexes = [regexes]
+
+        for timer_regex in timer_regexes:
+            regexes.extend(timer_regex)
+
+        self.timer_regexes = timer_regexes
+        self.commandHandler = command_handler
+        self.time = 0
+
+    def notify(self, regex, M_obj):
+        for timer_regex in self.timer_regexes:
+            if (timer_regex.has_regex(regex)):
+                self.time = timer_regex.time
+                break
+
+class TimerRegex(object):
+    def __init__(self, regexes, time):
+        if isinstance(regexes, str):
+            self.regexes = [regexes]
+        self.time = time
+
+    def has_regex(regex):
+        has_regex = False
+        
+        for r in regexes:
+            if (r == regex):
+                has_regex = True
+            break
+
+        return has_regex
+
