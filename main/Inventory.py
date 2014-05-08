@@ -65,7 +65,7 @@ class Inventory(BotReactionWithFlag):
             self.get_inventory()  # There are some notes about this at the bottom
             # I don't like this very much! I can't use ! to buy a lot of a thing.
 
-        super(Inventory, self).notify(regex, M_obj)  # sets __waiter_flag
+        super(Inventory, self).notify(regex, M_obj)  # sets _waiter_flag
 
     def get_inventory(self):
         self.telnetHandler.write("i")

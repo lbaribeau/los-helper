@@ -52,21 +52,21 @@ class Info(BotReactionWithFlag):
             self.character.AURA_PREFERRED = M_obj.group(1)
         elif regex is self.first:
             self.got_stats_skills = True
-            self.character.str = M_obj.group(1)
-            self.character.dex = M_obj.group(4)
-            self.character.con = M_obj.group(7)
-            self.character.int = M_obj.group(10)
-            self.character.pty = M_obj.group(13)
-            self.character.sharp = M_obj.group(2)
-            self.character.thrust = M_obj.group(5)
-            self.character.blunt = M_obj.group(8)
-            self.character.pole = M_obj.group(11)
-            self.character.missile = M_obj.group(14)
-            self.character.earth = M_obj.group(3)
-            self.character.wind = M_obj.group(6)
-            self.character.fire = M_obj.group(9)
-            self.character.water = M_obj.group(12)
-            self.character.astral = M_obj.group(15)
+            self.character.str = int(M_obj.group(1))
+            self.character.dex = int(M_obj.group(4))
+            self.character.con = int(M_obj.group(7))
+            self.character.int = int(M_obj.group(10))
+            self.character.pty = int(M_obj.group(13))
+            self.character.sharp = int(M_obj.group(2))
+            self.character.thrust = int(M_obj.group(5))
+            self.character.blunt = int(M_obj.group(8))
+            self.character.pole = int(M_obj.group(11))
+            self.character.missile = int(M_obj.group(14))
+            self.character.earth = int(M_obj.group(3))
+            self.character.wind = int(M_obj.group(6))
+            self.character.fire = int(M_obj.group(9))
+            self.character.water = int(M_obj.group(12))
+            self.character.astral = int(M_obj.group(15))
             self.got_first = True
             # magentaprint(self.character.astral)
         elif regex is self.second:
@@ -82,7 +82,7 @@ class Info(BotReactionWithFlag):
             self.character.gold_to_level = int(M_obj.group(10))
             self.character.objects = int(M_obj.group(11))
             self.got_second = True
-            self.__waiter_flag = True
+            self._waiter_flag = True
             # magentaprint("Objects: " + str(self.character.objects))
 
         @property 

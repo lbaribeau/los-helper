@@ -28,27 +28,31 @@ class BotReactionWithFlag(BotReaction):
     """ wait_for_flag() is useful when you send a telnet command and 
     want to wait for the server's response to that command. """
 
-    __waiter_flag = True
+    _waiter_flag = True
     good_MUD_timeout = 8.0  #* (see footnote)
 
     def notify(self, regex, M_obj):
-        """ Subclasses should implement notify and also ensure that __waiter_flag
+        """ Subclasses should implement notify and also ensure that _waiter_flag
         gets set."""
-        self.__waiter_flag = True
+        self._waiter_flag = True
 
     def wait_for_flag(self):
-        self.__waiter_flag = False
+        self._waiter_flag = False
         start_time = time.time()
         run_time = 0
+        magentaprint("Waiting for flag " + str(self), end="")
 
-        while not self.__waiter_flag and run_time < self.good_MUD_timeout:
+        while not self._waiter_flag and run_time < self.good_MUD_timeout:
             time.sleep(0.05)
             run_time = time.time() - start_time
 
-        if not self.__waiter_flag:
+        # magentaprint("... done waiting.", timestamp=False)
+
+        if not self._waiter_flag:
+            magentaprint("BotReactionWithFlag.wait_for_flag() timed out! " + str(self))
             return False  # Timed out
         else:
-            self.__waiter_flag = False
+            self._waiter_flag = False
             return True
 
     # * A high MUD_timeout allows for big lag, which is nice. 
