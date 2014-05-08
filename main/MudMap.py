@@ -74,3 +74,12 @@ class MudMap():
 		for mob_location in mob_locations:
 			magentaprint("<" + str(mob_location.area.id) + "> - " + mob_location.mob.name, False)
 
+	def get_mob_locations_by_name(name):
+		locations = []
+		mob_locations = MobLocation.get_locations_by_exact_mob_name(name)
+
+		for mob_location in mob_locations:
+			locations.append(mob_location.area.id)
+
+		return locations
+

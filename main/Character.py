@@ -12,7 +12,7 @@ class Character(object):
     level = None
     preferred_alignment = None
     BLACK_MAGIC = True
-    FAVOURITE_SPELL = "hurt"
+    FAVOURITE_SPELL = "burn"
     KNOWS_VIGOR = True
     #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
     #MAGIC_SKILLS= [0, 0, 0, 0, 0]
@@ -142,14 +142,14 @@ class Character(object):
             self.MAX_MANA = 24
             self.MANA_TO_ENGAGE = 15        
         else:
-            self.HEALTH_TO_HEAL = 62
-            self.HEALTH_TO_FLEE = 27
-            self.MAX_MANA = 27 - 4 + 1
-            self.MANA_TO_ENGAGE = 18
-            #adam.HEALTH_TO_HEAL = 65
-            #adam.HEALTH_TO_FLEE = 15
-            #adam.MAX_MANA = 4
-            #adam.MANA_TO_ENGAGE = 0
+            #self.HEALTH_TO_HEAL = 62
+            #self.HEALTH_TO_FLEE = 27
+            #self.MAX_MANA = 27 - 4 + 1
+            #self.MANA_TO_ENGAGE = 18
+            self.HEALTH_TO_HEAL = 65
+            self.HEALTH_TO_FLEE = 15
+            self.MAX_MANA = 4
+            self.MANA_TO_ENGAGE = 0
     
     ### Monster stuff ###
 
@@ -198,11 +198,11 @@ class Character(object):
         'trader', "butcher", "young knight", "acrobat", "militia soldier", 
         "carpenter", "stagehand", 'hungry spider', 'cook', 'joiner', "ranch hand",
         "old rancher", "tired ranch hand", "drinking ranch hand",
-        "busy ranch hand", "sawmill operator"
+        "busy ranch hand",
         #"auctioneer", # They pile up so bad!  
         # Definitely need smart chasing or a path that runs extra around the 
         # market (after healing)
-        #"actress", # For blue balance
+        "actress", # For blue balance
         #'miner'
         ]
     # hungry spiders are hostile
@@ -217,12 +217,12 @@ class Character(object):
     lvl6_monsters = [
         "dwarven field worker", "dwarven bartender", "school teacher",
         'lyrist', "nobleman", "seeker", "bull", "hunter", 'usher',
-        'sword swallower', 'archer',
-        "yard supervisor", #"sawmill supervisor"
+        'sword swallower', 'archer', "mime artist",
+        "yard supervisor", "sawmill operator"
         #'sentry' stand in pairs unfortunately...
         ] # bull and hunter might be wrong (too high).
     lvl6_red_monsters = [
-        'gnoll sentry', "bandit swordsman"
+        'gnoll sentry', "bandit swordsman", "gnoll spearsman", "gnoll raider"
         ]
     lvl7_monsters = [
         "dwarven cook", "swordsman", 'fort sergeant', 'oremaster', 
@@ -239,7 +239,7 @@ class Character(object):
     # I may want to kill even if they are too low of level.
     # Mostly hostiles and things that don't let you loot.
     preferred_lvl_1_2_monsters = [
-        "oaf", "wanderer", #"acolyte", 
+        "oaf", "wanderer", "acolyte", 
         "thug", "spiv", "kobold sentry", "tired hooker", 
         "blond hooker", "angry hooker", "sultry hooker", 
         "journeyman" ] 

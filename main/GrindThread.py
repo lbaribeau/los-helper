@@ -293,6 +293,8 @@ class GrindThread(BotThread):
             new_target = self.decide_which_mob_to_kill(self.character.MONSTER_LIST)
         else:
             new_target = ""
+            self.do_rest_hooks()
+
             
         while (new_target != "" and not self.is_stopping()):
             # MudReader maintains MONSTER_LIST pretty well by
@@ -330,51 +332,25 @@ class GrindThread(BotThread):
                 new_target = ""
         return
 
-    def go(self, exit_str):
-        #time.sleep(0.8) # sometimes not a good idea to go immediately
-        
-        if(self.is_stopping()):
-            return True
-        
-        # TODO (sort of a bug).  Sometimes 'go' doesn't 'go' anywhere, 
-        # like for dropping or selling or preparing, etc.  The bot's 
-        # logic should be fixed to realize that it's not in a new area 
-        # in these instances.
-        
-        magentaprint("Going " + exit_str + (". %f" % (time.time() - self.character.START_TIME)))
-        wait_for_move_ready(self.character)
-        wait_for_attack_ready(self.character)
-        wait_for_cast_ready(self.character)
+    def do_rest_hooks(self):
+      return
 
-        if(exit_str == "nw" or exit_str == "ne" or
-           exit_str == "sw" or exit_str == "se" or
-           exit_str == 'n' or exit_str == 'e' or
-           exit_str == 's' or exit_str == 'w'):
-            self.commandHandler.process(exit_str)
-            return self.mudReaderHandler.check_for_successful_go() 
+    def do_go_hooks(self):
+      #if you want to define custom hooks like sell_items / drop_items etc... you can do so here
+      if(exit_str == "prepare"):
+          self.commandHandler.process(exit_str)
+          return True
 
-        elif(re.match("open ", exit_str)):
-            self.commandHandler.process(exit_str)
-            self.commandHandler.process("go " + exit_str.split(' ')[1])
-            return self.mudReaderHandler.check_for_successful_go() 
+      elif(exit_str == "sell_items"):
+          self.sell_items()
+          return True
 
-        elif(exit_str == "prepare"):
-            self.commandHandler.process(exit_str)
-            return True
+      elif(exit_str == "drop_items"):
+          self.drop_items()
+          return True
 
-        elif(exit_str == "sell_items"):
-            self.sell_items()
-            return True
+      return False
 
-        elif(exit_str == "drop_items"):
-            self.drop_items()
-            return True
-
-        else:
-            self.commandHandler.process("go " + exit_str)
-            return self.mudReaderHandler.check_for_successful_go()
-
-        
 # Just thinking about changing top level...
  
 # I don't like this version because mobs will leave and arrive while in

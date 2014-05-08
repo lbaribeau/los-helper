@@ -1,7 +1,6 @@
 
 from BotReactions import BotReactionWithFlag
-
-from misc_functions import magentaprint
+from misc_functions import *
 
 class Whois(BotReactionWithFlag):
 
@@ -13,8 +12,14 @@ class Whois(BotReactionWithFlag):
         self.regexes = [character_name.title() + "\s+?(\S\S\S)\s\s([MF])\s\s\[(\d\d)\](\S+)\s+(\d+)\s+(\S+)\s" ]
         self.mudReaderHandler.register_reaction(self)
         self.telnetHandler.write("whois " + character_name)
-        self.wait_for_flag()
+        #self.wait_for_flag()
         self.mudReaderHandler.unregister_reaction(self)
+        self.character_class = "Mon"
+        self.gender = "M"
+        self.level = 13
+        self.title = "Enlightened Brother"
+        self.age = "16"
+        self.race = "Human"
 
     def notify(self, regex, M_obj):
         self.character_class = M_obj.group(1)

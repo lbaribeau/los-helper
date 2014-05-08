@@ -1,4 +1,4 @@
-
+from misc_functions import *
 from Ability import *
 
 class CharacterClass(object):

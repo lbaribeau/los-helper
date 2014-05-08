@@ -109,7 +109,6 @@ class Cartography(BotReaction):
                     self.catalog_monsters(area, monster_list)
                 else:
                     self.character.AREA_ID = None
-#self.blocked_path, self.please_wait, self.cant_go, self.no_exit
         elif regex == self.blocked_path:
             mob_name = M_obj.group(2)
             self.character.GO_BLOCKING_MOB = mob_name
@@ -122,15 +121,16 @@ class Cartography(BotReaction):
             magentaprint("loot blocker blocking pickup by: " + loot_blocker)
             self.catalog_loot_blocker(loot_blocker)
         elif regex == self.please_wait:
-            magentaprint("Cartography: unsuccessful go (please wait)")  
-            # TODO: fix this message which prints on every Please wait 1
-            self.character.GO_PLEASE_WAIT = True
-            self.character.SUCCESSFUL_GO = False
-            self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
+            magentaprint("Cartography: unsuccessful go| (please wait) dir="  + self.character.LAST_DIRECTION)  
+            magentaprint("Cartography: unsuccessful go| is trying to move?= "  + str(self.character.TRYING_TO_MOVE))  
+            if (self.character.TRYING_TO_MOVE):
+                self.character.GO_PLEASE_WAIT = True
+                self.character.SUCCESSFUL_GO = False
+                self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
         elif regex == self.cant_go:
             # This one is pretty problematic... as it should never happen.
             # Means we're off course.
-            #magentaprint("MudReader: unsuccessful go (you can't go that way)")
+            magentaprint("Cartography: unsuccessful go (can't go that way): " + self.character.LAST_DIRECTION)
             self.set_area_exit_as_unusable(regex)
         elif (regex == self.class_prohibited or
                 regex == self.level_too_low or
@@ -141,11 +141,14 @@ class Cartography(BotReaction):
                 regex == self.door_locked or
                 regex == self.no_right or
                 regex == self.not_authorized or
-                regex == self.no_force):
+                regex == self.no_force or
+                regex == self.no_exit):
             self.set_area_exit_as_unusable(regex)
         elif regex == self.not_here:
             self.character.ATTACK_CLK = time.time()-self.character.ATTACK_WAIT
-            self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
+            #self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
+            #self.character.SUCCESSFUL_GO = False
+            #self.character.TRYING_TO_MOVE = False
         else:
             magentaprint("Cartography case missing for regex: " + str(regex), False)
 
@@ -175,12 +178,12 @@ class Cartography(BotReaction):
         return area
 
     def set_area_exit_as_unusable(self, regex):
+        self.character.GO_NO_EXIT = True
+        self.character.SUCCESSFUL_GO = False
+        self.CHECK_GO_FLAG = 0
+
         if self.character.ACTIVELY_MAPPING:
             try:
-                self.character.GO_NO_EXIT = True
-                self.character.SUCCESSFUL_GO = False
-                self.CHECK_GO_FLAG = 0
-
                 area_from = self.character.AREA_ID
                 exit_type = self.character.LAST_DIRECTION
 

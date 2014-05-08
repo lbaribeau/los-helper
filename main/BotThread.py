@@ -59,6 +59,8 @@ class BotThread(threading.Thread):
             self.direction_list = self.decide_where_to_go()
                 
             while(self.direction_list != [] and not self.__stopping):
+                #magentaprint(str(self.direction_list), False)
+                #magentaprint("Going " + self.direction_list[0], False)
                 if(self.go(self.direction_list[0])):
                     # Successful go.
                     self.do_on_succesful_go()
@@ -67,7 +69,6 @@ class BotThread(threading.Thread):
                         # MUDReaderThread sets GO_BLOCKING_MOB when go returns false
                         self.do_on_blocking_mob()
                         continue
-
                     elif(self.character.GO_PLEASE_WAIT):
                         # Just try again.
                         self.do_on_go_please_wait()
@@ -92,15 +93,29 @@ class BotThread(threading.Thread):
         wait_for_move_ready(self.character)
         wait_for_attack_ready(self.character)
         wait_for_cast_ready(self.character)
-        magentaprint("Going " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)))
 
-        if(re.match("(.*?door)", exit_str)):
-            self.commandHandler.process("open " + exit_str)
-            self.commandHandler.process("go " + exit_str)
+        self.character.GO_BLOCKING_MOB = ""
+        self.character.GO_PLEASE_WAIT = False
+        self.character.GO_NO_EXIT = False
+        self.character.GO_TIMEOUT = False
+        self.character.SUCCESSFUL_GO = False
+
+        hook_found = self.do_go_hooks()
+
+        if not hook_found:
+            if(re.match("(.*?door)", exit_str)):
+                self.commandHandler.process("open " + exit_str)
+                self.commandHandler.process("go " + exit_str)
+            else:
+                self.commandHandler.process("go " + exit_str)
+
             return self.mudReaderHandler.check_for_successful_go()
         else:
-            self.commandHandler.process("go " + exit_str)
-            return self.mudReaderHandler.check_for_successful_go()
+            return hook_found
+
+    def do_go_hooks(self):
+        #if you want to define custom hooks like sell_items / drop_items etc... you can do so here
+        return False
 
     def do_run_startup(self):
         #self.set_up_automatic_ring_wearing()
@@ -136,7 +151,7 @@ class BotThread(threading.Thread):
         return
 
     def do_on_go_please_wait(self):
-        magentaprint("Bot: Got please wait on a go attempt, retrying.")
+        magentaprint("Bot: Got please wait on a go attempt, retrying.", False)
 
     def do_on_go_timeout(self):
         magentaprint("Bot: Check go timed out.  Could be lag.  Will try agian in 2 sec.")
@@ -453,8 +468,7 @@ class BotThread(threading.Thread):
             if(self.character.HEALTH <= self.character.HEALTH_TO_FLEE):
                 # We're done for!  Trust CommandHandler to get us out.  
                 # It will turn around and stop botThread.
-                self.stop()  
-                self.commandHandler.user_flee() 
+                self.do_flee_hook()
 
             time.sleep(0.05)
 
@@ -468,6 +482,9 @@ class BotThread(threading.Thread):
             
         return
 
+    def do_flee_hook(self):
+        self.stop()  
+        self.commandHandler.user_flee() 
 
     def get_items(self):
         if(self.__stopping):

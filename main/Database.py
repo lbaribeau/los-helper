@@ -330,6 +330,17 @@ class MobLocation(BaseModel):
 
         return mob_locations
 
+    def get_locations_by_exact_mob_name(mob_name):
+        mob_locations = []
+
+        try:
+            mob_locations = MobLocation.select().join(Mob).where(Mob.name == mob_name).order_by(Mob.id.desc())
+
+        except MobLocation.DoesNotExist:
+            mob_locations = []
+
+        return mob_locations
+
 class Log(BaseModel):
     timestamp = DateTimeField(default=datetime.now)
     data = TextField()

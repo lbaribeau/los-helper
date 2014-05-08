@@ -281,7 +281,7 @@ class Inventory(BotReactionWithFlag):
         return get_last_word(item_string)#item_string.split(" ")[0].split(".")[0]
 
     restoratives = ["chicken soup", "small restorative", "small flask", 
-                    "large restorative", "scarlet potion"]
+                    "large restorative", "scarlet potion", "white potion"]
     # usable = ["small retorative", "large restorative", "chicken soup", "scarlet potion", 
     #           "steel bottle", "silver chalice", "milky potion",
     #           "glowing potion",

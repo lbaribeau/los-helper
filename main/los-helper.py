@@ -29,6 +29,7 @@ from misc_functions import *
 from Character import Character
 from CharacterClass import CharacterClass
 from GrindThread import GrindThread
+from SmartGrindThread import SmartGrindThread
 from CrawlThread import CrawlThread
 from GotoThread import GotoThread
 from CommandHandler import CommandHandler
@@ -65,7 +66,7 @@ class LosHelper(object):
         self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler)
 
         magentaprint("Generating the mapfile....", False)
-        self.mud_map = MudMap() 
+        self.mud_map = MudMap()
         self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler, database_file, self.mud_map)
         self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character, database_file, self.mud_map)
         self.botThread = None

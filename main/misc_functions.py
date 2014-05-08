@@ -132,3 +132,12 @@ def replace_newlines_with_spaces(s):
 
 def get_last_word(s):
     return s.rsplit(None, 1)[-1]
+
+def get_shortest_array(list_of_arrays):
+    shortest_array = None
+
+    for array in list_of_arrays:
+        if shortest_array is None:
+            shortest_array = array
+        elif len(array) < len(shortest_array):
+            shortest_array = array

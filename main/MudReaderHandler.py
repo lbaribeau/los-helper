@@ -101,12 +101,6 @@ class MudReaderHandler(object):
         # will the Reader unset the flag, which is what we're waiting for.
         # The reader thread will set its SUCCESSFUL_GO variable which we will
         # read and return.
-        
-        self.character.GO_BLOCKING_MOB = ""
-        self.character.GO_PLEASE_WAIT = False
-        self.character.GO_NO_EXIT = False
-        self.character.GO_TIMEOUT = False
-        self.character.SUCCESSFUL_GO = False  
 
         self.MudReaderThread.CHECK_GO_FLAG = 1
             # This is like the return value.
