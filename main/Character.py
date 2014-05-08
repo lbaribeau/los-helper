@@ -12,7 +12,7 @@ class Character(object):
     level = None
     preferred_alignment = None
     BLACK_MAGIC = True
-    FAVOURITE_SPELL = "hurt"
+    FAVOURITE_SPELL = "burn"
     KNOWS_VIGOR = True
     #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
     #MAGIC_SKILLS= [0, 0, 0, 0, 0]
@@ -161,7 +161,7 @@ class Character(object):
         "one man band", "heather seller", "irate teenager", 'peasant', 
         'one-armed beggar', "village elder", "small dog", "tribesman", 
         "searcher", "delivery boy", "traveller", "wanderer", "villager", 
-        "vagrant", "dropout", "tramp", "serf", 'dishwasher']     
+        "vagrant", "dropout", "tramp", "serf", 'dishwasher', "punter"]     
     lvl1_red_monsters = [ # 8-15 exp
         "old kobold", "kobold child", "kobold dam"]
     lvl2_monsters = [

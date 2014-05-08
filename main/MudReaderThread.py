@@ -197,8 +197,15 @@ class MudReaderThread(threading.Thread):
                 if reaction.unregistered:
                     reactions_to_delete.append(reaction)
                     continue
+                # magentaprint(reaction.regexes)
+                # magentaprint(reaction)
                 for regex in reaction.regexes:
-                    M_obj = re.search(regex, text_buffer)
+                    # magentaprint("Regex: " + str(regex))
+                    try: 
+                        M_obj = re.search(regex, text_buffer)
+                    except TypeError:
+                        magentaprint("MudReaderThread TypeError: Regex: " + str(regex))
+
 
                     # if(M_obj != None):
                     if M_obj:

@@ -382,8 +382,9 @@ class MudReaderHandler(object):
         # might not work.  MudReaderThread takes some time to remove it.
         BotReaction.unregistered = False
         self.MudReaderThread.BotReactionList.append(BotReaction)
-        # print "registering reaction!"
-        # print self.MudReaderThread.BotReactionList
+        magentaprint("Registered: " + str(BotReaction))
+        magentaprint("Regexes: " + str(BotReaction.regexes))
+        # magentaprint(self.MudReaderThread.BotReactionList)
 
     def unregister_reaction(self, BotReaction):
         """ Removes a specific reaction from the list if it is still there """

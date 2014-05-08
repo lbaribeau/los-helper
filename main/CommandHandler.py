@@ -6,8 +6,9 @@ import time
 import re
 
 import misc_functions
-from KillThread import *
-from CastThread import *
+from KillThread import KillThread
+from CastThread import CastThread
+from SmartCombat import SmartCombat
 # from CoolAbility import *
 # from CoolAbilityThread import *
 from Database import *
@@ -15,12 +16,14 @@ from MudMap import *
 
 class CommandHandler(object):
 
-    def __init__(self, character, mudReaderHandler, telnetHandler, database_file, mud_map):
-        self.telnetHandler = telnetHandler
+    def __init__(self, character, mudReaderHandler, telnetHandler, inventory, database_file, mud_map):
         self.character = character
         self.mudReaderHandler = mudReaderHandler
+        self.telnetHandler = telnetHandler
+        self.inventory = inventory
         self.KillThread = None
         self.CastThread = None
+        self.smartCombatThread = None
         self.CoolAbilityThread1 = None
         self.CoolAbilityThread2 = None
 
@@ -31,22 +34,17 @@ class CommandHandler(object):
         create_tables()
         db.close()
 
-    def stop_KillThread(self, debug_on=False):
-        if(self.KillThread != None and self.KillThread.is_alive()):
+    def stop_KillThread(self):
+        if self.KillThread != None and self.KillThread.is_alive():
             self.KillThread.stop()
-        elif(debug_on):
-            magentaprint("No kk thread to stop.")
 
-    def stop_CastThread(self, debug_on=False):
-        if(self.CastThread != None and self.CastThread.is_alive()):
+    def stop_CastThread(self):
+        if self.CastThread != None and self.CastThread.is_alive():
             self.CastThread.stop()
-        elif(debug_on):
-            magentaprint("No cc thread to stop.")
-            
-    #TODO: def stop_CoolAbilityThread1(self):
-        
-    #TODO: def stop_CoolAbilityThread2(self):
 
+    def stop_smartCombatThread(self, debug_on=False):
+        if self.smartCombatThread != None and self.smartCombatThread.is_alive():
+            self.smartCombatThread.stop()
 
     def process(self, user_input):
         """ This CommandHandler function is the filter for user input that
@@ -69,6 +67,10 @@ class CommandHandler(object):
             self.user_cc(user_input[3:].lstrip())
         elif re.match("sc$", user_input):
             self.user_sc()
+        elif re.match("kkc ", user_input):
+            self.user_kkc(user_input[4:].strip())
+        elif re.match("skc ", user_input):
+            self.user_skc()
         elif re.match("dro? ", user_input):
             self.user_dr(user_input)
         elif re.match("ca? [a-zA-Z]|cast? [a-zA-Z]", user_input):
@@ -88,7 +90,6 @@ class CommandHandler(object):
             M_obj = re.search("find (.+)", user_input)
             magentaprint("Finding: " + str(M_obj.group(1)))
             MudMap.find(str(M_obj.group(1)))
-
         elif re.match("wie?2 +[a-zA-Z]+( +\d+)?", user_input):
             self.user_wie2(user_input[4:].lstrip())
         elif re.match("fle?$|flee$", user_input):
@@ -123,6 +124,8 @@ class CommandHandler(object):
             #gpm = str(calculate_vpm(gold))
             #magentaprint("Gold this Session: " + str(gold) + " | Gold / MIN: " + gpm, False)
             magentaprint(str(self.character.GOLD), False)
+        elif re.match("INVENTORY", user_input):
+            magentaprint(self.inventory.inventory)
         elif re.match("KILLS", user_input):
             kills = self.character.MOBS_KILLED
             kpm = str(calculate_vpm(kills))
@@ -312,12 +315,46 @@ class CommandHandler(object):
                                          target)
             self.CastThread.start()      
 
+    def user_kkc(self, argv):
+        theSplit = argv.split(" ")
+        length = len(theSplit)
+
+        if argv == None or length == 1 and theSplit[0] == "":
+            magentaprint("Usage:  kkc [<spell>] <target> [<number>]")
+            self.telnetHandler.write("")  # TODO: Keep a prompt up to date so we can print
+                                          # immediately instead of sending to mud.
+        # elif length == 1 and theSplit[0] not == "":
+        elif length == 1:
+            spell = None
+            target = theSplit[0]
+        elif length == 2 and re.match("^\d+$", theSplit[1]):
+            spell = None
+            target = theSplit[0] + " " + theSplit[1]
+        elif length == 2:
+            spell = theSplit[1]
+            target = theSplit[2]
+        else:
+            spell = theSplit[1]
+            target = theSplit[2] + " " + theSplit[3]
+
+        if self.smartCombatThread != None and self.smartCombatThread.is_alive():
+            magentaprint("CommandHandler calling smartCombatThread.keep_going()")
+            self.smartCombatThread.set_target(argv)
+            self.smartCombatThread.keep_going()
+        else:
+            magentaprint("CommandHandler making new smartCombatThread")
+            self.smartCombatThread = SmartCombat(self.character, self.mudReaderHandler, 
+                                                 self.telnetHandler, target, self.inventory, spell)
+            self.smartCombatThread.start()
 
     def user_sc(self):
         self.stop_CastThread()
         self.telnetHandler.write("")
 
-    
+    def user_skc(self):
+        self.stop_smartCombatThread()
+        self.telnetHandler.write("")
+     
     def user_wie2(self, argv):
         self.telnetHandler.write("wield %s\n" % (argv))
         self.telnetHandler.write("second %s\n" % (argv))

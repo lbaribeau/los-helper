@@ -3,6 +3,8 @@ import threading
 from threading import Thread
 import atexit 
 
+from misc_functions import magentaprint
+
 class CombatThread(threading.Thread):
     stopping = False
 
@@ -23,6 +25,7 @@ class CombatThread(threading.Thread):
         raise NotImplementedError("Subclasses must implement this!")
 
     def notify(self, regex, M_obj):
+        magentaprint("CombatThread stop called")
         self.stop()
         
     def stop(self):

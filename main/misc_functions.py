@@ -21,6 +21,7 @@ def attack_wait(character):
     return wait_amount(character.ATTACK_CLK, attack_period)
 
 def wait_for_attack_ready(character):
+    magentaprint("wait_for_attack_ready sleeping " + str(attack_wait(character)))
     time.sleep(attack_wait(character))
 
 def attack_ready(character):
@@ -30,6 +31,7 @@ def cast_wait(character):
     return wait_amount(character.CAST_CLK, character.CAST_WAIT)
 
 def wait_for_cast_ready(character):
+    magentaprint("wait_for_cast_ready sleeping " + str(cast_wait(character)))
     time.sleep(cast_wait(character))
 
 def cast_ready(character):
@@ -72,18 +74,35 @@ def my_list_equal(listA, listB):
 
     return True
     
-def magentaprint(text, isDebugCommand=True):
+def magentaprint(text, isDebugCommand=True, end=None, timestamp=True):
     global debugMode
 
-    if (debugMode or not isDebugCommand):
-        do_magentaprint (text)
+    if debugMode or not isDebugCommand:
+        newConsoleHandler().magenta()
 
-def do_magentaprint(text):
-    newConsoleHandler().magenta()
-    output = str(get_timestamp() + "| " + str(text))
+        output = str(text)
 
-    print (output)
-    newConsoleHandler().white()
+        if timestamp:
+            output = get_timestamp() + "| " + output
+
+        print(output, end=end)
+
+        # if end is None:
+        #     print(output)
+        # else:
+
+
+
+
+        # if end is None:
+        #     # print("end is " + str(end))
+        #     output = str(get_timestamp() + "| " + str(text))
+        #     print(output)
+        # else:
+        #     # print("Trying to print without a newline")
+        #     print(str(text), end=end)
+
+        newConsoleHandler().white()
 
 def manage_telnet_output(text, isVerbose=True):
     global verboseMode

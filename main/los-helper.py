@@ -17,6 +17,8 @@
 #       keep that aren't in KEEP_LIST into some bag that IS in KEEP_LIST)
 #   ANSI color
 
+print("Importing modules....")
+
 import sys
 import getpass
 import threading
@@ -44,12 +46,12 @@ from BotReactions import *
 from TelnetHandler import TelnetHandler 
 from Database import *
 from MudMap import *
-
+from misc_functions import magentaprint
 
 class LosHelper(object):
 
     def __init__(self):
-        magentaprint("LOSHelper connecting to database....", False)
+        magentaprint("Connecting to database....", False)
         database_file = "maplos.db"
         self.database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
         db.initialize(self.database)
@@ -65,8 +67,9 @@ class LosHelper(object):
         self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler)
 
         magentaprint("Generating the mapfile....", False)
-        self.mud_map = MudMap() 
-        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler, database_file, self.mud_map)
+        # self.mud_map = MudMap() 
+        self.mud_map = None
+        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler, self.inventory, database_file, self.mud_map)
         self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character, database_file, self.mud_map)
         self.botThread = None
 
@@ -119,7 +122,7 @@ class LosHelper(object):
     def check_class_and_level(self):
         whois = Whois(self.mudReaderHandler, self.telnetHandler)
         whois.execute(self.character.name)
-        self.character._class = CharacterClass(whois.character_class, self.telnetHandler)
+        self.character._class = CharacterClass(whois.character_class, self.mudReaderHandler, self.telnetHandler)
         self.character.gender = whois.gender
         self.character.level = whois.level
         self.character.title = whois.title
@@ -146,7 +149,8 @@ class LosHelper(object):
 
             if(not self.mudReaderThread.is_alive()):
                 magentaprint("\nWhat happened to read thread?  Time to turf.\n")
-                self.telnetHandler.write(user_input)
+                self.telnetHandler.write("")
+                self.telnetHandler.write("quit")
                 stopping = True
 
                 if(self.botThread != None and self.botThread.is_alive()):

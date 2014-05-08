@@ -1,9 +1,13 @@
-import CombatThread
-from Abilities import *
-from misc_functions import *
 
+from itertools import chain
+
+from CombatThread import CombatThread
+from Ability import *
+import misc_functions
+
+# class SmartCombat(BotReactionWithFlag, CombatThread):
 class SmartCombat(CombatThread, BotReactionWithFlag):
-	''' This thread is an alternative to the simpler KillThread and CastThread.
+    ''' This thread is an alternative to the simpler KillThread and CastThread.
     It will fight smart.  It will use all of your abilities and spells in a 
     smart order until your enemy dies.  It will also use restoratives.  It will 
     even flee.  It won't choose your spell for you though.  '''
@@ -13,45 +17,67 @@ class SmartCombat(CombatThread, BotReactionWithFlag):
     attack_flag = False
     cast_flag = False
 
+    # kill_return is at the bottom because it's huge
+    cast_return = "You cast a \S+ spell on .+?\.\n\r"
+            # "The spell did \d+ damage\."]
+    spell_fail = "Your spell fails\."
+
+    health_mana = "\[(\d+?) H (\d+?) M\]"
+    potion_drank = "Potion drank\."
+    
+    vig_return = "Vigor spell cast\."
+    bad_target = ["You don't see that here\.",
+                  "Attack what\?"
+                  # Need more from the Abilities
+    ]
+
     def __init__(self, character, mudReaderHandler, telnetHandler, target, 
-                 inventory, abilities, spell=None):
+                 inventory, spell=None):
         super(SmartCombat, self).__init__(character, mudReaderHandler, 
                                           telnetHandler, target)
         self.inventory = inventory
-        self.heal_abilities = filter(isinstance(HealAbility), abilities)
-        self.heal_abilities_that_fail = filter(isinstance(AbilityWithFailure), 
-                                               self.heal_abilities)
-        self.fast_combat_abilities = filter(isinstance(FastCombatAbility), abilities)
-        self.combat_abilities = filter(isinstance(CombatAbility), abilities)
+        # self.heal_abilities = filter(isinstance(HealAbility), self.character._class.abilities)
+        # self.heal_abilities_that_fail = filter(isinstance(AbilityWithFailure), 
+        #                                        self.heal_abilities)
+        # self.fast_combat_abilities = filter(isinstance(FastCombatAbility), self.character._class.abilities)
+        # self.combat_abilities = filter(isinstance(CombatAbility), self.character._class.abilities)
+        self.heal_abilities = [a for a in self.character._class.abilities if isinstance(a, HealAbility)]
+        self.heal_abilities_that_fail = [a for a in self.character._class.abilities if isinstance(a, HealAbility) and isinstance(a, AbilityWithFailure)]
+        self.fast_combat_abilities = [a for a in self.character._class.abilities if isinstance(a, FastCombatAbility)]
+        self.combat_abilities = [a for a in self.character._class.abilities if isinstance(a, CombatAbility)]
 
-        self.health_mana = "\[(\d+?) H (\d+?) M\]"
-        self.potion_drank = ["Potion drank\."]
-        self.kill_return = []
-        self.cast_return = []
-        self.vig_return = []
-        self.bad_target = ["You don't see that here\.",
-                           "Attack what\?,"
-                           # Need more from the Abilities
-                           ]
-        self.spell_fail = []
+        # self.regexes.extend([a.success_regex for a in self.character._class.abilities])
+        # self.regexes.extend([a.failure_regex for a in self.heal_abilities_that_fail])
+        # self.regexes.extend([a.failure_regex for a in self.fast_combat_abilities])
+        # self.regexes.extend([a.failure_regex for a in self.combat_abilities])
 
-        self.regexes.extend([a.success_regex for a in abilities])
-        self.regexes.extend([a.failure_regex for a in self.heal_abilities_that_fail])
-        self.regexes.extend([a.failure_regex for a in self.fast_combat_abilities])
-        self.regexes.extend([a.failure_regex for a in self.combat_abilities])
+        # [item for sublist in l for item in sublist]
+        # self.regexes.extend([].extend(
+        #     self.cast_return,
+        #     self.kill_return,
+        #     self.bad_target,
+        #     self.spell_fail,
+        #     self.potion_drank,
+        #     self.health_mana
+        # ])
         self.regexes.extend([
-                             self.potion_drank,
-                             self.kill_return,
-                             self.bad_target,
-                             self.spell_fail,
-                             self.health_mana,
-
+            self.cast_return,
+            self.spell_fail,
+            self.potion_drank,
+            self.health_mana
+        ])
+        self.regexes.extend(self.kill_return)
+        self.regexes.extend(self.bad_target)
+        magentaprint(self.regexes)
         self.spell = spell if spell is not None else self.character.FAVOURITE_SPELL
-        self.max_vig = round(self.character.piety / 3)  #guess
+        self.max_vig = round(self.character.pty / 2)  #guess
 
     def notify(self, regex, M_obj):
-        if regex is self.health_mana:
-            self.react_to_health(M_obj.group(1))
+        if regex in self.bad_target:
+            self.attack_flag = True
+            self.stop()
+        elif regex is self.health_mana:
+            self.react_to_health(int(M_obj.group(1)))
         elif regex in [a.success_regex for a in self.heal_abilities] or \
              regex in [a.failure_regex for a in self.heal_abilities_that_fail] or \
              regex is self.potion_drank or \
@@ -59,29 +85,38 @@ class SmartCombat(CombatThread, BotReactionWithFlag):
             self.healing = False  # Hopefully pots get appropriately spammed... test with high flee health
                                   # I put health_mana last to help healing = False to happen first
         elif regex in self.kill_return:
+            magentaprint("SmartCombat notify kill_return")
             self.attack_flag = True
-        elif regex in self.cast_return:
+        elif regex is self.cast_return or regex is self.vig_return:
             self.cast_flag = True
         elif regex is self.spell_fail:
             if not self.character.BLACK_MAGIC:
                 self.cast()
+            else:
+                self.cast_flag = True
         else:
-        # elif regex is self.it_collapsed or self.it_fled:  # TODO: party kill regex
+            # elif regex is self.it_collapsed or self.it_fled:  # TODO: party kill regex
+            magentaprint("SmartCombat notified on regex " + regex + ", stopping")
+            magentaprint("SmartCombat regexes: " + str(self.regexes))
+            if regex is self.health_mana:
+                magentaprint("Crazy")
+            else:
+                magentaprint("Not")
             self.stop()
 
-        self.__waiter_flag = True
+        self._waiter_flag = True
 
     def react_to_health(self, hp):
         if self.healing:
             return
 
         for heal_ability in self.heal_abilities:
-            if hp < self.character.MAXHP - heal_ability.max_amount and heal_ability.up():
+            if hp < self.character.maxHP - heal_ability.max_amount and heal_ability.up():
                 self.healing = True
                 heal_ability.use()
                 return
 
-        if not self.BLACK_MAGIC and self.cast_up and self.character.MAXHP - hp > self.max_vigor:
+        if not self.character.BLACK_MAGIC and misc_functions.cast_ready() and self.character.maxHP - hp > self.max_vigor:
             self.cast()
             # Let's not count vigor on self.healing because that is for behavior near HEALTH_TO_FLEE
 
@@ -96,10 +131,10 @@ class SmartCombat(CombatThread, BotReactionWithFlag):
         self.stopping = False
         self.mudReaderHandler.register_reaction(self)
         self.circled = False
-        wait_for_attack_ready(self.character)
+        misc_functions.wait_for_attack_ready(self.character)
 
         if self.character.BLACK_MAGIC:
-            wait_for_cast_ready()
+            misc_functions.wait_for_cast_ready(self.character)
 
         # if fast_combat_abilities:
         #     fast_ability_timer = min([a.timer for a in self.fast_combat_abilities])
@@ -107,31 +142,44 @@ class SmartCombat(CombatThread, BotReactionWithFlag):
         #     fast_ability_timer = 1000
 
         for a in self.fast_combat_abilities:
+            magentaprint("Cycling abilities: " + str(a))
             if a.up():
-                a.use_wait()
-                if self.stopping:
-                    return
+                magentaprint("Using " + str(a))
+                a.use_wait(self.target)
+                magentaprint("SmartCombat finished using ability.")
+                # if self.stopping:
+                #     return
                 break
 
+        magentaprint("SmartCombat before loop; stopping: " + str(self.stopping))
+
         while not self.stopping:
-            if attack_wait() <= cast_wait():
-                wait_for_attack_ready()
-                break if self.stopping
+            magentaprint("SmartCombat loop")
+            if misc_functions.attack_wait(self.character) <= misc_functions.cast_wait(self.character):
+                misc_functions.wait_for_attack_ready(self.character)
+                magentaprint("SmartCombat attack is ready")
+                if self.stopping: 
+                    break 
                 self.use_combat_ability_or_attack()
+                magentaprint("SmartCombat finished attack, stopping: " + str(self.stopping))
                 # time.sleep(0.1)  
             else:
-                wait_for_cast_ready()
-                break if self.stopping
+                misc_functions.wait_for_cast_ready(self.character)
+                magentaprint("SmartCombat cast is ready.")
+                if self.stopping:
+                    break
                 if self.character.BLACK_MAGIC:
-                    self.cast()
-                elif self.character.HEALTH <= self.character.MAXHP - self.max_vigor:
+                    self.cast_wait()
+                elif self.character.HEALTH <= self.character.maxHP - self.max_vigor:
                     self.cast()
                     # time.sleep(0.1)
                 else:
-                    wait_for_attack_ready()
+                    misc_functions.wait_for_attack_ready(self.character)
+
+        magentaprint("SmartCombat exiting run()")
 
     def use_combat_ability_or_attack(self):
-        for a in self.combat_abilites:
+        for a in self.combat_abilities:
             if a.up():
                 if isinstance(a, Bash):
                     continue
@@ -143,34 +191,93 @@ class SmartCombat(CombatThread, BotReactionWithFlag):
                     else:
                         self.circled = True
 
-                a.use_wait()
+                if isinstance(a, Turn):
+                    if self.target not in a.valid_targets:
+                        continue
+
+                a.use_wait(self.target)
+                self.character.ATTACK_CLK = time.time()
                 return
 
-        self.attack()
+        magentaprint("SmartCombat calling attack_wait")
+        self.attack_wait()
 
     def attack_wait(self):
         self.attack_flag = False
         self.attack()
-        busy_loop(self.attack_flag)
+        magentaprint("SmartCombat beginning busy loop.")
+        # misc_functions.busy_loop(self.attack_flag)
+        while not self.attack_flag:
+            time.sleep(0.02)
+        magentaprint("SmartCombat attack wait finished.")
 
     def attack(self):
-        self.character.ATTACK_CLK = time()
-        self.telnetHandler.write("k " + target)
+        self.character.ATTACK_CLK = time.time()
+        self.telnetHandler.write("k " + self.target)
 
     def cast_wait(self):
         self.cast_flag = False
         self.cast()
-        busy_loop(self.cast_flag)
+        # misc_functions.busy_loop(self.cast_flag)
+        while not self.cast_flag:
+            time.sleep(0.02)
+        magentaprint("SmartCombat cast wait finished.")
 
     def cast(self):
-        self.character.CAST_CLK = time()
+        self.character.CAST_CLK = time.time()
         if self.character.BLACK_MAGIC:
             self.telnetHandler.write("c " + self.character.FAVOURITE_SPELL + " " + self.target)
         else:
             self.telnetHandler("c vig")
 
+    kill_return = [
+        # "You attack the (.+?)\."  # Beginning combat
+        # r"You swing with your .+?, hacking the (.+?) for \d+ damage\.",
+        # r"You hack with your .+?, but your blow swings wide of the mark\.",
+        # r"You slice the (.+?) for \d+ damage with your .+?\.",
+        # r"You slice your (.+?) at the .+?, but miss\.",
+        # r"You slash at the (.+?) and hit for \d+ damage\.",
+        # r"You slash at the (.+?), but miss\.",
 
+        # r"You chop at the (.+?) for \d+ damage\.",
+        # r"You chop at the (.+?) but fail to hit them\.",
+        # r"You stab at the (.+?) with your .+?, causing \d+ damage"
+        # r"You try to stab the (.+?) with your .+?, but miss\.",
+        # r"You lunge at the (.+?), striking for \d+ damage\.",
+        # r"You lunge wildly at the (.?+) but mistime the strike\.",
 
+        # r"You lash out and thump the (.+?) for \d+ damage\.",
+        # r"You lash out at the (.+?), but miss\.",
+        # r"You punch the (.+?) for \d+ damage\.",
+        # r"You swing a wild punch at the (.+?), but it misses\.",
+        # r"You kick the (.+?) for \d+ damage\."
+        # r"You kick at the (.+?), but fail to hurt them\.",
+        # r"You head-butt the (.+?) for \d+ damage\."
+        # r"You grab at the (.+?), but (s?he|it) escapes your grasp\.",
+        # r"You grab the (.+?) and gouge (him|her|it) for \d+ damage\.",
+        # r"You try to gouge the (.+?), but can't get a good grip\.",
+
+        # r"You smash your .+? into the (.+?), causing \d+ damage\.",
+        # r"You swing your .+? at the (.+?), but miss\.",
+        # r"You heave your .+? at the (.+?), smashing (him|her|it) for \d+ damage\.",
+        # r"You heave your .+? in a wide arc, but fail to hit anything\.",
+        # r"You bludgeon the (.+?) for \d+ damage\.",
+        # r"You try to bludgeon the (.+?), but miss\.",
+
+        # r"You lunge at the (.+?), hitting them for \d+ damage\.",
+        # r"You lunge at the (.+?), but you miss\.",
+        # r"You swing your .+?, striking for \d+ damage\.",
+        # r"Your .+? swings, but fails to connect\.",
+        # r"You sweep the (.+?) with your .+? for \d+ damage\.",
+        # r"You sweep at the (.+?) with your .+?, but miss\.",
+
+        r"Your missile slams into the (.+?) for \d+ damage\.",
+        r"Your missile arcs towards the (.+?), but fails to hit them\.",
+        r"You attack the (.+?) with your .+?, striking for \d+ damage\.",
+        r"You attack the (.+?) with your .+?, but miss\.",
+        r"You use your .+? to strike the (.+?) for \d+ damage\.",
+        r"You use your .+?, but nothing hits the (.+?)\."
+    ]
 
 
 
@@ -196,19 +303,19 @@ class SmartCombat(CombatThread, BotReactionWithFlag):
 
 
 
-        if not self.character.BLACK_MAGIC:
-            self.
-        self.act()
+    #     if not self.character.BLACK_MAGIC:
+    #         self.
+    #     self.act()
 
-    def act(self):
+    # def act(self):
 
-    def vigor_up(self):
+    # def vigor_up(self):
 
-    # def cast_up(self):
-    #     return time() > cast_timer
-    #     Better keep track of this myself so I'm not calling time() a gazillion times
+    # # def cast_up(self):
+    # #     return time() > cast_timer
+    # #     Better keep track of this myself so I'm not calling time() a gazillion times
 
-        if any(d.up() for d in self.damage_abilities):
+    #     if any(d.up() for d in self.damage_abilities):
 
 
 
@@ -263,7 +370,7 @@ class SmartCombat(CombatThread, BotReactionWithFlag):
 # or possibly somewhere like commandHandler
 
 # TYPING
-# heal abilites, damage abilities, combat abilities.  Apparently type checking 
+# heal abilities, damage abilities, combat abilities.  Apparently type checking 
 # isn't pythonic, "duck typing" is preferred, where you try to do what you would 
 # do, and catch the exception if it doesn't work.  I think that is more for 
 # lists and strings.  I think what I'm doing is okay.  

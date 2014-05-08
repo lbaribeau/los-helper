@@ -1,6 +1,9 @@
 
 import telnetlib
 
+# from ConsoleHandler import newConsoleHandler
+from misc_functions import magentaprint
+
 class TelnetHandler(object):
 
     def __init__(self):
@@ -8,7 +11,26 @@ class TelnetHandler(object):
 
     def write(self, command):
         command += '\r'
+        # newConsoleHandler().magenta()
+        magentaprint("\"" + command[:len(command)-1] + "\" ", end="")
+        # print("\"" + command[:len(command)-1] + "\" ", end="")
+        # print("test.", end="")
+        #magentaprint("\"" + command[:len(command)-2] + "\" ")
+        # newConsoleHandler().white()
         self.tn.write(command.encode('ascii'))
+        # newConsoleHandler().magenta()
+        # print("sent.")
+        magentaprint("sent.", timestamp=False)
+        # print("sent.", end="")
+        # newConsoleHandler().white()
+
+    # def magentaprint(s, end=None):
+    #     newConsoleHandler().magenta()
+    #     if end:
+    #         print(s, end='')
+    #     else:
+    #         print(s)
+    #     newConsoleHandler.white()
 
     def connect_to_MUD(self):
         return telnetlib.Telnet("mud.landsofstone.org", 4801)  
