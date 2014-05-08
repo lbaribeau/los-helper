@@ -139,13 +139,13 @@ class BotThread(threading.Thread):
         magentaprint("Bot: Got please wait on a go attempt, retrying.")
 
     def do_on_go_timeout(self):
-        magentaprint("Bot: Check go timed out.  Could be lag.  Will try agian in 2 sec.")
+        magentaprint("Bot: Check go timed out.  Could be lag.  Will try again in 8 sec.")
         # This can happen when the system clock makes time.time() inconsistent.
         # Unless I can fix this I have to ignore this case and hope it worked.
         self.direction_list.pop(0)
         self.character.MOBS_JOINED_IN = [] 
         self.character.MOBS_ATTACKING = []
-        time.sleep(2)
+        time.sleep(8)
 
     def do_on_go_no_exit(self):
         # This is a tough one.  Hopefully it never 
