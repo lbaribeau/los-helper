@@ -124,7 +124,7 @@ class Cartography(BotReaction):
         elif regex == self.cant_go:
             # This one is pretty problematic... as it should never happen.
             # Means we're off course.
-            magentaprint("Cartography: unsuccessful go (can't go that way): " + self.character.LAST_DIRECTION)
+            magentaprint("Cartography: unsuccessful go (can't go that way): " + str(self.character.LAST_DIRECTION))
             self.set_area_exit_as_unusable(regex)
         elif (regex == self.class_prohibited or
                 regex == self.level_too_low or

@@ -31,6 +31,7 @@ from CharacterClass import CharacterClass
 from SmartGrindThread import SmartGrindThread
 from SmartCrawlThread import SmartCrawlThread
 from GotoThread import GotoThread
+from MixThread import MixThread
 from CommandHandler import CommandHandler
 from MudReaderHandler import MudReaderHandler 
 from MudReaderThread import MudReaderThread 
@@ -165,6 +166,8 @@ class LosHelper(object):
                 self.start_goto(user_input)
             elif(re.match("showto [0-9]+$", user_input)):
                 self.start_goto(user_input, True)
+            elif(re.match("domix (.+?) (.+?) ([\d]*)$", user_input)):
+                self.start_mix(user_input)
             elif(re.match("stop$", user_input)):
                 self.stop_bot()
             elif(re.match("fle?$|flee$", user_input)):
@@ -223,6 +226,35 @@ class LosHelper(object):
                                        starting_path,
                                        is_show_to)
             self.botThread.start()
+
+    def start_mix(self, user_input):
+        M_obj = re.search("domix (.+?) (.+?) ([\d]*)$", user_input)
+
+        can_mix = True
+
+        try:
+            target = M_obj.group(1)
+            mix_target = M_obj.group(2)
+            quantity = int(M_obj.group(3))
+        except Exception:
+            magentaprint(str(M_obj.groups()),False)
+            can_mix = False
+
+        if (self.botThread != None and self.botThread.is_alive()):
+            magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
+        elif can_mix:
+            self.botThread = MixThread(self.character, 
+                                       self.commandHandler, 
+                                       self.mudReaderHandler,
+                                       self.inventory,
+                                       self.mud_map,
+                                       self.telnetHandler,
+                                       target,
+                                       mix_target,
+                                       quantity)
+            self.botThread.start()
+        else:
+            magentaprint("Input not recognized - cannot start the mixer!", False)
 
 
     def stop_bot(self):

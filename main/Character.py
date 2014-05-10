@@ -11,9 +11,9 @@ class Character(object):
     _class = None
     level = None
     preferred_alignment = None
-    BLACK_MAGIC = False
+    BLACK_MAGIC = True
     FAVOURITE_SPELL = "burn"
-    KNOWS_VIGOR = False
+    KNOWS_VIGOR = True
     #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
     #MAGIC_SKILLS= [0, 0, 0, 0, 0]
     SKILLS = {} 

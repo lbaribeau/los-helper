@@ -2,9 +2,7 @@ from GrindThread import *
 from misc_functions import *
 from Inventory import *
 from Exceptions import *
-from SmartGrindTarget import *
 import random
-
 
 class SmartGrindThread(GrindThread):
 
@@ -31,21 +29,25 @@ class SmartGrindThread(GrindThread):
 
         self.cur_target = ""
         self.cur_area_id = self.character.AREA_ID
+        self.is_actually_dumb = True
 
     def decide_where_to_go(self):
-        self.cur_area_id = self.character.AREA_ID
-        directions = []
-
-        #get pawnshop path then tip path if necessary.
-        self.inventory.get_inventory()
-        if len(self.inventory.sellable()) > self.loot_threshold:
-            directions = self.get_vendor_paths()
-        elif(self.ready_for_combat()):
-            directions = self.get_grind_path()
+        if self.is_actually_dumb:
+            return super(SmartGrindThread, self).decide_where_to_go()
         else:
-            directions = self.get_heal_path()
+            self.cur_area_id = self.character.AREA_ID
+            directions = []
 
-        return directions
+            #get pawnshop path then tip path if necessary.
+            self.inventory.get_inventory()
+            if len(self.inventory.sellable()) > self.loot_threshold:
+                directions = self.get_vendor_paths()
+            elif(self.ready_for_combat()):
+                directions = self.get_grind_path()
+            else:
+                directions = self.get_heal_path()
+
+            return directions
 
     def get_grind_path(self):
         directions = []
@@ -168,3 +170,11 @@ class SmartGrindThread(GrindThread):
         self.commandHandler.user_flee()
         #we should have a new area id now
         self.direction_list = self.get_heal_path(self.character.AREA_ID)
+
+class SmartGrindTarget(object):
+    def __init__(self, name, locations):
+        self.name = name
+        self.locations = locations
+
+    def to_string(self):
+        return self.name #+ ", " + str(self.locations)

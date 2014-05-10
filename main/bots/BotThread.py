@@ -1,4 +1,3 @@
-
 import threading
 from threading import Thread
 import atexit 
@@ -41,6 +40,9 @@ class BotThread(threading.Thread):
 
     def keep_going(self):
         self.__stopping = False
+
+    def sleep(self, duration):
+        time.sleep(duration)
 
     def run(self):                    
         self.__stopping = False 
@@ -157,7 +159,7 @@ class BotThread(threading.Thread):
         self.direction_list.pop(0)
         self.character.MOBS_JOINED_IN = [] 
         self.character.MOBS_ATTACKING = []
-        time.sleep(2)
+        self.sleep(2)
 
     def do_on_go_no_exit(self):
         # This is a tough one.  Hopefully it never 
@@ -242,7 +244,7 @@ class BotThread(threading.Thread):
             if(self.engage_any_attacking_mobs()):
                 self.commandHandler.process("rest")
                 
-            time.sleep(0.1)
+            self.sleep(0.1)
 
         return
 
@@ -256,10 +258,10 @@ class BotThread(threading.Thread):
             MANA_SATISFIED = self.character.MAX_MANA - 1
         
         while(self.character.MANA < MANA_SATISFIED and not self.__stopping):
-            time.sleep(3.5)
+            self.sleep(3.5)
             self.engage_any_attacking_mobs()
             self.commandHandler.process('')
-            time.sleep(1.2)  # Wait for prompt to respond before checking MANA again.
+            self.sleep(1.2)  # Wait for prompt to respond before checking MANA again.
             
         return
     
@@ -275,7 +277,7 @@ class BotThread(threading.Thread):
             if(self.engage_any_attacking_mobs()):
                 self.commandHandler.process("rest")
 
-            time.sleep(0.1)
+            self.sleep(0.1)
 
         return
 
@@ -335,7 +337,7 @@ class BotThread(threading.Thread):
             
             #self.use_restorative_items() #spam them!!!
 
-            time.sleep(0.05)
+            self.sleep(0.05)
 
         self.commandHandler.stop_CastThread()
         
@@ -391,7 +393,7 @@ class BotThread(threading.Thread):
         now = time.time()
 
         while(self.character.SELL_CHECK_FLAG == 1 and time.time() - now < 3.0):
-            time.sleep(0.05)
+            self.sleep(0.05)
 
         magentaprint("Bot: Time for sell check was %.1f." % round(time.time()-now, 1))
         return self.character.MUD_RETURN_ITEM_SOLD    
@@ -432,7 +434,7 @@ class BotThread(threading.Thread):
         magentaprint("Engage: " + monster)
 
         self.commandHandler.user_kk(monster)
-        time.sleep(0.5)  # Keeps attacking and magic out of sync
+        self.sleep(0.5)  # Keeps attacking and magic out of sync
 
         while(self.commandHandler.KillThread != None and self.commandHandler.KillThread
               and self.commandHandler.KillThread.stopping == False):
@@ -467,7 +469,7 @@ class BotThread(threading.Thread):
                 # It will turn around and stop botThread.
                 self.do_flee_hook()
 
-            time.sleep(0.05)
+            self.sleep(0.05)
 
         # OK the mob died or ran or I ran
         self.commandHandler.stop_CastThread()    

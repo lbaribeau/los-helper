@@ -14,9 +14,9 @@ class Whois(BotReactionWithFlag):
         self.telnetHandler.write("whois " + character_name)
         #self.wait_for_flag()
         self.mudReaderHandler.unregister_reaction(self)
-        self.character_class = "Cle"
+        self.character_class = "Mon"
         self.gender = "M"
-        self.level = 1
+        self.level = 13
         self.title = "Enlightened Brother"
         self.age = "16"
         self.race = "Human"
