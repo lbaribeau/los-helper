@@ -9,8 +9,8 @@ from Exceptions import *
 class GrindThread(BotThread):
 
     def __init__(self, character, commandHandler, mudReaderHandler,
-                inventory, database, mud_map, starting_path=None): 
-        super(GrindThread, self).__init__(character, commandHandler, mudReaderHandler, inventory, database, mud_map)
+                inventory, mud_map, starting_path=None): 
+        super(GrindThread, self).__init__(character, commandHandler, mudReaderHandler, inventory, mud_map)
         # Set TOTALPATHS.  Setting it lower than the actual number
         # of paths in decide_where_to_go is a way to truncate paths
         # you don't want to send low level characters on.
@@ -43,6 +43,8 @@ class GrindThread(BotThread):
         magentaprint("Inside decide_where_to_go")
         
         LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
+
+        LEVEL_ONE_PATH = ["out", "s", "n", "chapel"]
 
         SHOP_AND_TIP_PATH = ["out", "s", "w", 'w', 'w', 's', 's', "shop",
                           "sell_items", 
@@ -206,6 +208,9 @@ class GrindThread(BotThread):
             magentaprint("Died; Pulling up my bootstraps and starting again", False)
             return LIMBO_TO_CHAPEL
 
+        if self.character.level == 1:
+            return LEVEL_ONE_PATH
+
         self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
 
         if (self.__nextpath % 2 == 0):
@@ -335,7 +340,7 @@ class GrindThread(BotThread):
     def do_rest_hooks(self):
       return
 
-    def do_go_hooks(self):
+    def do_go_hooks(self, exit_str):
       #if you want to define custom hooks like sell_items / drop_items etc... you can do so here
       if(exit_str == "prepare"):
           self.commandHandler.process(exit_str)

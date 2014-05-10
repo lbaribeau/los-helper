@@ -15,7 +15,7 @@ from MudMap import *
 
 class CommandHandler(object):
 
-    def __init__(self, character, mudReaderHandler, telnetHandler, database_file, mud_map):
+    def __init__(self, character, mudReaderHandler, telnetHandler):
         self.telnetHandler = telnetHandler
         self.character = character
         self.mudReaderHandler = mudReaderHandler
@@ -23,13 +23,6 @@ class CommandHandler(object):
         self.CastThread = None
         self.CoolAbilityThread1 = None
         self.CoolAbilityThread2 = None
-
-        database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
-        db.initialize(database)
-        db.connect()
-        self.mud_map = mud_map
-        create_tables()
-        db.close()
 
     def stop_KillThread(self, debug_on=False):
         if(self.KillThread != None and self.KillThread.is_alive()):
@@ -395,14 +388,3 @@ class CommandHandler(object):
             self.telnetHandler.write("wie " + self.character.WEAPON1)
         if self.character.WEAPON2 != "":
             self.telnetHandler.write("seco " + self.character.WEAPON2)
-
-    def get_directions_from_where_we_are_to_area_id(self, to_area_id):
-        directions = []
-        try:
-            if self.character.AREA_ID is not None:
-                directions = self.mud_map.get_path(int(self.character.AREA_ID), int(to_area_id))
-            else:
-                magentaprint("I'm not sure where I am (CurAreaID: " + str(self.character.AREA_ID) + ")", False)
-        except Exception:
-            magentaprint("I couldn't find a way there (" + str(self.character.AREA_ID) + ") to (" + str(to_area_id) + ")",False)
-        return directions

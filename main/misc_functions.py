@@ -1,12 +1,6 @@
-import time
-import sys
+import sys, time
 from ConsoleHandler import newConsoleHandler
 from datetime import datetime
-from Database import *
-
-database_file = "maplos.db"
-database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
-db.initialize(database)
 
 debugMode = False
 verboseMode = True
@@ -134,10 +128,4 @@ def get_last_word(s):
     return s.rsplit(None, 1)[-1]
 
 def get_shortest_array(list_of_arrays):
-    shortest_array = None
-
-    for array in list_of_arrays:
-        if shortest_array is None:
-            shortest_array = array
-        elif len(array) < len(shortest_array):
-            shortest_array = array
+    return min(list_of_arrays, key=len)

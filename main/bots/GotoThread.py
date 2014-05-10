@@ -4,8 +4,8 @@ from MudMap import *
 
 class GotoThread(BotThread):
     def __init__(self, character_in=None, commandHandler=None, mudReaderHandler_in=None,
-                inventory_in=None, database=None, mud_map=None, area_to_id=None, is_show_to=False):
-        super(GotoThread, self).__init__(character_in, commandHandler, mudReaderHandler_in, inventory_in, database, mud_map)
+                inventory_in=None, mud_map=None, area_to_id=None, is_show_to=False):
+        super(GotoThread, self).__init__(character_in, commandHandler, mudReaderHandler_in, inventory_in, mud_map)
 
         if(isinstance(area_to_id, int)):
             self.area_to_id = area_to_id

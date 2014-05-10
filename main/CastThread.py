@@ -41,7 +41,8 @@ class CastThread(CombatThread):
             try:
                 cur_target = get_last_word(self.target)
             except Exception:
-                magentaprint("get_last_word exception in cast thread: " + str("c <" + self.spell + "> <" + self.target + ">"), False)
+                pass
+                #magentaprint("get_last_word exception in cast thread: " + str("c <" + self.spell + "> <" + self.target + ">"))
             self.character.CAST_CLK = time.time()
             magentaprint("cast " + self.spell + " " + cur_target)
             self.telnetHandler.write("cast " + self.spell + " " + cur_target)

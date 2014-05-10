@@ -9,16 +9,24 @@ import random
 class SmartGrindThread(GrindThread):
 
     def __init__(self, character, commandHandler, mudReaderHandler,
-                inventory, database, mud_map, starting_path=None): 
-        super(SmartGrindThread, self).__init__(character, commandHandler, mudReaderHandler, inventory, database, mud_map)
-        target_list = ["theatre goer", "actor", "militia solider", "rancher sentry", "sawmill operator",
+                inventory, mud_map, starting_path=None): 
+        super(SmartGrindThread, self).__init__(character, commandHandler, mudReaderHandler, inventory, mud_map)
+        '''target_list = ["theatre goer", "actor", "militia solider", "rancher sentry", "sawmill operator",
         "dwarven fieldworker", "market official", "fort sentry", "large bandit", "kobold sentry", "old kobold",
-        "bandit swordsman", "gnoll sentry", "sword swallower"]
+        "bandit swordsman", "gnoll sentry", "sword swallower"]'''
+        target_list = ["dustman", "small girl", "young boy", "old woman", "old man", 
+        "townsman", "stall holder", "duck", "hedgehog", "piglet", 
+        'streetsweeper', "shopper", "window shopper", "window cleaner", 
+        "waitress", "housewife", "squirrel", "milk maid", "rabbit", 
+        "one man band", "heather seller", "irate teenager", 'peasant', 
+        'one-armed beggar', "village elder", "small dog", "tribesman", 
+        "searcher", "delivery boy", "traveller", "wanderer", "villager", 
+        "vagrant", "dropout", "tramp", "serf", 'dishwasher']
 
         self.smart_target_list = []
 
-        for target in self.target_list:
-            mob_locations = MudMap.get_mob_locations_by_name(self.cur_target)
+        for target in target_list:
+            mob_locations = MudMap.get_mob_locations_by_name(target)
             self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
 
         self.cur_target = ""
@@ -43,17 +51,22 @@ class SmartGrindThread(GrindThread):
         directions = []
 
         self.pick_new_target()
-        paths_to_target = get_all_paths_to_target()
+        paths_to_target = self.get_all_paths_to_target()
 
         i = 0
 
-        while i < (len(paths_to_target) / 2):
-            closest_path = get_shortest_array(paths_to_target)
+        while i < 5 or i < (len(paths_to_target)):
+            path = []
+            j = 0
+            while path == [] or j == len(paths_to_target):
+                j = j+1
+                
+            closest_path = paths_to_target.pop(get_shortest_array(paths_to_target))
             i = i + 1
 
         return directions
 
-    def get_all_paths_to_target(from_path=-1):
+    def get_all_paths_to_target(self, from_path=-1):
         paths = []
 
         for area_id in self.cur_target.locations:
@@ -142,8 +155,8 @@ class SmartGrindThread(GrindThread):
         while next_target == self.cur_target:
             next_target = random.choice(self.smart_target_list)
 
-        self.cur_target = next_target
-        magentaprint("Picking new target: " + next_target, False)
+        self.cur_target = next_target.name
+        magentaprint("Picking new target: " + next_target.to_string(), False)
 
     def do_rest_hooks(self):
         #this sets us on a path towards the chapel if possible - if not this will return an empty 

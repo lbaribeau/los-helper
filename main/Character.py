@@ -11,9 +11,9 @@ class Character(object):
     _class = None
     level = None
     preferred_alignment = None
-    BLACK_MAGIC = True
+    BLACK_MAGIC = False
     FAVOURITE_SPELL = "burn"
-    KNOWS_VIGOR = True
+    KNOWS_VIGOR = False
     #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
     #MAGIC_SKILLS= [0, 0, 0, 0, 0]
     SKILLS = {} 
@@ -107,8 +107,8 @@ class Character(object):
 
     def configure_health_and_mana_variables(self):
         if self.level <= 2:
-            self.HEALTH_TO_HEAL = 20
-            self.HEALTH_TO_FLEE = 8
+            self.HEALTH_TO_HEAL = 11
+            self.HEALTH_TO_FLEE = 4
             self.MAX_MANA = 3
             self.MANA_TO_ENGAGE = 3
         elif self.level <= 3:

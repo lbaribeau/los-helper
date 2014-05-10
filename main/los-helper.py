@@ -17,20 +17,19 @@
 #       keep that aren't in KEEP_LIST into some bag that IS in KEEP_LIST)
 #   ANSI color
 
-import sys
-import getpass
-import threading
+import sys, time, getpass, threading, atexit, re
 from threading import Thread
-import atexit 
-import re
-import time
+
+from import_tools import *
+import_subdir("data")
+import_subdir("bots")
+import_subdir("reactions")
 
 from misc_functions import *
 from Character import Character
 from CharacterClass import CharacterClass
-from GrindThread import GrindThread
 from SmartGrindThread import SmartGrindThread
-from CrawlThread import CrawlThread
+from SmartCrawlThread import SmartCrawlThread
 from GotoThread import GotoThread
 from CommandHandler import CommandHandler
 from MudReaderHandler import MudReaderHandler 
@@ -43,6 +42,7 @@ from Whois import Whois
 from Cartography import Cartography 
 from BotReactions import *
 from TelnetHandler import TelnetHandler 
+
 from Database import *
 from MudMap import *
 
@@ -50,11 +50,6 @@ from MudMap import *
 class LosHelper(object):
 
     def __init__(self):
-        magentaprint("LOSHelper connecting to database....", False)
-        database_file = "maplos.db"
-        self.database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
-        db.initialize(self.database)
-
         magentaprint("Connecting to MUD and initializing....", False)
         self.character = Character()
         self.telnetHandler = TelnetHandler()
@@ -67,8 +62,8 @@ class LosHelper(object):
 
         magentaprint("Generating the mapfile....", False)
         self.mud_map = MudMap()
-        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler, database_file, self.mud_map)
-        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character, database_file, self.mud_map)
+        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
+        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
         self.botThread = None
 
     def main(self):
@@ -190,11 +185,10 @@ class LosHelper(object):
         if (self.botThread != None and self.botThread.is_alive()):
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
-            self.botThread = GrindThread(self.character, 
+            self.botThread = SmartGrindThread(self.character, 
                                        self.commandHandler, 
                                        self.mudReaderHandler,
                                        self.inventory,
-                                       self.database,
                                        self.mud_map,
                                        starting_path)
             self.botThread.start()
@@ -203,11 +197,10 @@ class LosHelper(object):
         if (self.botThread != None and self.botThread.is_alive()):
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
-            self.botThread = CrawlThread(self.character, 
+            self.botThread = SmartCrawlThread(self.character, 
                                        self.commandHandler, 
                                        self.mudReaderHandler,
                                        self.inventory,
-                                       self.database,
                                        self.mud_map)
             self.botThread.start()
 
@@ -226,7 +219,6 @@ class LosHelper(object):
                                        self.commandHandler, 
                                        self.mudReaderHandler,
                                        self.inventory,
-                                       self.database,
                                        self.mud_map,
                                        starting_path,
                                        is_show_to)

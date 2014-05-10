@@ -1,3 +1,4 @@
+from peewee import *
 import networkx as nx
 from Database import *
 from misc_functions import *
@@ -82,4 +83,3 @@ class MudMap():
 			locations.append(mob_location.area.id)
 
 		return locations
-
