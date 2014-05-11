@@ -11,7 +11,7 @@ class MixThread(TelnetBotThread):
         self.mix_target = mix_target
         self.quantity = quantity
 
-        self.mixing_reactions = MixingReactions(mudReaderHandler_in, telnet_handler)
+        self.mixing_reactions = MixingReactions(mudReaderHandler_in, telnet_handler, inventory_in)
 
     def stop(self):
         super(MixThread, self).stop()

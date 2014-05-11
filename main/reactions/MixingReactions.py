@@ -6,7 +6,7 @@ from misc_functions import *
 
 class MixingReactions(BotReactionWithFlag):
 
-    def __init__(self, mudReaderHandler, telnetHandler):
+    def __init__(self, mudReaderHandler, telnetHandler, inventory):
         self.prepare_success = "You finish preparing a (.+?)\."
         self.prepare_fail = "Your preparation of a (.+?) fails\."
 
@@ -18,6 +18,7 @@ class MixingReactions(BotReactionWithFlag):
 
         self.mix_succeeded = False
 
+        self.inventory = inventory
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
         self.__stopping = False
@@ -53,6 +54,7 @@ class MixingReactions(BotReactionWithFlag):
             self.mix_target_to_target(target, mix_target)
 
             if not self.mix_succeeded:
+                self.inventory.drop_last(target)
                 self.fail_count = self.fail_count + 1
 
         self.finished = True

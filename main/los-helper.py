@@ -166,7 +166,7 @@ class LosHelper(object):
                 self.start_goto(user_input)
             elif(re.match("showto [0-9]+$", user_input)):
                 self.start_goto(user_input, True)
-            elif(re.match("domix (.+?) (.+?) ([\d]*)$", user_input)):
+            elif(re.match("domix '(.+?)'$", user_input)):
                 self.start_mix(user_input)
             elif(re.match("stop$", user_input)):
                 self.stop_bot()
@@ -228,14 +228,19 @@ class LosHelper(object):
             self.botThread.start()
 
     def start_mix(self, user_input):
-        M_obj = re.search("domix (.+?) (.+?) ([\d]*)$", user_input)
+        M_obj = re.search("domix '(.+?)' (.+?)( [\d]*)?$", user_input)
 
         can_mix = True
 
         try:
             target = M_obj.group(1)
             mix_target = M_obj.group(2)
-            quantity = int(M_obj.group(3))
+
+            try:
+                quantity = int(M_obj.group(3).strip())
+            except Exception:
+                magentaprint(str(M_obj.groups()),False)
+                quantity = 1
         except Exception:
             magentaprint(str(M_obj.groups()),False)
             can_mix = False

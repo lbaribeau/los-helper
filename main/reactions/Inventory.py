@@ -137,6 +137,10 @@ class Inventory(BotReactionWithFlag):
         self.telnetHandler.write("drop " + item_ref)
         self.wait_for_flag()
 
+    def drop_last(self, item_ref):
+        self.telnetHandler.write("drop " + item_ref  + " " + str(self.inventory[item_ref]))
+        self.wait_for_flag
+
     def stop(self):
         self.__stopping = True
 
@@ -280,8 +284,11 @@ class Inventory(BotReactionWithFlag):
         #magentaprint("Reference: " + s, False)
         return item_string.split(" ")[0].split(".")[0]
 
+    def output_inventory(self):
+        magentaprint(str(self.inventory),False)
+
     restoratives = ["chicken soup", "small restorative", "small flask", 
-                    "large restorative", "scarlet potion", "white potion"]
+                    "large restorative", "scarlet potion", "white potion", "tree root"]
     # usable = ["small retorative", "large restorative", "chicken soup", "scarlet potion", 
     #           "steel bottle", "silver chalice", "milky potion",
     #           "glowing potion",
@@ -293,7 +300,7 @@ class Inventory(BotReactionWithFlag):
     #thick liquid silences you !!!
 
     keep_list = ["large bag", "large sack", 
-        "silver chalice", "steel bottle", "small restorative", 'glowing potion', "chicken soup", 'scarlet potion', 'white potion']
+        "silver chalice", "steel bottle", "small restorative", 'glowing potion', "chicken soup", 'scarlet potion', 'white potion', "tree root"]
 
     ''' keep_list = ["large bag", "large sack", 
         "silver chalice", "steel bottle", 
