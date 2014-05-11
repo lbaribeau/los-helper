@@ -1,6 +1,7 @@
 import sys, time
 from ConsoleHandler import newConsoleHandler
 from datetime import datetime
+from Database import *
 
 debugMode = False
 verboseMode = True

@@ -54,9 +54,9 @@ class GrindThread(BotThread):
                           
         THEATRE_PATH = ["out", "s", "w", "w", "w", "s", "theat", "stair",
                           "cubby", "out", "down", "swing", "seat", "out",
-                          "down", "seat", "out", "open door", "stage",
+                          "down", "seat", "out", "door", "stage",
                           "side 2", "backstage", "door", "out", "curtain",
-                          "stage", "side", "open door",
+                          "stage", "side", "door",
                           "up", "out", "out", "n", "e",
                           "e", "e", "n", "chapel"]
         
@@ -87,7 +87,7 @@ class GrindThread(BotThread):
                           "ne", 'e', 'e', 's', "glowing", "passage", "mines",
                           'd', 'n',
                           'n', 'n', 'n', "ne", 'n', 'w', 'n', 'n', 'e',
-                          "open door", 'w', "gully", 'u', "boulder", 'u',
+                          "door", 'w', "gully", 'u', "boulder", 'u',
                           "cave 3", 'ne', 'ne', 'n', 's', 'u', 'e', 'se', 
                           'cave', 'out', 
                           # Note: You can remove the following line of code 
@@ -107,7 +107,7 @@ class GrindThread(BotThread):
                           # Comment out insane kobold (TODO: check level here)
                           # 'cave', 'out', 
                           "sw", 'se', 'nw', 'w', "out", 'd',
-                          "boulder", 'd', 'd', 'e', "open door", 'w', 's', 's',
+                          "boulder", 'd', 'd', 'e', "door", 'w', 's', 's',
                           'e', 's', "sw", 's', 's', 's', 's', "gully",
                           "glowing", "passage", "coral", 'n', 'w', 'w', "sw",
                           'w', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
@@ -342,7 +342,15 @@ class GrindThread(BotThread):
 
     def do_go_hooks(self, exit_str):
       #if you want to define custom hooks like sell_items / drop_items etc... you can do so here
-      if(exit_str == "prepare"):
+
+      if(exit_str == "nw" or exit_str == "ne" or
+           exit_str == "sw" or exit_str == "se" or
+           exit_str == 'n' or exit_str == 'e' or
+           exit_str == 's' or exit_str == 'w'):
+            self.commandHandler.process(exit_str)
+            return self.check_for_successful_go() 
+
+      elif(exit_str == "prepare"):
           self.commandHandler.process(exit_str)
           return True
 

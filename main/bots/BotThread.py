@@ -108,9 +108,12 @@ class BotThread(threading.Thread):
             else:
                 self.commandHandler.process("go " + exit_str)
 
-            return self.mudReaderHandler.check_for_successful_go()
+            return self.check_for_successful_go()
         else:
             return hook_found
+
+    def check_for_successful_go(self):
+        return self.mudReaderHandler.check_for_successful_go()
 
     def do_go_hooks(self, exit_str):
         #if you want to define custom hooks like sell_items / drop_items etc... you can do so here
@@ -166,7 +169,7 @@ class BotThread(threading.Thread):
         # happens.  I'm gonna assume it happened 
         # because the last go actually worked and 
         # was wrongly determined not to.
-        self.direction_list.pop()
+        magentaprint("Go no exit on: " + self.direction_list.pop(0), False)
         self.character.MOBS_JOINED_IN = []
         self.character.MOBS_ATTACKING = []
 
