@@ -54,6 +54,7 @@ class MixingReactions(BotReactionWithFlag):
             self.mix_target_to_target(target, mix_target)
 
             if not self.mix_succeeded:
+                self.sleep(2) #give a chance for the remove to register in inventory
                 self.inventory.drop_last(target)
                 self.fail_count = self.fail_count + 1
 

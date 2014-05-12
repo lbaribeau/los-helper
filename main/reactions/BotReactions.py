@@ -23,6 +23,9 @@ class BotReaction(object):
         """
         raise NotImplementedError()
 
+    def sleep(self, duration):
+        time.sleep(duration)
+
 
 class BotReactionWithFlag(BotReaction):
     """ wait_for_flag() is useful when you send a telnet command and 
@@ -42,7 +45,7 @@ class BotReactionWithFlag(BotReaction):
         run_time = 0
 
         while not self.__waiter_flag and run_time < self.good_MUD_timeout:
-            time.sleep(0.05)
+            self.sleep(0.05)
             run_time = time.time() - start_time
 
         if not self.__waiter_flag:

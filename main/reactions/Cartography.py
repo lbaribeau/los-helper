@@ -29,6 +29,7 @@ class Cartography(BotReaction):
         self.no_items_allowed = "You cannot bring anything through that exit\."
         self.door_locked = "It's locked\."
         self.no_right = "You have not earned the right to pass this way!"
+        self.in_tune = "That way may only be taken by those in tune with the world!"
         self.not_authorized = "You are not authorised to enter here\."
         self.no_force = "You cannot force yourself to go through there\."
         self.not_here = "You don't see that here\."
@@ -53,7 +54,8 @@ class Cartography(BotReaction):
             self.no_force,
             self.not_here,
             self.loot_blocked,
-            self.teleported_away
+            self.teleported_away,
+            self.in_tune
             ]
 
         self.mudReaderHandler = mudReaderHandler
@@ -136,7 +138,8 @@ class Cartography(BotReaction):
                 regex == self.no_right or
                 regex == self.not_authorized or
                 regex == self.no_force or
-                regex == self.no_exit):
+                regex == self.no_exit or
+                regex == self.in_tune):
             self.set_area_exit_as_unusable(regex)
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
@@ -145,8 +148,9 @@ class Cartography(BotReaction):
             #self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
             #self.character.SUCCESSFUL_GO = False
             #self.character.TRYING_TO_MOVE = False
-        elif regex == self.teleported_away:
-            self.character.DEAD = True
+        #elif regex == self.teleported_away:
+            #self.character.DEAD = True
+
         else:
             magentaprint("Cartography case missing for regex: " + str(regex), False)
 
