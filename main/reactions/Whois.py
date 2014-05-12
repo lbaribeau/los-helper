@@ -16,7 +16,7 @@ class Whois(BotReactionWithFlag):
         self.mudReaderHandler.unregister_reaction(self)
         self.character_class = "Mon"
         self.gender = "M"
-        self.level = 13
+        self.level = 14
         self.title = "Enlightened Brother"
         self.age = "16"
         self.race = "Human"

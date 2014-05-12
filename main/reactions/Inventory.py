@@ -29,12 +29,13 @@ class Inventory(BotReactionWithFlag):
         self.bought = "Bought\."  
         self.you_put_in_bag = "(?s)You put (.+?) in(to)? (.+?)\."
         self.gave_you = ".+? gave (.+?) to you\."
+        self.you_hold = "(?s)You hold (.+?)\."
 
         self.regexes = [self.you_have, self.you_get, self.wont_buy, self.wont_buy2, self.sold, 
             self.you_drop, self.not_a_pawn_shop, self.you_now_have, self.gold_from_tip,
             self.not_empty, self.you_wear, self.nothing_to_wear, self.you_remove,  
             self.nothing_to_remove, self.you_wield, self.you_give, self.bought,
-            self.you_put_in_bag, self.gave_you]
+            self.you_put_in_bag, self.gave_you, self.you_hold]
 
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
@@ -42,6 +43,7 @@ class Inventory(BotReactionWithFlag):
         self.gold = 0
         self.__stopping = False
         self.mudReaderHandler.register_reaction(self)
+        self.is_bulk_buying = False
 
     def notify(self, regex, M_obj):
         if regex is self.you_have:
@@ -57,13 +59,18 @@ class Inventory(BotReactionWithFlag):
         elif regex is self.you_get:
             item = self.clip_from_a_container(M_obj.group(1))
             self.add(item)
-        elif regex is self.you_drop or regex is self.you_wear or regex is self.you_give or regex is self.you_put_in_bag:
+        elif regex is self.you_drop or regex is self.you_wear or regex is self.you_give or regex is self.you_put_in_bag or regex is self.you_hold:
             self.remove(M_obj.group(1))
+            magentaprint(str(self.inventory))
+            magentaprint("'" + M_obj.group(1) + "'")
         elif regex is self.you_remove or regex is self.gave_you:
             self.add(M_obj.group(1))
+            magentaprint(str(self.inventory))
+            magentaprint("'" + M_obj.group(1) + "'")
         elif regex is self.bought:
-            self.get_inventory()  # There are some notes about this at the bottom
-            # I don't like this very much! I can't use ! to buy a lot of a thing.
+            if not self.is_bulk_buying:
+                self.get_inventory()  # There are some notes about this at the bottom
+                # I don't like this very much! I can't use ! to buy a lot of a thing.
 
         super(Inventory, self).notify(regex, M_obj)  # sets __waiter_flag
 
@@ -106,7 +113,6 @@ class Inventory(BotReactionWithFlag):
     #     else:
     #         magentaprint("Inventory: Error: " + item + " not usable.")
     #             self.telnetHandler.write("use " + item)
-
     def sell_stuff(self):
         self.__stopping = False
         self.get_inventory()  # Unnecessary if inventory is well tracked
@@ -120,6 +126,23 @@ class Inventory(BotReactionWithFlag):
     def sell(self, item_ref):
         self.telnetHandler.write("sell " + item_ref)
         self.wait_for_flag()
+
+    def buy_stuff(self, item_string):
+        self.telnetHandler.write("buy " + item_string)
+        #self.wait_for_flag
+
+    def bulk_buy_stuff(self, item_string, quantity):
+        i = 0
+        self.is_bulk_buying = True
+
+        while i < (quantity):
+            self.buy_stuff(item_string)
+            i += 1
+
+        self.sleep(3) #breathe!
+
+        self.is_bulk_buying = False
+
 
     # def sell_fast(self):
 
@@ -137,9 +160,14 @@ class Inventory(BotReactionWithFlag):
         self.telnetHandler.write("drop " + item_ref)
         self.wait_for_flag()
 
-    def drop_last(self, item_ref):
-        self.telnetHandler.write("drop " + item_ref  + " " + str(self.inventory[item_ref]))
-        self.wait_for_flag
+    def drop_item_at_position(self, item_string, position):
+        self.telnetHandler.write("drop " + item_string  + " " + str(position))
+        magentaprint("drop " + item_string  + " " + str(position), False)
+        self.wait_for_flag()
+
+    def drop_last(self, item_string):
+        item_ref = self._item_string_to_reference(item_string)
+        self.drop_item_at_position(item_ref, self.inventory[item_string])
 
     def stop(self):
         self.__stopping = True
@@ -216,7 +244,7 @@ class Inventory(BotReactionWithFlag):
         numbers = ["a ", "an ", "some ", "two ", "three ", "four ", "five ", "six ", "seven ", 
                    "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ", "fourteen ", 
                    "fifteen" , "sixteen ", "seventeen ", "eighteen ", "nineteen ", "twenty "]
-        numbers.extend([str(i) + " " for i in range(21, 100)])
+        numbers.extend([str(i) + " " for i in range(21, 200)])
 
         for item in inv_list:
             for n in range(0, len(numbers)):

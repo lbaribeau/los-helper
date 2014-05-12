@@ -316,7 +316,7 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return
 
-        if (self.character._class.id == "Mon"):
+        if self.is_character_class("Mon"):
             magentaprint("Last Meditate Check: " + str(time.time() - self.character.LAST_MEDITATE))
             if((time.time() - self.character.LAST_MEDITATE) > 150 and
                 self.character.HEALTH <= self.character.HEALTH_TO_HEAL):
@@ -345,6 +345,10 @@ class BotThread(threading.Thread):
         self.commandHandler.stop_CastThread()
         
         return
+
+
+    def is_character_class(self, cls):
+        return self.character._class.id == cls
 
     def buff_up(self):
         if((time.time() - self.character.LAST_BUFF) > 180):
@@ -451,7 +455,7 @@ class BotThread(threading.Thread):
                     
             # TODO: restoratives (use when vig not keeping up or low mana)
             if (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL)):
-                if (self.character._class.id == "Mon"):
+                if self.is_character_class("Mon"):
                     magentaprint("Last Meditate Check: " + str(time.time() - self.character.LAST_MEDITATE))
                     if((time.time() - self.character.LAST_MEDITATE) > 150):
                         self.commandHandler.process('meditate')

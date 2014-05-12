@@ -80,7 +80,15 @@ class CommandHandler(object):
         elif(re.match("find (.+)", user_input)):
             M_obj = re.search("find (.+)", user_input)
             magentaprint("Finding: " + str(M_obj.group(1)))
-            MudMap.find(str(M_obj.group(1)))
+            [areas, mob_locations] = MudMap.find(str(M_obj.group(1)))
+
+            magentaprint("Areas found:", False)
+            for area in areas:
+                magentaprint("<" + str(area.id) + "> - " + area.name, False)
+
+            magentaprint("Mobs found:", False)
+            for mob_location in mob_locations:
+                magentaprint("<" + str(mob_location.area.id) + "> - " + mob_location.mob.name, False)
 
         elif re.match("wie?2 +[a-zA-Z]+( +\d+)?", user_input):
             self.user_wie2(user_input[4:].lstrip())

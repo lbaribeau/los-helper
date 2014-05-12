@@ -30,7 +30,8 @@ class GrindThread(BotThread):
             self.__nextpath = 0
 
     def do_run_startup(self):
-        self.set_up_automatic_ring_wearing()
+        if not self.is_character_class("Mon"):
+          self.set_up_automatic_ring_wearing()
         return
 
     def do_pre_go_actions(self):

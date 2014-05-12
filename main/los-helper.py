@@ -112,6 +112,7 @@ class LosHelper(object):
         # This prints the inventory.  I like that.  
         # Inventory needs this to be up to date.
         self.inventory.get_inventory()
+        self.inventory.output_inventory()
 
     def check_class_and_level(self):
         whois = Whois(self.mudReaderHandler, self.telnetHandler)
@@ -166,8 +167,19 @@ class LosHelper(object):
                 self.start_goto(user_input)
             elif(re.match("showto [0-9]+$", user_input)):
                 self.start_goto(user_input, True)
-            elif(re.match("domix '(.+?)'$", user_input)):
+            elif(re.match("domix .+?", user_input)):
                 self.start_mix(user_input)
+            elif(re.match("bbuy (.+?)", user_input)):
+                try:
+                    M_obj = re.search("bbuy (.+?) ([\d]*)", user_input)
+                    item = M_obj.group(1)
+                    quantity = int(M_obj.group(2))
+
+                    self.inventory.bulk_buy_stuff(item, quantity)
+                except Exception as e:
+                    magentaprint("Error in the bulk buy function" + str(M_obj.groups(0)), False)
+                    raise e
+
             elif(re.match("stop$", user_input)):
                 self.stop_bot()
             elif(re.match("fle?$|flee$", user_input)):

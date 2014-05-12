@@ -53,6 +53,19 @@ class Character(object):
     CAST_WAIT = CAST_PERIOD
 
     MOBS_KILLED = 0
+    
+    HITS_DEALT = 0
+    HITS_MISSED = 0
+    DAMAGE_DEALT = 0
+    
+    LOWEST_DAMAGE = 0
+    HIGHEST_DAMAGE = 0
+    CRITS_LANDED = 0
+
+    HITS_RECEIVED = 0
+    HITS_EVADED = 0
+    DAMAGE_TAKEN = 0
+
     DEATHS = 0
 
     HASTING = False 
@@ -146,8 +159,8 @@ class Character(object):
             #self.HEALTH_TO_FLEE = 27
             #self.MAX_MANA = 27 - 4 + 1
             #self.MANA_TO_ENGAGE = 18
-            self.HEALTH_TO_HEAL = 65
-            self.HEALTH_TO_FLEE = 15
+            self.HEALTH_TO_HEAL = 70
+            self.HEALTH_TO_FLEE = 40
             self.MAX_MANA = 4
             self.MANA_TO_ENGAGE = 0
     
