@@ -175,7 +175,7 @@ class LosHelper(object):
                     item = M_obj.group(1)
                     quantity = int(M_obj.group(2))
 
-                    self.inventory.bulk_buy_stuff(item, quantity)
+                    self.inventory.bulk_buy(item, quantity)
                 except Exception as e:
                     magentaprint("Error in the bulk buy function" + str(M_obj.groups(0)), False)
                     raise e

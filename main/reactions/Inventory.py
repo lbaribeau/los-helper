@@ -43,7 +43,7 @@ class Inventory(BotReactionWithFlag):
         self.gold = 0
         self.__stopping = False
         self.mudReaderHandler.register_reaction(self)
-        self.is_bulk_buying = False
+        self.is_bulk_vendoring = False
 
     def notify(self, regex, M_obj):
         if regex is self.you_have:
@@ -68,7 +68,7 @@ class Inventory(BotReactionWithFlag):
             magentaprint(str(self.inventory))
             magentaprint("'" + M_obj.group(1) + "'")
         elif regex is self.bought:
-            if not self.is_bulk_buying:
+            if not self.is_bulk_vendoring:
                 self.get_inventory()  # There are some notes about this at the bottom
                 # I don't like this very much! I can't use ! to buy a lot of a thing.
 
@@ -127,21 +127,38 @@ class Inventory(BotReactionWithFlag):
         self.telnetHandler.write("sell " + item_ref)
         self.wait_for_flag()
 
-    def buy_stuff(self, item_string):
-        self.telnetHandler.write("buy " + item_string)
-        #self.wait_for_flag
-
-    def bulk_buy_stuff(self, item_string, quantity):
+    def bulk_sell(self, item_string, quantity):
         i = 0
-        self.is_bulk_buying = True
+        self.is_bulk_vendoring = True
 
-        while i < (quantity):
-            self.buy_stuff(item_string)
+        while i < (quantity ):
+            self.sell(item_string)
             i += 1
 
         self.sleep(3) #breathe!
 
-        self.is_bulk_buying = False
+        self.is_bulk_vendoring = False
+
+    def buy_stuff(self, item_string):
+        #this should be implemented to match sell stuff
+        #programmatic purchasing via a shopping list or something
+        return
+
+    def buy(self, item_string):
+        self.telnetHandler.write("buy " + item_string)
+        #self.wait_for_flag
+
+    def bulk_buy(self, item_string, quantity):
+        i = 0
+        self.is_bulk_vendoring = True
+
+        while i < (quantity ):
+            self.buy(item_string)
+            i += 1
+
+        self.sleep(3) #breathe!
+
+        self.is_bulk_vendoring = False
 
 
     # def sell_fast(self):
