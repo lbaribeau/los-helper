@@ -45,8 +45,6 @@ class GrindThread(BotThread):
         
         LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
-        LEVEL_ONE_PATH = ["out", "s", "n", "chapel"]
-
         SHOP_AND_TIP_PATH = ["out", "s", "w", 'w', 'w', 's', 's', "shop",
                           "sell_items", 
                           "out", "se", 'e', 'e', 'e', 'e', "ne", "tip",
@@ -201,16 +199,13 @@ class GrindThread(BotThread):
                         'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest',
                         'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
 
-        PATH_TO_SKIP_WITH = [ 'out', 'chapel' ]
+        PATH_TO_SKIP_WITH = []#[ 'out', 'chapel' ]
 
         if (self.character.DEAD):
             self.character.DEAD = False
             self.character.DEATHS += 1
             magentaprint("Died; Pulling up my bootstraps and starting again", False)
             return LIMBO_TO_CHAPEL
-
-        if self.character.level == 1:
-            return LEVEL_ONE_PATH
 
         self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
 

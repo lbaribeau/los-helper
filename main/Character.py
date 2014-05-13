@@ -11,7 +11,7 @@ class Character(object):
     _class = None
     level = None
     preferred_alignment = None
-    BLACK_MAGIC = True
+    BLACK_MAGIC = False
     FAVOURITE_SPELL = "fireball"
     SPELL_COST = 7
     KNOWS_VIGOR = True
@@ -50,7 +50,7 @@ class Character(object):
 
     ATTACK_WAIT = ATTACK_PERIOD   # Used by timer.  Same as ATTACK_PERIOD.
                                 # Amount of time to wait to walk after attacking
-    MOVE_WAIT = 0.29
+    MOVE_WAIT = 0.40
     CAST_WAIT = CAST_PERIOD
 
     MOBS_KILLED = 0
@@ -121,10 +121,10 @@ class Character(object):
 
     def configure_health_and_mana_variables(self):
         if self.level <= 2:
-            self.HEALTH_TO_HEAL = 11
-            self.HEALTH_TO_FLEE = 4
-            self.MAX_MANA = 3
-            self.MANA_TO_ENGAGE = 3
+            self.HEALTH_TO_HEAL = 16
+            self.HEALTH_TO_FLEE = 7
+            self.MAX_MANA = 7
+            self.MANA_TO_ENGAGE = 7
         elif self.level <= 3:
             self.HEALTH_TO_HEAL = 27
             self.HEALTH_TO_FLEE = 9
