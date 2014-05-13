@@ -6,13 +6,6 @@ from MudMap import *
 class CombatReactions(BotReaction):
     def __init__(self, mudReaderHandler, character):
         #self.physical_hit_type = "You (head-butt|kick|grab|lash out( at| and thump)?) the (.+?)( and gouge him)?"
-        
-        '''
-        I Think the text comes in like this so it might be best to parse the whole block instead of portions of it
-        This could help avoid issues with other matches happening
-        You attack the dustman.
-        The dustman is caught off guard by your attack!!
-        You punch the dustman for 48 damage.'''
 
         self.physical_damage = "You (.+?) the (.+?) for ([\d]*) damage\."
         self.physical_miss = "You (.+?) the (.+?), but (.+?)\." #keyword "but" means ignore everything - you missed
