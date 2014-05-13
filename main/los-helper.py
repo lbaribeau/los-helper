@@ -38,6 +38,7 @@ from MudReaderThread import MudReaderThread
 from MudListenerThread import MudListenerThread 
 from MyBuffer import MyBuffer 
 from Inventory import Inventory 
+from CombatReactions import CombatReactions
 from Info import Info 
 from Whois import Whois
 from Cartography import Cartography 
@@ -60,6 +61,7 @@ class LosHelper(object):
         self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
         self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
         self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler)
+        self.combat_reactions = CombatReactions(self.mudReaderHandler, self.character)
 
         magentaprint("Generating the mapfile....", False)
         self.mud_map = MudMap()

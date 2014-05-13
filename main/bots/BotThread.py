@@ -433,7 +433,7 @@ class BotThread(threading.Thread):
     
     def engage_monster(self, monster):
         vigor_cost = 2
-        black_magic_spell_cost = 3
+        black_magic_spell_cost = self.character.SPELL_COST
         
         if(self.__stopping):
             return

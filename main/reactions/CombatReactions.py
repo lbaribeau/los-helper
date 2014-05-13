@@ -4,19 +4,29 @@ from Database import *
 from MudMap import *
 
 class CombatReactions(BotReaction):
-    def __init__(self, mudReaderHandler, commandHandler, character):
+    def __init__(self, mudReaderHandler, character):
         #self.physical_hit_type = "You (head-butt|kick|grab|lash out( at| and thump)?) the (.+?)( and gouge him)?"
-        self.physical_damage = "^You (.+?) the (.+?) for ([\d]*) damage\.$"
-        self.physical_miss = "^You (.+?) the (.+?), but (.+?)\.$" #keyword "but" means ignore everything - you missed
-        self.physical_critical = "^The|Your?.+?!!$"
+        
+        '''
+        I Think the text comes in like this so it might be best to parse the whole block instead of portions of it
+        This could help avoid issues with other matches happening
+        You attack the dustman.
+        The dustman is caught off guard by your attack!!
+        You punch the dustman for 48 damage.'''
+
+        self.physical_damage = "You (.+?) the (.+?) for ([\d]*) damage\."
+        self.physical_miss = "You (.+?) the (.+?), but (.+?)\." #keyword "but" means ignore everything - you missed
+        self.physical_critical = "(The|Your?).+?!!"
 
         #self.mob_physical_hit_type = " (kicks|punches|lashes out|throws a wild punch at) you"        
-        self.mob_physical_damage = "^The (.+?) ([\d]) damage\.$" 
-        self.mob_physical_miss = "^The (.+?) you, but (.+?)\.$"
+        self.mob_physical_damage = "The (.+?) ([\d]) damage\." 
+        self.mob_physical_miss = "The (.+?) you, but (.+?)\."
 
-        self.spell_type = "^You cast a (.+?) spell on (.+?)\.$"
-        self.spell_damage_dealt = "^The spell did ([\d]*) damage\."
+        self.spell_type = "You cast a (.+?) spell on (.+?)\."
+        self.spell_damage_dealt = "The spell did ([\d]*) damage\."
         self.spell_fails = "Your spells fails\."
+
+        self.experience_gained = "You gain ([\d]*) experience\."
 
         self.regexes = [self.physical_damage,
                         self.physical_miss,
@@ -27,7 +37,6 @@ class CombatReactions(BotReaction):
                         self.spell_fails]
 
         self.mudReaderHandler = mudReaderHandler
-        self.commandHandler = commandHandler
         self.character = character
 
         self.good_MUD_timeout = 1.5
@@ -36,10 +45,11 @@ class CombatReactions(BotReaction):
         self.mudReaderHandler.register_reaction(self)
 
     def notify(self, regex, M_obj):
+        magentaprint("Combat Reaction happened on: " + regex)
         if regex == self.physical_damage:
             self.character.HITS_DEALT += 1
 
-            damage_dealt = M_obj.group(3)
+            damage_dealt = int(M_obj.group(3))
             self.character.DAMAGE_DEALT += damage_dealt
 
             if (self.character.HIGHEST_DAMAGE < damage_dealt):
@@ -52,7 +62,7 @@ class CombatReactions(BotReaction):
             self.character.CRITS_LANDED += 1
         elif regex == self.mob_physical_damage:
             self.character.HITS_RECEIVED += 1
-            damage_taken = M_obj.group(2)
+            damage_taken = int(M_obj.group(2))
             self.character.DAMAGE_TAKEN += damage_taken
         elif regex == self.mob_physical_miss:
             self.character.HITS_EVADED += 1

@@ -12,7 +12,8 @@ class Character(object):
     level = None
     preferred_alignment = None
     BLACK_MAGIC = True
-    FAVOURITE_SPELL = "burn"
+    FAVOURITE_SPELL = "fireball"
+    SPELL_COST = 7
     KNOWS_VIGOR = True
     #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
     #MAGIC_SKILLS= [0, 0, 0, 0, 0]
