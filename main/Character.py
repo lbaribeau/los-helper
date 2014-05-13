@@ -126,10 +126,10 @@ class Character(object):
             self.MAX_MANA = 7
             self.MANA_TO_ENGAGE = 7
         elif self.level <= 3:
-            self.HEALTH_TO_HEAL = 27
+            self.HEALTH_TO_HEAL = 20
             self.HEALTH_TO_FLEE = 9
-            self.MAX_MANA = 7
-            self.MANA_TO_ENGAGE = 3
+            self.MAX_MANA = 11
+            self.MANA_TO_ENGAGE = 11
         elif self.level <= 4:
             self.HEALTH_TO_HEAL = 31
             self.HEALTH_TO_FLEE = 11

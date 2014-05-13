@@ -14,7 +14,7 @@ class Whois(BotReactionWithFlag):
 
         self.character_class = "Cle"
         self.gender = "M"
-        self.level = 2
+        self.level = 3
         self.title = "Acolyte"
         self.age = "16"
         self.race = "Human"

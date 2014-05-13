@@ -294,7 +294,7 @@ class GrindThread(BotThread):
             new_target = self.decide_which_mob_to_kill(self.character.MONSTER_LIST)
         else:
             new_target = ""
-            self.do_rest_hooks()
+            #self.do_rest_hooks()
 
             
         while (new_target != "" and not self.is_stopping()):
