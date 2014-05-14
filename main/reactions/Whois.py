@@ -21,7 +21,7 @@ class Whois(BotReactionWithFlag):
         
         self.telnetHandler.write("whois " + character_name)
         #self.wait_for_flag()
-        self.mudReaderHandler.unregister_reaction(self)
+        #self.mudReaderHandler.unregister_reaction(self)
 
     def notify(self, regex, M_obj):
         self.character_class = M_obj.group(1)
