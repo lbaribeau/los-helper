@@ -25,6 +25,8 @@ class BotThread(threading.Thread):
         self.inventory = inventory
         self.direction_list = []
 
+        self.no_exit_count = 0
+
         self.mud_map = mud_map
         create_tables()
         db.close()
@@ -75,6 +77,7 @@ class BotThread(threading.Thread):
                     elif(self.character.GO_TIMEOUT):
                         self.do_on_go_timeout()
                     elif(self.character.GO_NO_EXIT): 
+                        self.no_exit_count += 1
                         self.do_on_go_no_exit()
                         continue
 
@@ -125,6 +128,7 @@ class BotThread(threading.Thread):
         return
 
     def do_pre_go_actions(self):
+        self.no_exit_count = 0
         #self.rest_and_check_aura()
         #self.check_weapons()
         #self.check_armour()

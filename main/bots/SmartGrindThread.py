@@ -171,6 +171,15 @@ class SmartGrindThread(GrindThread):
         #we should have a new area id now
         self.direction_list = self.get_heal_path(self.character.AREA_ID)
 
+    def do_on_go_no_exit(self):
+        if (self.no_exit_count > 10):
+            magentaprint("Walking back to the chapel", False)
+            self.direction_list = self.get_heal_path(self.character.AREA_ID)
+        else:
+            #magentaprint("Go no exit on: " + self.direction_list.pop(0), False)
+            self.character.MOBS_JOINED_IN = []
+            self.character.MOBS_ATTACKING = []
+
 class SmartGrindTarget(object):
     def __init__(self, name, locations):
         self.name = name
