@@ -165,7 +165,7 @@ class LosHelper(object):
                 self.start_bot(user_input)
             elif(re.match("crawl", user_input)):
                 self.start_crawl()
-            elif(re.match("goto [0-9]+$", user_input)):
+            elif(re.match("goto -?[0-9]+$", user_input)):
                 self.start_goto(user_input)
             elif(re.match("showto [0-9]+$", user_input)):
                 self.start_goto(user_input, True)
@@ -184,6 +184,8 @@ class LosHelper(object):
 
             elif(re.match("stop$", user_input)):
                 self.stop_bot()
+            elif(re.match("remap", user_input)):
+                self.mud_map = MudMap()
             elif(re.match("fle?$|flee$", user_input)):
                 self.stop_bot()
                 self.commandHandler.process(user_input)  
@@ -222,7 +224,7 @@ class LosHelper(object):
             self.botThread.start()
 
     def start_goto(self, user_input, is_show_to=False):
-        M_obj = re.search("[0-9]+", user_input)
+        M_obj = re.search("-?[0-9]+", user_input)
 
         if (M_obj):
             starting_path = int(M_obj.group(0))
