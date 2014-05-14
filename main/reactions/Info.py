@@ -34,8 +34,8 @@ class Info(BotReactionWithFlag):
         self.got_second = False
         self.mudReaderHandler.register_reaction(self)
         self.telnetHandler.write("info")
-        self.wait_for_flag()
-        self.mudReaderHandler.unregister_reaction(self)
+        #self.wait_for_flag()
+        #self.mudReaderHandler.unregister_reaction(self)
 
     def notify(self, regex, M_obj):
         # pass in character, or just edit self?
