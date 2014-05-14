@@ -14,7 +14,7 @@ class Cartography(BotReaction):
 
     def __init__(self, mudReaderHandler, commandHandler, character):
         #             Title     Description        Exit list                    Monsters (opt)                    Items (opt)
-        self.area = "(.+?\n\r)(\n\r.+)*?(\n\rObvious exits: .+?[\n\r]?.+?\.)\n\r(You see .+?[\n\r]?.+?\.)?[\n\r]?(You see .+?[\n\r]?.+?\.)?"
+        self.area = "(.+?\n\r)((?:\n\r.+)*)?(\n\rObvious exits: .+?[\n\r]?.+?\.)\n\r(You see .+?[\n\r]?.+?\.)?[\n\r]?(You see .+?[\n\r]?.+?\.)?"
         self.too_dark = "It's too dark to see\."
         s_numbered = "( 1st| 2nd| 3rd| 4th| 5th| 6th| 7th| 8th| 9th| 10th| 11th| 12th| 13th| 14th| 15th| 16th| 17th| 18th| 19th)?"
         self.blocked_path = "The" + s_numbered + " (.+?) blocks your exit\."
@@ -81,7 +81,7 @@ class Cartography(BotReaction):
             matched_groups = M_obj.groups()
 
             area_title = str(matched_groups[0]).strip()
-            area_description = matched_groups[1] #eat the description - doesn't give the full text
+            area_description = str(matched_groups[1]).strip() #eat the description - doesn't give the full text
             exit_list = self.parse_exit_list(matched_groups[2])
             self.character.EXIT_REGEX = self.create_exit_regex_for_character(exit_list)
 
