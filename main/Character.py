@@ -58,10 +58,17 @@ class Character(object):
     HITS_DEALT = 0
     HITS_MISSED = 0
     DAMAGE_DEALT = 0
-    
-    LOWEST_DAMAGE = 0
+
     HIGHEST_DAMAGE = 0
+    LOWEST_DAMAGE = 0
+    
     CRITS_LANDED = 0
+    
+    SPELLS_CAST = 0
+    SPELLS_FAILED = 0
+    SPELL_DAMAGE_DEALT = 0
+
+    SPELLS_CRIT = 0
 
     HITS_RECEIVED = 0
     HITS_EVADED = 0

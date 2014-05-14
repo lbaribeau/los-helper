@@ -59,6 +59,15 @@ class Area(BaseModel):
         for area in matching_areas: #we selected based on name / description so we know they match but just in case or if our descriptions are null
             if (area.has_exits(mapped_exits)):
                 self.id = area.id
+                self.is_always_dark = area.is_always_dark
+                self.is_dark_at_night = area.is_dark_at_night
+
+                #update the database with the longest description possible
+                if (len(self.description) > len(str(area.description))):
+                    super(Area, self).save()
+                else:
+                    self.description = area.description
+
                 is_new_mapping = False
                 return is_new_mapping #we want to stop the search if we've found a match
 
@@ -68,7 +77,14 @@ class Area(BaseModel):
         area_exits = AreaExit.get_area_exits_from_area(self)
         has_exits = (area_exits.count() == len(exits))
 
-        if (has_exits): #if the number of exits we have is the same
+        contains_hidden = False
+
+        for area_exit in area_exits:
+            if area_exit.is_hidden:
+                contains_hidden = True
+                break
+
+        if (has_exits or contains_hidden): #if the number of exits we have is the same
             exit_found = False
             for exit_type in exits:
                 exit_found = False
@@ -89,7 +105,7 @@ class Area(BaseModel):
         areas = []
 
         try:
-            areas = Area.select().where((Area.name == area_name) & (Area.description == area_description))
+            areas = Area.select().where((Area.name == area_name))# & (Area.description == area_description))
 
         except Area.DoesNotExist:
             areas = []

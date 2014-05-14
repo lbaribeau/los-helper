@@ -26,8 +26,6 @@ class CombatReactions(BotReaction):
         self.spell_damage_dealt = "The spell did ([\d]*) damage\."
         self.spell_fails = "Your spells fails\."
 
-        self.experience_gained = "You gain ([\d]*) experience\."
-
         self.regexes = [self.physical_damage,
                         self.physical_miss,
                         self.physical_critical,
@@ -56,13 +54,31 @@ class CombatReactions(BotReaction):
                 self.character.HIGHEST_DAMAGE = damage_dealt
             if (self.character.LOWEST_DAMAGE > damage_dealt):
                 self.character.LOWEST_DAMAGE = damage_dealt
+
         elif regex == self.physical_miss:
             self.character.HITS_MISSED += 1
+
         elif regex == self.physical_critical:
             self.character.CRITS_LANDED += 1
+
         elif regex == self.mob_physical_damage:
             self.character.HITS_RECEIVED += 1
             damage_taken = int(M_obj.group(2))
             self.character.DAMAGE_TAKEN += damage_taken
+
         elif regex == self.mob_physical_miss:
             self.character.HITS_EVADED += 1
+
+        elif regex == self.spell_damage_dealt:
+            self.character.SPELLS_CAST += 1
+            damage_dealt = int(M_obj.group(1))
+            self.character.SPELL_DAMAGE_DEALT += damage_dealt
+
+            if (self.character.HIGHEST_DAMAGE < damage_dealt):
+                self.character.HIGHEST_DAMAGE = damage_dealt
+            if (self.character.LOWEST_DAMAGE > damage_dealt):
+                self.character.LOWEST_DAMAGE = damage_dealt
+
+        elif regex == self.spell_fails:
+            self.character.SPELLS_CAST += 1
+            self.character.SPELLS_FAILED += 1
