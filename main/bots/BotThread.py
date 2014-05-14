@@ -206,7 +206,7 @@ class BotThread(threading.Thread):
         # away all the mana for characters with low piety, whose vigors will not do much, 
         # and may just be one tick away from good health. 
 
-        aura_updated = True#self.update_aura()  # Most reasonable reason to fail is if we have no mana
+        aura_updated = self.update_aura()  # Most reasonable reason to fail is if we have no mana
         self.heal_up()
             
         if self.character.MANA < MANA_TO_WAIT:
