@@ -7,9 +7,43 @@ class MudArea():
     area = None
     area_exits = []
 
-    def __init__(self, area, area_exits):
+    def __init__(self, area, area_exits=None):
         self.area = area
+
+        if area_exits is None:
+            area_exits = AreaExit.get_area_exits_from_area(area)
+
         self.area_exits = area_exits
+
+    def get_area_to_from_exit(self, exit_type):
+        area = None
+
+        for areaexit in self.area_exits:
+            if areaexit.exit_type.name == exit_type.name:
+                area = MudArea(areaexit.area_to)
+                break
+
+        return area
+
+    def compare_to_area_and_exit_list(self, area, exit_list):
+        matchFound = True
+
+        if self.area.name == area.name and len(exit_list) <= self.area_exits.count():
+            for areaexit in self.area_exits:
+                if not areaexit.is_hidden:
+                    matchedExit = False
+                    for exit in exit_list:
+                        if exit.name == areaexit.exit_type.name:
+                            matchedExit = True
+                            break
+                    if not matchedExit:
+                        matchFound = False
+                        break
+        else:
+            matchFound = False
+
+        return matchFound
+
 
 class MudMap():
     los_map = None
@@ -19,14 +53,16 @@ class MudMap():
         self.populate_map()
 
     def populate_map(self):
-        areas = Area.select()
-        area_exits = AreaExit.select().where(AreaExit.is_useable == 1)
+        areas = Area.raw('select * from v_areas_for_graph')
+        area_exits = AreaExit.raw('select * from v_areaexits_for_graph')
 
         for area in areas:
             self.los_map.add_node(area.id)
 
         for area_exit in area_exits:
-            area_to_id = -1 #this is a marker for a null / unexplored area
+            name = area_exit.exit_type.name
+            self.los_map.add_edge(area_exit.area_from.id, area_exit.area_to.id, name=name)
+            '''area_to_id = -1 #this is a marker for a null / unexplored area
             area_is_useable = True
             if (area_exit.area_to is not None):
                 area_to_id = area_exit.area_to.id
@@ -36,7 +72,7 @@ class MudMap():
 
             if area_is_useable: #don't add unusable areas to the graph
                 name = area_exit.exit_type.name
-                self.los_map.add_edge(area_exit.area_from.id, area_to_id, name=name)
+                self.los_map.add_edge(area_exit.area_from.id, area_to_id, name=name)'''
 
     def to_string(self):
         return str(self.los_map.nodes()) + "\n\n" + str(self.los_map.edges())

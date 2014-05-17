@@ -39,6 +39,12 @@ class AreaExit(BaseModel):
     def to_string(self):
         return str(self.id) + ", " + str(self.area_from.name) + ", " + str(self.get_area_to_name()) + ", " + str(self.exit_type.name)
 
+    def __str__(self):
+        return self.to_string()
+
+    def __repr__(self):
+        return self.to_string()
+
     '''Static AreaExit Functions'''
     def get_area_exit_by_area_from_and_exit_type(cur_area_from, cur_exit_type):
         try:

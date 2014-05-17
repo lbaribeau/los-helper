@@ -228,7 +228,7 @@ class Character(object):
         ]
     # hungry spiders are hostile
     lvl4_red_monsters = [
-        "kobold shaman", "drunken trouble-maker", "kobold champion"]
+        "kobold shaman", "drunken trouble-maker", "kobold champion", "hungry spider"]
     lvl5_monsters = [
         "dwarven farm hand", "dwarven barmaid", "fort sentry", "fur trader", 
         "aristocrat", "rancher sentry"]
@@ -239,7 +239,7 @@ class Character(object):
         "dwarven field worker", "dwarven bartender", "school teacher",
         'lyrist', "nobleman", "seeker", "bull", "hunter", 'usher',
         'sword swallower', 'archer', "mime artist",
-        "yard supervisor", "sawmill operator"
+        "yard supervisor", "sawmill operator", "large spider"
         #'sentry' stand in pairs unfortunately...
         ] # bull and hunter might be wrong (too high).
     lvl6_red_monsters = [
@@ -247,7 +247,7 @@ class Character(object):
         ]
     lvl7_monsters = [
         "dwarven cook", "swordsman", 'fort sergeant', 'oremaster', 
-        'giant spider'
+        'giant spider', "rock spider"
         ] # giant spiders are hostile
     lvl8_monsters = [
         'owlbear',
@@ -289,6 +289,8 @@ class Character(object):
         if self.level > 8:
             self.MONSTER_KILL_LIST.extend(self.lvl6_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl6_red_monsters)
+        if self.level > 10:
+            self.MONSTER_KILL_LIST.extend(self.lvl7_monsters)
 
 
 # todo: I don't like caps anymore

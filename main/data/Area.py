@@ -1,3 +1,4 @@
+import sys
 from peewee import *
 from BaseModel import BaseModel
 from misc_functions import *
@@ -10,6 +11,13 @@ class Area(BaseModel):
     is_restorative = BooleanField(default=False)
     #does_damage_on_entry = BooleanField(default=False)
     #teleports_character = Area(null=True)
+
+    class metadata:
+        def __init__(self):
+            self.is_dirty = False
+
+        def is_dirty(self):
+            is_dirty
 
     '''Private Area Functions'''
     def map(self, exits, cur_area_from=None, cur_exit_from=None):
@@ -55,21 +63,25 @@ class Area(BaseModel):
 
     def search_for_area(self, mapped_exits):
         is_new_mapping = True
-        matching_areas = Area.get_areas_by_name_and_description(self.name, self.description)
-        for area in matching_areas: #we selected based on name / description so we know they match but just in case or if our descriptions are null
-            if (area.has_exits(mapped_exits)):
+
+        matching_areas = Area.get_areas_by_name_and_exits(self.name, mapped_exits)
+
+        if matching_areas is not []:
+            self.metadata.is_dirty = True
+            is_new_mapping = False
+            
+            for area in matching_areas:
                 self.id = area.id
                 self.is_always_dark = area.is_always_dark
                 self.is_dark_at_night = area.is_dark_at_night
+                break
 
-                #update the database with the longest description possible
-                if (len(self.description) > len(str(area.description))):
-                    super(Area, self).save()
-                else:
-                    self.description = area.description
-
-                is_new_mapping = False
-                return is_new_mapping #we want to stop the search if we've found a match
+        if not self.metadata.is_dirty:
+            #update the database with the longest description possible
+            if (len(self.description) > len(str(area.description))):
+                super(Area, self).save()
+            else:
+                self.description = area.description
 
         return is_new_mapping
 
@@ -98,19 +110,79 @@ class Area(BaseModel):
         return has_exits
 
     def to_string(self):
-        return str(self.id) + ", " + self.name + ", " + str(self.description)
+        return str(self.id) + ", " + self.name
+
+    def __str__(self):
+        return self.to_string()
+
+    def __repr__(self):
+        return self.to_string()
 
     '''Static Area Functions'''
-    def get_areas_by_name_and_description(area_name, area_description):
+    def get_areas_by_name(area_name):
         areas = []
 
         try:
-            areas = Area.select().where((Area.name == area_name))# & (Area.description == area_description))
+            areas = Area.select().where((Area.name == area_name))
 
         except Area.DoesNotExist:
             areas = []
 
         return areas
+
+    def get_areas_by_name_and_description(area_name, area_description):
+        areas = []
+
+        try:
+            areas = Area.select().where((Area.name == area_name) & (Area.description == area_description))
+
+        except Area.DoesNotExist:
+            areas = []
+
+        return areas
+
+    def get_areas_by_name_and_exits(area_name, exit_type_list):
+        areas = []
+        exit_id_list = ""
+        exit_count = len(exit_type_list)
+
+        if (exit_count > 0):
+            exit_id_list += str(exit_type_list[0].id)
+            for i in range(1, exit_count):
+                exit_id_list += ", " + str(exit_type_list[i].id)
+
+            try:
+                query ="""
+select a.*
+from area a
+join areaexit as ae
+on a.id = ae.[area_from_id]
+where a.id in (
+select ae.area_from_id
+from areaexit as ae
+join area as a
+on a.id = ae.area_from_id
+where a.name = "%s" and ae.is_hidden = 0
+group by ae.area_from_id
+having count(*) = %s
+) and ae.[exit_type_id] in (%s)
+group by a.id
+having count(*) = %s
+"""
+
+                formatted_query = query % (area_name, str(exit_count), exit_id_list, str(exit_count))
+
+                #print (formatted_query)
+
+                areas = Area.raw(formatted_query)
+
+            except Area.DoesNotExist:
+                areas = []
+        else:
+            areas = []
+
+        return areas
+
 
     def get_area_by_id(area_id):
         area = []
@@ -136,3 +208,4 @@ class Area(BaseModel):
         return areas
 
 from AreaExit import *
+from ExitType import *

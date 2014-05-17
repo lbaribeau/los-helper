@@ -18,9 +18,11 @@ class GrindThread(BotThread):
         if self.character.level <= 2:
             self.__TOTALPATHS = 8 # Kobolds are level 1 safe.
         elif self.character.level <= 7:
-            self.__TOTALPATHS = 10 # include hookers for level 3            
+            self.__TOTALPATHS = 10 # include hookers for level 3   
+        elif self.character.level <= 10:
+            self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8        
         else:
-            self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
+            self.__TOTALPATHS = 22 # start the fort and bandits at lvl 8
 
         self.loot_threshold = 15  # the amount of loot to collect before selling
 
@@ -44,8 +46,6 @@ class GrindThread(BotThread):
         magentaprint("Inside decide_where_to_go")
         
         LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
-
-        LEVEL_ONE_PATH = ["out", "s", "n", "chapel"]
 
         SHOP_AND_TIP_PATH = ["out", "s", "w", 'w', 'w', 's', 's', "shop",
                           "sell_items", 
@@ -201,6 +201,21 @@ class GrindThread(BotThread):
                         'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest',
                         'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
 
+        SPIDER_FOREST = ['out', 'north', 'north', 'west', 'north gate', 'north', 'north', 'north',
+                        'north', 'north', 'gate', 'north', 'north', 'gate', 'north', 'northwest',
+                        'northwest', 'southwest', 'southwest', 'southwest', 'southwest', 'south',
+                        'southwest', 'southwest', 'west', 'west', 'southwest', 'southwest', 'southwest',
+                        'southwest', 'southeast', 'southeast', 'southeast', 'southeast', 'southeast',
+                        'south', 'south', 'forest', 'south', 'southeast', 'southwest', 'southwest',
+                        'south', 'south', 'east', 'east', 'northeast', 'north','south', 'southeast',
+                        'southwest', 'southwest', 'west', 'west', 'north', 'north', 'northeast',
+                        'northeast', 'north', 'fields', 'north', 'north', 'northwest', 'northwest',
+                        'northwest', 'northwest', 'northwest', 'northeast', 'northeast', 'northeast',
+                        'northeast', 'east', 'east', 'northeast', 'northeast', 'north', 'northeast',
+                        'northeast', 'northeast', 'northeast', 'southeast', 'southeast', 'south',
+                        'gate', 'south', 'south', 'gate', 'south', 'south', 'south', 'south', 'south',
+                        'gate', 'east', 'south', 'south', 'chapel']
+
         PATH_TO_SKIP_WITH = [ 'out', 'chapel' ]
 
         if (self.character.DEAD):
@@ -208,9 +223,6 @@ class GrindThread(BotThread):
             self.character.DEATHS += 1
             magentaprint("Died; Pulling up my bootstraps and starting again", False)
             return LIMBO_TO_CHAPEL
-
-        if self.character.level == 1:
-            return LEVEL_ONE_PATH
 
         self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
 
@@ -269,6 +281,8 @@ class GrindThread(BotThread):
             return MILL_WORKERS
         elif(self.__nextpath == 19):
             return RANCHER_SENTRY
+        elif(self.__nextpath == 21):
+            return SPIDER_FOREST
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" +
                          self.__nextpath)

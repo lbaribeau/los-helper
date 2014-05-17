@@ -71,6 +71,7 @@ class Cartography(BotReaction):
         if regex == self.too_dark:
             self.character.AREA_TITLE = ""
             self.character.AREA_ID = None
+            self.character.MUD_AREA = None
             self.character.LAST_DIRECTION = None
             self.character.EXIT_LIST = []
             self.character.MONSTER_LIST = []
@@ -94,6 +95,7 @@ class Cartography(BotReaction):
             self.character.SUCCESSFUL_GO = True #successful go should be true everytime the area parses
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
             self.character.CAN_SEE = True
+
             if (self.character.TRYING_TO_MOVE): #we only want to map when user input to move has been registered
                 self.character.TRYING_TO_MOVE = False #we've moved so we're not trying anymore
                 if (exit_list is not []):
@@ -152,7 +154,25 @@ class Cartography(BotReaction):
             #self.character.DEAD = True
 
         else:
-            magentaprint("Cartography case missing for regex: " + str(regex), False)
+            magentaprint("Cartography case missing for regex: " + str(regex))
+
+    def discern_location(self, area, direction_list, area_from_id, direction_from):
+        lastMudArea = self.character.MUD_AREA
+        discerned_area = None
+
+        if lastMudArea is not None:
+            exit_type = ExitType(name=str(direction_from))
+            isNewExit = exit_type.map() #get the correct database mapping
+            #if isNewExit: - this is logic we can implement once we have exit_type mapping completely bullet proof
+
+            curMudArea = lastMudArea.get_area_to_from_exit(exit_type)
+
+            if curMudArea is not None:
+                if curMudArea.compare_to_area_and_exit_list(area, direction_list):
+                    self.character.MUD_AREA = curMudArea
+                    discerned_area = curMudArea.area
+
+        return discerned_area
 
     def draw_map(self, area_title, area_description, exit_list):
         direction_list = []
@@ -166,16 +186,21 @@ class Cartography(BotReaction):
         area_from = self.character.AREA_ID
         direction_from = self.character.LAST_DIRECTION
 
-        if area_from is not None and direction_from is not None: #if we have an area we're coming from
-            magentaprint(str(area_from) + " " + str(direction_from))
-            area_from = Area.get_area_by_id(self.character.AREA_ID)
-            direction_from = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
-            area.map(direction_list, area_from, direction_from)
-        else:
-            area.map(direction_list)
+        discerned_area = self.discern_location(area, direction_list, area_from, direction_from)
 
-        area_exits = AreaExit.get_area_exits_from_area(area)
-        self.character.MUD_AREA = MudArea(area, area_exits)
+        if discerned_area is not None:
+            area = discerned_area
+        else:
+            if area_from is not None and direction_from is not None: #if we have an area we're coming from
+                magentaprint(str(area_from) + " " + str(direction_from))
+                area_from = Area.get_area_by_id(self.character.AREA_ID)
+                direction_from = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
+                area.map(direction_list, area_from, direction_from)
+            else:
+                area.map(direction_list)
+
+            area_exits = AreaExit.get_area_exits_from_area(area)
+            self.character.MUD_AREA = MudArea(area, area_exits)
 
         return area
 

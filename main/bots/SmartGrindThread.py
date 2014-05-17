@@ -175,6 +175,7 @@ class SmartGrindThread(GrindThread):
         if (self.no_exit_count > 10):
             magentaprint("Walking back to the chapel", False)
             self.direction_list = self.get_heal_path(self.character.AREA_ID)
+            self.no_exit_count = 0
         else:
             #magentaprint("Go no exit on: " + self.direction_list.pop(0), False)
             self.character.MOBS_JOINED_IN = []

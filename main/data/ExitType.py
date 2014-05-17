@@ -23,6 +23,12 @@ class ExitType(BaseModel):
     def to_string(self):
         return str(self.id) + ", " + self.name
 
+    def __str__(self):
+        return self.to_string()
+
+    def __repr__(self):
+        return self.to_string()
+
     '''Static ExitType Functions'''
     def get_exit_type_by_name(name): #this should always be unique
         exit_types = None
