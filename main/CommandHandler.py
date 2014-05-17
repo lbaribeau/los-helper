@@ -77,6 +77,11 @@ class CommandHandler(object):
             self.user_move(user_input)
             # routine which does appropriate waiting,
             # printing, and finally sending command.
+        elif re.match(str(self.character.EXIT_REGEX), user_input):
+            self.character.LAST_DIRECTION = user_input.replace("go ", "")
+            self.character.TRYING_TO_MOVE = True
+            self.user_move("go " + self.character.LAST_DIRECTION)
+            magentaprint("Running go on EXIT_REGEX: " + str(self.character.EXIT_REGEX), False)
         elif(re.match("find (.+)", user_input)):
             M_obj = re.search("find (.+)", user_input)
             magentaprint("Finding: " + str(M_obj.group(1)))
@@ -193,11 +198,6 @@ class CommandHandler(object):
         elif re.match("defecate", user_input):
             misc_functions.debugMode = not misc_functions.debugMode
             magentaprint("Debug Mode changed", False)
-        elif re.match(str(self.character.EXIT_REGEX), user_input):
-            self.character.LAST_DIRECTION = user_input.replace("go ", "")
-            self.character.TRYING_TO_MOVE = True
-            self.user_move("go " + self.character.LAST_DIRECTION)
-            magentaprint("Running go on EXIT_REGEX: " + str(self.character.EXIT_REGEX), False)
         else: # Doesn't match any command we are looking for
             self.telnetHandler.write(user_input) # Just shovel to telnet.
 

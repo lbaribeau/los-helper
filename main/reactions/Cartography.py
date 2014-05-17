@@ -161,8 +161,11 @@ class Cartography(BotReaction):
         discerned_area = None
 
         if lastMudArea is not None:
-            exit_type = ExitType(name=str(direction_from))
-            isNewExit = exit_type.map() #get the correct database mapping
+            exit_type = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
+
+            if exit_type is None:
+                exit_type = ExitType(name=direction_from)
+
             #if isNewExit: - this is logic we can implement once we have exit_type mapping completely bullet proof
 
             curMudArea = lastMudArea.get_area_to_from_exit(exit_type)
@@ -296,7 +299,7 @@ class Cartography(BotReaction):
     def create_exit_regex_for_character(self, E_LIST):
         exit_regex = "(NEVERMATCHTHISEVEREVER)"
         if (E_LIST is not None):
-            exit_regex += "(!?"
+            exit_regex += "(?:go )?(!?"
 
             for i,s in enumerate(E_LIST):
                 exit_regex += "(" + str(s) + ")"

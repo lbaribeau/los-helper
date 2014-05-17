@@ -62,6 +62,12 @@ def mud_area_cartography_test():
     mud_area_cartography_unit_test(home, out, "Holly Lane", [n, s, chapel])
     mud_area_cartography_unit_test(home, out, "Holly Lane", [n, s, w])
 
+    cartway = Area.get_area_by_id(166)
+    mud_area_cartography_unit_test(cartway, e, "The Cartway", [w, e])
+
+    cartway = Area.get_area_by_id(167)
+    mud_area_cartography_unit_test(cartway, e, "The Cartway", [w, e])
+
 
 def mud_area_cartography_unit_test(lastArea, lastDirection, curAreaName, direction_list):
     magentaprint("Travelled '%s' from '%s'" % (lastDirection.name, lastArea.name), False)
