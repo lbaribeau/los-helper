@@ -19,7 +19,7 @@ class Inventory(BotReactionWithFlag):
         self.not_a_pawn_shop = "This is not a pawn shoppe\."
         self.you_now_have = "You now have (.+?) gold pieces\."
         self.not_empty = "It isn't empty!"
-        self.you_wear= "(?s)You wear (.+?)\."
+        self.you_wear = "(?s)You wear (.+?)\."
         self.nothing_to_wear = "You have nothing you can wear\."
         self.you_get = "(?s)You get (.+?)\."
         self.you_remove = "(?s)You removed? (.+?)\."

@@ -13,6 +13,7 @@ from SmartCombat import SmartCombat
 # from CoolAbilityThread import *
 from Database import *
 from MudMap import *
+import Command
 
 class CommandHandler(object):
 
@@ -176,24 +177,26 @@ class CommandHandler(object):
 
 
     def user_ki(self, user_input):
-        now = time.time()
-        time_remaining = self.character.ATTACK_WAIT - (now - self.character.ATTACK_CLK)
+        Command.Kill(self.mudReaderHandler, self.telnetHandler).send(user_input.split(" ")[1])
 
-        if time_remaining < 0:
-            self.character.ATTACK_CLK = now
-            self.telnetHandler.write(user_input)
-        elif time_remaining < 0.1:
-            time.sleep(time_remaining)
-            self.character.ATTACK_CLK = now
-            self.telnetHandler.write(user_input)
-        elif time_remaining < 1.0:
-            magentaprint("Delaying by %.1f sec ..." % time_remaining)
-            time.sleep(time_remaining)
-            magentaprint("Sent.", False)
-            self.character.ATTACK_CLK = now
-            self.telnetHandler.write(user_input)
-        else:
-            magentaprint("Please wait %.1f more seconds." % time_remaining, False)
+        # now = time.time()
+        # time_remaining = self.character.ATTACK_WAIT - (now - self.character.ATTACK_CLK)
+
+        # if time_remaining < 0:
+        #     self.character.ATTACK_CLK = now
+        #     self.telnetHandler.write(user_input)
+        # elif time_remaining < 0.1:
+        #     time.sleep(time_remaining)
+        #     self.character.ATTACK_CLK = now
+        #     self.telnetHandler.write(user_input)
+        # elif time_remaining < 1.0:
+        #     magentaprint("Delaying by %.1f sec ..." % time_remaining)
+        #     time.sleep(time_remaining)
+        #     magentaprint("Sent.", False)
+        #     self.character.ATTACK_CLK = now
+        #     self.telnetHandler.write(user_input)
+        # else:
+        #     magentaprint("Please wait %.1f more seconds." % time_remaining, False)
 
             
     def user_ca(self, user_input):

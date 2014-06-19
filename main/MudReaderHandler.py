@@ -375,29 +375,33 @@ class MudReaderHandler(object):
     #  nor notifies, just loops through all of them.
     # I hope this works!!!
     
-    def register_reaction(self, BotReaction):
+    def register_reaction(self, botReaction):
         """ Registers the reaction in MudReaderThread's list of regexes 
         to check and call notify on."""
         # Re-registering a reaction that was just unregistered 
         # might not work.  MudReaderThread takes some time to remove it.
-        BotReaction.unregistered = False
-        self.MudReaderThread.BotReactionList.append(BotReaction)
-        magentaprint("Registered: " + str(BotReaction))
-        magentaprint("Regexes: " + str(BotReaction.regexes))
-        # magentaprint(self.MudReaderThread.BotReactionList)
+        if not botReaction in self.MudReaderThread.BotReactionList:
+            botReaction.unregistered = False  # I think this line's redundant
+            self.MudReaderThread.BotReactionList.append(botReaction)
+        # magentaprint("Registered: " + str(botReaction))
+        # magentaprint("Regexes: " + str(botReaction.regexes))
 
-    def unregister_reaction(self, BotReaction):
+    def unregister_reaction(self, botReaction):
         """ Removes a specific reaction from the list if it is still there """
-        if(self.MudReaderThread.BotReactionList.__contains__(BotReaction)):
-            #self.MudReaderThread.BotReactionList.remove(BotReaction) 
+        if self.MudReaderThread.BotReactionList.__contains__(botReaction):
+        # if botReaction in self.MudReaderThread.BotReactionList:
+            #self.MudReaderThread.BotReactionList.remove(botReaction) 
                 # Was causing list problem...
-            BotReaction.unregistered = True
-            #magentaprint("Unregistered " + str(BotReaction))  
+            botReaction.unregistered = True
+            #magentaprint("Unregistered " + str(botReaction))  
             # Should unregister all three killthread reactions... Yup
         # This ends up occurring while the list is being iterated on.
         # How about marking it for removal, and letting the removal 
         # happen outside of the loop.
         # TODO: Probably don't need the if statement!
+
+    def is_registered(self, botReaction):
+        return botReaction in self.MudReaderThread.BotReactionList and not botReaction.unregistered
         
     def unregister_reactions(self):
         self.MudReaderThread.BotReactionList = []
