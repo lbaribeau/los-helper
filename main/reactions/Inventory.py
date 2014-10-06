@@ -129,6 +129,7 @@ class Inventory(BotReactionWithFlag):
 
     def bulk_sell(self, item_string, quantity):
         i = 0
+        magentaprint("Bulk selling: " + item_string + " #" + quantity)
         self.is_bulk_vendoring = True
 
         while i < (quantity ):
