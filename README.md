@@ -1,6 +1,6 @@
-# LOSHelper
+# los-helper
 
-LOSHelper is a python script meant to automate certain aspects of mudding.
+los-helper is a python script meant to automate certain aspects of mudding.
 
 ## Installation
 
