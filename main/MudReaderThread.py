@@ -386,7 +386,7 @@ class MudReaderThread(threading.Thread):
                 #self.stop()  # breaks program but allows me to see what happened
 
             ########    Monster Gets Killed    ######
-            s_numbered = "( 1st| 2nd| 3rd| 4th| 5th| 6th| 7th| 8th| 9th| 10th| 11th| 12th| 13th| 14th| 15th| 16th| 17th| 18th| 19th)?"
+            s_numbered = "( \d+?1st| \d+?2nd| \d+?3rd| \d+th)?"
             
             #M_obj = re.search("Your enemy, the" + s_numbered + " (.+?) has been defeated\.", MUDBuffer)            
             M_obj = re.search("Your attack overwhelms the" + s_numbered + " (.+?) and (s?he|it) collapses!", text_buffer)
