@@ -71,17 +71,16 @@ class CommandHandler(object):
              re.match("nw$", user_input) or re.match("ne$", user_input) or \
              re.match("se$", user_input) or re.match("sw$", user_input) or \
              re.match("u$", user_input) or re.match("d$", user_input) or \
-             re.match("ou[t]?$", user_input) or re.match("go ",user_input):
+             re.match("ou[t]?$", user_input) or re.match("go ",user_input) or \
+             re.match(str(self.character.EXIT_REGEX), user_input):
             self.character.TRYING_TO_MOVE = True
             self.character.LAST_DIRECTION = user_input.replace("go ", "")
+
+            magentaprint("moving " + str(user_input))
+
             self.user_move(user_input)
             # routine which does appropriate waiting,
             # printing, and finally sending command.
-        elif re.match(str(self.character.EXIT_REGEX), user_input):
-            self.character.LAST_DIRECTION = user_input.replace("go ", "")
-            self.character.TRYING_TO_MOVE = True
-            self.user_move("go " + self.character.LAST_DIRECTION)
-            magentaprint("Running go on EXIT_REGEX: " + str(self.character.EXIT_REGEX), False)
         elif(re.match("find (.+)", user_input)):
             M_obj = re.search("find (.+)", user_input)
             magentaprint("Finding: " + str(M_obj.group(1)))
@@ -111,6 +110,7 @@ class CommandHandler(object):
             magentaprint(str(self.character.MONSTER_LIST), False)
         elif re.match("AREA_ID", user_input):
             magentaprint("<" + str(self.character.AREA_ID) + ">", False)
+            magentaprint("<" + str(self.character.MUD_AREA) + ">", False)
         elif re.match("LAST_DIR", user_input):
             magentaprint("<" + str(self.character.LAST_DIRECTION) + ">", False)
         elif re.match("AREA_TITLE", user_input):
@@ -247,7 +247,7 @@ class CommandHandler(object):
     def user_move(self, user_input):
         self.stop_KillThread()
         self.stop_CastThread()
-
+        move_dir = str(user_input)
         now = time.time()
         
         wait_from_move = self.character.MOVE_WAIT - (now - self.character.MOVE_CLK)
@@ -262,17 +262,17 @@ class CommandHandler(object):
           
         if time_remaining < 0:
             self.character.MOVE_CLK = now
-            self.telnetHandler.write(user_input)
+            self.telnetHandler.write(move_dir)
         elif time_remaining < 0.1:
             time.sleep(time_remaining)
             self.character.MOVE_CLK = now
-            self.telnetHandler.write(user_input)
+            self.telnetHandler.write(move_dir)
         elif time_remaining < 1.0:
             magentaprint("(Python) Delaying by %.1f sec ..." % time_remaining)
             time.sleep(time_remaining)
             magentaprint("Sent.")
             self.character.MOVE_CLK = now
-            self.telnetHandler.write(user_input)
+            self.telnetHandler.write(move_dir)
         else:
             magentaprint("Wait %.1f more seconds" % time_remaining)
         
