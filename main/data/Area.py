@@ -38,8 +38,6 @@ class Area(BaseModel):
         if is_new_mapping: #this means the search has found the matching area and our Area.ID is set
             super(Area, self).save()
 
-            print (self)
-
             #now we map our area exits
             for exit in mapped_exits:
                 #magentaprint("exit " + str(exit.to_string()), False)
@@ -88,8 +86,6 @@ class Area(BaseModel):
                 super(Area, self).save()
             else:
                 self.description = area.description
-
-        print ("matching areas: " + str(matching_areas) + " is new mapping: " + str(is_new_mapping))
 
         return is_new_mapping
 
