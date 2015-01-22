@@ -14,9 +14,9 @@ class Whois(BotReactionWithFlag):
         
         self.wait_for_flag()
         #self.mudReaderHandler.unregister_reaction(self)
-        self.character_class = "Mon"
+        self.character_class = "Cle"
         self.gender = "M"
-        self.level = 14
+        self.level = 1
         self.title = "Enlightened Brother"
         self.age = "16"
         self.race = "Human"
@@ -35,7 +35,7 @@ class Whois(BotReactionWithFlag):
             magentaprint("Unable to read whois data", False)
 
         try:
-            magentaprint(self.character_class + " " + self.gender + " " + self.level + " " + self.title + " " + self.age + " " + self.age, False)            
+            magentaprint(self.character_class + " " + self.gender + " " + str(self.level) + " " + self.title + " " + self.age + " " + self.race, False)            
         except Exception:
             magentaprint("Unable to ouput whois data", False)
 
