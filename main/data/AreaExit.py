@@ -37,7 +37,7 @@ class AreaExit(BaseModel):
             return None
 
     def to_string(self):
-        return str(self.id) + ", " + str(self.area_from.name) + ", " + str(self.get_area_to_name()) + ", " + str(self.exit_type.name)
+        return "<id: " + str(self.id) + ", from-name:" + str(self.area_from.name) + ", to-name:" + str(self.get_area_to_name()) + ", exit-name:" + str(self.exit_type.name) + ">"
 
     def __str__(self):
         return self.to_string()
@@ -47,16 +47,22 @@ class AreaExit(BaseModel):
 
     '''Static AreaExit Functions'''
     def get_area_exit_by_area_from_and_exit_type(cur_area_from, cur_exit_type):
+        area_exit = None
+
         try:
-            area_exit = AreaExit.select().where((AreaExit.area_from == cur_area_from.id) & (AreaExit.exit_type == cur_exit_type.id)).get()
+            for ae in AreaExit.select().where((AreaExit.area_from == cur_area_from.id) & (AreaExit.exit_type == cur_exit_type.id)):
+                area_exit = ae
+                break
         except AreaExit.DoesNotExist:
             area_exit = None
 
         return area_exit
 
     def get_area_exits_from_area(area):
+        area_exits = []
         try:
-            area_exits = AreaExit.select().where((AreaExit.area_from == area.id))
+            for ae in AreaExit.select().where((AreaExit.area_from == area.id)):
+                area_exits.append(ae)
         except AreaExit.DoesNotExist:
             area_exits = []
 
