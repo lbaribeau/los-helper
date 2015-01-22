@@ -8,27 +8,32 @@ class MudArea():
     area_exits = []
 
     def __init__(self, area, area_exits=None):
-        self.area = area
+        if self.area is not None or area is not None:
+            if self.area is None:
+                self.area = area
 
-        if area_exits is None:
-            area_exits = AreaExit.get_area_exits_from_area(area)
-
-        self.area_exits = area_exits
+            if area_exits is None and self.area:
+                self.area_exits = AreaExit.get_area_exits_from_area(area)
+            else:
+                self.area_exits = area_exits
+        else:
+            print ("Area is null for some awful reason.")
 
     def get_area_to_from_exit(self, exit_type):
         area = None
 
         for areaexit in self.area_exits:
             if areaexit.exit_type.name == exit_type.name:
-                area = MudArea(areaexit.area_to)
-                break
+                if areaexit.area_to is not None:
+                    area = MudArea(areaexit.area_to)
+                    break
 
         return area
 
     def compare_to_area_and_exit_list(self, area, exit_list):
         matchFound = True
 
-        if self.area.name == area.name and len(exit_list) <= self.area_exits.count():
+        if self.area.name == area.name and len(exit_list) <= len(self.area_exits):
             for areaexit in self.area_exits:
                 if not areaexit.is_hidden:
                     matchedExit = False
@@ -43,6 +48,12 @@ class MudArea():
             matchFound = False
 
         return matchFound
+
+    def to_string(self):
+        return str(self.area) + str(self.area_exits)[1:-1]
+
+    def __str__(self):
+        return self.to_string()
 
 
 class MudMap():
@@ -76,6 +87,9 @@ class MudMap():
 
     def to_string(self):
         return str(self.los_map.nodes()) + "\n\n" + str(self.los_map.edges())
+
+    def __str__(self):
+        return self.to_string()
 
     def get_path(self, start_area_id, end_area_id):
         node_path = nx.shortest_path(self.los_map,source=start_area_id,target=end_area_id)
