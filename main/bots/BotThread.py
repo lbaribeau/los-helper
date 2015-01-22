@@ -224,7 +224,7 @@ class BotThread(threading.Thread):
         if not aura_updated:
             self.update_aura()
     
-        if self.character.level > 3:
+        if True:
             self.heal_up()
             self.wait_for_mana()  
         else:
@@ -294,7 +294,7 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return False
 
-        if(self.character.level < 3 or time.time() - self.character.AURA_LAST_UPDATE < 480):
+        if(self.character.level < 1 or time.time() - self.character.AURA_LAST_UPDATE < 480):
             magentaprint("Last aura update: %d seconds ago." % round(time.time() - self.character.AURA_LAST_UPDATE))
             return True   
 
