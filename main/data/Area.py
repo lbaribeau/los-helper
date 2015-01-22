@@ -38,6 +38,8 @@ class Area(BaseModel):
         if is_new_mapping: #this means the search has found the matching area and our Area.ID is set
             super(Area, self).save()
 
+            print (self)
+
             #now we map our area exits
             for exit in mapped_exits:
                 #magentaprint("exit " + str(exit.to_string()), False)
@@ -66,7 +68,9 @@ class Area(BaseModel):
 
         matching_areas = Area.get_areas_by_name_and_exits(self.name, mapped_exits)
 
-        if matching_areas is not []:
+        #print ("matching areas: " + str(matching_areas) + " is new mapping: " + str(is_new_mapping))
+
+        if len(matching_areas) > 0:
             self.metadata.is_dirty = True
             is_new_mapping = False
             
@@ -76,12 +80,16 @@ class Area(BaseModel):
                 self.is_dark_at_night = area.is_dark_at_night
                 break
 
+        #print ("matching areas: " + str(matching_areas) + " is new mapping: " + str(is_new_mapping))
+
         if not self.metadata.is_dirty:
             #update the database with the longest description possible
             if (len(self.description) > len(str(area.description))):
                 super(Area, self).save()
             else:
                 self.description = area.description
+
+        print ("matching areas: " + str(matching_areas) + " is new mapping: " + str(is_new_mapping))
 
         return is_new_mapping
 
@@ -174,7 +182,8 @@ having count(*) = %s
 
                 #print (formatted_query)
 
-                areas = Area.raw(formatted_query)
+                for derp in Area.raw(formatted_query):
+                    areas.append(derp)
 
             except Area.DoesNotExist:
                 areas = []
