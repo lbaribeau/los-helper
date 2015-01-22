@@ -163,10 +163,9 @@ class Cartography(BotReaction):
             magentaprint("Cartography case missing for regex: " + str(regex))
 
     def discern_location(self, area, direction_list, area_from_id, direction_from):
-        lastMudArea = self.character.MUD_AREA
         discerned_area = None
 
-        if lastMudArea is not None:
+        if self.character.MUD_AREA is not None:
             exit_type = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
 
             if exit_type is None:
@@ -174,7 +173,9 @@ class Cartography(BotReaction):
 
             #if isNewExit: - this is logic we can implement once we have exit_type mapping completely bullet proof
 
-            curMudArea = lastMudArea.get_area_to_from_exit(exit_type)
+            #magentaprint("discerning: " + str(self.character.MUD_AREA) + " against " + str(area))
+
+            curMudArea = self.character.MUD_AREA.get_area_to_from_exit(exit_type)
 
             if curMudArea is not None:
                 if curMudArea.compare_to_area_and_exit_list(area, direction_list):
@@ -197,17 +198,18 @@ class Cartography(BotReaction):
 
         discerned_area = self.discern_location(area, direction_list, area_from, direction_from)
 
-        magentaprint("cataloging: " + str(area_from) + " " + str(direction_from) + str(area), False)
+        magentaprint("cataloging: " + str(area_from) + " " + str(direction_from) + str(area))
 
         if discerned_area is not None:
             area = discerned_area
-            magentaprint("discerned_area to be: " + str(discerned_area), False)
+            magentaprint("discerned_area to be: " + str(discerned_area))
+            self.character.MUD_AREA = MudArea(area)
         else:
             if area_from is not None and direction_from is not None: #if we have an area we're coming from
                 area_from = Area.get_area_by_id(self.character.AREA_ID)
                 direction_from = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
 
-                magentaprint(str(area_from) + " " + str(direction_from), False)
+                magentaprint(str(area_from) + " " + str(direction_from))
                 
                 area.map(direction_list, area_from, direction_from)
             else:
@@ -246,8 +248,13 @@ class Cartography(BotReaction):
             for monster in monster_list:
                 mob = Mob(name=monster)
                 mob.map()
+
+                magentaprint(str(mob))
+
                 mob_location = MobLocation(area=area, mob=mob)
                 mob_location.map()
+
+                magentaprint(str(mob_location))
         except Exception:
             magentaprint("Problem cataloging monsters", False)
 
