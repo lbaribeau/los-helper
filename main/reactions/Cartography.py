@@ -35,6 +35,7 @@ class Cartography(BotReaction):
         self.not_here = "You don't see that here\."
         self.loot_blocked = "The" + s_numbered + " (.+?) won't let you take anything\."#The spiv won't let you take anything.
         self.teleported_away = "### (.+?)'s body is teleported away to be healed\."
+        self.it_fled = "The (" + s_numbered + " )?(.+?) flees to the (.+?)\."
 
         self.regexes = [self.area,
             self.too_dark,
@@ -55,7 +56,8 @@ class Cartography(BotReaction):
             self.not_here,
             self.loot_blocked,
             self.teleported_away,
-            self.in_tune
+            self.in_tune,
+            self.it_fled,
             ]
 
         self.mudReaderHandler = mudReaderHandler
@@ -147,9 +149,13 @@ class Cartography(BotReaction):
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
         elif regex == self.not_here:
             self.character.ATTACK_CLK = time.time()-self.character.ATTACK_WAIT
-            #self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
+            self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
             #self.character.SUCCESSFUL_GO = False
             #self.character.TRYING_TO_MOVE = False
+        elif regex == self.it_fled:
+            matched_groups = M_obj.groups()
+            self.character.chase_mob = str(matched_groups[2])
+            self.character.chase_dir = str(matched_groups[3])
         #elif regex == self.teleported_away:
             #self.character.DEAD = True
 
@@ -191,13 +197,18 @@ class Cartography(BotReaction):
 
         discerned_area = self.discern_location(area, direction_list, area_from, direction_from)
 
+        magentaprint("cataloging: " + str(area_from) + " " + str(direction_from) + str(area), False)
+
         if discerned_area is not None:
             area = discerned_area
+            magentaprint("discerned_area to be: " + str(discerned_area), False)
         else:
             if area_from is not None and direction_from is not None: #if we have an area we're coming from
-                magentaprint(str(area_from) + " " + str(direction_from))
                 area_from = Area.get_area_by_id(self.character.AREA_ID)
                 direction_from = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
+
+                magentaprint(str(area_from) + " " + str(direction_from), False)
+                
                 area.map(direction_list, area_from, direction_from)
             else:
                 area.map(direction_list)
@@ -228,7 +239,7 @@ class Cartography(BotReaction):
                         area_exit.note = str(regex)
                         area_exit.save()
             except Exception:
-                magentaprint("Tried to make an area exit unusuable but failed", False)
+                magentaprint("Tried to make an area exit unusuable but failed")
 
     def catalog_monsters(self, area, monster_list):
         try:

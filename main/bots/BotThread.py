@@ -34,8 +34,9 @@ class BotThread(threading.Thread):
         atexit.register(self.stop)
 
     def stop(self):
-        magentaprint("Stopping bot.")
+        magentaprint("Stopping bot = " + str(self.__stopping))
         self.__stopping = True
+        magentaprint("Stopping bot = " + str(self.__stopping))
 
     def is_stopping(self):
         return self.__stopping
@@ -196,7 +197,7 @@ class BotThread(threading.Thread):
         #Todo: fix for case where there's ring mail in the inventory or multiple rings are dropped
 
     def rest_and_check_aura(self):
-        MANA_TO_WAIT = self.character.MAX_MANA - 12
+        MANA_TO_WAIT = self.character.MAX_MANA / 2
         if self.character.BLACK_MAGIC: 
             MANA_TO_GO = self.character.MAX_MANA 
         else:
@@ -443,6 +444,7 @@ class BotThread(threading.Thread):
             return
         
         magentaprint("Engage: " + monster)
+        ifled = False
 
         self.commandHandler.user_kk(monster)
         self.sleep(0.5)  # Keeps attacking and magic out of sync
@@ -474,11 +476,13 @@ class BotThread(threading.Thread):
                     #self.use_restorative_items()
 
 
+            ifled = False
             # FLEE Checks
             if(self.character.HEALTH <= self.character.HEALTH_TO_FLEE):
                 # We're done for!  Trust CommandHandler to get us out.  
                 # It will turn around and stop botThread.
                 self.do_flee_hook()
+                ifled = True
 
             self.sleep(0.05)
 
@@ -488,6 +492,17 @@ class BotThread(threading.Thread):
         if monster in self.character.MOBS_ATTACKING:
             #magentaprint("Bot:engage_monster: Removing " + monster + " from MOBS_ATTACKING.")
             magentaprint("I believe the following is dead or gone: " + monster, False)
+            #check to see if "monster" we're fighting has fled
+            if (not ifled):
+                self.sleep(0.05)
+                if monster == self.character.chase_mob:
+                    self.go(self.character.chase_dir)
+                    self.character.chase_mob = ""
+                    self.character.chase_dir = ""
+                    #append direction to movelist to follow it
+                    #append direction to path back to this node
+                    #execute move to target and engage
+                #remove monster fled flag
             self.character.MOBS_ATTACKING.remove(monster)
             
         return
