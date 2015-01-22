@@ -1,5 +1,5 @@
 
-import time
+import time, sys
 import CharacterClass
 
 class Character(object):
@@ -11,7 +11,7 @@ class Character(object):
     _class = None
     level = None
     preferred_alignment = None
-    BLACK_MAGIC = True
+    BLACK_MAGIC = False
     FAVOURITE_SPELL = "fireball"
     SPELL_COST = 7
     KNOWS_VIGOR = True
@@ -26,7 +26,7 @@ class Character(object):
     # Indices will be sharp, thrust, blunt, pole, missile, earth, water, wind, fire, astral
     # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
 
-    AURA_SCALE = 6
+    AURA_SCALE = 9
     AURA = AURA_LIST[AURA_SCALE]
     
     AURA_PREFERRED_SCALE = None
@@ -46,11 +46,19 @@ class Character(object):
 
     ATTACK_PERIOD = 3 #sec
     ATTACK_PERIOD_HASTE = 2 #sec
+
     CAST_PERIOD = 6
+
+    if _class == "Cle" or _class == "Mag":
+        CAST_PERIOD = 3
 
     ATTACK_WAIT = ATTACK_PERIOD   # Used by timer.  Same as ATTACK_PERIOD.
                                 # Amount of time to wait to walk after attacking
-    MOVE_WAIT = 0.29
+
+    MOVE_WAIT = 0.4
+    if sys.platform == 'win32':
+        MOVE_WAIT = 0.29
+ 
     CAST_WAIT = CAST_PERIOD
 
     MOBS_KILLED = 0
@@ -106,7 +114,7 @@ class Character(object):
     GO_TIMEOUT = False
 
     CAN_SEE = True
-    ACTIVELY_MAPPING = False
+    ACTIVELY_MAPPING = True
 
     MUD_AREA = None
     AREA_TITLE=""
@@ -121,6 +129,8 @@ class Character(object):
     LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096] #Half of this is the gold requirement
 
     START_TIME = time.time()
+    chase_mob = ""
+    chase_dir = ""
 
     # def __init__(self):
     #     self.set_level_health_mana_variables()
@@ -133,15 +143,15 @@ class Character(object):
             self.MAX_MANA = 3
             self.MANA_TO_ENGAGE = 3
         elif self.level <= 3:
-            self.HEALTH_TO_HEAL = 27
+            self.HEALTH_TO_HEAL = 25
             self.HEALTH_TO_FLEE = 9
-            self.MAX_MANA = 7
-            self.MANA_TO_ENGAGE = 3
+            self.MAX_MANA = 12
+            self.MANA_TO_ENGAGE = 7
         elif self.level <= 4:
-            self.HEALTH_TO_HEAL = 31
-            self.HEALTH_TO_FLEE = 11
-            self.MAX_MANA = 9
-            self.MANA_TO_ENGAGE = 3
+            self.HEALTH_TO_HEAL = 25
+            self.HEALTH_TO_FLEE = 15
+            self.MAX_MANA = 15
+            self.MANA_TO_ENGAGE = 9
         elif self.level <= 5:
             self.HEALTH_TO_HEAL= 31
             self.HEALTH_TO_FLEE = 8
