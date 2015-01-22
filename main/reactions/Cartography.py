@@ -310,7 +310,7 @@ class Cartography(BotReaction):
     def create_exit_regex_for_character(self, E_LIST):
         exit_regex = "(NEVERMATCHTHISEVEREVER)"
         if (E_LIST is not None):
-            exit_regex += "(?:go )?(!?"
+            exit_regex = "(?:go )?(!?"
 
             for i,s in enumerate(E_LIST):
                 exit_regex += "(" + str(s) + ")"
