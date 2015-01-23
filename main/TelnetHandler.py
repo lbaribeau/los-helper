@@ -5,9 +5,14 @@ class TelnetHandler(object):
 
     def __init__(self):
         self.tn = self.connect_to_MUD()
+        self.echoing = False
 
     def write(self, command):
         command += '\r'
+
+        if self.echoing:
+            print (command)
+    
         self.tn.write(command.encode('ascii'))
 
     def connect_to_MUD(self):

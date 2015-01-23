@@ -135,6 +135,8 @@ class CommandHandler(object):
             magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
         elif re.match("DUMP", user_input):
             magentaprint(self.character.__dict__, False)
+        elif re.match("CECHO", user_input):
+            self.telnetHandler.echoing = not self.telnetHandler.echoing
         elif re.match("VERSION", user_input):
             magentaprint("Version: " + str(misc_functions.VERSION), False)
             magentaprint(self.character.__dict__, False)
