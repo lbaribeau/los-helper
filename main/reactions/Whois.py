@@ -1,25 +1,25 @@
 
 from BotReactions import BotReactionWithFlag
 from misc_functions import *
+from CharacterClass import CharacterClass
 
 class Whois(BotReactionWithFlag):
 
-    def __init__(self, mudReaderHandler, telnetHandler):
+    character_class = ""
+    gender = ""
+    level = 0
+    title = ""
+    age = 0
+    race = ""
+
+    def __init__(self, mudReaderHandler, telnetHandler, character):
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
+        self.character = character
 
     def execute(self, character_name):
         self.regexes = [character_name.title() + "\s+?(\S\S\S)\s\s([MF])\s\s\[(\d\d)\](\S+)\s+(\d+)\s+(\S+)\s" ]
         self.mudReaderHandler.register_reaction(self)
-        
-        self.wait_for_flag()
-        #self.mudReaderHandler.unregister_reaction(self)
-        self.character_class = "Cle"
-        self.gender = "M"
-        self.level = 1
-        self.title = "Enlightened Brother"
-        self.age = "16"
-        self.race = "Human"
 
         self.telnetHandler.write("whois " + character_name)
 
@@ -36,6 +36,17 @@ class Whois(BotReactionWithFlag):
 
         try:
             magentaprint(self.character_class + " " + self.gender + " " + str(self.level) + " " + self.title + " " + self.age + " " + self.race, False)            
+
+            self.character._class = CharacterClass(self.character_class, self.telnetHandler)
+            self.character.gender = self.gender
+            self.character.level = self.level
+            self.character.title = self.title
+            self.character.race = self.race
+            self.character.configure_health_and_mana_variables()
+            self.character.set_monster_kill_list()
+
+            self.mudReaderHandler.unregister_reaction(self)
+        
         except Exception:
             magentaprint("Unable to ouput whois data", False)
 
