@@ -503,7 +503,8 @@ class BotThread(threading.Thread):
                 self.sleep(0.05)
                 if monster == self.character.chase_mob:
                     if self.character.AREA_ID is not None:
-                        self.direction_list.insert("areaid" + str(self.character.AREA_ID),0) #should be this area
+                        go_hook = "area_id" + str(self.character.AREA_ID)
+                        self.direction_list.insert(0, go_hook) #should be this area
                     self.go(self.character.chase_dir)
                     self.character.chase_mob = ""
                     self.character.chase_dir = ""
@@ -544,3 +545,5 @@ class BotThread(threading.Thread):
     def ready_for_combat(self):
         return (self.character.HEALTH > self.character.HEALTH_TO_HEAL and
                 self.character.MANA >= self.character.MANA_TO_ENGAGE)
+
+
