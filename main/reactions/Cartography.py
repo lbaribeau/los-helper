@@ -80,6 +80,7 @@ class Cartography(BotReaction):
             self.character.SUCCESSFUL_GO = True
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
             self.character.CAN_SEE = False
+            self.character.CONFUSED = False
         elif regex == self.area:
             matched_groups = M_obj.groups()
 
@@ -97,6 +98,7 @@ class Cartography(BotReaction):
             self.character.SUCCESSFUL_GO = True #successful go should be true everytime the area parses
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
             self.character.CAN_SEE = True
+            self.character.CONFUSED = False
 
             if (self.character.TRYING_TO_MOVE): #we only want to map when user input to move has been registered
                 self.character.TRYING_TO_MOVE = False #we've moved so we're not trying anymore
@@ -132,6 +134,8 @@ class Cartography(BotReaction):
             # Means we're off course.
             magentaprint("Cartography: unsuccessful go (can't go that way): " + str(self.character.LAST_DIRECTION))
             self.set_area_exit_as_unusable(regex)
+            self.character.SUCCESSFUL_GO = False
+            self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
         elif (regex == self.class_prohibited or
                 regex == self.level_too_low or
                 regex == self.not_invited or
@@ -149,7 +153,10 @@ class Cartography(BotReaction):
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
         elif regex == self.not_here:
             self.character.ATTACK_CLK = time.time()-self.character.ATTACK_WAIT
-            self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
+            if self.character.CONFUSED:
+                self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
+            else:
+                self.character.CONFUSED = True
             #self.character.SUCCESSFUL_GO = False
             #self.character.TRYING_TO_MOVE = False
         elif regex == self.it_fled:
@@ -158,9 +165,9 @@ class Cartography(BotReaction):
             self.character.chase_dir = str(matched_groups[3])
         #elif regex == self.teleported_away:
             #self.character.DEAD = True
-
         else:
             magentaprint("Cartography case missing for regex: " + str(regex))
+
 
     def discern_location(self, area, direction_list, area_from_id, direction_from):
         discerned_area = None

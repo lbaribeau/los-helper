@@ -113,6 +113,7 @@ class Character(object):
     GO_NO_EXIT = False
     GO_TIMEOUT = False
 
+    CONFUSED = False
     CAN_SEE = True
     ACTIVELY_MAPPING = True
 
@@ -143,10 +144,10 @@ class Character(object):
             self.MAX_MANA = 3
             self.MANA_TO_ENGAGE = 3
         elif self.level <= 3:
-            self.HEALTH_TO_HEAL = 25
+            self.HEALTH_TO_HEAL = 20
             self.HEALTH_TO_FLEE = 9
             self.MAX_MANA = 12
-            self.MANA_TO_ENGAGE = 7
+            self.MANA_TO_ENGAGE = 4
         elif self.level <= 4:
             self.HEALTH_TO_HEAL = 25
             self.HEALTH_TO_FLEE = 15
@@ -277,7 +278,7 @@ class Character(object):
 
     def set_monster_kill_list(self):
         self.MONSTER_KILL_LIST = []
-        self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
+        #self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
         self.MONSTER_KILL_LIST.extend(self.lvl1_red_monsters)
 
         if self.level > 3:
