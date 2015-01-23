@@ -58,10 +58,10 @@ class BotThread(threading.Thread):
 
             self.do_pre_go_actions()
             
-            self.direction_list = self.decide_where_to_go()
+            if len(self.direction_list) is 0:
+                self.direction_list = self.decide_where_to_go()
                 
             while(self.direction_list != [] and not self.__stopping):
-                #magentaprint(str(self.direction_list), False)
                 #magentaprint("Going " + self.direction_list[0], False)
                 if(self.go(self.direction_list[0])):
                     # Successful go.
@@ -121,6 +121,14 @@ class BotThread(threading.Thread):
 
     def do_go_hooks(self, exit_str):
         #if you want to define custom hooks like sell_items / drop_items etc... you can do so here
+
+        #add the path to a given areaid to out current direction_list
+        if (re.match("areaid[\d]*", exit_str)):
+            area_id = int(exit_str.replace("areaid", ""))
+            self.direction_list.pop(0)
+            self.direction_list = [""] + self.mud_map.get_path(self.character.AREA_ID, area_id) + self.direction_list
+            magentaprint(str(self.direction_list), False)
+            return True
         return False
 
     def do_run_startup(self):
@@ -218,13 +226,11 @@ class BotThread(threading.Thread):
             self.rest_for_mana()
         elif self.character.MANA < MANA_TO_GO:
             self.wait_for_mana()
-        else:
-            pass
                    
         if not aura_updated:
             self.update_aura()
     
-        if True:
+        if self.character.level > 3:
             self.heal_up()
             self.wait_for_mana()  
         else:
@@ -274,7 +280,6 @@ class BotThread(threading.Thread):
         return
     
     def rest_for_health(self):
-
         if(self.character.HEALTH >= self.character.HEALTH_TO_HEAL):
             return
             
@@ -282,6 +287,7 @@ class BotThread(threading.Thread):
 
         while(self.character.HEALTH < self.character.HEALTH_TO_HEAL and not self.__stopping):            
 
+            magentaprint(str(self.character.HEALTH) + " < " + str(self.character.HEALTH_TO_HEAL))
             if(self.engage_any_attacking_mobs()):
                 self.commandHandler.process("rest")
 
@@ -496,12 +502,11 @@ class BotThread(threading.Thread):
             if (not ifled):
                 self.sleep(0.05)
                 if monster == self.character.chase_mob:
+                    if self.character.AREA_ID is not None:
+                        self.direction_list.insert("areaid" + str(self.character.AREA_ID),0) #should be this area
                     self.go(self.character.chase_dir)
                     self.character.chase_mob = ""
                     self.character.chase_dir = ""
-                    #append direction to movelist to follow it
-                    #append direction to path back to this node
-                    #execute move to target and engage
                 #remove monster fled flag
             self.character.MOBS_ATTACKING.remove(monster)
             

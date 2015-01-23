@@ -34,6 +34,9 @@ class GrindThread(BotThread):
     def do_run_startup(self):
         if not self.is_character_class("Mon"):
           self.set_up_automatic_ring_wearing()
+
+        self.direction_list = ["areaid45"]
+
         return
 
     def do_pre_go_actions(self):
@@ -233,6 +236,8 @@ class GrindThread(BotThread):
             else:
                 self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
 
+        return KOBOLD_PATH
+
         if(self.__nextpath == 1):
             return THEATRE_PATH
 
@@ -257,7 +262,7 @@ class GrindThread(BotThread):
             # quite remember where they are and don't want to go through Amber
             # Also I think it's safe enough in the dark... maybe just lvl 4 
             # there are thugs
-            if(self.character.level <= 6):
+            if (False): #if(self.character.level <= 6):
                 return CORAL_ALLEY_PATH
             else:            
                 self.__nextpath = self.__nextpath + 1  # So that we don't go selling
@@ -377,7 +382,7 @@ class GrindThread(BotThread):
           self.drop_items()
           return True
 
-      return False
+      return super(GrindThread, self).do_go_hooks(exit_str)
 
 # Just thinking about changing top level...
  
