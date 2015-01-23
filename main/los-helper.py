@@ -32,6 +32,7 @@ from SmartGrindThread import SmartGrindThread
 from SmartCrawlThread import SmartCrawlThread
 from GotoThread import GotoThread
 from MixThread import MixThread
+from SlaveThread import SlaveThread
 from CommandHandler import CommandHandler
 from MudReaderHandler import MudReaderHandler 
 from MudReaderThread import MudReaderThread 
@@ -117,15 +118,8 @@ class LosHelper(object):
         self.inventory.output_inventory()
 
     def check_class_and_level(self):
-        whois = Whois(self.mudReaderHandler, self.telnetHandler)
+        whois = Whois(self.mudReaderHandler, self.telnetHandler, self.character)
         whois.execute(self.character.name)
-        self.character._class = CharacterClass(whois.character_class, self.telnetHandler)
-        self.character.gender = whois.gender
-        self.character.level = whois.level
-        self.character.title = whois.title
-        self.character.race = whois.race
-        self.character.configure_health_and_mana_variables()
-        self.character.set_monster_kill_list()
 
     def check_info(self):
         info = Info(self.mudReaderHandler, self.telnetHandler, self.character)
@@ -171,6 +165,8 @@ class LosHelper(object):
                 self.start_goto(user_input, True)
             elif(re.match("domix .+?", user_input)):
                 self.start_mix(user_input)
+            elif(re.match("slave", user_input)):
+                self.start_slave(user_input)
             elif(re.match("bbuy (.+?)", user_input)):
                 try:
                     M_obj = re.search("bbuy (.+?) ([\d]*)", user_input)
@@ -242,6 +238,15 @@ class LosHelper(object):
                                        starting_path,
                                        is_show_to)
             self.botThread.start()
+
+    def start_slave(self, user_input):
+        self.botThread = SlaveThread(self.character, 
+                                       self.commandHandler, 
+                                       self.mudReaderHandler,
+                                       self.inventory,
+                                       self.mud_map,
+                                       "")
+        self.botThread.start()
 
     def start_mix(self, user_input):
         M_obj = re.search("domix '(.+?)' (.+?)( [\d]*)?$", user_input)
