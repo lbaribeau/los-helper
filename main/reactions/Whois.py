@@ -18,7 +18,7 @@ class Whois(BotReactionWithFlag):
         self.character = character
 
     def execute(self, character_name):
-        self.regexes = [character_name.title() + "\s+?(\S\S\S)\s\s([MF])\s\s\[(\d\d)\](\S+)\s+(\d+)\s+(\S+)\s" ]
+        self.regexes = [character_name.title() + "\s+?(\S\S\S)\s\s([MF])\s\s\[(\d\d)\](.+?)\s+(\d+)\s+(\S+)\s" ]
         self.mudReaderHandler.register_reaction(self)
 
         self.telnetHandler.write("whois " + character_name)
