@@ -49,11 +49,11 @@ from TelnetHandler import TelnetHandler
 from Database import *
 from MudMap import *
 
-
 class LosHelper(object):
 
     def __init__(self):
         magentaprint("Connecting to MUD and initializing....", False)
+        self.t1 = threading.Thread(target=self.setup_mud_map)
         self.character = Character()
         self.telnetHandler = TelnetHandler()
         self.consoleHandler = newConsoleHandler() 
@@ -64,11 +64,17 @@ class LosHelper(object):
         self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler)
         self.combat_reactions = CombatReactions(self.mudReaderHandler, self.character)
 
-        magentaprint("Generating the mapfile....", False)
-        self.mud_map = MudMap()
+        self.mud_map = None
+
+        self.t1.start()
+
         self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
         self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
         self.botThread = None
+
+    def setup_mud_map(self):
+        magentaprint("Generating the mapfile....", False)
+        self.mud_map = MudMap()
 
     def main(self):
         self.mudListenerThread.start()
@@ -81,7 +87,7 @@ class LosHelper(object):
         self.check_class_and_level()
         self.check_info()
         self.watch_user_input()
-            
+        self.t1.join()
         # Quitting cleanly: The MUD_read thread quits if it hits
         # and EOF.  watch_user_input watches for
         # that and quits too.
