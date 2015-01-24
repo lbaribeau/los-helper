@@ -89,10 +89,10 @@ class GrindThread(BotThread):
                           "se", "se", 'e', 'e', 'e', "se", "se", "se", 's',
                           's', 's', 's', 's', 's', 's', 's', 's', 's', 'e',
                           "ne", 'e', 'e', 's', "glowing", "passage", "mines",
-                          'd', 'n',
+                          'down', 'n',
                           'n', 'n', 'n', "ne", 'n', 'w', 'n', 'n', 'e',
-                          "door", 'w', "gully", 'u', "boulder", 'u',
-                          "cave 3", 'ne', 'ne', 'n', 's', 'u', 'e', 'se', 
+                          "door", 'w', "gully", 'up', "boulder", 'up',
+                          "cave 3", 'ne', 'ne', 'n', 's', 'up', 'e', 'se', 
                           'cave', 'out', 
                           # Note: You can remove the following line of code 
                           # to remove the kobold guards and priests fights.
@@ -110,8 +110,8 @@ class GrindThread(BotThread):
                           "ladder", 'cave', 'out', "sw", 'w', 
                           # Comment out insane kobold (TODO: check level here)
                           # 'cave', 'out', 
-                          "sw", 'se', 'nw', 'w', "out", 'd',
-                          "boulder", 'd', 'd', 'e', "door", 'w', 's', 's',
+                          "sw", 'se', 'nw', 'w', "out", 'down',
+                          "boulder", 'down', 'down', 'e', "door", 'w', 's', 's',
                           'e', 's', "sw", 's', 's', 's', 's', "gully",
                           "glowing", "passage", "coral", 'n', 'w', 'w', "sw",
                           'w', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
@@ -121,10 +121,10 @@ class GrindThread(BotThread):
         CORAL_ALLEY_PATH = ["out", "s", 'e', 's', 's', 's', 'w', 'gate',
                               's', 'se', 'se', 'e', 'e', 'e',
                               'se', 'se', 'se', 's', 's', 's', 's', 'w',
-                              'alley', 's', 's', 'do', 'stai',
+                              'alley', 's', 's', 'door', 'stairs',
                               # angry hooker should be avoided unless lvl 5.
                               #'do 3', 'ou',
-                              'stai', 'out', 's',
+                              'stairs', 'out', 's',
                               #'w', 'e', #for zombies
                               # noticed drunken troublemakers arrive one east
                               # not sure what safest exit is... go north.

@@ -70,12 +70,21 @@ class Cartography(BotReaction):
         self.mudReaderHandler.register_reaction(self)
 
     def notify(self, regex, M_obj):
-        if regex == self.too_dark:
-            self.character.AREA_TITLE = ""
-            self.character.AREA_ID = None
-            self.character.MUD_AREA = None
-            self.character.LAST_DIRECTION = None
-            self.character.EXIT_LIST = []
+        if regex == self.too_dark:            
+            if self.character.AREA_ID is not None:
+                guessed_area = self.guess_location(self.character.AREA_ID, self.character.LAST_DIRECTION)            
+
+                if guessed_area is not None:
+                    self.character.AREA_ID = guessed_area.area.id
+                    self.character.AREA_TITLE = guessed_area.area.name
+                    self.character.EXIT_LIST = guessed_area.area_exits
+                    self.character.MUD_AREA = guessed_area
+                else:
+                    self.character.AREA_ID = None
+                    self.character.AREA_TITLE = None
+                    self.character.MUD_AREA = None
+                    self.character.EXIT_LIST = []
+
             self.character.MONSTER_LIST = []
             self.character.SUCCESSFUL_GO = True
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
@@ -151,13 +160,16 @@ class Cartography(BotReaction):
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
         elif (regex == self.not_here or regex == self.no_exit):
-            self.character.ATTACK_CLK = time.time()-self.character.ATTACK_WAIT
             if self.character.CONFUSED:
+                if (not self.character.CAN_SEE):
+                    self.commandHandler.process('c light') #look around to stop the "you don't see that here bug"
+
                 self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
             else:
                 self.character.CONFUSED = True
-            #self.character.SUCCESSFUL_GO = False
-            #self.character.TRYING_TO_MOVE = False
+            self.character.SUCCESSFUL_GO = False
+            self.character.TRYING_TO_MOVE = False
+            self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
         elif regex == self.it_fled:
             matched_groups = M_obj.groups()
             self.character.chase_mob = str(matched_groups[2])
@@ -167,6 +179,23 @@ class Cartography(BotReaction):
         else:
             magentaprint("Cartography case missing for regex: " + str(regex))
 
+    def guess_location(self, area_from_id, direction_from):
+        guessed_area = None
+
+        if self.character.MUD_AREA is not None:
+            exit_type = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
+
+            if exit_type is None:
+                exit_type = ExitType(name=direction_from)
+
+            guessed_area = self.character.MUD_AREA.get_area_to_from_exit(exit_type)
+            curMudArea = self.character.MUD_AREA.get_area_to_from_exit(exit_type)
+
+            if curMudArea is not None:
+                #check if curMudArea can be dark
+                guessed_area = curMudArea
+
+        return guessed_area
 
     def discern_location(self, area, direction_list, area_from_id, direction_from):
         discerned_area = None
