@@ -18,7 +18,7 @@ class GrindThread(BotThread):
         if self.character.level <= 2:
             self.__TOTALPATHS = 8 # Kobolds are level 1 safe.
         elif self.character.level <= 7:
-            self.__TOTALPATHS = 10 # include hookers for level 3   
+            self.__TOTALPATHS = 8 # include hookers for level 3   
         elif self.character.level <= 10:
             self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8        
         else:
@@ -236,8 +236,6 @@ class GrindThread(BotThread):
             else:
                 self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
 
-        return KOBOLD_PATH
-
         if(self.__nextpath == 1):
             return THEATRE_PATH
 
@@ -262,7 +260,7 @@ class GrindThread(BotThread):
             # quite remember where they are and don't want to go through Amber
             # Also I think it's safe enough in the dark... maybe just lvl 4 
             # there are thugs
-            if (False): #if(self.character.level <= 6):
+            if(self.character.level <= 6):
                 return CORAL_ALLEY_PATH
             else:            
                 self.__nextpath = self.__nextpath + 1  # So that we don't go selling

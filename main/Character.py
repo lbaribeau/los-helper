@@ -13,7 +13,7 @@ class Character(object):
     preferred_alignment = None
     BLACK_MAGIC = False
     FAVOURITE_SPELL = "fireball"
-    SPELL_COST = 7
+    SPELL_COST = 3
     KNOWS_VIGOR = True
     #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
     #MAGIC_SKILLS= [0, 0, 0, 0, 0]
@@ -55,7 +55,7 @@ class Character(object):
     ATTACK_WAIT = ATTACK_PERIOD   # Used by timer.  Same as ATTACK_PERIOD.
                                 # Amount of time to wait to walk after attacking
 
-    MOVE_WAIT = 0.4
+    MOVE_WAIT = 0.35
     if sys.platform == 'win32':
         MOVE_WAIT = 0.29
  
@@ -186,14 +186,15 @@ class Character(object):
     ### Monster stuff ###
 
     lvl1_monsters = [ # 1-8 exp
-        "dustman", "small girl", "young boy", "old woman", "old man", 
-        "townsman", "stall holder", "duck", "hedgehog", "piglet", 
-        'streetsweeper', "shopper", "window shopper", "window cleaner", 
-        "waitress", "housewife", "squirrel", "milk maid", "rabbit", 
-        "one man band", "heather seller", "irate teenager", 'peasant', 
-        'one-armed beggar', "village elder", "small dog", "tribesman", 
-        "searcher", "delivery boy", "traveller", "wanderer", "villager", 
-        "vagrant", "dropout", "tramp", "serf", 'dishwasher']     
+        "dustman", "small girl", #"young boy", "old woman", "old man", 
+        "townsman", "stall holder", #"duck", "hedgehog", "piglet", 
+        'streetsweeper', "shopper", #"window shopper", "window cleaner", 
+        #"waitress", "housewife", "squirrel", "milk maid", "rabbit", 
+        #"one man band", "heather seller", "irate teenager", 'peasant', 
+        #'one-armed beggar', "village elder", "small dog", "tribesman", 
+        #"searcher", "delivery boy", "traveller", "wanderer", "villager", 
+        #"vagrant", "dropout", "tramp", "serf", 'dishwasher'
+        ]     
     lvl1_red_monsters = [ # 8-15 exp
         "old kobold", "kobold child", "kobold dam"]
     lvl2_monsters = [
@@ -278,7 +279,7 @@ class Character(object):
 
     def set_monster_kill_list(self):
         self.MONSTER_KILL_LIST = []
-        #self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
+        self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
         self.MONSTER_KILL_LIST.extend(self.lvl1_red_monsters)
 
         if self.level > 3:

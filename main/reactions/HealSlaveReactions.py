@@ -19,4 +19,4 @@ class HealSlaveReactions(BotReaction):
         if regex == self.group_damage:
             target_name = str(M_obj.group(1))
             magentaprint("Notified <" + target_name + ">", False)
-            self.commandHandler.process('c mend ' + target_name)
+            self.commandHandler.process('c vig ' + target_name)
