@@ -115,7 +115,7 @@ class Character(object):
 
     CONFUSED = False
     CAN_SEE = True
-    ACTIVELY_MAPPING = True
+    ACTIVELY_MAPPING = False
 
     MUD_AREA = None
     AREA_TITLE=""
