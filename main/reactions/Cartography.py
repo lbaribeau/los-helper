@@ -146,12 +146,11 @@ class Cartography(BotReaction):
                 regex == self.no_right or
                 regex == self.not_authorized or
                 regex == self.no_force or
-                regex == self.no_exit or
                 regex == self.in_tune):
             self.set_area_exit_as_unusable(regex)
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
-        elif regex == self.not_here:
+        elif (regex == self.not_here or regex == self.no_exit):
             self.character.ATTACK_CLK = time.time()-self.character.ATTACK_WAIT
             if self.character.CONFUSED:
                 self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
