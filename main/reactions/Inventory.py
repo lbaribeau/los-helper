@@ -258,7 +258,7 @@ class Inventory(BotReactionWithFlag):
         return_dict = {}
         inventory_string = inventory_string.replace("\n\r", ' ')
         inv_list = inventory_string.split(',')
-        inv_list = [item.strip() for item in inv_list]
+        inv_list = [item.strip(' \t\n\r') for item in inv_list]
         numbers = ["a ", "an ", "some ", "two ", "three ", "four ", "five ", "six ", "seven ", 
                    "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ", "fourteen ", 
                    "fifteen" , "sixteen ", "seventeen ", "eighteen ", "nineteen ", "twenty "]
@@ -306,9 +306,11 @@ class Inventory(BotReactionWithFlag):
         numbered_references = []
 
         for item in self.inventory:
+            #magentaprint(item,False)
             reference = self._item_string_to_reference(item)
+            #magentaprint(reference,False)
 
-            if item not in self.keep_list:
+            if (item not in self.keep_list):
                 prev_items_with_same_reference = references[reference] if reference in references else 0
 
                 if prev_items_with_same_reference == 0:
@@ -317,7 +319,7 @@ class Inventory(BotReactionWithFlag):
                 else:
                     numbered_references.extend([reference + " " + str(n) for n in range(prev_items_with_same_reference, prev_items_with_same_reference + self.inventory[item])])
 
-            Inventory.add_to_qty_dict(references, (item, self.inventory[item]))
+                Inventory.add_to_qty_dict(references, (item, self.inventory[item]))
 
             # TODO: have quantities in keep_list
 
@@ -328,7 +330,7 @@ class Inventory(BotReactionWithFlag):
         # 'grey cloak' will be "grey", it just takes the first word.
         #s = get_last_word(item_string)
         #magentaprint("Reference: " + s, False)
-        return item_string.split(" ")[0].split(".")[0]
+        return item_string.strip().split(" ")[0].split(".")[0]
 
     def output_inventory(self):
         magentaprint(str(self.inventory),False)
@@ -345,7 +347,7 @@ class Inventory(BotReactionWithFlag):
 
     #thick liquid silences you !!!
 
-    keep_list = ["large bag", "large sack", 
+    keep_list = ["large bag", "large sack", "black bag",
         "silver chalice", "steel bottle", 'glowing potion', "chicken soup", 'scarlet potion', 'white potion', "tree root"]
 
     ''' keep_list = ["large bag", "large sack", 
