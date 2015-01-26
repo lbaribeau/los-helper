@@ -35,7 +35,6 @@ class Cartography(BotReaction):
         self.not_here = "You don't see that here\."
         self.loot_blocked = "The" + s_numbered + " (.+?) won't let you take anything\."#The spiv won't let you take anything.
         self.teleported_away = "### (.+?)'s body is teleported away to be healed\."
-        self.it_fled = "The (" + s_numbered + " )?(.+?) flees to the (.+?)\."
 
         self.regexes = [self.area,
             self.too_dark,
@@ -57,7 +56,6 @@ class Cartography(BotReaction):
             self.loot_blocked,
             self.teleported_away,
             self.in_tune,
-            self.it_fled,
             ]
 
         self.mudReaderHandler = mudReaderHandler
@@ -160,9 +158,14 @@ class Cartography(BotReaction):
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
         elif (regex == self.not_here or regex == self.no_exit):
+            #The state is confusion is usually caused by bad processing of good data (i.e. bugs)
+            #The following is a set of work arounds to smoothe things out until those bugs are fixed
             if self.character.CONFUSED:
                 if (not self.character.CAN_SEE):
                     self.commandHandler.process('c light') #look around to stop the "you don't see that here bug"
+
+                #clear the attacking list
+                self.character.MOBS_ATTACKING = []
 
                 self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
             else:
@@ -170,10 +173,6 @@ class Cartography(BotReaction):
             self.character.SUCCESSFUL_GO = False
             self.character.TRYING_TO_MOVE = False
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
-        elif regex == self.it_fled:
-            matched_groups = M_obj.groups()
-            self.character.chase_mob = str(matched_groups[2])
-            self.character.chase_dir = str(matched_groups[3])
         #elif regex == self.teleported_away:
             #self.character.DEAD = True
         else:
