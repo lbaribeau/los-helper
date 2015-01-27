@@ -34,20 +34,17 @@ class Whois(BotReactionWithFlag):
         except Exception:
             magentaprint("Unable to read whois data", False)
 
-        try:
-            magentaprint(self.character_class + " " + self.gender + " " + str(self.level) + " " + self.title + " " + self.age + " " + self.race, False)            
+        magentaprint(self.character_class + " " + self.gender + " " + str(self.level) + " " + self.title + " " + self.age + " " + self.race, False)            
 
-            self.character._class = CharacterClass(self.character_class, self.telnetHandler)
-            self.character.gender = self.gender
-            self.character.level = self.level
-            self.character.title = self.title
-            self.character.race = self.race
-            self.character.configure_health_and_mana_variables()
-            self.character.set_monster_kill_list()
+        self.character._class = CharacterClass(self.character_class, self.telnetHandler, self.mudReaderHandler)
+        self.character.gender = self.gender
+        self.character.level = self.level
+        self.character.title = self.title
+        self.character.race = self.race
+        self.character.configure_health_and_mana_variables()
+        self.character.set_monster_kill_list()
 
-            self.mudReaderHandler.unregister_reaction(self)
-        
-        except Exception:
-            magentaprint("Unable to ouput whois data", False)
+        self.mudReaderHandler.unregister_reaction(self)
+
 
         super(Whois, self).notify(regex, M_obj)
