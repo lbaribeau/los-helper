@@ -45,6 +45,7 @@ from Whois import Whois
 from Cartography import Cartography 
 from BotReactions import *
 from TelnetHandler import TelnetHandler 
+from FakeTelnetHandler import FakeTelnetHandler 
 
 from Database import *
 from MudMap import *
@@ -55,7 +56,13 @@ class LosHelper(object):
         magentaprint("Connecting to MUD and initializing....", False)
         self.t1 = threading.Thread(target=self.setup_mud_map)
         self.character = Character()
+
         self.telnetHandler = TelnetHandler()
+        
+        if (len(sys.argv) > 3):
+            if (sys.argv[3] == "-fake"):
+                self.telnetHandler = FakeTelnetHandler()
+
         self.consoleHandler = newConsoleHandler() 
         self.MUDBuffer = MyBuffer()
         self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
@@ -75,6 +82,7 @@ class LosHelper(object):
     def setup_mud_map(self):
         magentaprint("Generating the mapfile....", False)
         self.mud_map = MudMap()
+        magentaprint("Mapfile generated", False)
 
     def main(self):
         self.mudListenerThread.start()

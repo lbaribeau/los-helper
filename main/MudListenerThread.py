@@ -40,7 +40,7 @@ class MudListenerThread(threading.Thread):
                 # TODO:  Hmmm, this gets SPAMMED BIGTIME on exit...  (Do not print here)
                 continue
 
-            if sel_out_triple != ([], [], []):
+            if (sel_out_triple != ([], [], []) or socket_number == 1):
                 try:
                     fragment = fragment + self.telnetHandler.read_some().decode('ascii', errors='ignore')
                 except (EOFError, OSError) as e:
