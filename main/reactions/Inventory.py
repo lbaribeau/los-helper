@@ -348,7 +348,9 @@ class Inventory(BotReactionWithFlag):
     #thick liquid silences you !!!
 
     keep_list = ["large bag", "large sack", "black bag",
-        "silver chalice", "steel bottle", 'glowing potion', "chicken soup", 'scarlet potion', 'white potion', "tree root"]
+        "silver chalice", "steel bottle", 'glowing potion',
+        "chicken soup", 'scarlet potion', 'white potion', "tree root",
+        "Elixir of Morinva", "granite potion", "philtre of perception"]
 
     ''' keep_list = ["large bag", "large sack", 
         "silver chalice", "steel bottle", 
