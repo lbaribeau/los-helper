@@ -222,3 +222,5 @@ main/__pycache__/*
 main/*.db
 
 maplos.db
+
+*.plist
