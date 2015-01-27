@@ -37,8 +37,8 @@ class CombatThread(threading.Thread):
                 matched_groups = M_obj.groups()
                 self.character.chase_mob = str(matched_groups[2])
                 self.character.chase_dir = str(matched_groups[3])
-        
-        self.stop()
+            
+            self.stop()
         
     def stop(self):
         if not self.stopping:
