@@ -26,17 +26,17 @@ class CombatThread(threading.Thread):
         raise NotImplementedError("Subclasses must implement this!")
 
     def notify(self, regex, M_obj):
-        magentaprint(" <" + str(self.target) + "> : " + str(self.character.MONSTER_LIST))
-        magentaprint(regex)
-
-        if regex == self.enemy_defeated:
-            monster = M_obj.group(1)
-            if monster in self.character.MOBS_ATTACKING:
-                self.character.MOBS_ATTACKING.remove(monster)
-        elif regex == self.it_fled:
-            matched_groups = M_obj.groups()
-            self.character.chase_mob = str(matched_groups[2])
-            self.character.chase_dir = str(matched_groups[3])
+        # magentaprint(" <" + str(self.target) + "> : " + str(self.character.MONSTER_LIST))
+        # magentaprint(regex)
+        if not self.stopping:
+            if regex == self.enemy_defeated:
+                monster = M_obj.group(1)
+                if monster in self.character.MOBS_ATTACKING:
+                    self.character.MOBS_ATTACKING.remove(monster)
+            elif regex == self.it_fled:
+                matched_groups = M_obj.groups()
+                self.character.chase_mob = str(matched_groups[2])
+                self.character.chase_dir = str(matched_groups[3])
         
         self.stop()
         
