@@ -34,6 +34,7 @@ class Info(BotReactionWithFlag):
         self.got_second = False
         self.mudReaderHandler.register_reaction(self)
         self.telnetHandler.write("info")
+        self.telnetHandler.write("time")
         #self.wait_for_flag()
         #self.mudReaderHandler.unregister_reaction(self)
 
