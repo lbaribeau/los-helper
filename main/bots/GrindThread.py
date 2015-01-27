@@ -22,7 +22,7 @@ class GrindThread(BotThread):
         elif self.character.level <= 10:
             self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8 
         elif self.character.level > 12:
-            self.__TOTALPATHS = 26
+            self.__TOTALPATHS = 24
         else:
             self.__TOTALPATHS = 22 # start the fort and bandits at lvl 8
 
@@ -302,8 +302,8 @@ class GrindThread(BotThread):
             return SPIDER_FOREST
         elif(self.__nextpath == 23):
             return GNOLL_CAMP
-        elif(self.__nextpath == 25):
-            return KNIGHTS
+        # elif(self.__nextpath == 25):
+        #     return KNIGHTS
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" +
                          str(self.__nextpath))
