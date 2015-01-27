@@ -167,7 +167,7 @@ class LosHelper(object):
                 self.start_crawl()
             elif(re.match("goto -?[0-9]+$", user_input)):
                 self.start_goto(user_input)
-            elif(re.match("showto [0-9]+$", user_input)):
+            elif(re.match("showto -?[0-9]+$", user_input)):
                 self.start_goto(user_input, True)
             elif(re.match("domix .+?", user_input)):
                 self.start_mix(user_input)
