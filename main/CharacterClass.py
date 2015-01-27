@@ -25,10 +25,10 @@ class CharacterClass(object):
             self.lvl1_maxHP = 16 
             self.lvl1_maxMP = 4
             self.mana_tick = 2
-            self.buff_skills.extend([ClassSkillReaction(mudReaderHandler, "pray",
+            self.buff_skills.extend([ClassSkillReaction(mudReaderHandler, "Pray",
                                     SkillTimer("You feel extremely pious\.", 360),
                                     SkillTimer("Your prayers were not answered\.", 10),
-                                   SkillTimer("You feel less pious\."))])
+                                   SkillTimer("You feel less pious\.", 285))])
             # self.abilities = [ Pray(telnetHandler), Turn(telnetHandler) ]
         elif class_string == "Fig":
             self.lvl1_maxHP = 22 
@@ -64,10 +64,10 @@ class CharacterClass(object):
             self.lvl1_maxMP = 3
             self.HP_gained_per_level = 6
             self.MP_gained_per_level = 3
-            self.heal_skills.extend([ClassSkillReaction(mudReaderHandler, "meditate",
+            self.heal_skills.extend([ClassSkillReaction(mudReaderHandler, "Meditate",
                                     SkillTimer("You feel at one with the universe\.", 100),
                                     SkillTimer("Your spirit is not at peace.", 10))])
-            self.combat_skills.extend([ClassSkillReaction(mudReaderHandler, "touch",
+            self.combat_skills.extend([ClassSkillReaction(mudReaderHandler, "Touch",
                                     SkillTimer("Your? touch(?:ed)? .+?\.", 240),
                                     SkillTimer("You failed to harm the .+?\.", 240))])
             # self.abilities = [ Meditate(telnetHandler), Touch(telnetHandler) ]
