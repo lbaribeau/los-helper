@@ -23,22 +23,16 @@ class ClassSkillReaction(BotReaction):
         self.timer = 0
         self.last_used = 0
 
-        self.regexes = [self.success_timer.regex,
+        self.timer_check = "(" + command + ")\s\s\s(?:\*READY\*|(?:(?:([\d]*):)?([\d]*) (?:minutes|seconds?) (?:remaining|left on current run)))"
+        self.please_wait = "Please wait (?:([\d]*):)?([\d]*) more (?:minutes|seconds?)\."
+        self.regexes = [self.timer_check,
+                        #self.please_wait,
+                        self.success_timer.regex,
                         self.fail_timer.regex,
                         self.end_timer.regex]
 
         self.mud_reader_handler = mud_reader_handler    
         self.mud_reader_handler.register_reaction(self)
-
-    def __iter__(self):
-        return self
-    
-    def next(self): # Python 3: def __next__(self)
-        if self.current > self.high:
-            raise StopIteration
-        else:
-            self.current += 1
-            return self.current - 1
     
     def notify(self, regex, M_obj):
         if regex == self.success_timer.regex:
@@ -47,5 +41,32 @@ class ClassSkillReaction(BotReaction):
         elif regex is self.fail_timer.regex:
             self.timer = self.fail_timer.set_timer_to
         elif regex is self.end_timer.regex:
-            self.timer = 0
+            self.timer = self.end_timer.set_timer_to
             #doFunction
+        elif regex is self.timer_check:
+            command = M_obj.group(1).strip()
+            minutes = M_obj.group(2)
+            seconds = M_obj.group(3)
+
+            if command == self.command:
+                if seconds is None:
+                    #magentaprint(command + " is ready.",False)
+                    self.timer = 0 #*READY*
+                elif minutes is None and seconds is not None:
+                    #magentaprint(command + " is ready in '" + str(seconds) + "' seconds.",False)
+                    self.timer = int(seconds)
+                else:
+                    #magentaprint(command + " is ready in '" + str(minutes) + "' minutes " + str(seconds) + "' seconds.",False)
+                    self.timer = (int(minutes) * 60) + int(seconds)
+
+        elif (regex is self.please_wait and False):
+            minutes = M_obj.group(1)
+            seconds = M_obj.group(2)
+
+            if minutes is not None:
+                self.timer = minutes * 60 + seconds
+            else:
+                self.timer = seconds
+
+        #magentaprint("Timer set to: " + str(self.timer) + " by " + regex, False)
+
