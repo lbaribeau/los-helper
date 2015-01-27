@@ -224,3 +224,15 @@ main/*.db
 maplos.db
 
 *.plist
+
+*.xcscheme
+
+*.xccheckout
+
+*.xcuserstate
+
+*.xcworkspacedata
+
+*.pbxproj
+
+los-helper/*
