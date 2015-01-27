@@ -428,25 +428,21 @@ class BotThread(threading.Thread):
                 re.search("clown", mob)):
                 return ""
 
-        #engage mobs which are already fighting us
-        for mob in self.character.MOBS_ATTACKING:
-            if mob is self.character.chase_mob:
-                magentaprint(mob + "/" + self.character.chase_mob + " ran from me!",False)            
-                if self.character.AREA_ID is not None:
-                    go_hook = "areaid" + str(self.character.AREA_ID)
-                    if self.direction_list[0] is not go_hook:
-                        self.direction_list.insert(0, go_hook) #should be this area
-                else:
-                    go_hook = "areaid45"
-                    if self.direction_list[0] is not go_hook:
-                        self.direction_list.insert(0, go_hook) #should be this area
+        if self.character.chase_mob is not "":
+            mob = self.character.chase_mob
+            #engage mobs which are already fighting us            
+            if self.character.AREA_ID is not None:
+                go_hook = "areaid" + str(self.character.AREA_ID)
+                self.direction_list.insert(0, go_hook) #should be this area
+            else:
+                go_hook = "areaid45"
+                self.direction_list.insert(0, go_hook) #should be this area
 
-                self.go(self.character.chase_dir)
-                self.character.chase_mob = ""
-                self.character.chase_dir = ""
-                return mob
-            elif mob in monster_list:
-                return mob
+            self.go(self.character.chase_dir)
+            self.character.chase_mob = ""
+            self.character.chase_dir = ""
+
+            return mob
         
         #find a new monster to kill
         for mob in monster_list:
