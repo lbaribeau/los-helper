@@ -144,7 +144,7 @@ class BotThread(threading.Thread):
         return         
 
     def decide_where_to_go(self): #each logic thread will have to implement this function
-        #self.directionlist = []
+        #self.direction_list = []
         raise NotImplementedError()
 
     def do_on_succesful_go(self):
@@ -327,17 +327,11 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return
 
-        if self.is_character_class("Mon"):
-            magentaprint("Last Meditate Check: " + str(time.time() - self.character.LAST_MEDITATE))
-            if((time.time() - self.character.LAST_MEDITATE) > 150 and
-                self.character.HEALTH <= self.character.HEALTH_TO_HEAL):
-                self.commandHandler.process('meditate')
-                self.character.LAST_MEDITATE = time.time()
-
-        if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
-           self.character.MANA >= heal_cost):
-            if (self.character.KNOWS_VIGOR):
-                self.commandHandler.user_cc(heal_spell)
+        if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL):
+            self.do_heal_skills()
+            if self.character.MANA >= heal_cost:
+                if (self.character.KNOWS_VIGOR):
+                    self.commandHandler.user_cc(heal_spell)
         
         self.character.HAS_RESTORE_ITEMS = False
 
@@ -366,6 +360,7 @@ class BotThread(threading.Thread):
             #while(self.character.MANA > 0): 
                 #self.commandHandler.user_ca('c light')
 
+            self.do_buff_skills()
             self.use_buff_items()
             self.character.LAST_BUFF = time.time()
             return
@@ -425,23 +420,65 @@ class BotThread(threading.Thread):
         self.inventory.drop_stuff()
 
     def decide_which_mob_to_kill(self, monster_list):
-        monster_list = monster_list[:]
+        monster_list = monster_list[:]                 
 
+        #avoid fighting around mobs that join in
         for mob in monster_list:
             if (re.search("town guard", mob) or re.search("town crier", mob) or
                 re.search("clown", mob)):
                 return ""
 
+        #engage mobs which are already fighting us
         for mob in self.character.MOBS_ATTACKING:
-            if mob in monster_list:
+            if mob is self.character.chase_mob:
+                magentaprint(mob + "/" + self.character.chase_mob + " ran from me!",False)            
+                if self.character.AREA_ID is not None:
+                    go_hook = "areaid" + str(self.character.AREA_ID)
+                    if self.direction_list[0] is not go_hook:
+                        self.direction_list.insert(0, go_hook) #should be this area
+                else:
+                    go_hook = "areaid45"
+                    if self.direction_list[0] is not go_hook:
+                        self.direction_list.insert(0, go_hook) #should be this area
+
+                self.go(self.character.chase_dir)
+                self.character.chase_mob = ""
+                self.character.chase_dir = ""
+                return mob
+            elif mob in monster_list:
                 return mob
         
+        #find a new monster to kill
         for mob in monster_list:
             if mob in self.character.MONSTER_KILL_LIST:
                 return mob
             
         return ""
-    
+
+    def do_buff_skills(self):
+        if self.character._class is not None:
+            if self.character._class.buff_skills is not []:
+                for skill in self.character._class.buff_skills:
+                    if((time.time() - skill.last_used) > skill.timer):
+                        self.commandHandler.process(skill.command)
+                        skill.last_used = time.time()
+
+    def do_combat_skills(self, monster):
+        if self.character._class is not None:
+            if self.character._class.combat_skills is not []:
+                for skill in self.character._class.combat_skills:
+                    if((time.time() - skill.last_used) > skill.timer):
+                        self.commandHandler.process(skill.command + " " + monster)
+                        skill.last_used = time.time()
+
+    def do_heal_skills(self):
+        if self.character._class is not None:
+            if self.character._class.heal_skills is not []:
+                for skill in self.character._class.heal_skills:
+                    if((time.time() - skill.last_used) > skill.timer):
+                        self.commandHandler.process(skill.command)
+                        skill.last_used = time.time()
+
     def engage_monster(self, monster):
         vigor_cost = 2
         black_magic_spell_cost = self.character.SPELL_COST
@@ -449,6 +486,9 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return
         
+        self.do_buff_skills()
+        self.do_combat_skills(monster)
+
         magentaprint("Engage: " + monster)
         ifled = False
 
@@ -457,7 +497,7 @@ class BotThread(threading.Thread):
 
         while(self.commandHandler.KillThread != None and self.commandHandler.KillThread
               and self.commandHandler.KillThread.stopping == False):
-            
+
             if(self.character.BLACK_MAGIC and self.character.MANA >= black_magic_spell_cost):
                 if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
                     magentaprint("Starting black magic cast thread: " + monster)
@@ -467,11 +507,7 @@ class BotThread(threading.Thread):
                     
             # TODO: restoratives (use when vig not keeping up or low mana)
             if (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL)):
-                if self.is_character_class("Mon"):
-                    magentaprint("Last Meditate Check: " + str(time.time() - self.character.LAST_MEDITATE))
-                    if((time.time() - self.character.LAST_MEDITATE) > 150):
-                        self.commandHandler.process('meditate')
-                        self.character.LAST_MEDITATE = time.time()
+                self.do_heal_skills()
                 if(self.character.MANA >= vigor_cost and self.character.KNOWS_VIGOR and
                     self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
                     magentaprint("Starting vigor cast thread")
@@ -490,26 +526,10 @@ class BotThread(threading.Thread):
                 self.do_flee_hook()
                 ifled = True
 
-            self.sleep(0.05)
-
-        # OK the mob died or ran or I ran
-        self.commandHandler.stop_CastThread()    
-        
-        if monster in self.character.MOBS_ATTACKING:
-            #magentaprint("Bot:engage_monster: Removing " + monster + " from MOBS_ATTACKING.")
-            magentaprint("I believe the following is dead or gone: " + monster, False)
-            #check to see if "monster" we're fighting has fled
-            if (not ifled):
-                self.sleep(0.05)
-                if monster == self.character.chase_mob:
-                    if self.character.AREA_ID is not None:
-                        go_hook = "area_id" + str(self.character.AREA_ID)
-                        self.direction_list.insert(0, go_hook) #should be this area
-                    self.go(self.character.chase_dir)
-                    self.character.chase_mob = ""
-                    self.character.chase_dir = ""
-                #remove monster fled flag
-            self.character.MOBS_ATTACKING.remove(monster)
+                # OK the mob died or ran
+                self.commandHandler.stop_CastThread() 
+            
+            self.sleep(0.05)   
             
         return
 
@@ -520,7 +540,6 @@ class BotThread(threading.Thread):
     def get_items(self):
         if(self.__stopping):
             return
-
         self.commandHandler.process("ga")  
         return
 
