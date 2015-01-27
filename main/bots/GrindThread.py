@@ -18,9 +18,11 @@ class GrindThread(BotThread):
         if self.character.level <= 2:
             self.__TOTALPATHS = 8 # Kobolds are level 1 safe.
         elif self.character.level <= 7:
-            self.__TOTALPATHS = 8 # include hookers for level 3   
+            self.__TOTALPATHS = 9 # include hookers for level 3   
         elif self.character.level <= 10:
-            self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8        
+            self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8 
+        elif self.character.level > 12:
+            self.__TOTALPATHS = 26
         else:
             self.__TOTALPATHS = 22 # start the fort and bandits at lvl 8
 
@@ -85,12 +87,12 @@ class GrindThread(BotThread):
                           "nw", 'n', "gate", 'e', 'n', 'n', 'n', 'w', 'n',
                           "chapel"]
         
-        KOBOLD_PATH = ["out", 's', 'e', 's', 's', 's', 'w', "gate", 's',
-                          "se", "se", 'e', 'e', 'e', "se", "se", "se", 's',
-                          's', 's', 's', 's', 's', 's', 's', 's', 's', 'e',
-                          "ne", 'e', 'e', 's', "glowing", "passage", "mines",
-                          'down', 'n',
-                          'n', 'n', 'n', "ne", 'n', 'w', 'n', 'n', 'e',
+        KOBOLD_PATH = ['out', 'south', 'east', 'south', 'south', 'south',
+                        'west', 'gate', 'south', 'southeast', 'southeast', 'east', 'east',
+                        'east', 'southeast', 'southeast', 'southeast', 'south', 'south', 'south',
+                        'south', 'south', 'east', 'east', 'southeast', 'east', 'south', 'south',
+                        'south', 'south', 'glowing portal', "passage", "mines",
+                          'down', 'n', 'n', 'n', 'n', "ne", 'n', 'w', 'n', 'n', 'e',
                           "door", 'w', "gully", 'up', "boulder", 'up',
                           "cave 3", 'ne', 'ne', 'n', 's', 'up', 'e', 'se', 
                           'cave', 'out', 
@@ -113,10 +115,12 @@ class GrindThread(BotThread):
                           "sw", 'se', 'nw', 'w', "out", 'down',
                           "boulder", 'down', 'down', 'e', "door", 'w', 's', 's',
                           'e', 's', "sw", 's', 's', 's', 's', "gully",
-                          "glowing", "passage", "coral", 'n', 'w', 'w', "sw",
-                          'w', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-                          'n', "nw", "nw", "nw", 'w', 'w','w', "nw", "nw", 'n',
-                          "gate", 'e', 'n', 'n', 'n', 'w', 'n', "chapel"]
+                          'glowing portal', 'passage', 'coral', 'north', 'north',
+                          'north', 'north', 'west', 'northwest', 'west', 'west',
+                          'north', 'north', 'north', 'north', 'north', 'northwest',
+                          'northwest', 'northwest', 'west', 'west', 'west', 'northwest',
+                          'northwest', 'north', 'gate', 'east', 'north', 'north', 'north',
+                          'west', 'north', 'chapel']
 
         CORAL_ALLEY_PATH = ["out", "s", 'e', 's', 's', 's', 'w', 'gate',
                               's', 'se', 'se', 'e', 'e', 'e',
@@ -219,8 +223,16 @@ class GrindThread(BotThread):
                         'gate', 'south', 'south', 'gate', 'south', 'south', 'south', 'south', 'south',
                         'gate', 'east', 'south', 'south', 'chapel']
 
-        PATH_TO_SKIP_WITH = [ 'out', 'chapel' ]
+        #The following areas repeat a bit because the spawns are fast
+        KNIGHTS = ['areaid1904', 'areaid1912', 'areaid1909', 'areaid1913',
+                          'areaid1904', 'areaid1912', 'areaid1909', 'areaid1913',
+                          'areaid1904', 'areaid1912', 'areaid1909', 'areaid45',] #end with chapel
 
+        GNOLL_CAMP = ['areaid1574', 'areaid800', 'areaid1574', 'areaid800', 'areaid1574', 'areaid45', ]
+
+        PATH_TO_SKIP_WITH = [ 'out', 'chapel' ]
+        #return SHOP_AND_TIP_PATH
+        
         if (self.character.DEAD):
             self.character.DEAD = False
             self.character.DEATHS += 1
@@ -235,6 +247,8 @@ class GrindThread(BotThread):
                 return SHOP_AND_TIP_PATH
             else:
                 self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
+
+        #return KOBOLD_PATH
 
         if(self.__nextpath == 1):
             return THEATRE_PATH
@@ -286,9 +300,13 @@ class GrindThread(BotThread):
             return RANCHER_SENTRY
         elif(self.__nextpath == 21):
             return SPIDER_FOREST
+        elif(self.__nextpath == 23):
+            return GNOLL_CAMP
+        elif(self.__nextpath == 25):
+            return KNIGHTS
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" +
-                         self.__nextpath)
+                         str(self.__nextpath))
             return PATH_TO_SKIP_WITH
         return PATH_TO_SKIP_WITH
 
