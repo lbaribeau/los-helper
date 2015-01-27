@@ -1,34 +1,43 @@
 from misc_functions import *
 from Ability import *
+from ClassSkill import *
+from CoolAbility import *
 
 class CharacterClass(object):
 
-    def __init__(self, class_string, telnetHandler):
+    def __init__(self, class_string, telnetHandler, mudReaderHandler):
         self.id = class_string
+        self.combat_skills = []
+        self.heal_skills = []
+        self.buff_skills = []
 
         if class_string == "Ass":
             self.lvl1_maxHP = 19 
-            self.lvl1_maxMP = 2
-            self.abilities = [ Backstab(telnetHandler) ]
+            self.lvl1_maxMP #= 2
+            # self.abilities = [ Backstab(telnetHandler) ]
         elif class_string == "Bar":
             self.lvl1_maxHP = 24 
             self.lvl1_maxMP = 0
             self.mana_tick = 0
-            self.mana_tick_chapel = 0
-            self.abilities = [ Bash(telnetHandler), Circle(telnetHandler), Berserk(telnetHandler) ]
+            self.mana_tick_c#hapel = 0
+            # self.abilities = [ Bash(telnetHandler), Circle(telnetHandler), Berserk(telnetHandler) ]
         elif class_string == "Cle":
             self.lvl1_maxHP = 16 
             self.lvl1_maxMP = 4
             self.mana_tick = 2
-            self.abilities = [ Pray(telnetHandler), Turn(telnetHandler) ]
+            self.buff_skills.extend([ClassSkillReaction(mudReaderHandler, "pray",
+                                    SkillTimer("You feel extremely pious\.", 360),
+                                    SkillTimer("Your prayers were not answered\.", 10),
+                                   SkillTimer("You feel less pious\."))])
+            # self.abilities = [ Pray(telnetHandler), Turn(telnetHandler) ]
         elif class_string == "Fig":
             self.lvl1_maxHP = 22 
-            self.lvl1_maxMP = 2
-            self.abilities = [ Bash(telnetHandler), Circle(telnetHandler) ]
+            self.lvl1_maxMP #= 2
+            # self.abilities = [ Bash(telnetHandler), Circle(telnetHandler) ]
         elif class_string == "Brd":
             self.lvl1_maxHP = 15 
-            self.lvl1_maxMP = 3
-            self.abilities = [ AestersTears(telnetHandler), DanceOfTheCobra(telnetHandler) ]
+            self.lvl1_maxMP #= 3
+            # self.abilities = [ AestersTears(telnetHandler), DanceOfTheCobra(telnetHandler) ]
         elif class_string == "Mag":
             self.lvl1_maxHP = 14 
             self.lvl1_maxMP = 5
@@ -36,49 +45,68 @@ class CharacterClass(object):
                           ["door", "out", "out", "w", "n", "e", "e", "e", "n", "cha"]]
         elif class_string == "Pal":
             self.lvl1_maxHP = 19 
-            self.lvl1_maxMP = 3
-            self.abilities = [ Pray(telnetHandler), Turn(telnetHandler) ]
+            self.lvl1_maxMP #= 3
+            # self.abilities = [ Pray(telnetHandler), Turn(telnetHandler) ]
         elif class_string == "Ran":
             self.lvl1_maxHP = 18 
             self.lvl1_maxMP = 3
             self.HP_gained_per_level = 6
             self.MP_gained_per_level = 3
             self.mana_tick = 2 
-            self.mana_tick_chapel = 4 
-            self.abilities = [ Haste(telnetHandler) ]
+            self.mana_tick_c#hapel = 4 
+            # self.abilities = [ Haste(telnetHandler) ]
         elif class_string == "Thi":
             self.lvl1_maxHP = 18 
-            self.lvl1_maxMP = 3
-            self.abilities = [ Backstab(telnetHandler), Steal(telnetHandler) ]
+            self.lvl1_maxMP #= 3
+            # self.abilities = [ Backstab(telnetHandler), Steal(telnetHandler) ]
         elif class_string == "Mon":
             self.lvl1_maxHP = 17 
             self.lvl1_maxMP = 3
             self.HP_gained_per_level = 6
             self.MP_gained_per_level = 3
-            self.abilities = [ Meditate(telnetHandler), Touch(telnetHandler) ]
+            self.heal_skills.extend([ClassSkillReaction(mudReaderHandler, "meditate",
+                                    SkillTimer("You feel at one with the universe\.", 100),
+                                    SkillTimer("Your spirit is not at peace.", 10))])
+            self.combat_skills.extend([ClassSkillReaction(mudReaderHandler, "touch",
+                                    SkillTimer("Your? touch(?:ed)? .+?\.", 240),
+                                    SkillTimer("You failed to harm the .+?\.", 240))])
+            # self.abilities = [ Meditate(telnetHandler), Touch(telnetHandler) ]
         elif class_string == "Dru":
             self.lvl1_maxHP = 15
-            self.lvl1_maxMP = 4
-            self.abilities = [ Barkskin(telnetHandler) ]
+            self.lvl1_maxMP #= 4
+            # self.abilities = [ Barkskin(telnetHandler) ]
         elif class_string == "Alc":
             self.lvl1_maxHP = 15 
             lvl1_maxMP = 4
         elif class_string == "Dar":
             lvl1_maxHP = 19 
-            lvl1_maxMP = 4
-            abilities = [ Berserk(telnetHandler), Wither(telnetHandler) ]
+            lvl1_maxMP #= 4
+            # abilities = [ Berserk(telnetHandler), Wither(telnetHandler) ]
         else:
             magentaprint("CharacterClass error: could not recognize class string.")
 
-
-
+class ClassSkill(object):
+    def command(self): 
+        abstract()
+    def cooldown_in_seconds_after_success(self): 
+        abstract()
+    def cooldown_in_seconds_after_failure(self):
+        abstract()
+    def use_for_combat(self):
+        abstract()
+    def success_mud_text(self):
+        abstract()
+    def failure_mud_text(self):
+        abstract()
+    def wear_off_mud_text(self):
+        abstract()
 
 
 # OLD IDEAS
 
 # CombatAbility class?
 #class CombatAbility:
-#    ''' CombatAbilities are things that will affect how a character fights,
+#   ''' CombatAbilities are things that will affect how a character fights,
 #    like circle, bash, steal, backstab, ''' 
 #    def getCommand(self):
 #        abstract()
@@ -99,6 +127,6 @@ class CharacterClass(object):
     # @property
     # def mana_tick_amount(self): raise NotImplementedError("Subclasses should implement this!")
     # @property
-    # def abilities(self): raise NotImplementedError("Subclasses should implement this!")
+ #   def abilities(self): raise NotImplementedError("Subclasses should implement this!")
     # @property
     # def level_path(self): raise NotImplementedError("Subclasses should implement this!")
