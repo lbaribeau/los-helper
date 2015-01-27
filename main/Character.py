@@ -55,7 +55,7 @@ class Character(object):
     ATTACK_WAIT = ATTACK_PERIOD   # Used by timer.  Same as ATTACK_PERIOD.
                                 # Amount of time to wait to walk after attacking
 
-    MOVE_WAIT = 0.35
+    MOVE_WAIT = 0.33
     if sys.platform == 'win32':
         MOVE_WAIT = 0.29
  
@@ -154,10 +154,10 @@ class Character(object):
             self.MAX_MANA = 15
             self.MANA_TO_ENGAGE = 9
         elif self.level <= 5:
-            self.HEALTH_TO_HEAL= 31
-            self.HEALTH_TO_FLEE = 8
+            self.HEALTH_TO_HEAL= 30
+            self.HEALTH_TO_FLEE = 15
             self.MAX_MANA = 12
-            self.MANA_TO_ENGAGE = 6           
+            self.MANA_TO_ENGAGE = 12          
         elif self.level <= 6:
             self.HEALTH_TO_HEAL = 35 # 43
             self.HEALTH_TO_FLEE = 15
@@ -186,14 +186,14 @@ class Character(object):
     ### Monster stuff ###
 
     lvl1_monsters = [ # 1-8 exp
-        "dustman", "small girl", #"young boy", "old woman", "old man", 
-        "townsman", "stall holder", #"duck", "hedgehog", "piglet", 
-        'streetsweeper', "shopper", #"window shopper", "window cleaner", 
-        #"waitress", "housewife", "squirrel", "milk maid", "rabbit", 
-        #"one man band", "heather seller", "irate teenager", 'peasant', 
-        #'one-armed beggar', "village elder", "small dog", "tribesman", 
-        #"searcher", "delivery boy", "traveller", "wanderer", "villager", 
-        #"vagrant", "dropout", "tramp", "serf", 'dishwasher'
+        "dustman", "small girl", "young boy", "old woman", "old man", 
+        "townsman", "stall holder", "duck", "hedgehog", "piglet", 
+        'streetsweeper', "shopper", "window shopper", "window cleaner", 
+        "waitress", "housewife", "squirrel", "milk maid", "rabbit", 
+        "one man band", "heather seller", "irate teenager", 'peasant', 
+        'one-armed beggar', "village elder", "small dog", "tribesman", 
+        "searcher", "delivery boy", "traveller", "wanderer", "villager", 
+        "vagrant", "dropout", "tramp", "serf", 'dishwasher'
         ]     
     lvl1_red_monsters = [ # 8-15 exp
         "old kobold", "kobold child", "kobold dam"]
@@ -254,7 +254,7 @@ class Character(object):
         "yard supervisor", "sawmill operator", "large spider"
         #'sentry' stand in pairs unfortunately...
         ] # bull and hunter might be wrong (too high).
-    lvl6_red_monsters = [
+    lvl6_red_monsters = [ #1574 for gnoll camp
         'gnoll sentry', "bandit swordsman", "gnoll spearsman", "gnoll raider"
         ]
     lvl7_monsters = [
@@ -267,6 +267,11 @@ class Character(object):
         ]
     lvl9_monsters = [
         "dwarven blacksmith"
+        ]
+
+    lvl10_blue_monsters = [ #1913 Red Tent, #1904 / #1912 Knights Tent, #1909
+        "old knight", "young knight", "hedge knight", "white knight", "battered knight",
+        #'silver knight' deflects attacks a.k.a. takes 50% dmg and shouldn't be fought by melee
         ]
     # A list of monsters redundant to the above lists that
     # I may want to kill even if they are too low of level.
@@ -303,6 +308,8 @@ class Character(object):
             self.MONSTER_KILL_LIST.extend(self.lvl6_red_monsters)
         if self.level > 10:
             self.MONSTER_KILL_LIST.extend(self.lvl7_monsters)
+        if self.level > 12:
+            self.MONSTER_KILL_LIST.extend(self.lvl10_blue_monsters)
 
 
 # todo: I don't like caps anymore
