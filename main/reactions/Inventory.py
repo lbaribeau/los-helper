@@ -330,6 +330,7 @@ class Inventory(BotReactionWithFlag):
         # 'grey cloak' will be "grey", it just takes the first word.
         #s = get_last_word(item_string)
         #magentaprint("Reference: " + s, False)
+        item_string = item_string.replace('sets of ', ' ')
         return item_string.strip().split(" ")[0].split(".")[0]
 
     def output_inventory(self):
