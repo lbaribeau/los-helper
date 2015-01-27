@@ -11,9 +11,9 @@ class Character(object):
     _class = None
     level = None
     preferred_alignment = None
-    BLACK_MAGIC = False
+    BLACK_MAGIC = True
     FAVOURITE_SPELL = "fireball"
-    SPELL_COST = 3
+    SPELL_COST = 7
     KNOWS_VIGOR = True
     #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
     #MAGIC_SKILLS= [0, 0, 0, 0, 0]
@@ -270,7 +270,8 @@ class Character(object):
         ]
 
     lvl10_blue_monsters = [ #1913 Red Tent, #1904 / #1912 Knights Tent, #1909
-        "old knight", "young knight", "hedge knight", "white knight", "battered knight",
+        "old knight", "young knight", "hedge knight", #"white knight", too tough for bot
+        "battered knight",
         #'silver knight' deflects attacks a.k.a. takes 50% dmg and shouldn't be fought by melee
         ]
     # A list of monsters redundant to the above lists that
