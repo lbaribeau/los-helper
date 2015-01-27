@@ -55,11 +55,11 @@ class CommandHandler(object):
         elif re.match("ki? [a-zA-Z]|kill? [a-zA-Z]", user_input):
             self.user_ki(user_input)
         elif re.match("kk ", user_input):
-            self.user_kk(user_input[3:].lstrip())
+            self.user_kk(get_last_word(user_input))
         elif re.match("sk$", user_input):
             self.user_sk()
         elif re.match("cc ", user_input):
-            self.user_cc(user_input[3:].lstrip())
+            self.user_cc(get_last_word(user_input))
         elif re.match("sc$", user_input):
             self.user_sc()
         elif re.match("dro? ", user_input):
@@ -106,9 +106,12 @@ class CommandHandler(object):
             magentaprint(self.character.WEAPON2, False)
         elif re.match("MONSTER_CHECK_FLAG", user_input):
             magentaprint(str(self.character.MONSTER_CHECK_FLAG), False)
-        elif re.match("MONSTER_LIST", user_input):
+        elif re.match("ml", user_input): #Monster List
             magentaprint(str(self.character.MONSTER_LIST), False)
-        elif re.match("AREA_ID", user_input):
+            if self.KillThread != None:
+                magentaprint("Cur KT Target: " + str(self.KillThread.target), False)
+            magentaprint("Mobs Attacking " + str(self.character.MOBS_ATTACKING), False)
+        elif re.match("aid", user_input): #Area ID
             magentaprint("<" + str(self.character.AREA_ID) + ">", False)
             magentaprint("<" + str(self.character.MUD_AREA) + ">", False)
         elif re.match("LAST_DIR", user_input):
@@ -117,7 +120,7 @@ class CommandHandler(object):
             magentaprint("<" + str(self.character.AREA_TITLE) + ">", False)
         elif re.match("EXIT_LIST", user_input):
             magentaprint(str(self.character.EXIT_LIST), False)
-        elif re.match("HEALTH", user_input):
+        elif re.match("hp", user_input):
             magentaprint(str(self.character.HEALTH), False)
         elif re.match("EXPERIENCE", user_input):
             exp = self.character.EXPERIENCE
@@ -145,6 +148,8 @@ class CommandHandler(object):
             time.sleep(1)
             exp = self.character.TOTAL_EXPERIENCE
             gold = self.character.TOTAL_GOLD
+            aura = str(self.character.AURA)
+            magentaprint("Current Aura: " + aura, False)
             magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), False)
             exp = self.character.EXPERIENCE
             expm = str(calculate_vpm(exp))
@@ -292,6 +297,8 @@ class CommandHandler(object):
         self.telnetHandler.write(user_input)
     
     def user_kk(self, argv):
+        target = argv
+
         if self.KillThread != None and self.KillThread.is_alive():
             # Commenting... tried doing registering reactions here but maybe 
             # it's better for KillThread to do it.
@@ -305,10 +312,10 @@ class CommandHandler(object):
             #      # KillThread do the registering.
             #else:
             #    self.KillThread.set_target(argv)                
-            self.KillThread.set_target(argv)
+            self.KillThread.set_target(target)
             self.KillThread.keep_going()
         else:
-            self.KillThread = KillThread(self.character, self.mudReaderHandler, self.telnetHandler, argv)
+            self.KillThread = KillThread(self.character, self.mudReaderHandler, self.telnetHandler, target)
             self.KillThread.start()
             #self._do_kill_reactions()
 
