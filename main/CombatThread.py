@@ -14,9 +14,11 @@ class CombatThread(threading.Thread):
         self.telnetHandler = telnetHandler
         self.target = target
         numbers = "(\d+?1st|\d+?2nd|\d+?3rd|\d+th)" 
-        self.it_collapsed = "Your attack overwhelms the (" + numbers + " )?" + target + " and (s?he|it) collapses!"
+        #collapsed doesn't work in parties
+        #self.it_collapsed = "Your attack overwhelms the (" + numbers + " )?" + target + " and (s?he|it) collapses!"
+        self.enemy_defeated = "Your enemy, the (.+?) has been defeated\."
         self.it_fled = "The (" + numbers + " )?(.+?) flees to the (.+?)\."
-        self.regexes = [self.it_collapsed,
+        self.regexes = [self.enemy_defeated,
                         self.it_fled]
         atexit.register(self.stop)
 
@@ -27,8 +29,16 @@ class CombatThread(threading.Thread):
         magentaprint(" <" + str(self.target) + "> : " + str(self.character.MONSTER_LIST))
         magentaprint(regex)
 
-        if not self.stopping:
-            self.stop()
+        if regex == self.enemy_defeated:
+            monster = M_obj.group(1)
+            if monster in self.character.MOBS_ATTACKING:
+                self.character.MOBS_ATTACKING.remove(monster)
+        elif regex == self.it_fled:
+            matched_groups = M_obj.groups()
+            self.character.chase_mob = str(matched_groups[2])
+            self.character.chase_dir = str(matched_groups[3])
+        
+        self.stop()
         
     def stop(self):
         if not self.stopping:
