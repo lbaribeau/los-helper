@@ -430,15 +430,6 @@ class BotThread(threading.Thread):
 
         if self.character.chase_mob is not "":
             mob = self.character.chase_mob
-            #engage mobs which are already fighting us            
-            if self.character.AREA_ID is not None:
-                go_hook = "areaid" + str(self.character.AREA_ID)
-                self.direction_list.insert(0, go_hook) #should be this area
-            else:
-                go_hook = "areaid45"
-                self.direction_list.insert(0, go_hook) #should be this area
-
-            self.go(self.character.chase_dir)
             self.character.chase_mob = ""
             self.character.chase_dir = ""
 
@@ -524,8 +515,19 @@ class BotThread(threading.Thread):
 
                 # OK the mob died or ran
                 self.commandHandler.stop_CastThread() 
-            
+
             self.sleep(0.05)   
+
+        if (self.character.chase_mob is not ""):
+            #engage mobs which are already fighting us            
+            if self.character.AREA_ID is not None:
+                go_hook = "areaid" + str(self.character.AREA_ID)
+                self.direction_list.insert(0, go_hook) #should be this area
+            else:
+                go_hook = "areaid45"
+                self.direction_list.insert(0, go_hook) #should be this area
+
+            self.go(self.character.chase_dir)
             
         return
 
@@ -534,9 +536,10 @@ class BotThread(threading.Thread):
         self.commandHandler.user_flee() 
 
     def get_items(self):
-        if(self.__stopping):
-            return
-        self.commandHandler.process("ga")  
+        if (self.character.chase_mob is ""): #Only get items when we're not chasing!
+            if(self.__stopping):
+                return
+            self.commandHandler.process("ga")  
         return
 
     def engage_mobs_who_joined_in(self):
