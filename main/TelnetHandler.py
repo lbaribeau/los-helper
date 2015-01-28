@@ -1,5 +1,5 @@
-
 import telnetlib
+from misc_functions import *
 
 class TelnetHandler(object):
 
@@ -8,11 +8,10 @@ class TelnetHandler(object):
         self.echoing = False
 
     def write(self, command):
-        command += '\r'
-
         if self.echoing:
-            print (command)
-    
+            magentaprint('{' + command + '}',False)
+
+        command += '\r'    
         self.tn.write(command.encode('ascii'))
 
     def connect_to_MUD(self):
