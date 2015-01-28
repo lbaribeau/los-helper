@@ -72,6 +72,7 @@ class LosHelper(object):
         self.combat_reactions = CombatReactions(self.mudReaderHandler, self.character)
 
         self.mud_map = None
+        self.bot_ready = False
 
         self.t1.start()
 
@@ -83,6 +84,7 @@ class LosHelper(object):
         magentaprint("Generating the mapfile....", False)
         self.mud_map = MudMap()
         magentaprint("Mapfile generated", False)
+        self.bot_ready = True
 
     def main(self):
         self.mudListenerThread.start()
@@ -206,10 +208,10 @@ class LosHelper(object):
     def start_bot(self, user_input):
         M_obj = re.search("[0-9]+", user_input)
 
+        starting_path = 0
+
         if (M_obj):
             starting_path = int(M_obj.group(0))
-        else:
-            starting_path = 0
 
         if (self.botThread != None and self.botThread.is_alive()):
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)

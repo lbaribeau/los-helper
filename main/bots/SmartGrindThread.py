@@ -7,29 +7,33 @@ import random
 class SmartGrindThread(GrindThread):
 
     def __init__(self, character, commandHandler, mudReaderHandler,
-                inventory, mud_map, starting_path=None): 
-        super(SmartGrindThread, self).__init__(character, commandHandler, mudReaderHandler, inventory, mud_map)
-        '''target_list = ["theatre goer", "actor", "militia solider", "rancher sentry", "sawmill operator",
-        "dwarven fieldworker", "market official", "fort sentry", "large bandit", "kobold sentry", "old kobold",
-        "bandit swordsman", "gnoll sentry", "sword swallower"]'''
-        target_list = ["dustman", "small girl", "young boy", "old woman", "old man", 
-        "townsman", "stall holder", "duck", "hedgehog", "piglet", 
-        'streetsweeper', "shopper", "window shopper", "window cleaner", 
-        "waitress", "housewife", "squirrel", "milk maid", "rabbit", 
-        "one man band", "heather seller", "irate teenager", 'peasant', 
-        'one-armed beggar', "village elder", "small dog", "tribesman", 
-        "searcher", "delivery boy", "traveller", "wanderer", "villager", 
-        "vagrant", "dropout", "tramp", "serf", 'dishwasher']
+                inventory, mud_map, starting_path=0): 
+        super(SmartGrindThread, self).__init__(character, commandHandler, mudReaderHandler, inventory, mud_map, starting_path)
 
-        self.smart_target_list = []
+        self.is_actually_dumb = True
 
-        for target in target_list:
-            mob_locations = MudMap.get_mob_locations_by_name(target)
-            self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
+        if not (self.is_actually_dumb):
+            '''target_list = ["theatre goer", "actor", "militia solider", "rancher sentry", "sawmill operator",
+            "dwarven fieldworker", "market official", "fort sentry", "large bandit", "kobold sentry", "old kobold",
+            "bandit swordsman", "gnoll sentry", "sword swallower"]'''
+
+            target_list = ["dustman", "small girl", "young boy", "old woman", "old man", 
+            "townsman", "stall holder", "duck", "hedgehog", "piglet", 
+            'streetsweeper', "shopper", "window shopper", "window cleaner", 
+            "waitress", "housewife", "squirrel", "milk maid", "rabbit", 
+            "one man band", "heather seller", "irate teenager", 'peasant', 
+            'one-armed beggar', "village elder", "small dog", "tribesman", 
+            "searcher", "delivery boy", "traveller", "wanderer", "villager", 
+            "vagrant", "dropout", "tramp", "serf", 'dishwasher']
+
+            self.smart_target_list = []
+
+            for target in target_list:
+                mob_locations = MudMap.get_mob_locations_by_name(target)
+                self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
 
         self.cur_target = ""
         self.cur_area_id = self.character.AREA_ID
-        self.is_actually_dumb = True
 
     def decide_where_to_go(self):
         if self.is_actually_dumb:

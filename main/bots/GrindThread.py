@@ -9,7 +9,7 @@ from Exceptions import *
 class GrindThread(BotThread):
 
     def __init__(self, character, commandHandler, mudReaderHandler,
-                inventory, mud_map, starting_path=None): 
+                inventory, mud_map, starting_path): 
         super(GrindThread, self).__init__(character, commandHandler, mudReaderHandler, inventory, mud_map)
         # Set TOTALPATHS.  Setting it lower than the actual number
         # of paths in decide_where_to_go is a way to truncate paths
@@ -18,7 +18,7 @@ class GrindThread(BotThread):
         if self.character.level <= 2:
             self.__TOTALPATHS = 8 # Kobolds are level 1 safe.
         elif self.character.level <= 7:
-            self.__TOTALPATHS = 9 # include hookers for level 3   
+            self.__TOTALPATHS = 10 # include hookers for level 3   
         elif self.character.level <= 10:
             self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8 
         elif self.character.level > 12:
@@ -48,7 +48,8 @@ class GrindThread(BotThread):
         return
 
     def decide_where_to_go(self):
-        magentaprint("Inside decide_where_to_go")
+        magentaprint("Inside decide_where_to_go", False)
+        magentaprint("next path = " + str(self.__nextpath), False)
         
         LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
