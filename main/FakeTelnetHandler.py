@@ -17,8 +17,9 @@ class FakeTelnetSocket(object):
         ##### CONTENT ######
         self.inventory_string = 'You have: an Elixir of Morinva, two black bags, a broom, a cabbage,\n two carrots, three cauliflowers, some chicken soup, three feathers, some furry mittens, three granite pot\nions, a grey cloak, a large bag, three large iron shields, two large maces, a large orcish sword, two mandibles, five philtre of perc\neption, some ring mail armour, some ring mail leggings, a scarlet potion, a sparkler, four tree roots.'
         self.whois_string = 'Player                Cls Gen [Lv]Title                      Age   Race      \n-----------------------------------------------------------------------------\nDerp                  Mon  M  [14]Enlightened Brother        16    Human\n'
-        self.time_string = '                      Meditate   *READY*\n                         Touch   3:25 minutes remaining'
+        self.time_string = '                      Meditate   *READY*\n                         Touch   3:25 minutes remaining\n'
         self.current_area = ""
+        self.current_mud_area = None
         self.current_monster_list = []
 
         self.fso = FakeSocketOutput()
@@ -31,42 +32,60 @@ class FakeTelnetSocket(object):
         #re.match("bot ?$|bot [0-9]+$", user_input)
         #M_obj = re.search("[0-9]+", user_input)
         if (command == "i"):
-            self.content.insert(0, self.inventory_string)
+            self.content.append(self.inventory_string)
         elif (re.match("whois (.+?)", command)):
-            self.content.insert(0, self.whois_string)
+            self.content.append(self.whois_string)
         elif (re.match("time", command)):
-            self.content.insert(0, self.time_string)
+            self.content.append(self.time_string)
         elif (re.match("c show", command)):
-            self.content.insert(0, "You glow with a grey aura.\n")
+            self.content.append("You glow with a grey aura.\n")
         elif (re.match("genaid [\d]*", command)): #OUTPUT AN AREA
             M_obj = re.search("genaid ([\d]*)", command)
             area = Area.get_area_by_id(int(M_obj.group(1)))
-
-
-            #(.+?\n\r)((?:\n\r.+)*)?(\n\rObvious exits: .+?[\n\r]?.+?\.)\n\r(You see .+?[\n\r]?.+?\.)?[\n\r]?(You see .+?[\n\r]?.+?\.)?
-            area_string = (area.name + "\n\r\n\r" +
-                          str(area.description) + "\n\r" +
-                          "Obvious exits: arched door, out, silver portal, chamber.")
-
-            magentaprint(str(self.current_monster_list),False)
-
-            self.current_area = area_string
-
-            self.content.insert(0, str(self.show_current_area()))
+            self.gen_area(area)
         elif (command == "l"):
-            self.content.insert(0, str(self.show_current_area()))
-        elif (re.match("addmon .+", command)): #OUTPUT AN AREA
-            M_obj = re.search("addmon (.+)", command)
+            self.content.append(str(self.show_current_area()))
+        elif (re.match("addmob .+", command)): #OUTPUT AN AREA
+            M_obj = re.search("addmob (.+)", command)
             mob = str(M_obj.group(1))
-            self.current_monster_list.insert(0, mob)
-
+            self.current_monster_list.append(mob)
             mob_arrived_string = "An " + mob + " just arrived.\n"
-            self.content.insert(0, mob_arrived_string)
-        elif (re.match("mobflee .+", command)):
-            M_obj = re.search("mobflee (.+)", command)
+            self.content.append(mob_arrived_string)
+        elif (re.match("mobflee .+? .+", command)):
+            M_obj = re.search("mobflee (.+?) (.+)", command)
             mob = str(M_obj.group(1))
-            flee_string = "The " + mob + " flees to the alley.\n"
-            self.content.insert(0, flee_string)
+            direction = str(M_obj.group(2))
+            flee_string = "The " + mob + " flees to the " + direction + ".\n"
+            self.content.append(flee_string)
+        elif (re.match("mobdead .+", command)):
+            M_obj = re.search("mobdead (.+)", command)
+            mob = str(M_obj.group(1))
+            dead_string = "Your attack overwhelms the " + mob + " and he collapses!\nYour enemy, the " + mob + " has been defeated.\nYou gain 11 experience.\n"
+            self.current_monster_list = []
+            self.content.append(dead_string)
+        elif (re.match("go .+", command)):
+            M_obj = re.search("go (.+)", command)
+            direction = str(M_obj.group(1))
+            exit = ExitType(name=direction)
+            mud_area = self.current_mud_area.get_area_to_from_exit(exit)
+            self.gen_area(mud_area.area)
+
+
+    def gen_area(self, area):
+        self.current_mud_area = MudArea(area)
+        #(.+?\n\r)((?:\n\r.+)*)?(\n\rObvious exits: .+?[\n\r]?.+?\.)\n\r(You see .+?[\n\r]?.+?\.)?[\n\r]?(You see .+?[\n\r]?.+?\.)?
+        area_string = (area.name + "\n\r\n\r" +
+                      #str(area.description) + "\n\r" +
+                      "Obvious exits: ")
+        i = 0
+        while (i < (len(self.current_mud_area.area_exits) - 1)):
+            area_string += str(self.current_mud_area.area_exits[i].exit_type.name) + ", "
+            i += 1
+
+        area_string += self.current_mud_area.area_exits[i].exit_type.name + "."
+
+        self.current_area = area_string
+        self.content.append(str(self.show_current_area()))
 
     def show_current_area(self):
         area_string = self.current_area
@@ -82,7 +101,7 @@ class FakeTelnetSocket(object):
         return area_string + "\n\r"
 
     def read_some(self):
-        time.sleep(1)
+        time.sleep(0.1)
         if len(self.content) is not 0:
             fso = FakeSocketOutput(self.content.pop(0))
             return fso
@@ -103,13 +122,13 @@ class FakeTelnetHandler(object):
         self.tn.connect()
 
         self.tn.write("genaid 45") #lets start us in the chapel
-        self.tn.write("addmon spiv") #most everything will fight this
+        self.tn.write("addmob spiv") #most everything will fight this
 
-        self.echoing = False
+        self.echoing = True
 
     def write(self, command):
         if self.echoing:
-            print ('{' + command + '}\r')
+            magentaprint('{' + command + '}',False)
     
         self.tn.write(command)
 
