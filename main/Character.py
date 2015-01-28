@@ -87,7 +87,7 @@ class Character(object):
     HASTING = False 
     DEAD = False
 
-    WEAPON1=""
+    WEAPON1="ball"
     WEAPON2=""
                             
     ATTACK_CLK = -ATTACK_WAIT

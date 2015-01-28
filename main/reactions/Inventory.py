@@ -337,7 +337,8 @@ class Inventory(BotReactionWithFlag):
         magentaprint(str(self.inventory),False)
 
     restoratives = ["chicken soup", "small restorative", "small flask", 
-                    "large restorative", "scarlet potion", "white potion", "tree root"]
+                    "large restorative", "scarlet potion", "white potion", "tree root",
+                    "ball and chain"]
     # usable = ["small retorative", "large restorative", "chicken soup", "scarlet potion", 
     #           "steel bottle", "silver chalice", "milky potion",
     #           "glowing potion",
