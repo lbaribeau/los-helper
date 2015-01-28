@@ -11,7 +11,7 @@ class Character(object):
     _class = None
     level = None
     preferred_alignment = None
-    BLACK_MAGIC = True
+    BLACK_MAGIC = False
     FAVOURITE_SPELL = "fireball"
     SPELL_COST = 7
     KNOWS_VIGOR = True
@@ -162,7 +162,7 @@ class Character(object):
             self.HEALTH_TO_HEAL = 35 # 43
             self.HEALTH_TO_FLEE = 15
             self.MAX_MANA = 18
-            self.MANA_TO_ENGAGE = 9     
+            self.MANA_TO_ENGAGE = 12   
         elif self.level <= 7:
             self.HEALTH_TO_HEAL= 45
             self.HEALTH_TO_FLEE = 8 
@@ -278,28 +278,28 @@ class Character(object):
     # I may want to kill even if they are too low of level.
     # Mostly hostiles and things that don't let you loot.
     preferred_lvl_1_2_monsters = [
-        "oaf", "wanderer", "acolyte", 
+        "oaf", "wanderer", #"acolyte", 
         "thug", "spiv", "kobold sentry", "tired hooker", 
         "blond hooker", "angry hooker", "sultry hooker", 
         "journeyman" ] 
 
     def set_monster_kill_list(self):
         self.MONSTER_KILL_LIST = []
-        self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
+        #self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
         self.MONSTER_KILL_LIST.extend(self.lvl1_red_monsters)
 
         if self.level > 3:
-            self.MONSTER_KILL_LIST.extend(self.lvl2_monsters)
+            #self.MONSTER_KILL_LIST.extend(self.lvl2_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl2_red_monsters)
         if self.level > 4:
-            self.MONSTER_KILL_LIST.extend(self.lvl3_monsters)
+            #self.MONSTER_KILL_LIST.extend(self.lvl3_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl3_red_monsters)
         if self.level > 5:
             self.MONSTER_KILL_LIST = [m for m in self.MONSTER_KILL_LIST \
                                       if m not in self.lvl1_monsters    \
                                       and m not in self.lvl2_monsters]
             self.MONSTER_KILL_LIST.extend(self.preferred_lvl_1_2_monsters)
-            self.MONSTER_KILL_LIST.extend(self.lvl4_monsters)
+            #self.MONSTER_KILL_LIST.extend(self.lvl4_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl4_red_monsters)
         if self.level > 7:
             self.MONSTER_KILL_LIST.extend(self.lvl5_monsters)
