@@ -124,10 +124,15 @@ class BotThread(threading.Thread):
 
         #add the path to a given areaid to out current direction_list
         if (re.match("areaid[\d]*", exit_str)):
+            #magentaprint("go hook found with: " + str(self.direction_list), False)
             area_id = int(exit_str.replace("areaid", ""))
             self.direction_list.pop(0)
-            self.direction_list = [""] + self.mud_map.get_path(self.character.AREA_ID, area_id) + self.direction_list
-            magentaprint(str(self.direction_list), False)
+            path = self.mud_map.get_path(self.character.AREA_ID, area_id)
+            if (len(path) == 0):
+                self.direction_list = ["buffer"] + self.direction_list
+            else:
+                self.direction_list = ["buffer"] + path + self.direction_list
+            #magentaprint("path added to list: " + str(self.direction_list), False)
             return True
         return False
 
@@ -519,7 +524,7 @@ class BotThread(threading.Thread):
             self.sleep(0.05)   
 
         if (self.character.chase_mob is not ""):
-            #engage mobs which are already fighting us            
+            #engage mobs which are already fighting us
             if self.character.AREA_ID is not None:
                 go_hook = "areaid" + str(self.character.AREA_ID)
                 self.direction_list.insert(0, go_hook) #should be this area
@@ -528,6 +533,8 @@ class BotThread(threading.Thread):
                 self.direction_list.insert(0, go_hook) #should be this area
 
             self.go(self.character.chase_dir)
+
+        #magentaprint("end of enage dir list: " + str(self.direction_list), False)
             
         return
 
@@ -546,7 +553,7 @@ class BotThread(threading.Thread):
         while(self.character.MOBS_JOINED_IN != []):
             self.engage_monster(self.character.MOBS_JOINED_IN[0])
             self.character.MOBS_JOINED_IN = self.character.MOBS_JOINED_IN[1:]
-            self.get_items()         
+            self.get_items()
 
         return
     
