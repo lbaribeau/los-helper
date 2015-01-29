@@ -16,7 +16,9 @@ class Cartography(BotReaction):
         #             Title     Description        Exit list                    Monsters (opt)                    Items (opt)
         self.area = "(.+?\n\r)((?:\n\r.+)*)?(\n\rObvious exits: .+?[\n\r]?.+?\.)\n\r(You see .+?[\n\r]?.+?\.)?[\n\r]?(You see .+?[\n\r]?.+?\.)?"
         self.too_dark = "It's too dark to see\."
-        s_numbered = "( \d+?1st| \d+?2nd| \d+?3rd| \d+th)?"
+        s_numbered = " ?([\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)?"
+        self.you_see_the = "You see(?: the ?)?" + s_numbered + " (.+?)\.\n\r(.+?)\n\r(.+?)\n\r(.+?(?:\.|!))"
+        self.mob_aura_check = "The" + s_numbered + " (.+?) glows with a (.+?) aura\."
         self.blocked_path = "The" + s_numbered + " (.+?) blocks your exit\."
         self.please_wait = "Please wait [\d]* more seconds?\."
         self.cant_go = "You can't go that way\."
@@ -56,6 +58,8 @@ class Cartography(BotReaction):
             self.loot_blocked,
             self.teleported_away,
             self.in_tune,
+            self.you_see_the,
+            self.mob_aura_check
             ]
 
         self.mudReaderHandler = mudReaderHandler
@@ -157,6 +161,18 @@ class Cartography(BotReaction):
             self.set_area_exit_as_unusable(regex)
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
+        elif (regex == self.you_see_the):
+            name = M_obj.group(2)
+            description = M_obj.group(3)
+            health = M_obj.group(4)
+            level = M_obj.group(5)
+
+            self.catalog_monster_bio(name, description, level)
+        elif (regex == self.mob_aura_check):
+            name = M_obj.group(2)
+            aura = M_obj.group(3)
+
+            self.catalog_monster_aura(name, aura)
         elif (regex == self.not_here or regex == self.no_exit):
             #The state is confusion is usually caused by bad processing of good data (i.e. bugs)
             #The following is a set of work arounds to smoothe things out until those bugs are fixed
@@ -283,6 +299,9 @@ class Cartography(BotReaction):
                 mob = Mob(name=monster)
                 mob.map()
 
+                if (mob.approximate_level == None):
+                    self.commandHandler.process('l ' + monster)
+
                 magentaprint(str(mob))
 
                 mob_location = MobLocation(area=area, mob=mob)
@@ -291,6 +310,33 @@ class Cartography(BotReaction):
                 magentaprint(str(mob_location))
         except Exception:
             magentaprint("Problem cataloging monsters", False)
+
+    def catalog_monster_bio(self, name, description, level):
+        try:
+            mob = Mob(name=name)
+            mob.map()
+            mob.description = description.strip()
+
+            if mob.level is None: #don't overwrite levels
+                for regex in self.character.LEVEL_LIST:
+                    if (re.match(regex, level)):
+                        level_index = self.character.LEVEL_LIST.index(regex) - 4
+                        if (level_index == -4 or level_index == 4):
+                            mob.approximate_level = self.character.level + level_index
+                        else:
+                            mob.level = self.character.level + level_index
+                            mob.approximate_level = self.character.level + level_index
+
+            mob.save()
+        except Exception:
+            magentaprint("Problem cataloging monster bio")
+
+    def catalog_monster_aura(self, name, aura):
+        mob = Mob(name=name)
+        mob.map()
+        mob.aura = self.character.AURA_LIST.index(aura)
+
+        mob.save()
 
     def catalog_path_blocker(self, path_blocker_name):
         mob = Mob(name=path_blocker_name)
