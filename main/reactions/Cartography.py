@@ -17,9 +17,10 @@ class Cartography(BotReaction):
         self.area = "(.+?\n\r)((?:\n\r.+)*)?(\n\rObvious exits: .+?[\n\r]?.+?\.)\n\r(You see .+?[\n\r]?.+?\.)?[\n\r]?(You see .+?[\n\r]?.+?\.)?"
         self.too_dark = "It's too dark to see\."
         s_numbered = " ?([\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)?"
-        self.you_see_the = "You see(?: the ?)?" + s_numbered + " (.+?)\.\n\r(.+?)\n\r(.+?)\n\r(.+?(?:\.|!))"
-        self.mob_aura_check = "The" + s_numbered + " (.+?) glows with a (.+?) aura\."
-        self.blocked_path = "The" + s_numbered + " (.+?) blocks your exit\."
+        the = " ?(?:The|the)?" #named mobs have no "The/the"
+        self.you_see_the = "You see" + the + s_numbered + " (.+?)\.\n\r(.+?)\n\r(.+?)\n\r(.+?(?:\.|!))"
+        self.mob_aura_check = the + s_numbered + " (.+?) glows with a (.+?) aura\."
+        self.blocked_path = the + s_numbered + " (.+?) blocks your exit\."
         self.please_wait = "Please wait [\d]* more seconds?\."
         self.cant_go = "You can't go that way\."
         self.no_exit = "I don't see that exit\."
@@ -37,6 +38,8 @@ class Cartography(BotReaction):
         self.not_here = "You don't see that here\."
         self.loot_blocked = "The" + s_numbered + " (.+?) won't let you take anything\."#The spiv won't let you take anything.
         self.teleported_away = "### (.+?)'s body is teleported away to be healed\."
+        self.store_list = "You may buy:\n((?:.+\n?)*)"
+        self.store_item_list = "(?:[\s]*)(.+?)(?:[\s]*)(?:(\(.\))?(?:[\s]*))?Cost: ([\d]*)" #well do a re.findall on the list above to iterate through, don't add this to the array below
 
         self.regexes = [self.area,
             self.too_dark,
@@ -59,7 +62,8 @@ class Cartography(BotReaction):
             self.teleported_away,
             self.in_tune,
             self.you_see_the,
-            self.mob_aura_check
+            self.mob_aura_check,
+            self.store_list
             ]
 
         self.mudReaderHandler = mudReaderHandler
@@ -172,6 +176,10 @@ class Cartography(BotReaction):
             name = M_obj.group(2)
             aura = M_obj.group(3)
 
+            magentaprint("{" + M_obj.group(0) + "}", False)
+            magentaprint("{" + regex + "}", False)
+            magentaprint("'" + name + "' => '" + aura + "'",False)
+
             self.catalog_monster_aura(name, aura)
         elif (regex == self.not_here or regex == self.no_exit):
             #The state is confusion is usually caused by bad processing of good data (i.e. bugs)
@@ -191,6 +199,10 @@ class Cartography(BotReaction):
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
         #elif regex == self.teleported_away:
             #self.character.DEAD = True
+        elif (regex == self.store_list):
+            item_list = re.findall(self.store_item_list, M_obj.group(0))
+            magentaprint("{" + M_obj.group(0) + "}", False)
+            magentaprint("items: " + str(item_list), False)
         else:
             magentaprint("Cartography case missing for regex: " + str(regex))
 
