@@ -39,7 +39,7 @@ class Cartography(BotReaction):
         self.loot_blocked = "The" + s_numbered + " (.+?) won't let you take anything\."#The spiv won't let you take anything.
         self.teleported_away = "### (.+?)'s body is teleported away to be healed\."
         self.store_list = "You may buy:\n((?:.+\n?)*)"
-        self.store_item_list = "(?:[\s]*)(?:A |An |Some )(.+?)(?:[\s]*)(?:(\(.\))?(?:[\s]*))?Cost: ([\d]*)" #well do a re.findall on the list above to iterate through, don't add this to the array below
+        self.store_item_list = "(?:[\s]*)(?:A |An |Some )?(.+?)(?:[\s]*)(?:(\(.\))?(?:[\s]*))?Cost: ([\d]*)" #well do a re.findall on the list above to iterate through, don't add this to the array below
 
         self.regexes = [self.area,
             self.too_dark,
@@ -209,7 +209,7 @@ class Cartography(BotReaction):
                 item_value = item[2]
 
                 area_item = self.catalog_item(item_name, item_size, item_value)
-                self.catalog_area_store_item(area_item, self.curMudArea.area)
+                self.catalog_area_store_item(area_item, self.character.MUD_AREA.area)
         else:
             magentaprint("Cartography case missing for regex: " + str(regex))
 
@@ -376,20 +376,14 @@ class Cartography(BotReaction):
             mob.save()
 
     def catalog_item(self, item_name, item_size, item_value):
-        magentaprint(item_name, False)
-
         item = Item(name=item_name, value=item_value, description=item_size)
         item.map()
 
         return item
 
-    def catalog_item(self, item_name, size, value):
-        magentaprint(item_name, False)
-
-        item = Item(name=item_name)
-        item.map()
-
-        return item
+    def catalog_area_store_item(self, item, area):
+        asitem = AreaStoreItem(area=area,item=item)
+        asitem.map()
 
     def parse_exit_list(self, MUD_exit_str):
         try:
