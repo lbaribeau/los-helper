@@ -23,6 +23,17 @@ class Character(object):
                  'dusty blue', 'pale blue', 'blue',
                  'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue']
 
+    LEVEL_LIST = ["You could kill (?:.+?) with a needle\.", #-4 or more levels
+                  "(?:.+?) should be easy to kill\.", #-2 level from this character
+                  "(?:.+?) shouldn't be too tough to kill\.", #-2 level from this character
+                  "(?:.+?) is not quite as good as you\.", #-1 level from this character
+                  "(?:.+?) is a perfect match for you!", #same level as character
+                  "(?:.+?) is a little better than you\.", #+1 level from this character
+                  "(?:.+?) might be tough to kill\.", #+2 level from this character
+                  "(?:.+?) should be really hard to kill\.", #+3 levels from this character
+                  "(?:.+?) could kill you with a needle\." #+4 or more levels from this character
+                  ]
+
     # Indices will be sharp, thrust, blunt, pole, missile, earth, water, wind, fire, astral
     # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
 
@@ -116,6 +127,7 @@ class Character(object):
     CONFUSED = False
     CAN_SEE = True
     ACTIVELY_MAPPING = False
+    ACTIVELY_BOTTING = False
 
     MUD_AREA = None
     AREA_TITLE=""
