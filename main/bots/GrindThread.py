@@ -209,20 +209,8 @@ class GrindThread(BotThread):
                         'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest',
                         'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
 
-        SPIDER_FOREST = ['out', 'north', 'north', 'west', 'north gate', 'north', 'north', 'north',
-                        'north', 'north', 'gate', 'north', 'north', 'gate', 'north', 'northwest',
-                        'northwest', 'southwest', 'southwest', 'southwest', 'southwest', 'south',
-                        'southwest', 'southwest', 'west', 'west', 'southwest', 'southwest', 'southwest',
-                        'southwest', 'southeast', 'southeast', 'southeast', 'southeast', 'southeast',
-                        'south', 'south', 'forest', 'south', 'southeast', 'southwest', 'southwest',
-                        'south', 'south', 'east', 'east', 'northeast', 'north','south', 'southeast',
-                        'southwest', 'southwest', 'west', 'west', 'north', 'north', 'northeast',
-                        'northeast', 'north', 'fields', 'north', 'north', 'northwest', 'northwest',
-                        'northwest', 'northwest', 'northwest', 'northeast', 'northeast', 'northeast',
-                        'northeast', 'east', 'east', 'northeast', 'northeast', 'north', 'northeast',
-                        'northeast', 'northeast', 'northeast', 'southeast', 'southeast', 'south',
-                        'gate', 'south', 'south', 'gate', 'south', 'south', 'south', 'south', 'south',
-                        'gate', 'east', 'south', 'south', 'chapel']
+        #aid418, 1975, 1979, 1951, 415, 45
+        SPIDER_FOREST = ['areaid418', 'areaid1975', 'areaid1979', 'areaid1951', 'areaid415', 'areaid45']
 
         #The following areas repeat a bit because the spawns are fast
         KNIGHTS = ['areaid1904', 'areaid1912', 'areaid1909', 'areaid1913',

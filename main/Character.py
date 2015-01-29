@@ -21,7 +21,7 @@ class Character(object):
     AURA_LIST = ['demonic red', 'ominous red', 'ghastly red', 'murky red',
                  'red', 'rusty', 'dusty red', 'grey',
                  'dusty blue', 'pale blue', 'blue',
-                 'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue']
+                 'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue', 'blazing blue', 'blood red']
 
     LEVEL_LIST = ["You could kill (?:.+?) with a needle\.", #-4 or more levels
                   "(?:.+?) should be easy to kill\.", #-2 level from this character
@@ -297,21 +297,21 @@ class Character(object):
 
     def set_monster_kill_list(self):
         self.MONSTER_KILL_LIST = []
-        #self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
+        self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
         self.MONSTER_KILL_LIST.extend(self.lvl1_red_monsters)
 
         if self.level > 3:
-            #self.MONSTER_KILL_LIST.extend(self.lvl2_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl2_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl2_red_monsters)
         if self.level > 4:
-            #self.MONSTER_KILL_LIST.extend(self.lvl3_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl3_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl3_red_monsters)
         if self.level > 5:
             self.MONSTER_KILL_LIST = [m for m in self.MONSTER_KILL_LIST \
                                       if m not in self.lvl1_monsters    \
                                       and m not in self.lvl2_monsters]
             self.MONSTER_KILL_LIST.extend(self.preferred_lvl_1_2_monsters)
-            #self.MONSTER_KILL_LIST.extend(self.lvl4_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl4_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl4_red_monsters)
         if self.level > 7:
             self.MONSTER_KILL_LIST.extend(self.lvl5_monsters)

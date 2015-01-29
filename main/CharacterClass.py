@@ -26,7 +26,7 @@ class CharacterClass(object):
             self.lvl1_maxMP = 4
             self.mana_tick = 2
             self.buff_skills.extend([ClassSkillReaction(mudReaderHandler, "Pray",
-                                    SkillTimer("You feel extremely pious\.", 360),
+                                    SkillTimer("You feel extremely pious\.", 400),
                                     SkillTimer("Your prayers were not answered\.", 10),
                                    SkillTimer("You feel less pious\.", 285))])
             # self.abilities = [ Pray(telnetHandler), Turn(telnetHandler) ]
