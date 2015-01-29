@@ -4,6 +4,7 @@ from misc_functions import *
 
 class Mob(BaseModel):
     name = CharField()
+    description = CharField(null=True)
     level = IntegerField(null=True)
     approximate_level = IntegerField(null=True)
     difficulty_rating = IntegerField(null=True)
@@ -23,6 +24,9 @@ class Mob(BaseModel):
             self.id = mob.id
             self.blocks_pickup = mob.blocks_pickup
             self.blocks_exit = mob.blocks_exit
+            self.level = mob.level
+            self.approximate_level = mob.approximate_level
+            self.aura = mob.aura
             #update other fields if you want
 
         return is_new_mapping
