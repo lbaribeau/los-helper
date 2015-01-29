@@ -13,13 +13,13 @@ class CharacterClass(object):
 
         if class_string == "Ass":
             self.lvl1_maxHP = 19 
-            self.lvl1_maxMP #= 2
+            self.lvl1_maxMP = 2
             # self.abilities = [ Backstab(telnetHandler) ]
         elif class_string == "Bar":
             self.lvl1_maxHP = 24 
             self.lvl1_maxMP = 0
             self.mana_tick = 0
-            self.mana_tick_c#hapel = 0
+            self.mana_tick_chapel = 0
             # self.abilities = [ Bash(telnetHandler), Circle(telnetHandler), Berserk(telnetHandler) ]
         elif class_string == "Cle":
             self.lvl1_maxHP = 16 
@@ -32,11 +32,11 @@ class CharacterClass(object):
             # self.abilities = [ Pray(telnetHandler), Turn(telnetHandler) ]
         elif class_string == "Fig":
             self.lvl1_maxHP = 22 
-            self.lvl1_maxMP #= 2
+            self.lvl1_maxMP = 2
             # self.abilities = [ Bash(telnetHandler), Circle(telnetHandler) ]
         elif class_string == "Brd":
             self.lvl1_maxHP = 15 
-            self.lvl1_maxMP #= 3
+            self.lvl1_maxMP = 3
             # self.abilities = [ AestersTears(telnetHandler), DanceOfTheCobra(telnetHandler) ]
         elif class_string == "Mag":
             self.lvl1_maxHP = 14 
@@ -45,7 +45,7 @@ class CharacterClass(object):
                           ["door", "out", "out", "w", "n", "e", "e", "e", "n", "cha"]]
         elif class_string == "Pal":
             self.lvl1_maxHP = 19 
-            self.lvl1_maxMP #= 3
+            self.lvl1_maxMP = 3
             # self.abilities = [ Pray(telnetHandler), Turn(telnetHandler) ]
         elif class_string == "Ran":
             self.lvl1_maxHP = 18 
@@ -57,7 +57,7 @@ class CharacterClass(object):
             # self.abilities = [ Haste(telnetHandler) ]
         elif class_string == "Thi":
             self.lvl1_maxHP = 18 
-            self.lvl1_maxMP #= 3
+            self.lvl1_maxMP = 3
             # self.abilities = [ Backstab(telnetHandler), Steal(telnetHandler) ]
         elif class_string == "Mon":
             self.lvl1_maxHP = 17 
@@ -73,14 +73,14 @@ class CharacterClass(object):
             # self.abilities = [ Meditate(telnetHandler), Touch(telnetHandler) ]
         elif class_string == "Dru":
             self.lvl1_maxHP = 15
-            self.lvl1_maxMP #= 4
+            self.lvl1_maxMP = 4
             # self.abilities = [ Barkskin(telnetHandler) ]
         elif class_string == "Alc":
             self.lvl1_maxHP = 15 
             lvl1_maxMP = 4
         elif class_string == "Dar":
             lvl1_maxHP = 19 
-            lvl1_maxMP #= 4
+            lvl1_maxMP = 4
             # abilities = [ Berserk(telnetHandler), Wither(telnetHandler) ]
         else:
             magentaprint("CharacterClass error: could not recognize class string.")
