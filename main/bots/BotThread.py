@@ -25,6 +25,8 @@ class BotThread(threading.Thread):
         self.inventory = inventory
         self.direction_list = []
 
+        self.character.ACTIVELY_BOTTING = True
+
         self.no_exit_count = 0
 
         self.mud_map = mud_map
@@ -36,6 +38,7 @@ class BotThread(threading.Thread):
     def stop(self):
         magentaprint("Stopping bot = " + str(self.__stopping))
         self.__stopping = True
+        self.character.ACTIVELY_BOTTING = False
         magentaprint("Stopping bot = " + str(self.__stopping))
 
     def is_stopping(self):
