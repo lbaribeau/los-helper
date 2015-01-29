@@ -1,6 +1,7 @@
 from peewee import *
 from BaseModel import *
 from misc_functions import *
+from ItemType import *
 
 class Item(BaseModel):
     name = CharField()
@@ -27,7 +28,7 @@ class Item(BaseModel):
         return is_new_mapping
 
     def to_string(self):
-        return str(self.id) + ", " + str(self.name) + ", " + str(self.level)
+        return str(self.id) + ", " + str(self.name)
 
     '''Static Item Functions'''
     def get_item_by_name(name):

@@ -39,7 +39,7 @@ class Cartography(BotReaction):
         self.loot_blocked = "The" + s_numbered + " (.+?) won't let you take anything\."#The spiv won't let you take anything.
         self.teleported_away = "### (.+?)'s body is teleported away to be healed\."
         self.store_list = "You may buy:\n((?:.+\n?)*)"
-        self.store_item_list = "(?:[\s]*)(.+?)(?:[\s]*)(?:(\(.\))?(?:[\s]*))?Cost: ([\d]*)" #well do a re.findall on the list above to iterate through, don't add this to the array below
+        self.store_item_list = "(?:[\s]*)(?:A |An |Some )(.+?)(?:[\s]*)(?:(\(.\))?(?:[\s]*))?Cost: ([\d]*)" #well do a re.findall on the list above to iterate through, don't add this to the array below
 
         self.regexes = [self.area,
             self.too_dark,
@@ -176,9 +176,9 @@ class Cartography(BotReaction):
             name = M_obj.group(2)
             aura = M_obj.group(3)
 
-            magentaprint("{" + M_obj.group(0) + "}", False)
-            magentaprint("{" + regex + "}", False)
-            magentaprint("'" + name + "' => '" + aura + "'",False)
+            #magentaprint("{" + M_obj.group(0) + "}", False)
+            #magentaprint("{" + regex + "}", False)
+            #magentaprint("'" + name + "' => '" + aura + "'",False)
 
             self.catalog_monster_aura(name, aura)
         elif (regex == self.not_here or regex == self.no_exit):
@@ -201,8 +201,15 @@ class Cartography(BotReaction):
             #self.character.DEAD = True
         elif (regex == self.store_list):
             item_list = re.findall(self.store_item_list, M_obj.group(0))
-            magentaprint("{" + M_obj.group(0) + "}", False)
-            magentaprint("items: " + str(item_list), False)
+            #magentaprint("{" + M_obj.group(0) + "}", False)
+            #magentaprint("items: " + str(item_list), False)
+            for item in item_list:
+                item_name = item[0]
+                item_size = item[1]
+                item_value = item[2]
+
+                area_item = self.catalog_item(item_name, item_size, item_value)
+                self.catalog_area_store_item(area_item, self.curMudArea.area)
         else:
             magentaprint("Cartography case missing for regex: " + str(regex))
 
@@ -339,7 +346,7 @@ class Cartography(BotReaction):
                             mob.level = self.character.level + level_index
                             mob.approximate_level = self.character.level + level_index
 
-            mob.save()
+                mob.save()
         except Exception:
             magentaprint("Problem cataloging monster bio")
 
@@ -367,6 +374,22 @@ class Cartography(BotReaction):
             magentaprint("Catalogged new loot blocker", False)
             mob.blocks_pickup = True
             mob.save()
+
+    def catalog_item(self, item_name, item_size, item_value):
+        magentaprint(item_name, False)
+
+        item = Item(name=item_name, value=item_value, description=item_size)
+        item.map()
+
+        return item
+
+    def catalog_item(self, item_name, size, value):
+        magentaprint(item_name, False)
+
+        item = Item(name=item_name)
+        item.map()
+
+        return item
 
     def parse_exit_list(self, MUD_exit_str):
         try:
@@ -484,3 +507,11 @@ class Cartography(BotReaction):
             M_LIST = []
 
         return M_LIST
+
+
+
+
+
+
+
+

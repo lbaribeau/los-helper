@@ -12,6 +12,11 @@ from AreaExit import *
 from ExitType import *
 from Mob import *
 from MobLocation import *
+from Item import *
+from ItemType import *
+from ItemTypeModel import *
+from ItemTypeData import *
+from AreaStoreItem import *
 from MudMap import *
 
 def create_tables():
@@ -24,6 +29,11 @@ def create_tables():
         try_create(ExitSynonym)
         try_create(Mob)
         try_create(MobLocation)
+        try_create(Item)
+        try_create(ItemType)
+        try_create(ItemTypeModel)
+        try_create(ItemTypeData)
+        try_create(AreaStoreItem)
     except:
         pass
 
@@ -37,6 +47,11 @@ def drop_tables():
         try_drop(ExitSynonym)
         try_drop(Mob)
         try_drop(MobLocation)
+        try_drop(Item)
+        try_drop(ItemType)
+        try_drop(ItemTypeModel)
+        try_drop(ItemTypeData)
+        try_drop(AreaStoreItem)
     except:
         pass
 
