@@ -16,7 +16,7 @@ class CombatThread(threading.Thread):
         numbers = "(\d+?1st|\d+?2nd|\d+?3rd|\d+th)" 
         #collapsed doesn't work in parties
         #self.it_collapsed = "Your attack overwhelms the (" + numbers + " )?" + target + " and (s?he|it) collapses!"
-        self.enemy_defeated = "Your enemy, the (.+?) has been defeated\."
+        self.enemy_defeated = "Your enemy, (?:the )?(.+?) has been defeated\."
         self.it_fled = "The (" + numbers + " )?(.+?) flees to the (.+?)\."
         self.regexes = [self.enemy_defeated,
                         self.it_fled]
@@ -26,11 +26,12 @@ class CombatThread(threading.Thread):
         raise NotImplementedError("Subclasses must implement this!")
 
     def notify(self, regex, M_obj):
-        # magentaprint(" <" + str(self.target) + "> : " + str(self.character.MONSTER_LIST))
+        #magentaprint(" <" + str(self.target) + "> : " + str(self.character.MONSTER_LIST), False)
         # magentaprint(regex)
         if not self.stopping:
             if regex == self.enemy_defeated:
                 monster = M_obj.group(1)
+                self.target = ""
                 if monster in self.character.MOBS_ATTACKING:
                     self.character.MOBS_ATTACKING.remove(monster)
             elif regex == self.it_fled:
