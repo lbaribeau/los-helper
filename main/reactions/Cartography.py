@@ -445,6 +445,8 @@ class Cartography(BotReaction):
                     M_LIST[i] = M_LIST[i][2:]
                 elif (re.match("an ", M_LIST[i])):
                     M_LIST[i] = M_LIST[i][3:]
+                elif (re.match("The ", M_LIST[i])):
+                    M_LIST[i] = M_LIST[i][4:]
                 elif (re.match("two ", M_LIST[i])):
                     M_LIST[i] = M_LIST[i][4:]
                     if (M_LIST[i][len(M_LIST[i]) - 3:] == "ses"):
