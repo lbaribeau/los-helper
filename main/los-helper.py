@@ -180,11 +180,13 @@ class LosHelper(object):
             elif(re.match("showto -?[0-9]+$", user_input)):
                 self.start_goto(user_input, True)
             elif(re.match("domix .+?", user_input)):
+                #domix 'tree root' berry 50 - first param must be exact match
                 self.start_mix(user_input)
             elif(re.match("slave", user_input)):
                 self.start_slave(user_input)
             elif(re.match("bbuy (.+?)", user_input)):
                 try:
+                    #bbuy item quant
                     M_obj = re.search("bbuy (.+?) ([\d]*)", user_input)
                     item = M_obj.group(1)
                     quantity = int(M_obj.group(2))
