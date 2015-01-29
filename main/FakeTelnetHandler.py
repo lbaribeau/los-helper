@@ -93,10 +93,13 @@ class FakeTelnetSocket(object):
         if len(self.current_monster_list) is not 0:
             area_string += "\n\rYou see "
 
-            for mob in self.current_monster_list:
-                area_string += "a " + mob
+            i = 0
+            while (i < (len(self.current_monster_list) - 1)):
+                mob = str(self.current_monster_list[i])
+                area_string += "a " + mob + ", "
+                i += 1
 
-            area_string += "."
+            area_string += str(self.current_monster_list[i]) + "."
 
         return area_string + "\n\r"
 
