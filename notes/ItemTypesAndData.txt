@@ -1,0 +1,72 @@
+"1" "weapon"
+
+Data
+"1" "Sharp"
+"2" "Thrust"
+"3" "Blunt"
+"4" "Pole"
+"5" "Missile"
+
+Weapon Types
+
+"1" "Sharp Weapon"
+"2" "Thrust Weapon"
+"3" "Blunt Weapon"
+"4" "Pole Weapon"
+"5" "Missile Weapon"
+
+
+"2" "armor"
+
+Data
+
+"6" "Body"
+"7" "Arms"
+"8" "Legs"
+"9" "Neck"
+"10"    "Hands"
+"11"    "Head"
+"12"    "Feet"
+"13"    "Finger"
+"14"    "Shield"
+
+Armor Types
+"6" "Body"
+"7" "Arms"
+"8" "Legs"
+"9" "Neck"
+"10"    "Hands"
+"11"    "Head"
+"12"    "Feet"
+"13"    "Finger"
+"14"    "Shield"
+
+
+
+"3" "consumable"
+"4" "quest"
+"5" "reageant"
+"6" "scroll"
+"7" "trash"
+"8" ""
+"9" ""
+"10"    ""
+
+
+On body:   some chain mail armour
+On arms:   some chain mail sleeves
+On legs:   some chain mail leggings
+On neck:   a grey cloak
+On hands:  some chain mail gloves
+On head:   a chain mail hood
+On feet:   some chain mail boots
+On finger: an iron ring
+On finger: an iron ring
+On finger: an iron ring
+On finger: an iron ring
+On finger: an iron ring
+On finger: an iron ring
+On finger: an iron ring
+On finger: an iron ring
+Shield:    a cast iron shield
+Wielded:   a morning star
