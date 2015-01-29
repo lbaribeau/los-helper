@@ -32,7 +32,7 @@ class Mob(BaseModel):
         return is_new_mapping
 
     def to_string(self):
-        return str(self.id) + ", " + str(self.name) + ", " + str(self.level)
+        return str(self.id) + ", " + str(self.name) + ", " + str(self.level) + ", " + str(self.aura)
 
     '''Static Mob Functions'''
     def get_mob_by_name(name):
