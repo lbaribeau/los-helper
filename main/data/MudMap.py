@@ -60,6 +60,9 @@ class MudMap():
     los_map = None
 
     def __init__(self):
+        self.re_map()
+
+    def re_map(self):
         self.los_map = nx.DiGraph()
         self.populate_map()
 

@@ -199,7 +199,7 @@ class LosHelper(object):
             elif(re.match("stop$", user_input)):
                 self.stop_bot()
             elif(re.match("remap", user_input)):
-                self.mud_map = MudMap()
+                self.mud_map.re_map()
             elif(re.match("fle?$|flee$", user_input)):
                 self.stop_bot()
                 self.commandHandler.process(user_input)  
