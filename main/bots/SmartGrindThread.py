@@ -12,6 +12,9 @@ class SmartGrindThread(GrindThread):
 
         self.is_actually_dumb = True
 
+        self.cur_target = None
+        self.cur_area_id = self.character.AREA_ID
+
         if not (self.is_actually_dumb):
             '''target_list = ["theatre goer", "actor", "militia solider", "rancher sentry", "sawmill operator",
             "dwarven fieldworker", "market official", "fort sentry", "large bandit", "kobold sentry", "old kobold",
@@ -24,9 +27,6 @@ class SmartGrindThread(GrindThread):
             for target in target_list:
                 mob_locations = MudMap.get_mob_locations_by_name(target)
                 self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
-
-            self.cur_target = None
-            self.cur_area_id = self.character.AREA_ID
 
     def decide_where_to_go(self):
         if self.is_actually_dumb:
@@ -110,9 +110,9 @@ class SmartGrindThread(GrindThread):
 
         try:
             if from_path == -1:
-                directions = self.mud_map.get_path(self.cur_area_id, 1913)
+                directions = self.mud_map.get_path(self.cur_area_id, 45)
             else:
-                directions = self.mud_map.get_path(from_path, 1913)
+                directions = self.mud_map.get_path(from_path, 45)
         except Exception:
             #not a good situation - we can't find a way to the chapel from wherever we are
             #therefore we should just sit and wait here until we can go on the warpath again
