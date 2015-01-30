@@ -12,7 +12,7 @@ class Character(object):
     _class = None
     level = None
     preferred_alignment = None
-    BLACK_MAGIC = True
+    BLACK_MAGIC = False
     FAVOURITE_SPELL = "fireball"
     SPELL_COST = 7
     KNOWS_VIGOR = True
@@ -238,7 +238,7 @@ class Character(object):
     lvl2_red_monsters = [ 
         "kobold sentry", "blond hooker", "sultry hooker", "kobold", "spiv", 
         "drunken miner", "kobold miner", "kobold archer", 'angry hooker',
-        "angry kobold", 'red axer', 'pickpocket', 'thug'
+        "angry kobold", 'red axer', 'pickpocket', 'thug', "tired hooker"
         ] 
     # pickpockets drop leather collars and masks
     # red axer drops studded leather collar
@@ -262,7 +262,7 @@ class Character(object):
         "carpenter", "stagehand", 'hungry spider', 'cook', 'joiner', "ranch hand",
         "old rancher", "tired ranch hand", "drinking ranch hand",
         "busy ranch hand",
-        #"auctioneer", # They pile up so bad!  
+        "auctioneer", # They pile up so bad!  
         # Definitely need smart chasing or a path that runs extra around the 
         # market (after healing)
         "actress", # For blue balance
@@ -324,7 +324,7 @@ class Character(object):
         if self.level > 4:
             self.MONSTER_KILL_LIST.extend(self.lvl3_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl3_red_monsters)
-        if self.level > 5:
+        if self.level > 6:
             self.MONSTER_KILL_LIST = [m for m in self.MONSTER_KILL_LIST \
                                       if m not in self.lvl1_monsters    \
                                       and m not in self.lvl2_monsters]
