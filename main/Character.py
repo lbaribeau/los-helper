@@ -257,7 +257,8 @@ class Character(object):
         ]
     lvl4_monsters = [ # 45-60 exp
         "actor", "grip", "theatre goer", "merchant", "journeyman", "logger", 
-        'trader', "butcher", "young knight", "acrobat", "militia soldier", 
+        'trader', "butcher", #"young knight", because of targetting this could get confused with old / white etc...
+        "acrobat", "militia soldier", 
         "carpenter", "stagehand", 'hungry spider', 'cook', 'joiner', "ranch hand",
         "old rancher", "tired ranch hand", "drinking ranch hand",
         "busy ranch hand",
