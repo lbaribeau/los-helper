@@ -56,21 +56,25 @@ class Info(BotReactionWithFlag):
             magentaprint(self.character.AURA_PREFERRED)
         elif regex is self.first:
             self.got_stats_skills = True
-            self.character.str = M_obj.group(1)
-            self.character.dex = M_obj.group(4)
-            self.character.con = M_obj.group(7)
-            self.character.int = M_obj.group(10)
-            self.character.pty = M_obj.group(13)
-            self.character.sharp = M_obj.group(2)
-            self.character.thrust = M_obj.group(5)
-            self.character.blunt = M_obj.group(8)
-            self.character.pole = M_obj.group(11)
-            self.character.missile = M_obj.group(14)
-            self.character.earth = M_obj.group(3)
-            self.character.wind = M_obj.group(6)
-            self.character.fire = M_obj.group(9)
-            self.character.water = M_obj.group(12)
-            self.character.astral = M_obj.group(15)
+            self.character.stats = {'Str' : M_obj.group(1),
+                                    'Dex' : M_obj.group(4),
+                                    'Con' : M_obj.group(7),
+                                    'Int' : M_obj.group(10),
+                                    'Pty' : M_obj.group(13)}
+
+            self.character.weapons = {'sharp' : M_obj.group(2),
+                                    'thrust' : M_obj.group(5),
+                                    'blunt' : M_obj.group(8),
+                                    'pole' : M_obj.group(11),
+                                    'missile' : M_obj.group(14)}
+
+            self.character.magic = {'earth' : M_obj.group(3),
+                                    'wind' : M_obj.group(6),
+                                    'fire' : M_obj.group(9),
+                                    'water' : M_obj.group(12),
+                                    'astral' : M_obj.group(15)}
+
+            self.character.configure_equipment_and_spell_preferences()
             self.got_first = True
             # magentaprint(self.character.astral)
         elif regex is self.second:
@@ -91,6 +95,7 @@ class Info(BotReactionWithFlag):
 
         @property 
         def success(self):
+
             return got_first and got_second
 
 

@@ -1,6 +1,7 @@
 
-import time, sys
+import time, sys, operator
 import CharacterClass
+from misc_functions import *
 
 class Character(object):
 
@@ -11,7 +12,7 @@ class Character(object):
     _class = None
     level = None
     preferred_alignment = None
-    BLACK_MAGIC = False
+    BLACK_MAGIC = True
     FAVOURITE_SPELL = "fireball"
     SPELL_COST = 7
     KNOWS_VIGOR = True
@@ -145,9 +146,25 @@ class Character(object):
     chase_mob = ""
     chase_dir = ""
 
-    # def __init__(self):
-    #     self.set_level_health_mana_variables()
-    #     self.set_monster_kill_list()
+    weapon_model = "Blunt"
+    weapon_proficiency = "0"
+    weapon_level = "1"
+    armor_level = "1"
+    spell_model = "Fire"
+    spell_proficiency = "0"
+
+    def configure_equipment_and_spell_preferences(self):
+        if self.weapons is not None:
+            self.weapon_model, self.weapon_proficiency = key_with_max_val(self.weapons)
+
+        if self.magic is not None:
+            self.spell_model, self.spell_proficiency = key_with_max_val(self.magic)
+
+        if self.level is not None:
+            if self.level <= 4:
+                self.armor_level = 1
+            else: #more testing needs to be done to determine what other levels are available
+                self.armor_level = 2
 
     def configure_health_and_mana_variables(self):
         if self.level <= 2:
@@ -282,7 +299,7 @@ class Character(object):
         ]
 
     lvl10_blue_monsters = [ #1913 Red Tent, #1904 / #1912 Knights Tent, #1909
-        "old knight", "young knight", "hedge knight", #"white knight", too tough for bot
+        "old knight", "hedge knight", "white knight", #too tough for bot
         "battered knight",
         #'silver knight' deflects attacks a.k.a. takes 50% dmg and shouldn't be fought by melee
         ]
