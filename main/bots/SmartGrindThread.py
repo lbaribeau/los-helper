@@ -17,14 +17,7 @@ class SmartGrindThread(GrindThread):
             "dwarven fieldworker", "market official", "fort sentry", "large bandit", "kobold sentry", "old kobold",
             "bandit swordsman", "gnoll sentry", "sword swallower"]'''
 
-            target_list = ["dustman", "small girl", "young boy", "old woman", "old man", 
-            "townsman", "stall holder", "duck", "hedgehog", "piglet", 
-            'streetsweeper', "shopper", "window shopper", "window cleaner", 
-            "waitress", "housewife", "squirrel", "milk maid", "rabbit", 
-            "one man band", "heather seller", "irate teenager", 'peasant', 
-            'one-armed beggar', "village elder", "small dog", "tribesman", 
-            "searcher", "delivery boy", "traveller", "wanderer", "villager", 
-            "vagrant", "dropout", "tramp", "serf", 'dishwasher']
+            target_list = ["old knight", "hedge knight", "white knight", "battered knight"]
 
             self.smart_target_list = []
 
@@ -32,8 +25,8 @@ class SmartGrindThread(GrindThread):
                 mob_locations = MudMap.get_mob_locations_by_name(target)
                 self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
 
-        self.cur_target = ""
-        self.cur_area_id = self.character.AREA_ID
+            self.cur_target = None
+            self.cur_area_id = self.character.AREA_ID
 
     def decide_where_to_go(self):
         if self.is_actually_dumb:
@@ -59,6 +52,7 @@ class SmartGrindThread(GrindThread):
         self.pick_new_target()
         paths_to_target = self.get_all_paths_to_target()
 
+        ''' Half assed shortest paths
         i = 0
 
         while i < 5 or i < (len(paths_to_target)):
@@ -68,7 +62,11 @@ class SmartGrindThread(GrindThread):
                 j = j+1
                 
             closest_path = paths_to_target.pop(get_shortest_array(paths_to_target))
-            i = i + 1
+            i = i + 1'''
+
+        directions = paths_to_target
+
+        magentaprint(str(directions), False)
 
         return directions
 
@@ -76,10 +74,14 @@ class SmartGrindThread(GrindThread):
         paths = []
 
         for area_id in self.cur_target.locations:
-            if from_path == -1:
-                paths.append(self.mud_map.get_path(self.cur_area_id, area_id))
-            else:
-                paths.append(self.mud_map.get_path(from_path, area_id))
+            try:
+                if from_path == -1:
+                    paths += (self.mud_map.get_path(self.cur_area_id, area_id))
+                else:
+                    paths += (self.mud_map.get_path(from_path, area_id))
+            except Exception:
+                magentaprint("Area ID: {" + str(area_id) + "} cannot be pathed to!", False)
+                self.cur_target.locations.remove(area_id)
 
         return paths
 
@@ -108,9 +110,9 @@ class SmartGrindThread(GrindThread):
 
         try:
             if from_path == -1:
-                directions = self.mud_map.get_path(self.cur_area_id, 45)
+                directions = self.mud_map.get_path(self.cur_area_id, 1913)
             else:
-                directions = self.mud_map.get_path(from_path, 45)
+                directions = self.mud_map.get_path(from_path, 1913)
         except Exception:
             #not a good situation - we can't find a way to the chapel from wherever we are
             #therefore we should just sit and wait here until we can go on the warpath again
@@ -161,7 +163,7 @@ class SmartGrindThread(GrindThread):
         while next_target == self.cur_target:
             next_target = random.choice(self.smart_target_list)
 
-        self.cur_target = next_target.name
+        self.cur_target = next_target
         magentaprint("Picking new target: " + next_target.to_string(), False)
 
     def do_rest_hooks(self):
