@@ -9,6 +9,27 @@ from misc_functions import *
 
 class Inventory(BotReactionWithFlag):
 
+    Wearable = ["body",
+                "arms",
+                "legs",
+                "neck",
+                "neck",
+                "hands",
+                "head",
+                "feet",
+                "finger",
+                "finger",
+                "finger",
+                "finger",
+                "finger",
+                "finger",
+                "finger",
+                "finger",
+                "Shield",
+                "Wielded",
+                "Holding"
+                ]
+
     def __init__(self, mudReaderHandler, telnetHandler):
         self.you_have = "(?s)You have: (.+?)\."
         self.wont_buy = "The shopkeep says, \"I won't buy that rubbish from you\.\""
@@ -19,7 +40,7 @@ class Inventory(BotReactionWithFlag):
         self.not_a_pawn_shop = "This is not a pawn shoppe\."
         self.you_now_have = "You now have (.+?) gold pieces\."
         self.not_empty = "It isn't empty!"
-        self.you_wear= "(?s)You wear (.+?)\."
+        self.you_wear = "(?s)You wear (.+?)\."
         self.nothing_to_wear = "You have nothing you can wear\."
         self.you_get = "(?s)You get (.+?)\."
         self.you_remove = "(?s)You removed? (.+?)\."
@@ -30,12 +51,16 @@ class Inventory(BotReactionWithFlag):
         self.you_put_in_bag = "(?s)You put (.+?) in(to)? (.+?)\."
         self.gave_you = ".+? gave (.+?) to you\."
         self.you_hold = "(?s)You hold (.+?)\."
+        self.weapon_breaks = "Your (.+?) breaks and you have to remove it\."
+        self.armor_breaks = "Your (.+?) fell apart\."
+        self.equipped = "You see (.+?) (?:the .+?)\.\n\r(?:(?:.+?\.\n\r)+)?((?:.+?:.+\n\r?)+)"
+        self.wearing = "(?:On )?(.+?):[\s]*(.+)"
 
         self.regexes = [self.you_have, self.you_get, self.wont_buy, self.wont_buy2, self.sold, 
             self.you_drop, self.not_a_pawn_shop, self.you_now_have, self.gold_from_tip,
             self.not_empty, self.you_wear, self.nothing_to_wear, self.you_remove,  
             self.nothing_to_remove, self.you_wield, self.you_give, self.bought,
-            self.you_put_in_bag, self.gave_you, self.you_hold]
+            self.you_put_in_bag, self.gave_you, self.you_hold, self.weapon_breaks, self.armor_breaks, self.equipped]
 
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
@@ -63,7 +88,7 @@ class Inventory(BotReactionWithFlag):
             self.remove(M_obj.group(1))
             magentaprint(str(self.inventory))
             magentaprint("'" + M_obj.group(1) + "'")
-        elif regex is self.you_remove or regex is self.gave_you:
+        elif regex is self.you_remove or regex is self.gave_you or regex is self.weapon_breaks or regex is self.armor_breaks:
             self.add(M_obj.group(1))
             magentaprint(str(self.inventory))
             magentaprint("'" + M_obj.group(1) + "'")
@@ -196,6 +221,8 @@ class Inventory(BotReactionWithFlag):
     def add(self, item_string):
         items = self.parse_item_list(item_string)
 
+        magentaprint(items, False)
+
         for item, qty in items.items():
             if item != 'gold coin':
                 Inventory.add_to_qty_dict(self.inventory, (item, qty)) 
@@ -265,9 +292,11 @@ class Inventory(BotReactionWithFlag):
         numbers.extend([str(i) + " " for i in range(21, 200)])
 
         for item in inv_list:
+            number_found = False
             for n in range(0, len(numbers)):
                 number = numbers[n]
                 if item[0:len(number)] == number:
+                    number_found = True
                     if n < 3:
                         item = item[len(number):]
                         return_dict[item] = 1
@@ -287,6 +316,10 @@ class Inventory(BotReactionWithFlag):
                         return_dict[item] = n - 1
 
                     continue
+            if number_found is False:
+                #if the item wasn't received with a/an/some etc...
+                #we assume it's just one item
+                return_dict[item] = 1
 
         return return_dict
 

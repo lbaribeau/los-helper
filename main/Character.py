@@ -35,6 +35,25 @@ class Character(object):
                   "(?:.+?) could kill you with a needle\." #+4 or more levels from this character
                   ]
 
+    WEAPON_TYPES = ["Sharp",
+                    "Thrust",
+                    "Blunt",
+                    "Pole",
+                    "Missile"
+                    ]
+
+    ARMOR_TYPES = [
+                "Body",
+                "Arms",
+                "Legs",
+                "Neck",
+                "Hands",
+                "Head",
+                "Feet",
+                "Finger",
+                "Shield"
+                ]
+
     # Indices will be sharp, thrust, blunt, pole, missile, earth, water, wind, fire, astral
     # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
 

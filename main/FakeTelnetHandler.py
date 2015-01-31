@@ -69,6 +69,15 @@ class FakeTelnetSocket(object):
             exit = ExitType(name=direction)
             mud_area = self.current_mud_area.get_area_to_from_exit(exit)
             self.gen_area(mud_area.area)
+        elif (re.match("break (.+)", command)):
+            M_obj = re.search("break (.+)", command)
+            item = str(M_obj.group(1))
+            break_string = "Your " + item + " fell apart.\n"
+            self.content.append(break_string)
+        elif (re.match("echo (.+)", command)):
+            M_obj = re.search("echo (.+)", command)
+            echo = str(M_obj.group(1))
+            self.content.append(echo)
 
 
     def gen_area(self, area):
