@@ -103,10 +103,15 @@ class FakeTelnetSocket(object):
             item = str(M_obj.group(1))
             break_string = "Your " + item + " fell apart.\n"
             self.content.append(break_string)
+        elif (re.match("sell (.+)", command)):
+            M_obj = re.search("sell (.+)", command)
+            item = str(M_obj.group(1))
+            sell_string = "The shopkeep gives you 30 gold for " + item + "."
+            self.content.append(sell_string)
         elif (re.match("echo (.+)", command)):
             M_obj = re.search("echo (.+)", command)
             echo = str(M_obj.group(1))
-            self.content.append(echo)
+            self.content.append(echo + "\n")
 
 
     def gen_area(self, area):
@@ -160,10 +165,9 @@ class FakeTelnetHandler(object):
         self.tn = self.connect_to_MUD()
         self.tn.connect()
 
-        self.tn.write("genaid 45") #lets start us in the chapel
-        self.tn.write("addmob spiv") #most everything will fight this
-
         self.echoing = True
+        self.tn.write("genaid 45") #lets start us in the chapel
+        #self.tn.write("addmob spiv") #most everything will fight this
 
     def write(self, command):
         if self.echoing:
