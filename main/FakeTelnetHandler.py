@@ -18,6 +18,26 @@ class FakeTelnetSocket(object):
         self.inventory_string = 'You have: an Elixir of Morinva, two black bags, a broom, a cabbage,\n two carrots, three cauliflowers, some chicken soup, three feathers, some furry mittens, three granite pot\nions, a grey cloak, a large bag, three large iron shields, two large maces, a large orcish sword, two mandibles, five philtre of perc\neption, some ring mail armour, some ring mail leggings, a scarlet potion, a sparkler, four tree roots.'
         self.whois_string = 'Player                Cls Gen [Lv]Title                      Age   Race      \n-----------------------------------------------------------------------------\nDerp                  Mon  M  [14]Enlightened Brother        16    Human\n'
         self.time_string = '                      Meditate   *READY*\n                         Touch   3:25 minutes remaining\n'
+        self.equipment = ("You see Derp the Human Vicar.\n" \
+                        "He is in general good health.\n" \
+                        "On body:   some chain mail armour\n"   
+                        "On arms:   some chain mail sleeves\n"
+                        "On legs:   some chain mail leggings\n"
+                        "On neck:   a grey cloak\n"
+                        "On hands:  some chain mail gloves\n"
+                        "On head:   a chain mail hood\n"
+                        "On feet:   some chain mail boots\n"
+                        "On finger: an iron ring\n"
+                        "On finger: an iron ring\n"
+                        "On finger: an iron ring\n"
+                        "On finger: an iron ring\n"
+                        "On finger: an iron ring\n"
+                        "On finger: an iron ring\n"
+                        "On finger: an iron ring\n"
+                        "On finger: an iron ring\n"
+                        "Shield:    a cast iron shield\n"
+                        "Wielded:   a morning star\n")
+
         self.current_area = ""
         self.current_mud_area = None
         self.current_monster_list = []
@@ -45,6 +65,8 @@ class FakeTelnetSocket(object):
             self.gen_area(area)
         elif (command == "l"):
             self.content.append(str(self.show_current_area()))
+        elif (command == "lself"):
+            self.content.append(str(self.equipment))
         elif (re.match("addmob .+", command)): #OUTPUT AN AREA
             M_obj = re.search("addmob (.+)", command)
             mob = str(M_obj.group(1))

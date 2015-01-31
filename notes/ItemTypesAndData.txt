@@ -52,7 +52,8 @@ Armor Types
 "9" ""
 "10"    ""
 
-
+You see Twerp the Human Vicar.
+He is in general good health.
 On body:   some chain mail armour
 On arms:   some chain mail sleeves
 On legs:   some chain mail leggings
