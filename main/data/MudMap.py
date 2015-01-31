@@ -52,6 +52,9 @@ class MudArea():
     def to_string(self):
         return str(self.area) + str(self.area_exits)[1:-1]
 
+    def __repr__(self):
+        return self.to_string()
+
     def __str__(self):
         return self.to_string()
 
@@ -92,6 +95,9 @@ class MudMap():
         return str(self.los_map.nodes()) + "\n\n" + str(self.los_map.edges())
 
     def __str__(self):
+        return self.to_string()
+
+    def __repr__(self):
         return self.to_string()
 
     def get_path(self, start_area_id, end_area_id):
