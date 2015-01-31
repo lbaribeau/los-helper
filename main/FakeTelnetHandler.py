@@ -34,6 +34,7 @@ class FakeTelnetSocket(object):
                         "On hands:  some chain mail gloves\n"
                         "On head:   a chain mail hood\n"
                         "On feet:   some chain mail boots\n"
+                        "On face:   some spectacles\n"
                         "On finger: an iron ring\n"
                         "On finger: an iron ring\n"
                         "On finger: an iron ring\n"
