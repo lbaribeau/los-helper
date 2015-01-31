@@ -71,7 +71,7 @@ class LosHelper(object):
         self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
         self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
         self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
-        self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler)
+        self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler, self.character)
         self.combat_reactions = CombatReactions(self.mudReaderHandler, self.character)
 
         self.mud_map = None
