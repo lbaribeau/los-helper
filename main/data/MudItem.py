@@ -8,6 +8,8 @@ class MudItem():
 
     def __init__(self, item_name):
         self.item = Item(name=item_name)
+
+    def map(self):
         self.item.map()
 
     def to_string(self):

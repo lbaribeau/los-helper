@@ -340,6 +340,7 @@ class Inventory(BotReactionWithFlag):
                         if n < 3:
                             item = item[len(number):]
                             mud_item = MudItem(item)
+                            mud_item.map()
                             item_list = ItemList([mud_item])
                             return_dict[mud_item] = item_list
                         else:
@@ -356,6 +357,7 @@ class Inventory(BotReactionWithFlag):
                                         item = item[:len(item)-1]
 
                                 mud_item = MudItem(item)
+                                mud_item.map()
                                 mud_items = []
                                 for _ in range(n - 1):
                                     mud_items.append(mud_item)
@@ -368,6 +370,7 @@ class Inventory(BotReactionWithFlag):
                     #if the item wasn't received with a/an/some etc...
                     #we assume it's just one item
                     mud_item = MudItem(item)
+                    mud_item.map()
                     item_list = ItemList([mud_item])
                     return_dict[mud_item] = item_list
 
