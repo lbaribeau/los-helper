@@ -5,30 +5,22 @@ import re
 from Exceptions import *
 from BotReactions import *
 from misc_functions import *
-
+from data.MudItem import *
 
 class Inventory(BotReactionWithFlag):
 
-    Wearable = ["body",
-                "arms",
-                "legs",
-                "neck",
-                "neck",
-                "hands",
-                "head",
-                "feet",
-                "finger",
-                "finger",
-                "finger",
-                "finger",
-                "finger",
-                "finger",
-                "finger",
-                "finger",
-                "Shield",
-                "Wielded",
-                "Holding"
-                ]
+    equipped_items = {"body" : [],
+                "arms" : [],
+                "legs" : [],
+                "neck" : [],
+                "hands" : [],
+                "head" : [],
+                "feet" : [],
+                "finger" : [],
+                "Shield" : [],
+                "Wielded" : [],
+                "Holding" : []
+                }
 
     def __init__(self, mudReaderHandler, telnetHandler):
         self.you_have = "(?s)You have: (.+?)\."
@@ -53,14 +45,15 @@ class Inventory(BotReactionWithFlag):
         self.you_hold = "(?s)You hold (.+?)\."
         self.weapon_breaks = "Your (.+?) breaks and you have to remove it\."
         self.armor_breaks = "Your (.+?) fell apart\."
-        self.equipped = "You see (.+?) (?:the .+?)\.\n\r(?:(?:.+?\.\n\r)+)?((?:.+?:.+\n\r?)+)"
-        self.wearing = "(?:On )?(.+?):[\s]*(.+)"
+        self.current_equipment = "You see (.+?) (?:the .+?)\.\n?\r?(?:(?:.+?\.\n?\r?)+)?((?:.+?:.+\n?\r?)+)"
+        self.wearing = "(?:On )?(.+?):[\s]*(?:a |an |some )(.+)"
 
         self.regexes = [self.you_have, self.you_get, self.wont_buy, self.wont_buy2, self.sold, 
             self.you_drop, self.not_a_pawn_shop, self.you_now_have, self.gold_from_tip,
             self.not_empty, self.you_wear, self.nothing_to_wear, self.you_remove,  
             self.nothing_to_remove, self.you_wield, self.you_give, self.bought,
-            self.you_put_in_bag, self.gave_you, self.you_hold, self.weapon_breaks, self.armor_breaks, self.equipped]
+            self.you_put_in_bag, self.gave_you, self.you_hold, self.weapon_breaks,
+            self.armor_breaks, self.current_equipment]
 
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
@@ -73,6 +66,7 @@ class Inventory(BotReactionWithFlag):
     def notify(self, regex, M_obj):
         if regex is self.you_have:
             self.set_inventory(M_obj.group(1))
+            magentaprint(str(self.inventory), False)
         elif regex is self.sold:
             self.gold = self.gold + int(M_obj.group(1))
             self.remove(M_obj.group(2))
@@ -88,14 +82,20 @@ class Inventory(BotReactionWithFlag):
             self.remove(M_obj.group(1))
             magentaprint(str(self.inventory))
             magentaprint("'" + M_obj.group(1) + "'")
-        elif regex is self.you_remove or regex is self.gave_you or regex is self.weapon_breaks or regex is self.armor_breaks:
+        elif regex is self.you_remove or regex is self.gave_you:
             self.add(M_obj.group(1))
-            magentaprint(str(self.inventory))
-            magentaprint("'" + M_obj.group(1) + "'")
+        elif regex in (self.weapon_breaks, self.armor_breaks):
+            self.add_broken(M_obj.group(1))
+            magentaprint(str(self.inventory), False)
         elif regex is self.bought:
             if not self.is_bulk_vendoring:
                 self.get_inventory()  # There are some notes about this at the bottom
                 # I don't like this very much! I can't use ! to buy a lot of a thing.
+        elif regex is self.current_equipment:
+            equipment_list = re.findall(self.wearing, M_obj.group(2))
+
+            for slot in equipment_list:
+                self.equipped_items[slot[0]].append(MudItem(slot[1]))
 
         super(Inventory, self).notify(regex, M_obj)  # sets __waiter_flag
 
@@ -221,15 +221,20 @@ class Inventory(BotReactionWithFlag):
     def add(self, item_string):
         items = self.parse_item_list(item_string)
 
-        magentaprint(items, False)
+        for item, qty in items.items():
+            Inventory.add_to_qty_dict(self.inventory, (item, qty)) 
+
+    def add_broken(self, item_string):
+        items = self.parse_item_list(item_string)
 
         for item, qty in items.items():
-            if item != 'gold coin':
-                Inventory.add_to_qty_dict(self.inventory, (item, qty)) 
+            item.is_unusable = True
+            Inventory.add_to_qty_dict(self.inventory, (item, qty))
 
     @staticmethod
     def add_to_qty_dict(d, duple):
         ''' For (key, qty) pairs. '''
+        
         if duple[0] in d:
             d[duple[0]] += duple[1]
         else:
@@ -252,6 +257,7 @@ class Inventory(BotReactionWithFlag):
     @staticmethod
     def remove_from_qty_dict(d, duple):
         ''' For (key, qty) pairs. '''
+        
         if duple[0] in d:
             if duple[1] >= d[duple[0]]:
                 del d[duple[0]]
@@ -299,7 +305,7 @@ class Inventory(BotReactionWithFlag):
                     number_found = True
                     if n < 3:
                         item = item[len(number):]
-                        return_dict[item] = 1
+                        return_dict[MudItem(item)] = 1
                     else:
                         sets_of = "sets of "
                         if item[len(number):len(number)+len(sets_of)] == sets_of:
@@ -313,13 +319,13 @@ class Inventory(BotReactionWithFlag):
                                 else:
                                     item = item[:len(item)-1]
 
-                        return_dict[item] = n - 1
+                        return_dict[MudItem(item)] = n - 1
 
                     continue
             if number_found is False:
                 #if the item wasn't received with a/an/some etc...
                 #we assume it's just one item
-                return_dict[item] = 1
+                return_dict[MudItem(item)] = 1
 
         return return_dict
 
