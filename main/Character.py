@@ -12,7 +12,7 @@ class Character(object):
     _class = None
     level = None
     preferred_alignment = None
-    BLACK_MAGIC = False
+    BLACK_MAGIC = True
     FAVOURITE_SPELL = "fireball"
     SPELL_COST = 7
     KNOWS_VIGOR = True
@@ -212,9 +212,9 @@ class Character(object):
             self.MAX_MANA = 18
             self.MANA_TO_ENGAGE = 12   
         elif self.level <= 7:
-            self.HEALTH_TO_HEAL= 45
-            self.HEALTH_TO_FLEE = 8 
-            self.MAX_MANA = 21
+            self.HEALTH_TO_HEAL= 35
+            self.HEALTH_TO_FLEE = 15 
+            self.MAX_MANA = 25
             self.MANA_TO_ENGAGE = 12
         elif self.level <= 8:
             self.HEALTH_TO_HEAL= 45
@@ -280,7 +280,7 @@ class Character(object):
         "acrobat", "militia soldier", 
         "carpenter", "stagehand", 'hungry spider', 'cook', 'joiner', "ranch hand",
         "old rancher", "tired ranch hand", "drinking ranch hand",
-        "busy ranch hand",
+        "busy ranch hand","safety inspector",
         "auctioneer", # They pile up so bad!  
         # Definitely need smart chasing or a path that runs extra around the 
         # market (after healing)
@@ -292,7 +292,21 @@ class Character(object):
         "kobold shaman", "drunken trouble-maker", "kobold champion", "hungry spider"]
     lvl5_monsters = [
         "dwarven farm hand", "dwarven barmaid", "fort sentry", "fur trader", 
-        "aristocrat", "rancher sentry"]
+        "aristocrat", "rancher sentry",
+        "vicar",
+        "nobleman",
+        "lyrist",
+        "orange picker",
+        "logger",
+        "veteran",
+        "bruiser",
+        "axeman",
+        "seeker",
+        "hunter",
+        "bull",
+        "lay priest",
+        "protector"
+        ]
     lvl5_red_monsters = [
         'large bandit', "kobold guard", "mugger", 'large spider'
         ]
@@ -300,7 +314,13 @@ class Character(object):
         "dwarven field worker", "dwarven bartender", "school teacher",
         'lyrist', "nobleman", "seeker", "bull", "hunter", 'usher',
         'sword swallower', 'archer', "mime artist",
-        "yard supervisor", "sawmill operator", "large spider"
+        "yard supervisor", "sawmill operator", "large spider", "blacksmith",
+        "farm foreman",
+        "yard supervisor",
+        "Old Man James",
+        "dwarven traveller",
+        "Goourd",
+        "tourney organiser"
         #'sentry' stand in pairs unfortunately...
         ] # bull and hunter might be wrong (too high).
     lvl6_red_monsters = [ #1574 for gnoll camp
@@ -308,21 +328,48 @@ class Character(object):
         ]
     lvl7_monsters = [
         "dwarven cook", "swordsman", 'fort sergeant', 'oremaster', 
-        'giant spider', "rock spider"
+        'giant spider', "rock spider",
+        "Aldo",
+        "dwarven trader",
+        "gnoll chaplain",
+        "Cheryn",
+        "robed priest",
+        "orc scout"
         ] # giant spiders are hostile
+
     lvl8_monsters = [
         'owlbear',
+        "hauler"
+        "Farmer Malbon",
+        "sonneteer",
+        "Tag",
+        "mine manager",
+        "Alaran the Market Manager",
+        "artificer",
+        "Dini Stonehammer",
+        "Thereze",
+        "Farmer Viladin",
+        "Rancher Renstone",
+        "berzerker",
+        "dwarven hunter",
+        "initiate",
+        "Olmer",
+        "berserk orc",
+        "old knight"
+
         #'mine manager'
         ]
     lvl9_monsters = [
-        "dwarven blacksmith"
+        "dwarven blacksmith",
+        "director",
+        "Elder Barthrodue",
+        "abbot",
+        "orc warrior",
+        "white knight",
+        "battered knight",
+        "hedge knight"
         ]
 
-    lvl10_blue_monsters = [ #1913 Red Tent, #1904 / #1912 Knights Tent, #1909
-        "old knight", "hedge knight", "white knight", #too tough for bot
-        "battered knight",
-        #'silver knight' deflects attacks a.k.a. takes 50% dmg and shouldn't be fought by melee
-        ]
     # A list of monsters redundant to the above lists that
     # I may want to kill even if they are too low of level.
     # Mostly hostiles and things that don't let you loot.
@@ -334,32 +381,41 @@ class Character(object):
 
     def set_monster_kill_list(self):
         self.MONSTER_KILL_LIST = []
-        self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
-        self.MONSTER_KILL_LIST.extend(self.lvl1_red_monsters)
 
-        if self.level > 3:
-            self.MONSTER_KILL_LIST.extend(self.lvl2_monsters)
-            self.MONSTER_KILL_LIST.extend(self.lvl2_red_monsters)
-        if self.level > 4:
-            self.MONSTER_KILL_LIST.extend(self.lvl3_monsters)
-            self.MONSTER_KILL_LIST.extend(self.lvl3_red_monsters)
-        if self.level > 6:
-            self.MONSTER_KILL_LIST = [m for m in self.MONSTER_KILL_LIST \
-                                      if m not in self.lvl1_monsters    \
-                                      and m not in self.lvl2_monsters]
-            self.MONSTER_KILL_LIST.extend(self.preferred_lvl_1_2_monsters)
-            self.MONSTER_KILL_LIST.extend(self.lvl4_monsters)
-            self.MONSTER_KILL_LIST.extend(self.lvl4_red_monsters)
-        if self.level > 7:
-            self.MONSTER_KILL_LIST.extend(self.lvl5_monsters)
-            self.MONSTER_KILL_LIST.extend(self.lvl5_red_monsters)
-        if self.level > 8:
-            self.MONSTER_KILL_LIST.extend(self.lvl6_monsters)
-            self.MONSTER_KILL_LIST.extend(self.lvl6_red_monsters)
-        if self.level > 10:
-            self.MONSTER_KILL_LIST.extend(self.lvl7_monsters)
-        if self.level > 12:
-            self.MONSTER_KILL_LIST.extend(self.lvl10_blue_monsters)
+        if self.level <= 12:
+            self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl1_red_monsters)
+
+            if self.level > 3:
+                self.MONSTER_KILL_LIST.extend(self.lvl2_monsters)
+                self.MONSTER_KILL_LIST.extend(self.lvl2_red_monsters)
+            if self.level > 4:
+                self.MONSTER_KILL_LIST.extend(self.lvl3_monsters)
+                self.MONSTER_KILL_LIST.extend(self.lvl3_red_monsters)
+            if self.level > 6:
+                self.MONSTER_KILL_LIST = [m for m in self.MONSTER_KILL_LIST \
+                                          if m not in self.lvl1_monsters    \
+                                          and m not in self.lvl2_monsters]
+                self.MONSTER_KILL_LIST.extend(self.preferred_lvl_1_2_monsters)
+                self.MONSTER_KILL_LIST.extend(self.lvl4_monsters)
+                self.MONSTER_KILL_LIST.extend(self.lvl4_red_monsters)
+            if self.level > 8:
+                self.MONSTER_KILL_LIST.extend(self.lvl5_monsters)
+                self.MONSTER_KILL_LIST.extend(self.lvl5_red_monsters)
+            if self.level > 9:
+                self.MONSTER_KILL_LIST.extend(self.lvl6_monsters)
+                self.MONSTER_KILL_LIST.extend(self.lvl6_red_monsters)
+            if self.level > 11:
+                self.MONSTER_KILL_LIST.extend(self.lvl7_monsters)
+        else:
+            if self.level > 12:
+                self.MONSTER_KILL_LIST.extend(self.lvl5_monsters)
+                self.MONSTER_KILL_LIST.extend(self.lvl5_red_monsters)
+                self.MONSTER_KILL_LIST.extend(self.lvl6_monsters)
+                self.MONSTER_KILL_LIST.extend(self.lvl6_red_monsters)
+                self.MONSTER_KILL_LIST.extend(self.lvl7_monsters)
+                self.MONSTER_KILL_LIST.extend(self.lvl8_monsters)
+                self.MONSTER_KILL_LIST.extend(self.lvl9_monsters)
 
 
 # todo: I don't like caps anymore
