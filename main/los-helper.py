@@ -56,12 +56,15 @@ class LosHelper(object):
         magentaprint("Connecting to MUD and initializing....", False)
         self.t1 = threading.Thread(target=self.setup_mud_map)
         self.character = Character()
-
-        self.telnetHandler = TelnetHandler()
         
+        self.telnetHandler = None
+
         if (len(sys.argv) > 3):
             if (sys.argv[3] == "-fake"):
                 self.telnetHandler = FakeTelnetHandler()
+        else:
+                self.telnetHandler = TelnetHandler()
+
 
         self.consoleHandler = newConsoleHandler() 
         self.MUDBuffer = MyBuffer()
