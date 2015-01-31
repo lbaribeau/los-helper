@@ -53,11 +53,11 @@ class GrindThread(BotThread):
         
         LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
-        SHOP_AND_TIP_PATH = ["out", "s", "w", 'w', 'w', 's', 's', "shop",
+        SHOP_AND_TIP_PATH = ["out", "south", "west", 'west', 'west', 'south', 'south', "shop",
                           "sell_items", 
-                          "out", "se", 'e', 'e', 'e', 'e', "ne", "tip",
+                          "out", "southeast", 'east', 'east', 'east', 'east', "northeast", "tip",
                           "drop_items",
-                          "out", 'n', 'n', 'w', 'w', 'w', 'n', "chapel"]
+                          "out", 'north', 'north', 'west', 'west', 'west', 'north', "chapel"]
                           
         THEATRE_PATH = ["out", "s", "w", "w", "w", "s", "theat", "stair",
                           "cubby", "out", "down", "swing", "seat", "out",
