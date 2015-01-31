@@ -15,7 +15,13 @@ class FakeTelnetSocket(object):
         self.mud_map = mud_map
 
         ##### CONTENT ######
-        self.inventory_string = 'You have: an Elixir of Morinva, two black bags, a broom, a cabbage,\n two carrots, three cauliflowers, some chicken soup, three feathers, some furry mittens, three granite pot\nions, a grey cloak, a large bag, three large iron shields, two large maces, a large orcish sword, two mandibles, five philtre of perc\neption, some ring mail armour, some ring mail leggings, a scarlet potion, a sparkler, four tree roots.'
+        self.inventory_string = ("You have: an Elixir of Morinva, two black bags, a broom, "
+                                "a cabbage, two carrots, three cauliflowers, some chicken soup, "
+                                "three feathers, some furry mittens, three granite potions, "
+                                "a grey cloak, a large bag, three large iron shields, two large maces, "
+                                "a large orcish sword, two mandibles, five philtre of perception, "
+                                "some ring mail armour, some ring mail leggings, a scarlet potion, "
+                                "a sparkler, four tree roots.\n")
         self.whois_string = 'Player                Cls Gen [Lv]Title                      Age   Race      \n-----------------------------------------------------------------------------\nDerp                  Mon  M  [14]Enlightened Brother        16    Human\n'
         self.time_string = '                      Meditate   *READY*\n                         Touch   3:25 minutes remaining\n'
         self.equipment = ("You see Derp the Human Vicar.\n" \
@@ -24,6 +30,7 @@ class FakeTelnetSocket(object):
                         "On arms:   some chain mail sleeves\n"
                         "On legs:   some chain mail leggings\n"
                         "On neck:   a grey cloak\n"
+                        "On neck:   a traveller's cross\n"
                         "On hands:  some chain mail gloves\n"
                         "On head:   a chain mail hood\n"
                         "On feet:   some chain mail boots\n"
@@ -135,12 +142,10 @@ class FakeTelnetSocket(object):
         return area_string + "\n\r"
 
     def read_some(self):
-        time.sleep(0.1)
         if len(self.content) is not 0:
             fso = FakeSocketOutput(self.content.pop(0))
             return fso
         else:
-            time.sleep(1)
             return FakeSocketOutput()
 
     def close(self):
