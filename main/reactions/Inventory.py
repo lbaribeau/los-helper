@@ -130,8 +130,6 @@ class Inventory(BotReactionWithFlag):
 
                 #magentaprint(str(self.equipped_items), False)
 
-        magentaprint("Sell List: " + str(self.sellable()) + "\n\n", False)
-
         super(Inventory, self).notify(regex, M_obj)  # sets __waiter_flag
 
     def get_inventory(self):
@@ -240,7 +238,6 @@ class Inventory(BotReactionWithFlag):
 
     def drop_item_at_position(self, item_string, position):
         self.telnetHandler.write("drop " + item_string  + " " + str(position))
-        magentaprint("drop " + item_string  + " " + str(position), False)
         self.wait_for_flag()
 
     def drop_last(self, item_string):
