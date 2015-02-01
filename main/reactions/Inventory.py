@@ -130,6 +130,8 @@ class Inventory(BotReactionWithFlag):
 
                 #magentaprint(str(self.equipped_items), False)
 
+        magentaprint("Sell List: " + str(self.sellable()) + "\n\n", False)
+
         super(Inventory, self).notify(regex, M_obj)  # sets __waiter_flag
 
     def get_inventory(self):
@@ -395,27 +397,26 @@ class Inventory(BotReactionWithFlag):
         # I dare you to come up with a better algorithm.  I bet python list operations are 
         # pretty quick.
 
-        references = {}
+        references = []
         numbered_references = []
 
         for item in self.inventory:
-            #magentaprint(item,False)
-            reference = self._item_string_to_reference(str(item))
-            #magentaprint(reference,False)
+            references.append(item.reference)
 
-            prev_items_with_same_reference = references[reference] if reference in references else 0
-
-            if prev_items_with_same_reference == 0:
-                numbered_references.append(reference)
-                numbered_references.extend([reference + " " + str(n) for n in range(1, int(self.inventory[item]))])
-            else:
-                numbered_references.extend([reference + " " + str(n) for n in range(prev_items_with_same_reference, prev_items_with_same_reference + int(self.inventory[item]))])
-
+        for item in self.inventory:
             if (item not in self.keep_list):
-                Inventory.add_to_qty_dict(references, (item, self.inventory[item]))
+                prev_items_with_same_reference = references.count(item.reference)
+
+                if prev_items_with_same_reference == 0:
+                    numbered_references.append(item.reference)
+                    numbered_references.extend([item.reference + " " + str(n) for n in range(1, int(self.inventory[item]))])
+                else:
+                    numbered_references.extend([item.reference + " " +
+                     str(n) for n in range(prev_items_with_same_reference, prev_items_with_same_reference + int(self.inventory[item]))])
 
             # TODO: have quantities in keep_list
 
+        numbered_references.sort()
         numbered_references.reverse()
         return numbered_references
       
@@ -429,8 +430,7 @@ class Inventory(BotReactionWithFlag):
         magentaprint(str(self.inventory),False)
 
     restoratives = ["chicken soup", "small restorative", "small flask", 
-                    "large restorative", "scarlet potion", "white potion", "tree root",
-                    "ball and chain"]
+                    "large restorative", "scarlet potion", "white potion", "tree root"]
     # usable = ["small retorative", "large restorative", "chicken soup", "scarlet potion", 
     #           "steel bottle", "silver chalice", "milky potion",
     #           "glowing potion",
