@@ -5,9 +5,11 @@ from misc_functions import *
 class MudItem():
     item = None
     is_unusable = False
+    reference = None
 
     def __init__(self, item_name):
         self.item = Item(name=item_name)
+        self.reference = get_last_word(self.item.name)
 
     def map(self):
         self.item.map()
@@ -57,7 +59,7 @@ class ItemList():
 
     def remove(self, item, index=0):
         self.items.pop(index)
-        self.qty -= 1
+        self.set_quantity()
 
     def set_quantity(self):
         self.qty = len(self.items)        
