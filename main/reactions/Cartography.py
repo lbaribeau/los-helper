@@ -185,16 +185,18 @@ class Cartography(BotReaction):
         elif (regex == self.not_here or regex == self.no_exit):
             #The state is confusion is usually caused by bad processing of good data (i.e. bugs)
             #The following is a set of work arounds to smoothe things out until those bugs are fixed
-            if self.character.CONFUSED:
-                if (not self.character.CAN_SEE):
-                    self.commandHandler.process('c light') #look around to stop the "you don't see that here bug"
+            if self.character.ACTIVELY_BOTTING:
+                if self.character.CONFUSED:
+                    if (not self.character.CAN_SEE):
+                        self.commandHandler.process('c light') #look around to stop the "you don't see that here bug"
 
-                #clear the attacking list
-                self.character.MOBS_ATTACKING = []
+                    #clear the attacking list
+                    self.character.MOBS_ATTACKING = []
 
-                self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
-            else:
-                self.character.CONFUSED = True
+                    self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
+                else:
+                    self.character.CONFUSED = True
+
             self.character.SUCCESSFUL_GO = False
             self.character.TRYING_TO_MOVE = False
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
@@ -319,8 +321,9 @@ class Cartography(BotReaction):
                 mob = Mob(name=monster)
                 mob.map()
 
-                if (mob.approximate_level == None):
-                    self.commandHandler.process('l ' + monster)
+                if (self.character.ACTIVELY_BOTTING):
+                    if (mob.approximate_level == None):
+                        self.commandHandler.process('l ' + monster)
 
                 magentaprint(str(mob))
 
