@@ -1,6 +1,5 @@
 
-import time
-import re
+import time, re, collections
 
 from Exceptions import *
 from BotReactions import *
@@ -81,7 +80,7 @@ class Inventory(BotReactionWithFlag):
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
         self.character = character
-        self.inventory = []
+        self.inventory = {}
         self.gold = 0
         self.__stopping = False
         self.mudReaderHandler.register_reaction(self)
@@ -116,7 +115,7 @@ class Inventory(BotReactionWithFlag):
             if not self.is_bulk_vendoring:
                 self.get_inventory()  # There are some notes about this at the bottom
                 # I don't like this very much! I can't use ! to buy a lot of a thing.
-        elif regex is (self.weapon_breaks, self.armor_breaks):
+        elif regex in (self.weapon_breaks, self.armor_breaks):
             self.add_broken(M_obj.group(1))
         elif regex is self.current_equipment:
             character_name = M_obj.group(1)
@@ -251,12 +250,15 @@ class Inventory(BotReactionWithFlag):
 
     def set_inventory(self, item_string):
         self.inventory = self.parse_item_list(item_string)
+        self.sort_inventory()
 
     def add(self, item_string):
         items = self.parse_item_list(item_string)
 
         for item, qty in items.items():
-            Inventory.add_to_qty_dict(self.inventory, (item, qty)) 
+            Inventory.add_to_qty_dict(self.inventory, (item, qty))
+
+        self.sort_inventory()
 
     def add_broken(self, item_string):
         items = self.parse_item_list(item_string)
@@ -264,6 +266,8 @@ class Inventory(BotReactionWithFlag):
         for item, qty in items.items():
             item.is_unusable = True
             Inventory.add_to_qty_dict(self.inventory, (item, qty))
+
+        self.sort_inventory()
 
     @staticmethod
     def add_to_qty_dict(d, keyvalue):
@@ -300,6 +304,9 @@ class Inventory(BotReactionWithFlag):
                 d[keyvalue[0]].remove(keyvalue[1])
         else:
             raise ValueError
+
+    def sort_inventory(self):
+        self.inventory = collections.OrderedDict(sorted(self.inventory.items()))
 
     def clip_in_your_off_hand(self, wield_string):
         # Example wield_string: a spear in your off hand
@@ -346,26 +353,24 @@ class Inventory(BotReactionWithFlag):
                             item_list = ItemList([mud_item])
                             return_dict[mud_item] = item_list
                         else:
-                            sets_of = "sets of "
-                            if item[len(number):len(number)+len(sets_of)] == sets_of:
-                            # if item[len(number) + (0:9)] == " sets of ":
-                                item = item[len(number)+len(sets_of):]
-                            else:
-                                item = item[len(number):]
-                                if item[len(item)-1] == 's':
-                                    if item[len(item)-3:] == "ses" or item[len(item)-3:] == "xes":
-                                        item = item[:len(item)-2]
-                                    else:
-                                        item = item[:len(item)-1]
+                            if "sets of" in item:
+                                item = item.replace("sets of ", "")
 
-                                mud_item = MudItem(item)
-                                mud_item.map()
-                                mud_items = []
-                                for _ in range(n - 1):
-                                    mud_items.append(mud_item)
-                                
-                                item_list = ItemList(mud_items)
-                                return_dict[mud_item] = item_list
+                            item = item[len(number):]
+                            if item[len(item)-1] == 's':
+                                if item[len(item)-3:] == "ses" or item[len(item)-3:] == "xes":
+                                    item = item[:len(item)-2]
+                                else:
+                                    item = item[:len(item)-1]
+
+                            mud_item = MudItem(item)
+                            mud_item.map()
+                            mud_items = []
+                            for _ in range(n - 1):
+                                mud_items.append(mud_item)
+                            
+                            item_list = ItemList(mud_items)
+                            return_dict[mud_item] = item_list
                         continue
 
                 if number_found is False:
@@ -398,15 +403,15 @@ class Inventory(BotReactionWithFlag):
             reference = self._item_string_to_reference(str(item))
             #magentaprint(reference,False)
 
+            prev_items_with_same_reference = references[reference] if reference in references else 0
+
+            if prev_items_with_same_reference == 0:
+                numbered_references.append(reference)
+                numbered_references.extend([reference + " " + str(n) for n in range(1, int(self.inventory[item]))])
+            else:
+                numbered_references.extend([reference + " " + str(n) for n in range(prev_items_with_same_reference, prev_items_with_same_reference + int(self.inventory[item]))])
+
             if (item not in self.keep_list):
-                prev_items_with_same_reference = references[reference] if reference in references else 0
-
-                if prev_items_with_same_reference == 0:
-                    numbered_references.append(reference)
-                    numbered_references.extend([reference + " " + str(n) for n in range(1, int(self.inventory[item]))])
-                else:
-                    numbered_references.extend([reference + " " + str(n) for n in range(prev_items_with_same_reference, prev_items_with_same_reference + int(self.inventory[item]))])
-
                 Inventory.add_to_qty_dict(references, (item, self.inventory[item]))
 
             # TODO: have quantities in keep_list
@@ -416,9 +421,9 @@ class Inventory(BotReactionWithFlag):
       
     def _item_string_to_reference(self, item_string):
         # 'grey cloak' will be "grey", it just takes the first word.
-        #s = get_last_word(item_string)
+        s = get_last_word(item_string)
         #magentaprint("Reference: " + s, False)
-        return item_string.strip().split(" ")[0].split(".")[0]
+        return s#item_string.strip().split(" ")[0].split(".")[0]
 
     def output_inventory(self):
         magentaprint(str(self.inventory),False)

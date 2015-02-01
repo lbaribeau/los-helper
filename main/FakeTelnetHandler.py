@@ -15,13 +15,12 @@ class FakeTelnetSocket(object):
         self.mud_map = mud_map
 
         ##### CONTENT ######
-        self.inventory_string = ("You have: an Elixir of Morinva, two black bags, a broom, "
-                                "a cabbage, two carrots, three cauliflowers, some chicken soup, "
-                                "three feathers, some furry mittens, three granite potions, "
-                                "a grey cloak, a large bag, three large iron shields, two large maces, "
-                                "a large orcish sword, two mandibles, five philtre of perception, "
-                                "some ring mail armour, some ring mail leggings, a scarlet potion, "
-                                "a sparkler, four tree roots.\n")
+        self.inventory_string = ("You have: two adamantine rods, an amber vial, seven sets of bolos, two sets of "
+"coloured balls, two copper rings, a duster, a furry hat, four sets of furry "
+"mittens, two garden forks, three grey cloaks, a jemmy, a large bag, two large "
+"maces, two large sacks, four sets of ring mail sleeves, a saw, a short sword, "
+"a silver chalice, a silver crucifix, some slippers, a small prism, three "
+"sticky salves, a war hammer.\n")
         self.whois_string = 'Player                Cls Gen [Lv]Title                      Age   Race      \n-----------------------------------------------------------------------------\nDerp                  Mon  M  [14]Enlightened Brother        16    Human\n'
         self.time_string = '                      Meditate   *READY*\n                         Touch   3:25 minutes remaining\n'
         self.equipment = ("You see Derp the Human Vicar.\n" \

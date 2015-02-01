@@ -33,6 +33,9 @@ class MudItem():
 
         return is_equal
 
+    def __lt__(self, other):
+        return self.item.name < other.item.name
+
     def __ne__(self, other):
         return not self.__eq__(other)
 
