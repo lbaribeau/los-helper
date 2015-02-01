@@ -1,9 +1,9 @@
 from peewee import *
 from BaseModel import *
 from misc_functions import *
+from NamedModel import NamedModel
 
-class Mob(BaseModel):
-    name = CharField()
+class Mob(NamedModel):
     description = CharField(null=True)
     level = IntegerField(null=True)
     approximate_level = IntegerField(null=True)

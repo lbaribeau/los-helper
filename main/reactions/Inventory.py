@@ -5,6 +5,7 @@ from Exceptions import *
 from BotReactions import *
 from misc_functions import *
 from data.MudItem import *
+from data.GenericMudList import *
 
 class Inventory(BotReactionWithFlag):
 
@@ -127,8 +128,6 @@ class Inventory(BotReactionWithFlag):
                         self.equipped_items[slot[0]] = []
 
                     self.equipped_items[slot[0]].append(MudItem(slot[1]))
-
-        magentaprint(str(self.inventory), False)
 
         super(Inventory, self).notify(regex, M_obj)  # sets __waiter_flag
 
@@ -282,7 +281,7 @@ class Inventory(BotReactionWithFlag):
 
         for keyvalue in item_list:
             try:
-                magentaprint(str(keyvalue) + " " + str(item_list[keyvalue].items))
+                magentaprint(str(keyvalue) + " " + str(item_list[keyvalue].objs()))
                 # self.remove((item, qty))
                 Inventory.remove_from_qty_dict(self.inventory, (keyvalue, item_list[keyvalue]) )
             except ValueError:
@@ -297,7 +296,7 @@ class Inventory(BotReactionWithFlag):
         magentaprint(str(keyvalue))
 
         if keyvalue[0] in d:
-            if keyvalue[1].qty >= d[keyvalue[0]].qty:
+            if keyvalue[1].qty() >= d[keyvalue[0]].qty():
                 del d[keyvalue[0]]
             else:
                 d[keyvalue[0]].remove(keyvalue[1])
@@ -349,7 +348,7 @@ class Inventory(BotReactionWithFlag):
                             item = item[len(number):]
                             mud_item = MudItem(item)
                             mud_item.map()
-                            item_list = ItemList([mud_item])
+                            item_list = GenericMudList([mud_item])
                             return_dict[mud_item] = item_list
                         else:
                             if "sets of" in item:
@@ -368,7 +367,7 @@ class Inventory(BotReactionWithFlag):
                             for _ in range(n - 1):
                                 mud_items.append(mud_item)
                             
-                            item_list = ItemList(mud_items)
+                            item_list = GenericMudList(mud_items)
                             return_dict[mud_item] = item_list
                         continue
 
@@ -377,7 +376,7 @@ class Inventory(BotReactionWithFlag):
                     #we assume it's just one item
                     mud_item = MudItem(item)
                     mud_item.map()
-                    item_list = ItemList([mud_item])
+                    item_list = GenericMudList([mud_item])
                     return_dict[mud_item] = item_list
 
         return return_dict

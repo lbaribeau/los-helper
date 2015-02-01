@@ -1,9 +1,9 @@
 from peewee import *
 from BaseModel import *
 from misc_functions import *
+from NamedModel import NamedModel
 
-class ExitType(BaseModel):
-    name = CharField() #ex. north, out, door
+class ExitType(NamedModel):
 
     '''Private Area Functions'''
     def map(self):

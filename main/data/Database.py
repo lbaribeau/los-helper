@@ -5,7 +5,7 @@ from peewee import *
 
 db = Proxy()
 
-from misc_functions import *
+from BaseModel import *
 from Logging import *
 from Area import *
 from AreaExit import *

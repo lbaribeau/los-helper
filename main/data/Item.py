@@ -1,10 +1,9 @@
 from peewee import *
-from BaseModel import *
+from NamedModel import NamedModel
 from misc_functions import *
 from ItemType import *
 
-class Item(BaseModel):
-    name = CharField()
+class Item(NamedModel):
     description = CharField(null=True)
     level = IntegerField(null=True)
     itemtype = ForeignKeyField(ItemType, null=True)

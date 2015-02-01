@@ -1,10 +1,9 @@
 import sys
 from peewee import *
-from BaseModel import BaseModel
 from misc_functions import *
+from NamedModel import NamedModel
 
-class Area(BaseModel):
-    name = CharField() #Chapel
+class Area(NamedModel):
     description = CharField(null=True) #This will only be used for crawler comparisons
     is_always_dark = BooleanField(default=False)
     is_dark_at_night = BooleanField(default=False)
