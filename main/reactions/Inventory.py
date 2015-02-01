@@ -105,17 +105,19 @@ class Inventory(BotReactionWithFlag):
         elif regex is self.you_get:
             item = self.clip_from_a_container(M_obj.group(1))
             self.add(item)
-        elif regex is self.you_drop or regex is self.you_wear or regex is self.you_give or regex is self.you_put_in_bag or regex is self.you_hold:
+        elif regex is self.you_drop or regex is self.you_give or regex is self.you_put_in_bag or regex is self.you_hold:
             self.remove(M_obj.group(1))
+        elif regex is self.you_wear:
+            self.remove(M_obj.group(1))
+            #we know this is armor of some kind so we need to find a way to assign it to the right spot
         elif regex is self.you_remove or regex is self.gave_you:
             self.add(M_obj.group(1))
         elif regex is self.bought:
             if not self.is_bulk_vendoring:
                 self.get_inventory()  # There are some notes about this at the bottom
                 # I don't like this very much! I can't use ! to buy a lot of a thing.
-        elif regex in (self.weapon_breaks, self.armor_breaks):
+        elif regex is (self.weapon_breaks, self.armor_breaks):
             self.add_broken(M_obj.group(1))
-            magentaprint(str(self.inventory), False)
         elif regex is self.current_equipment:
             character_name = M_obj.group(1)
             equipment_list = re.findall(self.wearing, M_obj.group(2))

@@ -109,6 +109,7 @@ class Cartography(BotReaction):
             self.character.AREA_TITLE = area_title #title
             self.character.EXIT_LIST = exit_list #exits
             self.character.MONSTER_LIST = monster_list#monster_list #mob list
+            self.character.MONSTER_LIST.sort()
 
             self.character.SUCCESSFUL_GO = True #successful go should be true everytime the area parses
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0

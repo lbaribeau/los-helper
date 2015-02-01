@@ -393,7 +393,8 @@ class MudReaderThread(threading.Thread):
             if(M_obj != None):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 if(my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1):
-                    self.character.MONSTER_LIST.remove(M_obj.group(2))
+                    self.character.remove_from_monster_list(M_obj.group(2))
+                    #self.character.MONSTER_LIST.remove(M_obj.group(2))
                 else:
                     magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
             # Experience
@@ -408,7 +409,8 @@ class MudReaderThread(threading.Thread):
             if(M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 if(my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1):
-                    self.character.MONSTER_LIST.remove(M_obj.group(2))
+                    #self.character.MONSTER_LIST.remove(M_obj.group(2))
+                    self.character.remove_from_monster_list(M_obj.group(2))
                 else:
                     magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
                 # TODO: make sure we're matching damage text for all kinds of attacks.
@@ -424,7 +426,8 @@ class MudReaderThread(threading.Thread):
             if(M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 if(my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1):
-                    self.character.MONSTER_LIST.remove(M_obj.group(2))
+                    #self.character.MONSTER_LIST.remove(M_obj.group(2))
+                    self.character.remove_from_monster_list(M_obj.group(2))
                 else:
                     magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
             # Monster wanders away
@@ -432,14 +435,16 @@ class MudReaderThread(threading.Thread):
             if(M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 if(my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1):
-                    self.character.MONSTER_LIST.remove(M_obj.group(2))
+                    #self.character.MONSTER_LIST.remove(M_obj.group(2))
+                    self.character.remove_from_monster_list(M_obj.group(2))
                 else:
                     magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
             # Monster arrival
             M_obj = re.search("An? (.+?) just arrived\.", text_buffer)
             if(M_obj):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                self.character.MONSTER_LIST.append(M_obj.group(1))
+                #self.character.MONSTER_LIST.append(M_obj.group(1))
+                self.character.add_to_monster_list(M_obj.group(1))
             # TODO: handle "Two lay followers just arrived."
             # Monsters joining in
             # Two strings which can occur

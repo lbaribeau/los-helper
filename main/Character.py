@@ -154,6 +154,20 @@ class Character(object):
     EXIT_LIST=[]
     MONSTER_LIST=[]
 
+    def add_to_monster_list(self, monster_name):
+        self.MONSTER_LIST.append(monster_name)
+        self.MONSTER_LIST.sort()
+
+    def remove_from_monster_list(self, monster_name):
+        for index, monster in enumerate(self.MONSTER_LIST):
+            if (monster == monster_name):
+                self.MONSTER_LIST.pop(index)
+                continue
+
+        self.MONSTER_LIST.sort()
+
+        
+
     TRYING_TO_MOVE = True
     EXIT_REGEX="self.character.EXIT_REGEX"
     AREA_ID = None
@@ -228,7 +242,7 @@ class Character(object):
             #self.MANA_TO_ENGAGE = 18
             self.HEALTH_TO_HEAL = 70
             self.HEALTH_TO_FLEE = 40
-            self.MAX_MANA = 4
+            self.MAX_MANA = 0
             self.MANA_TO_ENGAGE = 0
     
     ### Monster stuff ###

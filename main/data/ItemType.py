@@ -10,4 +10,4 @@ class ItemType(BaseModel):
     note = CharField(null=True)
 
     def to_string(self):
-        return str(self.id) + ", " + str(self.data)
+        return str(self.model) + ", " + str(self.data)

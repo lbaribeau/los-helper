@@ -65,7 +65,7 @@ class CharacterClass(object):
             self.HP_gained_per_level = 6
             self.MP_gained_per_level = 3
             self.heal_skills.extend([ClassSkillReaction(mudReaderHandler, "Meditate",
-                                    SkillTimer("You feel at one with the universe\.", 100),
+                                    SkillTimer("You feel at one with the universe\.", 105),
                                     SkillTimer("Your spirit is not at peace.", 10))])
             self.combat_skills.extend([ClassSkillReaction(mudReaderHandler, "Touch",
                                     SkillTimer("Your? touch(?:ed)? .+?\.", 240),

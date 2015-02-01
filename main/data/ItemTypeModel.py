@@ -6,4 +6,4 @@ class ItemTypeModel(BaseModel):
     name = CharField()
 
     def to_string(self):
-        return str(self.id) + ", " + str(self.name) + ", " + str(self.level)
+        return str(self.name)
