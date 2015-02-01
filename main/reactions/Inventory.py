@@ -129,6 +129,8 @@ class Inventory(BotReactionWithFlag):
 
                     self.equipped_items[slot[0]].append(MudItem(slot[1]))
 
+        magentaprint(str(self.inventory), False)
+
         super(Inventory, self).notify(regex, M_obj)  # sets __waiter_flag
 
     def get_inventory(self):
@@ -281,7 +283,7 @@ class Inventory(BotReactionWithFlag):
 
         for keyvalue in item_list:
             try:
-                magentaprint(str(keyvalue) + " " + str(item_list[keyvalue].objs()))
+                magentaprint(str(keyvalue) + " " + str(item_list[keyvalue].objs))
                 # self.remove((item, qty))
                 Inventory.remove_from_qty_dict(self.inventory, (keyvalue, item_list[keyvalue]) )
             except ValueError:
@@ -296,7 +298,7 @@ class Inventory(BotReactionWithFlag):
         magentaprint(str(keyvalue))
 
         if keyvalue[0] in d:
-            if keyvalue[1].qty() >= d[keyvalue[0]].qty():
+            if keyvalue[1].qty >= d[keyvalue[0]].qty:
                 del d[keyvalue[0]]
             else:
                 d[keyvalue[0]].remove(keyvalue[1])

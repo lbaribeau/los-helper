@@ -5,16 +5,11 @@ from NamedModel import NamedModel
 
 class GenericMudList():
     objs = []
+    qty = 1
 
     def __init__(self, objs):
         self.objs = objs
         self.set_quantity()
-
-    def qty(self):
-        return len(self.objs)
-
-    def objs(self):
-        return self.objs
 
     def add(self, obj_list):
         self.objs += obj_list.objs
