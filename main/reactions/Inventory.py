@@ -129,8 +129,6 @@ class Inventory(BotReactionWithFlag):
 
                     self.equipped_items[slot[0]].append(MudItem(slot[1]))
 
-        magentaprint(str(self.inventory), False)
-
         super(Inventory, self).notify(regex, M_obj)  # sets __waiter_flag
 
     def get_inventory(self):

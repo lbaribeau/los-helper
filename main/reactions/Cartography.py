@@ -8,6 +8,8 @@ from BotReactions import *
 from misc_functions import *
 from Database import *
 from MudMap import *
+from MudItem import *
+from MudMob import *
 import re
 
 class Cartography(BotReaction):
