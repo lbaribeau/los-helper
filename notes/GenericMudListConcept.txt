@@ -1,0 +1,47 @@
+class GenericMudList():
+    ordered_dictionary = {} #this would be {GenericMudObject : GenericMudObjectList}
+
+    def __init__(self, dictionary):
+        self.dictionary = OrderedDict(dictionary) #maintains alphabetically sorting
+
+    def add(self, key, value):
+        #clone of add_to_qty from inventory
+
+    def remove(self, key, value):
+        #clone of remove_from_qty from inventory
+
+
+class GenericMudObject(): #maintains a complex object but appears simply as a string
+    obj = None #this could be the reference to the item or monster or whatever else we wanted from the database
+    reference = None #this is the string reference used for targetting the object
+
+    def __init__(self, obj):
+        self.obj = obj
+        self.reference = get_last_word(obj.name) #everything in the mud has a name
+        self.hash_key = obj.name
+
+    def map(self): #standard "save to or get from database" function
+        abstract() #implemented by children along with any other database related functions
+
+    def __hash__/__eq__/__lt__/__getitem__ #All the things we need to hash and sort this object
+
+    def __repr__/__str__/to_string():
+        return str(obj.name) #this will make the object look like a string to most of the other functions using it
+
+
+class GenericMudObjectList(): #maintains an array but evaluates as an int
+    objlist = []
+    #maintaining the array allows us to have some of the "same" object but different attributes 
+    #e.g. (unusable/enchanted items, hurt monsters)
+
+    def __init__(self, objlist):
+        self.objlist = objlist
+
+    def add(self, key, value):
+        #clone of add_to_qty from inventory
+
+    def remove(self, key, value):
+        #clone of remove_from_qty from inventory
+
+    def __repr__/__int__/to_string():
+        return len(objlist) #this will make the object look like a string to most of the other functions using it
