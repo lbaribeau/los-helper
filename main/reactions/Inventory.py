@@ -56,7 +56,7 @@ class Inventory(BotReactionWithFlag):
         self.not_empty = "It isn't empty!"
         self.you_wear = "(?s)You wear (.+?)\."
         self.nothing_to_wear = "You have nothing you can wear\."
-        self.you_get = "(?s)You get (.+?)\."
+        self.you_get = "(?s)[^ ]You get (.+?)\.(?:\nYou now have (.+?) gold pieces\.)?"
         self.you_remove = "(?s)You removed? (.+?)\."
         self.nothing_to_remove = "You aren't wearing anything that can be removed\."
         self.you_wield = "You wield (.+?)\."
@@ -128,7 +128,7 @@ class Inventory(BotReactionWithFlag):
 
                     self.equipped_items[slot[0]].append(MudItem(slot[1]))
 
-                #magentaprint(str(self.equipped_items), False)
+        magentaprint(str(self.inventory), False)
 
         super(Inventory, self).notify(regex, M_obj)  # sets __waiter_flag
 

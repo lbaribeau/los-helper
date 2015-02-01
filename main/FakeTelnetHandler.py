@@ -118,7 +118,7 @@ class FakeTelnetSocket(object):
         self.current_mud_area = MudArea(area)
         #(.+?\n\r)((?:\n\r.+)*)?(\n\rObvious exits: .+?[\n\r]?.+?\.)\n\r(You see .+?[\n\r]?.+?\.)?[\n\r]?(You see .+?[\n\r]?.+?\.)?
         area_string = (area.name + "\n\r\n\r" +
-                      #str(area.description) + "\n\r" +
+                      str(area.description) + "\n\r" +
                       "Obvious exits: ")
         i = 0
         while (i < (len(self.current_mud_area.area_exits) - 1)):
@@ -166,7 +166,7 @@ class FakeTelnetHandler(object):
         self.tn.connect()
 
         self.echoing = True
-        self.tn.write("genaid 45") #lets start us in the chapel
+        self.tn.write("genaid 414") #lets start us in the chapel
         #self.tn.write("addmob spiv") #most everything will fight this
 
     def write(self, command):
