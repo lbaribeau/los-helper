@@ -1,9 +1,15 @@
-import sys
-import Database
+import unittest
+from main.misc_functions import *
+from main.data.MudMob import *
 
-def main():
-    chapel = Area(name='Chapel', desc='Pithy Chapel of sorts')
+class data_functionsTest(unittest.TestCase):
 
-    print (chapel.name)
+    def test_get_mob_locations_by_aura_and_level(self):
+        #setup
+        mls = MudMob.get_mobs_by_level_and_aura_ranges(6, 8, 6, 8)
+        result = True
 
-main()
+        for m in mls:
+            print(str(m))
+
+        self.assertEquals(True , result)

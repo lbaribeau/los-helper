@@ -56,3 +56,41 @@ class MobLocation(BaseModel):
             mob_locations = []
 
         return mob_locations
+
+    def get_locations_by_mob_id(id):
+        mob_locations = []
+
+        try:
+            mob_locations = MobLocation.select().join(Mob).where(Mob.id == id).order_by(Mob.id.desc())
+
+        except MobLocation.DoesNotExist:
+            mob_locations = []
+
+        return mob_locations
+
+    def get_locations_by_mobs_level(level):
+        try:
+            mob_locations = MobLocation.select().join(Mob).where(Mob.level == level)
+        except Mob.DoesNotExist:
+            mob_locations = []
+
+        return mob_locations
+
+    def get_locations_by_mobs_level_and_aura(level, aura):
+        try:
+            mob_locations = MobLocation.select().join(Mob).where((Mob.level == level) & (Mob.aura == aura))
+        except Mob.DoesNotExist:
+            mob_locations = []
+
+        return mob_locations
+
+    def get_locations_by_mob_level_range_and_aura_range(low_level, high_level, low_aura, high_aura):
+
+        try:
+            mob_locations = MobLocation.select().join(Mob).where((Mob.level.between(low_level, high_level)) &
+                 (Mob.aura.between(low_aura, high_aura)) &
+                 ~(Mob.name.contains("guard"))).order_by(Mob.level.asc())
+        except Mob.DoesNotExist:
+            mob_locations = []
+
+        return mob_locations
