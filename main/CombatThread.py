@@ -34,6 +34,7 @@ class CombatThread(threading.Thread):
                 self.target = ""
                 if monster in self.character.MOBS_ATTACKING:
                     self.character.MOBS_ATTACKING.remove(monster)
+                magentaprint("<" + monster + "> defeated" , False)
             elif regex == self.it_fled:
                 matched_groups = M_obj.groups()
                 self.character.chase_mob = str(matched_groups[2])

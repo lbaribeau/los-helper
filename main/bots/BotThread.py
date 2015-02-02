@@ -64,8 +64,7 @@ class BotThread(threading.Thread):
             if len(self.direction_list) is 0:
                 self.direction_list = self.decide_where_to_go()
                 
-            while(self.direction_list != [] and not self.__stopping):
-                #magentaprint("Going " + self.direction_list[0], False)
+            while(len(self.direction_list) is not 0 and not self.__stopping):
                 if(self.go(self.direction_list[0])):
                     # Successful go.
                     self.do_on_succesful_go()
@@ -130,11 +129,17 @@ class BotThread(threading.Thread):
             #magentaprint("go hook found with: " + str(self.direction_list), False)
             area_id = int(exit_str.replace("areaid", ""))
             self.direction_list.pop(0)
-            path = self.mud_map.get_path(self.character.AREA_ID, area_id)
-            if (len(path) == 0):
-                self.direction_list = ["buffer"] + self.direction_list
-            else:
-                self.direction_list = ["buffer"] + path + self.direction_list
+            
+            try:
+                path = self.mud_map.get_path(self.character.AREA_ID, area_id)
+                
+                if (len(path) == 0):
+                    self.direction_list = ["buffer"] + self.direction_list
+                else:
+                    self.direction_list = ["buffer"] + path + self.direction_list
+
+            except Exception:
+                return False
             #magentaprint("path added to list: " + str(self.direction_list), False)
             return True
         return False
@@ -228,6 +233,10 @@ class BotThread(threading.Thread):
         # and may just be one tick away from good health. 
 
         aura_updated = self.update_aura()  # Most reasonable reason to fail is if we have no mana
+
+        if (aura_updated):
+            self.aura_updated_hook()
+
         self.heal_up()
             
         if self.character.MANA < MANA_TO_WAIT:
@@ -250,6 +259,11 @@ class BotThread(threading.Thread):
 
         return
 
+    def do_rest_hooks(self):
+      return
+
+    def aura_updated_hook(self):
+      return
 
     def rest_for_mana(self):
         if(self.character.BLACK_MAGIC): 

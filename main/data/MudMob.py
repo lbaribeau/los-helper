@@ -18,9 +18,20 @@ class MudMob(GenericMudObject):
         return MobLocation.get_locations_by_mob_id(self.obj.id)
 
     ''' Static Functions '''
-    def get_mobs_by_level_and_aura(level, aura):
-        return MobLocation.get_locations_by_mobs_level_and_aura(level, aura)
-
-    ''' Static Functions '''
     def get_mobs_by_level_and_aura_ranges(low_level, high_level, low_aura, high_aura):
-        return MobLocation.get_locations_by_mob_level_range_and_aura_range(low_level, high_level, low_aura, high_aura)
+        return Mob.get_mobs_by_level_and_aura_ranges(low_level, high_level, low_aura, high_aura)
+
+    def get_areas_to_mob(area_id, mob_name):
+        area_ids = []
+
+        try:
+            mob_locations = MobLocation.select().join(Mob).where((Mob.name == mob_name) &
+             (MobLocation.area.id == area_id)).order_by(Mob.id.desc())
+
+            for location in mob_locations:
+                area_ids += location.area.id
+
+        except MobLocation.DoesNotExist:
+            mob_locations = []
+
+        return area_ids

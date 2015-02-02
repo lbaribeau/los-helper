@@ -2,31 +2,29 @@ from GrindThread import *
 from misc_functions import *
 from Inventory import *
 from Exceptions import *
-import random
+from MudMob import *
+import random, math
 
 class SmartGrindThread(GrindThread):
+    smart_target_list = []
+
 
     def __init__(self, character, commandHandler, mudReaderHandler,
                 inventory, mud_map, starting_path=0): 
         super(SmartGrindThread, self).__init__(character, commandHandler, mudReaderHandler, inventory, mud_map, starting_path)
 
-        self.is_actually_dumb = True
+        self.is_actually_dumb = False
 
         self.cur_target = None
         self.cur_area_id = self.character.AREA_ID
 
-        if not (self.is_actually_dumb):
-            '''target_list = ["theatre goer", "actor", "militia solider", "rancher sentry", "sawmill operator",
-            "dwarven fieldworker", "market official", "fort sentry", "large bandit", "kobold sentry", "old kobold",
-            "bandit swordsman", "gnoll sentry", "sword swallower"]'''
+        self.low_level = int(self.character.level / 2) - 2
+        self.high_level = int(math.ceil(self.character.level / 2))# + 1 #risky business
+        
+        self.low_aura = 0 #how evil the targets are
+        self.high_aura = 16 #how good the targets are
+        self.aura_updated_hook()
 
-            target_list = ["old knight", "hedge knight", "white knight", "battered knight"]
-
-            self.smart_target_list = []
-
-            for target in target_list:
-                mob_locations = MudMap.get_mob_locations_by_name(target)
-                self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
 
     def decide_where_to_go(self):
         if self.is_actually_dumb:
@@ -50,23 +48,15 @@ class SmartGrindThread(GrindThread):
         directions = []
 
         self.pick_new_target()
-        paths_to_target = self.get_all_paths_to_target()
 
-        ''' Half assed shortest paths
-        i = 0
+        #Half assed shortest paths
+        for location in self.cur_target.locations:
+            directions.append("areaid%s" % location)
+            if len(directions) > 5:
+                break
+            
 
-        while i < 5 or i < (len(paths_to_target)):
-            path = []
-            j = 0
-            while path == [] or j == len(paths_to_target):
-                j = j+1
-                
-            closest_path = paths_to_target.pop(get_shortest_array(paths_to_target))
-            i = i + 1'''
-
-        directions = paths_to_target
-
-        magentaprint(str(directions), False)
+        magentaprint(directions, False)
 
         return directions
 
@@ -157,6 +147,16 @@ class SmartGrindThread(GrindThread):
 
         return directions
 
+    def get_targets(self):
+        target_list = MudMob.get_mobs_by_level_and_aura_ranges(self.low_level, self.high_level, self.low_aura, self.high_aura)
+
+        self.character.MONSTER_KILL_LIST = []
+
+        for target in target_list:
+            self.character.MONSTER_KILL_LIST.append(target.name)
+            mob_locations = MudMap.get_mob_locations_by_id(target.id)
+            self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
+
     def pick_new_target(self):
         next_target = self.cur_target
 
@@ -166,10 +166,24 @@ class SmartGrindThread(GrindThread):
         self.cur_target = next_target
         magentaprint("Picking new target: " + next_target.to_string(), False)
 
+    def aura_updated_hook(self):
+        #if character is too evil
+        if self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:
+            self.low_aura = 0
+            self.high_aura = 7
+        #if character is too good
+        elif self.character.AURA_SCALE > self.character.AURA_PREFERRED_SCALE:
+            self.low_aura = 7
+            self.high_aura = 15
+
+        self.get_targets()
+
+
     def do_rest_hooks(self):
         #this sets us on a path towards the chapel if possible - if not this will return an empty 
         #array that causes the bot to sit and wait to heal
         self.direction_list = self.get_heal_path(self.character.AREA_ID)
+        self.rest_and_check_aura()
 
     def do_flee_hook(self):
         unsafe_area = self.character.AREA_ID
@@ -192,5 +206,11 @@ class SmartGrindTarget(object):
         self.name = name
         self.locations = locations
 
+    def __str__(self):
+        return self.to_string()
+
+    def __repr__(self):
+        return self.to_string()
+
     def to_string(self):
-        return self.name #+ ", " + str(self.locations)
+        return self.name.to_string() #+ ", " + str(self.locations)

@@ -37,7 +37,7 @@ class GrindThread(BotThread):
         if not self.is_character_class("Mon"):
           self.set_up_automatic_ring_wearing()
 
-        self.direction_list = ["areaid45"]
+        self.direction_list = [] #could append areaid45
 
         return
 
@@ -361,9 +361,6 @@ class GrindThread(BotThread):
             else:
                 new_target = ""
         return
-
-    def do_rest_hooks(self):
-      return
 
     def do_go_hooks(self, exit_str):
       #if you want to define custom hooks like sell_items / drop_items etc... you can do so here

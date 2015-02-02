@@ -263,9 +263,9 @@ class CommandHandler(object):
         
         time_remaining = max(wait_from_move, wait_from_ATTACK, wait_from_CAST);
         
-        #magentaprint("MOVE wait time: %.2f" % round(wait_from_move, 2))
-        #magentaprint("ATTACK wait time: %.2f" % round(wait_from_ATTACK, 2))
-        #magentaprint("CAST wait time: %.2f" % round(wait_from_CAST, 2))
+        # magentaprint("MOVE wait time: %.2f" % round(wait_from_move, 2), False)
+        # magentaprint("ATTACK wait time: %.2f" % round(wait_from_ATTACK, 2), False)
+        # magentaprint("CAST wait time: %.2f" % round(wait_from_CAST, 2), False)
           
         if time_remaining < 0:
             self.character.MOVE_CLK = now

@@ -10,8 +10,12 @@ class CharacterClass(object):
         self.combat_skills = []
         self.heal_skills = []
         self.buff_skills = []
+        self.cast_wait = 6
 
-        if class_string == "Ass":
+        if class_string == "":
+            self.lvl1_maxHP = 10
+            self.lvl1_maxMP = 2
+        elif class_string == "Ass":
             self.lvl1_maxHP = 19 
             self.lvl1_maxMP = 2
             # self.abilities = [ Backstab(telnetHandler) ]
@@ -25,6 +29,7 @@ class CharacterClass(object):
             self.lvl1_maxHP = 16 
             self.lvl1_maxMP = 4
             self.mana_tick = 2
+            self.cast_wait = 3.5
             self.buff_skills.extend([ClassSkillReaction(mudReaderHandler, "Pray",
                                     SkillTimer("You feel extremely pious\.", 400),
                                     SkillTimer("Your prayers were not answered\.", 10),
@@ -41,6 +46,7 @@ class CharacterClass(object):
         elif class_string == "Mag":
             self.lvl1_maxHP = 14 
             self.lvl1_maxMP = 5
+            self.cast_wait = 3.5            
             self.levelPath = [ ["out", "s", "w", "w", "w", "s", "e", "shop", "backroom", "portal"],
                           ["door", "out", "out", "w", "n", "e", "e", "e", "n", "cha"]]
         elif class_string == "Pal":

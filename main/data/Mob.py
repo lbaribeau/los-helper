@@ -34,6 +34,12 @@ class Mob(NamedModel):
     def to_string(self):
         return str(self.id) + ", " + str(self.name) + ", " + str(self.level) + ", " + str(self.aura)
 
+    def __str__(self):
+        return self.to_string()
+
+    def __repr__(self):
+        return self.to_string()
+
     '''Static Mob Functions'''
     def get_mob_by_name(name):
         try:
@@ -42,3 +48,15 @@ class Mob(NamedModel):
             mob = None
 
         return mob
+
+
+    def get_mobs_by_level_and_aura_ranges(low_level, high_level, low_aura, high_aura):
+
+        try:
+            mobs = Mob.select().where((Mob.level.between(low_level, high_level)) &
+                 (Mob.aura.between(low_aura, high_aura)) &
+                 ~(Mob.name.contains("guard"))).order_by(Mob.level.asc())
+        except Mob.DoesNotExist:
+            mobs = []
+
+        return mobs

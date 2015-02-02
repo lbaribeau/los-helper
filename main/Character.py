@@ -60,7 +60,7 @@ class Character(object):
     AURA_SCALE = 9
     AURA = AURA_LIST[AURA_SCALE]
     
-    AURA_PREFERRED_SCALE = None
+    AURA_PREFERRED_SCALE = 5
     AURA_PREFERRED = None
     
     AURA_LAST_UPDATE = -300
@@ -79,9 +79,6 @@ class Character(object):
     ATTACK_PERIOD_HASTE = 2 #sec
 
     CAST_PERIOD = 6
-
-    if _class == "Cle" or _class == "Mag":
-        CAST_PERIOD = 3
 
     ATTACK_WAIT = ATTACK_PERIOD   # Used by timer.  Same as ATTACK_PERIOD.
                                 # Amount of time to wait to walk after attacking
@@ -319,7 +316,8 @@ class Character(object):
         "hunter",
         "bull",
         "lay priest",
-        "protector"
+        "protector",
+        "battered knight"
         ]
     lvl5_red_monsters = [
         'large bandit', "kobold guard", "mugger", 'large spider'
@@ -380,7 +378,6 @@ class Character(object):
         "abbot",
         "orc warrior",
         "white knight",
-        "battered knight",
         "hedge knight"
         ]
 

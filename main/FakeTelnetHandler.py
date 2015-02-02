@@ -15,12 +15,8 @@ class FakeTelnetSocket(object):
         self.mud_map = mud_map
 
         ##### CONTENT ######
-        self.inventory_string = ("You have: two adamantine rods, an amber vial, seven sets of bolos, two sets of "
-"coloured balls, two copper rings, a duster, a furry hat, four sets of furry "
-"mittens, two garden forks, three grey cloaks, a jemmy, a large bag, two large "
-"maces, two large sacks, four sets of ring mail sleeves, a saw, a short sword, "
-"a silver chalice, a silver crucifix, some slippers, a small prism, three "
-"sticky salves, a war hammer.\n")
+        self.inventory_string = "You have: two adamantine rods\n"
+        
         self.whois_string = 'Player                Cls Gen [Lv]Title                      Age   Race      \n-----------------------------------------------------------------------------\nDerp                  Mon  M  [14]Enlightened Brother        16    Human\n'
         self.time_string = '                      Meditate   *READY*\n                         Touch   3:25 minutes remaining\n'
         self.equipment = ("You see Derp the Human Vicar.\n" \
@@ -44,6 +40,10 @@ class FakeTelnetSocket(object):
                         "On finger: an iron ring\n"
                         "Shield:    a cast iron shield\n"
                         "Wielded:   a morning star\n")
+
+        self.drop_string = ("You drop a %s.\n"
+                            "Thanks for recycling.\n"
+                            "You have 13612 gold.\n")
 
         self.current_area = ""
         self.current_mud_area = None
@@ -103,6 +103,11 @@ class FakeTelnetSocket(object):
             item = str(M_obj.group(1))
             break_string = "Your " + item + " fell apart.\n"
             self.content.append(break_string)
+        elif (re.match("drop (.+)", command)):
+            M_obj = re.search("drop (.+)", command)
+            item = str(M_obj.group(1))
+            drop_string = self.drop_string % item
+            self.content.append(drop_string)
         elif (re.match("sell (.+)", command)):
             M_obj = re.search("sell (.+)", command)
             item = str(M_obj.group(1))
@@ -166,7 +171,7 @@ class FakeTelnetHandler(object):
         self.tn.connect()
 
         self.echoing = True
-        self.tn.write("genaid 414") #lets start us in the chapel
+        self.tn.write("genaid 45") #lets start us in the chapel
         #self.tn.write("addmob spiv") #most everything will fight this
 
     def write(self, command):

@@ -218,6 +218,7 @@ class Cartography(BotReaction):
         else:
             magentaprint("Cartography case missing for regex: " + str(regex))
 
+    #Used if it's dark and / or the current area doesn't appear to be findable
     def guess_location(self, area_from_id, direction_from):
         guessed_area = None
 
@@ -236,6 +237,7 @@ class Cartography(BotReaction):
 
         return guessed_area
 
+    #This is used when the map is complete and we already know the last_area led to this current one from the direction travelled
     def discern_location(self, area, direction_list, area_from_id, direction_from):
         discerned_area = None
 

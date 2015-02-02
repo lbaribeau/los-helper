@@ -211,6 +211,10 @@ class LosHelper(object):
 
 
     def start_bot(self, user_input):
+        if not self.bot_ready:
+            magentaprint("Please wait for the Mapfile before using this command", False)
+            return False
+
         M_obj = re.search("[0-9]+", user_input)
 
         starting_path = 0
@@ -230,6 +234,10 @@ class LosHelper(object):
             self.botThread.start()
 
     def start_crawl(self):
+        if not self.bot_ready:
+            magentaprint("Please wait for the Mapfile before using this command", False)
+            return False
+
         if (self.botThread != None and self.botThread.is_alive()):
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
@@ -241,6 +249,10 @@ class LosHelper(object):
             self.botThread.start()
 
     def start_goto(self, user_input, is_show_to=False):
+        if not self.bot_ready:
+            magentaprint("Please wait for the Mapfile before using this command", False)
+            return False
+
         M_obj = re.search("-?[0-9]+", user_input)
 
         if (M_obj):
@@ -261,6 +273,10 @@ class LosHelper(object):
             self.botThread.start()
 
     def start_slave(self, user_input):
+        if not self.bot_ready:
+            magentaprint("Please wait for the Mapfile before using this command", False)
+            return False
+
         self.botThread = SlaveThread(self.character, 
                                        self.commandHandler, 
                                        self.mudReaderHandler,
@@ -270,6 +286,10 @@ class LosHelper(object):
         self.botThread.start()
 
     def start_mix(self, user_input):
+        if not self.bot_ready:
+            magentaprint("Please wait for the Mapfile before using this command", False)
+            return False
+
         M_obj = re.search("domix '(.+?)' (.+?)( [\d]*)?$", user_input)
 
         can_mix = True

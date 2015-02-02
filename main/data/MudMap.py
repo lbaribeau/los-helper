@@ -134,3 +134,12 @@ class MudMap():
             locations.append(mob_location.area.id)
 
         return locations
+
+    def get_mob_locations_by_id(mob_id):
+        locations = []
+        mob_locations = MobLocation.get_locations_by_mob_id(mob_id)
+
+        for mob_location in mob_locations:
+            locations.append(mob_location.area.id)
+
+        return locations
