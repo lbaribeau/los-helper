@@ -26,14 +26,33 @@ class SmartGrindThread(GrindThread):
         self.aura_updated_hook()
 
     def do_pre_go_actions(self):
-        if not (self.ready_for_combat()):
-            directions = self.get_heal_path()
-            
-            if (len(directions) == 0):
-                self.rest_and_check_aura()
-
+        self.go_rest_if_not_ready()
         self.check_weapons()
         self.check_armour()
+        return
+
+    def check_weapons(self):
+        if(self.__stopping):
+            return
+
+            #check if we have a weapon equipped
+            #if not then 
+            #   check inventory for out favorite type of weapon
+            #   if we don't have one lets go buy one and equip it
+            #otherwise laugh hysterically
+
+        return
+
+    def purchase_weapon(self):
+        return
+
+    def equip_weapon(self):
+        return
+
+    def check_armour(self):
+        if(self.__stopping):
+            return
+        
         return
 
     def decide_where_to_go(self):
@@ -62,7 +81,7 @@ class SmartGrindThread(GrindThread):
         #Half assed shortest paths
         for location in self.cur_target.locations:
             directions.append("areaid%s" % location)
-            if len(directions) > 5:
+            if len(directions) > 10:
                 break
             
 
@@ -218,8 +237,15 @@ class SmartGrindThread(GrindThread):
             self.character.MOBS_JOINED_IN = []
             self.character.MOBS_ATTACKING = []
 
-    # def do_after_directions_travelled(self):
-    #     self.rest_and_check_aura()
+    def do_after_directions_travelled(self):
+        self.go_rest_if_not_ready()
+
+    def go_rest_if_not_ready(self):
+        if not (self.ready_for_combat()):
+            directions = self.get_heal_path()
+            
+            if (len(directions) == 0):
+                self.rest_and_check_aura()        
 
 class SmartGrindTarget(object):
     def __init__(self, name, locations):
