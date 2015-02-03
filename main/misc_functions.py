@@ -85,7 +85,7 @@ def magentaprint(text, is_debug_command=True, log_output=False):
 
 def do_magentaprint(text):
     newConsoleHandler().magenta()
-    output = str(get_timestamp() + "| " + str(text))
+    output = str(get_timestamp() + "| <" + str(text) + ">")
 
     print (output)
     newConsoleHandler().white()
@@ -129,7 +129,14 @@ def get_last_word(s):
     return s.rsplit(None, 1)[-1]
 
 def get_shortest_array(list_of_arrays):
-    return min(list_of_arrays, key=len)
+    shortest_array = []
+
+    for array in list_of_arrays:
+        shortest_array.append(len(array))
+
+    index = shortest_array.index(min(shortest_array, key=int))
+
+    return list_of_arrays[index]
 
 def key_with_max_val(d):
      """ a) create a list of the dict's keys and values; 
