@@ -45,11 +45,17 @@ class ClassSkillReaction(BotReaction):
             #doFunction
         elif regex is self.timer_check:
             command = M_obj.group(1).strip()
-            minutes = M_obj.group(2)
-            seconds = M_obj.group(3)
+            ready = M_obj.group(2)
+            minutes = M_obj.group(3)
+            seconds = M_obj.group(4)
+
+            # magentaprint(ready, False)
+            # magentaprint(command, False)
+            # magentaprint(minutes, False)
+            # magentaprint(seconds, False)
 
             if command == self.command:
-                if seconds is None:
+                if ready is not None:
                     #magentaprint(command + " is ready.",False)
                     self.timer = 0 #*READY*
                 elif minutes is None and seconds is not None:
