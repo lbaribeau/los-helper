@@ -15,7 +15,7 @@ class FakeTelnetSocket(object):
         self.mud_map = mud_map
 
         ##### CONTENT ######
-        self.inventory_string = "You have: two adamantine rods\n"
+        self.inventory_string = "You have: two adamantine rods, three silver chalices, two steel bottles.\n"
         
         self.whois_string = 'Player                Cls Gen [Lv]Title                      Age   Race      \n-----------------------------------------------------------------------------\nDerp                  Mon  M  [14]Enlightened Brother        16    Human\n'
         self.time_string = '                      Meditate   *READY*\n                         Touch   3:25 minutes remaining\n'
