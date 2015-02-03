@@ -32,9 +32,6 @@ class SmartGrindThread(GrindThread):
         return
 
     def check_weapons(self):
-        if(self.__stopping):
-            return
-
             #check if we have a weapon equipped
             #if not then 
             #   check inventory for out favorite type of weapon
@@ -50,9 +47,6 @@ class SmartGrindThread(GrindThread):
         return
 
     def check_armour(self):
-        if(self.__stopping):
-            return
-        
         return
 
     def decide_where_to_go(self):
@@ -85,7 +79,7 @@ class SmartGrindThread(GrindThread):
                 break
             
 
-        magentaprint(directions, False)
+        magentaprint(directions)
 
         return directions
 
@@ -99,7 +93,7 @@ class SmartGrindThread(GrindThread):
                 else:
                     paths += (self.mud_map.get_path(from_path, area_id))
             except Exception:
-                magentaprint("Area ID: {" + str(area_id) + "} cannot be pathed to!", False)
+                magentaprint("Area ID: {" + str(area_id) + "} cannot be pathed to!")
                 self.cur_target.locations.remove(area_id)
 
         return paths
@@ -136,7 +130,7 @@ class SmartGrindThread(GrindThread):
             #not a good situation - we can't find a way to the chapel from wherever we are
             #therefore we should just sit and wait here until we can go on the warpath again
             magentaprint("Exception getting heal path - resting here...", False)
-            magentaprint(e, False)
+            magentaprint(e)
             self.rest_and_check_aura()
 
         return directions
@@ -195,14 +189,14 @@ class SmartGrindThread(GrindThread):
             next_target = random.choice(self.smart_target_list)
 
         self.cur_target = next_target
-        magentaprint("Picking new target: " + next_target.to_string(), False)
+        magentaprint("Picking new target: " + next_target.to_string())
 
     def aura_updated_hook(self):
         self.low_aura = 0
         self.high_aura = 15
 
-        magentaprint("Current Aura Scale: " + str(self.character.AURA_SCALE), False)
-        magentaprint("Current Aura Scale: " + str(self.character.AURA_PREFERRED_SCALE), False)
+        magentaprint("Current Aura Scale: " + str(self.character.AURA_SCALE))
+        magentaprint("Preferred Aura Scale: " + str(self.character.AURA_PREFERRED_SCALE))
 
         #if character is too evil
         if self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:
@@ -229,7 +223,7 @@ class SmartGrindThread(GrindThread):
 
     def do_on_go_no_exit(self):
         if (self.no_exit_count > 10):
-            magentaprint("Walking back to the chapel", False)
+            magentaprint("Walking back to the chapel")
             self.direction_list = self.get_heal_path(self.character.AREA_ID)
             self.no_exit_count = 0
         else:
