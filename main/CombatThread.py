@@ -16,7 +16,7 @@ class CombatThread(threading.Thread):
         numbers = "(?:[\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)" 
         #collapsed doesn't work in parties
         #self.it_collapsed = "Your attack overwhelms the (" + numbers + " )?" + target + " and (s?he|it) collapses!"
-        self.enemy_defeated = "Your enemy, (?:the |The )?((?:" + numbers + " )?.+?) has been defeated\."
+        self.enemy_defeated = "Your enemy, (?:the |The )?(" + numbers + " )?(.+?) has been defeated\."
         self.it_fled = "The (?:" + numbers + " )?(.+?) flees to the (.+?)\."
         self.regexes = [self.enemy_defeated,
                         self.it_fled]
@@ -31,10 +31,19 @@ class CombatThread(threading.Thread):
         # magentaprint(regex)
         if not self.stopping:
             if regex == self.enemy_defeated:
-                monster = M_obj.group(1)
+                number = M_obj.group(1)
+                monster = M_obj.group(2)
+
+                target_string = monster
+                if number is not None:
+                    target_string = number + monster
+
                 self.target = ""
-                if monster in self.character.MOBS_ATTACKING:
-                    self.character.MOBS_ATTACKING.remove(monster)
+                if target_string in self.character.MOBS_ATTACKING:
+                    self.character.MOBS_ATTACKING.remove(target_string)
+                if monster in self.character.MONSTER_LIST:
+                    self.character.MONSTER_LIST.remove(monster)
+                
                 magentaprint("<" + monster + "> defeated" , False)
             elif regex == self.it_fled:
                 self.character.chase_mob = M_obj.group(1)
