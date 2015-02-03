@@ -11,3 +11,4 @@ class ItemType(BaseModel):
 
     def to_string(self):
         return str(self.model) + ", " + str(self.data)
+    
