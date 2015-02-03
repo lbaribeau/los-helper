@@ -513,7 +513,7 @@ class MudReaderThread(threading.Thread):
             M_obj = re.search("You glow with an? (.+?) aura\.", text_buffer)
             if(M_obj):
                 self.character.AURA = M_obj.group(1)
-                self.character.AURA_SCALE = my_list_search(self.character.AURA_LIST, self.character.AURA)
+                self.character.AURA_SCALE = self.character.AURA_LIST.index(self.character.AURA)#my_list_search(self.character.AURA_LIST, self.character.AURA)
                 if(self.character.AURA_SCALE == -1):
                     magentaprint('Error in reading aura (not in list), came out as ' + self.character.AURA + '.')
                 self.CHECK_AURA_FLAG = 0
