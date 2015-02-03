@@ -211,5 +211,16 @@ having count(*) = %s
 
         return areas
 
+    def get_restorative_areas():
+        areas = []
+
+        try:
+            areas = Area.select().where((Area.is_restorative == 1))
+
+        except Area.DoesNotExist:
+            areas = []
+
+        return areas
+
 from AreaExit import *
 from ExitType import *

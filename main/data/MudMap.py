@@ -118,6 +118,19 @@ class MudMap():
     def get_nearest_unexplored_path(self, start_area_id):
         return self.get_path(start_area_id, -1)
 
+    def get_paths_to_nearest_restorative_area(self, start_area_id):
+        paths = []
+
+        areas = Area.get_restorative_areas()
+
+        for area in areas:
+            try:
+                paths.append(self.get_path(start_area_id, area.id))
+            except Exception:
+                magentaprint("couldn't path to area")
+
+        return paths
+
 
     #static functions
     def find(text):
