@@ -351,7 +351,7 @@ class BotThread(threading.Thread):
 
         if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL):
             self.do_heal_skills()
-            if self.character.MANA >= heal_cost:
+            if self.character.MANA >= heal_cost and self.character.MAX_MANA > heal_cost * 4:
                 if (self.character.KNOWS_VIGOR):
                     self.commandHandler.user_cc(heal_spell)
         
