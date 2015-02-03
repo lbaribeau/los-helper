@@ -106,6 +106,7 @@ class Inventory(BotReactionWithFlag):
             item = self.clip_from_a_container(M_obj.group(1))
             self.add(item)
         elif regex is self.you_drop or regex is self.you_give or regex is self.you_put_in_bag or regex is self.you_hold:
+            # magentaprint(str(M_obj.group(1)), False)
             self.remove(M_obj.group(1))
         elif regex is self.you_wear:
             self.remove(M_obj.group(1))
@@ -128,6 +129,8 @@ class Inventory(BotReactionWithFlag):
                         self.equipped_items[slot[0]] = []
 
                     self.equipped_items[slot[0]].append(MudItem(slot[1]))
+
+        # magentaprint(self.inventory, False)
 
         super(Inventory, self).notify(regex, M_obj)  # sets __waiter_flag
 
@@ -299,9 +302,9 @@ class Inventory(BotReactionWithFlag):
             if keyvalue[1].qty >= d[keyvalue[0]].qty:
                 del d[keyvalue[0]]
             else:
-                d[keyvalue[0]].remove(keyvalue[1])
+                d[keyvalue[0]].remove() #keyvalue[1]
         else:
-            raise ValueError
+            magentaprint("Couldn't remove " + str(keyvalue[0]), False)
 
     def sort_inventory(self):
         self.inventory = collections.OrderedDict(sorted(self.inventory.items()))
