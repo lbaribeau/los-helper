@@ -199,6 +199,9 @@ class Cartography(BotReaction):
                 else:
                     self.character.CONFUSED = True
 
+            if regex == self.no_exit:
+                self.character.GO_NO_EXIT = True
+
             self.character.SUCCESSFUL_GO = False
             self.character.TRYING_TO_MOVE = False
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
