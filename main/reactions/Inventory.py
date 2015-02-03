@@ -415,7 +415,7 @@ class Inventory(BotReactionWithFlag):
 
             # TODO: have quantities in keep_list
 
-        numbered_references.sort()
+        # numbered_references.sort() 
         numbered_references.reverse()
         return numbered_references
       
