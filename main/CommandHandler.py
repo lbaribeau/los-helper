@@ -137,7 +137,8 @@ class CommandHandler(object):
             kpm = str(calculate_vpm(kills))
             magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
         elif re.match("DUMP", user_input):
-            magentaprint(self.character.__dict__, False)
+            for attr in self.character.__dict__:
+                magentaprint(str(attr) + " : " + str(self.character.__dict__[attr]), False)
         elif re.match("CECHO", user_input):
             self.telnetHandler.echoing = not self.telnetHandler.echoing
         elif re.match("VERSION", user_input):
