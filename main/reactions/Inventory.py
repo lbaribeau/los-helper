@@ -151,6 +151,11 @@ class Inventory(BotReactionWithFlag):
         else:
             return item_or_list in self.inventory
 
+    def get_item_of_type(self, type_name, level=-1):
+        for item in self.inventory:
+            if item.is_of_type(type_name):
+                return item.name
+
     def use(self, item_or_list):
         item = ""
         if type(item) is list:
