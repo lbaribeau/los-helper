@@ -25,6 +25,16 @@ class SmartGrindThread(GrindThread):
         self.high_aura = 16 #how good the targets are
         self.aura_updated_hook()
 
+    def do_pre_go_actions(self):
+        if not (self.ready_for_combat()):
+            directions = self.get_heal_path()
+            
+            if (len(directions) == 0):
+                self.rest_and_check_aura()
+
+        self.check_weapons()
+        self.check_armour()
+        return
 
     def decide_where_to_go(self):
         if self.is_actually_dumb:
@@ -100,12 +110,14 @@ class SmartGrindThread(GrindThread):
 
         try:
             if from_path == -1:
-                directions = self.mud_map.get_path(self.cur_area_id, 45)
+                directions = get_shortest_array(self.mud_map.get_paths_to_nearest_restorative_area(self.cur_area_id))
             else:
-                directions = self.mud_map.get_path(from_path, 45)
-        except Exception:
+                directions = get_shortest_array(self.mud_map.get_paths_to_nearest_restorative_area(from_path))
+        except Exception as e:
             #not a good situation - we can't find a way to the chapel from wherever we are
             #therefore we should just sit and wait here until we can go on the warpath again
+            magentaprint("Exception getting heal path - resting here...", False)
+            magentaprint(e, False)
             self.rest_and_check_aura()
 
         return directions
@@ -167,6 +179,12 @@ class SmartGrindThread(GrindThread):
         magentaprint("Picking new target: " + next_target.to_string(), False)
 
     def aura_updated_hook(self):
+        self.low_aura = 0
+        self.high_aura = 15
+
+        magentaprint("Current Aura Scale: " + str(self.character.AURA_SCALE), False)
+        magentaprint("Current Aura Scale: " + str(self.character.AURA_PREFERRED_SCALE), False)
+
         #if character is too evil
         if self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:
             self.low_aura = 0
@@ -183,7 +201,6 @@ class SmartGrindThread(GrindThread):
         #this sets us on a path towards the chapel if possible - if not this will return an empty 
         #array that causes the bot to sit and wait to heal
         self.direction_list = self.get_heal_path(self.character.AREA_ID)
-        self.rest_and_check_aura()
 
     def do_flee_hook(self):
         unsafe_area = self.character.AREA_ID
@@ -200,6 +217,9 @@ class SmartGrindThread(GrindThread):
             #magentaprint("Go no exit on: " + self.direction_list.pop(0), False)
             self.character.MOBS_JOINED_IN = []
             self.character.MOBS_ATTACKING = []
+
+    # def do_after_directions_travelled(self):
+    #     self.rest_and_check_aura()
 
 class SmartGrindTarget(object):
     def __init__(self, name, locations):
