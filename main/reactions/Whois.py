@@ -37,6 +37,8 @@ class Whois(BotReactionWithFlag):
         magentaprint(self.character_class + " " + self.gender + " " + str(self.level) + " " + self.title + " " + self.age + " " + self.race, False)            
 
         self.character._class = CharacterClass(self.character_class, self.telnetHandler, self.mudReaderHandler)
+        self.character.CAST_PERIOD = self.character._class.cast_wait
+        self.character.CAST_WAIT = self.character._class.cast_wait
         self.character.gender = self.gender
         self.character.level = self.level
         self.character.title = self.title
