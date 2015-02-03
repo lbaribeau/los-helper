@@ -51,9 +51,9 @@ class Info(BotReactionWithFlag):
             # self.character.AURA_PREFERRED_SCALE = self.auras.index(preferred_alignment)
             self.character.AURA_PREFERRED_SCALE = Aura(M_obj.group(1)).auras.index(M_obj.group(1))
             self.character.AURA_PREFERRED = M_obj.group(1)
-            magentaprint(self.character.preferred_alignment)
-            magentaprint(self.character.AURA_PREFERRED_SCALE)
-            magentaprint(self.character.AURA_PREFERRED)
+            # magentaprint(self.character.preferred_alignment, False)
+            # magentaprint(self.character.AURA_PREFERRED_SCALE, False)
+            # magentaprint(self.character.AURA_PREFERRED, False)
         elif regex is self.first:
             self.got_stats_skills = True
             self.character.stats = {'Str' : M_obj.group(1),
