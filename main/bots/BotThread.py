@@ -247,7 +247,7 @@ class BotThread(threading.Thread):
         if not aura_updated:
             self.update_aura()
     
-        if self.character.level > 3:
+        if self.character.level > 3 and self.character.KNOWS_VIGOR:
             self.heal_up()
             self.wait_for_mana()  
         else:
@@ -307,6 +307,8 @@ class BotThread(threading.Thread):
             
         self.commandHandler.process("rest")            
 
+        self.do_heal_skills()
+
         while(self.character.HEALTH < self.character.HEALTH_TO_HEAL and not self.__stopping):            
 
             magentaprint(str(self.character.HEALTH) + " < " + str(self.character.HEALTH_TO_HEAL))
@@ -351,7 +353,7 @@ class BotThread(threading.Thread):
 
         if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL):
             self.do_heal_skills()
-            if self.character.MANA >= heal_cost and self.character.MAX_MANA > heal_cost * 4:
+            if self.character.MANA >= heal_cost and self.character.MAX_MANA > heal_cost:
                 if (self.character.KNOWS_VIGOR):
                     self.commandHandler.user_cc(heal_spell)
         
@@ -517,10 +519,10 @@ class BotThread(threading.Thread):
             # TODO: restoratives (use when vig not keeping up or low mana)
             if (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL)):
                 self.do_heal_skills()
-                if(self.character.MANA >= vigor_cost and self.character.KNOWS_VIGOR and
-                    self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
-                    magentaprint("Starting vigor cast thread")
-                    self.commandHandler.user_cc("vig")
+                if(self.character.MANA >= vigor_cost and self.character.KNOWS_VIGOR):
+                    if( self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
+                        magentaprint("Starting vigor cast thread")
+                        self.commandHandler.user_cc("vig")
                 else:
                     self.commandHandler.stop_CastThread()
                 #else:
