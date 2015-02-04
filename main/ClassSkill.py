@@ -23,7 +23,7 @@ class ClassSkillReaction(BotReaction):
         self.timer = 0
         self.last_used = 0
 
-        self.timer_check = "(" + command + ")\s\s\s(?:(\*READY\*)|(?:(?:([\d]*):)?([\d]*) (?:minutes|seconds?) (?:remaining|left on current run)))"
+        self.timer_check = "(" + command + ")\s\s\s(?:(\*READY\*)|(?:(?:([\d]*):)?0?([\d]*) (?:minutes|seconds?) (?:remaining|left on current run)))"
         self.please_wait = "Please wait (?:([\d]*):)?([\d]*) more (?:minutes|seconds?)\."
         self.regexes = [self.timer_check,
                         #self.please_wait,
