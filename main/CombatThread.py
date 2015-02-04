@@ -17,11 +17,10 @@ class CombatThread(threading.Thread):
         #collapsed doesn't work in parties
         #self.it_collapsed = "Your attack overwhelms the (" + numbers + " )?" + target + " and (s?he|it) collapses!"
         self.enemy_defeated = "Your enemy, (?:the |The )?(" + numbers + " )?(.+?) has been defeated\."
-        self.it_fled = "The (?:" + numbers + " )?(.+?) flees to the (.+?)\."
+        self.it_fled = "The (" + numbers + " )?(.+?) flees to the (.+?)\."
         self.regexes = [self.enemy_defeated,
                         self.it_fled]
         atexit.register(self.stop)
-        magentaprint("Starting Combat Thread on: " + target, False)
 
     def run(self):
         raise NotImplementedError("Subclasses must implement this!")
@@ -46,8 +45,8 @@ class CombatThread(threading.Thread):
                 
                 magentaprint("<" + monster + "> defeated" , False)
             elif regex == self.it_fled:
-                self.character.chase_mob = M_obj.group(1)
-                self.character.chase_dir = M_obj.group(2)
+                self.character.chase_mob = M_obj.group(2)
+                self.character.chase_dir = M_obj.group(3)
             
             self.stop()
         
