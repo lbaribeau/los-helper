@@ -12,7 +12,7 @@ class Character(object):
     _class = None
     level = None
     preferred_alignment = None
-    BLACK_MAGIC = True
+    BLACK_MAGIC = False
     FAVOURITE_SPELL = "fireball"
     SPELL_COST = 7
     KNOWS_VIGOR = True
@@ -42,17 +42,10 @@ class Character(object):
                     "Missile"
                     ]
 
-    ARMOR_TYPES = [
-                "Body",
-                "Arms",
-                "Legs",
-                "Neck",
-                "Hands",
-                "Head",
-                "Feet",
-                "Finger",
-                "Shield"
-                ]
+    ARMOR_SLOTS = []
+    ARMOR_SIZE = "m" #set this in info or whois
+    
+    WEAPON_SLOTS = []
 
     # Indices will be sharp, thrust, blunt, pole, missile, earth, water, wind, fire, astral
     # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
@@ -178,14 +171,24 @@ class Character(object):
 
     weapon_model = "Blunt"
     weapon_proficiency = "0"
-    weapon_level = "1"
-    armor_level = "1"
+    weapon_level = 1
+    armor_level = 1
     spell_model = "Fire"
     spell_proficiency = "0"
 
     def configure_equipment_and_spell_preferences(self):
+        self.ARMOR_SLOTS = self._class.ARMOR_SLOTS
+        self.WEAPON_SLOTS = self._class.WEAPON_SLOTS
+
         if self.weapons is not None:
             self.weapon_model, self.weapon_proficiency = key_with_max_val(self.weapons)
+
+            #more testing needed for weapon level check
+            if int(self.weapon_proficiency) > 15:
+                self.weapon_level = 2
+
+            if int(self.weapon_proficiency) > 30:
+                self.weapon_level = 3
 
         if self.magic is not None:
             self.spell_model, self.spell_proficiency = key_with_max_val(self.magic)
@@ -195,6 +198,7 @@ class Character(object):
                 self.armor_level = 1
             else: #more testing needs to be done to determine what other levels are available
                 self.armor_level = 2
+            
 
     def configure_health_and_mana_variables(self):
         if self.level <= 2:

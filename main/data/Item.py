@@ -27,7 +27,7 @@ class Item(NamedModel):
         return is_new_mapping
 
     def to_string(self):
-        return str(self.id) + ", " + str(self.name)
+        return str(self.id) + ", " + str(self.name) + ", " + str(self.itemtype)
 
     '''Static Item Functions'''
     def get_item_by_name(name):

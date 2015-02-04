@@ -12,6 +12,20 @@ class CharacterClass(object):
         self.buff_skills = []
         self.cast_wait = 6
 
+        self.ARMOR_SLOTS = [
+                    "Body",
+                    "Arms",
+                    "Legs",
+                    "Neck",
+                    "Hands",
+                    "Head",
+                    "Feet",
+                    "Finger",
+                    "Shield"
+                    ]
+        
+        self.WEAPON_SLOTS = ["Wielded"]
+
         if class_string == "":
             self.lvl1_maxHP = 10
             self.lvl1_maxMP = 2
@@ -59,7 +73,8 @@ class CharacterClass(object):
             self.HP_gained_per_level = 6
             self.MP_gained_per_level = 3
             self.mana_tick = 2 
-            self.mana_tick_c#hapel = 4 
+            self.mana_tick_chapel = 4
+            self.WEAPON_SLOTS.append("Second") 
             # self.abilities = [ Haste(telnetHandler) ]
         elif class_string == "Thi":
             self.lvl1_maxHP = 18 
@@ -76,6 +91,8 @@ class CharacterClass(object):
             self.combat_skills.extend([ClassSkillReaction(mudReaderHandler, "Touch",
                                     SkillTimer("Your? touch(?:ed)? .+?\.", 240),
                                     SkillTimer("You failed to harm the .+?\.", 240))])
+            self.WEAPON_SLOTS = []
+            self.ARMOR_SLOTS = []
             # self.abilities = [ Meditate(telnetHandler), Touch(telnetHandler) ]
         elif class_string == "Dru":
             self.lvl1_maxHP = 15

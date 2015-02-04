@@ -17,7 +17,7 @@ class FakeTelnetSocket(object):
         ##### CONTENT ######
         self.inventory_string = "You have: two adamantine rods, three silver chalices, two steel bottles.\n"
         
-        self.whois_string = 'Player                Cls Gen [Lv]Title                      Age   Race      \n-----------------------------------------------------------------------------\nDerp                  Mon  M  [14]Enlightened Brother        16    Human\n'
+        self.whois_string = 'Player                Cls Gen [Lv]Title                      Age   Race      \n-----------------------------------------------------------------------------\nTwerp                  Cle  M  [8]Enlightened Brother        16    Human\n'
         self.time_string = '                      Meditate   *READY*\n                         Touch   3:25 minutes remaining\n'
         self.equipment = ("You see Derp the Human Vicar.\n" \
                         "He is in general good health.\n" \
@@ -41,6 +41,27 @@ class FakeTelnetSocket(object):
                         "Shield:    a cast iron shield\n"
                         "Wielded:   a morning star\n")
 
+        self.info_string = ("/============================== Overview ==================================\\\n"
+"|         Derp the Human, an Enlightened Brother of the 13th level         |\n"
+"|                  Your preferred alignment is dusty red                   |\n"
+"\==========================================================================/\n"
+"\n"
+" /==== Attributes =====\  /======= Weapons =====\  /======= Magic ========\\\n"
+" |       Str : 20      |  |     Sharp   : 0  %  |  |     Earth : 0  %     |\n"
+" |       Dex : 19      |  |     Thrust  : 0  %  |  |     Wind  : 0  %     |\n"
+" |       Con : 17      |  |     Blunt   : 87 %  |  |     Fire  : 45 %     |\n"
+" |       Int : 5       |  |     Pole    : 0  %  |  |     Water : 0  %     |\n"
+" |       Pty : 6       |  |     Missile : 0  %  |  |    Astral : 0  %     |\n"
+" \=====================/  \=====================/  \======================/\n"
+"\n"
+" /===== Status 1 ======\  /====== Status 2 =====\  /=====  Status 3 ======\\\n"
+" |   Curr HP : 86      |  |     Exp : 440607    |  | GameTime :  25:22:47 |\n"
+" |    Max HP : 89      |  |    Gold : 1578462   |  | Game Age : 16        |\n"
+" |   Curr MP : 1       |  |  -Needed to Level-  |  |                      |\n"
+" |    Max MP : 27      |  |     Exp : 560992    |  |   Weight : 113       |\n"
+" |        AC : 0       |  |    Gold : 70124     |  |  Objects : 33        |\n"
+" \=====================/  \=====================/  \======================/\n")
+
         self.drop_string = ("You drop a %s.\n"
                             "Thanks for recycling.\n"
                             "You have 13612 gold.\n")
@@ -62,6 +83,8 @@ class FakeTelnetSocket(object):
             self.content.append(self.inventory_string)
         elif (re.match("whois (.+?)", command)):
             self.content.append(self.whois_string)
+        elif (re.match("info", command)):
+            self.content.append(self.info_string)
         elif (re.match("time", command)):
             self.content.append(self.time_string)
         elif (re.match("c show", command)):
@@ -171,7 +194,7 @@ class FakeTelnetHandler(object):
         self.tn.connect()
 
         self.echoing = True
-        self.tn.write("genaid 45") #lets start us in the chapel
+        self.tn.write("genaid 609") #lets start us in the chapel
         #self.tn.write("addmob spiv") #most everything will fight this
 
     def write(self, command):

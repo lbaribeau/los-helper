@@ -9,7 +9,7 @@ class NamedModel(BaseModel):
     '''Static Item Functions'''
     def get_by_name(name):
         try:
-            obj = NamedModel.select().where((NamedModel.name == name)).get()
+            obj = NamedModel.select().where(fn.Lower(NamedModel.name) == fn.Lower(name)).get()
         except NamedModel.DoesNotExist:
             obj = None
 

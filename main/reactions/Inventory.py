@@ -60,7 +60,7 @@ class Inventory(BotReactionWithFlag):
         self.you_get = "(?s)[^ ]You get (.+?)\.(?:\nYou now have (.+?) gold pieces\.)?"
         self.you_remove = "(?s)You removed? (.+?)\."
         self.nothing_to_remove = "You aren't wearing anything that can be removed\."
-        self.you_wield = "You wield (.+?)\."
+        self.you_wield = "You wield (?:a |an |some )(.+?)( in your off hand)?\."
         self.you_give = "(?s)You give (.+?) to (.+?)\."
         self.bought = "Bought\."  
         self.you_put_in_bag = "(?s)You put (.+?) in(to)? (.+?)\."
@@ -100,7 +100,14 @@ class Inventory(BotReactionWithFlag):
         elif regex is self.you_now_have or regex is self.gold_from_tip:
             self.gold = int(M_obj.group(1))
         elif regex is self.you_wield:
-            weapon = self.clip_in_your_off_hand(M_obj.group(1))
+            weapon = M_obj.group(1)
+            
+            if M_obj.group(2) is not None:
+                self.equipped_items["Second"] = [weapon]
+            else:
+                self.equipped_items["Wielded"] = [weapon]
+
+            magentaprint(weapon, False)
             self.remove(weapon)
         elif regex is self.you_get:
             item = self.clip_from_a_container(M_obj.group(1))
@@ -139,6 +146,10 @@ class Inventory(BotReactionWithFlag):
         self.wait_for_flag()
         return self.inventory
 
+    def get_equipment(self, name):
+        self.telnetHandler.write("l " + name)
+        self.wait_for_flag()
+
     def has_restorative(self):
         return self.has(self.restoratives)
 
@@ -151,10 +162,23 @@ class Inventory(BotReactionWithFlag):
         else:
             return item_or_list in self.inventory
 
-    def get_item_of_type(self, type_name, level=-1):
+    def has_slot_equipped(self, slot_to_check, quantity=1):
+        has_slot_equipped = False
+
+        for slot in self.equipped_items:
+            if slot == slot_to_check:
+                if len(self.equipped_items[slot]) >= quantity:
+                    has_slot_equipped = True
+                    break
+
+        return has_slot_equipped
+
+    def get_item_of_type(self, itemModel, itemData, level=-1):
         for item in self.inventory:
-            if item.is_of_type(type_name):
-                return item.name
+            if item.is_of_type(itemModel, itemData, level):
+                for iteminstance in self.inventory[item].objs:
+                    if not iteminstance.is_unusable:
+                        return item.obj.name
 
     def use(self, item_or_list):
         item = ""
@@ -212,14 +236,15 @@ class Inventory(BotReactionWithFlag):
 
     def buy(self, item_string):
         self.telnetHandler.write("buy " + item_string)
-        #self.wait_for_flag
+        self.wait_for_flag
+        self.add(item_string)
 
     def bulk_buy(self, item_string, quantity):
         i = 0
         self.is_bulk_vendoring = True
 
         while i < (quantity ):
-            self.buy(item_string)
+            self.telnetHandler.write("buy " + item_string)
             i += 1
 
         self.sleep(3) #breathe!
@@ -314,6 +339,11 @@ class Inventory(BotReactionWithFlag):
     def sort_inventory(self):
         self.inventory = collections.OrderedDict(sorted(self.inventory.items()))
 
+    def equip_item(self, equip_string):
+        self.telnetHandler.write(equip_string)
+        self.wait_for_flag()
+
+
     def clip_in_your_off_hand(self, wield_string):
         # Example wield_string: a spear in your off hand
         wield_string = wield_string.replace('\n\r', ' ')
@@ -322,6 +352,7 @@ class Inventory(BotReactionWithFlag):
         if wield_string[length-17:length] == " in your off hand":
             return wield_string[:length-17]
         else:
+
             return wield_string
 
     def clip_from_a_container(self, get_string):

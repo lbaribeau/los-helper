@@ -2,6 +2,9 @@ from peewee import *
 from BaseModel import *
 from misc_functions import *
 from Item import *
+from ItemType import *
+from ItemTypeModel import *
+from ItemTypeData import *
 from Area import *
 
 class AreaStoreItem(BaseModel):
@@ -24,7 +27,7 @@ class AreaStoreItem(BaseModel):
         return is_new_mapping
 
     def to_string(self):
-        return str(self.id) + ", " + str(self.area) + ", " + str(self.item)
+        return str(self.id) + ", " + str(self.area.id) + ", " + str(self.item.name)
 
     '''Static AreaStoreItem Functions'''
     def get_by_area_and_item(areaid, itemid):
@@ -34,3 +37,24 @@ class AreaStoreItem(BaseModel):
             areastoreitem = None
 
         return areastoreitem
+
+    def get_by_item(itemid):
+        try:
+            areastoreitem = AreaStoreItem.select().where((AreaStoreItem.item == itemid)).get()
+        except AreaStoreItem.DoesNotExist:
+            areastoreitem = None
+
+        return areastoreitem
+
+    def get_by_item_type_and_level(model_name, data_name, level = 1):
+        items = []
+
+        itemtypemodel = ItemTypeModel.get_by_name(model_name).get().id
+        itemtypedata = ItemTypeData.get_by_name(data_name).get().id
+
+        try:
+            items = AreaStoreItem.select().join(Item).where(Item.level == level).join(ItemType).where(ItemType.model == itemtypemodel and ItemType.data == itemtypedata)
+        except AreaStoreItem.DoesNotExist:
+            items = []
+
+        return items

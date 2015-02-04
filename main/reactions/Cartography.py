@@ -328,9 +328,9 @@ class Cartography(BotReaction):
                 mob = Mob(name=monster)
                 mob.map()
 
-                if (self.character.ACTIVELY_BOTTING):
-                    if (mob.approximate_level == None):
-                        self.commandHandler.process('l ' + monster)
+                # if (self.character.ACTIVELY_BOTTING):
+                #     if (mob.approximate_level == None):
+                #         self.commandHandler.process('l ' + monster)
 
                 magentaprint(str(mob))
 

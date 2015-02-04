@@ -18,33 +18,66 @@ class SmartGrindThread(GrindThread):
         self.cur_target = None
         self.cur_area_id = self.character.AREA_ID
 
-        self.low_level = int(self.character.level / 2) - 2
+        self.low_level = int(math.ceil(self.character.level / 2)) - 2
         self.high_level = int(math.ceil(self.character.level / 2))# + 1 #risky business
         
         self.low_aura = 0 #how evil the targets are
         self.high_aura = 16 #how good the targets are
+
+        self.update_aura()
         self.aura_updated_hook()
 
     def do_pre_go_actions(self):
         self.go_rest_if_not_ready()
+
+        self.inventory.get_equipment(self.character.name)
+
         self.check_weapons()
         self.check_armour()
+
+        if len(self.character.MONSTER_KILL_LIST) == 0:
+            self.reset_kill_list()
+
         return
 
     def check_weapons(self):
-            #check if we have a weapon equipped
-            #if not then 
-            #   check inventory for out favorite type of weapon
-            #   if we don't have one lets go buy one and equip it
-            #otherwise laugh hysterically
+        weapons_equipped = False
 
-        return
+        magentaprint("Checking weapons: " + str(self.character.WEAPON_SLOTS), False)
+        # magentaprint("Checking inventory " + str(self.inventory.inventory), False)
+        magentaprint("Checking equipped items: " + str(self.inventory.equipped_items), False)
 
-    def purchase_weapon(self):
-        return
+        for slot in self.character.WEAPON_SLOTS:
+            if not self.inventory.has_slot_equipped(slot):
+                item = self.inventory.get_item_of_type("weapon",
+                    self.character.weapon_model,
+                    self.character.weapon_level)
+                if item is not None:
+                    self.inventory.equip_item("wie " + item)
+                else:
+                    self.go_purchase_item("weapon", self.character.weapon_model, self.character.weapon_level)
+                
+                break
 
-    def equip_weapon(self):
-        return
+        return weapons_equipped
+
+    def go_purchase_item(self, model, data, level):
+        items = MudItem.get_suitable_item_of_type(model, data, level)
+
+        direction_list = []
+        self.character.MONSTER_KILL_LIST = []
+        item = None
+
+        for itemdict in items:
+            item = items[itemdict]
+            areaid = itemdict
+            break
+
+        if item is not None:
+            direction_list = ["areaid%s" % areaid]
+            direction_list.append("dobuy%s" % item.obj.name)
+
+        self.direction_list = direction_list
 
     def check_armour(self):
         return
@@ -57,8 +90,12 @@ class SmartGrindThread(GrindThread):
             directions = []
 
             #get pawnshop path then tip path if necessary.
-            self.inventory.get_inventory()
-            if len(self.inventory.sellable()) > self.loot_threshold:
+            # self.inventory.get_inventory()
+            sellable = self.inventory.sellable()
+
+            # magentaprint("Items in sellable: " + str(sellable), False)
+            if len(sellable) > self.loot_threshold:
+                # magentaprint("Selling", False)
                 directions = self.get_vendor_paths()
             elif(self.ready_for_combat()):
                 directions = self.get_grind_path()
@@ -177,10 +214,17 @@ class SmartGrindThread(GrindThread):
 
         self.character.MONSTER_KILL_LIST = []
 
+        # magentaprint(target_list.count(), False)
+        # magentaprint(target_list, False)
+
         for target in target_list:
-            self.character.MONSTER_KILL_LIST.append(target.name)
+            # magentaprint(target, False)
             mob_locations = MudMap.get_mob_locations_by_id(target.id)
             self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
+
+    def reset_kill_list(self):
+        for target in self.smart_target_list:
+            self.character.MONSTER_KILL_LIST.append(target.name)
 
     def pick_new_target(self):
         next_target = self.cur_target
@@ -208,6 +252,23 @@ class SmartGrindThread(GrindThread):
             self.high_aura = 15
 
         self.get_targets()
+
+
+    def do_go_hooks(self, exit_str):
+        if (re.match("dobuy.+?", exit_str)):
+            #magentaprint("go hook found with: " + str(self.direction_list), False)
+            item = exit_str.replace("dobuy", "")
+            
+            self.inventory.buy(item)
+            self.sleep(2)
+
+            magentaprint(self.inventory.inventory, False)
+
+            self.direction_list = [""]
+            return True
+
+
+        return super(GrindThread, self).do_go_hooks(exit_str)
 
 
     def do_rest_hooks(self):
