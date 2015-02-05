@@ -23,10 +23,9 @@ class ClassSkillReaction(BotReaction):
         self.timer = 0
         self.last_used = 0
 
-        self.timer_check = "(" + command + ")\s\s\s(?:(\*READY\*)|(?:(?:([\d]*):)?0?([\d]*) (?:minutes|seconds?) (?:remaining|left on current run)))"
-        self.please_wait = "Please wait (?:([\d]*):)?([\d]*) more (?:minutes|seconds?)\."
+        self.timer_check = "(" + command + ")[\s]*(?:(\*READY\*)|(?:(?:([\d]*):)?0?([\d]*) (?:minutes|seconds?) (?:remaining|left on current run)))"
+        # self.please_wait = "Please wait (?:([\d]*):)?([\d]*) more (?:minutes|seconds?)\."
         self.regexes = [self.timer_check,
-                        #self.please_wait,
                         self.success_timer.regex,
                         self.fail_timer.regex,
                         self.end_timer.regex]
@@ -49,8 +48,8 @@ class ClassSkillReaction(BotReaction):
             minutes = M_obj.group(3)
             seconds = M_obj.group(4)
 
-            # magentaprint(ready, False)
             # magentaprint(command, False)
+            # magentaprint(ready, False)
             # magentaprint(minutes, False)
             # magentaprint(seconds, False)
 
@@ -64,15 +63,6 @@ class ClassSkillReaction(BotReaction):
                 else:
                     #magentaprint(command + " is ready in '" + str(minutes) + "' minutes " + str(seconds) + "' seconds.",False)
                     self.timer = (int(minutes) * 60) + int(seconds)
-
-        elif (regex is self.please_wait and False):
-            minutes = M_obj.group(1)
-            seconds = M_obj.group(2)
-
-            if minutes is not None:
-                self.timer = minutes * 60 + seconds
-            else:
-                self.timer = seconds
 
         #magentaprint("Timer set to: " + str(self.timer) + " by " + regex, False)
 
