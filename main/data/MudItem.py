@@ -8,7 +8,7 @@ class MudItem(GenericMudObject):
 
     def __init__(self, name):
         self.obj = Item(name=name)
-        self.reference = get_last_word(self.obj.name)
+        self.reference = get_first_word(self.obj.name)
 
     def map(self):
         self.obj.map()
