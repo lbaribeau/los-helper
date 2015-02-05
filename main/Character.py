@@ -12,7 +12,7 @@ class Character(object):
     _class = None
     level = None
     preferred_alignment = None
-    BLACK_MAGIC = False
+    BLACK_MAGIC = True
     FAVOURITE_SPELL = "fireball"
     SPELL_COST = 7
     KNOWS_VIGOR = True
@@ -200,6 +200,23 @@ class Character(object):
                 self.armor_level = 2
             
 
+    def get_ideal_mana(self):
+        ideal_mana = self.MAX_MANA
+
+        if not (self.BLACK_MAGIC): 
+            ideal_mana = self.MAX_MANA - 1
+
+        return ideal_mana
+
+        # self.character.MAX_MANA / 2
+        #     if self.character.BLACK_MAGIC: 
+        #         MANA_TO_GO = self.character.MAX_MANA 
+        #     else:
+        #         if self.character.MAX_MANA % 2 == 1:
+        #             MANA_TO_GO = self.character.MAX_MANA - 1 
+        #         else:                                        
+        #             MANA_TO_GO = self.character.MAX_MANA    
+
     def configure_health_and_mana_variables(self):
         if self.level <= 2:
             self.HEALTH_TO_HEAL = 11
@@ -242,7 +259,7 @@ class Character(object):
             #self.MAX_MANA = 27 - 4 + 1
             #self.MANA_TO_ENGAGE = 18
             self.HEALTH_TO_HEAL = 70
-            self.HEALTH_TO_FLEE = 40
+            self.HEALTH_TO_FLEE = 30
             self.MAX_MANA = 0
             self.MANA_TO_ENGAGE = 0
     

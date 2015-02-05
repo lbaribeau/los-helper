@@ -121,6 +121,44 @@ class BotThread(threading.Thread):
     def check_for_successful_go(self):
         return self.mudReaderHandler.check_for_successful_go()
 
+    ''' STATIC METHODS '''
+    @staticmethod
+    def has_ideal_mana(current_mana, ideal_mana):
+        return current_mana >= ideal_mana
+
+    @staticmethod
+    def has_ideal_health(current_health, ideal_health):
+        return current_health >= ideal_health
+
+    @staticmethod
+    def can_use_timed_ability(current_time, last_use, timeout):
+        return timeout < (current_time - last_use)
+
+    @staticmethod
+    def can_cast_spell(current_mana, spell_cost, knows_spell):
+        can_cast = False
+
+        if knows_spell:
+            if current_mana >= spell_cost:
+                can_cast = True
+
+        return can_cast
+    
+    @staticmethod
+    def should_heal_up(current_health, ideal_health, current_mana, heal_cost, knows_spell,
+                        has_healing_items):
+        should_heal = not BotThread.has_ideal_health(current_health, ideal_health)
+
+        if should_heal:
+            can_cast_spell = BotThread.can_cast_spell(current_mana, heal_cost, knows_spell)
+
+            if can_cast_spell or has_healing_items:
+                should_heal = True
+            else:
+                should_heal = False
+
+        return should_heal
+
     def do_go_hooks(self, exit_str):
         #if you want to define custom hooks like sell_items / drop_items etc... you can do so here
 
@@ -144,6 +182,8 @@ class BotThread(threading.Thread):
             return True
         return False
 
+
+    ''' Defined Hooks in Run() '''
     def do_run_startup(self):
         #self.set_up_automatic_ring_wearing()
         #setup heal reactions
@@ -239,15 +279,15 @@ class BotThread(threading.Thread):
 
         self.heal_up()
             
-        if self.character.MANA < MANA_TO_WAIT:
+        if not BotThread.has_ideal_mana(self.character.MANA, MANA_TO_WAIT):
             self.rest_for_mana()
-        elif self.character.MANA < MANA_TO_GO:
+        elif not BotThread.has_ideal_mana(self.character.MANA, MANA_TO_GO):
             self.wait_for_mana()
                    
         if not aura_updated:
             self.update_aura()
     
-        if self.character.level > 3 and self.character.KNOWS_VIGOR:
+        if self.character.level < 3:
             self.heal_up()
             self.wait_for_mana()  
         else:
@@ -266,15 +306,12 @@ class BotThread(threading.Thread):
       return
 
     def rest_for_mana(self):
-        if(self.character.BLACK_MAGIC): 
-            MANA_SATISFIED = self.character.MAX_MANA 
-        else:
-            MANA_SATISFIED = self.character.MAX_MANA - 1
+        ideal_mana = self.character.get_ideal_mana()
         
-        if(self.character.MANA < MANA_SATISFIED):
+        if(not Bot.has_ideal_mana(self.character.MANA, ideal_mana)):
             self.commandHandler.process("rest")            
 
-        while(self.character.MANA < MANA_SATISFIED and 
+        while(not Bot.has_ideal_mana(self.character.MANA, ideal_mana) and 
               not self.__stopping):
             
             if(self.engage_any_attacking_mobs()):
@@ -284,34 +321,27 @@ class BotThread(threading.Thread):
 
         return
 
-
     def wait_for_mana(self):
-        # Issues an enter every few seconds to get the prompt.  
+        ideal_mana = self.character.get_ideal_mana()
         
-        if(self.character.BLACK_MAGIC): 
-            MANA_SATISFIED = self.character.MAX_MANA 
-        else:
-            MANA_SATISFIED = self.character.MAX_MANA - 1
-        
-        while(self.character.MANA < MANA_SATISFIED and not self.__stopping):
+        while(not BotThread.has_ideal_mana(self.character.MANA, ideal_mana) and not self.__stopping):
             self.sleep(3.5)
             self.engage_any_attacking_mobs()
             self.commandHandler.process('')
             self.sleep(1.2)  # Wait for prompt to respond before checking MANA again.
             
         return
-    
+
     def rest_for_health(self):
-        if(self.character.HEALTH >= self.character.HEALTH_TO_HEAL):
+        if(not BotThread.has_ideal_health(self.character.HEALTH, self.character.HEALTH_TO_HEAL)):
             return
             
         self.commandHandler.process("rest")            
 
         self.do_heal_skills()
 
-        while(self.character.HEALTH < self.character.HEALTH_TO_HEAL and not self.__stopping):            
+        while(not BotThread.has_ideal_health(self.character.HEALTH, self.character.HEALTH_TO_HEAL) and not self.__stopping):            
 
-            magentaprint(str(self.character.HEALTH) + " < " + str(self.character.HEALTH_TO_HEAL))
             if(self.engage_any_attacking_mobs()):
                 self.commandHandler.process("rest")
 
@@ -319,12 +349,12 @@ class BotThread(threading.Thread):
 
         return
 
-
     def update_aura(self):
         if(self.__stopping):
             return False
 
-        if(self.character.level < 1 or time.time() - self.character.AURA_LAST_UPDATE < 480):
+        if(self.character.level < 1 or
+                BotThread.can_use_timed_ability(time.time(), self.character.AURA_LAST_UPDATE, 480)):
             magentaprint("Last aura update: %d seconds ago." % round(time.time() - self.character.AURA_LAST_UPDATE))
             return True   
 
@@ -342,7 +372,6 @@ class BotThread(threading.Thread):
 
         return False  # Ran out of mana
 
-    
     def heal_up(self):
         magentaprint("In heal_up.")
         heal_spell = "vig"
@@ -351,20 +380,23 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return
 
-        if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL):
+        if(not BotThread.has_ideal_health(self.character.HEALTH, self.character.HEALTH_TO_HEAL)):
+
             self.do_heal_skills()
-            if self.character.MANA >= heal_cost and self.character.MAX_MANA > heal_cost:
-                if (self.character.KNOWS_VIGOR):
-                    self.commandHandler.user_cc(heal_spell)
+
+            if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
+                self.commandHandler.user_cc(heal_spell)
         
         self.character.HAS_RESTORE_ITEMS = False
 
         # Just wait for MudReader to set HEALTH for us while the cast thread continues..
-        while((self.character.HEALTH <= self.character.HEALTH_TO_HEAL and not self.__stopping) 
-                and (self.character.MANA >= heal_cost or self.character.HAS_RESTORE_ITEMS) ):
+        while(BotThread.should_heal_up(self.character.HEALTH, self.character.HEALTH_TO_HEAL,
+                self.character.MANA, heal_cost, self.character.KNOWS_VIGOR, self.character.HAS_RESTORE_ITEMS) and not self.__stopping):
+
+            self.do_heal_skills()
 
             if (self.engage_any_attacking_mobs()):
-                if(self.character.MANA >= heal_cost and self.character.KNOWS_VIGOR):
+                if(BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR)):
                     self.commandHandler.user_cc(heal_spell)
             
             #self.use_restorative_items() #spam them!!!
@@ -466,11 +498,12 @@ class BotThread(threading.Thread):
             
         return ""
 
+
     def do_buff_skills(self):
         if self.character._class is not None:
             if self.character._class.buff_skills is not []:
                 for skill in self.character._class.buff_skills:
-                    if((time.time() - skill.last_used) > skill.timer):
+                    if BotThread.can_use_timed_ability(time.time(), skill.last_used, skill.timer):
                         self.commandHandler.process(skill.command)
                         skill.last_used = time.time()
 
@@ -478,7 +511,7 @@ class BotThread(threading.Thread):
         if self.character._class is not None:
             if self.character._class.combat_skills is not []:
                 for skill in self.character._class.combat_skills:
-                    if((time.time() - skill.last_used) > skill.timer):
+                    if BotThread.can_use_timed_ability(time.time(), skill.last_used, skill.timer):
                         self.commandHandler.process(skill.command + " " + monster)
                         skill.last_used = time.time()
 
@@ -486,7 +519,7 @@ class BotThread(threading.Thread):
         if self.character._class is not None:
             if self.character._class.heal_skills is not []:
                 for skill in self.character._class.heal_skills:
-                    if((time.time() - skill.last_used) > skill.timer):
+                    if BotThread.can_use_timed_ability(time.time(), skill.last_used, skill.timer):
                         self.commandHandler.process(skill.command)
                         skill.last_used = time.time()
 
@@ -509,17 +542,19 @@ class BotThread(threading.Thread):
         while(self.commandHandler.KillThread != None and self.commandHandler.KillThread
               and self.commandHandler.KillThread.stopping == False):
 
-            if(self.character.BLACK_MAGIC and self.character.MANA >= black_magic_spell_cost):
+            if(BotThread.can_cast_spell(self.character.MANA, black_magic_spell_cost, self.character.BLACK_MAGIC)):
                 if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
                     magentaprint("Starting black magic cast thread: " + monster)
                     self.commandHandler.user_cc(self.character.FAVOURITE_SPELL + " " + monster)
                 else:
                     self.commandHandler.stop_CastThread()
-                    
+            
             # TODO: restoratives (use when vig not keeping up or low mana)
-            if (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL)):
+            if (not BotThread.has_ideal_health(self.character.HEALTH, self.character.HEALTH_TO_HEAL)):
+
                 self.do_heal_skills()
-                if(self.character.MANA >= vigor_cost and self.character.KNOWS_VIGOR):
+                
+                if (BotThread.can_cast_spell(self.character.MANA, vigor_cost, self.character.KNOWS_VIGOR)):
                     if( self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
                         magentaprint("Starting vigor cast thread")
                         self.commandHandler.user_cc("vig")
@@ -552,6 +587,7 @@ class BotThread(threading.Thread):
                 self.direction_list.insert(0, go_hook) #should be this area
 
             self.go(self.character.chase_dir)
+            self.character.chase_dir = ""
 
         #magentaprint("end of enage dir list: " + str(self.direction_list), False)
             
