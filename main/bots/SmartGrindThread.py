@@ -36,16 +36,16 @@ class SmartGrindThread(GrindThread):
         self.check_armour()
 
         if len(self.character.MONSTER_KILL_LIST) == 0:
-            self.reset_kill_list()
+            self.get_targets()
 
         return
 
     def check_weapons(self):
-        weapons_equipped = False
+        weapons_equipped = True
 
-        magentaprint("Checking weapons: " + str(self.character.WEAPON_SLOTS), False)
+        # magentaprint("Checking weapons: " + str(self.character.WEAPON_SLOTS), False)
         # magentaprint("Checking inventory " + str(self.inventory.inventory), False)
-        magentaprint("Checking equipped items: " + str(self.inventory.equipped_items), False)
+        # magentaprint("Checking equipped items: " + str(self.inventory.equipped_items), False)
 
         for slot in self.character.WEAPON_SLOTS:
             if not self.inventory.has_slot_equipped(slot):
@@ -56,6 +56,7 @@ class SmartGrindThread(GrindThread):
                     self.inventory.equip_item("wie " + item)
                 else:
                     self.go_purchase_item("weapon", self.character.weapon_model, self.character.weapon_level)
+                    return False
                 
                 break
 
@@ -220,11 +221,11 @@ class SmartGrindThread(GrindThread):
         for target in target_list:
             # magentaprint(target, False)
             mob_locations = MudMap.get_mob_locations_by_id(target.id)
+            self.character.MONSTER_KILL_LIST.append(target.name)
             self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
 
     def reset_kill_list(self):
-        for target in self.smart_target_list:
-            self.character.MONSTER_KILL_LIST.append(target.name)
+        self.get_targets()
 
     def pick_new_target(self):
         next_target = self.cur_target
@@ -267,8 +268,7 @@ class SmartGrindThread(GrindThread):
             self.direction_list = [""]
             return True
 
-
-        return super(GrindThread, self).do_go_hooks(exit_str)
+        return super(SmartGrindThread, self).do_go_hooks(exit_str)
 
 
     def do_rest_hooks(self):
