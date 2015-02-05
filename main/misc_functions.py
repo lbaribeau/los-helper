@@ -128,6 +128,9 @@ def replace_newlines_with_spaces(s):
 def get_last_word(s):
     return s.rsplit(None, 1)[-1]
 
+def get_first_word(s):
+    return s.split(' ', 1)[0]
+
 def get_shortest_array(list_of_arrays):
     shortest_array = []
 
