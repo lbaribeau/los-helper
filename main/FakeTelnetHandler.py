@@ -17,7 +17,9 @@ class FakeTelnetSocket(object):
         ##### CONTENT ######
         self.inventory_string = "You have: two adamantine rods, three silver chalices, two steel bottles.\n"
         
-        self.whois_string = 'Player                Cls Gen [Lv]Title                      Age   Race      \n-----------------------------------------------------------------------------\nTwerp                  Cle  M  [8]Enlightened Brother        16    Human\n'
+        self.whois_string = ("Player                Cls Gen [Lv]Title                      Age   Race      \n"
+"-----------------------------------------------------------------------------\n"
+"Derp                  Mon  M  [12]Brother                    16    Human\n")
         self.time_string = '                      Meditate   *READY*\n                         Touch   3:25 minutes remaining\n'
         self.equipment = ("You see Derp the Human Vicar.\n" \
                         "He is in general good health.\n" \
@@ -83,8 +85,8 @@ class FakeTelnetSocket(object):
             self.content.append(self.inventory_string)
         elif (re.match("whois (.+?)", command)):
             self.content.append(self.whois_string)
-        elif (re.match("info", command)):
-            self.content.append(self.info_string)
+        # elif (re.match("info", command)):
+        #     self.content.append(self.info_string)
         elif (re.match("time", command)):
             self.content.append(self.time_string)
         elif (re.match("c show", command)):

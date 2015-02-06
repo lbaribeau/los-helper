@@ -13,6 +13,8 @@ from misc_functions import *
 # from test.misc_functionsTest import misc_functionsTest #out of date
 # from test.DatabaseTest import data_functionsTest
 from test.BotThreadTest import BotThreadTest
+from test.MudObjectDictTests import MudObjectDict_functionsTest
+
 
 if __name__=='__main__':
     magentaprint("meow", False)
@@ -27,5 +29,8 @@ if __name__=='__main__':
     # suite = unittest.TestSuite(unittest.TestLoader().loadTestsFromTestCase(data_functionsTest))
     # unittest.TextTestRunner().run(suite)
 
-    suite = unittest.TestSuite(unittest.TestLoader().loadTestsFromTestCase(BotThreadTest))
+    # suite = unittest.TestSuite(unittest.TestLoader().loadTestsFromTestCase(BotThreadTest))
+    # unittest.TextTestRunner().run(suite)
+
+    suite = unittest.TestSuite(unittest.TestLoader().loadTestsFromTestCase(MudObjectDict_functionsTest))
     unittest.TextTestRunner().run(suite)
