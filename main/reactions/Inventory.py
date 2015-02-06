@@ -14,7 +14,8 @@ class Inventory(BotReactionWithFlag):
     keep_list = ["large bag", "large sack", "black bag",
         "silver chalice", "steel bottle", 'glowing potion',
         "chicken soup", 'scarlet potion', 'white potion', "tree root",
-        "Elixir of Morinva", "granite potion", "philtre of perception"]
+        "Elixir of Morinva", "granite potion", "philtre of perception",
+        "burnt ochre potion"]
 
     ''' keep_list = ["large bag", "large sack", 
         "silver chalice", "steel bottle", 
@@ -442,12 +443,8 @@ class Inventory(BotReactionWithFlag):
             if (item not in self.keep_list):
                 prev_items_with_same_reference = references.count(item.reference)
 
-                if prev_items_with_same_reference == 0:
-                    numbered_references.append(item.reference)
-                    numbered_references.extend([item.reference + " " + str(n) for n in range(1, int(self.inventory[item]))])
-                else:
-                    numbered_references.extend([item.reference + " " +
-                     str(n) for n in range(prev_items_with_same_reference, prev_items_with_same_reference + int(self.inventory[item]))])
+                numbered_references.extend([item.reference + " " +
+                 str(n) for n in range(prev_items_with_same_reference, prev_items_with_same_reference + int(self.inventory[item]))])
 
             # TODO: have quantities in keep_list
 
@@ -457,7 +454,7 @@ class Inventory(BotReactionWithFlag):
       
     def _item_string_to_reference(self, item_string):
         # 'grey cloak' will be "grey", it just takes the first word.
-        s = get_last_word(item_string)
+        s = get_first_word(item_string)
         #magentaprint("Reference: " + s, False)
         return s#item_string.strip().split(" ")[0].split(".")[0]
 
