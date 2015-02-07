@@ -29,7 +29,7 @@ class MudObjectDict():
         if (obj is not None):
             if obj in self.dictionary.keys():
                 count = len(self.dictionary[obj])
-        #count everythin
+        #count everything
         else:
             for obj,qty in self.dictionary.items():
                 olist = self.dictionary[obj]
@@ -51,6 +51,13 @@ class MudObjectDict():
                 magentaprint(e)
                 magentaprint("Couldn't remove '" + str((keyvalue, obj_dict[keyvalue])) + "' from inventory.")
                 # magentaprint("obj_string: <" + obj_string + ">")
+
+    def get_object_of_type(self, model, data, level=-1):
+        for obj in self.dictionary:
+            if obj.is_of_type(model, data, level):
+                for instance in self.dictionary[obj].objs:
+                    if not instance.is_unusable:
+                        return obj.obj.name
 
     def get_unique_references(self, exception_list = []):
         references = collections.OrderedDict(sorted({}))
