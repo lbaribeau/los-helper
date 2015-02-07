@@ -4,60 +4,77 @@ from misc_functions import *
 
 class MudObjectDict():
     dictionary = {}
-    parser_func = None
 
-    def __init__(self, parser_func):
-        self.parser_func = parser_func
+    def __init__(self):
+        self.dictionary = {}
+
+    def __len__(self):
+        return self.count()
+
+    def __str__(self):
+        return self.to_string()
+
+    def __repr__(self):
+        return self.to_string()
+
+    def to_string(self):
+        return str(self.dictionary)
 
     def sort(self):
         self.dictionary = collections.OrderedDict(sorted(self.dictionary.items()))
 
-    def count(self):
+    def count(self, obj=None):
         count = 0
 
-        for obj in self.dictionary.items():
-            magentaprint(obj, False)
-            olist = self.dictionary[obj]
-            count += len(olist.objs)
+        if (obj is not None):
+            if obj in self.dictionary.keys():
+                count = len(self.dictionary[obj])
+        #count everythin
+        else:
+            for obj,qty in self.dictionary.items():
+                olist = self.dictionary[obj]
+                count += len(olist.objs)
 
         return count
 
-
-    def add(self, obj_string):
-        objs = self.parser_func(obj_string)
-
-        for obj, qty in objs.items():
+    def add(self, obj_dict):
+        for obj, qty in obj_dict.items():
             MudObjectDict.add_to_qty_dict(self.dictionary, (obj, qty))
 
         self.sort()
 
-    def remove(self, obj_string):
-        objs = self.parser_func(obj_string)
-
-        for keyvalue in objs:
+    def remove(self, obj_dict):
+        for keyvalue in obj_dict:
             try:
-                MudObjectDict.remove_from_qty_dict(self.objs, (keyvalue, objs[keyvalue]) )
+                MudObjectDict.remove_from_qty_dict(self.dictionary, (keyvalue, obj_dict[keyvalue]) )
             except Exception as e:
                 magentaprint(e)
-                magentaprint("Couldn't remove '" + str((keyvalue, objs[keyvalue])) + "' from inventory.")
-                magentaprint("obj_string: <" + obj_string + ">")
+                magentaprint("Couldn't remove '" + str((keyvalue, obj_dict[keyvalue])) + "' from inventory.")
+                # magentaprint("obj_string: <" + obj_string + ">")
 
     def get_unique_references(self, exception_list = []):
-        references = []
+        references = collections.OrderedDict(sorted({}))
         numbered_references = []
 
-        for obj in self.dictionary:
-            references.append(obj.reference)
+        for obj,qty in self.dictionary.items():
+            if obj in exception_list:
+                # magentaprint("Found in exception_list " +  str(obj), False)
+                for index, gobj in enumerate(qty.objs):
+                    qty.objs[index].conserve = True
+            MudObjectDict.add_to_qty_dict(references, (obj.reference, qty))
 
-        for objs in self.inventory:
-            if (objs not in exception_list):
-                prev_objss_with_same_reference = references.count(objs.reference)
+        for obj,qty in references.items():
+            i = 0
+            while i < int(qty):
+                cur_gobj = qty.objs[i]
+                i += 1
+                if not cur_gobj.conserve:
+                    numbered_references.append(obj + " " + str(i))
 
-                numbered_references.extend([objs.reference + " " +
-                 str(n) for n in range(prev_objss_with_same_reference, prev_objss_with_same_reference + int(self.dictionary[objs]))])
+        numbered_references.reverse()
 
-        # numbered_references.sort() 
-        numbered_references.reverse() 
+        # magentaprint(numbered_references, False)
+
         return numbered_references
 
     @staticmethod

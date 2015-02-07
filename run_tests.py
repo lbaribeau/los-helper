@@ -17,7 +17,7 @@ from test.MudObjectDictTests import MudObjectDict_functionsTest
 
 
 if __name__=='__main__':
-    magentaprint("meow", False)
+    magentaprint("meow tests are being run meow", False)
 
 	#The following test cases are out of date with the code in main
     #suite = unittest.TestSuite(unittest.TestLoader().loadTestsFromTestCase(MudReaderThreadTest))

@@ -6,6 +6,7 @@ from NamedModel import NamedModel
 class GenericMudObject():
     obj = None
     reference = None
+    conserve = False
 
     def map(self):
         raise NotImplementedError()

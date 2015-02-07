@@ -33,3 +33,6 @@ class GenericMudList():
 
     def __repr__(self):
         return self.to_string()
+
+    def __len__(self):
+        return self.qty
