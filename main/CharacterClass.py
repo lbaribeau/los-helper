@@ -123,6 +123,8 @@ class ClassSkill(object):
         abstract()
     def wear_off_mud_text(self):
         abstract()
+    def can_use(self):
+        abstract()
 
 
 # OLD IDEAS

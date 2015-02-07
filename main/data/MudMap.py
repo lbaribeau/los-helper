@@ -126,8 +126,10 @@ class MudMap():
         for area in areas:
             try:
                 paths.append(self.get_path(start_area_id, area.id))
-            except Exception:
-                magentaprint("couldn't path to area")
+            except Exception as e:
+                continue
+                # print ("couldn't path to area")
+                # magentaprint("couldn't path to area")
 
         return paths
 

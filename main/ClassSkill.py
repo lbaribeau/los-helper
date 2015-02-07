@@ -14,6 +14,9 @@ class SkillTimer():
         self.set_timer_to = set_timer_to
         self.func_pointer = func_pointer
 
+    def __int__(self):
+        return int(self.set_timer_to)
+
 class ClassSkillReaction(BotReaction):
     def __init__(self, mud_reader_handler, command, success_timer, fail_timer, end_timer=SkillTimer("NEVERMATCHEVER~")):
         self.command = command
@@ -60,9 +63,22 @@ class ClassSkillReaction(BotReaction):
                 elif minutes is None and seconds is not None:
                     #magentaprint(command + " is ready in '" + str(seconds) + "' seconds.",False)
                     self.timer = int(seconds)
+                    self.last_used = time.time() + self.timer
                 else:
                     #magentaprint(command + " is ready in '" + str(minutes) + "' minutes " + str(seconds) + "' seconds.",False)
                     self.timer = (int(minutes) * 60) + int(seconds)
+                    self.last_used = time.time() + self.timer
+
+                # magentaprint(self.timer, False)
+                # magentaprint("Skill ready in: " + str(self.last_used - time.time()), False)
+
+    def can_use(self):
+        cooldown = time.time() - self.last_used
+
+        if self.timer < cooldown:
+            return True
+
+        return False
 
         #magentaprint("Timer set to: " + str(self.timer) + " by " + regex, False)
 

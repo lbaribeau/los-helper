@@ -13,7 +13,7 @@ class SmartGrindThread(GrindThread):
                 inventory, mud_map, starting_path=0): 
         super(SmartGrindThread, self).__init__(character, commandHandler, mudReaderHandler, inventory, mud_map, starting_path)
 
-        self.is_actually_dumb = False
+        self.is_actually_dumb = True
 
         self.cur_target = None
         self.cur_area_id = self.character.AREA_ID
@@ -30,10 +30,11 @@ class SmartGrindThread(GrindThread):
     def do_pre_go_actions(self):
         self.go_rest_if_not_ready()
 
-        self.inventory.get_equipment(self.character.name)
+        self.inventory.get_inventory()
+        # self.inventory.get_equipment(self.character.name)
 
-        self.check_weapons()
-        self.check_armour()
+        # self.check_weapons()
+        # self.check_armour()
 
         if len(self.character.MONSTER_KILL_LIST) == 0:
             self.get_targets()
@@ -168,7 +169,8 @@ class SmartGrindThread(GrindThread):
             #not a good situation - we can't find a way to the chapel from wherever we are
             #therefore we should just sit and wait here until we can go on the warpath again
             magentaprint("Exception getting heal path - resting here...", False)
-            magentaprint(e)
+            magentaprint(e, False)
+            raise e
             self.rest_and_check_aura()
 
         return directions
@@ -240,8 +242,8 @@ class SmartGrindThread(GrindThread):
         self.low_aura = 0
         self.high_aura = 15
 
-        magentaprint("Current Aura Scale: " + str(self.character.AURA_SCALE))
-        magentaprint("Preferred Aura Scale: " + str(self.character.AURA_PREFERRED_SCALE))
+        # magentaprint("Current Aura Scale: " + str(self.character.AURA_SCALE), False)
+        # magentaprint("Preferred Aura Scale: " + str(self.character.AURA_PREFERRED_SCALE), False)
 
         #if character is too evil
         if self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:

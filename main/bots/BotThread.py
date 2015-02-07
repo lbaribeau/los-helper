@@ -123,16 +123,25 @@ class BotThread(threading.Thread):
 
     ''' STATIC METHODS '''
     @staticmethod
+    def has_ideal_stat(cur_value, ideal_value):
+        return cur_value >= ideal_value
+
+    @staticmethod
     def has_ideal_mana(current_mana, ideal_mana):
-        return current_mana >= ideal_mana
+        return BotThread.has_ideal_stat(current_mana, ideal_mana)
 
     @staticmethod
     def has_ideal_health(current_health, ideal_health):
-        return current_health >= ideal_health
+        return BotThread.has_ideal_stat(current_health, ideal_health)
 
     @staticmethod
-    def can_use_timed_ability(current_time, last_use, timeout):
-        return timeout < (current_time - last_use)
+    def can_use_timed_ability(last_use, timeout):
+        cooldown = time.time() - last_use
+
+        if timeout < cooldown:
+            return True
+
+        return False
 
     @staticmethod
     def can_cast_spell(current_mana, spell_cost, knows_spell):
@@ -278,7 +287,7 @@ class BotThread(threading.Thread):
             self.aura_updated_hook()
 
         self.heal_up()
-            
+
         if not BotThread.has_ideal_mana(self.character.MANA, MANA_TO_WAIT):
             self.rest_for_mana()
         elif not BotThread.has_ideal_mana(self.character.MANA, MANA_TO_GO):
@@ -287,10 +296,11 @@ class BotThread(threading.Thread):
         if not aura_updated:
             self.update_aura()
     
-        if self.character.level < 3:
+        if self.character.level < 3 or self.character.MAX_MANA > 10:
             self.heal_up()
             self.wait_for_mana()  
         else:
+            # magentaprint("Resting for health", False)
             # Probably not the greatest logic but low level characters will need 
             # to gain health other than healing up.
             self.rest_for_health()
@@ -308,10 +318,10 @@ class BotThread(threading.Thread):
     def rest_for_mana(self):
         ideal_mana = self.character.get_ideal_mana()
         
-        if(not Bot.has_ideal_mana(self.character.MANA, ideal_mana)):
+        if(not BotThread.has_ideal_mana(self.character.MANA, ideal_mana)):
             self.commandHandler.process("rest")            
 
-        while(not Bot.has_ideal_mana(self.character.MANA, ideal_mana) and 
+        while(not BotThread.has_ideal_mana(self.character.MANA, ideal_mana) and 
               not self.__stopping):
             
             if(self.engage_any_attacking_mobs()):
@@ -333,19 +343,25 @@ class BotThread(threading.Thread):
         return
 
     def rest_for_health(self):
-        if(not BotThread.has_ideal_health(self.character.HEALTH, self.character.HEALTH_TO_HEAL)):
+        if (BotThread.has_ideal_health(self.character.HEALTH, self.character.HEALTH_TO_HEAL)):
             return
-            
-        self.commandHandler.process("rest")            
 
         self.do_heal_skills()
+        
+        self.commandHandler.process("rest")            
+
+        # magentaprint(BotThread.has_ideal_health(self.character.HEALTH, self.character.HEALTH_TO_HEAL), False)
 
         while(not BotThread.has_ideal_health(self.character.HEALTH, self.character.HEALTH_TO_HEAL) and not self.__stopping):            
 
             if(self.engage_any_attacking_mobs()):
                 self.commandHandler.process("rest")
+            elif (self.do_heal_skills()):
+                self.commandHandler.process("rest")
 
             self.sleep(0.1)
+
+        # magentaprint("Stopping rest for health",False)
 
         return
 
@@ -353,8 +369,8 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return False
 
-        if(self.character.level < 1 or
-                BotThread.can_use_timed_ability(time.time(), self.character.AURA_LAST_UPDATE, 480)):
+        if(self.character.level < 1 or not
+                BotThread.can_use_timed_ability(self.character.AURA_LAST_UPDATE, 480)):
             magentaprint("Last aura update: %d seconds ago." % round(time.time() - self.character.AURA_LAST_UPDATE))
             return True   
 
@@ -503,25 +519,34 @@ class BotThread(threading.Thread):
         if self.character._class is not None:
             if self.character._class.buff_skills is not []:
                 for skill in self.character._class.buff_skills:
-                    if BotThread.can_use_timed_ability(time.time(), skill.last_used, skill.timer):
+                    if skill.can_use():
+                        skill.timer = int(skill.fail_timer) #always assume it fails
                         self.commandHandler.process(skill.command)
                         skill.last_used = time.time()
+                        return True
+        return False
 
-    def do_combat_skills(self, monster):
+    def do_combat_skills(self, target):
         if self.character._class is not None:
             if self.character._class.combat_skills is not []:
                 for skill in self.character._class.combat_skills:
-                    if BotThread.can_use_timed_ability(time.time(), skill.last_used, skill.timer):
-                        self.commandHandler.process(skill.command + " " + monster)
+                    if skill.can_use():
+                        skill.timer = int(skill.fail_timer)  #always assume it fails
+                        self.commandHandler.process(skill.command + " " + target)
                         skill.last_used = time.time()
+                        return True
+        return False
 
     def do_heal_skills(self):
         if self.character._class is not None:
             if self.character._class.heal_skills is not []:
                 for skill in self.character._class.heal_skills:
-                    if BotThread.can_use_timed_ability(time.time(), skill.last_used, skill.timer):
+                    if skill.can_use():
+                        skill.timer = int(skill.fail_timer) #always assume it fails
                         self.commandHandler.process(skill.command)
                         skill.last_used = time.time()
+                        return True
+        return False
 
     def engage_monster(self, monster):
         vigor_cost = 2
@@ -588,6 +613,7 @@ class BotThread(threading.Thread):
 
             self.go(self.character.chase_dir)
             self.character.chase_dir = ""
+            self.character.chase_mob = ""
 
         #magentaprint("end of enage dir list: " + str(self.direction_list), False)
             

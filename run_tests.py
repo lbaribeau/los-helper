@@ -29,8 +29,8 @@ if __name__=='__main__':
     # suite = unittest.TestSuite(unittest.TestLoader().loadTestsFromTestCase(data_functionsTest))
     # unittest.TextTestRunner().run(suite)
 
-    # suite = unittest.TestSuite(unittest.TestLoader().loadTestsFromTestCase(BotThreadTest))
-    # unittest.TextTestRunner().run(suite)
+    suite = unittest.TestSuite(unittest.TestLoader().loadTestsFromTestCase(BotThreadTest))
+    unittest.TextTestRunner().run(suite)
 
     suite = unittest.TestSuite(unittest.TestLoader().loadTestsFromTestCase(MudObjectDict_functionsTest))
     unittest.TextTestRunner().run(suite)

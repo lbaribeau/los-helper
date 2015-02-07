@@ -45,19 +45,19 @@ class BotThreadTest(unittest.TestCase):
         self.assertEquals(result, True)
 
     def test_TrueCanUseTimedAbility(self):
-        current_time = time.time()
         last_use = time.time() - self.high_timeout 
         timeout = self.low_timeout
 
-        result = BotThread.can_use_timed_ability(current_time, last_use, timeout)
+        result = BotThread.can_use_timed_ability(last_use, timeout)
         self.assertEquals(result, True)
 
     def test_FalseCanUseTimedAbility(self):
-        current_time = time.time()
         last_use = time.time() - self.low_timeout
         timeout = self.high_timeout
 
-        result = BotThread.can_use_timed_ability(current_time, last_use, timeout)
+        # magentaprint("Times : " + str(last_use) + " " + str(timeout), False)
+
+        result = BotThread.can_use_timed_ability(last_use, timeout)
         self.assertEquals(result, False)
 
     def test_TrueCanCastSpell_HasSurplusManaAndSpell(self):
