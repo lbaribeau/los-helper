@@ -6,6 +6,7 @@ from BotReactions import *
 from misc_functions import *
 from data.MudItem import *
 from data.GenericMudList import *
+from data.MudObjectDict import *
 
 class Inventory(BotReactionWithFlag):
 
@@ -82,7 +83,7 @@ class Inventory(BotReactionWithFlag):
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
         self.character = character
-        self.inventory = {}
+        self.inventory = MudObjectDict()
         self.gold = 0
         self.__stopping = False
         self.mudReaderHandler.register_reaction(self)
@@ -151,17 +152,17 @@ class Inventory(BotReactionWithFlag):
         self.telnetHandler.write("l " + name)
         self.wait_for_flag()
 
-    def has_restorative(self):
-        return self.has(self.restoratives)
+    # def has_restorative(self):
+    #     return self.has(self.restoratives)
 
-    def use_restorative(self):
-        self.use(self.restoratives)
+    # def use_restorative(self):
+    #     self.use(self.restoratives)
 
-    def has(self, item_or_list):
-        if type(item) is list:
-            return any([i in self.inventory for i in item])
-        else:
-            return item_or_list in self.inventory
+    # def has(self, item_or_list):
+    #     if type(item) is list:
+    #         return any([i in self.inventory for i in item])
+    #     else:
+    #         return item_or_list in self.inventory
 
     def has_slot_equipped(self, slot_to_check, quantity=1):
         has_slot_equipped = False
@@ -174,12 +175,8 @@ class Inventory(BotReactionWithFlag):
 
         return has_slot_equipped
 
-    def get_item_of_type(self, itemModel, itemData, level=-1):
-        for item in self.inventory:
-            if item.is_of_type(itemModel, itemData, level):
-                for iteminstance in self.inventory[item].objs:
-                    if not iteminstance.is_unusable:
-                        return item.obj.name
+    def get_item_of_type(self, itemModel, itemData, level=1):
+        return self.inventory.get_object_of_type(itemModel, itemData, level)
 
     def use(self, item_or_list):
         item = ""
@@ -281,64 +278,24 @@ class Inventory(BotReactionWithFlag):
         self.__stopping = True
 
     def set_inventory(self, item_string):
-        self.inventory = self.parse_item_list(item_string)
-        self.sort_inventory()
+        self.inventory = MudObjectDict()
+        self.inventory.add(self.parse_item_list(item_string))
 
     def add(self, item_string):
         items = self.parse_item_list(item_string)
-
-        for item, qty in items.items():
-            Inventory.add_to_qty_dict(self.inventory, (item, qty))
-
-        self.sort_inventory()
+        self.inventory.add(items)
 
     def add_broken(self, item_string):
         items = self.parse_item_list(item_string)
 
-        for item, qty in items.items():
+        for item in items:
             item.is_unusable = True
-            Inventory.add_to_qty_dict(self.inventory, (item, qty))
 
-        self.sort_inventory()
-
-    @staticmethod
-    def add_to_qty_dict(d, keyvalue):
-        ''' For (key, qty) pairs. '''
-
-        if keyvalue[0] in d:
-            d[keyvalue[0]].add(keyvalue[1])
-        else:
-            d[keyvalue[0]] = keyvalue[1]
+        self.inventory.add(items)
 
     def remove(self, item_string):
         item_list = self.parse_item_list(item_string)
-
-        for keyvalue in item_list:
-            try:
-                magentaprint(str(keyvalue) + " " + str(item_list[keyvalue].objs))
-                # self.remove((item, qty))
-                Inventory.remove_from_qty_dict(self.inventory, (keyvalue, item_list[keyvalue]) )
-            except ValueError:
-                magentaprint("Couldn't remove '" + str((keyvalue, item_list[keyvalue])) + "' from inventory.")
-                magentaprint("inventory:" + str(self.inventory))
-                magentaprint("item_string: " + item_string)
-
-    @staticmethod
-    def remove_from_qty_dict(d, keyvalue):
-        ''' For (key, qty) pairs. '''
-
-        magentaprint(str(keyvalue))
-
-        if keyvalue[0] in d:
-            if keyvalue[1].qty >= d[keyvalue[0]].qty:
-                del d[keyvalue[0]]
-            else:
-                d[keyvalue[0]].remove() #keyvalue[1]
-        else:
-            magentaprint("Couldn't remove " + str(keyvalue[0]), False)
-
-    def sort_inventory(self):
-        self.inventory = collections.OrderedDict(sorted(self.inventory.items()))
+        self.inventory.remove(item_list)
 
     def equip_item(self, equip_string):
         self.telnetHandler.write(equip_string)
@@ -422,41 +379,7 @@ class Inventory(BotReactionWithFlag):
         return return_dict
 
     def sellable(self):
-        # Go backwards through the list because we want to sell in reverse order
-        # That way the numbers don't change.
-        # Here we are counting the items so we can come up with "silver 5" and stuff like that.
-
-        # The word "reference" is used as a more generic term for the word "item" in case you 
-        # have a large axe and a large knife, their references are both "large" 
-
-        # This is O(like a gazillion) but that's fine with me.  It's pretty darn complicated.  
-        # I dare you to come up with a better algorithm.  I bet python list operations are 
-        # pretty quick.
-
-        references = []
-        numbered_references = []
-
-        for item in self.inventory:
-            references.append(item.reference)
-
-        for item in self.inventory:
-            if (item not in self.keep_list):
-                prev_items_with_same_reference = references.count(item.reference)
-
-                numbered_references.extend([item.reference + " " +
-                 str(n) for n in range(prev_items_with_same_reference, prev_items_with_same_reference + int(self.inventory[item]))])
-
-            # TODO: have quantities in keep_list
-
-        # numbered_references.sort() 
-        numbered_references.reverse()
-        return numbered_references
-      
-    def _item_string_to_reference(self, item_string):
-        # 'grey cloak' will be "grey", it just takes the first word.
-        s = get_first_word(item_string)
-        #magentaprint("Reference: " + s, False)
-        return s#item_string.strip().split(" ")[0].split(".")[0]
+        return self.inventory.get_unique_references(self.keep_list)
 
     def output_inventory(self):
         magentaprint(str(self.inventory),False)
