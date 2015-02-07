@@ -37,7 +37,8 @@ class GrindThread(BotThread):
         if not self.is_character_class("Mon"):
           self.set_up_automatic_ring_wearing()
 
-        self.direction_list = [] #could append areaid45
+        if self.direction_list is None:
+          self.direction_list = [] #could append areaid45
 
         return
 
