@@ -15,7 +15,7 @@ class FakeTelnetSocket(object):
         self.mud_map = mud_map
 
         ##### CONTENT ######
-        self.inventory_string = "You have: two adamantine rods, three silver chalices, two steel bottles.\n"
+        self.inventory_string = "You have: an awl, six small lamps, six small knives, a buckler, a burnt ochre potion, a hammer, a large bag, a large mace, two large sacks, a long sword, seven silver chalices, a silver torch, two small lamps, six steel bottles, five steel rings, two stilletos.\n"
         
         self.whois_string = ("Player                Cls Gen [Lv]Title                      Age   Race      \n"
 "-----------------------------------------------------------------------------\n"
@@ -196,7 +196,7 @@ class FakeTelnetHandler(object):
         self.tn.connect()
 
         self.echoing = True
-        self.tn.write("genaid 609") #lets start us in the chapel
+        self.tn.write("genaid 336") #lets start us in the chapel
         #self.tn.write("addmob spiv") #most everything will fight this
 
     def write(self, command):
