@@ -40,3 +40,10 @@ class MudItem(GenericMudObject):
 
     def get_purchase_location_id(self): #model to help track sizes
         return AreaStoreItem.get_by_item(self.obj.id).area.id
+
+
+# class MudItemMeta():
+#     def __init__(self, id, is_unusable=False):
+#         self.id = id
+#         self.is_unusable = is_unusable
+
