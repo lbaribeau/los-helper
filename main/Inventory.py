@@ -38,7 +38,7 @@ class Inventory(BotReactionWithFlag):
 
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
-        self.inventory = []
+        self.inventory = {}
         self.gold = 0
         self.__stopping = False
         self.mudReaderHandler.register_reaction(self)
@@ -324,7 +324,7 @@ class Inventory(BotReactionWithFlag):
         "spider leg", 'heavy crossbow', 
         "spear", "bolos", 'javelin', "long bow", 
         "heathen amulet",
-        "broad sword", "rapier",
+        "broad sword", "rapier", "stilleto",
         # armour
         "hard cap", "hard gloves", "hard boots", "padded hat",
         "mountain gloves", "mountain boots", "mountain boots with crampons",

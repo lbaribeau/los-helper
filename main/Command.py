@@ -59,8 +59,8 @@ class Command(BotReactionWithFlag):
         #     self.spell = " " + spell
         # if target:
         #     self.target = " " + target
-        magentaprint(self.regexes)
-        magentaprint("Registering " + str(self) + " with regexes " + str(self.regexes))
+        # magentaprint(self.regexes)
+        # magentaprint("Registering " + str(self) + " with regexes " + str(self.regexes))
         # mudReaderHandler.register_reaction(self)
 
     def notify(self, regex, M_obj):
@@ -88,13 +88,13 @@ class Command(BotReactionWithFlag):
         # and will do the things that the user wants.  If the cooldown is close, it'll wait that 
         # little bit before sending.  It updates the cooldown timer.
 
-        magentaprint("Command.send: self.__class__.timer - time.time(): %.1f" + str(round(self.__class__.timer - time.time(), 1)))
+        magentaprint("Command.send: self.__class__.timer - time.time(): %.1f" % round(self.__class__.timer - time.time(), 1))
 
         if self.__class__.timer - time.time() < 0.75:
             time.sleep(max(0, self.__class__.timer - time.time()))
             magentaprint("Command.send: done sleeping.")
         else:
-            magentaprint("Command: not ready for %.1f seconds." % str(round(self.__class__.timer - time.time(), 1)))
+            magentaprint("Command: not ready for %.1f seconds." % round(self.__class__.timer - time.time(), 1))
             return
 
         self.success = False
@@ -142,7 +142,7 @@ class Command(BotReactionWithFlag):
 
         while self.please_wait_time != -1:
             if please_wait_time <= 6:
-                self.__class__.timer = 0
+                self.clear_timer()
                 if self.please_wait_time > 1:
                     time.sleep(self.please_wait_time - 1)
                 self.send(target)
@@ -165,7 +165,7 @@ class Command(BotReactionWithFlag):
         # Maybe a different object can do that, since we want this one to be disposable.
         # I'd like to register the class object... but I'd have to join the dark side.
         self.send(target)
-        self.start_timer()
+        # self.start_timer()
         self.wait_for_flag()
 
         while self.please_wait_time != -1:
@@ -196,13 +196,17 @@ class Command(BotReactionWithFlag):
     def up(self):
         return self.__class__.timer < time.time()
 
+    @staticmethod
+    def wait_until_ready(self):
+        sleep(max(0, self.__class__.timer - time.time()))
+
 
 class Kill(Command):
     timer = 0
 
     def __init__(self, mudReaderHandler, telnetHandler):
         self.command = "kill"
-        # self.target = " " + target
+        # self.target = " " + target  # target not needed - it's an argument to Command.execute_and_block(target=None)
         self.cooldown_after_success = 3
         self.cooldown_after_failure = 3 
         super(Kill, self).__init__(mudReaderHandler, telnetHandler)
@@ -264,6 +268,26 @@ class Kill(Command):
         r"Your missile arcs towards the (.+?), but fails to hit them\.",
         r"You attack the (.+?) with your .+?, but miss\.",
         r"You use your .+?, but nothing hits the (.+?)\."
+    ]
+
+
+
+class Cast(Command):
+    timer = 0
+    command = "cast"
+    cooldown_after_success = 3
+    cooldown_after_failure = 3 
+
+    def __init__(self, mudReaderHandler, telnetHandler):
+        super(Cast, self).__init__(mudReaderHandler, telnetHandler)
+
+    success_regexes = [
+        r"You cast a (.+?) spell on (.+?)\.",
+        r"(.+?) spell cast\."
+    ]
+
+    failure_regexes = [
+        r"Your spell fails\."
     ]
 
 # class Command(BotReactionWithFlag):

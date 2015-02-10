@@ -4,6 +4,7 @@ from itertools import chain
 from CombatThread import CombatThread
 from Ability import *
 import misc_functions
+from Command import Kill
 
 # class SmartCombat(BotReactionWithFlag, CombatThread):
 class SmartCombat(CombatThread, BotReactionWithFlag):
@@ -97,7 +98,7 @@ class SmartCombat(CombatThread, BotReactionWithFlag):
         else:
             # elif regex is self.it_collapsed or self.it_fled:  # TODO: party kill regex
             magentaprint("SmartCombat notified on regex " + regex + ", stopping")
-            magentaprint("SmartCombat regexes: " + str(self.regexes))
+            # magentaprint("SmartCombat regexes: " + str(self.regexes))
             if regex is self.health_mana:
                 magentaprint("Crazy")
             else:
@@ -151,8 +152,6 @@ class SmartCombat(CombatThread, BotReactionWithFlag):
                 #     return
                 break
 
-        magentaprint("SmartCombat before loop; stopping: " + str(self.stopping))
-
         while not self.stopping:
             magentaprint("SmartCombat loop")
             if misc_functions.attack_wait(self.character) <= misc_functions.cast_wait(self.character):
@@ -199,8 +198,11 @@ class SmartCombat(CombatThread, BotReactionWithFlag):
                 self.character.ATTACK_CLK = time.time()
                 return
 
-        magentaprint("SmartCombat calling attack_wait")
-        self.attack_wait()
+        # magentaprint("SmartCombat calling attack_wait")
+        # self.attack_wait()
+        magentaprint("SmartCombat calling Kill")
+        Kill(self.mudReaderHandler, self.telnetHandler).execute_and_block(self.target)
+
 
     def attack_wait(self):
         self.attack_flag = False

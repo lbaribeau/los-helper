@@ -54,17 +54,15 @@ class Ability(BotReactionWithFlag):
         super(Ability, self).notify(regex, M_obj)
 
     def use(self, target=""):
-        magentaprint("Ability.use: self.timer - time.time(): " + str(self.timer - time.time()))
         if self.timer - time.time() < 0.75:
-            magentaprint("Ability.use: sleeping.")
+            magentaprint("Ability.use: sleeping " + str(self.timer - time.time()))
             time.sleep(max(0, self.timer - time.time()))
-            magentaprint("Ability.use: done sleeping.")
         else:
             magentaprint("Ability: not ready for " + self.timer - time.time() + " seconds.")
             return
 
         self.success = False
-        magentaprint("Calling telnetHandler.write(" + self.command + " " + target + ")")
+        # magentaprint("Ability: Calling telnetHandler.write(" + self.command + " " + target + ")")
         self.telnetHandler.write(self.command + " " + target)
         self.timer = time.time() + self.cooldown_after_success
 

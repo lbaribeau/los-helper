@@ -64,7 +64,6 @@ class Cartography(BotReaction):
         self.Character = character
 
         self.good_MUD_timeout = 1.5
-        self.__waiter_flag = False
         self.__stopping = False
         self.mudReaderHandler.register_reaction(self)
 
