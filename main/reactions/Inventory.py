@@ -16,7 +16,7 @@ class Inventory(BotReactionWithFlag):
         "silver chalice", "steel bottle", 'glowing potion',
         "chicken soup", 'scarlet potion', 'white potion', "tree root",
         "Elixir of Morinva", "granite potion", "philtre of perception",
-        "burnt ochre potion"]
+        "burnt ochre potion", "milky potion"]
 
     ''' keep_list = ["large bag", "large sack", 
         "silver chalice", "steel bottle", 
@@ -158,11 +158,14 @@ class Inventory(BotReactionWithFlag):
     # def use_restorative(self):
     #     self.use(self.restoratives)
 
-    # def has(self, item_or_list):
-    #     if type(item) is list:
-    #         return any([i in self.inventory for i in item])
-    #     else:
-    #         return item_or_list in self.inventory
+    def has(self, mud_item_string):
+        mud_item = MudItem(mud_item_string)
+        mud_item.map()
+
+        if self.inventory.count(mud_item) > 0:
+            return True
+
+        return False
 
     def has_slot_equipped(self, slot_to_check, quantity=1):
         has_slot_equipped = False
