@@ -5,12 +5,13 @@ from CoolAbility import *
 
 class CharacterClass(object):
 
-    def __init__(self, class_string, telnetHandler, mudReaderHandler):
+    def __init__(self, class_string, level, telnetHandler, mudReaderHandler):
         self.id = class_string
         self.combat_skills = []
         self.heal_skills = []
         self.buff_skills = []
         self.cast_wait = 6
+        self.level = level
 
         self.ARMOR_SLOTS = [
                     "Body",
@@ -88,9 +89,10 @@ class CharacterClass(object):
             self.heal_skills.extend([ClassSkillReaction(mudReaderHandler, "Meditate",
                                     SkillTimer("You feel at one with the universe\.", 110),
                                     SkillTimer("Your spirit is not at peace.", 10))])
-            self.combat_skills.extend([ClassSkillReaction(mudReaderHandler, "Touch",
-                                    SkillTimer("Your? touch(?:ed)? .+?\.", 240),
-                                    SkillTimer("You failed to harm the .+?\.", 240))])
+            if self.level > 9:
+                self.combat_skills.extend([ClassSkillReaction(mudReaderHandler, "Touch",
+                                        SkillTimer("Your? touch(?:ed)? .+?\.", 240),
+                                        SkillTimer("You failed to harm the .+?\.", 240))])
             self.WEAPON_SLOTS = []
             self.ARMOR_SLOTS = []
             # self.abilities = [ Meditate(telnetHandler), Touch(telnetHandler) ]
@@ -122,8 +124,6 @@ class ClassSkill(object):
     def failure_mud_text(self):
         abstract()
     def wear_off_mud_text(self):
-        abstract()
-    def can_use(self):
         abstract()
 
 
