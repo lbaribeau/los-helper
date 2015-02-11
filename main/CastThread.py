@@ -34,3 +34,6 @@ class CastThread(CombatThread):
             self.character.CAST_CLK = time.time()
             self.telnetHandler.write("cast " + self.spell + " " + self.target)
             wait_for_cast_ready(self.character)
+
+        self.end_run()
+

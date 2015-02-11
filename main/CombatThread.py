@@ -6,10 +6,10 @@ import atexit
 from misc_functions import magentaprint
 
 class CombatThread(threading.Thread):
-    stopping = False
 
     def __init__(self, character, mudReaderHandler, telnetHandler, target):   
         Thread.__init__(self)
+        self.stopping = False
         self.character = character
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
@@ -19,23 +19,24 @@ class CombatThread(threading.Thread):
         self.it_fled = "The (" + numbers + " )?(.+?) flees to the (.+?)\."
         self.regexes = [self.it_collapsed,
                         self.it_fled]
-        atexit.register(self.stop)
-
-    def run(self):
-        raise NotImplementedError("Subclasses must implement this!")
+        # atexit.register(self.stop)
 
     def notify(self, regex, M_obj):
-        magentaprint("CombatThread stop called")
+        magentaprint(str(self) + " notified.")
         self.stop()
         
     def stop(self):
         self.stopping = True
-        self.mudReaderHandler.unregister_reaction(self)
-        
+
+    def end_run(self):
+        self.unregistered = True
+        magentaprint(str(self) + " ended run.")
+
     def keep_going(self):
+        magentaprint(str(self) + " keep_going " + str(self.stopping))
+        
         if self.stopping is True:
             self.stopping = False
-            self.mudReaderHandler.register_reaction(self)
 
     def set_target(self, new_target):
         self.target = new_target

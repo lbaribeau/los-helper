@@ -21,7 +21,9 @@ def attack_wait(character):
     return wait_amount(character.ATTACK_CLK, attack_period)
 
 def wait_for_attack_ready(character):
-    magentaprint("wait_for_attack_ready sleeping " + str(round(attack_wait(character), 1)))
+    if attack_wait(character) > 0.1:
+        magentaprint("wait_for_attack_ready sleeping " + str(round(attack_wait(character), 1)))
+
     time.sleep(attack_wait(character))
 
 def attack_ready(character):
@@ -31,7 +33,9 @@ def cast_wait(character):
     return wait_amount(character.CAST_CLK, character.CAST_WAIT)
 
 def wait_for_cast_ready(character):
-    magentaprint("wait_for_cast_ready sleeping " + str(round(cast_wait(character), 1)))
+    if cast_wait(character) > 0.1:
+        magentaprint("wait_for_cast_ready sleeping " + str(round(cast_wait(character), 1)))
+        
     time.sleep(cast_wait(character))
 
 def cast_ready(character):

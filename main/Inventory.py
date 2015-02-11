@@ -292,37 +292,17 @@ class Inventory(BotReactionWithFlag):
     adam_keep_list = ["large bag", "large sack", 
         "silver chalice", "steel bottle", "small restorative", 'glowing potion', "chicken soup", 
         'scarlet potion', "white potion"
-        # weapons
-        #'war hammer', "adamantine sword", 'adamantine axe', "claymore", 
-        #"spider leg", 
-        #"spear", "bolos", 'javelin', "long bow", 
-        #"heathen amulet",
-        #"broad sword", "rapier",
-        #'heavy crossbow', 
-        # armour
-        #"hard cap", "hard gloves", "hard boots", "padded hat",
-        #"mountain gloves", "mountain boots", "mountain boots with crampons",
-        #"travellers cross", "leather mask", "leather collar",
-        #"studded leather collar", "studded leather sleeves",
-        #"studded leather boots", "studded leather pants",
-        #"chain mail armour", 'chain mail sleeves', 'chain mail leggings', 
-        #'chain mail gloves', 'chain mail hood', 'chain mail boots', 
-        #"ring mail armour", "ring mail sleeves", "ring mail leggings", 
-        #"ring mail hood", "ring mail gauntlets", "leather collar", 
-        #"furry cloak", "enchanted indigo cloak",
-        #'lion charm', "poison ring",
-        #'steel mask' # the bot slowly collects these
         ]
 
-    keep_list = ["large bag", "large sack", 
+    keep_list = ["large bag", "large sack", "sack",
         "silver chalice", "steel bottle", 
-        'glowing potion', 
+        'glowing potion', "milky potion", "granite potion",
         "chicken soup", "small restorative", "small flask", 
         "large restorative", "scarlet potion",
         # weapons
         'war hammer', "adamantine sword", 'adamantine axe', "claymore", 
         "spider leg", 'heavy crossbow', 
-        "spear", "bolos", 'javelin', "long bow", 
+        "spear", "bolos", 'javelin', "long bow",
         "heathen amulet",
         "broad sword", "rapier", "stilleto",
         # armour

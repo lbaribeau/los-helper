@@ -24,5 +24,7 @@ class KillThread(CombatThread):
             self.telnetHandler.write("k " + self.target)
             wait_for_attack_ready(self.character)
 
-        # This code is really similar to castThread, there's likely a way 
+        self.end_run()
+
+        # Some of this code is really similar to castThread, there's likely a way 
         # to put it in CombatThread 

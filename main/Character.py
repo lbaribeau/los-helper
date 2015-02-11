@@ -127,15 +127,15 @@ class Character(object):
             self.MAX_MANA = 12
             self.MANA_TO_ENGAGE = 6           
         elif self.level <= 6:
-            self.HEALTH_TO_HEAL = 35 # 43
+            self.HEALTH_TO_HEAL = 35 # was 43 for Ruorg
             self.HEALTH_TO_FLEE = 15
             self.MAX_MANA = 18
             self.MANA_TO_ENGAGE = 9     
-        elif self.level <= 7:
-            self.HEALTH_TO_HEAL= 45
-            self.HEALTH_TO_FLEE = 8 
+        elif self.level <= 7: # has the same enemy list as 6
+            self.HEALTH_TO_HEAL= 41 # was 45
+            self.HEALTH_TO_FLEE =  15
             self.MAX_MANA = 21
-            self.MANA_TO_ENGAGE = 12
+            self.MANA_TO_ENGAGE = 9
         elif self.level <= 8:
             self.HEALTH_TO_HEAL= 45
             self.HEALTH_TO_FLEE = 30
@@ -260,7 +260,7 @@ class Character(object):
                                       if m not in self.lvl1_monsters    \
                                       and m not in self.lvl2_monsters]
             self.MONSTER_KILL_LIST.extend(self.preferred_lvl_1_2_monsters)
-            self.MONSTER_KILL_LIST.extend(self.lvl4_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl4_monsters)  # Militia soldiers troublesome?
             self.MONSTER_KILL_LIST.extend(self.lvl4_red_monsters)
         if self.level > 7:
             self.MONSTER_KILL_LIST.extend(self.lvl5_monsters)
