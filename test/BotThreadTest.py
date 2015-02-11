@@ -16,7 +16,7 @@ class BotThreadTest(unittest.TestCase):
         current_mana = self.low_value
         ideal_mana = self.high_value
 
-        result = BotThread.has_ideal_mana(current_mana, ideal_mana)
+        result = BotThread.has_ideal_stat(current_mana, ideal_mana)
 
         self.assertEquals(result, False)
 
@@ -24,7 +24,7 @@ class BotThreadTest(unittest.TestCase):
         current_mana = self.high_value
         ideal_mana = self.low_value
 
-        result = BotThread.has_ideal_mana(current_mana, ideal_mana)
+        result = BotThread.has_ideal_stat(current_mana, ideal_mana)
 
         self.assertEquals(result, True)
 
@@ -32,7 +32,7 @@ class BotThreadTest(unittest.TestCase):
         current_health = self.low_value
         ideal_health = self.high_value
 
-        result = BotThread.has_ideal_health(current_health, ideal_health)
+        result = BotThread.has_ideal_stat(current_health, ideal_health)
 
         self.assertEquals(result, False)
 
@@ -40,7 +40,7 @@ class BotThreadTest(unittest.TestCase):
         current_health = self.high_value
         ideal_health = self.low_value
 
-        result = BotThread.has_ideal_health(current_health, ideal_health)
+        result = BotThread.has_ideal_stat(current_health, ideal_health)
 
         self.assertEquals(result, True)
 

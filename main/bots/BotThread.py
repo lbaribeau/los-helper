@@ -124,15 +124,7 @@ class BotThread(threading.Thread):
     ''' STATIC METHODS '''
     @staticmethod
     def has_ideal_stat(cur_value, ideal_value):
-        return cur_value >= ideal_value
-
-    @staticmethod
-    def has_ideal_mana(current_mana, ideal_mana):
-        return BotThread.has_ideal_stat(current_mana, ideal_mana)
-
-    @staticmethod
-    def has_ideal_health(current_health, ideal_health):
-        return BotThread.has_ideal_stat(current_health, ideal_health)
+        return cur_value >= ideal_value 
 
     @staticmethod
     def can_use_timed_ability(last_use, timeout):
@@ -156,7 +148,7 @@ class BotThread(threading.Thread):
     @staticmethod
     def should_heal_up(current_health, ideal_health, current_mana, heal_cost, knows_spell,
                         has_healing_items):
-        should_heal = not BotThread.has_ideal_health(current_health, ideal_health)
+        should_heal = not BotThread.has_ideal_stat(current_health, ideal_health)
 
         if should_heal:
             can_cast_spell = BotThread.can_cast_spell(current_mana, heal_cost, knows_spell)
@@ -167,6 +159,12 @@ class BotThread(threading.Thread):
                 should_heal = False
 
         return should_heal
+
+    def has_ideal_mana(self):
+        return BotThread.has_ideal_stat(self.character.MANA, self.character.MAX_MANA)
+
+    def has_ideal_health(self):
+        return BotThread.has_ideal_stat(self.character.HEALTH, self.character.HEALTH_TO_HEAL)
 
     def do_go_hooks(self, exit_str):
         #if you want to define custom hooks like sell_items / drop_items etc... you can do so here
@@ -288,15 +286,15 @@ class BotThread(threading.Thread):
 
         self.heal_up()
 
-        if not BotThread.has_ideal_mana(self.character.MANA, MANA_TO_WAIT):
+        if not BotThread.has_ideal_stat(self.character.MANA, MANA_TO_WAIT):
             self.rest_for_mana()
-        elif not BotThread.has_ideal_mana(self.character.MANA, MANA_TO_GO):
+        elif not BotThread.has_ideal_stat(self.character.MANA, MANA_TO_GO):
             self.wait_for_mana()
                    
         if not aura_updated:
             self.update_aura()
     
-        if self.character.level < 3 or self.character.MAX_MANA > 10:
+        if self.character.level > 3 and self.character.MAX_MANA > 10:
             self.heal_up()
             self.wait_for_mana()  
         else:
@@ -305,7 +303,7 @@ class BotThread(threading.Thread):
             # to gain health other than healing up.
             self.rest_for_health()
 
-        #self.buff_up()
+        self.buff_up()
 
         return
 
@@ -318,10 +316,10 @@ class BotThread(threading.Thread):
     def rest_for_mana(self):
         ideal_mana = self.character.get_ideal_mana()
         
-        if(not BotThread.has_ideal_mana(self.character.MANA, ideal_mana)):
+        if(not self.has_ideal_mana()):
             self.commandHandler.process("rest")            
 
-        while(not BotThread.has_ideal_mana(self.character.MANA, ideal_mana) and 
+        while(not self.has_ideal_mana() and 
               not self.__stopping):
             
             if(self.engage_any_attacking_mobs()):
@@ -334,7 +332,7 @@ class BotThread(threading.Thread):
     def wait_for_mana(self):
         ideal_mana = self.character.get_ideal_mana()
         
-        while(not BotThread.has_ideal_mana(self.character.MANA, ideal_mana) and not self.__stopping):
+        while(not self.has_ideal_mana() and not self.__stopping):
             self.sleep(3.5)
             self.engage_any_attacking_mobs()
             self.commandHandler.process('')
@@ -343,23 +341,23 @@ class BotThread(threading.Thread):
         return
 
     def rest_for_health(self):
-        if (BotThread.has_ideal_health(self.character.HEALTH, self.character.HEALTH_TO_HEAL)):
+        if (self.has_ideal_health()):
             return
 
         self.do_heal_skills()
         
         self.commandHandler.process("rest")            
 
-        # magentaprint(BotThread.has_ideal_health(self.character.HEALTH, self.character.HEALTH_TO_HEAL), False)
+        # magentaprint(self.has_ideal_health(), False)
 
-        while(not BotThread.has_ideal_health(self.character.HEALTH, self.character.HEALTH_TO_HEAL) and not self.__stopping):            
+        while(not self.has_ideal_health() and not self.__stopping):            
 
             if(self.engage_any_attacking_mobs()):
                 self.commandHandler.process("rest")
             elif (self.do_heal_skills()):
                 self.commandHandler.process("rest")
 
-            self.sleep(0.1)
+            self.sleep(1.2)
 
         # magentaprint("Stopping rest for health",False)
 
@@ -396,7 +394,7 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return
 
-        if(not BotThread.has_ideal_health(self.character.HEALTH, self.character.HEALTH_TO_HEAL)):
+        if(not self.has_ideal_health()):
 
             self.do_heal_skills()
 
@@ -428,28 +426,28 @@ class BotThread(threading.Thread):
         return self.character._class.id == cls
 
     def buff_up(self):
-        if((time.time() - self.character.LAST_BUFF) > 180):
-            #while(self.character.MANA > 0): 
-                #self.commandHandler.user_ca('c light')
-
-            self.do_buff_skills()
+        self.do_buff_skills()
+        if (BotThread.can_use_timed_ability(self.character.LAST_BUFF, 180)):
             self.use_buff_items()
             self.character.LAST_BUFF = time.time()
             return
 
     def use_buff_items(self):
-        #self.commandHandler.process('drink milky')
-        if (any("milky potion" in s for s in self.inventory)):
-            #magentaprint("drinking steel bottle", False)
+        if (self.inventory.has("milky potion")):
             self.commandHandler.process('drink milky')
+        elif(self.inventory.has("steel bottle")):
+            self.commandHandler.process('drink steel')
         else:
             self.character.HAS_BUFF_ITEMS = False
         return
 
     def use_restorative_items(self):
-        if (any("small restorative" in s for s in self.inventory)):
-            magentaprint("drinking small restorative", False)
+        if (self.inventory.has("small restorative")):
             self.commandHandler.process('drink restorative')
+        elif (self.inventory.has("scarlet potion")):
+            self.commandHandler.process('drink scarlet')
+        elif (self.inventory.has("tree root")):
+            self.commandHandler.process('eat root')
         else:
             self.character.HAS_RESTORE_ITEMS = False
         return
@@ -555,7 +553,7 @@ class BotThread(threading.Thread):
         if(self.__stopping):
             return
         
-        self.do_buff_skills()
+        self.buff_up()
         self.do_combat_skills(monster)
 
         magentaprint("Engage: " + monster)
@@ -575,7 +573,7 @@ class BotThread(threading.Thread):
                     self.commandHandler.stop_CastThread()
             
             # TODO: restoratives (use when vig not keeping up or low mana)
-            if (not BotThread.has_ideal_health(self.character.HEALTH, self.character.HEALTH_TO_HEAL)):
+            if (not self.has_ideal_health()):
 
                 self.do_heal_skills()
                 
@@ -649,7 +647,7 @@ class BotThread(threading.Thread):
         return engaged
     
     def ready_for_combat(self):
-        return (self.character.HEALTH > self.character.HEALTH_TO_HEAL and
-                self.character.MANA >= self.character.MANA_TO_ENGAGE)
+        return (self.has_ideal_health() and
+                self.has_ideal_mana())
 
 
