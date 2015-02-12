@@ -19,13 +19,17 @@ class CombatReactions(BotReaction):
         self.spell_damage_dealt = "The spell did ([\d]*) damage\."
         self.spell_fails = "Your spells fails\."
 
+        numbers = "(?:[\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)" 
+        self.enemy_defeated = "Your enemy, (?:the |The )?(" + numbers + " )?(.+?) has been defeated\."
+
         self.regexes = [self.physical_damage,
                         self.physical_miss,
                         self.physical_critical,
                         self.mob_physical_damage,
                         self.mob_physical_miss,
                         self.spell_damage_dealt,
-                        self.spell_fails]
+                        self.spell_fails,
+                        self.enemy_defeated]
 
         self.mudReaderHandler = mudReaderHandler
         self.character = character
@@ -48,6 +52,10 @@ class CombatReactions(BotReaction):
             if (self.character.LOWEST_DAMAGE > damage_dealt):
                 self.character.LOWEST_DAMAGE = damage_dealt
 
+        elif regex == self.enemy_defeated:
+                # number = M_obj.group(1)
+                monster = M_obj.group(2)
+                self.character.MOBS_KILLED.append(monster)
         elif regex == self.physical_miss:
             self.character.HITS_MISSED += 1
 

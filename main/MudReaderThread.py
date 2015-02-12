@@ -400,7 +400,6 @@ class MudReaderThread(threading.Thread):
             # Experience
             M_obj = re.search("You gain (.+?) experience\.", text_buffer)       
             if(M_obj):
-                self.character.MOBS_KILLED += 1
                 self.character.EXPERIENCE = self.character.EXPERIENCE + int(M_obj.group(1))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             # Monster flees.
