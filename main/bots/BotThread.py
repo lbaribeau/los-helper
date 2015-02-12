@@ -184,6 +184,8 @@ class BotThread(threading.Thread):
                     self.direction_list = ["buffer"] + path + self.direction_list
 
             except Exception:
+                if len(self.direction_list) > 0:
+                    self.direction_list.pop(0) #remove the areaid[/d]*
                 return False
             #magentaprint("path added to list: " + str(self.direction_list), False)
             return True
