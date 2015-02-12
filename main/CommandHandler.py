@@ -134,8 +134,7 @@ class CommandHandler(object):
             magentaprint(str(self.character.GOLD), False)
         elif re.match("KILLS", user_input):
             kills = self.character.MOBS_KILLED
-            kpm = str(calculate_vpm(kills))
-            magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
+            magentaprint("Kills this Session: " + str(kills), False)
         elif re.match("DUMP", user_input):
             for attr in self.character.__dict__:
                 magentaprint(str(attr) + " : " + str(self.character.__dict__[attr]), False)
@@ -145,8 +144,8 @@ class CommandHandler(object):
             magentaprint("Version: " + str(misc_functions.VERSION), False)
             magentaprint(self.character.__dict__, False)
         elif re.match("REPORT", user_input):
-            self.process("info")
-            time.sleep(1)
+            # self.process("info")
+            # time.sleep(1)
             exp = self.character.TOTAL_EXPERIENCE
             gold = self.character.TOTAL_GOLD
             aura = str(self.character.AURA)
@@ -155,7 +154,7 @@ class CommandHandler(object):
             exp = self.character.EXPERIENCE
             expm = str(calculate_vpm(exp))
             magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
-            kills = self.character.MOBS_KILLED
+            kills = len(self.character.MOBS_KILLED)
             kpm = str(calculate_vpm(kills))
             magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
             hits_dealt = self.character.HITS_DEALT
