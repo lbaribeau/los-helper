@@ -13,9 +13,9 @@ class Character(object):
     level = None
     preferred_alignment = None
     BLACK_MAGIC = True
-    FAVOURITE_SPELL = "fireball"
-    SPELL_COST = 7
-    KNOWS_VIGOR = True
+    FAVOURITE_SPELL = "burn"
+    SPELL_COST = 3
+    KNOWS_VIGOR = False
     #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
     #MAGIC_SKILLS= [0, 0, 0, 0, 0]
     SKILLS = {} 
@@ -60,7 +60,7 @@ class Character(object):
     LAST_BUFF = -150
     LAST_MEDITATE = -150
 
-    HAS_BUFF_ITEMS = False
+    HAS_BUFF_ITEMS = True
     HAS_RESTORE_ITEMS = False
 
     EXPERIENCE = 0
@@ -82,7 +82,7 @@ class Character(object):
  
     CAST_WAIT = CAST_PERIOD
 
-    MOBS_KILLED = 0
+    MOBS_KILLED = []
     
     HITS_DEALT = 0
     HITS_MISSED = 0
@@ -108,7 +108,7 @@ class Character(object):
     HASTING = False 
     DEAD = False
 
-    WEAPON1="ball"
+    WEAPON1=""
     WEAPON2=""
                             
     ATTACK_CLK = -ATTACK_WAIT
@@ -258,8 +258,8 @@ class Character(object):
             #self.HEALTH_TO_FLEE = 27
             #self.MAX_MANA = 27 - 4 + 1
             #self.MANA_TO_ENGAGE = 18
-            self.HEALTH_TO_HEAL = 70
-            self.HEALTH_TO_FLEE = 30
+            self.HEALTH_TO_HEAL = 55
+            self.HEALTH_TO_FLEE = 25
             self.MAX_MANA = 0
             self.MANA_TO_ENGAGE = 0
     
