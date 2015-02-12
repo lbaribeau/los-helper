@@ -13,7 +13,7 @@ class SmartGrindThread(GrindThread):
                 inventory, mud_map, starting_path=0): 
         super(SmartGrindThread, self).__init__(character, commandHandler, mudReaderHandler, inventory, mud_map, starting_path)
 
-        self.is_actually_dumb = True
+        self.is_actually_dumb = False
 
         self.cur_target = None
         self.cur_area_id = self.character.AREA_ID
@@ -22,7 +22,7 @@ class SmartGrindThread(GrindThread):
         self.high_level = int(math.ceil(self.character.level / 2))# + 1 #risky business
         
         self.low_aura = 0 #how evil the targets are
-        self.high_aura = 16 #how good the targets are
+        self.high_aura = 15 #how good the targets are
 
         self.update_aura()
         self.aura_updated_hook()
@@ -85,13 +85,14 @@ class SmartGrindThread(GrindThread):
         return
 
     def decide_where_to_go(self):
+        self.cur_area_id = self.character.AREA_ID
+
         if self.is_actually_dumb:
             if self.cur_area_id != 45:
                 self.direction_list = ["areaid45"]
 
             return super(SmartGrindThread, self).decide_where_to_go()
         else:
-            self.cur_area_id = self.character.AREA_ID
             
             directions = []
 
@@ -149,7 +150,7 @@ class SmartGrindThread(GrindThread):
         i = 0
 
         for area_id in direction_list:
-            if i < 10:
+            if i < 5:
                 try:
                     directions.extend(self.mud_map.get_path(last_area_id, area_id))
                     last_area_id = area_id
@@ -245,24 +246,25 @@ class SmartGrindThread(GrindThread):
         magentaprint("Picking new target: " + next_target.to_string())
 
     def aura_updated_hook(self):
-        self.low_aura = 0
-        self.high_aura = 15
+        self.low_aura = 6
+        self.high_aura = 7
+        # self.low_level = int(math.ceil(self.character.level / 2)) - 2
+
 
         # magentaprint("Current Aura Scale: " + str(self.character.AURA_SCALE), False)
         # magentaprint("Preferred Aura Scale: " + str(self.character.AURA_PREFERRED_SCALE), False)
 
         #if character is too evil
         if self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:
-            self.low_level = 2
+            # self.low_level = 2
             self.low_aura = 0
-            self.high_aura = 7
+            self.high_aura = 6
         #if character is too good
         elif self.character.AURA_SCALE > self.character.AURA_PREFERRED_SCALE:
-            self.low_level = 2
-            self.low_aura = 7
+            # self.low_level = 2
+            self.low_aura = 8
             self.high_aura = 15
 
-        self.low_level = int(math.ceil(self.character.level / 2)) - 2
 
         self.get_targets()
 
