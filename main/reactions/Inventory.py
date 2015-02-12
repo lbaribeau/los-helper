@@ -53,18 +53,19 @@ class Inventory(BotReactionWithFlag):
         self.wont_buy2 = "The shopkeep won't buy that from you\."
         self.sold = "The shopkeep gives you (.+?) gold for (.+?)\."
         self.you_drop = "(?s)You drop (.+?)\."
+        self.potion_disintegrates = "A (.+?) disintegrates\."
         self.gold_from_tip = "You have (.+?) gold\."
         self.not_a_pawn_shop = "This is not a pawn shoppe\."
         self.you_now_have = "You now have (.+?) gold pieces\."
         self.not_empty = "It isn't empty!"
-        self.you_wear = "(?s)You wear (.+?)\."
+        self.you_wear = "You wear (.+?)\."
         self.nothing_to_wear = "You have nothing you can wear\."
         self.you_get = "(?s)[^ ]You get (.+?)\.(?:\nYou now have (.+?) gold pieces\.)?"
         self.you_remove = "(?s)You removed? (.+?)\."
         self.nothing_to_remove = "You aren't wearing anything that can be removed\."
-        self.you_wield = "You wield (?:a |an |some )(.+?)( in your off hand)?\."
+        self.you_wield = "You wield (.+?)( in your off hand)?\."
         self.you_give = "(?s)You give (.+?) to (.+?)\."
-        self.bought = "Bought\."  
+        self.bought = "Bought\."
         self.you_put_in_bag = "(?s)You put (.+?) in(to)? (.+?)\."
         self.gave_you = ".+? gave (.+?) to you\."
         self.you_hold = "(?s)You hold (.+?)\."
@@ -74,7 +75,7 @@ class Inventory(BotReactionWithFlag):
         self.wearing = "\n?\r?(?:On )?(.+?):[\s]*(?:a |an |some )(.+)"
 
         self.regexes = [self.you_have, self.you_get, self.wont_buy, self.wont_buy2, self.sold, 
-            self.you_drop, self.not_a_pawn_shop, self.you_now_have, self.gold_from_tip,
+            self.you_drop, self.potion_disintegrates, self.not_a_pawn_shop, self.you_now_have, self.gold_from_tip,
             self.not_empty, self.you_wear, self.nothing_to_wear, self.you_remove,  
             self.nothing_to_remove, self.you_wield, self.you_give, self.bought,
             self.you_put_in_bag, self.gave_you, self.you_hold, self.weapon_breaks,
@@ -109,16 +110,18 @@ class Inventory(BotReactionWithFlag):
             else:
                 self.equipped_items["Wielded"] = [weapon]
 
-            magentaprint(weapon, False)
+            # magentaprint(weapon, False)
             self.remove(weapon)
+            self.get_equipment()
         elif regex is self.you_get:
             item = self.clip_from_a_container(M_obj.group(1))
             self.add(item)
-        elif regex is self.you_drop or regex is self.you_give or regex is self.you_put_in_bag or regex is self.you_hold:
+        elif regex in (self.you_drop, self.you_give, self.you_put_in_bag, self.potion_disintegrates):
             # magentaprint(str(M_obj.group(1)), False)
             self.remove(M_obj.group(1))
-        elif regex is self.you_wear:
+        elif regex in (self.you_wear, self.you_hold):
             self.remove(M_obj.group(1))
+            self.get_equipment()
             #we know this is armor of some kind so we need to find a way to assign it to the right spot
         elif regex is self.you_remove or regex is self.gave_you:
             self.add(M_obj.group(1))
@@ -127,7 +130,9 @@ class Inventory(BotReactionWithFlag):
                 self.get_inventory()  # There are some notes about this at the bottom
                 # I don't like this very much! I can't use ! to buy a lot of a thing.
         elif regex in (self.weapon_breaks, self.armor_breaks):
-            self.add_broken(M_obj.group(1))
+            item = M_obj.group(1)
+            self.add_broken(M_obj.group(1)) 
+            self.get_equipment()
         elif regex is self.current_equipment:
             character_name = M_obj.group(1)
             equipment_list = re.findall(self.wearing, M_obj.group(2))
@@ -138,6 +143,7 @@ class Inventory(BotReactionWithFlag):
                         self.equipped_items[slot[0]] = []
 
                     self.equipped_items[slot[0]].append(MudItem(slot[1]))
+            # magentaprint(self.equipped_items,False)
 
         # magentaprint(self.inventory, False)
 
@@ -148,9 +154,10 @@ class Inventory(BotReactionWithFlag):
         self.wait_for_flag()
         return self.inventory
 
-    def get_equipment(self, name):
-        self.telnetHandler.write("l " + name)
-        self.wait_for_flag()
+    def get_equipment(self):
+        return
+        # self.telnetHandler.write("l " + self.character.name)
+        # self.wait_for_flag()
 
     # def has_restorative(self):
     #     return self.has(self.restoratives)
@@ -330,11 +337,12 @@ class Inventory(BotReactionWithFlag):
         ''' Returns a dict {item: quantity} ie. {"chicken soup": 5, steel bottle: 1} '''
         return_dict = {}
         inventory_string = inventory_string.replace("\n\r", ' ')
+        # inventory_string = inventory_string.replace("  ", ' ') #replace double space with a single one
         inv_list = inventory_string.split(',')
         inv_list = [item.strip(' \t\n\r') for item in inv_list]
         numbers = ["a ", "an ", "some ", "two ", "three ", "four ", "five ", "six ", "seven ", 
                    "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ", "fourteen ", 
-                   "fifteen" , "sixteen ", "seventeen ", "eighteen ", "nineteen ", "twenty "]
+                   "fifteen " , "sixteen ", "seventeen ", "eighteen ", "nineteen ", "twenty "]
         numbers.extend([str(i) + " " for i in range(21, 200)])
 
         for item in inv_list:
