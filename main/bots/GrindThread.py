@@ -301,7 +301,9 @@ class GrindThread(BotThread):
         return PATH_TO_SKIP_WITH
 
     def do_on_succesful_go(self):
-        self.direction_list.pop(0)
+        if len(self.direction_list) != 0:
+          self.direction_list.pop(0)
+  
         self.character.MOBS_JOINED_IN = [] 
         self.character.MOBS_ATTACKING = []
         return
