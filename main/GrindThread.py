@@ -22,7 +22,7 @@ class GrindThread(BotThread):
         else:
             self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
 
-        self.loot_threshold = 15  # the amount of loot to collect before selling
+        self.loot_threshold = 1  # the amount of loot to collect before selling
 
         if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
             self.__nextpath = starting_path
