@@ -21,6 +21,7 @@ class Area(NamedModel):
     '''Private Area Functions'''
     def map(self, exits, cur_area_from=None, cur_exit_from=None):
         is_new_mapping = True
+        is_new_exit_mapping = False
 
         mapped_exits = []
         for exit in exits:
@@ -48,6 +49,7 @@ class Area(NamedModel):
                     else:'''
 
                 area_exit.map()
+                is_new_exit_mapping = True
 
         #last but not least we want to try to update our area_from with it's area_to value :)
         if cur_area_from is not None and cur_exit_from is not None:
@@ -58,12 +60,12 @@ class Area(NamedModel):
                     area_exit_from.save()
                     #magentaprint("Updating AreaExit with: \n" + area_exit_from.to_string())
 
-        return is_new_mapping
+        return is_new_mapping, is_new_exit_mapping
 
     def search_for_area(self, mapped_exits):
         is_new_mapping = True
 
-        matching_areas = Area.get_areas_by_name_and_exits(self.name, mapped_exits)
+        matching_areas = Area.get_areas_by_name_and_exits(self.name, mapped_exits, self.description)
 
         #print ("matching areas: " + str(matching_areas) + " is new mapping: " + str(is_new_mapping))
 
@@ -144,10 +146,14 @@ class Area(NamedModel):
 
         return areas
 
-    def get_areas_by_name_and_exits(area_name, exit_type_list):
+    def get_areas_by_name_and_exits(area_name, exit_type_list, area_description=""):
         areas = []
         exit_id_list = ""
         exit_count = len(exit_type_list)
+        description_clause = ""
+
+        if area_description != "":
+            description_clause = " and a.description = '%s'" % area_description.replace("'", "''")
 
         if (exit_count > 0):
             exit_id_list += str(exit_type_list[0].id)
@@ -165,7 +171,7 @@ select ae.area_from_id
 from areaexit as ae
 join area as a
 on a.id = ae.area_from_id
-where a.name = "%s" and ae.is_hidden = 0
+where a.name = "%s"%s and ae.is_hidden = 0
 group by ae.area_from_id
 having count(*) = %s
 ) and ae.[exit_type_id] in (%s)
@@ -173,9 +179,9 @@ group by a.id
 having count(*) = %s
 """
 
-                formatted_query = query % (area_name, str(exit_count), exit_id_list, str(exit_count))
+                formatted_query = query % (area_name, description_clause, str(exit_count), exit_id_list, str(exit_count))
 
-                #print (formatted_query)
+                # print (formatted_query)
 
                 for derp in Area.raw(formatted_query):
                     areas.append(derp)
