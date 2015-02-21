@@ -3,71 +3,18 @@ import networkx as nx
 from Database import *
 from misc_functions import *
 
-class MudArea():
-    area = None
-    area_exits = []
-
-    def __init__(self, area, area_exits=None):
-        if self.area is not None or area is not None:
-            if self.area is None:
-                self.area = area
-
-            if area_exits is None and self.area:
-                self.area_exits = AreaExit.get_area_exits_from_area(area)
-            else:
-                self.area_exits = area_exits
-        else:
-            print ("Area is null for some awful reason.")
-
-    def get_area_to_from_exit(self, exit_type):
-        area = None
-
-        for areaexit in self.area_exits:
-            if areaexit.exit_type.name == exit_type.name:
-                if areaexit.area_to is not None:
-                    area = MudArea(areaexit.area_to)
-                    break
-
-        return area
-
-    def compare_to_area_and_exit_list(self, area, exit_list):
-        matchFound = True
-
-        if self.area.name == area.name and len(exit_list) <= len(self.area_exits):
-            for areaexit in self.area_exits:
-                if not areaexit.is_hidden:
-                    matchedExit = False
-                    for exit in exit_list:
-                        if exit.name == areaexit.exit_type.name:
-                            matchedExit = True
-                            break
-                    if not matchedExit:
-                        matchFound = False
-                        break
-        else:
-            matchFound = False
-
-        return matchFound
-
-    def to_string(self):
-        return str(self.area) + str(self.area_exits)[1:-1]
-
-    def __repr__(self):
-        return self.to_string()
-
-    def __str__(self):
-        return self.to_string()
-
-
 class MudMap():
     los_map = None
+    ready = False
 
     def __init__(self):
         self.re_map()
 
     def re_map(self):
+        self.ready = False
         self.los_map = nx.DiGraph()
         self.populate_map()
+        self.ready = True
 
     def populate_map(self):
         areas = Area.raw('select * from v_areas_for_graph')
@@ -116,7 +63,7 @@ class MudMap():
         return edge_path
 
     def get_nearest_unexplored_path(self, start_area_id):
-        return self.get_path(start_area_id, -1)
+        return self.get_path(start_area_id, 1)
 
     def get_paths_to_nearest_restorative_area(self, start_area_id):
         paths = []
