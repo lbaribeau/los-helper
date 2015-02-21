@@ -25,4 +25,4 @@ class TelnetHandler(object):
         return self.tn.get_socket()
 
     def read_some(self):
-        return self.tn.read_some()  # read_eager() would miss characters
+        return self.tn.read_very_eager()  # read_eager() would miss characters
