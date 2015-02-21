@@ -34,6 +34,32 @@ def create_tables():
         try_create(ItemTypeModel)
         try_create(ItemTypeData)
         try_create(AreaStoreItem)
+
+        #Create Views
+        db.execute_sql("""CREATE VIEW [v_named_mobs] AS 
+select *
+from mob
+where name != lower(name);""")
+
+        db.execute_sql("""CREATE VIEW [v_areas_inc_dirt] AS 
+select a.*, 1 as Derp
+from area as a;""")
+
+        db.execute_sql("""CREATE VIEW [v_areaexits_for_graph] AS 
+select ae.id, ae.area_from_id, coalesce(ae.area_to_id, 1) as area_to_id, ae.exit_type_id, ae.is_useable, ae.note, ae.is_hidden
+from areaexit as ae
+where ae.is_useable = 1;""")
+
+        db.execute_sql("""CREATE VIEW [v_areas_for_graph] AS 
+select a.* from area as a
+where a.id in (
+      select distinct(area_from_id)
+      from v_areaexits_for_graph);""")
+
+        #Load Preliminary Data
+        Unknown = Area(name="Unknown", description="")
+        Unknown.save()
+
     except:
         pass
 
