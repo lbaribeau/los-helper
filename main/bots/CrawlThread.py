@@ -48,6 +48,9 @@ class CrawlThread(BotThread):
             #if we didn't find a null exit we end up here and the magic starts
             self.mud_map = MudMap() #if we actively update the map in Cartography then we wouldn't have to re-create it here
 
+            while (not self.mud_map.ready):
+                time.sleep(1)
+
             try:
                 exit = self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
             except Exception:
