@@ -366,7 +366,7 @@ class BotThread(threading.Thread):
         return
 
     def update_aura(self):
-        if(self.__stopping):
+        if(self.__stopping or self.character.ACTIVELY_MAPPING):
             return False
 
         if(self.character.level < 1 or not
