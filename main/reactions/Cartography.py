@@ -8,6 +8,7 @@ from BotReactions import *
 from misc_functions import *
 from Database import *
 from MudMap import *
+from MudArea import *
 from MudItem import *
 from MudMob import *
 import re
@@ -15,14 +16,15 @@ import re
 class Cartography(BotReaction):
 
     def __init__(self, mudReaderHandler, commandHandler, character):
-        #             Title     Description        Exit list                    Monsters (opt)                    Items (opt)
-        self.area = "(.+?\n\r)((?:\n\r.+)*)?(\n\rObvious exits: .+?[\n\r]?.+?\.)\n\r(You see .+?[\n\r]?.+?\.)?[\n\r]?(You see .+?[\n\r]?.+?\.)?"
+        #           .=\n\r   EAT JUNK DATA (death,loginprompts,hptick)               Title       Description        Exit list               Players / Mobs / Signs / Items (optional)
+        self.area = "(?s)(?:(?:.+?Stone\.\n\r|.+?healed\.\n\r|.+?\]:\s+?)\n\r)?([A-Za-z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"
         self.too_dark = "It's too dark to see\."
-        s_numbered = " ?([\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)?"
-        the = " ?(?:The|the)?" #named mobs have no "The/the"
-        self.you_see_the = "You see" + the + s_numbered + " (.+?)\.\n\r(.+?)\n\r(.+?)\n\r(.+?(?:\.|!))"
-        self.mob_aura_check = the + s_numbered + " (.+?) glows with a (.+?) aura\."
-        self.blocked_path = the + s_numbered + " (.+?) blocks your exit\."
+        s_numbered = " ?([\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)? ?"
+        the = " ?(?:The |the )?" #named mobs have no "The/the"
+        self.you_see_the = "You see" + the + s_numbered + "(.+?)\.\n\r(.+?)\n\r(.+?)\n\r(.+?(?:\.|!))"
+        self.mob_aura_check = the + s_numbered + "(.+?) glows with a (.+?) aura\."
+        #This regex doesn't work for named mobs....
+        self.blocked_path = " (?:The )" + s_numbered + "(.+?) blocks your exit\."
         self.please_wait = "Please wait [\d]* more seconds?\."
         self.cant_go = "You can't go that way\."
         self.no_exit = "I don't see that exit\."
@@ -101,6 +103,8 @@ class Cartography(BotReaction):
         elif regex == self.area:
             matched_groups = M_obj.groups()
 
+            # magentaprint(M_obj.group(0),False,False,True)
+
             area_title = str(matched_groups[0]).strip()
             area_description = str(matched_groups[1]).strip() #eat the description - doesn't give the full text
             exit_list = self.parse_exit_list(matched_groups[2])
@@ -121,12 +125,21 @@ class Cartography(BotReaction):
             if (self.character.TRYING_TO_MOVE): #we only want to map when user input to move has been registered
                 self.character.TRYING_TO_MOVE = False #we've moved so we're not trying anymore
                 if (exit_list is not []):
-                    area = self.draw_map(area_title, area_description, exit_list)
+                    area_from = self.character.AREA_ID
+                    direction_from = self.character.LAST_DIRECTION
+                    cur_mud_area = self.character.MUD_AREA
+                    mud_area = MudArea.map(area_title, area_description, exit_list, area_from, direction_from, cur_mud_area)
+                    # area = self.draw_map(area_title, area_description, exit_list)
+                    self.character.MudArea = mud_area
+                    area = mud_area.area
+
                     self.catalog_monsters(area, monster_list)
 
                     self.character.AREA_ID = area.id
 
                     self.catalog_monsters(area, monster_list)
+
+                    # magentaprint(area, False)
                 else:
                     self.character.AREA_ID = None
         elif regex == self.blocked_path:
@@ -165,7 +178,7 @@ class Cartography(BotReaction):
                 regex == self.not_authorized or
                 regex == self.no_force or
                 regex == self.in_tune):
-            self.set_area_exit_as_unusable(regex)
+            self.set_area_exit_as_unusable(M_obj.group(0))
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
         elif (regex == self.you_see_the):
@@ -195,7 +208,7 @@ class Cartography(BotReaction):
                     #clear the attacking list
                     self.character.MOBS_ATTACKING = []
 
-                    self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
+                    # self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
                 else:
                     self.character.CONFUSED = True
 
@@ -205,8 +218,11 @@ class Cartography(BotReaction):
             self.character.SUCCESSFUL_GO = False
             self.character.TRYING_TO_MOVE = False
             self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
-        #elif regex == self.teleported_away:
-            #self.character.DEAD = True
+        elif regex == self.teleported_away:
+            if M_obj.group(1) == self.character.name:
+                self.character.DEAD = True
+                self.character.AREA_ID = 82
+                self.character.MUD_AREA = None
         elif (regex == self.store_list):
             item_list = re.findall(self.store_item_list, M_obj.group(0))
             #magentaprint("{" + M_obj.group(0) + "}", False)
@@ -240,65 +256,6 @@ class Cartography(BotReaction):
 
         return guessed_area
 
-    #This is used when the map is complete and we already know the last_area led to this current one from the direction travelled
-    def discern_location(self, area, direction_list, area_from_id, direction_from):
-        discerned_area = None
-
-        if self.character.MUD_AREA is not None:
-            exit_type = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
-
-            if exit_type is None:
-                exit_type = ExitType(name=direction_from)
-
-            #if isNewExit: - this is logic we can implement once we have exit_type mapping completely bullet proof
-
-            #magentaprint("discerning: " + str(self.character.MUD_AREA) + " against " + str(area))
-
-            curMudArea = self.character.MUD_AREA.get_area_to_from_exit(exit_type)
-
-            if curMudArea is not None:
-                if curMudArea.compare_to_area_and_exit_list(area, direction_list):
-                    self.character.MUD_AREA = curMudArea
-                    discerned_area = curMudArea.area
-
-        return discerned_area
-
-    def draw_map(self, area_title, area_description, exit_list):
-        direction_list = []
-        area = Area(name=str(area_title), description=str(area_description))
-
-        for exit in exit_list:
-            exit_type = ExitType(name=str(exit))
-            exit_type.map()
-            direction_list.append(exit_type)
-
-        area_from = self.character.AREA_ID
-        direction_from = self.character.LAST_DIRECTION
-
-        discerned_area = self.discern_location(area, direction_list, area_from, direction_from)
-
-        magentaprint("cataloging: " + str(area_from) + " " + str(direction_from) + str(area))
-
-        if discerned_area is not None:
-            area = discerned_area
-            magentaprint("discerned_area to be: " + str(discerned_area))
-            self.character.MUD_AREA = MudArea(area)
-        else:
-            if area_from is not None and direction_from is not None: #if we have an area we're coming from
-                area_from = Area.get_area_by_id(self.character.AREA_ID)
-                direction_from = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
-
-                magentaprint(str(area_from) + " " + str(direction_from))
-                
-                area.map(direction_list, area_from, direction_from)
-            else:
-                area.map(direction_list)
-
-            area_exits = AreaExit.get_area_exits_from_area(area)
-            self.character.MUD_AREA = MudArea(area, area_exits)
-
-        return area
-
     def set_area_exit_as_unusable(self, regex):
         self.character.GO_NO_EXIT = True
         self.character.SUCCESSFUL_GO = False
@@ -309,16 +266,7 @@ class Cartography(BotReaction):
                 area_from = self.character.AREA_ID
                 exit_type = self.character.LAST_DIRECTION
 
-                magentaprint("setting from & direction as unusable" + str(area_from) + " " + str(exit_type))
-                if area_from is not None and exit_type is not None:
-                    area_from = Area.get_area_by_id(area_from)
-                    exit_type = ExitType.get_exit_type_by_name_or_shorthand(exit_type)
-                    area_exit = AreaExit.get_area_exit_by_area_from_and_exit_type(area_from, exit_type)
-
-                    if area_exit is not None:
-                        area_exit.is_useable = False
-                        area_exit.note = str(regex)
-                        area_exit.save()
+                MudArea.set_area_exit_as_unusable(regex, area_from, exit_type)
             except Exception:
                 magentaprint("Tried to make an area exit unusuable but failed")
 
@@ -328,11 +276,11 @@ class Cartography(BotReaction):
                 mob = Mob(name=monster)
                 mob.map()
 
-                # if (self.character.ACTIVELY_BOTTING):
-                #     if (mob.approximate_level == None):
-                #         self.commandHandler.process('l ' + monster)
+                if (self.character.ACTIVELY_BOTTING):
+                    if (mob.approximate_level == None):
+                        self.commandHandler.process('l ' + monster)
 
-                magentaprint(str(mob))
+                # magentaprint(str(mob))
 
                 mob_location = MobLocation(area=area, mob=mob)
                 mob_location.map()
@@ -477,7 +425,7 @@ class Cartography(BotReaction):
                     M_LIST[i] = M_LIST[i][4:]
                 elif (re.match("two ", M_LIST[i])):
                     M_LIST[i] = M_LIST[i][4:]
-                    if (M_LIST[i][len(M_LIST[i]) - 3:] == "ses"):
+                    if (M_LIST[i][len(M_LIST[i]) - 4:] == "sses"):
                         M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 2]
                     elif (M_LIST[i][len(M_LIST[i]) - 1] == 's'):
                         M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 1]
@@ -486,7 +434,7 @@ class Cartography(BotReaction):
                     M_LIST.append(M_LIST[i])
                 elif (re.match("three ", M_LIST[i])):
                     M_LIST[i] = M_LIST[i][6:]
-                    if (M_LIST[i][len(M_LIST[i]) - 3:] == "ses"):
+                    if (M_LIST[i][len(M_LIST[i]) - 4:] == "sses"):
                         M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 2]
                     elif (M_LIST[i][len(M_LIST[i]) - 1] == 's'):
                         M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 1]
@@ -496,7 +444,7 @@ class Cartography(BotReaction):
                         M_LIST.append(M_LIST[i])
                 elif (re.match("four ", M_LIST[i])):
                     M_LIST[i] = M_LIST[i][5:]
-                    if (M_LIST[i][len(M_LIST[i]) - 3:] == "ses"):
+                    if (M_LIST[i][len(M_LIST[i]) - 4:] == "sses"):
                         M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 2]
                     elif (M_LIST[i][len(M_LIST[i]) - 1] == 's'):
                         M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 1]

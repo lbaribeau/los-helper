@@ -1,6 +1,7 @@
 import sys, time, re
 from data.Database import *
 from data.MudMap import *
+from data.MudArea import *
 
 class FakeSocketOutput(object):
     def __init__(self, text=""):
