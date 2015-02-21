@@ -7,6 +7,7 @@ from Mob import *
 class MobLocation(BaseModel):
     area = ForeignKeyField(Area)
     mob = ForeignKeyField(Mob)
+    # rank = FloatField(default=0)
 
     '''Private Mob Functions'''
     def map(self):
@@ -17,6 +18,9 @@ class MobLocation(BaseModel):
             super(MobLocation, self).save()
         else:
             self.id = mob_locations.id
+            self.area = mob_locations.area
+            self.mob = mob_locations.mob
+            # self.rank = mob_locations.rank
             #update other fields if you want
 
         return is_new_mapping

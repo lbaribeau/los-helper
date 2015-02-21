@@ -55,7 +55,9 @@ class CombatReactions(BotReaction):
         elif regex == self.enemy_defeated:
                 # number = M_obj.group(1)
                 monster = M_obj.group(2)
-                self.character.MOBS_KILLED.append(monster)
+                # self.character.MOBS_KILLED.append(monster)
+                # self.character.area_id, monster - map both into a MobLocation
+                # add a rank to the MobLocation
         elif regex == self.physical_miss:
             self.character.HITS_MISSED += 1
 
