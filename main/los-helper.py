@@ -17,7 +17,7 @@
 #       keep that aren't in KEEP_LIST into some bag that IS in KEEP_LIST)
 #   ANSI color
 
-print("Importing modules....")
+print("Importing python modules...")
 
 import sys
 import getpass
@@ -27,7 +27,9 @@ import atexit
 import re
 import time
 
-from misc_functions import *
+print("Importing los-helper modules...")
+
+from misc_functions import magentaprint
 from Character import Character
 from CharacterClass import CharacterClass
 from GrindThread import GrindThread
@@ -47,7 +49,7 @@ from BotReactions import *
 from TelnetHandler import TelnetHandler 
 from Database import *
 from MudMap import *
-from misc_functions import magentaprint
+from Quit import Quit
 
 class LosHelper(object):
 
@@ -69,8 +71,8 @@ class LosHelper(object):
         self.character.inventory = Inventory(self.mudReaderHandler, self.telnetHandler)
 
         magentaprint("Generating the mapfile....", False)
-        # self.mud_map = MudMap() 
-        self.mud_map = None
+        self.mud_map = MudMap() 
+        # self.mud_map = None
 
         self.mudListenerThread.start()
         self.mudReaderThread.start()
@@ -90,20 +92,23 @@ class LosHelper(object):
     def main(self):
 
         self.watch_user_input()
-            
-        # Quitting cleanly: The MUD_read thread quits if it hits
-        # and EOF.  watch_user_input watches for
-        # that and quits too.
+        self.mudReaderThread.stop()
+        # Wait a bit for server EOF (Doesn't seem to work)
+        # while self.mudReaderThread.is_alive(): 
+        #     self.mudReaderThread.join(10)  
+        #     if self.mudReaderThread.is_alive():
+        #         magentaprint("No server EOF")
+        #         self.mudReaderThread.stop()  # No EOF
 
-        while(self.mudReaderThread.is_alive()): 
-            self.mudReaderThread.join(3)  
-            if (self.mudReaderThread.is_alive()):
-                self.mudReaderThread.stop()  # Last resort.
+        self.mudListenerThread.stop()
+        self.mudReaderThread.join(10)
+        magentaprint("Waiting for mudListener")
+        self.mudListenerThread.join(10)
+        magentaprint("Stopped and joined mudReaderThread and mudListenerThread.")
 
-        #Okay, clean exit!
         self.telnetHandler.close();
-        print ("It should be safe to ctrl + c now")
-        time.sleep(10) 
+        # print("It should be safe to ctrl + c now")
+        # time.sleep(10)   # This was so I could see error messages in the windows prompt...
 
     def write_username_and_pass(self):
         if len(sys.argv) >= 3:
@@ -166,8 +171,10 @@ class LosHelper(object):
             elif user_input == "quit":
                 # TODO:  correct if MUD prints "Please wait x more seconds"
                 # after quit was sent.
-                self.telnetHandler.write(user_input)
-                stopping = True
+                # self.telnetHandler.write(user_input)
+                quit = Quit(self.mudReaderHandler, self.telnetHandler)
+                magentaprint("LosHelper quit.result is " + str(quit.result))
+                stopping = True if quit.result == 'success' else False
 
                 if self.botThread != None and self.botThread.is_alive():
                     self.botThread.stop()
@@ -220,12 +227,12 @@ class LosHelper(object):
     def start_goto(self, user_input, is_show_to=False):
         M_obj = re.search("[0-9]+", user_input)
 
-        if (M_obj):
+        if M_obj:
             starting_path = int(M_obj.group(0))
         else:
             starting_path = None
 
-        if (self.botThread != None and self.botThread.is_alive()):
+        if self.botThread != None and self.botThread.is_alive():
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
             self.botThread = GotoThread(self.character, 

@@ -66,11 +66,11 @@ class MudReaderThread(threading.Thread):
             # ... the better pattern is for the MudReader (observer) to 
             # always match the pattern and let things subscribe to notifications.
         
-        self.__stopping = False
+        self.stopping = False
         atexit.register(self.stop)
                 
     def stop(self):
-        self.__stopping = True
+        self.stopping = True
     
     def run(self):
         self.__left_off_index = 0  # This is a save point index of the buffer 
@@ -78,18 +78,18 @@ class MudReaderThread(threading.Thread):
                             # printing again.
         currently_escaping = False  # Used to filter escape sequences
         text_buffer = ""
-        while(not self.__stopping):
+        while not self.stopping:
             time_loop_start = time.time()
             
             # Do a wait loop.  This means that the main loop will 
             # iterate every time new text comes in.
             # Put in a sleep so the loop doesn't hog too many resources
-            timeout = 3
+            # (I think MudListener should call some sort of notify...)
+            timeout = 1
             start_time = time.time()
             run_time = 0
 
-            while(self.__left_off_index == len(self.MUDBuffer.buffer) and 
-                run_time < timeout):
+            while self.__left_off_index == len(self.MUDBuffer.buffer) and run_time < timeout:
                  time.sleep(0.005) 
                  run_time = time.time() - start_time
                 
@@ -534,17 +534,13 @@ class MudReaderThread(threading.Thread):
             #if(M_obj):
             #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             ##    self.CommandHandler_inst.process("ou")
+
+            # Quitting... instead have the caller call stop.
+            # M_obj = re.search("Goodbye! Come back soon\.", text_buffer)
+            # if M_obj:
+
+
             
-            # Internal check function MUD_output_check
-            #if(self.__check_flag):
-            #    M_obj = re.search(self.__check_regex_true, text_buffer)
-            #    if(M_obj):
-            #        self.__check_M_obj = M_obj
-            #        self.__check_flag = False
-            #    M_obj = re.search(self.__check_regex_false, text_buffer)
-            #    if(M_obj):
-            #        self.__check_M_obj = None
-            #        self.__check_flag = False
             ##### DONE MATCHING RE's  WOOOOOOOO ######
         
             #sys.stdout.write('"' + MUDBuffer[MUD_buffer_trunc] + '"') #debug.  Shows where last match took place. Gives MUD_buffer not defined error.

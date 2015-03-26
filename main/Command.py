@@ -44,8 +44,11 @@ class Command(BotReactionWithFlag):
     please_wait = r"Please wait (\d+) more seconds?\."
     please_wait2 = r"Please wait (\d+):(\d+) more minutes" #"\n\r"
     # success_regexes = []
-    # failure_regexes = []
+    failure_regexes = []
     error_regexes = []
+    # Maybe have an inheritance level for commands without cooldowns?  Meh for now.
+    cooldown_after_success = 0
+    cooldown_after_failure = 0
 
     # def __init__(self, mudReaderHandler, telnetHandler, spell=None, target=None):
     def __init__(self, telnetHandler):

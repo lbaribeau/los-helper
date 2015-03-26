@@ -83,7 +83,7 @@ class Info(BotReactionWithFlag):
             self.character.objects = int(M_obj.group(11))
             self.got_second = True
             super().notify(regex, M_obj)
-            # magentaprint("Objects: " + str(self.character.objects))
+            # magentaprint("Objects: " + str(self.character.objects))   
 
         @property 
         def success(self):

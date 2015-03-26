@@ -14,16 +14,15 @@ class MudListenerThread(threading.Thread):
     ''' This thread watches the the MUD output and appends it 
     to the buffer for the MudReaderThread to read it.'''
     
-    __stopping = False
-
     def __init__(self, telnetHandler, MUDBuffer):
         Thread.__init__(self)        
         self.telnetHandler = telnetHandler
         self.MUDBuffer = MUDBuffer
         atexit.register(self.stop)
+        self.stopping = False
 
     def stop(self):
-        self.__stopping = True
+        self.stopping = True
 
     def run (self):        
         # First get the file descriptor (no) of the internal telnet socket object
@@ -32,9 +31,9 @@ class MudListenerThread(threading.Thread):
         fragment=""
         
         # Loop forever, just do stuff when the socket says its ready.
-        while not self.__stopping:
+        while not self.stopping:
             try:
-                sel_out_triple = select.select([socket_number], [], [], 2)
+                sel_out_triple = select.select([socket_number], [], [], 2)  # A 1 second timeout makes quitting fast
             except ValueError:
                 #Eat the error
                 # TODO:  Hmmm, this gets SPAMMED BIGTIME on exit...  (Do not print here)
@@ -69,4 +68,7 @@ class MudListenerThread(threading.Thread):
                 # Socket timed out.
                 pass    # just keep waiting.
                         # if stopping was set it will exit the loop
+
+        # los-helper closes the socket
+
                 

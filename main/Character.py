@@ -132,7 +132,7 @@ class Character(object):
             self.MAX_MANA = 18
             self.MANA_TO_ENGAGE = 9     
         elif self.level <= 7: # has the same enemy list as 6
-            self.HEALTH_TO_HEAL= 41 # was 45
+            self.HEALTH_TO_HEAL= 40 # was 45
             self.HEALTH_TO_FLEE =  15
             self.MAX_MANA = 21
             self.MANA_TO_ENGAGE = 9

@@ -80,7 +80,6 @@ class SmartCombat(CombatObject):
                 if self.black_magic:
                     # self.cast.cast(self.telnetHandler, self.favourite_spell)
                     self.cast.__class__.command = 'cas ' + self.favourite_spell
-                    magentaprint("SmartCombat self.cast.command is " + self.favourite_spell)
                     self.cast.execute(self.target)
                 elif self.character.HEALTH <= self.character.maxHP - self.max_vigor:
                     # self.cast.cast(self.telnetHandler, 'vig')
@@ -137,4 +136,11 @@ class SmartCombat(CombatObject):
             self.stopping = True
         # self.character.ATTACK_CLK = time.time()  # TODO: Kill should be smart enough to keep the clock set
                                                  # Kill should actually own the clock...
+
+    @property
+    def heal_ability_is_up(self):
+        # self.heal_abilities[0].up()
+        # return True if self.heal_abilities
+        return any([a.up() for a in self.heal_abilities])
+
 

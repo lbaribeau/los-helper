@@ -23,4 +23,4 @@ class Whois(BotReactionWithFlag):
         self.title = M_obj.group(4)
         self.age = M_obj.group(5)
         self.race = M_obj.group(6)
-        super(Whois, self).notify(regex, M_obj)
+        super().notify(regex, M_obj)

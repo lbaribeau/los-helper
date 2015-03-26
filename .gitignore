@@ -1,6 +1,7 @@
 networkx
 nx
 *.db-journal
+main/old
 
 #################
 ## Eclipse
