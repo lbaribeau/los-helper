@@ -8,8 +8,6 @@ import sys
 import select
 
 from misc_functions import *
-from KillThread import *
-from CastThread import *
 from MyBuffer import *
 
 class MudReaderThread(threading.Thread):
