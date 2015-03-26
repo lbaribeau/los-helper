@@ -82,7 +82,7 @@ class Info(BotReactionWithFlag):
             self.character.gold_to_level = int(M_obj.group(10))
             self.character.objects = int(M_obj.group(11))
             self.got_second = True
-            self._waiter_flag = True
+            super().notify(regex, M_obj)
             # magentaprint("Objects: " + str(self.character.objects))
 
         @property 

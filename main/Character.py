@@ -49,7 +49,7 @@ class Character(object):
 
     ATTACK_WAIT = ATTACK_PERIOD   # Used by timer.  Same as ATTACK_PERIOD.
                                 # Amount of time to wait to walk after attacking
-    MOVE_WAIT = 0.29
+    MOVE_WAIT = 0.33
     CAST_WAIT = CAST_PERIOD
 
     MOBS_KILLED = 0

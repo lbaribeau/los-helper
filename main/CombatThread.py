@@ -13,7 +13,7 @@ class CombatThread(threading.Thread):
         self.character = character
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
-        self.target = target      
+        self.target = target  # target should be chosen at run() time with an argument and non-inherited threading
         numbers = "(1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th|11th|12th|13th|14th|15th|16th|17th|18th|19th)" 
         self.it_collapsed = "Your attack overwhelms the (" + numbers + " )?(.+?) and (s?he|it) collapses!"
         self.it_fled = "The (" + numbers + " )?(.+?) flees to the (.+?)\."

@@ -217,6 +217,7 @@ class MudReaderThread(threading.Thread):
             for reaction in reactions_to_delete:
                 try:
                     self.BotReactionList.remove(reaction)
+                    # magentaprint(str(len(self.BotReactionList)) + " reactions.")
                 except ValueError:
                     magentaprint("MudReaderHandler could not unregister reaction!")
                     magentaprint("Reaction: " + str(reaction))
@@ -226,7 +227,9 @@ class MudReaderThread(threading.Thread):
                 #     magentaprint("Removed a reaction.")
 
                 # reaction_counter = reaction_counter + 1
-            # if (reaction_counter > 0):
+
+            # if reaction_counter > 0:
+            #     magentaprint(str(len(self.BotReactionList) + " reactions, deleted " + str(reaction_counter)))
             #     magentaprint("MudReaderThread removed " + str(reaction_counter) + 
             #                  " reactions," + str(len(self.BotReactionList)) + 
             #                  " reactions left.")

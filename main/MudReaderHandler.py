@@ -387,18 +387,8 @@ class MudReaderHandler(object):
         # magentaprint("Regexes: " + str(botReaction.regexes))
 
     def unregister_reaction(self, botReaction):
-        """ Removes a specific reaction from the list if it is still there """
-        if self.MudReaderThread.BotReactionList.__contains__(botReaction):
-        # if botReaction in self.MudReaderThread.BotReactionList:
-            #self.MudReaderThread.BotReactionList.remove(botReaction) 
-                # Was causing list problem...
-            botReaction.unregistered = True
-            #magentaprint("Unregistered " + str(botReaction))  
-            # Should unregister all three killthread reactions... Yup
-        # This ends up occurring while the list is being iterated on.
-        # How about marking it for removal, and letting the removal 
-        # happen outside of the loop.
-        # TODO: Probably don't need the if statement!
+        botReaction.unregistered = True
+    #   Nevermind this function, just do it manually, it's simpler
 
     def is_registered(self, botReaction):
         return botReaction in self.MudReaderThread.BotReactionList and not botReaction.unregistered

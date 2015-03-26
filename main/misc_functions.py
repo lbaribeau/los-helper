@@ -3,6 +3,9 @@ import sys
 from ConsoleHandler import newConsoleHandler
 from datetime import datetime
 
+# from CombatObject import Kill
+# from CombatObject import Cast
+
 debugMode = True
 verboseMode = True
 startTime = datetime.now()
@@ -21,6 +24,9 @@ def attack_wait(character):
     return wait_amount(character.ATTACK_CLK, attack_period)
 
 def wait_for_attack_ready(character):
+    # Kill.wait_until_ready()
+
+    magentaprint("misc_functions.wait_for_attack_ready waiting " + str(round(attack_wait(character), 1)))
     if attack_wait(character) > 0.1:
         magentaprint("wait_for_attack_ready sleeping " + str(round(attack_wait(character), 1)))
 
@@ -33,6 +39,7 @@ def cast_wait(character):
     return wait_amount(character.CAST_CLK, character.CAST_WAIT)
 
 def wait_for_cast_ready(character):
+    # Cast.wait_until_ready()
     if cast_wait(character) > 0.1:
         magentaprint("wait_for_cast_ready sleeping " + str(round(cast_wait(character), 1)))
         
@@ -42,8 +49,9 @@ def cast_ready(character):
     return cast_wait() <= 0
 
 def wait_for_move_ready(character):
-    wait_for_attack_ready(character)
-    wait_for_cast_ready(character)
+    # Commenting might break some stuff
+    # wait_for_attack_ready(character)
+    # wait_for_cast_ready(character)
     time.sleep(max(0, character.MOVE_WAIT - (time.time() - character.MOVE_CLK)))
 
 def move_ready(character):
@@ -86,7 +94,7 @@ def magentaprint(text, isDebugCommand=True, end=None, timestamp=True):
         output = str(text)
 
         if timestamp:
-            output = get_timestamp() + "| " + output
+            output = get_timestamp() + "   | " + output
 
         print(output, end=end)
         newConsoleHandler().white()

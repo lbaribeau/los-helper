@@ -15,7 +15,7 @@ from MudMap import MudMap
 
 class BotThread(threading.Thread):
 
-    def __init__(self, character, commandHandler, mudReaderHandler, inventory, database, mud_map):
+    def __init__(self, character, commandHandler, mudReaderHandler, database, mud_map):
         Thread.__init__(self)
         # Initialize some variables local to this thread
         self.__stopping = False        
@@ -23,7 +23,10 @@ class BotThread(threading.Thread):
         self.character = character
         self.commandHandler = commandHandler
         self.mudReaderHandler = mudReaderHandler
-        self.inventory = inventory
+        self.inventory = character.inventory
+        self.smartCombat = commandHandler.smartCombat
+        self.kill = self.smartCombat.kill
+        self.cast = self.smartCombat.cast
         self.direction_list = []
 
         self.database = database
@@ -90,8 +93,8 @@ class BotThread(threading.Thread):
             return True
         
         wait_for_move_ready(self.character)
-        wait_for_attack_ready(self.character)
-        wait_for_cast_ready(self.character)
+        self.kill.wait_until_ready()
+        self.cast.wait_until_ready()
         magentaprint("Going " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)))
 
         if(re.match("(.*?door)", exit_str)):
@@ -168,7 +171,7 @@ class BotThread(threading.Thread):
     The idea would be to limit the scope of the helper classes to tasks all the logic threads would need otherwise we should have
     another abstract class added'''
     def set_up_automatic_ring_wearing(self):
-        """ Makes some BotReactions so that when MudReaderHandler sees us 
+        """ Makes a BotReaction so that when MudReaderHandler sees us 
         pick up a ring, we'll wear it."""
         ringReaction = GenericBotReaction("(?s)You get .+? an? .+? ring((,.+?\.)|(\.))", self.commandHandler, "wear ring")
         self.mudReaderHandler.register_reaction(ringReaction)
@@ -244,7 +247,7 @@ class BotThread(threading.Thread):
             MANA_SATISFIED = self.character.MAX_MANA - 1
         
         while(self.character.MANA < MANA_SATISFIED and not self.__stopping):
-            time.sleep(3.5)
+            time.sleep(3.0)
             self.engage_any_attacking_mobs()
             self.commandHandler.process('')
             time.sleep(1.2)  # Wait for prompt to respond before checking MANA again.
@@ -269,19 +272,25 @@ class BotThread(threading.Thread):
 
 
     def update_aura(self):
-        if(self.__stopping):
+        # This could be written
+        # - put aura variables in Cast not character
+        # - only use Command type structures and delete a lot of code from MudReaderHandler
+        # - write a 'execute_until_success' function into command
+
+        if self.__stopping:
             return False
 
-        if(self.character.level < 3 or time.time() - self.character.AURA_LAST_UPDATE < 480):
+        if self.character.level < 3 or time.time() - self.character.AURA_LAST_UPDATE < 480:
             magentaprint("Last aura update: %d seconds ago." % round(time.time() - self.character.AURA_LAST_UPDATE))
             return True   
 
-        wait_for_cast_ready(self.character)
-        self.commandHandler.user_ca('c show')
+        # self.commandHandler.user_ca('c show')
+        self.cast.wait_until_ready()
+        self.cast.__class__.command = 'cas show'
         aura_matched = False
 
         while(not aura_matched and self.character.MANA > 0): 
-            self.commandHandler.user_ca('c show')
+            self.cast.execute()
             aura_matched = self.mudReaderHandler.wait_for_aura_match() 
             
         if(aura_matched):
@@ -292,7 +301,6 @@ class BotThread(threading.Thread):
 
     
     def heal_up(self):
-        magentaprint("In heal_up.")
         heal_spell = "vig"
         heal_cost = 2
 
@@ -309,7 +317,9 @@ class BotThread(threading.Thread):
         if(self.character.HEALTH <= self.character.HEALTH_TO_HEAL and 
            self.character.MANA >= heal_cost):
             if (self.character.KNOWS_VIGOR):
-                self.commandHandler.user_cc(heal_spell)
+                # self.commandHandler.user_cc(heal_spell)
+                self.cast.__class__.command = 'cas vig'
+                self.cast.start_thread()
         
         self.character.HAS_RESTORE_ITEMS = False
 
@@ -319,13 +329,16 @@ class BotThread(threading.Thread):
 
             if (self.engage_any_attacking_mobs()):
                 if(self.character.MANA >= heal_cost and self.character.KNOWS_VIGOR):
-                    self.commandHandler.user_cc(heal_spell)
+                    # self.commandHandler.user_cc(heal_spell)
+                    self.cast.__class__.command = 'cas vig'
+                    self.cast.start_thread()
             
             #self.use_restorative_items() #spam them!!!
 
             time.sleep(0.05)
 
-        self.commandHandler.stop_CastThread()
+        # self.commandHandler.stop_CastThread()
+        self.cast.stop()
         
         return
 
@@ -414,48 +427,56 @@ class BotThread(threading.Thread):
         vigor_cost = 2
         black_magic_spell_cost = 3
         
-        if(self.__stopping):
+        if self.__stopping:
             return
+
+        self.smartCombat.target = monster
+        self.smartCombat.run()
         
-        self.commandHandler.user_kk(monster)
-        time.sleep(0.5)  # Keeps attacking and magic out of sync
+        # SmartCombat(self.character, self.mudReaderHandler, self.telnetHandler, monster, self.inventory).run()
+        # I don't think it can be stopped this way...
+        # This is very obselete, but I won't rewrite it now because SmartCombat will do a better job of replacing it.
 
-        while(self.commandHandler.KillThread != None and self.commandHandler.KillThread
-              and self.commandHandler.KillThread.stopping == False):
+        # self.commandHandler.user_kk(monster)
+        # # self.kill.engage(monster)
+        # time.sleep(0.5)  # Keeps attacking and magic out of sync
+
+        # while(self.commandHandler.KillThread != None and self.commandHandler.KillThread
+        #       and self.commandHandler.KillThread.stopping == False):
             
-            if(self.character.BLACK_MAGIC):
-                if(self.character.MANA >= black_magic_spell_cost):
-                    if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
-                        self.commandHandler.user_cc(self.character.FAVOURITE_SPELL + " " + monster)
-                else:
-                    self.commandHandler.stop_CastThread()
+        #     if(self.character.BLACK_MAGIC):
+        #         if(self.character.MANA >= black_magic_spell_cost):
+        #             if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
+        #                 self.commandHandler.user_cc(self.character.FAVOURITE_SPELL + " " + monster)
+        #         else:
+        #             self.commandHandler.stop_CastThread()
                     
-            # TODO: restoratives (use when vig not keeping up or low mana)
-            if (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL)):
-                if (self.character._class.id == "Mon"):
-                    magentaprint("Last Meditate Check: " + str(time.time() - self.character.LAST_MEDITATE))
-                    if((time.time() - self.character.LAST_MEDITATE) > 150):
-                        self.commandHandler.process('meditate')
-                        self.character.LAST_MEDITATE = time.time()
-                if(self.character.MANA >= vigor_cost and self.character.KNOWS_VIGOR and
-                    self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
-                    self.commandHandler.user_cc("vig")
-                    self.commandHandler.stop_CastThread()
-                #else:
-                    #self.use_restorative_items()
+        #     # TODO: restoratives (use when vig not keeping up or low mana)
+        #     if (self.character.HEALTH <= (self.character.HEALTH_TO_HEAL)):
+        #         if (self.character._class.id == "Mon"):
+        #             magentaprint("Last Meditate Check: " + str(time.time() - self.character.LAST_MEDITATE))
+        #             if((time.time() - self.character.LAST_MEDITATE) > 150):
+        #                 self.commandHandler.process('meditate')
+        #                 self.character.LAST_MEDITATE = time.time()
+        #         if(self.character.MANA >= vigor_cost and self.character.KNOWS_VIGOR and
+        #             self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
+        #             self.commandHandler.user_cc("vig")
+        #             self.commandHandler.stop_CastThread()
+        #         #else:
+        #             #self.use_restorative_items()
 
 
-            # FLEE Checks
-            if(self.character.HEALTH <= self.character.HEALTH_TO_FLEE):
-                # We're done for!  Trust CommandHandler to get us out.  
-                # It will turn around and stop botThread.
-                self.stop()  
-                self.commandHandler.user_flee() 
+        #     # FLEE Checks
+        #     if(self.character.HEALTH <= self.character.HEALTH_TO_FLEE):
+        #         # We're done for!  Trust CommandHandler to get us out.  
+        #         # It will turn around and stop botThread.
+        #         self.stop()  
+        #         self.commandHandler.user_flee() 
 
-            time.sleep(0.05)
+        #     time.sleep(0.05)
 
-        # OK the mob died or ran or I ran
-        self.commandHandler.stop_CastThread()    
+        # # OK the mob died or ran or I ran
+        # self.commandHandler.stop_CastThread()    
         
         if monster in self.character.MOBS_ATTACKING:
             #magentaprint("Bot:engage_monster: Removing " + monster + " from MOBS_ATTACKING.")

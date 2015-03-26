@@ -6,27 +6,26 @@ import time
 import re
 
 import misc_functions
-from KillThread import KillThread
-from CastThread import CastThread
 from SmartCombat import SmartCombat
-# from CoolAbility import *
-# from CoolAbilityThread import *
+from CombatObject import Kill, Cast
 from Database import *
 from MudMap import *
 import Command
 
 class CommandHandler(object):
 
-    def __init__(self, character, mudReaderHandler, telnetHandler, inventory, database_file, mud_map):
+    def __init__(self, character, mudReaderHandler, telnetHandler, database_file, mud_map):
         self.character = character
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
-        self.inventory = inventory
-        self.KillThread = None
-        self.CastThread = None
-        self.smartCombatThread = None
-        self.CoolAbilityThread1 = None
-        self.CoolAbilityThread2 = None
+        self.inventory = character.inventory
+
+        self.smartCombat = SmartCombat(self.telnetHandler, Kill(telnetHandler), Cast(telnetHandler), self.character)
+        mudReaderHandler.register_reaction(self.smartCombat.kill)
+        mudReaderHandler.register_reaction(self.smartCombat.cast)
+        mudReaderHandler.register_reaction(self.smartCombat)
+        self.kill = self.smartCombat.kill
+        self.cast = self.smartCombat.cast
 
         database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
         db.initialize(database)
@@ -34,18 +33,6 @@ class CommandHandler(object):
         self.mud_map = mud_map
         create_tables()
         db.close()
-
-    def stop_KillThread(self):
-        if self.KillThread != None and self.KillThread.is_alive():
-            self.KillThread.stop()
-
-    def stop_CastThread(self):
-        if self.CastThread != None and self.CastThread.is_alive():
-            self.CastThread.stop()
-
-    def stop_smartCombatThread(self, debug_on=False):
-        if self.smartCombatThread != None and self.smartCombatThread.is_alive():
-            self.smartCombatThread.stop()
 
     def process(self, user_input):
         """ This CommandHandler function is the filter for user input that
@@ -59,23 +46,32 @@ class CommandHandler(object):
         if re.match("ga$", user_input):
             self.telnetHandler.write("get all")
         elif re.match("ki? [a-zA-Z]|kill? [a-zA-Z]", user_input):
-            self.user_ki(user_input)
+            self.ki(user_input)
         elif re.match("kk ", user_input):
-            self.user_kk(user_input[3:].lstrip())
+            self.kk(user_input)
         elif re.match("sk$", user_input):
-            self.user_sk()
+            self.kill.stop()
+            self.telnetHandler.write("")
+        elif re.match("ca? [a-zA-Z]|cast? [a-zA-Z]", user_input):
+            the_split = user_input.split(" ")
+            Cast.command = "cas " + the_split[1]
+            target = the_split[2] if len(the_split) >= 3 else None
+            # self.cast.execute(user_input.split(" ")[2])  # Error on "c show", old way was to put user_input into telnetHandler
+            self.cast.execute(target)
         elif re.match("cc ", user_input):
-            self.user_cc(user_input[3:].lstrip())
+            the_split = user_input.split(" ")
+            Cast.command = "cas " + the_split[1]
+            target = the_split[2] if len(the_split) >= 3 else None
+            self.cast.start_thread(target)
         elif re.match("sc$", user_input):
-            self.user_sc()
+            self.cast.stop()
+            self.telnetHandler.write("")
         elif re.match("kkc ", user_input):
             self.user_kkc(user_input[4:].strip())
         elif re.match("skc ", user_input):
             self.user_skc()
         elif re.match("dro? ", user_input):
             self.user_dr(user_input)
-        elif re.match("ca? [a-zA-Z]|cast? [a-zA-Z]", user_input):
-            self.user_ca(user_input)
         elif re.match("n$", user_input) or re.match("s$", user_input) or \
              re.match("e$", user_input) or re.match("w$", user_input) or \
              re.match("nw$", user_input) or re.match("ne$", user_input) or \
@@ -175,54 +171,17 @@ class CommandHandler(object):
         else: # Doesn't match any command we are looking for
             self.telnetHandler.write(user_input) # Just shovel to telnet.
 
+    def ki(self, user_input):
+        self.kill.execute(user_input.split(" ")[1])
 
-    def user_ki(self, user_input):
-        Command.Kill(self.mudReaderHandler, self.telnetHandler).send(user_input.split(" ")[1])
-
-        # now = time.time()
-        # time_remaining = self.character.ATTACK_WAIT - (now - self.character.ATTACK_CLK)
-
-        # if time_remaining < 0:
-        #     self.character.ATTACK_CLK = now
-        #     self.telnetHandler.write(user_input)
-        # elif time_remaining < 0.1:
-        #     time.sleep(time_remaining)
-        #     self.character.ATTACK_CLK = now
-        #     self.telnetHandler.write(user_input)
-        # elif time_remaining < 1.0:
-        #     magentaprint("Delaying by %.1f sec ..." % time_remaining)
-        #     time.sleep(time_remaining)
-        #     magentaprint("Sent.", False)
-        #     self.character.ATTACK_CLK = now
-        #     self.telnetHandler.write(user_input)
-        # else:
-        #     magentaprint("Please wait %.1f more seconds." % time_remaining, False)
-
-            
-    def user_ca(self, user_input):
-        now = time.time()
-        time_remaining = self.character.CAST_WAIT - (now - self.character.CAST_CLK) 
-
-        if time_remaining < 0:
-            self.character.CAST_CLK = now
-            self.telnetHandler.write(user_input)
-        elif time_remaining < 0.1:
-            time.sleep(time_remaining)
-            self.character.CAST_CLK = now
-            self.telnetHandler.write(user_input)
-        elif time_remaining < 1.0:
-            magentaprint("(Python) Delaying by %.1f sec ... " % time_remaining)
-            time.sleep(time_remaining)
-            magentaprint("Sent.", False)
-            self.character.CAST_CLK = now
-            self.telnetHandler.write(user_input)
-        else:
-            magentaprint("(Python) Wait %.1f more seconds" % time_remaining)
-
+    def kk(self, user_input):
+        magentaprint(str(self.kill))
+        # self.kill.engage(self.telnetHandler, user_input[3:])
+        self.kill.start_thread(user_input[3:])
 
     def user_move(self, user_input):
-        self.stop_KillThread()
-        self.stop_CastThread()
+        self.kill.stop()
+        self.cast.stop()
 
         now = time.time()
         
@@ -252,44 +211,30 @@ class CommandHandler(object):
         else:
             magentaprint("Wait %.1f more seconds" % time_remaining)
         
-    def stop_KillThread(self):
-        if self.KillThread != None and self.KillThread.is_alive():
-            self.KillThread.stop()
-
-    def stop_CastThread(self):
-        if self.CastThread != None and self.CastThread.is_alive():
-            self.CastThread.stop()
-
     def user_dr(self, user_input):
         [command, item] = user_input.split(" ", 1)
         user_input = "drop " + item
         self.telnetHandler.write(user_input)
     
-    def user_kk(self, argv):
-        if self.KillThread != None and self.KillThread.is_alive():
-            # Commenting... tried doing registering reactions here but maybe 
-            # it's better for KillThread to do it.
-            #if(self.KillThread.get_stopping() == True):
-            #    self.KillThread.keep_going()
-            #    self.KillThread.set_target(argv)
-            #    self._do_kill_reactions() 
-            #      # Assumes that when stop is called the kill reactions were unregistered,
-            #      # so we have to redo the kill reactions.  They would have been undone
-            #      # Or, maybe I could make 'stop' work immediately.  Nah, try having 
-            #      # KillThread do the registering.
-            #else:
-            #    self.KillThread.set_target(argv)                
-            self.KillThread.set_target(argv)
-            self.KillThread.keep_going()
-        else:
-            self.KillThread = KillThread(self.character, self.mudReaderHandler, self.telnetHandler, argv)
-            self.KillThread.start()
-            #self._do_kill_reactions()
+    # Commented: user_kk is deprecated and this code also doesn't work
+    def user_kk(self, monster):
+        magentaprint("CommandHandler.telnetHandler: " + str(self.telnetHandler))
+        # self.kill.engage(self.telnetHandler, argv[3:].lstrip())
+        # self.kill.engage(self.telnetHandler, monster)
+        self.kill.start_thread(monster)
+
+        # if self.KillThread != None and self.KillThread.is_alive():
+        #     self.KillThread.set_target(argv)
+        #     self.KillThread.keep_going()
+        # else:
+        #     self.KillThread = KillThread(self.character, self.mudReaderHandler, self.telnetHandler, argv)
+        #     self.KillThread.start()
 
     
     def user_sk(self):
-        self.stop_KillThread()
-        self.telnetHandler.write("")
+        self.kill.stop()
+        # self.stop_KillThread()
+        # self.telnetHandler.write("")
     
 
     def user_cc(self, argv):
@@ -340,54 +285,40 @@ class CommandHandler(object):
             spell = theSplit[1]
             target = theSplit[2] + " " + theSplit[3]
 
-        if self.smartCombatThread != None and self.smartCombatThread.is_alive():
-            magentaprint("CommandHandler calling smartCombatThread.keep_going()")
-            self.smartCombatThread.set_target(argv)
-            self.smartCombatThread.keep_going()
-        else:
-            magentaprint("CommandHandler making new smartCombatThread")
-            self.smartCombatThread = SmartCombat(self.character, self.mudReaderHandler, 
-                                                 self.telnetHandler, target, self.inventory, spell)
-            self.smartCombatThread.start()
+        self.smartCombat.start_thread(target)
+
+        # if self.smartCombatThread != None and self.smartCombatThread.is_alive():
+        #     magentaprint("CommandHandler calling smartCombatThread.keep_going()")
+        #     self.smartCombatThread.set_target(argv)
+        #     self.smartCombatThread.keep_going()
+        # else:
+        #     magentaprint("CommandHandler making new smartCombatThread")
+        #     self.smartCombatThread = SmartCombat(self.character, self.mudReaderHandler, 
+        #                                          self.telnetHandler, self.inventory)
+        #     self.smartCombatThread.target = target  
+        #     # I want to start doing threads without inheritance...
+        #     self.smartCombatThread.start()
 
     def user_sc(self):
-        self.stop_CastThread()
+        # self.stop_CastThread()
+        self.cast.stop()
         self.telnetHandler.write("")
 
     def user_skc(self):
-        self.stop_smartCombatThread()
+        # self.stop_smartCombatThread()
+        self.smartCombat.stop()
         self.telnetHandler.write("")
      
     def user_wie2(self, argv):
         self.telnetHandler.write("wield %s\n" % (argv))
         self.telnetHandler.write("second %s\n" % (argv))
 
-    
-    # COOL ABILITIES
     def user_hastec(self):        
-        if((self.CoolAbilityThread1 != None and 
-            self.CoolAbilityThread1.is_alive() and
-            self.CoolAbilityThread1.CoolAbility.getCommand().isequal("haste")) 
-            or
-            (self.CoolAbilityThread2 != None and 
-            self.CoolAbilityThread2.is_alive() and
-            self.CoolAbilityThread2.CoolAbility.getCommand().isequal("haste"))):
-            # Already running a thread
-            magentaprint("Haste thread already going.")
-        else:
-            magentaprint("CommandHandler: new haste thread")
-            if self.CoolAbilityThread1 == None or not self.CoolAbilityThread1.is_alive():
-                self.CoolAbilityThread1 = CoolAbilityThread(Haste(), self.mudReaderHandler, self.telnetHandler)
-                self.CoolAbilityThread1.start()
-            elif self.CoolAbilityThread2 == None or not self.CoolAbilityThread2.is_alive():
-                self.CoolAbilityThread2 = CoolAbilityThread(Haste(), self.mudReaderHandler, self.telnetHandler)
-                self.CoolAbilityThread2.start()
-            else: 
-                magentaprint("Error! both CoolAbilityThreads are unavailable!")
-
+        magentaprint("CommandHandler: user_hastec")
     
     def user_flee(self):
-        self.stop_CastThread()
+        # self.stop_CastThread()
+        self.cast.stop()
         now = time.time()
         time_remaining = max(self.character.MOVE_WAIT - (now - self.character.MOVE_CLK),
                              self.character.ATTACK_WAIT - (now - self.character.ATTACK_CLK),
@@ -399,7 +330,7 @@ class CommandHandler(object):
 
         # This sleep will allow KillThread to get one more swing in if there is time for it.
         # So we wait until time_remaining is 3 before stopping KillThread
-        self.stop_KillThread()
+        self.kill.stop()
         magentaprint("KillThread is stopped, %.1f until escape." % time_remaining, False)
 
         if self.character.WEAPON1 != "":

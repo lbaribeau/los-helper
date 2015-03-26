@@ -8,13 +8,12 @@ from Exceptions import *
 
 class GrindThread(BotThread):
 
-    def __init__(self, character, commandHandler, mudReaderHandler,
-                inventory, database, mud_map, starting_path=None): 
-        super(GrindThread, self).__init__(character, commandHandler, mudReaderHandler, inventory, database, mud_map)
+    def __init__(self, character, commandHandler, mudReaderHandler, database, mud_map, starting_path=None): 
+        super().__init__(character, commandHandler, mudReaderHandler, database, mud_map)
+
         # Set TOTALPATHS.  Setting it lower than the actual number
         # of paths in decide_where_to_go is a way to truncate paths
         # you don't want to send low level characters on.
-
         if self.character.level <= 2:
             self.__TOTALPATHS = 8 # Kobolds are level 1 safe.
         elif self.character.level <= 7:
@@ -340,8 +339,8 @@ class GrindThread(BotThread):
         
         magentaprint("Going " + exit_str + (". %f" % (time.time() - self.character.START_TIME)))
         wait_for_move_ready(self.character)
-        wait_for_attack_ready(self.character)
-        wait_for_cast_ready(self.character)
+        self.kill.wait_until_ready()
+        self.cast.wait_until_ready()
 
         if(exit_str == "nw" or exit_str == "ne" or
            exit_str == "sw" or exit_str == "se" or

@@ -7,17 +7,22 @@ gets registered with the MudReader, which will call notify with a regex
 in the list is matched."""
 
 class BotReaction(object):
-    unregistered = False # MudReaderHandler uses this variable as part of the unregister procedure
-    # pass
+    pass
+    # def __init__(self):
+    #     self.unregistered = False
+    # Hmmm, do I want everyone to inherit "self.unregistered = False" or 
+    # do I just want to task MudReaderHandler.register_reaction() with 
+    # tacking that on?  Currently, it works because both are sort of 
+    # happening, but it'd be kind of nice to get that inheritance in, 
+    # but it's also quite unnecessary.  MudReaderHandler doing it 
+    # is super flexible too, you could just throw anything in there.
+
 # class BotReaction(object):
-
-
 #     # Not defining init to allow for multiple inheritance
 #     # def __init__(self, regexes):
 #     #     if isinstance(regexes, str):
 #     #         regexes = [regexes]
 #     #     self.regexes = regexes
-
 #     def notify(self, regex, M_obj):
 #         """ This function is called by MudReaderThread when regex was 
 #         matched.  MudReaderThread gives the regex back so that the Reaction 
@@ -27,21 +32,21 @@ class BotReaction(object):
 #         raise NotImplementedError()
 
 
-def wait_for_a_flag(flagged_object):
+def wait_for_a_flag(class_with_flag):
     # I dunno why this always gets to 8 seconds and doesn't detect the flag.
-    flagged_object._waiter_flag = False
+    class_with_flag._waiter_flag = False  # Use __class__ for writing or else it will make an instance level flag
     start_time = time.time()
     run_time = 0
 
-    while not flagged_object._waiter_flag and run_time < BotReactionWithFlag.good_MUD_timeout:
+    while not class_with_flag._waiter_flag and run_time < BotReactionWithFlag.good_MUD_timeout:
         time.sleep(0.05)
         run_time = time.time() - start_time
 
-    if not flagged_object._waiter_flag:
+    if not class_with_flag._waiter_flag:
         magentaprint("BotReaction.wait_for_flag() timed out!")
         return False  # Timed out
     else:
-        flagged_object._waiter_flag = False
+        class_with_flag._waiter_flag = False
         return True
 
         
@@ -49,20 +54,22 @@ class BotReactionWithFlag(object):
     """ wait_for_flag() is useful when you send a telnet command and 
     want to wait for the server's response to that command. """
 
-    _waiter_flag = True
+    _waiter_flag = True  
     good_MUD_timeout = 8.0  #* (see footnote)
 
     # def __init__(self):
-    #     self.unregistered = False
+        # regexes must also get set
+        # self.unregistered = False
 
     def notify(self, regex, M_obj):
         """ Subclasses should implement notify and also ensure that _waiter_flag
         gets set."""
-        self._waiter_flag = True
+        # magentaprint("BotReactionWithFlag setting _waiter_flag on " + str(self) + " from " + str(self._waiter_flag))
+        self.__class__._waiter_flag = True  
 
     def wait_for_flag(self):
         # magentaprint("Waiting for flag " + str(self), end="")
-        wait_for_a_flag(self)
+        wait_for_a_flag(self.__class__)
 
         # self._waiter_flag = False
         # start_time = time.time()
@@ -82,9 +89,16 @@ class BotReactionWithFlag(object):
         #     self._waiter_flag = False
         #     return True
 
-    @staticmethod
-    def wait_for_class_flag():
-        wait_for_a_flag(__class__)
+    # @staticmethod
+    # def wait_for_class_flag():
+    #     wait_for_a_flag(__class__)
+
+    @classmethod
+    def wait_for_class_flag(cls):
+        # magentaprint("wait_for_class_flag on " + str(cls))
+        # magentaprint(str(cls._waiter_flag))
+        wait_for_a_flag(cls)
+        # magentaprint("wait_for_class_flag done ")
 
 
     # * A high MUD_timeout allows for big lag, which is nice. 
@@ -126,12 +140,12 @@ class GenericBotReaction(object):
 class WieldReaction(object):
     """ notify will execute wield commands."""
     
-    def __init__(self, character, commandHandler):
+    def __init__(self, character, telnetHandler):
         # Note: regex should specify the weapon string in a group.
         self.regexes = [ "Your (.+?) breaks and you have to remove it\.",
                          "Your (.+?) shatters\."]
         self.character = character
-        self.commandHandler = commandHandler
+        self.telnetHandler = telnetHandler
 
     def notify(self, regex, M_obj):
         magentaprint("Reequiping weapon..." + M_obj.group(1))
@@ -139,10 +153,10 @@ class WieldReaction(object):
         
     def reequip_weapon(self, weapon):        
         if self.character.WEAPON1 == self.character.WEAPON2:
-            self.commandHandler.process("wie " + weapon)
-            self.commandHandler.process("seco " + weapon)
+            self.telnetHandler.write("wie " + weapon)
+            self.telnetHandler.write("seco " + weapon)
         else:
             if weapon == self.character.WEAPON1:
-                self.commandHandler.process("wie " + weapon)
+                self.telnetHandler.write("wie " + weapon)
             else:
-                self.commandHandler.process("seco " + weapon)
+                self.telnetHandler.write("seco " + weapon)

@@ -38,7 +38,8 @@ from MudReaderHandler import MudReaderHandler
 from MudReaderThread import MudReaderThread 
 from MudListenerThread import MudListenerThread 
 from MyBuffer import MyBuffer 
-from Inventory import Inventory 
+from Inventory import Inventory
+from SmartCombat import SmartCombat
 from Info import Info 
 from Whois import Whois
 from Cartography import Cartography 
@@ -51,9 +52,10 @@ from misc_functions import magentaprint
 class LosHelper(object):
 
     def __init__(self):
+        self.botThread = None
         magentaprint("Connecting to database....", False)
-        database_file = "maplos.db"
-        self.database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
+        self.database_file = "maplos.db"
+        self.database = SqliteDatabase(self.database_file, threadlocals=True, check_same_thread=False)
         db.initialize(self.database)
 
         magentaprint("Connecting to MUD and initializing....", False)
@@ -64,25 +66,29 @@ class LosHelper(object):
         self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
         self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
         self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
-        self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler)
+        self.character.inventory = Inventory(self.mudReaderHandler, self.telnetHandler)
 
         magentaprint("Generating the mapfile....", False)
         # self.mud_map = MudMap() 
         self.mud_map = None
-        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler, self.inventory, database_file, self.mud_map)
-        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character, database_file, self.mud_map)
-        self.botThread = None
 
-    def main(self):
         self.mudListenerThread.start()
         self.mudReaderThread.start()
-
         # With the MUDReaderThread going, we have the server's text and prompts now showing
+
         self.write_username_and_pass()
-        self.set_up_auto_wield()
+        self.initialize_reactions()
         self.check_inventory()
         self.check_class_and_level()
         self.check_info()
+
+        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler, self.database_file, self.mud_map)
+        # Maybe commandHandler can just 'have' SmartCombat (CombatLogic) which 'has' kill and cast
+        # Same with the botThread... CombatLogic should own all the little objects so we don't have to pass them individually.
+        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character, self.database_file, self.mud_map)
+
+    def main(self):
+
         self.watch_user_input()
             
         # Quitting cleanly: The MUD_read thread quits if it hits
@@ -111,24 +117,26 @@ class LosHelper(object):
             password = getpass.getpass("")
             self.telnetHandler.write(password)
 
-    def set_up_auto_wield(self):
-        self.mudReaderHandler.register_reaction(WieldReaction(self.character, self.commandHandler))
+    def initialize_reactions(self):
+        self.mudReaderHandler.register_reaction(WieldReaction(self.character, self.telnetHandler))
 
     def check_inventory(self):
         # This prints the inventory.  I like that.  
         # Inventory needs this to be up to date.
-        self.inventory.get_inventory()
+        self.character.inventory.get_inventory()
 
     def check_class_and_level(self):
         whois = Whois(self.mudReaderHandler, self.telnetHandler)
         whois.execute(self.character.name)
-        self.character._class = CharacterClass(whois.character_class, self.mudReaderHandler, self.telnetHandler)
+        self.character._class = CharacterClass(whois.character_class, self.telnetHandler)
         self.character.gender = whois.gender
         self.character.level = whois.level
         self.character.title = whois.title
         self.character.race = whois.race
         self.character.configure_health_and_mana_variables()
         self.character.set_monster_kill_list()
+        for a in self.character._class.abilities:
+            self.mudReaderHandler.register_reaction(a)
 
     def check_info(self):
         info = Info(self.mudReaderHandler, self.telnetHandler, self.character)
@@ -147,56 +155,52 @@ class LosHelper(object):
 
             user_input = user_input.lstrip()
 
-            if(not self.mudReaderThread.is_alive()):
+            if not self.mudReaderThread.is_alive():
                 magentaprint("\nWhat happened to read thread?  Time to turf.\n")
                 self.telnetHandler.write("")
                 self.telnetHandler.write("quit")
                 stopping = True
 
-                if(self.botThread != None and self.botThread.is_alive()):
+                if self.botThread != None and self.botThread.is_alive():
                     self.botThread.stop()
-
-            elif(user_input == "quit"):
+            elif user_input == "quit":
                 # TODO:  correct if MUD prints "Please wait x more seconds"
                 # after quit was sent.
                 self.telnetHandler.write(user_input)
                 stopping = True
 
-                if(self.botThread != None and self.botThread.is_alive()):
+                if self.botThread != None and self.botThread.is_alive():
                     self.botThread.stop()
-
-            elif(re.match("bot ?$|bot [0-9]+$", user_input)):
-                self.start_bot(user_input)
-            elif(re.match("crawl", user_input)):
+            elif re.match("bot ?$|bot [0-9]+$", user_input):
+                self.start_grind(user_input)
+            elif re.match("crawl", user_input):
                 self.start_crawl()
-            elif(re.match("goto [0-9]+$", user_input)):
+            elif re.match("goto [0-9]+$", user_input):
                 self.start_goto(user_input)
-            elif(re.match("showto [0-9]+$", user_input)):
+            elif re.match("showto [0-9]+$", user_input):
                 self.start_goto(user_input, True)
-            elif(re.match("stop$", user_input)):
+            elif re.match("stop$", user_input):
                 self.stop_bot()
-            elif(re.match("fle?$|flee$", user_input)):
+            elif re.match("fle?$|flee$", user_input):
                 self.stop_bot()
                 self.commandHandler.process(user_input)  
             else:
                 self.commandHandler.process(user_input)
 
-
-    def start_bot(self, user_input):
+    def start_grind(self, user_input):
         M_obj = re.search("[0-9]+", user_input)
 
-        if (M_obj):
+        if M_obj:
             starting_path = int(M_obj.group(0))
         else:
             starting_path = 0
 
-        if (self.botThread != None and self.botThread.is_alive()):
+        if self.botThread != None and self.botThread.is_alive():
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
             self.botThread = GrindThread(self.character, 
                                        self.commandHandler, 
                                        self.mudReaderHandler,
-                                       self.inventory,
                                        self.database,
                                        self.mud_map,
                                        starting_path)
@@ -209,7 +213,6 @@ class LosHelper(object):
             self.botThread = CrawlThread(self.character, 
                                        self.commandHandler, 
                                        self.mudReaderHandler,
-                                       self.inventory,
                                        self.database,
                                        self.mud_map)
             self.botThread.start()
@@ -228,7 +231,6 @@ class LosHelper(object):
             self.botThread = GotoThread(self.character, 
                                        self.commandHandler, 
                                        self.mudReaderHandler,
-                                       self.inventory,
                                        self.database,
                                        self.mud_map,
                                        starting_path,
