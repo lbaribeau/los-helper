@@ -21,13 +21,13 @@ import sys, time, getpass, threading, atexit, re
 from threading import Thread
 
 from system.import_tools import *
-import_subdir("system")
-import_subdir("gamelogic")
-import_subdir("misc")
-import_subdir("data")
-import_subdir("bots")
-import_subdir("reactions")
-import_subdir("threads")
+import_subdir("../system")
+import_subdir("../gamelogic")
+import_subdir("../misc")
+import_subdir("../data")
+import_subdir("../bots")
+import_subdir("../reactions")
+import_subdir("../threads")
 
 from misc_functions import *
 from Character import Character
