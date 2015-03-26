@@ -287,13 +287,12 @@ class GrindThread(BotThread):
         return
 
     def do_post_go_actions(self):
-        #here we would implement combat or whatever other other actions we want to do before we decide where to go again
-        if(self.ready_for_combat()):
+        if self.ready_for_combat():
             new_target = self.decide_which_mob_to_kill(self.character.MONSTER_LIST)
         else:
             new_target = ""
             
-        while (new_target != "" and not self.is_stopping()):
+        while new_target != "" and not self.is_stopping():
             # MudReader maintains MONSTER_LIST pretty well by
             # adding and removing.  
             # It will not remove from MOBS_JOINED_IN nor 
@@ -310,17 +309,19 @@ class GrindThread(BotThread):
             # killed.  (That's in fact how we knew combat was over)
             # The higher priority mobs were in the other lists 
             # and will also have been removed from MONSTER_LIST
-            
+
+            self.kill.wait_until_ready()
+            self.cast.wait_until_ready()
             self.engage_monster(new_target)
             self.get_items()
             self.engage_mobs_who_joined_in()
             self.engage_any_attacking_mobs()
             self.check_weapons()
             
-            if (not self.character.BLACK_MAGIC):
+            if not self.character.BLACK_MAGIC:
                 self.heal_up()
             
-            if(self.ready_for_combat()):
+            if self.ready_for_combat():
                 new_target = self.decide_which_mob_to_kill(self.character.MONSTER_LIST)
             else:
                 new_target = ""

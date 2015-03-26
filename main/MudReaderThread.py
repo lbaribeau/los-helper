@@ -428,7 +428,13 @@ class MudReaderThread(threading.Thread):
                 self.character.MONSTER_LIST = []
                 self.character.CAST_CLK = time.time() - self.character.CAST_WAIT
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                               
+
+            M_obj = re.search("You don't see that here\.", text_buffer)
+            if M_obj:
+                self.character.MONSTER_LIST = []
+                # self.character.ATTACK_CLK = time.time() - self.character.CAST_WAIT
+                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+
             # Monster wanders to specific exit
             M_obj = re.search("The" + s_numbered + " (.+?) just wandered to the .+?\.", text_buffer)
             if(M_obj):

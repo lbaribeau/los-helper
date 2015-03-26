@@ -62,9 +62,6 @@ class SmartCombat(CombatObject):
         self.stopping = False
         self.mob_paralyzed = False
 
-        if self.black_magic:
-            self.cast.wait_until_ready()
-
         self.use_any_fast_combat_abilities()
 
         while not self.stopping:

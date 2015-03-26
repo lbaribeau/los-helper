@@ -33,21 +33,12 @@ class CombatObject2(CombatObject):
     def stop(cls):
         cls.stopping = True
 
-    # def run(self):
-        # Do combatty things
-        # Make a loop with a sleep in it... use cooldown variables in self...
-        # Use self.target
-
     @classmethod
     def keep_going(cls):
         magentaprint(str(cls) + " keep_going " + str(cls.stopping))
         
         if cls.stopping is True:
             cls.stopping = False
-
-    # Instead of using .set_target() which is stupid 1st year stuff from another language, just do it from outside...
-    # def set_target(self, new_target):
-    #     self.target = new_target
 
     @classmethod
     def engage(cls, telnetHandler, target=None):
@@ -132,18 +123,18 @@ class Cast(SimpleCombatObject):
         r"Cast at whom\?" 
      ]
 
-    # def notify(self, regex, M_obj):
-    #     if regex is self.spell_failed:
-    #         # Looks like we need spell to be instance or class variable
-    #         # What is it currently - it's currently part of command I believe...
-    #         # does this code even work yet.... command will just get changed...
-    #         # ... so we can get spell from command here inevitably...
-    #         if re.match("vig?|vigor?", spell):
-    #             self.__class__.timer = self.__class__.timer - self.cooldown_after_success + self.cooldown_after_failure
-
-
-    #         pass
-    #     super().notify(regex, M_obj)
+     # Commented... hmmm.. I went with the notify_failure(), I think so I wasn't checking for the regex twice...
+     # Just a logic structure thing.
+        # def notify(self, regex, M_obj):
+        #     if regex is self.spell_failed:
+        #         # Looks like we need spell to be instance or class variable
+        #         # What is it currently - it's currently part of command I believe...
+        #         # does this code even work yet.... command will just get changed...
+        #         # ... so we can get spell from command here inevitably...
+        #         if re.match("vig?|vigor?", spell):
+        #             self.__class__.timer = self.__class__.timer - self.cooldown_after_success + self.cooldown_after_failure
+        #         pass
+        #     super().notify(regex, M_obj)
 
     def notify_failure(self, regex, M_obj):
         spell = self.command.split(' ')[1].lower()
