@@ -4,9 +4,9 @@ import time, re, collections
 from Exceptions import *
 from BotReactions import *
 from misc_functions import *
-from data.MudItem import *
-from data.GenericMudList import *
-from data.MudObjectDict import *
+from MudItem import *
+from GenericMudList import *
+from MudObjectDict import *
 
 class Inventory(BotReactionWithFlag):
 
