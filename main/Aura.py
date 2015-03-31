@@ -6,7 +6,8 @@ class Aura(object):
     auras = ['demonic red', 'ominous red', 'ghastly red', 'murky red',
              'red', 'rusty', 'dusty red', 'grey',
              'dusty blue', 'pale blue', 'blue',
-             'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue']
+             'deep blue', 'bright blue', 'shimmering blue',
+             'heavenly blue', 'blazing blue', 'blood red']
              # 0-6 red, 7 grey, 9-14 blue
 
     def __init__(self, s):

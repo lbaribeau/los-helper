@@ -1,26 +1,52 @@
 
 from BotReactions import BotReactionWithFlag
-
-from misc_functions import magentaprint
+from misc_functions import *
+from CharacterClass import CharacterClass
 
 class Whois(BotReactionWithFlag):
 
-    def __init__(self, mudReaderHandler, telnetHandler):
+    character_class = ""
+    gender = ""
+    level = 0
+    title = ""
+    age = 0
+    race = ""
+
+    def __init__(self, mudReaderHandler, telnetHandler, character):
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
+        self.character = character
 
     def execute(self, character_name):
-        self.regexes = [character_name.title() + "\s+?(\S\S\S)\s\s([MF])\s\s\[(\d\d)\](\S+)\s+(\d+)\s+(\S+)\s" ]
+        self.regexes = [character_name.title() + "\s+?(\S\S\S)\s\s([MF])\s\s\[(\d\d)\](.+?)\s+(\d+)\s+(\S+)\s" ]
         self.mudReaderHandler.register_reaction(self)
+
         self.telnetHandler.write("whois " + character_name)
-        self.wait_for_flag()
-        self.mudReaderHandler.unregister_reaction(self)
 
     def notify(self, regex, M_obj):
-        self.character_class = M_obj.group(1)
-        self.gender = M_obj.group(2)
-        self.level = int(M_obj.group(3))
-        self.title = M_obj.group(4)
-        self.age = M_obj.group(5)
-        self.race = M_obj.group(6)
-        super().notify(regex, M_obj)
+        try:
+            self.character_class = M_obj.group(1)
+            self.gender = M_obj.group(2)
+            self.level = int(M_obj.group(3))
+            self.title = M_obj.group(4)
+            self.age = M_obj.group(5)
+            self.race = M_obj.group(6)
+        except Exception:
+            magentaprint("Unable to read whois data", False)
+
+        magentaprint(self.character_class + " " + self.gender + " " + str(self.level) + " " + self.title + " " + self.age + " " + self.race, False)            
+
+        self.character._class = CharacterClass(self.character_class, self.level, self.telnetHandler, self.mudReaderHandler)
+        self.character.CAST_PERIOD = self.character._class.cast_wait
+        self.character.CAST_WAIT = self.character._class.cast_wait
+        self.character.gender = self.gender
+        self.character.level = self.level
+        self.character.title = self.title
+        self.character.race = self.race
+        self.character.configure_health_and_mana_variables()
+        self.character.set_monster_kill_list()
+
+        self.mudReaderHandler.unregister_reaction(self)
+
+
+        super(Whois, self).notify(regex, M_obj)

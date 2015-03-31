@@ -1,85 +1,51 @@
-import unittest
-from main.MudReaderThread import MudReaderThread
+import unittest, re
+from main.misc_functions import *
 class MudReaderThreadTest(unittest.TestCase):
 
 
     def test_parse_inventory_list_charecterizationTest(self):
-        #setup
-        input = '''a candy cane, some cleaning rags, three large bags, a lasso, four
-leaf blades, five silver chalices, a silver snuff box, five small
-restoratives, five spears, five steel bottles, two stilletos.
-'''
-        #execute
-        result = MudReaderThread().parse_inventory_list(input)
-        #assert
-        self.assertEquals(['candy cane', 'cleaning rags', 'large bag', 'large bag', 'large bag', 'lasso', 'leaf blade', 'leaf blade', 'leaf blade', 'leaf blade', 'silver chalice', 'silver chalice', 'silver chalice', 'silver chalice', 'silver chalice', 'silver snuff box', 'small restorative', 'small restorative', 'small restorative', 'small restorative', 'small restorative', 'spear', 'spear', 'spear', 'spear', 'spear', 'steel bottle', 'steel bottle', 'steel bottle', 'steel bottle', 'steel bottle', 'stilletos.', 'stilletos.'] , result)
+        area = """/---------------------------------------------------------------------------\
+|    The Flint Engine version 1.9.9           Developed by Shihan, Kaedan   |
+|    Derived from Mordor V4.06 by Brooke Paul & Brett Vickers               |
+|                                                                           |
+|    Website   : www.landsofstone.org                                       |
+|    Game      : mud.landsofstone.org                                       |
+|    Scenarios : type 'help credits' in-game to view details                |
+|    Connection problems? email andyb@creative-realms.net with details.     |
+|                                                                           |
+|                          lands of stone v(0.86.8)                         |
+|                                                                           |
+|                                 Welcome!                                  |
+|                                                                           |
+\---------------------------------------------------------------------------/
 
-    def test_parse_inventory_list_whenThereIsOneItem(self):
-        #setup
-        input = 'an item'
-        #execute
-        result = MudReaderThread().parse_inventory_list(input)
-        #assert
-        self.assertEquals(['item'], result)
+Please enter name: Please enter password: 
+### Herp the Human Apprentice just entered the Lands of Stone.
 
-    def test_parse_inventory_list_whenThereIsOneSet(self):
-        #setup
-        input = 'some pants'
-        #execute
-        result = MudReaderThread().parse_inventory_list(input)
-        #assert
-        self.assertEquals(['pants'], result)
+Town Hall Lobby
 
-    def test_parse_inventory_list_whenThereIsOneItemAndANewLine(self):
-        #setup
-        input = '''an
-item'''
-        #execute
-        result = MudReaderThread().parse_inventory_list(input)
-        #assert
-        self.assertEquals(['item'], result)
+The entrance is quite narrow, but long. It doesn't seem busy though.
+The initial appearance is of a place which is not much in use and the
+dust everywhere seems to support that point of view. A small window
+has a notice saying to wait in the room east for service, but as far
+as you can tell there isn't anyone behind the window at all.
+Obvious exits: east, doors, out.
+You see a beggar, a tax inspector.
+"""
+        area = area.replace("\n", "\n\r")
 
-    def test_parse_inventory_list_whenThereAreTwoItems(self):
-        #setup
-        input = 'two items'
-        #execute
-        result = MudReaderThread().parse_inventory_list(input)
-        #assert
-        self.assertEquals(['item', 'item'], result)
+        area_regex = "(?s)(?:(?:.+?Stone\.\n\r|.+?healed\.\n\r|.+?\]:\s+?)\n\r)?(^[A-Z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"
+        area_regex = re.compile(r"(?:(?:.+?Stone\.\n\r|.+?healed\.\n\r|.+?\]:\s+?)\n\r)?([A-Z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?", re.DOTALL|re.MULTILINE)
+        M_obj = re.search(area_regex, area)
 
-    def test_parse_inventory_list_shouldReturnExpandedList_whenThereAreTwoSets(self):
-        #setup
-        input = 'two sets of items'
-        #execute
-        result = MudReaderThread().parse_inventory_list(input)
-        #assert
-        self.assertEquals(['items', 'items'], result)
+        # magentaprint(M_obj.group(0), False, False, True)
 
-    def test_parse_inventory_list_whenThereAreFiveItems(self):
-        #setup
-        input = 'five items'
-        #execute
-        result = MudReaderThread().parse_inventory_list(input)
-        #assert
-        self.assertEquals(['item', 'item', 'item', 'item', 'item'], result)
+        for match in M_obj.groups():
+            magentaprint(match, False)
 
-    def test_parse_inventory_list_whenThereAreFiveSets(self):
-        #setup
-        input = 'five sets of items'
-        #execute
-        result = MudReaderThread().parse_inventory_list(input)
-        #assert
-        self.assertEquals(['items', 'items', 'items', 'items', 'items'], result)
+        result = True
 
-#    def test_parse_inventory_list_steel_bottle_test(self):
-#        
-#        input =  "a hyena's ear, four javelins, a large sack, a sharp knife, two silver chalices, two small bags, a small knife, eight small restoratives, four spears, fourteen steel bottles, a steel mask."
-#        
-#        result = MudReaderThread().parse_inventory_list(input):
-#        
-#        self.assertEquals([')
-        
-
+        self.assertEquals(True , result)
 
 
 

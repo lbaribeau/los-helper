@@ -396,9 +396,9 @@ shortpath = nx.shortest_path(g,source="The Chapel of Healing 4",target="Town Tip
 
 i = 0
 while i < (len(shortpath) - 1):
-	cur_edge = g.get_edge_data(shortpath[i], shortpath[i+1])
+    cur_edge = g.get_edge_data(shortpath[i], shortpath[i+1])
 
-	print(cur_edge['name'])
-	i += 1
+    print(cur_edge['name'])
+    i += 1
 
 #print(str(g.edges(data=True)))

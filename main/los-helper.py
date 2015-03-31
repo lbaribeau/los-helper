@@ -17,97 +17,107 @@
 #       keep that aren't in KEEP_LIST into some bag that IS in KEEP_LIST)
 #   ANSI color
 
-print("Importing python modules...")
-
-import sys
-import getpass
-import threading
+import sys, time, getpass, threading, atexit, re
 from threading import Thread
-import atexit 
-import re
-import time
 
-print("Importing los-helper modules...")
+# from system.import_tools import *
+# import_subdir("../system")
+# import_subdir("../gamelogic")
+# import_subdir("../misc")
+# import_subdir("../data")
+# import_subdir("../bots")
+# import_subdir("../reactions")
+# import_subdir("../threads")
 
-from misc_functions import magentaprint
+from misc_functions import *
 from Character import Character
 from CharacterClass import CharacterClass
-from GrindThread import GrindThread
-from CrawlThread import CrawlThread
+from SmartGrindThread import SmartGrindThread
+from SmartCrawlThread import SmartCrawlThread
 from GotoThread import GotoThread
+from MixThread import MixThread
+from SlaveThread import SlaveThread
 from CommandHandler import CommandHandler
 from MudReaderHandler import MudReaderHandler 
 from MudReaderThread import MudReaderThread 
 from MudListenerThread import MudListenerThread 
 from MyBuffer import MyBuffer 
-from Inventory import Inventory
-from SmartCombat import SmartCombat
+from Inventory import Inventory 
+from CombatReactions import CombatReactions
 from Info import Info 
 from Whois import Whois
 from Cartography import Cartography 
 from BotReactions import *
 from TelnetHandler import TelnetHandler 
+from FakeTelnetHandler import FakeTelnetHandler 
+
 from Database import *
 from MudMap import *
-from Quit import Quit
 
 class LosHelper(object):
 
     def __init__(self):
-        self.botThread = None
-        magentaprint("Connecting to database....", False)
-        self.database_file = "maplos.db"
-        self.database = SqliteDatabase(self.database_file, threadlocals=True, check_same_thread=False)
-        db.initialize(self.database)
-
         magentaprint("Connecting to MUD and initializing....", False)
+        self.t1 = threading.Thread(target=self.setup_mud_map)
         self.character = Character()
-        self.telnetHandler = TelnetHandler()
+        
+        self.telnetHandler = None
+
+        if (len(sys.argv) > 3):
+            if (sys.argv[3] == "-fake"):
+                self.telnetHandler = FakeTelnetHandler()
+        else:
+                self.telnetHandler = TelnetHandler()
+
+
         self.consoleHandler = newConsoleHandler() 
         self.MUDBuffer = MyBuffer()
         self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
         self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
         self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
-        self.character.inventory = Inventory(self.mudReaderHandler, self.telnetHandler)
+        self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler, self.character)
+        self.combat_reactions = CombatReactions(self.mudReaderHandler, self.character)
 
+        self.mud_map = None
+        self.bot_ready = False
+
+        self.t1.start()
+
+        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
+        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
+        self.botThread = None
+
+    def setup_mud_map(self):
         magentaprint("Generating the mapfile....", False)
-        self.mud_map = MudMap() 
-        # self.mud_map = None
+        self.mud_map = MudMap()
+        magentaprint("Mapfile generated", False)
+        self.bot_ready = True
 
+    def main(self):
         self.mudListenerThread.start()
         self.mudReaderThread.start()
-        # With the MUDReaderThread going, we have the server's text and prompts now showing
 
+        # With the MUDReaderThread going, we have the server's text and prompts now showing
         self.write_username_and_pass()
-        self.initialize_reactions()
+        self.set_up_auto_wield()
         self.check_inventory()
         self.check_class_and_level()
         self.check_info()
-
-        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler, self.database_file, self.mud_map)
-        # Maybe commandHandler can just 'have' SmartCombat (CombatLogic) which 'has' kill and cast
-        # Same with the botThread... CombatLogic should own all the little objects so we don't have to pass them individually.
-        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character, self.database_file, self.mud_map)
-
-    def main(self):
-
         self.watch_user_input()
-        self.mudReaderThread.stop()
-        # Wait a bit for server EOF (Doesn't seem to work)
-        # while self.mudReaderThread.is_alive(): 
-        #     self.mudReaderThread.join(10)  
-        #     if self.mudReaderThread.is_alive():
-        #         magentaprint("No server EOF")
-        #         self.mudReaderThread.stop()  # No EOF
+        self.t1.join()
+        # Quitting cleanly: The MUD_read thread quits if it hits
+        # and EOF.  watch_user_input watches for
+        # that and quits too.
 
-        self.mudListenerThread.stop()
-        self.mudReaderThread.join(10)
-        self.mudListenerThread.join(10)
+        while(self.mudReaderThread.is_alive()): 
+            self.mudReaderThread.join(3)  
+            if (self.mudReaderThread.is_alive()):
+                self.mudReaderThread.stop()  # Last resort.
+
+        #Okay, clean exit!
         self.telnetHandler.close();
-        magentaprint("Closed telnet.")
-
-        # print("It should be safe to ctrl + c now")
-        # time.sleep(10)   # This was so I could see error messages in the windows prompt...
+        print ("It should be safe to ctrl + c now")
+        time.sleep(10) 
 
     def write_username_and_pass(self):
         if len(sys.argv) >= 3:
@@ -121,26 +131,18 @@ class LosHelper(object):
             password = getpass.getpass("")
             self.telnetHandler.write(password)
 
-    def initialize_reactions(self):
-        self.mudReaderHandler.register_reaction(WieldReaction(self.character, self.telnetHandler))
+    def set_up_auto_wield(self):
+        self.mudReaderHandler.register_reaction(WieldReaction(self.character, self.commandHandler))
 
     def check_inventory(self):
         # This prints the inventory.  I like that.  
         # Inventory needs this to be up to date.
-        self.character.inventory.get_inventory()
+        self.inventory.get_inventory()
+        self.inventory.output_inventory()
 
     def check_class_and_level(self):
-        whois = Whois(self.mudReaderHandler, self.telnetHandler)
+        whois = Whois(self.mudReaderHandler, self.telnetHandler, self.character)
         whois.execute(self.character.name)
-        self.character._class = CharacterClass(whois.character_class, self.telnetHandler)
-        self.character.gender = whois.gender
-        self.character.level = whois.level
-        self.character.title = whois.title
-        self.character.race = whois.race
-        self.character.configure_health_and_mana_variables()
-        self.character.set_monster_kill_list()
-        for a in self.character._class.abilities:
-            self.mudReaderHandler.register_reaction(a)
 
     def check_info(self):
         info = Info(self.mudReaderHandler, self.telnetHandler, self.character)
@@ -159,88 +161,171 @@ class LosHelper(object):
 
             user_input = user_input.lstrip()
 
-            if not self.mudReaderThread.is_alive():
+            if(not self.mudReaderThread.is_alive()):
                 magentaprint("\nWhat happened to read thread?  Time to turf.\n")
-                self.telnetHandler.write("")
-                self.telnetHandler.write("quit")
+                self.telnetHandler.write(user_input)
                 stopping = True
 
-                if self.botThread != None and self.botThread.is_alive():
+                if(self.botThread != None and self.botThread.is_alive()):
                     self.botThread.stop()
-            elif user_input == "quit":
+
+            elif(user_input == "quit"):
                 # TODO:  correct if MUD prints "Please wait x more seconds"
                 # after quit was sent.
-                # self.telnetHandler.write(user_input)
-                quit = Quit(self.mudReaderHandler, self.telnetHandler)
-                stopping = True if quit.result == 'success' else False
+                self.telnetHandler.write(user_input)
+                stopping = True
 
-                if self.botThread != None and self.botThread.is_alive():
+                if(self.botThread != None and self.botThread.is_alive()):
                     self.botThread.stop()
-            elif re.match("bot ?$|bot [0-9]+$", user_input):
-                self.start_grind(user_input)
-            elif re.match("crawl", user_input):
+
+            elif(re.match("bot ?$|bot [0-9]+$", user_input)):
+                self.start_bot(user_input)
+            elif(re.match("crawl", user_input)):
                 self.start_crawl()
-            elif re.match("goto [0-9]+$", user_input):
+            elif(re.match("goto -?[0-9]+$", user_input)):
                 self.start_goto(user_input)
-            elif re.match("showto [0-9]+$", user_input):
+            elif(re.match("showto -?[0-9]+$", user_input)):
                 self.start_goto(user_input, True)
-            elif re.match("stop$", user_input):
+            elif(re.match("domix .+?", user_input)):
+                #domix 'tree root' berry 50 - first param must be exact match
+                self.start_mix(user_input)
+            elif(re.match("slave", user_input)):
+                self.start_slave(user_input)
+            elif(re.match("bbuy (.+?)", user_input)):
+                try:
+                    #bbuy item quant
+                    M_obj = re.search("bbuy (.+?) ([\d]*)", user_input)
+                    item = M_obj.group(1)
+                    quantity = int(M_obj.group(2))
+
+                    self.inventory.bulk_buy(item, quantity)
+                except Exception as e:
+                    magentaprint("Error in the bulk buy function" + str(M_obj.groups(0)), False)
+                    raise e
+
+            elif(re.match("stop$", user_input)):
                 self.stop_bot()
-            elif re.match("fle?$|flee$", user_input):
+            elif(re.match("remap", user_input)):
+                self.mud_map.re_map()
+            elif(re.match("fle?$|flee$", user_input)):
                 self.stop_bot()
                 self.commandHandler.process(user_input)  
             else:
                 self.commandHandler.process(user_input)
 
-    def start_grind(self, user_input):
+
+    def start_bot(self, user_input):
+        if not self.bot_ready:
+            magentaprint("Please wait for the Mapfile before using this command", False)
+            return False
+
         M_obj = re.search("[0-9]+", user_input)
 
-        if M_obj:
-            starting_path = int(M_obj.group(0))
-        else:
-            starting_path = 0
+        starting_path = 0
 
-        if self.botThread != None and self.botThread.is_alive():
+        if (M_obj):
+            starting_path = int(M_obj.group(0))
+
+        if (self.botThread != None and self.botThread.is_alive()):
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
-            self.botThread = GrindThread(self.character, 
+            self.botThread = SmartGrindThread(self.character, 
                                        self.commandHandler, 
                                        self.mudReaderHandler,
-                                       self.database,
+                                       self.inventory,
                                        self.mud_map,
                                        starting_path)
             self.botThread.start()
 
     def start_crawl(self):
+        if not self.bot_ready:
+            magentaprint("Please wait for the Mapfile before using this command", False)
+            return False
+
         if (self.botThread != None and self.botThread.is_alive()):
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
-            self.botThread = CrawlThread(self.character, 
+            self.botThread = SmartCrawlThread(self.character, 
                                        self.commandHandler, 
                                        self.mudReaderHandler,
-                                       self.database,
+                                       self.inventory,
                                        self.mud_map)
             self.botThread.start()
 
     def start_goto(self, user_input, is_show_to=False):
-        M_obj = re.search("[0-9]+", user_input)
+        if not self.bot_ready:
+            magentaprint("Please wait for the Mapfile before using this command", False)
+            return False
 
-        if M_obj:
+        M_obj = re.search("-?[0-9]+", user_input)
+
+        if (M_obj):
             starting_path = int(M_obj.group(0))
         else:
             starting_path = None
 
-        if self.botThread != None and self.botThread.is_alive():
+        if (self.botThread != None and self.botThread.is_alive()):
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
             self.botThread = GotoThread(self.character, 
                                        self.commandHandler, 
                                        self.mudReaderHandler,
-                                       self.database,
+                                       self.inventory,
                                        self.mud_map,
                                        starting_path,
                                        is_show_to)
             self.botThread.start()
+
+    def start_slave(self, user_input):
+        if not self.bot_ready:
+            magentaprint("Please wait for the Mapfile before using this command", False)
+            return False
+
+        self.botThread = SlaveThread(self.character, 
+                                       self.commandHandler, 
+                                       self.mudReaderHandler,
+                                       self.inventory,
+                                       self.mud_map,
+                                       "")
+        self.botThread.start()
+
+    def start_mix(self, user_input):
+        if not self.bot_ready:
+            magentaprint("Please wait for the Mapfile before using this command", False)
+            return False
+
+        M_obj = re.search("domix '(.+?)' (.+?)( [\d]*)?$", user_input)
+
+        can_mix = True
+
+        try:
+            target = M_obj.group(1)
+            mix_target = M_obj.group(2)
+
+            try:
+                quantity = int(M_obj.group(3).strip())
+            except Exception:
+                magentaprint(str(M_obj.groups()),False)
+                quantity = 1
+        except Exception:
+            magentaprint(str(M_obj.groups()),False)
+            can_mix = False
+
+        if (self.botThread != None and self.botThread.is_alive()):
+            magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
+        elif can_mix:
+            self.botThread = MixThread(self.character, 
+                                       self.commandHandler, 
+                                       self.mudReaderHandler,
+                                       self.inventory,
+                                       self.mud_map,
+                                       self.telnetHandler,
+                                       target,
+                                       mix_target,
+                                       quantity)
+            self.botThread.start()
+        else:
+            magentaprint("Input not recognized - cannot start the mixer!", False)
 
 
     def stop_bot(self):

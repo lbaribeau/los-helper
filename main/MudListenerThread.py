@@ -42,7 +42,7 @@ class MudListenerThread(threading.Thread):
                     magentaprint("MudListenerThread:" + str(ValueError))
                 continue
 
-            if sel_out_triple != ([], [], []):
+            if (sel_out_triple != ([], [], []) or socket_number == 1):
                 try:
                     fragment = fragment + self.telnetHandler.read_some().decode('ascii', errors='ignore')
                 except (EOFError, OSError) as e:

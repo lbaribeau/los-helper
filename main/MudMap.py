@@ -1,76 +1,107 @@
+from peewee import *
 import networkx as nx
 from Database import *
 from misc_functions import *
 
-class MudArea():
-	area = None
-	area_exits = []
-
-	def __init__(self, area, area_exits):
-		self.area = area
-		self.area_exits = area_exits
-
 class MudMap():
-	los_map = None
+    los_map = None
+    ready = False
 
-	def __init__(self):
-		self.los_map = nx.DiGraph()
-		self.populate_map()
+    def __init__(self):
+        self.re_map()
 
-	def populate_map(self):
-		areas = Area.select()
-		area_exits = AreaExit.select().where(AreaExit.is_useable == 1)
+    def re_map(self):
+        self.ready = False
+        self.los_map = nx.DiGraph()
+        self.populate_map()
+        self.ready = True
 
-		for area in areas:
-			self.los_map.add_node(area.id)
+    def populate_map(self):
+        areas = Area.raw('select * from v_areas_for_graph')
+        area_exits = AreaExit.raw('select * from v_areaexits_for_graph')
 
-		for area_exit in area_exits:
-			area_to_id = -1 #this is a marker for a null / unexplored area
-			area_is_useable = True
-			if (area_exit.area_to is not None):
-				area_to_id = area_exit.area_to.id
-				area_is_useable = area_exit.is_useable
+        for area in areas:
+            self.los_map.add_node(area.id)
 
-				#magentaprint("area useable: " + str(area_is_useable) + " " + str(area_exit.is_useable), False)
+        for area_exit in area_exits:
+            name = area_exit.exit_type.name
+            self.los_map.add_edge(area_exit.area_from.id, area_exit.area_to.id, name=name)
+            '''area_to_id = -1 #this is a marker for a null / unexplored area
+            area_is_useable = True
+            if (area_exit.area_to is not None):
+                area_to_id = area_exit.area_to.id
+                area_is_useable = area_exit.is_useable
 
-			if area_is_useable: #don't add unusable areas to the graph
-				name = area_exit.exit_type.name
-				self.los_map.add_edge(area_exit.area_from.id, area_to_id, name=name)
+                #magentaprint("area useable: " + str(area_is_useable) + " " + str(area_exit.is_useable), False)
 
-	def to_string(self):
-		return str(self.los_map.nodes()) + "\n\n" + str(self.los_map.edges())
+            if area_is_useable: #don't add unusable areas to the graph
+                name = area_exit.exit_type.name
+                self.los_map.add_edge(area_exit.area_from.id, area_to_id, name=name)'''
 
-	def get_path(self, start_area_id, end_area_id):
-		node_path = nx.shortest_path(self.los_map,source=start_area_id,target=end_area_id)
-		edge_path = []
+    def to_string(self):
+        return str(self.los_map.nodes()) + "\n\n" + str(self.los_map.edges())
 
-		i = 0
-		while i < (len(node_path) - 1):
-			cur_edge = self.los_map.get_edge_data(node_path[i], node_path[i+1])
+    def __str__(self):
+        return self.to_string()
 
-			edge_path.append(cur_edge['name'])
-			i += 1
+    def __repr__(self):
+        return self.to_string()
 
-		#magentaprint("Got path: " + str(edge_path), False)
+    def get_path(self, start_area_id, end_area_id):
+        node_path = nx.shortest_path(self.los_map,source=start_area_id,target=end_area_id)
+        edge_path = []
 
-		return edge_path
+        i = 0
+        while i < (len(node_path) - 1):
+            cur_edge = self.los_map.get_edge_data(node_path[i], node_path[i+1])
 
-	def get_nearest_unexplored_path(self, start_area_id):
-		return self.get_path(start_area_id, -1)
+            edge_path.append(cur_edge['name'])
+            i += 1
+
+        #magentaprint("Got path: " + str(edge_path), False)
+
+        return edge_path
+
+    def get_nearest_unexplored_path(self, start_area_id):
+        return self.get_path(start_area_id, 1)
+
+    def get_paths_to_nearest_restorative_area(self, start_area_id):
+        paths = []
+
+        areas = Area.get_restorative_areas()
+
+        for area in areas:
+            try:
+                paths.append(self.get_path(start_area_id, area.id))
+            except Exception as e:
+                continue
+                # print ("couldn't path to area")
+                # magentaprint("couldn't path to area")
+
+        return paths
 
 
-	#static functions
-	def find(text):
-		areas = Area.get_areas_by_partial_name(text)
-		mob_locations = MobLocation.get_locations_by_partial_mob_name(text)
+    #static functions
+    def find(text):
+        areas = Area.get_areas_by_partial_name(text)
+        mob_locations = MobLocation.get_locations_by_partial_mob_name(text)
 
-		magentaprint("Areas found:", False)
+        return [areas, mob_locations]
 
-		for area in areas:
-			magentaprint("<" + str(area.id) + "> - " + area.name, False)
+    def get_mob_locations_by_name(name):
+        locations = []
+        mob_locations = MobLocation.get_locations_by_exact_mob_name(name)
 
-		magentaprint("Mobs found:", False)
+        for mob_location in mob_locations:
+            locations.append(mob_location.area.id)
 
-		for mob_location in mob_locations:
-			magentaprint("<" + str(mob_location.area.id) + "> - " + mob_location.mob.name, False)
+        return locations
 
+    def get_mob_locations_by_id(mob_id):
+        locations = []
+        mob_locations = MobLocation.get_locations_by_mob_id(mob_id)
+
+        for mob_location in mob_locations:
+            locations.append(mob_location.area.id)
+
+        return locations

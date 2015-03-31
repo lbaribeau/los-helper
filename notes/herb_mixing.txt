@@ -1,0 +1,22 @@
+Herbs - all available for purchase at the HighMarket Store
+brown + leaf = paste item - failed
+brown + berry = brown smells of disease and corruption
+disease brown + brown = more disease
+disease brown + leaf = disease :/
+
+disease mould eventually kills you when pasted
+
+flower + root = drinking item - failed
+leaf + yellow flower = pasted item - failed
+yellow + leaf = drinking item - failed
+
+berry + root = paste item - healing item
+berry + brown mould = paste item - healing item
+berry + leaf = paste item - healing item
+
+root + mould = edible item - healing
+root + berry = edible healing item that restore at least 10 hp
+root + leaf = edible healing item
+edible root + leaf = fails - still edible tho
+
+leaf + brown = cream item - deals damage when applied :/

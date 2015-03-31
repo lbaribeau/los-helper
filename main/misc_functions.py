@@ -1,12 +1,9 @@
-import time
-import sys
+import sys, time
 from ConsoleHandler import newConsoleHandler
 from datetime import datetime
+from Database import *
 
-# from CombatObject import Kill
-# from CombatObject import Cast
-
-debugMode = True
+debugMode = False
 verboseMode = True
 startTime = datetime.now()
 VERSION = "2"
@@ -24,12 +21,6 @@ def attack_wait(character):
     return wait_amount(character.ATTACK_CLK, attack_period)
 
 def wait_for_attack_ready(character):
-    # Kill.wait_until_ready()
-
-    magentaprint("misc_functions.wait_for_attack_ready waiting " + str(round(attack_wait(character), 1)))
-    if attack_wait(character) > 0.1:
-        magentaprint("wait_for_attack_ready sleeping " + str(round(attack_wait(character), 1)))
-
     time.sleep(attack_wait(character))
 
 def attack_ready(character):
@@ -39,19 +30,14 @@ def cast_wait(character):
     return wait_amount(character.CAST_CLK, character.CAST_WAIT)
 
 def wait_for_cast_ready(character):
-    # Cast.wait_until_ready()
-    if cast_wait(character) > 0.1:
-        magentaprint("wait_for_cast_ready sleeping " + str(round(cast_wait(character), 1)))
-        
     time.sleep(cast_wait(character))
 
 def cast_ready(character):
     return cast_wait() <= 0
 
 def wait_for_move_ready(character):
-    # Commenting might break some stuff
-    # wait_for_attack_ready(character)
-    # wait_for_cast_ready(character)
+    wait_for_attack_ready(character)
+    wait_for_cast_ready(character)
     time.sleep(max(0, character.MOVE_WAIT - (time.time() - character.MOVE_CLK)))
 
 def move_ready(character):
@@ -86,18 +72,26 @@ def my_list_equal(listA, listB):
 
     return True
     
-def magentaprint(text, isDebugCommand=True, end=None, timestamp=True):
+def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=False):
     global debugMode
 
-    if debugMode or not isDebugCommand:
-        newConsoleHandler().magenta()
-        output = str(text)
+    if show_hidden:
+        text = repr(text) #escape all characters in string
 
-        if timestamp:
-            output = get_timestamp() + "   | " + output
+    if (debugMode or not is_debug_command):
+        do_magentaprint (text)
 
-        print(output, end=end)
-        newConsoleHandler().white()
+    if (debugMode or log_output):
+        log = Log()
+        log.data = text
+        log.save()
+
+def do_magentaprint(text):
+    newConsoleHandler().magenta()
+    output = str(get_timestamp() + "| <" + str(text) + ">")
+
+    print (output)
+    newConsoleHandler().white()
 
 def manage_telnet_output(text, isVerbose=True):
     global verboseMode
@@ -133,3 +127,28 @@ def calculate_vpm(value):
 def replace_newlines_with_spaces(s):
     s = s.replace('\n\r', ' ')
     return s
+
+def get_last_word(s):
+    return s.rsplit(None, 1)[-1]
+
+def get_first_word(s):
+    return s.split(' ', 1)[0]
+
+def get_shortest_array(list_of_arrays):
+    shortest_array = []
+
+    for array in list_of_arrays:
+        shortest_array.append(len(array))
+
+    index = shortest_array.index(min(shortest_array, key=int))
+
+    return list_of_arrays[index]
+
+def key_with_max_val(d):
+     """ a) create a list of the dict's keys and values; 
+         b) return the key with the max value"""  
+     v=list(d.values())
+     k=list(d.keys())
+     return k[v.index(max(v))],max(v)
+
+
