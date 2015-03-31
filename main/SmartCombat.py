@@ -62,7 +62,7 @@ class SmartCombat(CombatObject):
         self.stopping = False
         self.mob_paralyzed = False
 
-        self.use_any_fast_combat_abilities()
+        self.use_any_fast_combat_abilities()  # ie. Touch
 
         while not self.stopping:
 
@@ -78,12 +78,9 @@ class SmartCombat(CombatObject):
                 if self.stopping or self.mob_paralyzed:
                     continue
                 if self.black_magic:
-                    # self.cast.cast(self.telnetHandler, self.favourite_spell)
                     self.cast.__class__.command = 'cas ' + self.favourite_spell
-                    self.cast.execute(self.target)
+                    self.cast.execute(self.target)  # use cast.cast maybe
                 elif self.character.HEALTH <= self.character.maxHP - self.max_vigor:
-                    # self.cast.cast(self.telnetHandler, 'vig')
-                    # time.sleep(0.1)
                     self.cast.__class__.command = 'cas vi'
                     self.cast.execute()
                 else:
@@ -143,4 +140,6 @@ class SmartCombat(CombatObject):
         # return True if self.heal_abilities
         return any([a.up() for a in self.heal_abilities])
 
+    # def flee(self):
+    # I want to do the Go object first and get rid of MOVE_CLK
 

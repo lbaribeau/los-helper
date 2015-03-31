@@ -12,7 +12,6 @@ class Character(object):
     level = None
     preferred_alignment = None
     BLACK_MAGIC = True
-    FAVOURITE_SPELL = "burn"
     KNOWS_VIGOR = True
     #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
     #MAGIC_SKILLS= [0, 0, 0, 0, 0]
@@ -20,7 +19,7 @@ class Character(object):
     AURA_LIST = ['demonic red', 'ominous red', 'ghastly red', 'murky red',
                  'red', 'rusty', 'dusty red', 'grey',
                  'dusty blue', 'pale blue', 'blue',
-                 'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue']
+                 'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue']  # blood red and blazing blue...
 
     # Indices will be sharp, thrust, blunt, pole, missile, earth, water, wind, fire, astral
     # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
@@ -215,7 +214,8 @@ class Character(object):
         'large bandit', "kobold guard", "mugger", 'large spider'
         ]
     lvl6_monsters = [
-        "dwarven field worker", "dwarven bartender", "school teacher",
+        # "dwarven field worker",   # Dwarven farm hands can mess up this fight...
+        "dwarven bartender", "school teacher",
         'lyrist', "nobleman", "seeker", "bull", "hunter", 'usher',
         'sword swallower', 'archer',
         "yard supervisor", #"sawmill supervisor"
@@ -225,6 +225,7 @@ class Character(object):
         'gnoll sentry', "bandit swordsman"
         ]
     lvl7_monsters = [
+        "dwarven field worker",  # Actually level 6
         "dwarven cook", "swordsman", 'fort sergeant', 'oremaster', 
         'giant spider'
         ] # giant spiders are hostile

@@ -110,6 +110,7 @@ class Inventory(BotReactionWithFlag):
     def sell_stuff(self):
         self.__stopping = False
         self.get_inventory()  # Unnecessary if inventory is well tracked
+        magentaprint(str(self.inventory))
 
         for item_ref in self.sellable():
             if not self.__stopping:
@@ -236,7 +237,7 @@ class Inventory(BotReactionWithFlag):
 
                         return_dict[item] = n - 1
 
-                    continue
+                    break
 
         return return_dict
 

@@ -1,7 +1,7 @@
 
 import telnetlib
+from socket import error
 
-# from ConsoleHandler import newConsoleHandler
 from misc_functions import magentaprint
 
 class TelnetHandler(object):
@@ -11,26 +11,13 @@ class TelnetHandler(object):
 
     def write(self, command):
         command += '\r'
-        # newConsoleHandler().magenta()
-        magentaprint("\"" + command[:len(command)-1] + "\" ", end="")
-        # print("\"" + command[:len(command)-1] + "\" ", end="")
-        # print("test.", end="")
-        #magentaprint("\"" + command[:len(command)-2] + "\" ")
-        # newConsoleHandler().white()
-        self.tn.write(command.encode('ascii'))
-        # newConsoleHandler().magenta()
-        # print("sent.")
-        magentaprint("sent.", timestamp=False)
-        # print("sent.", end="")
-        # newConsoleHandler().white()
-
-    # def magentaprint(s, end=None):
-    #     newConsoleHandler().magenta()
-    #     if end:
-    #         print(s, end='')
-    #     else:
-    #         print(s)
-    #     newConsoleHandler.white()
+        # magentaprint("\"" + command[:len(command)-1] + "\" ", end="")
+        magentaprint("Sending '" + command[:len(command)-1] + "'")
+        try:
+            self.tn.write(command.encode('ascii'))
+        except error:
+            magentaprint("TelnetHandler write() error: " + str(error))
+        # magentaprint("sent.", timestamp=False)
 
     def connect_to_MUD(self):
         return telnetlib.Telnet("mud.landsofstone.org", 4801)  
@@ -43,4 +30,10 @@ class TelnetHandler(object):
         return self.tn.get_socket()
 
     def read_some(self):
-        return self.tn.read_some()  # read_eager() would miss characters
+        try:
+            return self.tn.read_some()  # read_eager() would miss characters
+        except error:
+            magentaprint("TelnetHandler read_some() error: " + str(error))
+            return ''
+
+        

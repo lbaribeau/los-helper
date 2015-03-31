@@ -20,6 +20,7 @@ class MudListenerThread(threading.Thread):
         self.MUDBuffer = MUDBuffer
         atexit.register(self.stop)
         self.stopping = False
+        self.airbag = False
 
     def stop(self):
         self.stopping = True
@@ -35,15 +36,17 @@ class MudListenerThread(threading.Thread):
             try:
                 sel_out_triple = select.select([socket_number], [], [], 2)  # A 1 second timeout makes quitting fast
             except ValueError:
-                #Eat the error
-                # TODO:  Hmmm, this gets SPAMMED BIGTIME on exit...  (Do not print here)
+                # TODO:  Hmmm, this can get SPAMMED BIGTIME on exit...  (Do not print here)
+                if not self.airbag:
+                    self.airbag = True
+                    magentaprint("MudListenerThread:" + str(ValueError))
                 continue
 
             if sel_out_triple != ([], [], []):
                 try:
                     fragment = fragment + self.telnetHandler.read_some().decode('ascii', errors='ignore')
                 except (EOFError, OSError) as e:
-                    # These can be thrown by read_some()
+                    # I think that the server doesn't send these.
                     magentaprint("MudListenerThread: Exiting (saw EOF) or Socket is dead")
                     self.stop()
                     break
@@ -68,6 +71,8 @@ class MudListenerThread(threading.Thread):
                 # Socket timed out.
                 pass    # just keep waiting.
                         # if stopping was set it will exit the loop
+                # Hmmm..... is there any way to tell if the server's ignoring us... "Timed out."
+                # other than that text.
 
         # los-helper closes the socket
 

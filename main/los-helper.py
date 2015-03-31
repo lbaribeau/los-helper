@@ -102,11 +102,10 @@ class LosHelper(object):
 
         self.mudListenerThread.stop()
         self.mudReaderThread.join(10)
-        magentaprint("Waiting for mudListener")
         self.mudListenerThread.join(10)
-        magentaprint("Stopped and joined mudReaderThread and mudListenerThread.")
-
         self.telnetHandler.close();
+        magentaprint("Closed telnet.")
+
         # print("It should be safe to ctrl + c now")
         # time.sleep(10)   # This was so I could see error messages in the windows prompt...
 
@@ -173,7 +172,6 @@ class LosHelper(object):
                 # after quit was sent.
                 # self.telnetHandler.write(user_input)
                 quit = Quit(self.mudReaderHandler, self.telnetHandler)
-                magentaprint("LosHelper quit.result is " + str(quit.result))
                 stopping = True if quit.result == 'success' else False
 
                 if self.botThread != None and self.botThread.is_alive():

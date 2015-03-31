@@ -1,6 +1,7 @@
 
 from threading import Thread
 import re
+from time import time
 
 from misc_functions import magentaprint
 from Command import Command
@@ -96,7 +97,7 @@ class SimpleCombatObject(CombatObject2, Command):
 
 
 class Cast(SimpleCombatObject):
-    command = 'cas '  # This gets rewritten to append the spellname alot
+    command = 'cas'  # This gets rewritten to append the spellname alot
     cooldown_after_success = 4  # Gets rewritten by characterClass...
     cooldown_after_failure = 0
     regexes = []  
@@ -105,6 +106,7 @@ class Cast(SimpleCombatObject):
     success_regexes = [  
         r"You cast a (.+?) spell on (.+?)\.",
         r"(.+?) spell cast\.",
+        r"You cast a (.+?) spell\.",
         aura_regex
     ]
 
@@ -121,42 +123,70 @@ class Cast(SimpleCombatObject):
         r"Cast what\?",
         r"They are not here\.",
         r"Cast at whom\?" 
-     ]
+    ]
 
-     # Commented... hmmm.. I went with the notify_failure(), I think so I wasn't checking for the regex twice...
-     # Just a logic structure thing.
-        # def notify(self, regex, M_obj):
-        #     if regex is self.spell_failed:
-        #         # Looks like we need spell to be instance or class variable
-        #         # What is it currently - it's currently part of command I believe...
-        #         # does this code even work yet.... command will just get changed...
-        #         # ... so we can get spell from command here inevitably...
-        #         if re.match("vig?|vigor?", spell):
-        #             self.__class__.timer = self.__class__.timer - self.cooldown_after_success + self.cooldown_after_failure
-        #         pass
-        #     super().notify(regex, M_obj)
+    aura = None
+    aura_timer = 0
+    aura_refresh = 480
+
+    # Commented... hmmm.. I went with the notify_failure(), I think so I wasn't checking for the regex twice...
+    # Just a logic structure thing.
+       # def notify(self, regex, M_obj):
+       #     if regex is self.spell_failed:
+       #         # Looks like we need spell to be instance or class variable
+       #         # What is it currently - it's currently part of command I believe...
+       #         # does this code even work yet.... command will just get changed...
+       #         # ... so we can get spell from command here inevitably...
+       #         if re.match("vig?|vigor?", spell):
+       #             self.__class__.timer = self.__class__.timer - self.cooldown_after_success + self.cooldown_after_failure
+       #         pass
+       #     super().notify(regex, M_obj)
+
+    def notify(self, regex, M_obj):
+        if regex is self.aura_regex:
+            self.__class__.aura = M_obj.group(1)
+            self.__class__.aura_timer = time()
+        super().notify(regex, M_obj)
 
     def notify_failure(self, regex, M_obj):
         spell = self.command.split(' ')[1].lower()
-        if re.match("vig?|vigor?", spell) or re.match("show-?|show-au?|show-aura?", spell):
+        if re.match("vig?|vigor?", spell) or \
+           re.match("show-?|show-au?|show-aura?", spell) or \
+           re.match("lig?|light?", spell) :
             self.clear_timer()
 
-    @classmethod
-    def cast(cls, telnetHandler, spell, target=None):
-        cls.command = "cas " + spell
-        cls.send(telnetHandler, target)
+    def cast(self, spell, target=None):
+        self.__class__.command = "cas " + spell
+        self.execute(target)
+        # self.wait_for_flag()
         # I think I only need to provide waiting calls since other 
         # calls can just be done with telnetHandler
         # Maybe the way to go is @classmethods need not wait (human use,)
         # and calls using the instance will wait.
-        # The caller even has access to wait_for_flags so this is not important.
+        # The caller even has access to wait_for_flag so this is not important.
 
         # Keep in mind that cls.target is for thread use.
 
-    # How will I do spell failure cooldowns that depend on the spell?
+    def update_aura(self):
+        if time() > self.aura_timer + self.aura_refresh:
+            self.cast('show')
+            self.wait_for_flag()
+
+    def spam_spell(self, character, spell, target=None):  # Maybe a prompt object would be better than character
+        spell_cost = 2 if re.match("vig?|vigor?", spell) else \
+                     1 if re.match("show?|show-a?|show-aura?", spell) else \
+                     5 if re.match("lig?|light?", spell) else 3
+
+        self.result = ''
+
+        while self.result != 'success' and character.MANA >= spell_cost:
+            self.wait_until_ready()
+            self.cast(spell, target)
+            self.wait_for_flag()
+
 
 class Kill(SimpleCombatObject):
-    command = 'k '
+    command = 'k'
     cooldown_after_success = 3
     cooldown_after_failure = 3 
     regexes = []  
@@ -222,10 +252,3 @@ class Kill(SimpleCombatObject):
         "You attack the (" + SimpleCombatObject.numbers + " )?(.+?) with your .+?, but miss\.",
         "You use your .+?, but nothing hits the (" + SimpleCombatObject.numbers + " )?(.+?)\."
     ]
-
-
-# set target to None when there's no target, and set it to a mob to target
-# - target needs to be a class variable for thread logic
-# - it will always be required as an argument to command send functions
-# spell will have to be part of cls.command for Command.send to work.
-# - Cast.command

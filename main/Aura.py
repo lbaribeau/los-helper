@@ -1,4 +1,6 @@
 
+from Command import Command
+
 class Aura(object):
 
     auras = ['demonic red', 'ominous red', 'ghastly red', 'murky red',

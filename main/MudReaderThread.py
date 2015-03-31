@@ -258,44 +258,9 @@ class MudReaderThread(threading.Thread):
             if (M_obj != None):
                 self.character.TOTAL_GOLD = M_obj.group(1)
 
-            #### Casting regexes ####
-            
-            # Now we are setting flags to tell the Handler that the cast command 
-            # went through (instead of stopping the cast/kill threads ourselves.)
-            # Actually, we're scrapping the flags
-            M_obj = re.search("That spell does not exist\.", text_buffer)
-            if(M_obj):
-                # refresh cast clock (cooldown wasn't used)
-                self.character.CAST_CLK = time.time() - self.character.CAST_WAIT 
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            M_obj = re.search("You don't know that spell\.", text_buffer)
-            if(M_obj):
-                self.character.CAST_CLK = time.time() - self.character.CAST_WAIT
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            M_obj = re.search("You cannot meet the casting cost!", text_buffer)
-            if(M_obj):
-                self.character.CAST_CLK = time.time() - self.character.CAST_WAIT 
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            M_obj = re.search("Spell name is not unique\.", text_buffer)
-            if(M_obj):
-                self.character.CAST_CLK = time.time() - self.character.CAST_WAIT 
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            M_obj = re.search("Cast what\?", text_buffer)
-            if(M_obj):
-                self.character.CAST_CLK = time.time() - self.character.CAST_WAIT 
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("Your spell fails\.", text_buffer)
-            if(M_obj):
-                self.character.CAST_CLK = time.time() - self.character.CAST_WAIT
-                # TODO: BUG
-                #  - some spells can be cast again immediately if they fail and some cannot
-                #  - equivalently you can move or not move immediately after failing a spell
-                #    based on what spell it was.
-                #  - Spells that should reset here are vigor, light, show-aura
-                #  - spells that should not reset are black magic.  
-                    # reset cast clock
-                # Do not kill the cast thread if the spell failed  
-                if(self.CHECK_AURA_FLAG):
+            if M_obj:
+                if self.CHECK_AURA_FLAG:
                     self.CHECK_AURA_FLAG=0;
                     self.CHECK_AURA_SUCCESS=0;
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
@@ -600,3 +565,4 @@ class MudReaderThread(threading.Thread):
             pass
     
     
+

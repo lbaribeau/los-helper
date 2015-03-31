@@ -317,8 +317,8 @@ class CommandHandler(object):
         magentaprint("CommandHandler: user_hastec")
     
     def user_flee(self):
-        # self.stop_CastThread()
         self.cast.stop()
+        # self.smartCombat.flee()
         now = time.time()
         time_remaining = max(self.character.MOVE_WAIT - (now - self.character.MOVE_CLK),
                              self.character.ATTACK_WAIT - (now - self.character.ATTACK_CLK),
