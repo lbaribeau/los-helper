@@ -5,7 +5,7 @@ import atexit
 import time
 import re
 
-import misc_functions
+from misc_functions import magentaprint
 from SmartCombat import SmartCombat
 from CombatObject import Kill, Cast
 from Database import *

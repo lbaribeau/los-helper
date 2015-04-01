@@ -1,4 +1,6 @@
-import sys, time
+import time
+import sys
+
 from ConsoleHandler import newConsoleHandler
 from datetime import datetime
 from Database import *
@@ -36,8 +38,8 @@ def cast_ready(character):
     return cast_wait() <= 0
 
 def wait_for_move_ready(character):
-    wait_for_attack_ready(character)
-    wait_for_cast_ready(character)
+    # wait_for_attack_ready(character)
+    # wait_for_cast_ready(character)
     time.sleep(max(0, character.MOVE_WAIT - (time.time() - character.MOVE_CLK)))
 
 def move_ready(character):
@@ -76,21 +78,22 @@ def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=Fals
     global debugMode
 
     if show_hidden:
-        text = repr(text) #escape all characters in string
+        text = repr(text)  # escape all characters in string
 
-    if (debugMode or not is_debug_command):
-        do_magentaprint (text)
+    if debugMode or not is_debug_command:
+        do_magentaprint(text)
 
-    if (debugMode or log_output):
+    if debugMode or log_output:
         log = Log()
         log.data = text
         log.save()
 
 def do_magentaprint(text):
     newConsoleHandler().magenta()
-    output = str(get_timestamp() + "| <" + str(text) + ">")
+    # output = str(get_timestamp() + "| <" + str(text) + ">")
+    output = str(get_timestamp() + "   | " + str(text))  
 
-    print (output)
+    print(output)
     newConsoleHandler().white()
 
 def manage_telnet_output(text, isVerbose=True):

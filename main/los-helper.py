@@ -135,6 +135,7 @@ class LosHelper(object):
                 # self.telnetHandler.write(user_input)
                 quit = Quit(self.mudReaderHandler, self.telnetHandler)
                 stopping = True if quit.result == 'success' else False
+                magentaprint("los-helper stopping is now " + str(stopping))
 
                 if self.botThread != None and self.botThread.is_alive():
                     self.botThread.stop()
@@ -333,4 +334,6 @@ class LosHelper(object):
             self.botThread.stop()
             #self.mudReaderHandler.unregister_reactions()
 
-LosHelper().main()
+L = LosHelper()
+L.main()
+L.close()
