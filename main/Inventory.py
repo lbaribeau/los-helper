@@ -274,6 +274,9 @@ class Inventory(BotReactionWithFlag):
 
         numbered_references.reverse()
         return numbered_references
+
+    def output_inventory(self):
+        magentaprint(str(self.inventory), False)
       
     def _item_string_to_reference(self, item_string):
         # 'grey cloak' will be "grey", it just takes the first word.

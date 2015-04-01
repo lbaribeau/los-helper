@@ -16,15 +16,31 @@ class Character(object):
     #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
     #MAGIC_SKILLS= [0, 0, 0, 0, 0]
     SKILLS = {} 
-    AURA_LIST = ['demonic red', 'ominous red', 'ghastly red', 'murky red',
-                 'red', 'rusty', 'dusty red', 'grey',
-                 'dusty blue', 'pale blue', 'blue',
-                 'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue']  # blood red and blazing blue...
 
-    # Indices will be sharp, thrust, blunt, pole, missile, earth, water, wind, fire, astral
+    AURA_LIST =  ['demonic red', 'ominous red', 'ghastly red', 'murky red',
+                  'red', 'rusty', 'dusty red', 'grey',
+                  'dusty blue', 'pale blue', 'blue',
+                  'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue'
+    ]  # blood red and blazing blue...
     # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
+    LEVEL_LIST = ["You could kill (?:.+?) with a needle\.", #-4 or more levels
+                  "(?:.+?) should be easy to kill\.", #-2 level from this character
+                  "(?:.+?) shouldn't be too tough to kill\.", #-2 level from this character
+                  "(?:.+?) is not quite as good as you\.", #-1 level from this character
+                  "(?:.+?) is a perfect match for you!", #same level as character
+                  "(?:.+?) is a little better than you\.", #+1 level from this character
+                  "(?:.+?) might be tough to kill\.", #+2 level from this character
+                  "(?:.+?) should be really hard to kill\.", #+3 levels from this character
+                  "(?:.+?) could kill you with a needle\." #+4 or more levels from this character
+    ]
+    WEAPON_TYPES = ["Sharp", "Thrust", "Blunt", "Pole", "Missile" ]
 
-    AURA_SCALE = 6
+    ARMOR_SLOTS = []
+    ARMOR_SIZE = "m" # todo: set this in info or whois
+    
+    WEAPON_SLOTS = []
+
+    AURA_SCALE = 8
     AURA = AURA_LIST[AURA_SCALE]
     
     AURA_PREFERRED_SCALE = None
@@ -52,6 +68,19 @@ class Character(object):
     CAST_WAIT = CAST_PERIOD
 
     MOBS_KILLED = 0
+    HITS_DEALT = 0
+    HITS_MISSED = 0
+    DAMAGE_DEALT = 0
+    HIGHEST_DAMAGE = 0
+    LOWEST_DAMAGE = 0
+    CRITS_LANDED = 0
+    SPELLS_CAST = 0
+    SPELLS_FAILED = 0
+    SPELL_DAMAGE_DEALT = 0
+    SPELLS_CRIT = 0
+    HITS_RECEIVED = 0
+    HITS_EVADED = 0
+    DAMAGE_TAKEN = 0
     DEATHS = 0
 
     HASTING = False 
@@ -83,26 +112,86 @@ class Character(object):
     GO_NO_EXIT = False
     GO_TIMEOUT = False
 
+    CONFUSED = False
     CAN_SEE = True
     ACTIVELY_MAPPING = False
+    ACTIVELY_BOTTING = False
 
     MUD_AREA = None
     AREA_TITLE=""
     EXIT_LIST=[]
     MONSTER_LIST=[]
 
+    def add_to_monster_list(self, monster_name):
+        self.MONSTER_LIST.append(monster_name)
+        self.MONSTER_LIST.sort()
+
+    def remove_from_monster_list(self, monster_name):
+        for index, monster in enumerate(self.MONSTER_LIST):
+            if (monster == monster_name):
+                self.MONSTER_LIST.pop(index)
+                continue
+        self.MONSTER_LIST.sort()
+
     TRYING_TO_MOVE = True
     EXIT_REGEX="self.character.EXIT_REGEX"
     AREA_ID = None
     LAST_DIRECTION = None
 
-    LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096] #Half of this is the gold requirement
+    # LEVEL_UP_EXP = [512, 1024, 2048, 4096] 
+
+    weapon_model = "Blunt"
+    weapon_proficiency = "0"
+    weapon_level = 1
+    armor_level = 1
+    spell_model = "Fire"
+    spell_proficiency = "0"
 
     START_TIME = time.time()
 
     # def __init__(self):
     #     self.set_level_health_mana_variables()
     #     self.set_monster_kill_list()
+    
+    def configure_equipment_and_spell_preferences(self):
+        self.ARMOR_SLOTS = self._class.ARMOR_SLOTS
+        self.WEAPON_SLOTS = self._class.WEAPON_SLOTS
+
+        if self.weapons is not None:
+            self.weapon_model, self.weapon_proficiency = key_with_max_val(self.weapons)
+
+            #more testing needed for weapon level check
+            if int(self.weapon_proficiency) > 15:
+                self.weapon_level = 2
+
+            if int(self.weapon_proficiency) > 30:
+                self.weapon_level = 3
+
+        if self.magic is not None:
+            self.spell_model, self.spell_proficiency = key_with_max_val(self.magic)
+
+        if self.level is not None:
+            if self.level <= 4:
+                self.armor_level = 1
+            else: #more testing needs to be done to determine what other levels are available
+                self.armor_level = 2
+          
+    def get_ideal_mana(self):
+        ideal_mana = self.MAX_MANA
+
+        if not (self.BLACK_MAGIC): 
+            ideal_mana = self.MAX_MANA - 1
+
+        return ideal_mana
+
+        # self.character.MAX_MANA / 2
+        #     if self.character.BLACK_MAGIC: 
+        #         MANA_TO_GO = self.character.MAX_MANA 
+        #     else:
+        #         if self.character.MAX_MANA % 2 == 1:
+        #             MANA_TO_GO = self.character.MAX_MANA - 1 
+        #         else:                                        
+        #             MANA_TO_GO = self.character.MAX_MANA  
 
     def configure_health_and_mana_variables(self):
         if self.level <= 2:
@@ -175,7 +264,7 @@ class Character(object):
     lvl2_red_monsters = [ 
         "kobold sentry", "blond hooker", "sultry hooker", "kobold", "spiv", 
         "drunken miner", "kobold miner", "kobold archer", 'angry hooker',
-        "angry kobold", 'red axer', 'pickpocket', 'thug'
+        "angry kobold", 'red axer', 'pickpocket', 'thug', "tired hooker"
         ] 
     # pickpockets drop leather collars and masks
     # red axer drops studded leather collar
@@ -206,36 +295,88 @@ class Character(object):
         ]
     # hungry spiders are hostile
     lvl4_red_monsters = [
-        "kobold shaman", "drunken trouble-maker", "kobold champion"]
+        "kobold shaman", "drunken trouble-maker", "kobold champion", "hungry spider"]
     lvl5_monsters = [
         "dwarven farm hand", "dwarven barmaid", "fort sentry", "fur trader", 
         "aristocrat", "rancher sentry"]
+    lvl5_monsters = [
+        "dwarven farm hand", "dwarven barmaid", "fort sentry", "fur trader", 
+        "aristocrat", "rancher sentry",
+        # "vicar",
+        "nobleman", 
+        "lyrist",
+        "orange picker",
+        "logger",
+        "veteran",
+        "bruiser",
+        "axeman",
+        "seeker",
+        "hunter",
+        "bull",
+        "lay priest",
+        "protector",
+        "battered knight"
+    ]
     lvl5_red_monsters = [
         'large bandit', "kobold guard", "mugger", 'large spider'
-        ]
+    ]
     lvl6_monsters = [
-        # "dwarven field worker",   # Dwarven farm hands can mess up this fight...
-        "dwarven bartender", "school teacher",
+        "dwarven field worker", "dwarven bartender", "school teacher",
         'lyrist', "nobleman", "seeker", "bull", "hunter", 'usher',
-        'sword swallower', 'archer',
-        "yard supervisor", #"sawmill supervisor"
+        'sword swallower', 'archer', "mime artist",
+        "yard supervisor", "sawmill operator", "large spider", "blacksmith",
+        "farm foreman",
+        "yard supervisor",
+        "Old Man James",
+        "dwarven traveller",
+        "Goourd",
+        "tourney organiser"
         #'sentry' stand in pairs unfortunately...
-        ] # bull and hunter might be wrong (too high).
-    lvl6_red_monsters = [
-        'gnoll sentry', "bandit swordsman"
-        ]
+    ]
+    lvl6_red_monsters = [ #1574 for gnoll camp
+        'gnoll sentry', "bandit swordsman", "gnoll spearsman", "gnoll raider"
+    ]
     lvl7_monsters = [
-        "dwarven field worker",  # Actually level 6
         "dwarven cook", "swordsman", 'fort sergeant', 'oremaster', 
-        'giant spider'
-        ] # giant spiders are hostile
+        'giant spider', "rock spider",
+        "Aldo",
+        "dwarven trader",
+        "gnoll chaplain",
+        "Cheryn",
+        "robed priest",
+        "orc scout"
+    ] # giant spiders are hostile
     lvl8_monsters = [
         'owlbear',
+        "hauler"
+        "Farmer Malbon",
+        "sonneteer",
+        "Tag",
+        "mine manager",
+        "Alaran the Market Manager",
+        "artificer",
+        "Dini Stonehammer",
+        "Thereze",
+        "Farmer Viladin",
+        "Rancher Renstone",
+        "berzerker",
+        "dwarven hunter",
+        "initiate",
+        "Olmer",
+        "berserk orc",
+        "old knight"
+
         #'mine manager'
-        ]
+    ]
     lvl9_monsters = [
-        "dwarven blacksmith"
-        ]
+        "dwarven blacksmith",
+        "director",
+        "Elder Barthrodue",
+        "abbot",
+        "orc warrior",
+        "white knight",
+        "hedge knight"
+    ]
     # A list of monsters redundant to the above lists that
     # I may want to kill even if they are too low of level.
     # Mostly hostiles and things that don't let you loot.
@@ -243,12 +384,15 @@ class Character(object):
         "oaf", "wanderer", #"acolyte", 
         "thug", "spiv", "kobold sentry", "tired hooker", 
         "blond hooker", "angry hooker", "sultry hooker", 
-        "journeyman" ] 
+        "journeyman" 
+    ] 
 
     def set_monster_kill_list(self):
         self.MONSTER_KILL_LIST = []
-        self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
-        self.MONSTER_KILL_LIST.extend(self.lvl1_red_monsters)
+
+        if self.level <= 7:
+            self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl1_red_monsters)
 
         if self.level > 3:
             self.MONSTER_KILL_LIST.extend(self.lvl2_monsters)
@@ -256,19 +400,29 @@ class Character(object):
         if self.level > 4:
             self.MONSTER_KILL_LIST.extend(self.lvl3_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl3_red_monsters)
-        if self.level > 5:
-            self.MONSTER_KILL_LIST = [m for m in self.MONSTER_KILL_LIST \
-                                      if m not in self.lvl1_monsters    \
-                                      and m not in self.lvl2_monsters]
+        if self.level > 6:
+            # self.MONSTER_KILL_LIST = [m for m in self.MONSTER_KILL_LIST \
+            #                           if m not in self.lvl1_monsters    \
+            #                           and m not in self.lvl2_monsters]
             self.MONSTER_KILL_LIST.extend(self.preferred_lvl_1_2_monsters)
-            self.MONSTER_KILL_LIST.extend(self.lvl4_monsters)  # Militia soldiers troublesome?
+            self.MONSTER_KILL_LIST.extend(self.lvl4_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl4_red_monsters)
-        if self.level > 7:
+        if self.level > 8:
             self.MONSTER_KILL_LIST.extend(self.lvl5_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl5_red_monsters)
-        if self.level > 8:
+        if self.level > 9:
             self.MONSTER_KILL_LIST.extend(self.lvl6_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl6_red_monsters)
+        if self.level > 11:
+            self.MONSTER_KILL_LIST.extend(self.lvl7_monsters)
+        if self.level > 12:
+            self.MONSTER_KILL_LIST.extend(self.lvl5_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl5_red_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl6_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl6_red_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl7_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl8_monsters)
+            # self.MONSTER_KILL_LIST.extend(self.lvl9_monsters)
 
 
 # todo: I don't like caps anymore

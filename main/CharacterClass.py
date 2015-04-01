@@ -3,10 +3,34 @@ from misc_functions import magentaprint
 from Ability import *
 from CombatObject import Cast
 
+# def get_class(character):
+#     class_string = character.class_string
+#     level = character.level
+#     if class_string == "Ass":
+#         return Assassin(telnetHandler)
+#     elif class_string == "Bar":
+#         return Barbarian(telnetHandler)
+# class Assassin(object):
+#     def __init__(self, telnetHandler):
+#         self.lvl1_maxHP = 19
+#         self.lvl1_maxMP = 2
+#         self.abilities = [Backstab(telnetHandler)]
+
+
 class CharacterClass(object):
 
-    def __init__(self, class_string, telnetHandler):
+    def __init__(self, class_string, level, telnetHandler):
         self.id = class_string
+        # self.combat_skills = []
+        # self.heal_skills = []
+        # self.buff_skills = []
+        # class_string = character.class_string
+
+        self.ARMOR_SLOTS = [ "Body", "Arms", "Legs", "Neck", "Hands", "Head",
+                             "Feet", "Finger", "Shield"
+        ]
+
+        self.WEAPON_SLOTS = ["Wielded"]
 
         if class_string == "Ass":
             self.lvl1_maxHP = 19 
@@ -54,6 +78,7 @@ class CharacterClass(object):
             self.mana_tick_chapel = 4 
             self.abilities = [ Haste(telnetHandler) ]
             Cast.cooldown_after_success = 5
+            self.WEAPON_SLOTS.append("Second") 
         elif class_string == "Thi":
             self.lvl1_maxHP = 18 
             self.lvl1_maxMP = 3
@@ -66,11 +91,25 @@ class CharacterClass(object):
             self.MP_gained_per_level = 3
             self.abilities = [ Meditate(telnetHandler), Touch(telnetHandler) ]
             Cast.cooldown_after_success = 3
+            # self.heal_skills.extend([ClassSkillReaction(mudReaderHandler, "Meditate",
+            #                         SkillTimer("You feel at one with the universe\.", 110),
+            #                         SkillTimer("Your spirit is not at peace.", 10))])
+
+            # I actually remove abilities that are too high in level at the bottom.
+            # if self.level > 9:  
+            #     self.combat_skills.extend([ClassSkillReaction(mudReaderHandler, "Touch",
+            #                             SkillTimer("Your? touch(?:ed)? .+?\.", 240),
+            #                             SkillTimer("You failed to harm the .+?\.", 240))])
+            self.WEAPON_SLOTS = []
+            self.ARMOR_SLOTS = []
         elif class_string == "Dru":
             self.lvl1_maxHP = 15
             self.lvl1_maxMP = 4
             self.abilities = [ Barkskin(telnetHandler) ]
             Cast.cooldown_after_success = 2
+        elif class_string == "Alc":
+            self.lvl1_maxHP = 15 
+            lvl1_maxMP = 4
         elif class_string == "Dar":
             self.lvl1_maxHP = 19 
             self.lvl1_maxMP = 4
@@ -79,8 +118,7 @@ class CharacterClass(object):
         else:
             magentaprint("CharacterClass error: could not recognize class string.")
 
-
-
+        self.abilities = [a for a in self.abilities if a.level >= level]
 
 
 # OLD IDEAS

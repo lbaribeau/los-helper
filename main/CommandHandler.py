@@ -14,7 +14,7 @@ import Command
 
 class CommandHandler(object):
 
-    def __init__(self, character, mudReaderHandler, telnetHandler, database_file, mud_map):
+    def __init__(self, character, mudReaderHandler, telnetHandler):
         self.character = character
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
@@ -26,13 +26,6 @@ class CommandHandler(object):
         mudReaderHandler.register_reaction(self.smartCombat)
         self.kill = self.smartCombat.kill
         self.cast = self.smartCombat.cast
-
-        database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
-        db.initialize(database)
-        db.connect()
-        self.mud_map = mud_map
-        create_tables()
-        db.close()
 
     def process(self, user_input):
         """ This CommandHandler function is the filter for user input that
