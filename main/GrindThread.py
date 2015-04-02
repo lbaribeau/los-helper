@@ -8,8 +8,8 @@ from Exceptions import *
 
 class GrindThread(BotThread):
 
-    def __init__(self, character, commandHandler, mudReaderHandler, database, mud_map, starting_path=None): 
-        super().__init__(character, commandHandler, mudReaderHandler, database, mud_map)
+    def __init__(self, character, commandHandler, mudReaderHandler, mud_map, starting_path=None): 
+        super().__init__(character, commandHandler, mudReaderHandler, mud_map)
 
         # Set TOTALPATHS.  Setting it lower than the actual number
         # of paths in decide_where_to_go is a way to truncate paths

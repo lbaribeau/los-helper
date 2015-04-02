@@ -40,7 +40,7 @@ class CombatReactions(BotReaction):
         self.mudReaderHandler.register_reaction(self)
 
     def notify(self, regex, M_obj):
-        magentaprint("Combat Reaction happened on: " + regex)
+        # magentaprint("Combat Reaction happened on: " + regex)
         if regex == self.physical_damage:
             self.character.HITS_DEALT += 1
 

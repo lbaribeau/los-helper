@@ -9,9 +9,8 @@ class SmartGrindThread(GrindThread):
     smart_target_list = []
 
 
-    def __init__(self, character, commandHandler, mudReaderHandler,
-                inventory, mud_map, starting_path=0): 
-        super(SmartGrindThread, self).__init__(character, commandHandler, mudReaderHandler, inventory, mud_map, starting_path)
+    def __init__(self, character, commandHandler, mudReaderHandler, mud_map, starting_path=0): 
+        super().__init__(character, commandHandler, mudReaderHandler, mud_map, starting_path)
 
         self.is_actually_dumb = False
 

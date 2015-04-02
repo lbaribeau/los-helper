@@ -43,7 +43,7 @@ def wait_for_a_flag(class_with_flag):
         run_time = time.time() - start_time
 
     if not class_with_flag._waiter_flag:
-        magentaprint("BotReaction.wait_for_flag() timed out!")
+        magentaprint("BotReaction.wait_for_flag() timed out!" + str(class_with_flag))
         return False  # Timed out
     else:
         class_with_flag._waiter_flag = False

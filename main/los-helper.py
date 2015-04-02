@@ -135,7 +135,6 @@ class LosHelper(object):
                 # self.telnetHandler.write(user_input)
                 quit = Quit(self.mudReaderHandler, self.telnetHandler)
                 stopping = True if quit.result == 'success' else False
-                magentaprint("los-helper stopping is now " + str(stopping))
 
                 if self.botThread != None and self.botThread.is_alive():
                     self.botThread.stop()
@@ -314,7 +313,7 @@ class LosHelper(object):
             magentaprint(str(M_obj.groups()),False)
             can_mix = False
 
-        if (self.botThread != None and self.botThread.is_alive()):
+        if self.botThread != None and self.botThread.is_alive():
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         elif can_mix:
             self.botThread = MixThread(self.character, 
