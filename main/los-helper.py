@@ -272,11 +272,12 @@ class LosHelper(object):
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
             self.botThread = GotoThread(self.character, 
-                                        self.commandHandler, 
-                                        self.mudReaderHandler,
-                                        self.mud_map,
-                                        starting_path,
-                                        is_show_to)
+                                       self.commandHandler, 
+                                       self.mudReaderHandler,
+                                       self.inventory,
+                                       self.mud_map,
+                                       starting_path,
+                                       is_show_to)
             self.botThread.start()
 
     def start_slave(self, user_input):
