@@ -1,3 +1,4 @@
+
 import sys, time, re
 from Database import *
 from MudMap import *
@@ -14,65 +15,76 @@ class FakeTelnetSocket(object):
     def __init__(self, mud_map):
         self.content = ["[90 H 17 M]"]
         self.mud_map = mud_map
+        self.whois_string = None
 
-        ##### CONTENT ######
+    def initialize_content(self, character_name):
         self.inventory_string = "You have: an awl, six small lamps, six small knives, a buckler, a burnt ochre potion, a hammer, a large bag, a large mace, two large sacks, a long sword, seven silver chalices, a silver torch, two small lamps, six steel bottles, five steel rings, two stilletos.\n"
+        spaces = "                      "[0:22 - len(character_name)]
         
-        self.whois_string = ("Player                Cls Gen [Lv]Title                      Age   Race      \n"
-"-----------------------------------------------------------------------------\n"
-"Derp                  Mon  M  [12]Brother                    16    Human\n")
+        self.whois_string = (
+            "Player                Cls Gen [Lv]Title                      Age   Race      \n"
+            "-----------------------------------------------------------------------------\n" + 
+            character_name + spaces + "Mon  M  [12]Brother                    16    Human\n"
+            # "Derp                  Mon  M  [12]Brother                    16    Human\n")
+        )
+
         self.time_string = '                      Meditate   *READY*\n                         Touch   3:25 minutes remaining\n'
-        self.equipment = ("You see Derp the Human Vicar.\n" \
-                        "He is in general good health.\n" \
-                        "On body:   some chain mail armour\n"   
-                        "On arms:   some chain mail sleeves\n"
-                        "On legs:   some chain mail leggings\n"
-                        "On neck:   a grey cloak\n"
-                        "On neck:   a traveller's cross\n"
-                        "On hands:  some chain mail gloves\n"
-                        "On head:   a chain mail hood\n"
-                        "On feet:   some chain mail boots\n"
-                        "On face:   some spectacles\n"
-                        "On finger: an iron ring\n"
-                        "On finger: an iron ring\n"
-                        "On finger: an iron ring\n"
-                        "On finger: an iron ring\n"
-                        "On finger: an iron ring\n"
-                        "On finger: an iron ring\n"
-                        "On finger: an iron ring\n"
-                        "On finger: an iron ring\n"
-                        "Shield:    a cast iron shield\n"
-                        "Wielded:   a morning star\n")
+        self.equipment = (
+            "You see " + character_name + " the Human Vicar.\n" \
+            "He is in general good health.\n" \
+            "On body:   some chain mail armour\n"   
+            "On arms:   some chain mail sleeves\n"
+            "On legs:   some chain mail leggings\n"
+            "On neck:   a grey cloak\n"
+            "On neck:   a traveller's cross\n"
+            "On hands:  some chain mail gloves\n"
+            "On head:   a chain mail hood\n"
+            "On feet:   some chain mail boots\n"
+            "On face:   some spectacles\n"
+            "On finger: an iron ring\n"
+            "On finger: an iron ring\n"
+            "On finger: an iron ring\n"
+            "On finger: an iron ring\n"
+            "On finger: an iron ring\n"
+            "On finger: an iron ring\n"
+            "On finger: an iron ring\n"
+            "On finger: an iron ring\n"
+            "Shield:    a cast iron shield\n"
+            "Wielded:   a morning star\n"
+        )
 
-        self.info_string = ("/============================== Overview ==================================\\\n"
-"|         Derp the Human, an Enlightened Brother of the 13th level         |\n"
-"|                  Your preferred alignment is dusty red                   |\n"
-"\==========================================================================/\n"
-"\n"
-" /==== Attributes =====\  /======= Weapons =====\  /======= Magic ========\\\n"
-" |       Str : 20      |  |     Sharp   : 0  %  |  |     Earth : 0  %     |\n"
-" |       Dex : 19      |  |     Thrust  : 0  %  |  |     Wind  : 0  %     |\n"
-" |       Con : 17      |  |     Blunt   : 87 %  |  |     Fire  : 45 %     |\n"
-" |       Int : 5       |  |     Pole    : 0  %  |  |     Water : 0  %     |\n"
-" |       Pty : 6       |  |     Missile : 0  %  |  |    Astral : 0  %     |\n"
-" \=====================/  \=====================/  \======================/\n"
-"\n"
-" /===== Status 1 ======\  /====== Status 2 =====\  /=====  Status 3 ======\\\n"
-" |   Curr HP : 86      |  |     Exp : 440607    |  | GameTime :  25:22:47 |\n"
-" |    Max HP : 89      |  |    Gold : 1578462   |  | Game Age : 16        |\n"
-" |   Curr MP : 1       |  |  -Needed to Level-  |  |                      |\n"
-" |    Max MP : 27      |  |     Exp : 560992    |  |   Weight : 113       |\n"
-" |        AC : 0       |  |    Gold : 70124     |  |  Objects : 33        |\n"
-" \=====================/  \=====================/  \======================/\n")
+        self.info_string = (
+            "/============================== Overview ==================================\\\n\r"
+            "|         " + character_name + " the Human, an Enlightened Brother of the 13th level      |\n\r"
+            "|                  Your preferred alignment is dusty red                   |\n\r"
+            "\==========================================================================/\n\r"
+            "\n\r"
+            " /==== Attributes =====\  /======= Weapons =====\  /======= Magic ========\\\n\r"
+            " |       Str : 20      |  |     Sharp   : 0  %  |  |     Earth : 0  %     |\n\r"
+            " |       Dex : 19      |  |     Thrust  : 0  %  |  |     Wind  : 0  %     |\n\r"
+            " |       Con : 17      |  |     Blunt   : 87 %  |  |     Fire  : 45 %     |\n\r"
+            " |       Int : 5       |  |     Pole    : 0  %  |  |     Water : 0  %     |\n\r"
+            " |       Pty : 6       |  |     Missile : 0  %  |  |    Astral : 0  %     |\n\r"
+            " \=====================/  \=====================/  \======================/\n\r"
+            "\n\r"
+            " /===== Status 1 ======\  /====== Status 2 =====\  /=====  Status 3 ======\\\n\r"
+            " |   Curr HP : 86      |  |     Exp : 440607    |  | GameTime :  25:22:47 |\n\r"
+            " |    Max HP : 89      |  |    Gold : 1578462   |  | Game Age : 16        |\n\r"
+            " |   Curr MP : 1       |  |  -Needed to Level-  |  |                      |\n\r"
+            " |    Max MP : 27      |  |     Exp : 560992    |  |   Weight : 113       |\n\r"
+            " |        AC : 0       |  |    Gold : 70124     |  |  Objects : 33        |\n\r"
+            " \=====================/  \=====================/  \======================/\n\r"
+        )
 
-        self.drop_string = ("You drop a %s.\n"
-                            "Thanks for recycling.\n"
-                            "You have 13612 gold.\n")
+        self.drop_string = (
+            "You drop a %s.\n"
+            "Thanks for recycling.\n"
+            "You have 13612 gold.\n"
+        )
 
         self.current_area = ""
         self.current_mud_area = None
         self.current_monster_list = []
-
         self.fso = FakeSocketOutput()
 
     def connect(host="", port=""):
@@ -82,12 +94,16 @@ class FakeTelnetSocket(object):
     def write(self, command):
         #re.match("bot ?$|bot [0-9]+$", user_input)
         #M_obj = re.search("[0-9]+", user_input)
-        if (command == "i"):
+        if not self.whois_string:
+            # The first written string is the character's name for login
+            self.initialize_content(command)
+            self.write("genaid 336")
+        elif (command == "i"):
             self.content.append(self.inventory_string)
         elif (re.match("whois (.+?)", command)):
             self.content.append(self.whois_string)
-        # elif (re.match("info", command)):
-        #     self.content.append(self.info_string)
+        elif (re.match("info", command)):
+            self.content.append(self.info_string)
         elif (re.match("time", command)):
             self.content.append(self.time_string)
         elif (re.match("c show", command)):
@@ -197,13 +213,13 @@ class FakeTelnetHandler(object):
         self.tn.connect()
 
         self.echoing = True
-        self.tn.write("genaid 336") #lets start us in the chapel
+        # self.tn.write("genaid 336") #lets start us in the chapel
         #self.tn.write("addmob spiv") #most everything will fight this
 
     def write(self, command):
         if self.echoing:
             magentaprint('{' + command + '}',False)
-    
+
         self.tn.write(command)
 
     def connect_to_MUD(self):

@@ -64,12 +64,11 @@ class LosHelper(object):
         self.mud_map_thread = threading.Thread(target=self.setup_mud_map)
         self.character = Character()
         
-        if len(sys.argv) > 3:
-            if sys.argv[3] == "-fake":
-                self.telnetHandler = FakeTelnetHandler()
+        if "-fake" in sys.argv:
+            self.telnetHandler = FakeTelnetHandler()
+            sys.argv.remove("-fake")
         else:
-                self.telnetHandler = TelnetHandler()
-
+            self.telnetHandler = TelnetHandler()
 
         self.consoleHandler = newConsoleHandler() 
         self.MUDBuffer = MyBuffer()
@@ -97,7 +96,6 @@ class LosHelper(object):
         self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
     
     def close(self):
-
         self.mud_map_thread.join()
         self.mudListenerThread.stop()
         self.mudReaderThread.stop()
