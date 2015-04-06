@@ -4,6 +4,8 @@ import re
 
 from misc_functions import *
 from MyBuffer import *
+from MudEvent import MudEvent
+import RegexStore
 
 class MudReaderHandler(object):
     # This object tells the MudReaderThread what to do.
@@ -23,11 +25,12 @@ class MudReaderHandler(object):
     # on the buffer.  Often a flag will be unset triggered on that text.  
     # The handler's job is to know what flags to set.
     
-    def __init__(self, MudReaderThread, character):        
+    def __init__(self, mudReaderThread, character):        
         
-        self.MudReaderThread = MudReaderThread
+        self.mudReaderThread = mudReaderThread
         self.character = character
         self.good_MUD_timeout = 8
+        self.initialize_mud_events()
             # A good amount of time to wait for the MUD to spit out 
             # any given text.  My goal however is to never timeout :)
     # end __init__
@@ -102,14 +105,14 @@ class MudReaderHandler(object):
         # The reader thread will set its SUCCESSFUL_GO variable which we will
         # read and return.
 
-        self.MudReaderThread.CHECK_GO_FLAG = 1
+        self.mudReaderThread.CHECK_GO_FLAG = 1
             # This is like the return value.
             # Probably not necessary to set it but oh well.
         
         timeout = self.good_MUD_timeout
         start_time = time.time()
         run_time = 0
-        while(self.MudReaderThread.CHECK_GO_FLAG == 1 and 
+        while(self.mudReaderThread.CHECK_GO_FLAG == 1 and 
               run_time < timeout):
             time.sleep(0.05)
             run_time = time.time() - start_time
@@ -120,7 +123,7 @@ class MudReaderHandler(object):
         # changes the system clock in the background.  We can't really rely on time.time() 
         # too much :(.
         if(run_time < timeout):
-            #magentaprint("Check for successful go, returning " + str(self.MudReaderThread.SUCCESSFUL_GO))
+            #magentaprint("Check for successful go, returning " + str(self.mudReaderThread.SUCCESSFUL_GO))
             return self.character.SUCCESSFUL_GO
         else:
             magentaprint("MudReaderHandler: check_go timed out by %.1fs." % round(run_time, 1))
@@ -181,11 +184,11 @@ class MudReaderHandler(object):
         
     def wait_for_inventory_match(self):
         #self.character.INVENTORY_LIST = []
-        self.MudReaderThread.CHECK_INVENTORY_FLAG = 1
+        self.mudReaderThread.CHECK_INVENTORY_FLAG = 1
         start_time = time.time()
         run_time = 0
         timeout = self.good_MUD_timeout
-        while(self.MudReaderThread.CHECK_INVENTORY_FLAG == 1 and 
+        while(self.mudReaderThread.CHECK_INVENTORY_FLAG == 1 and 
               run_time < timeout):
             time.sleep(0.05)
             run_time = time.time() - start_time
@@ -196,17 +199,17 @@ class MudReaderHandler(object):
             return False    
         
     def wait_for_aura_match(self):
-        self.MudReaderThread.CHECK_AURA_FLAG = 1
-        self.MudReaderThread.CHECK_AURA_SUCCESS = 0
+        self.mudReaderThread.CHECK_AURA_FLAG = 1
+        self.mudReaderThread.CHECK_AURA_SUCCESS = 0
         start_time = time.time()
         run_time = 0
         timeout = self.good_MUD_timeout
-        while(self.MudReaderThread.CHECK_AURA_FLAG == 1 and 
+        while(self.mudReaderThread.CHECK_AURA_FLAG == 1 and 
               run_time < timeout):
             time.sleep(0.05)
             run_time = time.time() - start_time
             
-        if(run_time < timeout and self.MudReaderThread.CHECK_AURA_SUCCESS):
+        if(run_time < timeout and self.mudReaderThread.CHECK_AURA_SUCCESS):
             return True
         else:
             return False  
@@ -240,11 +243,11 @@ class MudReaderHandler(object):
         #        return False #timeout
         
     def check_if_item_was_sold(self):
-        self.MudReaderThread.CHECK_SELL_FLAG = 1
+        self.mudReaderThread.CHECK_SELL_FLAG = 1
         start_time = time.time()
         run_time = 0
         timeout = self.good_MUD_timeout
-        while(self.MudReaderThread.CHECK_SELL_FLAG == 1 and 
+        while(self.mudReaderThread.CHECK_SELL_FLAG == 1 and 
               run_time < timeout):
             time.sleep(0.05)
             run_time = time.time() - start_time
@@ -276,14 +279,14 @@ class MudReaderHandler(object):
     #        # Only call after sending a kill command.
     #    
     #    # First, wait for the regular attack info
-    #    self.MudReaderThread.check_kill_flags.waitflag = True
+    #    self.mudReaderThread.check_kill_flags.waitflag = True
     #          
-    #    return self.poll_flag(self.MudReaderThread.check_kill_flags)
+    #    return self.poll_flag(self.mudReaderThread.check_kill_flags)
         
     
     def poll_flag(self, check_flags):
         # Poll_flag function.
-        # MudReaderHandler.poll_flag manages MudReaderThread's flags and returns 
+        # MudReaderHandler.poll_flag manages mudReaderThread's flags and returns 
         # when something was matched.  
         # Argument: check_flags should be a MyMudWaiterFlags object
         start_time = time.time()
@@ -374,9 +377,9 @@ class MudReaderHandler(object):
         to check and call notify on."""
         # Re-registering a reaction that was just unregistered 
         # might not work.  MudReaderThread takes some time to remove it.
-        if not botReaction in self.MudReaderThread.BotReactionList:
+        if not botReaction in self.mudReaderThread.BotReactionList:
             botReaction.unregistered = False  # I think this line's redundant
-            self.MudReaderThread.BotReactionList.append(botReaction)
+            self.mudReaderThread.BotReactionList.append(botReaction)
         # magentaprint("Registered: " + str(botReaction))
         # magentaprint("Regexes: " + str(botReaction.regexes))
 
@@ -385,10 +388,10 @@ class MudReaderHandler(object):
     #   Nevermind this function, just do it manually, it's simpler
 
     def is_registered(self, botReaction):
-        return botReaction in self.MudReaderThread.BotReactionList and not botReaction.unregistered
+        return botReaction in self.mudReaderThread.BotReactionList and not botReaction.unregistered
         
     def unregister_reactions(self):
-        self.MudReaderThread.BotReactionList = []
+        self.mudReaderThread.BotReactionList = []
 
     #def wait_for_ability_feedback(self, CoolAbility):
         # Could do a flaggy thing or reacations.  Reactions, obviously.
@@ -414,6 +417,33 @@ class MudReaderHandler(object):
         #     self.stop()
         pass
         # myReaction = GenericBotReaction()
+
+    def subscribe_to_mud_event(self, subscriber, regex_store_attribute):
+        self.mudReaderThread.mud_events[regex_store_attribute[0]].subscribers.append(subscriber)  
+        # magentaprint("MudReaderHandler mud_events: " + str(self.mudReaderThread.mud_events))
+
+        # if subscriber not in self.mudReaderThread.mud_event[regex]:
+
+    def initialize_mud_events(self):
+        # eh this converts them to strings
+        # magentaprint("MudReaderHandler RegexStore.__dict__:" + str(RegexStore.__dict__))
+        # for regex in dir(RegexStore):  
+        # magentaprint("MudReaderHandler loop: " + str([s for s in dir(RegexStore) if s[1] != '_']))
+        # for regex in [s in dir(RegexStore) if s[1] != '_' and (len(s) > 1 and s[2] != '_' or len(s) == 1)]:  
+        # for regex in [s for s in dir(RegexStore) if s[1] != '_']:
+        # for regex in [s for s in dir(RegexStore) if s[1] != '_' and (len(s) > 1 and s[2] != '_' or len(s) == 1)]:
+
+        # magentaprint("MudReaderHandler dir(RegexStore):" + str(dir(RegexStore)))
+        # magentaprint("MudReaderHandler loop: " + str([s for s in dir(RegexStore) if s[1] != '_' and (len(s) > 1 and s[2] != '_' or len(s) == 1)]))
+        for regex_list_name in [s for s in dir(RegexStore) if not s.startswith('__')]:
+            # mudReaderThread.mud_events.append(MudEvent(regex))
+            # mud_events should be a dict indexed by the regex
+            # self.mudReaderThread.mud_events[regex] = MudEvent(regex)
+            regex_list = getattr(RegexStore, regex_list_name)
+            self.mudReaderThread.mud_events[regex_list[0]] = MudEvent(regex_list)
+            # The first regex in the list is used as the string key to dict mud_events
+
+        magentaprint("MudReaderHandler done setting up mud_events:" + str(self.mudReaderThread.mud_events))
 
 
 

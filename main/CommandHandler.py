@@ -11,6 +11,7 @@ from CombatObject import Kill, Cast
 from Database import *
 from MudMap import *
 import Command
+import RegexStore
 
 class CommandHandler(object):
 
@@ -24,6 +25,8 @@ class CommandHandler(object):
         mudReaderHandler.register_reaction(self.smartCombat.kill)
         mudReaderHandler.register_reaction(self.smartCombat.cast)
         mudReaderHandler.register_reaction(self.smartCombat)
+        mudReaderHandler.subscribe_to_mud_event(self.smartCombat.kill, RegexStore.hastened)
+        mudReaderHandler.subscribe_to_mud_event(self.smartCombat.kill, RegexStore.feel_slower)
         self.kill = self.smartCombat.kill
         self.cast = self.smartCombat.cast
 

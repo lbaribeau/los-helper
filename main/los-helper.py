@@ -60,8 +60,11 @@ class LosHelper(object):
 
     def __init__(self):
         self.botThread = None
-        magentaprint("Connecting to MUD and initializing....", False)
+        magentaprint("LosHelper initializing...", False)
         self.mud_map_thread = threading.Thread(target=self.setup_mud_map)
+        self.mud_map_thread.start()
+        # self.mud_map_thread = threading.Thread(target=magentaprint, args=("setting up mud map in main thread",))
+        # self.setup_mud_map()
         self.character = Character()
         
         if "-fake" in sys.argv:
@@ -81,11 +84,12 @@ class LosHelper(object):
 
         self.bot_ready = False
         self.mud_map = None
-        self.mud_map_thread.start()
         self.mudListenerThread.start()
         self.mudReaderThread.start()
 
         # With the MUDReaderThread going, we have the server's text and prompts now showing
+        # magentaprint("LosHelper joining mud_map_thread.")  # Ha this print can cause the lock erroris
+        self.mud_map_thread.join() 
         self.write_username_and_pass()
         self.initialize_reactions()
         self.check_inventory()
@@ -96,7 +100,6 @@ class LosHelper(object):
         self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
     
     def close(self):
-        self.mud_map_thread.join()
         self.mudListenerThread.stop()
         self.mudReaderThread.stop()
         self.mudListenerThread.join(10)
@@ -269,12 +272,11 @@ class LosHelper(object):
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
             self.botThread = GotoThread(self.character, 
-                                       self.commandHandler, 
-                                       self.mudReaderHandler,
-                                       self.inventory,
-                                       self.mud_map,
-                                       starting_path,
-                                       is_show_to)
+                                        self.commandHandler, 
+                                        self.mudReaderHandler,
+                                        self.mud_map,
+                                        starting_path,
+                                        is_show_to)
             self.botThread.start()
 
     def start_slave(self, user_input):

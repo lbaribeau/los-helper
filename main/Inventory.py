@@ -62,7 +62,10 @@ class Inventory(BotReactionWithFlag):
         elif regex is self.you_remove or regex is self.gave_you:
             self.add(M_obj.group(1))
         elif regex is self.bought:
-            self.get_inventory()  # There are some notes about this at the bottom
+            # TODO: Use DB to figure out what was bought and add it to the inventory
+            # without any additional telnet commands
+            pass
+            # self.get_inventory()  # There are some notes about this at the bottom
             # I don't like this very much! I can't use ! to buy a lot of a thing.
 
         super(Inventory, self).notify(regex, M_obj)  # sets _waiter_flag
@@ -296,7 +299,7 @@ class Inventory(BotReactionWithFlag):
     adam_keep_list = ["large bag", "large sack", 
         "silver chalice", "steel bottle", "small restorative", 'glowing potion', "chicken soup", 
         'scarlet potion', "white potion"
-        ]
+    ]
 
     keep_list = ["large bag", "large sack", "sack",
         "silver chalice", "steel bottle", 

@@ -7,17 +7,21 @@ from misc_functions import magentaprint
 class Info(BotReactionWithFlag):
     header = "     (\S+) the (.+?), a (.+?) of the (1st|2nd|3rd|\d\d?th) level    "
     your_preferred = "Your preferred alignment is (.+?)     "
-    first =  "\|       Str : (\d+) +\|  \|     Sharp   : (\d+) *%  \|  \|     Earth : (\d+) *%     \|\n\r" + \
-            " \|       Dex : (\d+) +\|  \|     Thrust  : (\d+) *%  \|  \|     Wind  : (\d+) *%     \|\n\r" + \
-            " \|       Con : (\d+) +\|  \|     Blunt   : (\d+) *%  \|  \|     Fire  : (\d+) *%     \|\n\r" + \
-            " \|       Int : (\d+) +\|  \|     Pole    : (\d+) *%  \|  \|     Water : (\d+) *%     \|\n\r" + \
-            " \|       Pty : (\d+) +\|  \|     Missile : (\d+) *%  \|  \|    Astral : (\d+)"
-    second = \
-                                       "   Exp : (\d+) +\|  \| GameTime : +(\d+:\d\d:\d\d) +\|\n\r" + \
-        " \|    Max HP : (\d+) +\|  \|    Gold : (\d+) +\|  \| Game Age : (\d+) +\|\n\r" + \
-        " \|   Curr MP : \d+ +\|  \|  -Needed to Level-  \|  \| +\|\n\r" + \
-        " \|    Max MP : (\d+) +\|  \|     Exp : (\d+) +\|  \|   Weight : (\d+) +\|\n\r" + \
+    
+    first = (
+        " \|       Str : (\d+) +\|  \|     Sharp   : (\d+) *%  \|  \|     Earth : (\d+) *%     \|\n\r"
+        " \|       Dex : (\d+) +\|  \|     Thrust  : (\d+) *%  \|  \|     Wind  : (\d+) *%     \|\n\r"
+        " \|       Con : (\d+) +\|  \|     Blunt   : (\d+) *%  \|  \|     Fire  : (\d+) *%     \|\n\r"
+        " \|       Int : (\d+) +\|  \|     Pole    : (\d+) *%  \|  \|     Water : (\d+) *%     \|\n\r"
+        " \|       Pty : (\d+) +\|  \|     Missile : (\d+) *%  \|  \|    Astral : (\d+)"
+    )
+    second = (
+                                       "   Exp : (\d+) +\|  \| GameTime : +(\d+:\d\d:\d\d) +\|\n\r"
+        " \|    Max HP : (\d+) +\|  \|    Gold : (\d+) +\|  \| Game Age : (\d+) +\|\n\r"
+        " \|   Curr MP : \d+ +\|  \|  -Needed to Level-  \|  \| +\|\n\r"
+        " \|    Max MP : (\d+) +\|  \|     Exp : (\d+) +\|  \|   Weight : (\d+) +\|\n\r"
         " \|        AC : (-?\d+) +\|  \|    Gold : (\d+) +\|  \|  Objects : (\d+)"
+    )
 
     regexes = [header, your_preferred, first, second]
 

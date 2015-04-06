@@ -1,175 +1,9 @@
 
-# from Command import Command
-
-# class Ability(Command):
-#     pass
-
-# class BuffAbility(Ability):
-#     active = False
-
-#     # @property 
-#     # def already_buffed_regex(self):
-#     #     raise NotImplementedError()
-#     # @property 
-#     # def wear_off_regex(self):
-#     #     raise NotImplementedError() 
-
-#     def notify(self, regex, M_obj):
-#         if regex is self.success_regex:
-#             self.active = True
-#         elif regex is self.wear_off_regex:
-#             self.active = False
-
-#         super().notify(regex, M_obj)
-
-# class FastCombatAbility(Ability):  
-#     # You can attack immediately after these abilities
-#     # FastTargetedAbility is another possible name
-#     pass
-
-# class CombatAbility(Ability):
-#     # Bash, Circle, Touch, Wither
-#     def execute(self, target=None):
-#         Kill.start_timer()
-#         super().execute(target)
-#         # self.character.ATTACK_CLK = time()
-#         # Hmmm.... do abilities need to be constructed with a cooldowns object?
-#         # How about botThread takes care of that...
-
-# class HealAbility(object):
-#     pass
-
-# class AestersTears(HealAbility, Ability):
-#     command = "sing ae"
-#     cooldown_after_success = 140  # Can flee/move/attack immediately
-#     max_amount = 16  # guessed
-#     success_regexes = ["Your music rejuvenates everyone in the room\."]  # This seems to overwrite Ability...
-#     failure_regexes = ["(?!x)x"]  # Regex that never matches - Aester never fails
-#     # classes = ["Brd"]
-#     level = 4
-#     regexes = []
-
-# class DanceOfTheCobra(FastCombatAbility):
-#     command = 'sin da '
-#     cooldown_after_success = 570
-#     cooldown_after_failure = 10
-#     success_regexes = [r"he Dance of the Snake ends"]
-#     # failure_regex = r"The Dance of the Snake has no effect on the (.+?)\.\r\n"  # and you can hit right away.
-#     failure_regexes = [r"he Dance of the Snake has "]
-#     # classes = ["Brd"]
-#     level = 1  # guessed
-#     # magentaprint("Dance of the Cobra regexes before calling super: " + str(self.regexes))
-#     # regexes = []
-#     # super().__init__(telnetHandler)    
-#     regexes = []
-
-# import time
-
-# from BotReactions import BotReactionWithFlag
-# from misc_functions import magentaprint
-
-# from CombatObject import Ability
-
-# class Ability(BotReactionWithFlag):
-#     ''' Abilites are things like haste, barkskin, berserk, 
-#     pray (buffs,) meditate, sing (heals,) wither, 
-#     turn (damage,) circle, bash, touch, backstab, and steal (combat.) 
-#     The combat abilities change KillThread timing.  
-
-#     They are organized this way to facilite their usage in BotThread.
-
-#     There are some special cases.  Pray is used uniquely (before resting, 
-#     while other buffs are used after resting or before combat,) and turn 
-#     can be used only on undead.  The combat abilities share a cooldown 
-#     with normal attacks.
-#     '''
-
-#     # regexes = []
-
-#     def __init__(self, mudReaderHandler, telnetHandler):
-#         super(Ability, self).__init__()
-#         magentaprint("Init for Ability " + str(self))
-#         self.telnetHandler = telnetHandler
-#         self.timer = time.time()  # gives the time when the ability is available
-#           # timer will have to be adjusted to be checked on login
-#         self.success = False  # check this value to see if use() was successful
-#         # self.regexes.append(self.success_regex)  # Hmmm
-#         self.regexes.append(self.success_regex)
-#         magentaprint(self.regexes)
-#         magentaprint("That is the final regexes before registering.")
-#            # Needs to work when AbilityWithFlag calls it
-#            # and also when for instances of Ability.
-#         mudReaderHandler.register_reaction(self)
-#         # super(Ability, self).__init__(self.regexes)
-
-#     # @property
-#     # def command(self): 
-#     #     raise NotImplementedError()
-#     # @property
-#     # def cooldown_after_success(self): 
-#     #     raise NotImplementedError()
-#     # @property
-#     # def success_regex(self):
-#     #     raise NotImplementedError()
-
-#     def notify(self, regex, M_obj):
-#         if regex is self.success_regex:
-#             self.success = True
-
-#         magentaprint("Notify on Ablity was called.")
-
-#         super(Ability, self).notify(regex, M_obj)
-
-#     def use(self, target=""):
-#         if self.timer - time.time() < 0.75:
-#             magentaprint("Ability.use: sleeping " + str(self.timer - time.time()))
-#             time.sleep(max(0, self.timer - time.time()))
-#         else:
-#             magentaprint("Ability: not ready for " + self.timer - time.time() + " seconds.")
-#             return
-
-#         self.success = False
-#         # magentaprint("Ability: Calling telnetHandler.write(" + self.command + " " + target + ")")
-#         self.telnetHandler.write(self.command + " " + target)
-#         self.timer = time.time() + self.cooldown_after_success
-
-#     def use_wait(self, target=""):
-#         self.use(target)
-#         self.wait_for_flag()
-
-#     def up(self):
-#         return self.timer < time.time()
-
-#     #def use_until_successful(self):
-#     # This will be done by AbilityThread
-#     # Maybe this can start a Ability thread
-
-# class AbilityWithFailure(Ability):
-#     # Some abilities never fail (sing aester,) but most do (buff abilities, meditate)
-#     # @property
-#     # def cooldown_after_failure(self): 
-#     #     raise NotImplementedError()
-#     # @property
-#     # def failure_regex(self):
-#     #     raise NotImplementedError()
-
-#     def __init__(self, mudReaderHandler, telnetHandler):
-#         magentaprint("Init for AbilityWithFailure " + str(self))
-#         # regexes = [self.failure_regex]
-#         self.regexes.append(self.failure_regex)
-#         magentaprint("...regexes: " + str(self.regexes))
-#         super(AbilityWithFailure, self).__init__(mudReaderHandler, telnetHandler)
-
-#     def notify(self, regex, M_obj):
-#         if regex is self.failure_regex:
-#             self.timer = self.timer - self.cooldown_after_success + self.cooldown_after_failure
-
-#         super(AbilityWithFailure, self).notify(regex, M_obj)
-
 import time
 
 from Command import Command
 from BotReactions import BotReactionWithFlag
+import RegexStore
 
 class Ability(Command):
     regexes = []
@@ -222,10 +56,12 @@ class Haste(BuffAbility):
     command = "haste"
     cooldown_after_success = 600  # can flee
     cooldown_after_failure = 10  # can flee
-    success_regexes = [r"You feel yourself moving faster\."]
+    # success_regexes = [r"You feel yourself moving faster\."]
+    success_regexes = RegexStore.hastened
     failure_regexes = [r"Your attempt to hasten failed\."]
     already_buffed_regex = "You're already hastened\."
-    wear_off_regex = "You feel slower\."
+    # wear_off_regex = "You feel slower\."
+    wear_off_regex = RegexStore.feel_slower
     lasts = 150
     # self.classes = ["Ran"]
     level = 1
@@ -400,3 +236,180 @@ class Circle(CombatAbility):
 # @property is causing me issues... Like, one ability got a success_regex from another ability,
 # as if success_regex was a static thing for all different instances.  It also wouldn't let me 
 # overwrite self.command.
+
+
+
+
+
+
+
+
+
+
+# Previous attempt
+# from Command import Command
+
+# class Ability(Command):
+#     pass
+
+# class BuffAbility(Ability):
+#     active = False
+
+#     # @property 
+#     # def already_buffed_regex(self):
+#     #     raise NotImplementedError()
+#     # @property 
+#     # def wear_off_regex(self):
+#     #     raise NotImplementedError() 
+
+#     def notify(self, regex, M_obj):
+#         if regex is self.success_regex:
+#             self.active = True
+#         elif regex is self.wear_off_regex:
+#             self.active = False
+
+#         super().notify(regex, M_obj)
+
+# class FastCombatAbility(Ability):  
+#     # You can attack immediately after these abilities
+#     # FastTargetedAbility is another possible name
+#     pass
+
+# class CombatAbility(Ability):
+#     # Bash, Circle, Touch, Wither
+#     def execute(self, target=None):
+#         Kill.start_timer()
+#         super().execute(target)
+#         # self.character.ATTACK_CLK = time()
+#         # Hmmm.... do abilities need to be constructed with a cooldowns object?
+#         # How about botThread takes care of that...
+
+# class HealAbility(object):
+#     pass
+
+# class AestersTears(HealAbility, Ability):
+#     command = "sing ae"
+#     cooldown_after_success = 140  # Can flee/move/attack immediately
+#     max_amount = 16  # guessed
+#     success_regexes = ["Your music rejuvenates everyone in the room\."]  # This seems to overwrite Ability...
+#     failure_regexes = ["(?!x)x"]  # Regex that never matches - Aester never fails
+#     # classes = ["Brd"]
+#     level = 4
+#     regexes = []
+
+# class DanceOfTheCobra(FastCombatAbility):
+#     command = 'sin da '
+#     cooldown_after_success = 570
+#     cooldown_after_failure = 10
+#     success_regexes = [r"he Dance of the Snake ends"]
+#     # failure_regex = r"The Dance of the Snake has no effect on the (.+?)\.\r\n"  # and you can hit right away.
+#     failure_regexes = [r"he Dance of the Snake has "]
+#     # classes = ["Brd"]
+#     level = 1  # guessed
+#     # magentaprint("Dance of the Cobra regexes before calling super: " + str(self.regexes))
+#     # regexes = []
+#     # super().__init__(telnetHandler)    
+#     regexes = []
+
+# import time
+
+# from BotReactions import BotReactionWithFlag
+# from misc_functions import magentaprint
+
+# from CombatObject import Ability
+
+# class Ability(BotReactionWithFlag):
+#     ''' Abilites are things like haste, barkskin, berserk, 
+#     pray (buffs,) meditate, sing (heals,) wither, 
+#     turn (damage,) circle, bash, touch, backstab, and steal (combat.) 
+#     The combat abilities change KillThread timing.  
+
+#     They are organized this way to facilite their usage in BotThread.
+
+#     There are some special cases.  Pray is used uniquely (before resting, 
+#     while other buffs are used after resting or before combat,) and turn 
+#     can be used only on undead.  The combat abilities share a cooldown 
+#     with normal attacks.
+#     '''
+
+#     # regexes = []
+
+#     def __init__(self, mudReaderHandler, telnetHandler):
+#         super(Ability, self).__init__()
+#         magentaprint("Init for Ability " + str(self))
+#         self.telnetHandler = telnetHandler
+#         self.timer = time.time()  # gives the time when the ability is available
+#           # timer will have to be adjusted to be checked on login
+#         self.success = False  # check this value to see if use() was successful
+#         # self.regexes.append(self.success_regex)  # Hmmm
+#         self.regexes.append(self.success_regex)
+#         magentaprint(self.regexes)
+#         magentaprint("That is the final regexes before registering.")
+#            # Needs to work when AbilityWithFlag calls it
+#            # and also when for instances of Ability.
+#         mudReaderHandler.register_reaction(self)
+#         # super(Ability, self).__init__(self.regexes)
+
+#     # @property
+#     # def command(self): 
+#     #     raise NotImplementedError()
+#     # @property
+#     # def cooldown_after_success(self): 
+#     #     raise NotImplementedError()
+#     # @property
+#     # def success_regex(self):
+#     #     raise NotImplementedError()
+
+#     def notify(self, regex, M_obj):
+#         if regex is self.success_regex:
+#             self.success = True
+
+#         magentaprint("Notify on Ablity was called.")
+
+#         super(Ability, self).notify(regex, M_obj)
+
+#     def use(self, target=""):
+#         if self.timer - time.time() < 0.75:
+#             magentaprint("Ability.use: sleeping " + str(self.timer - time.time()))
+#             time.sleep(max(0, self.timer - time.time()))
+#         else:
+#             magentaprint("Ability: not ready for " + self.timer - time.time() + " seconds.")
+#             return
+
+#         self.success = False
+#         # magentaprint("Ability: Calling telnetHandler.write(" + self.command + " " + target + ")")
+#         self.telnetHandler.write(self.command + " " + target)
+#         self.timer = time.time() + self.cooldown_after_success
+
+#     def use_wait(self, target=""):
+#         self.use(target)
+#         self.wait_for_flag()
+
+#     def up(self):
+#         return self.timer < time.time()
+
+#     #def use_until_successful(self):
+#     # This will be done by AbilityThread
+#     # Maybe this can start a Ability thread
+
+# class AbilityWithFailure(Ability):
+#     # Some abilities never fail (sing aester,) but most do (buff abilities, meditate)
+#     # @property
+#     # def cooldown_after_failure(self): 
+#     #     raise NotImplementedError()
+#     # @property
+#     # def failure_regex(self):
+#     #     raise NotImplementedError()
+
+#     def __init__(self, mudReaderHandler, telnetHandler):
+#         magentaprint("Init for AbilityWithFailure " + str(self))
+#         # regexes = [self.failure_regex]
+#         self.regexes.append(self.failure_regex)
+#         magentaprint("...regexes: " + str(self.regexes))
+#         super(AbilityWithFailure, self).__init__(mudReaderHandler, telnetHandler)
+
+#     def notify(self, regex, M_obj):
+#         if regex is self.failure_regex:
+#             self.timer = self.timer - self.cooldown_after_success + self.cooldown_after_failure
+
+#         super(AbilityWithFailure, self).notify(regex, M_obj)

@@ -34,6 +34,7 @@ class MudReaderThread(threading.Thread):
         #self.CHECK_KILL_MONSTER_GONE = False # This one isn't used yet, I think it's to react to when a monster flees
         
         self.BotReactionList = []
+        self.mud_events = {}
         
         # Internal Variables
         # variables used for the MUD_output_check function
@@ -231,6 +232,16 @@ class MudReaderThread(threading.Thread):
             #     magentaprint("MudReaderThread removed " + str(reaction_counter) + 
             #                  " reactions," + str(len(self.BotReactionList)) + 
             #                  " reactions left.")
+
+            # MudEvents
+            # Regexes with lists of objects to notify.
+            for key, m in self.mud_events.items():
+                if m.subscribers is not []:  # This isn't necessary
+                    for r in m.regexes:
+                        M_obj = re.search(r, text_buffer)
+                        if M_obj is not None:
+                            for s in m.subscribers:
+                                s.notify(r, M_obj)
 
             #### Prompt ####
             M_obj = re.search("\[(.*?) H (.*?) M\]", text_buffer)

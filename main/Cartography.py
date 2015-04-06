@@ -97,7 +97,7 @@ class Cartography(BotReaction):
 
             self.character.MONSTER_LIST = []
             self.character.SUCCESSFUL_GO = True
-            self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
+            self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
             self.character.CAN_SEE = False
             self.character.CONFUSED = False
         elif regex == self.area:
@@ -118,7 +118,7 @@ class Cartography(BotReaction):
             self.character.MONSTER_LIST.sort()
 
             self.character.SUCCESSFUL_GO = True #successful go should be true everytime the area parses
-            self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
+            self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
             self.character.CAN_SEE = True
             self.character.CONFUSED = False
 
@@ -146,7 +146,7 @@ class Cartography(BotReaction):
             mob_name = M_obj.group(2)
             self.character.GO_BLOCKING_MOB = mob_name
             self.character.SUCCESSFUL_GO = False
-            self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
+            self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
             magentaprint("Path blocked by: " + mob_name)
             self.catalog_path_blocker(mob_name)
         elif regex == self.loot_blocked:
@@ -159,14 +159,14 @@ class Cartography(BotReaction):
             if (self.character.TRYING_TO_MOVE):
                 self.character.GO_PLEASE_WAIT = True
                 self.character.SUCCESSFUL_GO = False
-                self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
+                self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
         elif regex == self.cant_go:
             # This one is pretty problematic... as it should never happen.
             # Means we're off course.
             magentaprint("Cartography: unsuccessful go (can't go that way): " + str(self.character.LAST_DIRECTION))
             self.set_area_exit_as_unusable(regex)
             self.character.SUCCESSFUL_GO = False
-            self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
+            self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
         elif (regex == self.class_prohibited or
                 regex == self.level_too_low or
                 regex == self.not_invited or
@@ -180,7 +180,7 @@ class Cartography(BotReaction):
                 regex == self.in_tune):
             self.set_area_exit_as_unusable(M_obj.group(0))
             self.character.SUCCESSFUL_GO = False
-            self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
+            self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
         elif (regex == self.you_see_the):
             name = M_obj.group(2)
             description = M_obj.group(3)
@@ -217,7 +217,7 @@ class Cartography(BotReaction):
 
             self.character.SUCCESSFUL_GO = False
             self.character.TRYING_TO_MOVE = False
-            self.mudReaderHandler.MudReaderThread.CHECK_GO_FLAG = 0
+            self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
         elif regex == self.teleported_away:
             if M_obj.group(1) == self.character.name:
                 self.character.DEAD = True
@@ -233,7 +233,7 @@ class Cartography(BotReaction):
                 item_value = item[2]
 
                 area_item = self.catalog_item(item_name, item_size, item_value)
-                self.catalog_area_store_item(area_item, self.character.MUD_AREA.area)
+                self.catalog_area_store_item(area_item, self.character.area)
         else:
             magentaprint("Cartography case missing for regex: " + str(regex))
 
