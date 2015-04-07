@@ -47,7 +47,7 @@ class Command(BotReactionWithFlag):
     failure_regexes = []
     error_regexes = []
     # Maybe have an inheritance level for commands without cooldowns?  Meh for now.
-    cooldown_after_success = 0
+    cooldown_after_success = 0  # Rename to cooldown_on_success (todo)
     cooldown_after_failure = 0
 
     # def __init__(self, mudReaderHandler, telnetHandler, spell=None, target=None):

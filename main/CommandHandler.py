@@ -364,15 +364,18 @@ class CommandHandler(object):
         # self.smartCombat.flee()
         now = time.time()
         time_remaining = max(self.character.MOVE_WAIT - (now - self.character.MOVE_CLK),
-                             self.character.ATTACK_WAIT - (now - self.character.ATTACK_CLK),
-                             self.character.CAST_WAIT - (now - self.character.CAST_CLK))
+                             self.kill.wait_time(), self.cast.wait_time())
+        self.cast.stop()
+        self.smartCombat.stop_casting()
+        # self.kill.start_thread(self.smartCombat.target)  # if smartCombat.thread.is_alive()
         magentaprint("Fleeing in %.1f sec ..." % time_remaining)
-        first_sleep = max(time_remaining - self.character.ATTACK_WAIT - 0.2, 0)
+        first_sleep = max(time_remaining - self.kill.cooldown_after_success - 0.2, 0)
         second_sleep = time_remaining - first_sleep 
         time.sleep(first_sleep)
 
         # This sleep will allow KillThread to get one more swing in if there is time for it.
         # So we wait until time_remaining is 3 before stopping KillThread
+        self.smartCombat.stop()
         self.kill.stop()
         magentaprint("KillThread is stopped, %.1f until escape." % time_remaining, False)
 
@@ -388,9 +391,7 @@ class CommandHandler(object):
         
         now = time.time()
         time_remaining = max(self.character.MOVE_WAIT - (now - self.character.MOVE_CLK),
-                             self.character.ATTACK_WAIT - (now - self.character.ATTACK_CLK),
-                             self.character.CAST_WAIT - (now - self.character.CAST_CLK))
-
+                             self.kill.wait_time(), self.cast.wait_time())
         self.character.MOVE_CLK = now
             
         # Note: in very few rare cases it may be better to flee once.  
@@ -398,11 +399,6 @@ class CommandHandler(object):
         self.telnetHandler.write("fl")
         self.telnetHandler.write("fl")
         magentaprint("Sent.", False)
-
-        manage_telnet_output("I had to run - sorry....", False)  
-           # TODO: This should not print when human user runs
-           # And perhaps "manage_telnet_output" does not describe well what is happening here...
-           # Also, it should be magenta.
 
         time.sleep(0.1)  
 

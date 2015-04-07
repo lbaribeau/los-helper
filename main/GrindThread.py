@@ -14,12 +14,17 @@ class GrindThread(BotThread):
         # Set TOTALPATHS.  Setting it lower than the actual number
         # of paths in decide_where_to_go is a way to truncate paths
         # you don't want to send low level characters on.
+
         if self.character.level <= 2:
             self.__TOTALPATHS = 8 # Kobolds are level 1 safe.
         elif self.character.level <= 7:
-            self.__TOTALPATHS = 10 # include hookers for level 3            
+            self.__TOTALPATHS = 10 # include hookers for level 3   
+        elif self.character.level <= 10:
+            self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8 
+        elif self.character.level > 12:
+            self.__TOTALPATHS = 24
         else:
-            self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
+            self.__TOTALPATHS = 22 # start the fort and bandits at lvl 8
 
         self.loot_threshold = 1  # the amount of loot to collect before selling
 
@@ -29,7 +34,12 @@ class GrindThread(BotThread):
             self.__nextpath = 0
 
     def do_run_startup(self):
-        self.set_up_automatic_ring_wearing()
+        if not self.is_character_class("Mon"):
+          self.set_up_automatic_ring_wearing()
+
+        if self.direction_list is None:
+          self.direction_list = [] #could append areaid45
+
         return
 
     def do_pre_go_actions(self):
@@ -39,21 +49,22 @@ class GrindThread(BotThread):
         return
 
     def decide_where_to_go(self):
-        magentaprint("Inside decide_where_to_go")
+        magentaprint("Inside decide_where_to_go", False)
+        magentaprint("next path = " + str(self.__nextpath), False)
         
         LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
-        SHOP_AND_TIP_PATH = ["out", "s", "w", 'w', 'w', 's', 's', "shop",
+        SHOP_AND_TIP_PATH = ["out", "south", "west", 'west', 'west', 'south', 'south', "shop",
                           "sell_items", 
-                          "out", "se", 'e', 'e', 'e', 'e', "ne", "tip",
+                          "out", "southeast", 'east', 'east', 'east', 'east', "northeast", "tip",
                           "drop_items",
-                          "out", 'n', 'n', 'w', 'w', 'w', 'n', "chapel"]
+                          "out", 'north', 'north', 'west', 'west', 'west', 'north', "chapel"]
                           
         THEATRE_PATH = ["out", "s", "w", "w", "w", "s", "theat", "stair",
                           "cubby", "out", "down", "swing", "seat", "out",
-                          "down", "seat", "out", "open door", "stage",
+                          "down", "seat", "out", "door", "stage",
                           "side 2", "backstage", "door", "out", "curtain",
-                          "stage", "side", "open door",
+                          "stage", "side", "door",
                           "up", "out", "out", "n", "e",
                           "e", "e", "n", "chapel"]
         
@@ -78,14 +89,14 @@ class GrindThread(BotThread):
                           "nw", 'n', "gate", 'e', 'n', 'n', 'n', 'w', 'n',
                           "chapel"]
         
-        KOBOLD_PATH = ["out", 's', 'e', 's', 's', 's', 'w', "gate", 's',
-                          "se", "se", 'e', 'e', 'e', "se", "se", "se", 's',
-                          's', 's', 's', 's', 's', 's', 's', 's', 's', 'e',
-                          "ne", 'e', 'e', 's', "glowing", "passage", "mines",
-                          'd', 'n',
-                          'n', 'n', 'n', "ne", 'n', 'w', 'n', 'n', 'e',
-                          "open door", 'w', "gully", 'u', "boulder", 'u',
-                          "cave 3", 'ne', 'ne', 'n', 's', 'u', 'e', 'se', 
+        KOBOLD_PATH = ['out', 'south', 'east', 'south', 'south', 'south',
+                        'west', 'gate', 'south', 'southeast', 'southeast', 'east', 'east',
+                        'east', 'southeast', 'southeast', 'southeast', 'south', 'south', 'south',
+                        'south', 'south', 'east', 'east', 'southeast', 'east', 'south', 'south',
+                        'south', 'south', 'glowing portal', "passage", "mines",
+                          'down', 'n', 'n', 'n', 'n', "ne", 'n', 'w', 'n', 'n', 'e',
+                          "door", 'w', "gully", 'up', "boulder", 'up',
+                          "cave 3", 'ne', 'ne', 'n', 's', 'up', 'e', 'se', 
                           'cave', 'out', 
                           # Note: You can remove the following line of code 
                           # to remove the kobold guards and priests fights.
@@ -103,21 +114,23 @@ class GrindThread(BotThread):
                           "ladder", 'cave', 'out', "sw", 'w', 
                           # Comment out insane kobold (TODO: check level here)
                           # 'cave', 'out', 
-                          "sw", 'se', 'nw', 'w', "out", 'd',
-                          "boulder", 'd', 'd', 'e', "open door", 'w', 's', 's',
+                          "sw", 'se', 'nw', 'w', "out", 'down',
+                          "boulder", 'down', 'down', 'e', "door", 'w', 's', 's',
                           'e', 's', "sw", 's', 's', 's', 's', "gully",
-                          "glowing", "passage", "coral", 'n', 'w', 'w', "sw",
-                          'w', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n', 'n',
-                          'n', "nw", "nw", "nw", 'w', 'w','w', "nw", "nw", 'n',
-                          "gate", 'e', 'n', 'n', 'n', 'w', 'n', "chapel"]
+                          'glowing portal', 'passage', 'coral', 'north', 'north',
+                          'north', 'north', 'west', 'northwest', 'west', 'west',
+                          'north', 'north', 'north', 'north', 'north', 'northwest',
+                          'northwest', 'northwest', 'west', 'west', 'west', 'northwest',
+                          'northwest', 'north', 'gate', 'east', 'north', 'north', 'north',
+                          'west', 'north', 'chapel']
 
         CORAL_ALLEY_PATH = ["out", "s", 'e', 's', 's', 's', 'w', 'gate',
                               's', 'se', 'se', 'e', 'e', 'e',
                               'se', 'se', 'se', 's', 's', 's', 's', 'w',
-                              'alley', 's', 's', 'do', 'stai',
+                              'alley', 's', 's', 'door', 'stairs',
                               # angry hooker should be avoided unless lvl 5.
                               #'do 3', 'ou',
-                              'stai', 'out', 's',
+                              'stairs', 'out', 's',
                               #'w', 'e', #for zombies
                               # noticed drunken troublemakers arrive one east
                               # not sure what safest exit is... go north.
@@ -197,8 +210,19 @@ class GrindThread(BotThread):
                         'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest',
                         'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
 
-        PATH_TO_SKIP_WITH = [ 'out', 'chapel' ]
+        #aid418, 1975, 1979, 1951, 415, 45
+        SPIDER_FOREST = ['areaid418', 'areaid1975', 'areaid1979', 'areaid1951', 'areaid415', 'areaid45']
 
+        #The following areas repeat a bit because the spawns are fast
+        KNIGHTS = ['areaid1904', 'areaid1912', 'areaid1909', 'areaid1913',
+                          'areaid1904', 'areaid1912', 'areaid1909', 'areaid1913',
+                          'areaid1904', 'areaid1912', 'areaid1909', 'areaid45',] #end with chapel
+
+        GNOLL_CAMP = ['areaid1574', 'areaid800', 'areaid1574', 'areaid800', 'areaid1574', 'areaid45', ]
+
+        PATH_TO_SKIP_WITH = [ 'out', 'chapel' ]
+        #return SHOP_AND_TIP_PATH
+        
         if (self.character.DEAD):
             self.character.DEAD = False
             self.character.DEATHS += 1
@@ -213,6 +237,8 @@ class GrindThread(BotThread):
                 return SHOP_AND_TIP_PATH
             else:
                 self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
+
+        #return KOBOLD_PATH
 
         if(self.__nextpath == 1):
             return THEATRE_PATH
@@ -262,14 +288,22 @@ class GrindThread(BotThread):
             return MILL_WORKERS
         elif(self.__nextpath == 19):
             return RANCHER_SENTRY
+        elif(self.__nextpath == 21):
+            return SPIDER_FOREST
+        elif(self.__nextpath == 23):
+            return GNOLL_CAMP
+        # elif(self.__nextpath == 25):
+        #     return KNIGHTS
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" +
-                         self.__nextpath)
+                         str(self.__nextpath))
             return PATH_TO_SKIP_WITH
         return PATH_TO_SKIP_WITH
 
     def do_on_succesful_go(self):
-        self.direction_list.pop(0)
+        if len(self.direction_list) != 0:
+          self.direction_list.pop(0)
+  
         self.character.MOBS_JOINED_IN = [] 
         self.character.MOBS_ATTACKING = []
         return
@@ -287,12 +321,15 @@ class GrindThread(BotThread):
         return
 
     def do_post_go_actions(self):
-        if self.ready_for_combat():
+        #here we would implement combat or whatever other other actions we want to do before we decide where to go again
+        if(self.ready_for_combat()):
             new_target = self.decide_which_mob_to_kill(self.character.MONSTER_LIST)
         else:
             new_target = ""
+            self.do_rest_hooks()
+
             
-        while new_target != "" and not self.is_stopping():
+        while (new_target != "" and not self.is_stopping()):
             # MudReader maintains MONSTER_LIST pretty well by
             # adding and removing.  
             # It will not remove from MOBS_JOINED_IN nor 
@@ -309,69 +346,49 @@ class GrindThread(BotThread):
             # killed.  (That's in fact how we knew combat was over)
             # The higher priority mobs were in the other lists 
             # and will also have been removed from MONSTER_LIST
+            
+            magentaprint("Targeting: " + new_target)
 
-            self.kill.wait_until_ready()
-            self.cast.wait_until_ready()
             self.engage_monster(new_target)
             self.get_items()
             self.engage_mobs_who_joined_in()
             self.engage_any_attacking_mobs()
             self.check_weapons()
             
-            if not self.character.BLACK_MAGIC:
+            if (not self.character.BLACK_MAGIC):
                 self.heal_up()
             
-            if self.ready_for_combat():
+            if(self.ready_for_combat()):
+                magentaprint("Picking a new target since " + new_target + " was defeated")
                 new_target = self.decide_which_mob_to_kill(self.character.MONSTER_LIST)
             else:
                 new_target = ""
         return
-    
-    def go(self, exit_str):
-        #time.sleep(0.8) # sometimes not a good idea to go immediately
-        
-        if(self.is_stopping()):
-            return True
-        
-        # TODO (sort of a bug).  Sometimes 'go' doesn't 'go' anywhere, 
-        # like for dropping or selling or preparing, etc.  The bot's 
-        # logic should be fixed to realize that it's not in a new area 
-        # in these instances.
-        
-        magentaprint("Going " + exit_str + (". %f" % (time.time() - self.character.START_TIME)))
-        wait_for_move_ready(self.character)
-        self.kill.wait_until_ready()
-        self.cast.wait_until_ready()
 
-        if(exit_str == "nw" or exit_str == "ne" or
+    def do_go_hooks(self, exit_str):
+      #if you want to define custom hooks like sell_items / drop_items etc... you can do so here
+
+      if(exit_str == "nw" or exit_str == "ne" or
            exit_str == "sw" or exit_str == "se" or
            exit_str == 'n' or exit_str == 'e' or
            exit_str == 's' or exit_str == 'w'):
             self.commandHandler.process(exit_str)
-            return self.mudReaderHandler.check_for_successful_go() 
+            return self.check_for_successful_go() 
 
-        elif(re.match("open ", exit_str)):
-            self.commandHandler.process(exit_str)
-            self.commandHandler.process("go " + exit_str.split(' ')[1])
-            return self.mudReaderHandler.check_for_successful_go() 
+      elif(exit_str == "prepare"):
+          self.commandHandler.process(exit_str)
+          return True
 
-        elif(exit_str == "prepare"):
-            self.commandHandler.process(exit_str)
-            return True
+      elif(exit_str == "sell_items"):
+          self.sell_items()
+          return True
 
-        elif(exit_str == "sell_items"):
-            self.sell_items()
-            return True
+      elif(exit_str == "drop_items"):
+          self.drop_items()
+          return True
 
-        elif(exit_str == "drop_items"):
-            self.drop_items()
-            return True
+      return super(GrindThread, self).do_go_hooks(exit_str)
 
-        else:
-            self.commandHandler.process("go " + exit_str)
-            return self.mudReaderHandler.check_for_successful_go()
-
-        
 # Just thinking about changing top level...
  
 # I don't like this version because mobs will leave and arrive while in

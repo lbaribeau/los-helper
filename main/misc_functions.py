@@ -5,13 +5,35 @@ from ConsoleHandler import newConsoleHandler
 from datetime import datetime
 from Database import *
 
-debugMode = False
+debugMode = True
 verboseMode = True
 startTime = datetime.now()
 VERSION = "2"
 #databaseFile = "maplos.db"
 
-##################################### MISC FUNCTIONS ########################
+def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=False):
+    global debugMode
+
+    if show_hidden:
+        text = repr(text)  # escape all characters in string
+
+    if debugMode or not is_debug_command:
+        do_magentaprint(text)
+
+    if log_output:
+        log = Log()
+        log.data = text
+        log.save()
+
+def do_magentaprint(text):
+    newConsoleHandler().magenta()
+    # output = str(get_timestamp() + "| <" + str(text) + ">")
+    output = str(get_timestamp() + "   | " + str(text))  
+
+    print(output)
+    newConsoleHandler().white()
+
+######
 
 # TODO: These functions will belong to a 'cooldowns' object
 def wait_amount(time_triggered, period):
@@ -74,28 +96,6 @@ def my_list_equal(listA, listB):
 
     return True
     
-def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=False):
-    global debugMode
-
-    if show_hidden:
-        text = repr(text)  # escape all characters in string
-
-    if debugMode or not is_debug_command:
-        do_magentaprint(text)
-
-    if debugMode or log_output:
-        log = Log()
-        log.data = text
-        log.save()
-
-def do_magentaprint(text):
-    newConsoleHandler().magenta()
-    # output = str(get_timestamp() + "| <" + str(text) + ">")
-    output = str(get_timestamp() + "   | " + str(text))  
-
-    print(output)
-    newConsoleHandler().white()
-
 def manage_telnet_output(text, isVerbose=True):
     global verboseMode
 

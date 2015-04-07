@@ -60,13 +60,14 @@ class SmartCombat(CombatObject):
     def run(self):
         # This function defines combat, and it works for ALL classes.
         self.stopping = False
-        self.mob_paralyzed = False
+        self.mob_charmed = False
+        self.casting = True
 
         self.use_any_fast_combat_abilities()  # ie. Touch
 
         while not self.stopping:
 
-            if self.kill.timer <= self.cast.timer or self.kill.up():
+            if self.kill.timer <= self.cast.timer or self.kill.up() or not self.casting:
                 self.kill.wait_until_ready()
                 if self.stopping: 
                     break 
@@ -75,7 +76,7 @@ class SmartCombat(CombatObject):
                 # time.sleep(0.1)  
             else:
                 self.cast.wait_until_ready()
-                if self.stopping or self.mob_paralyzed:
+                if self.stopping or self.mob_charmed:
                     continue
                 if self.black_magic:
                     self.cast.__class__.command = 'cas ' + self.favourite_spell
@@ -98,7 +99,7 @@ class SmartCombat(CombatObject):
                 magentaprint("SmartCombat finished using ability.")
                 # So if we hit with Dance of the Cobra, we should save mana...
                 if a.success and isinstance(a, DanceOfTheCobra):
-                    self.mob_paralyzed = True
+                    self.mob_charmed = True
                 elif a.error:
                     self.stopping = True
                 # if self.stopping:
@@ -142,4 +143,7 @@ class SmartCombat(CombatObject):
 
     # def flee(self):
     # I want to do the Go object first and get rid of MOVE_CLK
+
+    def stop_casting(self):
+        self.casting = False
 

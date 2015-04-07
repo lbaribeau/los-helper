@@ -11,3 +11,5 @@ cast_error = [
 
 hastened = ["You feel yourself moving faster\."]
 feel_slower = ["You feel slower\."]
+
+# "The extreme nature of this place wracks your aura!""  (Bandit Hill)

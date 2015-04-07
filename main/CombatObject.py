@@ -153,7 +153,8 @@ class Cast(SimpleCombatObject):
         spell = self.command.split(' ')[1].lower()
         if re.match("vig?|vigor?", spell) or \
            re.match("show-?|show-au?|show-aura?", spell) or \
-           re.match("lig?|light?", spell) :
+           re.match("lig?|light?", spell) or \
+           re.match("me?|mend?|mend-w?|mend-wou?|mend-wound?|mend-wounds", spell):
             self.clear_timer()
 
     def cast(self, spell, target=None):
@@ -194,10 +195,8 @@ class Kill(SimpleCombatObject):
 
     def notify(self, regex, M_obj):
         if regex in RegexStore.hastened:
-            magentaprint("Kill notified of hastened event.")
-            Kill.cooldown_after_success = 2
+            Kill.cooldown_after_success = 2  
         elif regex in RegexStore.feel_slower:
-            magentaprint("Kill notified of felt slower event.")
             Kill.cooldown_after_success = 3
             # Erhm... do we want to start a thread to get the timing exact... (todo)
         super().notify(regex, M_obj)

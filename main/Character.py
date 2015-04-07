@@ -298,9 +298,6 @@ class Character(object):
         "kobold shaman", "drunken trouble-maker", "kobold champion", "hungry spider"]
     lvl5_monsters = [
         "dwarven farm hand", "dwarven barmaid", "fort sentry", "fur trader", 
-        "aristocrat", "rancher sentry"]
-    lvl5_monsters = [
-        "dwarven farm hand", "dwarven barmaid", "fort sentry", "fur trader", 
         "aristocrat", "rancher sentry",
         # "vicar",
         "nobleman", 
@@ -315,7 +312,8 @@ class Character(object):
         "bull",
         "lay priest",
         "protector",
-        "battered knight"
+        "battered knight",
+        "aspirant"  # grey
     ]
     lvl5_red_monsters = [
         'large bandit', "kobold guard", "mugger", 'large spider'
@@ -364,7 +362,10 @@ class Character(object):
         "initiate",
         "Olmer",
         "berserk orc",
-        "old knight"
+        "old knight",
+        "dusty warrior",  # dusty blue
+        "elven trader",   # pale blue
+        "Thereze" # grey
 
         #'mine manager'
     ]
@@ -376,6 +377,15 @@ class Character(object):
         "orc warrior",
         "white knight",
         "hedge knight"
+    ]
+    lvl10_monsters = [
+        "Kelluran", "Jerrek"  # all grey
+    ]
+    lvl11_monsters = [
+        "dwarven adventurer"  # dusty blue
+    ]
+    lvl12_monsters = [
+        "Gorban"  # dusty blue
     ]
     # A list of monsters redundant to the above lists that
     # I may want to kill even if they are too low of level.
