@@ -2,17 +2,15 @@
 from threading import Thread
 import re
 from time import time
+# from itertools import chaa
+import itertools
 
 from misc_functions import magentaprint
 from Command import Command
 import RegexStore
 
 class CombatObject(object):
-    numbers = "(1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th|11th|12th|13th|14th|15th|16th|17th|18th|19th)" 
-    end_combat_regexes = [
-        "Your attack overwhelms (?:the (" + numbers + " )?)?(.+?) and (s?he|it) collapses!",
-        "(:?The ?(" + numbers + " )?)?(.+?) flees to the (.+?)\."
-    ]
+    end_combat_regexes = RegexStore.mob_died + RegexStore.mob_fled
 
     def __init__(self, telnetHandler):   
         self.telnetHandler = telnetHandler
@@ -96,6 +94,28 @@ class SimpleCombatObject(CombatObject2, Command):
 
         magentaprint(str(cls) + " ending run." )
 
+class Kill(SimpleCombatObject):
+    command = 'k'
+    cooldown_after_success = 3
+    cooldown_after_failure = 3 
+    regexes = [] 
+
+    good_MUD_timeout = 1.5  # Kill regexes are complicated and you don't want to fail too badly during combat.
+
+    success_regexes = RegexStore.attack_hit
+    failure_regexes = RegexStore.attack_miss
+    error_regexes = RegexStore.attack_error
+
+    def notify(self, regex, M_obj):
+        if regex in RegexStore.hastened:
+            Kill.cooldown_after_success = 2  
+            Kill.cooldown_after_failure = 2  
+        elif regex in RegexStore.feel_slower:
+            Kill.cooldown_after_success = 3
+            Kill.cooldown_after_failure = 3  
+            # Erhm... do we want to start a thread to get the timing exact... (todo)
+        super().notify(regex, M_obj)
+
 
 class Cast(SimpleCombatObject):
     command = 'cas'  # This gets rewritten to append the spellname alot
@@ -103,28 +123,9 @@ class Cast(SimpleCombatObject):
     cooldown_after_failure = 0
     regexes = []  
 
-    aura_regex = r"You glow with a (.+?) aura\."
-    success_regexes = [  
-        r"You cast a (.+?) spell on (.+?)\.",
-        r"(.+?) spell cast\.",
-        r"You cast a (.+?) spell\.",
-        aura_regex
-    ]
-
-    failure_regexes = [  
-        # This is a unique case because the cooldown afterwards depends on the spell
-        r"Your spell fails\.",
-        r"You cannot meet the casting cost!"
-    ]   
-
-    error_regexes = [
-        r"That spell does not exist\.",
-        r"You don't know that spell\.",
-        r"Spell name is not unique\.",
-        r"Cast what\?",
-        r"They are not here\.",
-        r"Cast at whom\?" 
-    ]
+    success_regexes = RegexStore.cast
+    failure_regexes = RegexStore.cast_failure
+    error_regexes = RegexStore.cast_error
 
     aura = None
     aura_timer = 0
@@ -144,7 +145,7 @@ class Cast(SimpleCombatObject):
        #     super().notify(regex, M_obj)
 
     def notify(self, regex, M_obj):
-        if regex is self.aura_regex:
+        if regex is RegexStore.aura:
             self.__class__.aura = M_obj.group(1)
             self.__class__.aura_timer = time()
         super().notify(regex, M_obj)
@@ -185,80 +186,3 @@ class Cast(SimpleCombatObject):
             self.wait_until_ready()
             self.cast(spell, target)
             self.wait_for_flag()
-
-
-class Kill(SimpleCombatObject):
-    command = 'k'
-    cooldown_after_success = 3
-    cooldown_after_failure = 3 
-    regexes = [] 
-
-    def notify(self, regex, M_obj):
-        if regex in RegexStore.hastened:
-            Kill.cooldown_after_success = 2  
-        elif regex in RegexStore.feel_slower:
-            Kill.cooldown_after_success = 3
-            # Erhm... do we want to start a thread to get the timing exact... (todo)
-        super().notify(regex, M_obj)
-
-    error_regexes = [
-        r"You don't see that here\.",
-        r"Attack what\?"
-    ]
-
-    # This might be a performance problem.
-    success_regexes = [
-        "You swing with your .+?, hacking (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) for \d+ damage\.",
-        "You slice (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) for \d+ damage with your .+?\.",
-        "You slash at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) and hit for \d+ damage\.",
-
-        "You chop at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) for \d+ damage\.",
-        "You stab (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) with your .+?, causing \d+ damage",
-        "You lunge at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?), striking for \d+ damage\.",
-
-        "You lash out and thump (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) for \d+ damage\.",
-        "You punch (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) for \d+ damage\.",
-        "You kick (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) for \d+ damage\.",
-        "You head-butt (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) for \d+ damage\.",
-        "You grab (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) and gouge (him|her|it) for \d+ damage\.",
-
-        "You smash your .+? into (:the )?(" + SimpleCombatObject.numbers + " )?(.+?), causing \d+ damage\.",
-        "You heave your .+? at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?), smashing (him|her|it) for \d+ damage\.",
-        "You bludgeon (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) for \d+ damage\.",
-
-        "You lunge at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?), hitting them for \d+ damage\.",
-        "You swing your .+?, striking for \d+ damage\.",
-        "You sweep (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) with your .+? for \d+ damage\.",
-
-        "Your missile slams into (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) for \d+ damage\.",
-        "You attack (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) with your .+?, striking for \d+ damage\.",
-        "You use your .+? to strike (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) for \d+ damage\."
-    ]
-
-    failure_regexes = [
-        "You hack with your .+?, but your blow swings wide of the mark\.",
-        "You slice your .+? at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?), but miss\.",
-        "You slash at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?), but miss\.",
-
-        "You chop at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) but fail to hit them\.",
-        "You try to stab (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) with your .+?, but miss\.",
-        "You lunge wildly at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) but mistime the strike\.",
-
-        "You lash out at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?), but miss\.",
-        "You swing a wild punch at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?), but it misses\.",
-        "You kick at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?), but fail to hurt them\.",
-        "You grab at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?), but (s?he|it) escapes your grasp\.",
-        "You try to gouge (:the )?(" + SimpleCombatObject.numbers + " )?(.+?), but can't get a good grip\.",
-
-        "You swing your .+? at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?), but miss\.",
-        "You heave your .+? in a wide arc, but fail to hit anything\.",
-        "You try to bludgeon (:the )?(" + SimpleCombatObject.numbers + " )?(.+?), but miss\.",
-
-        "You lunge at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?), but you miss\.",
-        "Your .+? swings, but fails to connect\.",
-        "You sweep at (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) with your .+?, but miss\.",
-
-        "Your missile arcs towards (:the )?(" + SimpleCombatObject.numbers + " )?(.+?), but fails to hit them\.",
-        "You attack (:the )?(" + SimpleCombatObject.numbers + " )?(.+?) with your .+?, but miss\.",
-        "You use your .+?, but nothing hits (:the )?(" + SimpleCombatObject.numbers + " )?(.+?)\."
-    ]

@@ -38,7 +38,7 @@ def wait_for_a_flag(class_with_flag):
     start_time = time.time()
     run_time = 0
 
-    while not class_with_flag._waiter_flag and run_time < BotReactionWithFlag.good_MUD_timeout:
+    while not class_with_flag._waiter_flag and run_time < class_with_flag.good_MUD_timeout:
         time.sleep(0.05)
         run_time = time.time() - start_time
 
@@ -55,7 +55,7 @@ class BotReactionWithFlag(object):
     want to wait for the server's response to that command. """
 
     _waiter_flag = True  
-    good_MUD_timeout = 10.0  #* (see footnote)
+    good_MUD_timeout = 8.0  #* (see footnote)
 
     # def __init__(self):
         # regexes must also get set

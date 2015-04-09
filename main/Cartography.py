@@ -68,7 +68,7 @@ class Cartography(BotReaction):
             self.you_see_the,
             self.mob_aura_check,
             self.store_list
-            ]
+        ]
 
         self.mudReaderHandler = mudReaderHandler
         self.commandHandler = commandHandler
@@ -137,9 +137,9 @@ class Cartography(BotReaction):
 
                     self.character.AREA_ID = area.id
 
-                    self.catalog_monsters(area, monster_list)
+                    # self.catalog_monsters(area, monster_list)
 
-                    # magentaprint(area, False)
+                    magentaprint("Cartography area match: " + str(area))
                 else:
                     self.character.AREA_ID = None
         elif regex == self.blocked_path:
@@ -285,7 +285,7 @@ class Cartography(BotReaction):
                 mob_location = MobLocation(area=area, mob=mob)
                 mob_location.map()
 
-                magentaprint(str(mob_location))
+                magentaprint("Cartography catalog_monsters: " + str(mob_location))
         except Exception:
             magentaprint("Problem cataloging monsters", False)
 
@@ -321,7 +321,7 @@ class Cartography(BotReaction):
         mob.map()
 
         if not mob.blocks_exit:
-            magentaprint("Catalogged new path blocker", False)
+            magentaprint("Cartography catalogged new path blocker", False)
             mob.blocks_exit = True
             mob.save()
 
@@ -330,7 +330,7 @@ class Cartography(BotReaction):
         mob.map()
 
         if not mob.blocks_pickup:
-            magentaprint("Catalogged new loot blocker", False)
+            magentaprint("Cartography catalogged new loot blocker", False)
             mob.blocks_pickup = True
             mob.save()
 
@@ -347,7 +347,7 @@ class Cartography(BotReaction):
     def parse_exit_list(self, MUD_exit_str):
         try:
             if (MUD_exit_str is None):
-                magentaprint("Exit match: " + str(MUD_mob_str))
+                magentaprint("Cartography exit match: " + str(MUD_mob_str))
                 return []
 
             MUD_exit_str = MUD_exit_str.strip()

@@ -382,9 +382,11 @@ class Character(object):
         "Kelluran", "Jerrek"  # all grey
     ]
     lvl11_monsters = [
-        "dwarven adventurer"  # dusty blue
+        "dwarven adventurer",  # dusty blue
+        "enchantress"  # pale blue
     ]
     lvl12_monsters = [
+        "barbarian shaman", "barbarian warrior", # grey
         "Gorban"  # dusty blue
     ]
     # A list of monsters redundant to the above lists that

@@ -37,7 +37,7 @@ class MudArea():
                 area_from = Area.get_area_by_id(area_from)
                 direction_from = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
 
-                # magentaprint(str(area_from) + " " + str(direction_from))
+                magentaprint("MudArea: " + str(area_from) + " " + str(direction_from))
                 
                 area.map(direction_list, area_from, direction_from)
             else:
@@ -61,7 +61,7 @@ class MudArea():
 
             #if isNewExit: - this is logic we can implement once we have exit_type mapping completely bullet proof
 
-            #magentaprint("discerning: " + str(cur_mud_area) + " against " + str(area))
+            magentaprint("MudArea discerning: " + str(cur_mud_area) + " against " + str(area))
 
         return discerned_area
 

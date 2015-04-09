@@ -105,8 +105,8 @@ def manage_telnet_output(text, isVerbose=True):
         sys.stdout.write(text)
 
 def get_timestamp():
-    curtime = datetime.now().time()
-    return curtime.strftime("%H:%M:%S")
+    curtime = datetime.now().time().strftime("%H:%M:%S.%f")
+    return curtime[:len(curtime)-5]
 
 def get_runtime():
     global startTime

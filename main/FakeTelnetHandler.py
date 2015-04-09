@@ -98,68 +98,71 @@ class FakeTelnetSocket(object):
             # The first written string is the character's name for login
             self.initialize_content(command)
             self.write("genaid 336")
-        elif (command == "i"):
+        elif command == "":
+            self.content.append("[96 H 20 M] ")
+        elif command == "i":
             self.content.append(self.inventory_string)
-        elif (re.match("whois (.+?)", command)):
+        elif re.match("whois (.+?)", command):
             self.content.append(self.whois_string)
-        elif (re.match("info", command)):
+        elif re.match("info", command):
             self.content.append(self.info_string)
-        elif (re.match("time", command)):
+        elif re.match("time", command):
             self.content.append(self.time_string)
-        elif (re.match("c show", command)):
+        elif re.match("c show", command):
             self.content.append("You glow with a grey aura.\n")
-        elif (re.match("genaid [\d]*", command)): #OUTPUT AN AREA
+        elif re.match("genaid [\d]*", command): #OUTPUT AN AREA
             M_obj = re.search("genaid ([\d]*)", command)
             area = Area.get_area_by_id(int(M_obj.group(1)))
             self.gen_area(area)
-        elif (command == "l"):
+        elif command == "l":
             self.content.append(str(self.show_current_area()))
-        elif (command == "lself"):
+        elif command == "lself":
             self.content.append(str(self.equipment))
-        elif (re.match("addmob .+", command)): #OUTPUT AN AREA
+        elif re.match("addmob .+", command): #OUTPUT AN AREA
             M_obj = re.search("addmob (.+)", command)
             mob = str(M_obj.group(1))
             self.current_monster_list.append(mob)
             mob_arrived_string = "An " + mob + " just arrived.\n"
             self.content.append(mob_arrived_string)
-        elif (re.match("mobflee .+? .+", command)):
+        elif re.match("mobflee .+? .+", command):
             M_obj = re.search("mobflee (.+?) (.+)", command)
             mob = str(M_obj.group(1))
             direction = str(M_obj.group(2))
             flee_string = "The " + mob + " flees to the " + direction + ".\n"
             self.content.append(flee_string)
-        elif (re.match("mobdead .+", command)):
+        elif re.match("mobdead .+", command):
             M_obj = re.search("mobdead (.+)", command)
             mob = str(M_obj.group(1))
             dead_string = "Your attack overwhelms the " + mob + " and he collapses!\nYour enemy, the " + mob + " has been defeated.\nYou gain 11 experience.\n"
             self.current_monster_list = []
             self.content.append(dead_string)
-        elif (re.match("go .+", command)):
+        elif re.match("go .+", command):
             M_obj = re.search("go (.+)", command)
             direction = str(M_obj.group(1))
             exit = ExitType(name=direction)
             mud_area = self.current_mud_area.get_area_to_from_exit(exit)
             self.gen_area(mud_area.area)
-        elif (re.match("break (.+)", command)):
+        elif re.match("break (.+)", command):
             M_obj = re.search("break (.+)", command)
             item = str(M_obj.group(1))
             break_string = "Your " + item + " fell apart.\n"
             self.content.append(break_string)
-        elif (re.match("drop (.+)", command)):
+        elif re.match("drop (.+)", command):
             M_obj = re.search("drop (.+)", command)
             item = str(M_obj.group(1))
             drop_string = self.drop_string % item
             self.content.append(drop_string)
-        elif (re.match("sell (.+)", command)):
+        elif re.match("sell (.+)", command):
             M_obj = re.search("sell (.+)", command)
             item = str(M_obj.group(1))
             sell_string = "The shopkeep gives you 30 gold for " + item + "."
             self.content.append(sell_string)
-        elif (re.match("echo (.+)", command)):
+        elif re.match("echo (.+)", command):
             M_obj = re.search("echo (.+)", command)
             echo = str(M_obj.group(1))
             self.content.append(echo + "\n")
-
+        elif re.match("quit", command) or re.match("quilt", command):
+            self.content.append("Goodbye! Come back soon.")
 
     def gen_area(self, area):
         self.current_mud_area = MudArea(area)

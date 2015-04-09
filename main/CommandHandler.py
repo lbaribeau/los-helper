@@ -113,12 +113,12 @@ class CommandHandler(object):
                 magentaprint("Cur KT Target: " + str(self.KillThread.target), False)
             magentaprint("Mobs Attacking " + str(self.character.MOBS_ATTACKING), False)
         elif re.match("aid", user_input): #Area ID
-            magentaprint("<" + str(self.character.AREA_ID) + ">", False)
-            magentaprint("<" + str(self.character.MUD_AREA) + ">", False)
+            magentaprint("CommandHandler character.AREA_ID: " + str(self.character.AREA_ID), False)
+            magentaprint("CommandHandler character.MUD_AREA: " + str(self.character.MUD_AREA), False)
         elif re.match("LAST_DIR", user_input):
-            magentaprint("<" + str(self.character.LAST_DIRECTION) + ">", False)
+            magentaprint("CommandHandler character.LAST_DIRECTION: " + str(self.character.LAST_DIRECTION), False)
         elif re.match("AREA_TITLE", user_input):
-            magentaprint("<" + str(self.character.AREA_TITLE) + ">", False)
+            magentaprint("CommandHandler character.AREA_TITLE: " + str(self.character.AREA_TITLE), False)
         elif re.match("EXIT_LIST", user_input):
             magentaprint(str(self.character.EXIT_LIST), False)
         elif re.match("hp", user_input):

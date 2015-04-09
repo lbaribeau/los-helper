@@ -17,7 +17,7 @@
 #       keep that aren't in KEEP_LIST into some bag that IS in KEEP_LIST)
 #   ANSI color
 
-import sys, time, getpass, threading, atexit, re
+import sys, time, getpass, threading, atexit, re, os
 from threading import Thread
 
 # from system.import_tools import *
@@ -105,6 +105,11 @@ class LosHelper(object):
         self.mudListenerThread.join(10)
         self.mudReaderThread.join(10)
         self.telnetHandler.close();
+        try:
+            os.remove("no.db")
+        except OSError:
+            # pass
+            magentaprint(str(OSError))
         magentaprint("Closed telnet.")
 
     def main(self):
@@ -183,16 +188,34 @@ class LosHelper(object):
         self.bot_ready = True
 
     def write_username_and_pass(self):
-        if len(sys.argv) >= 3:
-            self.character.name = sys.argv[1].title()
-            self.telnetHandler.write(self.character.name)
-            self.telnetHandler.write(sys.argv[2])
+        args = [s for s in sys.argv[1:] if not s.startswith('-')]
+        magentaprint("LosHelper stripped args: " + str(args))
+
+        if len(args) >= 1:
+            self.character.name = args[0].title()
         else:
-            # With the MUD thread going already, there is no need to prompt here.
             self.character.name = input()
-            self.telnetHandler.write(self.character.name)
+
+        self.telnetHandler.write(self.character.name)
+
+        if len(args) >= 2:
+            password = args[1]
+        else:
             password = getpass.getpass("")
-            self.telnetHandler.write(password)
+
+        self.telnetHandler.write(password)
+
+        # if len(args) >= 2:
+        #     self.character.name = args[1].title()
+        #     self.telnetHandler.write(self.character.name)
+        #     password = args[2]
+        # else:
+        #     # With the MUD thread going already, there is no need to prompt here.
+        #     self.character.name = input()
+        #     self.telnetHandler.write(self.character.name)
+        #     password = getpass.getpass("")
+
+        # self.telnetHandler.write(password)
 
     def initialize_reactions(self):
         self.mudReaderHandler.register_reaction(WieldReaction(self.character, self.telnetHandler))
