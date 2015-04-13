@@ -65,7 +65,7 @@ class LosHelper(object):
         self.mud_map = None
         magentaprint("LosHelper initializing...", False)
         self.mud_map_thread = threading.Thread(target=self.setup_mud_map)
-        # self.mud_map_thread.start()  # Don't forget to uncomment .join()
+        self.mud_map_thread.start()  # Don't forget to uncomment .join()
         # self.mud_map_thread = threading.Thread(target=magentaprint, args=("setting up mud map in main thread",))
         # self.setup_mud_map()
         self.character = Character()
@@ -85,7 +85,7 @@ class LosHelper(object):
         self.character.inventory = self.inventory
         self.combat_reactions = CombatReactions(self.mudReaderHandler, self.character)
 
-        self.mud_map_thread.start()  # Don't forget to uncomment .join()
+        # self.mud_map_thread.start()  # Don't forget to uncomment .join()
         self.bot_ready = False
         self.mudListenerThread.start()
         self.mudReaderThread.start()
