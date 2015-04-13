@@ -1,3 +1,6 @@
+
+prompt = ["\[(\d+) H (\d+) M\]"]
+
 you_have = ["You have (.+?)\."]
 
 hastened = ["You feel yourself moving faster\."]

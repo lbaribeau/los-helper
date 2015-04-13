@@ -3,6 +3,7 @@ import time
 
 from BotReactions import BotReactionWithFlag
 from misc_functions import magentaprint
+import RegexStore
 
 # I need to rewrite Command because the current version has too much registering/unregistering.
 # Working from a copy of Command.py...
@@ -41,8 +42,6 @@ class Command(BotReactionWithFlag):
     # X - actually... give it a shot!
 
     timer = 0
-    please_wait = r"Please wait (\d+) more seconds?\."
-    please_wait2 = r"Please wait (\d+):(\d+) more minutes" #"\n\r"
     # success_regexes = []
     failure_regexes = []
     error_regexes = []
@@ -59,8 +58,13 @@ class Command(BotReactionWithFlag):
         self.regexes.extend(self.success_regexes)
         self.regexes.extend(self.failure_regexes)
         self.regexes.extend(self.error_regexes)
-        self.regexes.append(self.please_wait)
-        self.regexes.append(self.please_wait2)
+        self.regexes.extend(RegexStore.please_wait)
+        self.regexes.extend(RegexStore.please_wait2)
+
+        self.regex_cart = [
+            self.success_regexes, self.failure_regexes, self.error_regexes
+        ] + RegexStore.please_wait + RegexStore.please_wait2
+        
         self.result = 'success/failure/error'
 
     def notify(self, regex, M_obj):
@@ -83,10 +87,10 @@ class Command(BotReactionWithFlag):
             magentaprint("Command clearing timer on error" + str(self))
             self.result = 'error'
             self.clear_timer()
-        elif regex is self.please_wait:
+        elif regex in RegexStore.please_wait:
             self.please_wait_time = int(M_obj.group(1))
             self.result = 'Please wait ' + str(self.please_wait_time)
-        elif regex is self.please_wait2:
+        elif regex in RegexStore.please_wait2:
             self.please_wait_time = 60*int(M_obj.group(1)) + int(M_obj.group(2))
             self.result = 'Please wait ' + str(self.please_wait_time)
 

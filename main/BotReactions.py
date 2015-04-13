@@ -55,7 +55,7 @@ class BotReactionWithFlag(object):
     want to wait for the server's response to that command. """
 
     _waiter_flag = True  
-    good_MUD_timeout = 8.0  #* (see footnote)
+    good_MUD_timeout = 5.0  # *Needs to be long enough to handle lag
 
     # def __init__(self):
         # regexes must also get set

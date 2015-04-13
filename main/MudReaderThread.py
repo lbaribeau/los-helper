@@ -116,14 +116,14 @@ class MudReaderThread(threading.Thread):
             text_out = ""
             num_escape_characters=0
             for c in unparsed_unprinted_characters_from_server:
-                if (ord(c) == self.ASCII_EOT):
+                if ord(c) == self.ASCII_EOT:
                     magentaprint("MudReaderThread: Saw the EOT, quitting.")
                     self.stop()
-                elif(ord(c) == self.ASCII_ESC):
+                elif ord(c) == self.ASCII_ESC:
                     num_escape_characters = num_escape_characters + 1
                     escape_sequence = "" + c
                     currently_escaping = True  
-                elif (currently_escaping and ord(c) == self.ASCII_m):
+                elif currently_escaping and ord(c) == self.ASCII_m:
                     num_escape_characters = num_escape_characters + 1
                     escape_sequence = escape_sequence + c
                     currently_escaping = False
@@ -136,7 +136,7 @@ class MudReaderThread(threading.Thread):
                     text_buffer = text_buffer + text_out
                     text_out = ""
                     self.set_colour(escape_sequence);  # Call subroutine to do this.
-                elif (currently_escaping):
+                elif currently_escaping:
                     escape_sequence = escape_sequence + c
                     num_escape_characters = num_escape_characters + 1
                 else:  #not currently escaping:             
@@ -242,24 +242,8 @@ class MudReaderThread(threading.Thread):
                         if M_obj is not None:
                             for s in m.subscribers:
                                 s.notify(r, M_obj)
+                            text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
-            #### Prompt ####
-            M_obj = re.search("\[(.*?) H (.*?) M\]", text_buffer)
-            if (M_obj):
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])                
-                try:
-                    #magentaprint("MudReader: Got health %s mana %s." % (health, mana))
-                    self.character.HEALTH = int(M_obj.group(1))
-                    self.character.MANA = int(M_obj.group(2))
-                except ValueError:
-                    # The exception is if there's a glitch in the ANSI code or
-                    # character order... happens sometimes.  (Think its the
-                    # MUD's fault)  Its not critical...
-                    magentaprint("MudReader: Got exception when reading prompt.")
-                    pass
-
-
-            
             #TODO: continue with MAXHP, MAXMP, GOLD, EXP, LEVELGOLD, LEVELEXP, etc.
             M_obj = re.search("Exp : (\d+)",text_buffer)
             if (M_obj != None):

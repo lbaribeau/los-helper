@@ -224,16 +224,17 @@ class Cartography(BotReaction):
                 self.character.AREA_ID = 82
                 self.character.MUD_AREA = None
         elif (regex == self.store_list):
-            item_list = re.findall(self.store_item_list, M_obj.group(0))
-            #magentaprint("{" + M_obj.group(0) + "}", False)
-            #magentaprint("items: " + str(item_list), False)
-            for item in item_list:
-                item_name = item[0]
-                item_size = item[1]
-                item_value = item[2]
+            magentaprint("Cartography store_list is broken")
+            # item_list = re.findall(self.store_item_list, M_obj.group(0))
+            # #magentaprint("{" + M_obj.group(0) + "}", False)
+            # #magentaprint("items: " + str(item_list), False)
+            # for item in item_list:
+            #     item_name = item[0]
+            #     item_size = item[1]
+            #     item_value = item[2]
 
-                area_item = self.catalog_item(item_name, item_size, item_value)
-                self.catalog_area_store_item(area_item, self.character.area)
+            #     area_item = self.catalog_item(item_name, item_size, item_value)
+            #     self.catalog_area_store_item(area_item, self.character.area)
         else:
             magentaprint("Cartography case missing for regex: " + str(regex))
 

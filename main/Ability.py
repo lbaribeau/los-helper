@@ -19,6 +19,10 @@ class BuffAbility(Ability):
     # def wear_off_regex(self):
     #     raise NotImplementedError() 
 
+    def __init__(self, telnetHandler):
+        self.thread = None
+        super().__init__(telnetHandler)
+
     def notify(self, regex, M_obj):
         if regex in self.success_regexes:
             self.active = True
@@ -29,6 +33,12 @@ class BuffAbility(Ability):
         #         # Timer is completely wrong -> Just set it very high and wait for wear_off_regex
         #         magentaprint("BuffAbility timer was way off.")
         super().notify(regex, M_obj)
+
+    def execute_until_success(self):
+        pass
+
+    def stop_executing(self):
+        pass
 
 class FastCombatAbility(Ability):  
     # You can attack immediately after these abilities

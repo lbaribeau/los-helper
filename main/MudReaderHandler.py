@@ -424,6 +424,12 @@ class MudReaderHandler(object):
 
         # if subscriber not in self.mudReaderThread.mud_event[regex]:
 
+    def add_subscriber(self, subscriber):
+        for r_list in subscriber.regex_cart:
+            self.mudReaderThread.mud_events[r_list[0]].subscribers.append(subscriber)
+
+        # self.mudReaderThread.mud_events[subscriber.regexes regex_store_attribute[0]].subscribers.append()
+
     def initialize_mud_events(self):
         # eh this converts them to strings
         # magentaprint("MudReaderHandler RegexStore.__dict__:" + str(RegexStore.__dict__))

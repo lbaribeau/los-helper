@@ -300,18 +300,8 @@ class Character(object):
         "dwarven farm hand", "dwarven barmaid", "fort sentry", "fur trader", 
         "aristocrat", "rancher sentry",
         # "vicar",
-        "nobleman", 
-        "lyrist",
-        "orange picker",
-        "logger",
-        "veteran",
-        "bruiser",
-        "axeman",
-        "seeker",
-        "hunter",
-        "bull",
-        "lay priest",
-        "protector",
+        "nobleman", "lyrist", "orange picker", "logger",
+        "veteran", "bruiser", "axeman", "seeker", "hunter", "bull", "lay priest", "protector",
         "battered knight",
         "aspirant"  # grey
     ]
@@ -323,12 +313,8 @@ class Character(object):
         'lyrist', "nobleman", "seeker", "bull", "hunter", 'usher',
         'sword swallower', 'archer', "mime artist",
         "yard supervisor", "sawmill operator", "large spider", "blacksmith",
-        "farm foreman",
-        "yard supervisor",
-        "Old Man James",
-        "dwarven traveller",
-        "Goourd",
-        "tourney organiser"
+        "farm foreman", "yard supervisor", "Old Man James", "dwarven traveller",
+        "Goourd", "tourney organiser"
         #'sentry' stand in pairs unfortunately...
     ]
     lvl6_red_monsters = [ #1574 for gnoll camp
@@ -336,50 +322,28 @@ class Character(object):
     ]
     lvl7_monsters = [
         "dwarven cook", "swordsman", 'fort sergeant', 'oremaster', 
-        'giant spider', "rock spider",
-        "Aldo",
-        "dwarven trader",
-        "gnoll chaplain",
-        "Cheryn",
-        "robed priest",
-        "orc scout"
+        'giant spider', "rock spider", "Aldo", "dwarven trader",
+        "gnoll chaplain", "Cheryn", "robed priest", "orc scout",
+        "dwarven shepherd"  # grey
     ] # giant spiders are hostile
     lvl8_monsters = [
-        'owlbear',
-        "hauler"
-        "Farmer Malbon",
-        "sonneteer",
-        "Tag",
-        "mine manager",
-        "Alaran the Market Manager",
-        "artificer",
-        "Dini Stonehammer",
-        "Thereze",
-        "Farmer Viladin",
-        "Rancher Renstone",
-        "berzerker",
-        "dwarven hunter",
-        "initiate",
-        "Olmer",
-        "berserk orc",
-        "old knight",
-        "dusty warrior",  # dusty blue
+        'owlbear', "hauler", "Farmer Malbon", "sonneteer", "Tag",
+        "mine manager", "Alaran the Market Manager", "artificer", "Dini Stonehammer",
+        "Thereze", "Farmer Viladin", "Rancher Renstone", "berzerker",
+        "dwarven hunter", "initiate", "Olmer", "berserk orc",
+        "old knight", "dusty warrior",  # dusty blue        
         "elven trader",   # pale blue
-        "Thereze" # grey
-
+        "Thereze", # grey
+        "Farmer Malbon"
         #'mine manager'
     ]
     lvl9_monsters = [
-        "dwarven blacksmith",
-        "director",
-        "Elder Barthrodue",
-        "abbot",
-        "orc warrior",
-        "white knight",
-        "hedge knight"
+        "dwarven blacksmith", "director", "Elder Barthrodue", "abbot",
+        "orc warrior", "white knight", "hedge knight", "Farmer Calmor"
     ]
     lvl10_monsters = [
-        "Kelluran", "Jerrek"  # all grey
+        "Kelluran", "Jerrek",  # all grey
+        "Farmer McDermott"
     ]
     lvl11_monsters = [
         "dwarven adventurer",  # dusty blue

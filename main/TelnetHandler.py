@@ -17,6 +17,7 @@ class TelnetHandler(object):
             self.tn.write(command.encode('ascii'))
         except error:
             magentaprint("TelnetHandler write() error: " + str(error))
+            raise error
         # magentaprint("sent.", timestamp=False)
 
     def connect_to_MUD(self):

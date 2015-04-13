@@ -1,14 +1,19 @@
 from peewee import *
 import networkx as nx
+
 from Database import *
 from misc_functions import *
+# from misc_functions import magentaprint
 
+# class MudMap(object):
 class MudMap():
     los_map = None
     ready = False
 
     def __init__(self):
+        # magentaprint("MudMap: initialized.")
         self.re_map()
+        print("MudMap initialized, los_map: " + str(self.los_map))
 
     def re_map(self):
         self.ready = False
@@ -48,7 +53,8 @@ class MudMap():
         return self.to_string()
 
     def get_path(self, start_area_id, end_area_id):
-        node_path = nx.shortest_path(self.los_map,source=start_area_id,target=end_area_id)
+        magentaprint("MudMap.get_path self.los_map: " + str(self.los_map))
+        node_path = nx.shortest_path(self.los_map, source=start_area_id, target=end_area_id)
         edge_path = []
 
         i = 0
@@ -58,7 +64,8 @@ class MudMap():
             edge_path.append(cur_edge['name'])
             i += 1
 
-        #magentaprint("Got path: " + str(edge_path), False)
+        magentaprint("MudMap: Node path: " + str(node_path), False)
+        magentaprint("MudMap: Edge path: " + str(edge_path), False)
 
         return edge_path
 

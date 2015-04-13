@@ -32,6 +32,7 @@ from threading import Thread
 from misc_functions import *
 from Character import Character
 from CharacterClass import CharacterClass
+from GrindThread import GrindThread
 from SmartGrindThread import SmartGrindThread
 from SmartCrawlThread import SmartCrawlThread
 from GotoThread import GotoThread
@@ -52,6 +53,7 @@ from BotReactions import *
 from TelnetHandler import TelnetHandler 
 from FakeTelnetHandler import FakeTelnetHandler 
 from Quit import Quit
+from Prompt import Prompt
 
 from Database import *
 from MudMap import *
@@ -60,9 +62,10 @@ class LosHelper(object):
 
     def __init__(self):
         self.botThread = None
+        self.mud_map = None
         magentaprint("LosHelper initializing...", False)
         self.mud_map_thread = threading.Thread(target=self.setup_mud_map)
-        self.mud_map_thread.start()
+        # self.mud_map_thread.start()  # Don't forget to uncomment .join()
         # self.mud_map_thread = threading.Thread(target=magentaprint, args=("setting up mud map in main thread",))
         # self.setup_mud_map()
         self.character = Character()
@@ -82,14 +85,14 @@ class LosHelper(object):
         self.character.inventory = self.inventory
         self.combat_reactions = CombatReactions(self.mudReaderHandler, self.character)
 
+        self.mud_map_thread.start()  # Don't forget to uncomment .join()
         self.bot_ready = False
-        self.mud_map = None
         self.mudListenerThread.start()
         self.mudReaderThread.start()
 
         # With the MUDReaderThread going, we have the server's text and prompts now showing
-        # magentaprint("LosHelper joining mud_map_thread.")  # Ha this print can cause the lock erroris
-        self.mud_map_thread.join() 
+        # magentaprint("LosHelper joining mud_map_thread.")  # Ha this print can cause the lock error
+        # self.mud_map_thread.join() 
         self.write_username_and_pass()
         self.initialize_reactions()
         self.check_inventory()
@@ -98,6 +101,12 @@ class LosHelper(object):
 
         self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
         self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
+
+    def setup_mud_map(self):
+        magentaprint("Generating the mapfile....", False)
+        self.mud_map = MudMap()
+        magentaprint("Mapfile generated", False)
+        self.bot_ready = True
     
     def close(self):
         self.mudListenerThread.stop()
@@ -107,9 +116,8 @@ class LosHelper(object):
         self.telnetHandler.close();
         try:
             os.remove("no.db")
-        except OSError:
-            # pass
-            magentaprint(str(OSError))
+        except OSError as e:
+            magentaprint("LosHelper os.remove(\"no.db\") error: " + str(e))
         magentaprint("Closed telnet.")
 
     def main(self):
@@ -120,13 +128,13 @@ class LosHelper(object):
             try:
                 user_input = input(); 
             except (EOFError, KeyboardInterrupt) as e:
-                magentaprint("Don't try to crash me!  Use 'quit'.", False)
+                magentaprint("LosHelper: " + str(e))
                 user_input = ""
 
             user_input = user_input.lstrip()
 
             if not self.mudReaderThread.is_alive():
-                magentaprint("\nWhat happened to read thread?  Time to turf.\n")
+                magentaprint("\nRead thread is dead, we're cooked.\n")
                 self.telnetHandler.write("")
                 self.telnetHandler.write("quit")
                 # self.telnetHandler.write(user_input)
@@ -178,14 +186,11 @@ class LosHelper(object):
                 self.stop_bot()
                 self.commandHandler.process(user_input)  
             else:
-                self.commandHandler.process(user_input)
-
-
-    def setup_mud_map(self):
-        magentaprint("Generating the mapfile....", False)
-        self.mud_map = MudMap()
-        magentaprint("Mapfile generated", False)
-        self.bot_ready = True
+                try:
+                    self.commandHandler.process(user_input)
+                except Exception as e:
+                    magentaprint("LosHelper catching error and quitting: " + str(e))
+                    stopping = True
 
     def write_username_and_pass(self):
         args = [s for s in sys.argv[1:] if not s.startswith('-')]
@@ -219,6 +224,8 @@ class LosHelper(object):
 
     def initialize_reactions(self):
         self.mudReaderHandler.register_reaction(WieldReaction(self.character, self.telnetHandler))
+        self.mudReaderHandler.add_subscriber(Prompt(self.character))
+        magentaprint("LosHelper prompt object:" + str(Prompt))
 
     def check_inventory(self):
         # This prints the inventory.  I like that.  
@@ -244,9 +251,9 @@ class LosHelper(object):
 
 
     def start_grind(self, user_input):
-        if not self.bot_ready:
-            magentaprint("Please wait for the Mapfile before using this command", False)
-            return False
+        # if not self.bot_ready:
+        #     magentaprint("Please wait for the Mapfile before using this command", False)
+        #     return False
 
         M_obj = re.search("[0-9]+", user_input)
 
@@ -258,7 +265,8 @@ class LosHelper(object):
         if self.botThread != None and self.botThread.is_alive():
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
-            self.botThread = SmartGrindThread(self.character, 
+            # self.botThread = SmartGrindThread(self.character, 
+            self.botThread = GrindThread(self.character, 
                                               self.commandHandler, 
                                               self.mudReaderHandler,
                                               self.mud_map,
