@@ -3,8 +3,8 @@ from misc_functions import *
 from MudMap import *
 
 class GotoThread(BotThread):
-    def __init__(self, character, commandHandler, mudReaderHandler, database, mud_map, area_to_id, is_show_to=False):
-        super().__init__(character, commandHandler, mudReaderHandler, database, mud_map)
+    def __init__(self, character, commandHandler, mudReaderHandler, mud_map, area_to_id, is_show_to=False):
+        super().__init__(character, commandHandler, mudReaderHandler, mud_map)
 
         if isinstance(area_to_id, int):
             self.area_to_id = area_to_id

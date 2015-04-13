@@ -14,7 +14,7 @@ from MudMap import MudMap
 
 class BotThread(threading.Thread):
 
-    def __init__(self, character, commandHandler, mudReaderHandler, inventory, mud_map):
+    def __init__(self, character, commandHandler, mudReaderHandler, mud_map):
         Thread.__init__(self)
         # Initialize some variables local to this thread
         self.__stopping = False        
@@ -22,7 +22,7 @@ class BotThread(threading.Thread):
         self.character = character
         self.commandHandler = commandHandler
         self.mudReaderHandler = mudReaderHandler
-        self.inventory = inventory
+        self.inventory = character.inventory
         self.direction_list = []
 
         self.character.ACTIVELY_BOTTING = True
