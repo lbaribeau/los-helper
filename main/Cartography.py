@@ -130,7 +130,7 @@ class Cartography(BotReaction):
                     cur_mud_area = self.character.MUD_AREA
                     mud_area = MudArea.map(area_title, area_description, exit_list, area_from, direction_from, cur_mud_area)
                     # area = self.draw_map(area_title, area_description, exit_list)
-                    self.character.MudArea = mud_area
+                    self.character.MUD_AREA = mud_area
                     area = mud_area.area
 
                     self.catalog_monsters(area, monster_list)
