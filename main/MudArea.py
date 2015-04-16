@@ -22,6 +22,7 @@ class MudArea():
         direction_list = []
         area = Area(name=str(area_title), description=str(area_description).replace("\n\r", ' '))
         mud_area = None
+        area_exits = None
 
         for exit in exit_list:
             exit_type = ExitType(name=str(exit))
@@ -31,7 +32,7 @@ class MudArea():
         discerned_area = MudArea.discern_location(area, direction_list, area_from, direction_from, cur_mud_area)
 
         if discerned_area is not None:
-            area = discerned_area
+            area = discerned_area.area
         else:
             if area_from is not None and direction_from is not None: #if we have an area we're coming from
                 area_from = Area.get_area_by_id(area_from)
