@@ -25,6 +25,11 @@ class GotoThread(BotThread):
             magentaprint("GotoThread caught exception: " + str(e))
             self.stop()
 
+        if "amethyst" in directions:
+            magentaprint(directions, False)
+            magentaprint("Path goes through limbo!")
+            return []  # This will break the bot if the db gives a path through limbo
+
         if self.is_show_to:
             magentaprint(directions, False)
             directions = []

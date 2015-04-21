@@ -14,7 +14,7 @@ from MudItem import *
 from MudMob import *
 import RegexStore
 
-class Cartography(BotReaction):
+class Cartography(BotReactionWithFlag):
 
     def __init__(self, mudReaderHandler, commandHandler, character):
         #           .=\n\r   EAT JUNK DATA (death,loginprompts,hptick)               Title       Description        Exit list               Players / Mobs / Signs / Items (optional)
@@ -81,6 +81,7 @@ class Cartography(BotReaction):
         self.mudReaderHandler.register_reaction(self)
 
     def notify(self, regex, M_obj):
+        super().notify(regex, M_obj)
         if regex == self.too_dark:            
             if self.character.AREA_ID is not None:
                 guessed_area = self.guess_location(self.character.AREA_ID, self.character.LAST_DIRECTION)            
@@ -144,16 +145,11 @@ class Cartography(BotReaction):
                 else:
                     self.character.AREA_ID = None
         elif regex is self.blocked_path:
-            magentaprint("Cartography blocking mob M_obj: " + str(M_obj))
-            magentaprint("Cartography blocking mob M_obj.group(0): " + str(M_obj.group(0)))
-            magentaprint("Cartography blocking mob M_obj.group(1): " + str(M_obj.group(1)))
-            magentaprint("Cartography blocking mob M_obj.group(2): " + str(M_obj.group(2)))
-            magentaprint("Cartography blocking mob name: " + str(M_obj.group(1)))
-            mob_name = M_obj.group(2)
+            magentaprint("Cartography blocking mob name: " + str(M_obj.group('mob_name')))
+            mob_name = M_obj.group('mob_name')
             self.character.GO_BLOCKING_MOB = mob_name
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
-            magentaprint("Path blocked by: " + str(mob_name))
             self.catalog_path_blocker(mob_name)
         elif regex == self.loot_blocked:
             loot_blocker = M_obj.group(2)

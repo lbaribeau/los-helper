@@ -97,12 +97,14 @@ class LosHelper(object):
         # self.mud_map_thread.join() 
         self.write_username_and_pass()
         self.initialize_reactions()
-        self.check_inventory()
         self.check_class_and_level()
         self.check_info()
 
         self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
         self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
+        self.telnetHandler.write('l')  # Sets area id for mapping
+        self.commandHandler.go.wait_for_flag()
+        self.check_inventory()
 
     def setup_mud_map(self):
         magentaprint("Generating the mapfile....", False)

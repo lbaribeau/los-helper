@@ -18,11 +18,11 @@ please_wait2 = [r"Please wait (\d+):(\d+) more minutes"]
 __numbers = "(1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th|11th|12th|13th|14th|15th|16th|17th|18th|19th)" 
 __numbers2 = "(?:(\d*1st|\d*2nd|\d*3rd|\d+th) )?"
 
-obvious_exits = [r"Obvious exits: "]
+obvious_exits = [r"(?s)Obvious exits: (.+?)\.\n\r"]
 go_where = [r"Go where\?"]
 cant_go = [r"You can't go that way\."]
 # blocked_path = ["(?:The " + __numbers2 + ")?(.+?) blocks your exit\."]  # Make the The optional is hard
-blocked_path = ["(?:The )" + __numbers2 + "(.+?) blocks your exit\."]
+blocked_path = ["(?:The )" + __numbers2 + "(?P<mob_name>.+?) blocks your exit\."]
 open_first = ["You have to open it first\."]
 no_exit = ["I don't see that exit\."]
 class_prohibited = ["Your class prohibits you from entering there\."]
