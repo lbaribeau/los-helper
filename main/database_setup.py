@@ -1,7 +1,7 @@
 
 from sys import argv
 
-from Database import *
+# from Database import *
 
 if "-nodb" in argv:
 	database_file = "no.db"

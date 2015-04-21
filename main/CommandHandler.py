@@ -12,6 +12,7 @@ from Database import *
 from MudMap import *
 import Command
 import RegexStore
+from Go import Go
 
 class CommandHandler(object):
 
@@ -22,13 +23,16 @@ class CommandHandler(object):
         self.inventory = character.inventory
 
         self.smartCombat = SmartCombat(self.telnetHandler, Kill(telnetHandler), Cast(telnetHandler), self.character)
-        mudReaderHandler.register_reaction(self.smartCombat.kill)
-        mudReaderHandler.register_reaction(self.smartCombat.cast)
-        mudReaderHandler.register_reaction(self.smartCombat)
-        mudReaderHandler.subscribe_to_mud_event(self.smartCombat.kill, RegexStore.hastened)
-        mudReaderHandler.subscribe_to_mud_event(self.smartCombat.kill, RegexStore.feel_slower)
+        # mudReaderHandler.register_reaction(self.smartCombat.kill)
+        # mudReaderHandler.register_reaction(self.smartCombat.cast)
+        # mudReaderHandler.register_reaction(self.smartCombat)
         self.kill = self.smartCombat.kill
         self.cast = self.smartCombat.cast
+        mudReaderHandler.add_subscriber(self.kill)
+        mudReaderHandler.add_subscriber(self.cast)
+        self.go = Go(telnetHandler)
+        mudReaderHandler.add_subscriber(self.go)
+        mudReaderHandler.add_subscriber(self.smartCombat)
 
     def process(self, user_input):
         """ This CommandHandler function is the filter for user input that
@@ -73,13 +77,9 @@ class CommandHandler(object):
              re.match("nw$", user_input) or re.match("ne$", user_input) or \
              re.match("se$", user_input) or re.match("sw$", user_input) or \
              re.match("u$", user_input) or re.match("d$", user_input) or \
-             re.match("ou[t]?$", user_input) or re.match("go ",user_input) or \
+             re.match("ou[t]?$", user_input) or re.match("go ", user_input) or \
              re.match(str(self.character.EXIT_REGEX), user_input):
-            self.character.TRYING_TO_MOVE = True
-            self.character.LAST_DIRECTION = user_input.replace("go ", "")
-
-            magentaprint("moving " + str(user_input))
-
+            # magentaprint("moving " + str(user_input))
             self.user_move(user_input)
             # routine which does appropriate waiting,
             # printing, and finally sending command.
@@ -207,8 +207,6 @@ class CommandHandler(object):
             misc_functions.debugMode = not misc_functions.debugMode
             magentaprint("Debug Mode changed", False)
         elif re.match(str(self.character.EXIT_REGEX), user_input):
-            self.character.LAST_DIRECTION = user_input.replace("go ", "")
-            self.character.TRYING_TO_MOVE = True
             self.user_move("go " + self.character.LAST_DIRECTION)
             magentaprint("Running go on EXIT_REGEX: " + str(self.character.EXIT_REGEX), False)
         else: # Doesn't match any command we are looking for
@@ -223,36 +221,42 @@ class CommandHandler(object):
         self.kill.start_thread(user_input[3:])
 
     def user_move(self, user_input):
+        if user_input.startswith("go "):
+            exit = user_input.split(" ")[1]
+            if exit == "nw":
+                user_input = "nw"
+            elif exit == "sw":
+                user_input = "sw"
+            elif exit == "ne":
+                user_input = "ne"
+            elif exit == "se":
+                user_input = "se"
+
+        self.character.TRYING_TO_MOVE = True
+        self.character.LAST_DIRECTION = user_input.replace("go ", "")
         self.kill.stop()
         self.cast.stop()
-
         now = time.time()
-        
         wait_from_move = self.character.MOVE_WAIT - (now - self.character.MOVE_CLK)
-        wait_from_ATTACK = self.character.ATTACK_WAIT - (now - self.character.ATTACK_CLK)
-        wait_from_CAST = self.character.CAST_WAIT - (now - self.character.CAST_CLK)
-        
-        time_remaining = max(wait_from_move, wait_from_ATTACK, wait_from_CAST);
-        
-        #magentaprint("MOVE wait time: %.2f" % round(wait_from_move, 2))
-        #magentaprint("ATTACK wait time: %.2f" % round(wait_from_ATTACK, 2))
-        #magentaprint("CAST wait time: %.2f" % round(wait_from_CAST, 2))
-          
-        if time_remaining < 0:
-            self.character.MOVE_CLK = now
-            self.telnetHandler.write(user_input)
-        elif time_remaining < 0.1:
+        time_remaining = max(wait_from_move, self.kill.wait_time(), self.cast.wait_time(), 0);
+        # magentaprint("user_move: MOVE wait time: %.2f" % round(wait_from_move, 2))
+        # magentaprint("user_move: kill.wait_time(): " + str(self.kill.wait_time()))
+        # magentaprint("user_move: cast.wait_time(): " + str(self.cast.wait_time()))
+
+        if time_remaining < 3.0:
             time.sleep(time_remaining)
-            self.character.MOVE_CLK = now
-            self.telnetHandler.write(user_input)
-        elif time_remaining < 1.0:
-            magentaprint("(Python) Delaying by %.1f sec ..." % time_remaining)
-            time.sleep(time_remaining)
-            magentaprint("Sent.")
             self.character.MOVE_CLK = now
             self.telnetHandler.write(user_input)
         else:
-            magentaprint("Wait %.1f more seconds" % time_remaining)
+            magentaprint("Wait %.1f more seconds." % time_remaining)
+
+        # elif time_remaining < 1.0:
+        #     magentaprint("(Python) Delaying by %.1f sec ..." % time_remaining)
+        #     time.sleep(time_remaining)
+        #     magentaprint("Sent.")
+        #     self.character.MOVE_CLK = now
+        #     self.telnetHandler.write(user_input)
+        # else:
         
     def user_dr(self, user_input):
         [command, item] = user_input.split(" ", 1)

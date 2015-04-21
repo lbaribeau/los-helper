@@ -4,9 +4,10 @@ import networkx as nx
 from Database import *
 from misc_functions import *
 # from misc_functions import magentaprint
+from ConsoleHandler import newConsoleHandler
 
-# class MudMap(object):
-class MudMap():
+class MudMap(object):
+# class MudMap():
     los_map = None
     ready = False
 
@@ -24,6 +25,8 @@ class MudMap():
     def populate_map(self):
         areas = Area.raw('select * from v_areas_for_graph')
         area_exits = AreaExit.raw('select * from v_areaexits_for_graph')
+        self.magentaprint("MudMap populate_map areas:" + str(areas))
+        self.magentaprint("MudMap populate_map area_exits:" + str(area_exits))
 
         for area in areas:
             self.los_map.add_node(area.id)
@@ -31,17 +34,18 @@ class MudMap():
         for area_exit in area_exits:
             name = area_exit.exit_type.name
             self.los_map.add_edge(area_exit.area_from.id, area_exit.area_to.id, name=name)
-            '''area_to_id = -1 #this is a marker for a null / unexplored area
-            area_is_useable = True
-            if (area_exit.area_to is not None):
-                area_to_id = area_exit.area_to.id
-                area_is_useable = area_exit.is_useable
+            
+            # area_to_id = -1 #this is a marker for a null / unexplored area
+            # area_is_useable = True
 
-                #magentaprint("area useable: " + str(area_is_useable) + " " + str(area_exit.is_useable), False)
+            # if area_exit.area_to is not None:
+            #     area_to_id = area_exit.area_to.id
+            #     area_is_useable = area_exit.is_useable
+            #     #magentaprint("area useable: " + str(area_is_useable) + " " + str(area_exit.is_useable), False)
 
-            if area_is_useable: #don't add unusable areas to the graph
-                name = area_exit.exit_type.name
-                self.los_map.add_edge(area_exit.area_from.id, area_to_id, name=name)'''
+            # if area_is_useable: #don't add unusable areas to the graph
+            #     name = area_exit.exit_type.name
+            #     self.los_map.add_edge(area_exit.area_from.id, area_to_id, name=name)
 
     def to_string(self):
         return str(self.los_map.nodes()) + "\n\n" + str(self.los_map.edges())
@@ -53,14 +57,20 @@ class MudMap():
         return self.to_string()
 
     def get_path(self, start_area_id, end_area_id):
-        #magentaprint("MudMap.get_path self.los_map: " + str(self.los_map))
-        node_path = nx.shortest_path(self.los_map, source=start_area_id, target=end_area_id)
+        # magentaprint("MudMap.get_path self.los_map: " + str(self.los_map))
+
+        self.magentaprint("MudMap.get_path self.los_map: " + str(self.los_map))
+        try:
+            node_path = nx.shortest_path(self.los_map, source=start_area_id, target=end_area_id)
+        except Exception as e:
+            self.magentaprint("MudMap: " + str(e))
+            raise e
+
         edge_path = []
-
         i = 0
-        while i < (len(node_path) - 1):
+        while i < len(node_path) - 1:
+            # self.magentaprint("MudMap looping... " + str(i))
             cur_edge = self.los_map.get_edge_data(node_path[i], node_path[i+1])
-
             edge_path.append(cur_edge['name'])
             i += 1
 
@@ -68,6 +78,11 @@ class MudMap():
         #magentaprint("MudMap: Edge path: " + str(edge_path), False)
 
         return edge_path
+
+    def magentaprint(self, text):
+        newConsoleHandler().magenta()
+        print(text)
+        newConsoleHandler().white()
 
     def get_nearest_unexplored_path(self, start_area_id):
         return self.get_path(start_area_id, 1)

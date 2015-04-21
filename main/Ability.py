@@ -67,9 +67,9 @@ class Haste(BuffAbility):
     cooldown_after_success = 600  # can flee
     cooldown_after_failure = 10  # can flee
     # success_regexes = [r"You feel yourself moving faster\."]
-    success_regexes = RegexStore.hastened
-    failure_regexes = [r"Your attempt to hasten failed\."]
-    already_buffed_regex = "You're already hastened\."
+    success_regexes = [RegexStore.hastened, RegexStore.already_hastened]
+    failure_regexes = [RegexStore.haste_fail]
+    already_buffed_regex = RegexStore.already_hastened
     # wear_off_regex = "You feel slower\."
     wear_off_regex = RegexStore.feel_slower
     lasts = 150
@@ -135,7 +135,7 @@ class AestersTears(HealAbility, Ability):
     command = "sing ae"
     cooldown_after_success = 140  # Can flee/move/attack immediately
     max_amount = 16  # guessed
-    success_regexes = ["Your music rejuvenates everyone in the room\."]  # This seems to overwrite Ability...
+    success_regexes = [RegexStore.aesters_tears]  # This seems to overwrite Ability...
     # self.failure_regex = "(?!x)x"  # Regex that never matches - Aester never fails
     failure_regexes = []
     # classes = ["Brd"]
@@ -147,9 +147,10 @@ class DanceOfTheCobra(FastCombatAbility):
     cooldown_after_success = 570  # can hit right away i believe
     cooldown_after_failure = 30  # can flee/move/attack
     # success_regex = r"The Dance of the Snake ends\.\n\rYou complete the ritual by touching the (.+?) and the charming takes effect\.\.\."
-    success_regexes = [r"he Dance of the Snake ends"]
+    # success_regexes = [r"he Dance of the Snake ends"]
+    success_regexes = [RegexStore.dance_of_the_cobra]
     # failure_regex = r"The Dance of the Snake has no effect on the (.+?)\.\r\n"  # and you can hit right away.
-    failure_regexes = [r"he Dance of the Snake has "]
+    failure_regexes = [RegexStore.dance_of_the_cobra_fail]
     # classes = ["Brd"]
     level = 1  # guessed
     # magentaprint("Dance of the Cobra regexes before calling super: " + str(self.regexes))

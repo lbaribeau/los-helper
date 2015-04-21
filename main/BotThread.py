@@ -616,11 +616,9 @@ class BotThread(threading.Thread):
         self.commandHandler.user_flee() 
 
     def get_items(self):
-        if (self.character.chase_mob is ""): #Only get items when we're not chasing!
-            if(self.stopping):
-                return
+        if not self.stopping and self.character.chase_mob == "": 
+            # Only get items when not chasing!
             self.commandHandler.process("ga")  
-        return
 
     def engage_mobs_who_joined_in(self):
         while(self.character.MOBS_JOINED_IN != []):

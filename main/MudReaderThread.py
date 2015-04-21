@@ -203,7 +203,7 @@ class MudReaderThread(threading.Thread):
                     try: 
                         M_obj = re.search(regex, text_buffer)
                     except TypeError:
-                        magentaprint("MudReaderThread TypeError: Regex: " + str(regex))
+                        magentaprint("MudReaderThread reaction TypeError: " + str(reaction.__class__) + " regex: " + str(regex))
 
 
                     # if(M_obj != None):
@@ -260,30 +260,6 @@ class MudReaderThread(threading.Thread):
                     self.CHECK_AURA_SUCCESS=0;
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 
-            #### Haste ####
-            M_obj = re.search("You feel yourself moving faster\.",text_buffer)
-            if(M_obj != None):
-                self.character.HASTING = True
-                self.character.ATTACK_WAIT = self.character.ATTACK_PERIOD_HASTE
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            M_obj = re.search("You're already hastened\.",text_buffer)
-            #TODO: Its still possible that haste state is invalid.  Here user types
-            #haste and I trigger on "You're already hastened"... can by improved by
-            #doing everything under covers! (maybe send a command to telnet and use
-            #the response to update variables but don't print anything!  This could
-            #be a thread.  Or I could cover all the cases that invalidate haste,
-            #which is mainly logging in.  TODO: Login_Update() (do with main thread
-            #before raw_input call.)
-            if(M_obj != None):
-                self.character.HASTING = True
-                self.character.ATTACK_WAIT = self.character.ATTACK_PERIOD_HASTE
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            M_obj = re.search("You feel slower\.",text_buffer)
-            if(M_obj != None):
-                self.character.HASTING = False
-                self.character.ATTACK_WAIT = self.character.ATTACK_PERIOD
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                            
             #### Set weapon strings ####
             M_obj = re.search("You wield (.*?)\.", text_buffer)
             if (M_obj != None and not re.search(" in your off hand", M_obj.group(1))):

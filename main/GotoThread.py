@@ -14,19 +14,23 @@ class GotoThread(BotThread):
             magentaprint("No Area ID supplied to goto", False)
 
     def decide_where_to_go(self):
+        directions = []
+        magentaprint(str(self.character.AREA_ID) + " to " + str(self.area_to_id), False)
+
         try:
-            magentaprint(str(self.character.AREA_ID) + " to " + str(self.area_to_id), False)
             directions = self.mud_map.get_path(self.character.AREA_ID, self.area_to_id)
             # Hmmm... get_path returning none...
-
-            if self.is_show_to:
-                magentaprint(directions, False)
-                directions = []
-            return directions
         except Exception as e:
-            magentaprint("I/O error({0}): {1}".format(e.errno, e.strerror))
-            magentaprint("Unable to build a path to that destination", False)
+            # magentaprint("I/O error({0}): {1}".format(e.errno, e.strerror))
+            magentaprint("GotoThread caught exception: " + str(e))
             self.stop()
+
+        if self.is_show_to:
+            magentaprint(directions, False)
+            directions = []
+            self.stop()
+
+        return directions
 
     def do_after_directions_travelled(self):
         self.stop()

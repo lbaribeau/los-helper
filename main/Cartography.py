@@ -1,6 +1,7 @@
 
 import time
 import sys
+import re
 
 from collections import Counter
 from Exceptions import *
@@ -11,7 +12,7 @@ from MudMap import *
 from MudArea import *
 from MudItem import *
 from MudMob import *
-import re
+import RegexStore
 
 class Cartography(BotReaction):
 
@@ -24,21 +25,21 @@ class Cartography(BotReaction):
         self.you_see_the = "You see" + the + s_numbered + "(.+?)\.\n\r(.+?)\n\r(.+?)\n\r(.+?(?:\.|!))"
         self.mob_aura_check = the + s_numbered + "(.+?) glows with a (.+?) aura\."
         #This regex doesn't work for named mobs....
-        self.blocked_path = " (?:The )" + s_numbered + "(.+?) blocks your exit\."
-        self.please_wait = "Please wait [\d]* more seconds?\."
-        self.cant_go = "You can't go that way\."
-        self.no_exit = "I don't see that exit\."
-        self.class_prohibited = "Your class prohibits you from entering there\."
-        self.level_too_low = "You must be at least level [\d]* to go that way\."
-        self.not_invited = "You have not been invited in\."
-        self.not_open_during_day = "That exit is not open during the day\."
-        self.not_open_during_night = "That exit is closed for the night\."
-        self.no_items_allowed = "You cannot bring anything through that exit\."
-        self.door_locked = "It's locked\."
-        self.no_right = "You have not earned the right to pass this way!"
-        self.in_tune = "That way may only be taken by those in tune with the world!"
-        self.not_authorized = "You are not authorised to enter here\."
-        self.no_force = "You cannot force yourself to go through there\."
+        self.blocked_path = RegexStore.blocked_path[0]
+        self.please_wait = RegexStore.please_wait[0]
+        self.cant_go = RegexStore.cant_go[0]
+        self.no_exit = RegexStore.no_exit[0]
+        self.class_prohibited = RegexStore.class_prohibited[0]
+        self.level_too_low = RegexStore.level_too_low[0]
+        self.not_invited = RegexStore.not_invited[0]
+        self.not_open_during_day = RegexStore.not_open_during_day[0]
+        self.not_open_during_night = RegexStore.not_open_during_night[0]
+        self.no_items_allowed = RegexStore.no_items_allowed[0]
+        self.locked = RegexStore.locked[0]
+        self.no_right = RegexStore.no_right[0]
+        self.in_tune = RegexStore.in_tune[0]
+        self.not_authorized = RegexStore.not_authorized[0]
+        self.cannot_force = RegexStore.cannot_force[0]
         self.not_here = "You don't see that here\."
         self.loot_blocked = "The" + s_numbered + " (.+?) won't let you take anything\."#The spiv won't let you take anything.
         self.teleported_away = "### (.+?)'s body is teleported away to be healed\."
@@ -57,10 +58,10 @@ class Cartography(BotReaction):
             self.not_open_during_day,
             self.not_open_during_night,
             self.no_items_allowed,
-            self.door_locked,
+            self.locked,
             self.no_right,
             self.not_authorized,
-            self.no_force,
+            self.cannot_force,
             self.not_here,
             self.loot_blocked,
             self.teleported_away,
@@ -142,12 +143,17 @@ class Cartography(BotReaction):
                     magentaprint("Cartography area match: " + str(area))
                 else:
                     self.character.AREA_ID = None
-        elif regex == self.blocked_path:
+        elif regex is self.blocked_path:
+            magentaprint("Cartography blocking mob M_obj: " + str(M_obj))
+            magentaprint("Cartography blocking mob M_obj.group(0): " + str(M_obj.group(0)))
+            magentaprint("Cartography blocking mob M_obj.group(1): " + str(M_obj.group(1)))
+            magentaprint("Cartography blocking mob M_obj.group(2): " + str(M_obj.group(2)))
+            magentaprint("Cartography blocking mob name: " + str(M_obj.group(1)))
             mob_name = M_obj.group(2)
             self.character.GO_BLOCKING_MOB = mob_name
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
-            magentaprint("Path blocked by: " + mob_name)
+            magentaprint("Path blocked by: " + str(mob_name))
             self.catalog_path_blocker(mob_name)
         elif regex == self.loot_blocked:
             loot_blocker = M_obj.group(2)
@@ -173,10 +179,10 @@ class Cartography(BotReaction):
                 regex == self.not_open_during_day or
                 regex == self.not_open_during_night or
                 regex == self.no_items_allowed or
-                regex == self.door_locked or
+                regex == self.locked or
                 regex == self.no_right or
                 regex == self.not_authorized or
-                regex == self.no_force or
+                regex == self.cannot_force or
                 regex == self.in_tune):
             self.set_area_exit_as_unusable(M_obj.group(0))
             self.character.SUCCESSFUL_GO = False

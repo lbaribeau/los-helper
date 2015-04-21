@@ -9,10 +9,10 @@ class SmartCombat(CombatObject):
     black_magic = True
 
     def __init__(self, telnetHandler, kill, cast, character):
+        super().__init__(telnetHandler)
         self.thread = None
         self.target = None
         self.stopping = None
-        self.telnetHandler = telnetHandler
         self.kill = kill
         self.cast = cast
         self.abilities = character._class.abilities
@@ -30,8 +30,6 @@ class SmartCombat(CombatObject):
                                'burn' if spell_percent == character.fire else 'blis'
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
 
-        self.regexes = []
-        super().__init__(telnetHandler)
 
     def notify(self, regex, M_obj):
         # Notifications are used for healing
@@ -98,9 +96,9 @@ class SmartCombat(CombatObject):
                 a.wait_for_flag()
                 magentaprint("SmartCombat finished using ability.")
                 # So if we hit with Dance of the Cobra, we should save mana...
-                if a.success and isinstance(a, DanceOfTheCobra):
+                if a.result is 'success' and isinstance(a, DanceOfTheCobra):
                     self.mob_charmed = True
-                elif a.error:
+                elif a.result is 'error':
                     self.stopping = True
                 # if self.stopping:
                 #     return
@@ -130,7 +128,7 @@ class SmartCombat(CombatObject):
         # self.attack_wait()
         self.kill.execute(self.target)
         self.kill.wait_for_flag()
-        if self.kill.error:
+        if self.kill.result is 'error':
             self.stopping = True
         # self.character.ATTACK_CLK = time.time()  # TODO: Kill should be smart enough to keep the clock set
                                                  # Kill should actually own the clock...

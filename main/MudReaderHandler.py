@@ -418,13 +418,15 @@ class MudReaderHandler(object):
         pass
         # myReaction = GenericBotReaction()
 
-    def subscribe_to_mud_event(self, subscriber, regex_store_attribute):
-        self.mudReaderThread.mud_events[regex_store_attribute[0]].subscribers.append(subscriber)  
-        # magentaprint("MudReaderHandler mud_events: " + str(self.mudReaderThread.mud_events))
+    # def subscribe_to_mud_event(self, subscriber, regex_store_attribute):
+    #     self.mudReaderThread.mud_events[regex_store_attribute[0]].subscribers.append(subscriber)  
+    #     # magentaprint("MudReaderHandler mud_events: " + str(self.mudReaderThread.mud_events))
 
-        # if subscriber not in self.mudReaderThread.mud_event[regex]:
+    #     # if subscriber not in self.mudReaderThread.mud_event[regex]:
 
     def add_subscriber(self, subscriber):
+        # magentaprint("MudReaderHandler adding subscriber " + str(subscriber))
+        # magentaprint("MudReaderHandler regex cart length: " + str(len(subscriber.regex_cart)))
         for r_list in subscriber.regex_cart:
             self.mudReaderThread.mud_events[r_list[0]].subscribers.append(subscriber)
 
@@ -446,10 +448,11 @@ class MudReaderHandler(object):
             # mud_events should be a dict indexed by the regex
             # self.mudReaderThread.mud_events[regex] = MudEvent(regex)
             regex_list = getattr(RegexStore, regex_list_name)
+            # magentaprint("MudReaderHandler adding " + str(regex_list))
             self.mudReaderThread.mud_events[regex_list[0]] = MudEvent(regex_list)
             # The first regex in the list is used as the string key to dict mud_events
 
-        magentaprint("MudReaderHandler done setting up mud_events:" + str(self.mudReaderThread.mud_events))
+        # magentaprint("MudReaderHandler mud_events: " + str(self.mudReaderThread.mud_events))
 
 
 

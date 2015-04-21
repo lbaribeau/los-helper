@@ -4,12 +4,49 @@ prompt = ["\[(\d+) H (\d+) M\]"]
 you_have = ["You have (.+?)\."]
 
 hastened = ["You feel yourself moving faster\."]
+already_hastened = ["You're already hastened\."]
+# haste_success = [hastened[0], already_hastened[0]]
+haste_fail = ["Your attempt to hasten failed\."]
 feel_slower = ["You feel slower\."]
+aesters_tears = ["Your music rejuvenates everyone in the room\."]
+dance_of_the_cobra = [r"he Dance of the Snake ends"]
+dance_of_the_cobra_fail = [r"he Dance of the Snake has"]
 
 please_wait = [r"Please wait (\d+) more seconds?\."]
 please_wait2 = [r"Please wait (\d+):(\d+) more minutes"]
 
 __numbers = "(1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th|11th|12th|13th|14th|15th|16th|17th|18th|19th)" 
+__numbers2 = "(?:(\d*1st|\d*2nd|\d*3rd|\d+th) )?"
+
+obvious_exits = [r"Obvious exits: "]
+go_where = [r"Go where\?"]
+cant_go = [r"You can't go that way\."]
+# blocked_path = ["(?:The " + __numbers2 + ")?(.+?) blocks your exit\."]  # Make the The optional is hard
+blocked_path = ["(?:The )" + __numbers2 + "(.+?) blocks your exit\."]
+open_first = ["You have to open it first\."]
+no_exit = ["I don't see that exit\."]
+class_prohibited = ["Your class prohibits you from entering there\."]
+level_too_low = ["You must be at least level \d+ to go that way\."]
+not_invited = ["You have not been invited in\."]
+not_open_during_day = ["That exit is not open during the day\."]
+not_open_during_night = ["That exit is closed for the night\."]
+no_items_allowed = ["You cannot bring anything through that exit\."]
+locked = ["It's locked\."]
+no_right = ["You have not earned the right to pass this way!"]
+in_tune = ["That way may only be taken by those in tune with the world!"]
+not_authorized = ["You are not authorised to enter here\."]
+cannot_force = ["You cannot force yourself to go through there\."]
+# __go_failure = blocked_path + open_first + no_exit + class_prohibited + level_too_low + \
+#     class_prohibited + level_too_low + not_invited + not_open_during_day + \
+#     not_open_during_night + no_items_allowed + locked + no_right \
+#     in_tune + not_authorized + cannot_force
+
+open_success = ["You open the (.+?)\."]
+already_open = ["It's already open\."]
+open_what = ["Open what\?"]
+
+
+goodbye = ["Goodbye! Come back soon\."]
 
 mob_died = ["Your attack overwhelms (?:the (" + __numbers + " )?)?(.+?) and (s?he|it) collapses!"]
 mob_fled = ["(:?The ?(" + __numbers + " )?)?(.+?) flees to the (.+?)\."] 
@@ -73,20 +110,19 @@ attack_miss = [
         "(?s)You use your .+?, but nothing hits (:the )?(" + __numbers + " )?(.+?)\."
 ]
 
-aura = [r"You glow with a (.+?) aura\."]
+aura = [r"You glow with a (.+?) aura\.", r"The (.+?) glows with a (.+?) aura\."]
 
 cast = [
     r"You cast a (.+?) spell on (.+?)\.",
     r"(.+?) spell cast\.",
-    r"You cast a (.+?) spell\.",
-    aura[0]
+    r"You cast a (.+?) spell\."
 ]
-
 cast_failure = [
     r"Your spell fails\.",
+]
+no_mana = [
     r"You cannot meet the casting cost!"
 ]
-
 cast_error = [
     r"That spell does not exist\.",
     r"You don't know that spell\.",

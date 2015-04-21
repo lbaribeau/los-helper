@@ -1,5 +1,6 @@
 
 import time
+import itertools
 
 from BotReactions import BotReactionWithFlag
 from misc_functions import magentaprint
@@ -55,17 +56,34 @@ class Command(BotReactionWithFlag):
 
         self.please_wait_time = -1  # This variable is in case the server tells us to wait
                                     # Keep at -1 unless a "Please wait" message is given
-        self.regexes.extend(self.success_regexes)
-        self.regexes.extend(self.failure_regexes)
-        self.regexes.extend(self.error_regexes)
+
+        # self.regexes = self.regexes + self.success_regexes
+        # self.regexes = self.success_regexes[:]
+
+        self.regexes = list(itertools.chain.from_iterable(self.success_regexes + self.failure_regexes + self.error_regexes))
+        # s = self.success_regexes[0] if isinstance(self.success_regexes[0], list) else self.success_regexes
+        # f = self.failure_regexes[0] if isinstance(self.failure_regexes[0], list) else self.failure_regexes
+        # e = self.error_regexes[0] if isinstance(self.error_regexes[0], list) else self.error_regexes
+        # self.regexes = list(itertools.chain.from_iterable(s, f, e))
+
+        # self.regexes.extend(self.success_regexes)
+        # self.regexes.extend(self.failure_regexes)
+        # self.regexes.extend(self.error_regexes)
+        # magentaprint(str(self.__class__) + " regexes: " + str(self.regexes))
         self.regexes.extend(RegexStore.please_wait)
         self.regexes.extend(RegexStore.please_wait2)
 
-        self.regex_cart = [
-            self.success_regexes, self.failure_regexes, self.error_regexes
-        ] + RegexStore.please_wait + RegexStore.please_wait2
-        
-        self.result = 'success/failure/error'
+        # self.regex_cart = [
+        #     self.success_regexes, self.failure_regexes, self.error_regexes
+        # ] + RegexStore.please_wait + RegexStore.please_wait2
+        # self.regex_cart = self.success_regexes + self.failure_regexes + self.error_regexes + \
+        #     [RegexStore.please_wait, RegexStore.please_wait2]
+        # self.regex_cart.extend(self.success_regexes + self.failure_regexes + self.error_regexes + \
+        #     [RegexStore.please_wait, RegexStore.please_wait2])
+        self.regex_cart = self.success_regexes + self.failure_regexes + self.error_regexes + \
+            [RegexStore.please_wait, RegexStore.please_wait2]
+        # magentaprint(str(self.__class__) + " init regex_cart: " + str(self.regex_cart))
+        # self.result = 'success/failure/error'
 
     def notify(self, regex, M_obj):
         # magentaprint("Notify on Command " + str(self))
@@ -76,15 +94,22 @@ class Command(BotReactionWithFlag):
         # The plan for cooldowns is set it up for success when the command is sent, 
         # but correct it when the text comes back and we know the result.
 
-        if regex in self.success_regexes:
+        magentaprint("Command notified regex " + regex)
+        # magentaprint(str(itertools.chain(self.failure_regexes)))
+
+        # if regex in itertools.chain(self.success_regexes):
+        if regex in itertools.chain.from_iterable(self.success_regexes):
             self.result = 'success'
             self.please_wait_time = -1
-        elif regex in self.failure_regexes:
+        # elif regex in [item for sublist in self.failure_regexes for item in self.failure_regexes]
+        # elif regex in itertools.chain(*self.failure_regexes):
+        elif regex in itertools.chain.from_iterable(self.failure_regexes):
             self.result = 'failure'
             self.please_wait_time = -1
             self.notify_failure(regex, M_obj)
-        elif regex in self.error_regexes:
-            magentaprint("Command clearing timer on error" + str(self))
+            # [item for sublist in l for item in sublist]
+        # elif regex in list(itertools.chain(self.error_regexes)):
+        elif regex in itertools.chain.from_iterable(self.error_regexes):
             self.result = 'error'
             self.clear_timer()
         elif regex in RegexStore.please_wait:
@@ -154,8 +179,16 @@ class Command(BotReactionWithFlag):
     def execute(self, target=None):
         # Same as send() but gets called from instance
         # (send() doesn't need an instance but needs telnetHandler put in)
+        self.result = ''
         self.send(self.telnetHandler, target)
         # self.wait_for_flag()  # Just expect caller to call wait.
+
+    def super_execute(self, target=None):
+        self.execute(target)
+        self.wait_for_flag()
+        while self.result == "Please wait 1":
+            self.execute(target)
+            self.wait_for_flag()
 
     @classmethod
     def wait_until_ready(cls):

@@ -10,17 +10,23 @@ from Command import Command
 import RegexStore
 
 class CombatObject(object):
-    end_combat_regexes = RegexStore.mob_died + RegexStore.mob_fled
-
     def __init__(self, telnetHandler):   
+        self.end_combat_regexes = [RegexStore.mob_died, RegexStore.mob_fled]
         self.telnetHandler = telnetHandler
-        self.regexes.extend(self.end_combat_regexes)
+        # self.regexes.extend(self.end_combat_regexes)
+        # self.regex_cart = [RegexStore.mob_died, RegexStore.mob_fled]
+        # if hasattr(self, regex_cart):
+        #     self.regex_cart.extend([RegexStore.mob_died, RegexStore.mob_fled])
+        # else:
+        #     self.regex_cart = [RegexStore.mob_died, RegexStore.mob_fled]
+        # self.regex_cart.extend([RegexStore.mob_died, RegexStore.mob_fled])
+        # self.regexes = self.end_combat_regexes
+        self.regex_cart = self.end_combat_regexes[:]
 
     def notify(self, regex, M_obj):
-        if regex in self.end_combat_regexes:
+        if regex in itertools.chain.from_iterable(self.end_combat_regexes):
             magentaprint(str(self) + " ending combat.")
             self.stop()
-
 
 class CombatObject2(CombatObject):
     # SmartCombat, Kill, and Cast
@@ -60,20 +66,26 @@ class CombatObject2(CombatObject):
     def start_thread(self, target=None):
         self.engage(self.telnetHandler, target)
 
-
 class SimpleCombatObject(CombatObject2, Command):
     # This is for code used by Kill and Cast but not SmartCombat
 
     def __init__(self, telnetHandler):
-        self.end_combat_regexes.extend(self.error_regexes)
-        CombatObject.__init__(self, telnetHandler)
         Command.__init__(self, telnetHandler)
-        # Commented: done in 'Command'
-        # self.regexes.extend(self.success_regexes)
-        # self.regexes.extend(self.failure_regexes)
+        # CombatObject2.__init__(self, telnetHandler)
+        ## Commented: done in 'Command'
+        ## self.regexes.extend(self.success_regexes)
+        ## self.regexes.extend(self.failure_regexes)
+        # self.regexes.extend(self.end_combat_regexes)
+        ## self.regex_cart.extend([RegexStore.mob_died, RegexStore.mob_fled]))
+        # magentaprint("SimpleCombatObject end_combat_regexes: " + str(self.end_combat_regexes))
+        # self.regex_cart.extend([RegexStore.mob_died, RegexStore.mob_fled].extend(self.end_combat_regexes))
+        self.end_combat_regexes = [RegexStore.mob_died, RegexStore.mob_fled]
+        self.regex_cart.extend(self.end_combat_regexes)
+        self.end_combat_regexes.extend(self.error_regexes)
+        # magentaprint("SimepleCombatObject end_combat_regexes: " + str(self.end_combat_regexes))
 
     def notify(self, regex, M_obj):
-        CombatObject.notify(self, regex, M_obj)
+        CombatObject2.notify(self, regex, M_obj)
         Command.notify(self, regex, M_obj)
 
     # Needs to be a class method because the human doesn't have the object.
@@ -102,12 +114,16 @@ class Kill(SimpleCombatObject):
 
     good_MUD_timeout = 1.5  # Kill regexes are complicated and you don't want to fail too badly during combat.
 
-    success_regexes = RegexStore.attack_hit
-    failure_regexes = RegexStore.attack_miss
-    error_regexes = RegexStore.attack_error
+    success_regexes = [RegexStore.attack_hit]
+    failure_regexes = [RegexStore.attack_miss]
+    error_regexes = [RegexStore.attack_error]
+
+    def __init__(self, telnetHandler):
+        super().__init__(telnetHandler)
+        self.regex_cart.extend([RegexStore.hastened, RegexStore.already_hastened, RegexStore.feel_slower])
 
     def notify(self, regex, M_obj):
-        if regex in RegexStore.hastened:
+        if regex in RegexStore.hastened or regex in RegexStore.already_hastened:
             Kill.cooldown_after_success = 2  
             Kill.cooldown_after_failure = 2  
         elif regex in RegexStore.feel_slower:
@@ -118,18 +134,22 @@ class Kill(SimpleCombatObject):
 
 
 class Cast(SimpleCombatObject):
-    command = 'cas'  # This gets rewritten to append the spellname alot
+    command = 'c'  # This gets rewritten to append the spellname alot
     cooldown_after_success = 4  # Gets rewritten by characterClass...
     cooldown_after_failure = 0
     regexes = []  
 
-    success_regexes = RegexStore.cast
-    failure_regexes = RegexStore.cast_failure
-    error_regexes = RegexStore.cast_error
+    success_regexes = [RegexStore.cast, RegexStore.aura]
+    failure_regexes = [RegexStore.cast_failure, RegexStore.no_mana]
+    error_regexes = [RegexStore.cast_error]
 
     aura = None
     aura_timer = 0
     aura_refresh = 480
+
+    def __init__(self, telnetHandler):
+        super().__init__(telnetHandler)
+        self.end_combat_regexes.append(RegexStore.no_mana)
 
     # Commented... hmmm.. I went with the notify_failure(), I think so I wasn't checking for the regex twice...
     # Just a logic structure thing.
@@ -144,8 +164,10 @@ class Cast(SimpleCombatObject):
        #         pass
        #     super().notify(regex, M_obj)
 
+
+
     def notify(self, regex, M_obj):
-        if regex is RegexStore.aura:
+        if regex in RegexStore.aura:
             self.__class__.aura = M_obj.group(1)
             self.__class__.aura_timer = time()
         super().notify(regex, M_obj)

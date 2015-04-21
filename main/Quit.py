@@ -1,11 +1,11 @@
 
 from Command import Command
-
 from misc_functions import magentaprint
+import RegexStore
 
 class Quit(Command):
     command = "quit"
-    success_regexes = ["Goodbye! Come back soon\."]
+    success_regexes = [RegexStore.goodbye]
     failure_regexes = []
     regexes = []
 

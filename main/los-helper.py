@@ -119,7 +119,9 @@ class LosHelper(object):
         try:
             os.remove("no.db")
         except OSError as e:
-            magentaprint("LosHelper os.remove(\"no.db\") error: " + str(e))
+            if hasattr(e, 'errno') and e.errno != 2:
+                # errno 2 means the file's not there.
+                magentaprint("LosHelper os.remove(\"no.db\") error: " + str(e))
         magentaprint("Closed telnet.")
 
     def main(self):
@@ -250,7 +252,6 @@ class LosHelper(object):
     def check_info(self):
         info = Info(self.mudReaderHandler, self.telnetHandler, self.character)
         info.execute()
-
 
     def start_grind(self, user_input):
         # if not self.bot_ready:
