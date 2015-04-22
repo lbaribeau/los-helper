@@ -4,6 +4,7 @@ from threading import Thread
 from CombatObject import CombatObject
 from Ability import HealAbility, FastCombatAbility, CombatAbility, DanceOfTheCobra
 from misc_functions import magentaprint
+from Spells import rumble, hurt, burn, blister
 
 class SmartCombat(CombatObject):
     black_magic = True
@@ -25,11 +26,10 @@ class SmartCombat(CombatObject):
 
         spell_percent = max(character.earth, character.wind, character.fire, character.water)
         self.black_magic = character.pty < 7 or spell_percent >= 20
-        self.favourite_spell = 'rum' if spell_percent == character.earth else \
-                               'hurt' if spell_percent == character.wind else \
-                               'burn' if spell_percent == character.fire else 'blis'
+        self.favourite_spell = rumble if spell_percent == character.earth else \
+                               hurt if spell_percent == character.wind else \
+                               burn if spell_percent == character.fire else blister
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
-
 
     def notify(self, regex, M_obj):
         # Notifications are used for healing
@@ -44,19 +44,19 @@ class SmartCombat(CombatObject):
         self.stopping = False
         self.target = target if target else self.target
 
-    def start_thread(self, target):
-        # magentaprint("SmartCombat: engage" + str(self))
-        # magentaprint("telnetHandler: " + str(self.telnetHandler))
-
+    def start_thread(self, target, spell=None):
         self.target = target
+        self.spell = spell if spell else self.favourite_spell
 
-        if self.thread is None or not self.thread.is_alive():
+        # if self.thread is None or not self.thread.is_alive():
+        if self.thread and self.thread.is_alive():
+            self.keep_going(target)
+        else:
             # not is_alive() means it won't look at stopping anymore so we're good.
             self.thread = Thread(target = self.run)
             self.thread.start()
 
     def run(self):
-        # This function defines combat, and it works for ALL classes.
         self.stopping = False
         self.mob_charmed = False
         self.casting = True
@@ -77,11 +77,9 @@ class SmartCombat(CombatObject):
                 if self.stopping or self.mob_charmed:
                     continue
                 if self.black_magic:
-                    self.cast.__class__.command = 'cas ' + self.favourite_spell
-                    self.cast.execute(self.target)  # use cast.cast maybe
+                    self.cast.cast(self.spell, self.target)  # use cast.cast maybe
                 elif self.character.HEALTH <= self.character.maxHP - self.max_vigor:
-                    self.cast.__class__.command = 'cas vi'
-                    self.cast.execute()
+                    self.cast.cast('vi')
                 else:
                     self.kill.wait_until_ready()
 

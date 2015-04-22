@@ -164,8 +164,6 @@ class Cast(SimpleCombatObject):
        #         pass
        #     super().notify(regex, M_obj)
 
-
-
     def notify(self, regex, M_obj):
         if regex in RegexStore.aura:
             self.__class__.aura = M_obj.group(1)
@@ -180,8 +178,12 @@ class Cast(SimpleCombatObject):
            re.match("me?|mend?|mend-w?|mend-wou?|mend-wound?|mend-wounds", spell):
             self.clear_timer()
 
+    def start_thread(self, spell, target=None):
+        self.__class__.command = 'c ' + spell
+        super().start_thread(target)
+
     def cast(self, spell, target=None):
-        self.__class__.command = "cas " + spell
+        self.__class__.command = 'c ' + spell
         self.execute(target)
         # self.wait_for_flag()
         # I think I only need to provide waiting calls since other 
@@ -208,3 +210,4 @@ class Cast(SimpleCombatObject):
             self.wait_until_ready()
             self.cast(spell, target)
             self.wait_for_flag()
+

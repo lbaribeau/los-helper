@@ -1,4 +1,6 @@
 
+import re
+
 from misc_functions import magentaprint
 import RegexStore
 from Command import Command
@@ -26,15 +28,30 @@ class Go(Command):
 
     def execute(self, target):
         self.door = False
-        super.execute(target)
+        super().execute(target)
 
     def super_execute(self, target):
-        super().super_execute()
+        super().super_execute(target)
         if self.door:
             self.open.execute(target)
             self.open.wait_for_flag()
             if self.open.result is 'success':
-                super().super_execute()
+                super().super_execute(target)
+
+    @classmethod
+    def compose_command(cls, target=None):
+        if not target:
+            magentaprint("Go where?")
+            return ""
+        elif cls.is_direction(target):
+            return target
+        else:
+            return cls.command + " " + target
+
+    @classmethod
+    def is_direction(cls, s):
+        return s.strip() in ['n', 's', 'e', 'w', 'nw', 'ne', 'se', 'sw'] or re.match('up?$', s) or \
+               re.match('(do?|down?)$', s) or re.match('out?$', s)
 
 class Open(Command):
     command = 'open'

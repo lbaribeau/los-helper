@@ -1,28 +1,23 @@
 
 import telnetlib
-from socket import error
+import socket
+import time
+from threading import Thread
 
 from misc_functions import magentaprint
 
 class TelnetHandler(object):
+    server_timeout = 299 
 
     def __init__(self):
-        self.tn = self.connect_to_MUD()
+        self.tn = telnetlib.Telnet('mud.landsofstone.org', 4801)
+        self.set_timer()
+        self.thread = Thread(target=self.keep_connection_open)
+        self.thread.daemon = True
+        self.thread.start()
 
-    def write(self, command):
-        command += '\r'
-        # magentaprint("\"" + command[:len(command)-1] + "\" ", end="")
-        magentaprint("Sending '" + command[:len(command)-1] + "'")
-        try:
-            self.tn.write(command.encode('ascii'))
-        except error:
-            magentaprint("TelnetHandler write() error: " + str(error))
-            raise error
-        # magentaprint("sent.", timestamp=False)
-
-    def connect_to_MUD(self):
-        return telnetlib.Telnet("mud.landsofstone.org", 4801)  
-        # No need to call open (http://www.python.org/doc/2.5.2/lib/module-telnetlib.html)
+    def set_timer(self):
+        self.timer = time.time() + self.server_timeout
 
     def close(self):
         self.tn.close()
@@ -33,8 +28,32 @@ class TelnetHandler(object):
     def read_some(self):
         try:
             return self.tn.read_some()  # read_eager() would miss characters
-        except error:
+        except socket.error:
             magentaprint("TelnetHandler read_some() error: " + str(error))
             return ''
 
-        
+    def write(self, command):
+        magentaprint('"' + command + '"')
+        self.set_timer()
+        command += '\r'
+        # magentaprint("\"" + command[:len(command)-1] + "\" ", end="")
+        # magentaprint("Sending '" + command[:len(command)-1] + "'")
+        try:
+            self.tn.write(command.encode('ascii'))
+        except error:
+            magentaprint("TelnetHandler write() error: " + str(error))
+            raise error
+
+    def keep_connection_open(self):
+        # The server times out every 5 minutes - I'd prefer it to be 10 minutes,
+        # so I send a 'rest' command when we're about to time out.
+        while True:
+            while self.timer > time.time():
+                time.sleep(max(0, self.timer - time.time()))
+            self.tn.write('rest\r'.encode('ascii'))
+            time.sleep(self.server_timeout)
+            if self.timer < time.time():
+                # If no command was sent in this time, we've timed out by now.
+                # Sending a rest right after the timeout is actually a neat idea, 
+                # it might cause the exception required to exit.
+                return

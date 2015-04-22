@@ -13,6 +13,7 @@ from MudMap import *
 import Command
 import RegexStore
 from Go import Go
+from Spells import *
 
 class CommandHandler(object):
 
@@ -43,43 +44,36 @@ class CommandHandler(object):
         commands.  Also, when the bot is stopped on a flee, the calling layer
         handles stopping the bot."""
 
-        if re.match("ga$", user_input):
-            self.telnetHandler.write("get all")
-        elif re.match("ki? [a-zA-Z]|kill? [a-zA-Z]", user_input):
+        if user_input == 'ga':
+            self.telnetHandler.write('get all')
+        elif re.match('ki? [a-zA-Z]|kill? [a-zA-Z]', user_input):
             self.ki(user_input)
-        elif re.match("kk ", user_input):
-            self.kk(user_input)
-        elif re.match("sk$", user_input):
+        elif user_input.startswith('kk '):
+            self.kill.start_thread(user_input[3:].strip())
+        elif user_input == 'sk' or user_input == 'skc':
             self.kill.stop()
-            self.telnetHandler.write("")
-        elif re.match("ca? [a-zA-Z]|cast? [a-zA-Z]", user_input):
+            self.smartCombat.stop()
+            self.telnetHandler.write('')
+        elif re.match('ca? [a-zA-Z]|cast? [a-zA-Z]', user_input):
             the_split = user_input.split(" ")
-            Cast.command = "cas " + the_split[1]
             target = the_split[2] if len(the_split) >= 3 else None
-            # self.cast.execute(user_input.split(" ")[2])  # Error on "c show", old way was to put user_input into telnetHandler
-            self.cast.execute(target)
-        elif re.match("cc ", user_input):
-            the_split = user_input.split(" ")
-            Cast.command = "cas " + the_split[1]
+            self.cast.cast(the_split[1], target)
+        elif user_input.startswith('cc '):
+            the_split = user_input.split(' ')
             target = the_split[2] if len(the_split) >= 3 else None
-            self.cast.start_thread(target)
-        elif re.match("sc$", user_input):
+            self.cast.start_thread(the_split[1], target)
+        elif user_input == 'sc':
             self.cast.stop()
-            self.telnetHandler.write("")
-        elif re.match("kkc ", user_input):
+            self.smartCombat.stop_casting()
+            self.telnetHandler.write('')
+        elif user_input.startswith('kkc '):
             self.user_kkc(user_input[4:].strip())
-        elif re.match("skc ", user_input):
-            self.user_skc()
-        elif re.match("dro? ", user_input):
+        elif user_input.startswith('kk2 '):
+            self.user_kk2(user_input[4:].strip())
+        elif re.match('dro? ', user_input):
             self.user_dr(user_input)
-        elif re.match("n$", user_input) or re.match("s$", user_input) or \
-             re.match("e$", user_input) or re.match("w$", user_input) or \
-             re.match("nw$", user_input) or re.match("ne$", user_input) or \
-             re.match("se$", user_input) or re.match("sw$", user_input) or \
-             re.match("u$", user_input) or re.match("d$", user_input) or \
-             re.match("ou[t]?$", user_input) or re.match("go ", user_input) or \
+        elif self.go.is_direction(user_input) or user_input.startswith('go ') or \
              re.match(str(self.character.EXIT_REGEX), user_input):
-            # magentaprint("moving " + str(user_input))
             self.user_move(user_input)
             # routine which does appropriate waiting,
             # printing, and finally sending command.
@@ -215,10 +209,9 @@ class CommandHandler(object):
     def ki(self, user_input):
         self.kill.execute(user_input.split(" ")[1])
 
-    def kk(self, user_input):
-        magentaprint(str(self.kill))
+    def kk(self, target):
         # self.kill.engage(self.telnetHandler, user_input[3:])
-        self.kill.start_thread(user_input[3:])
+        self.kill.start_thread(target)
 
     def user_move(self, user_input):
         if user_input.startswith("go "):
@@ -247,6 +240,7 @@ class CommandHandler(object):
             time.sleep(time_remaining)
             self.character.MOVE_CLK = now
             self.telnetHandler.write(user_input)
+            # self.go.super_execute(self.character.LAST_DIRECTION)
         else:
             magentaprint("Wait %.1f more seconds." % time_remaining)
 
@@ -276,13 +270,11 @@ class CommandHandler(object):
         # else:
         #     self.KillThread = KillThread(self.character, self.mudReaderHandler, self.telnetHandler, argv)
         #     self.KillThread.start()
-
     
     def user_sk(self):
         self.kill.stop()
-        # self.stop_KillThread()
+        self.smartCombat.stop()
         # self.telnetHandler.write("")
-    
 
     def user_cc(self, argv):
         # TODO: Bug for user input "cc "
@@ -312,27 +304,27 @@ class CommandHandler(object):
 
     def user_kkc(self, argv):
         theSplit = argv.split(" ")
-        length = len(theSplit)
+        n = len(theSplit)
 
-        if argv == None or length == 1 and theSplit[0] == "":
+        if argv == None or n == 1 and theSplit[0] == "":
             magentaprint("Usage:  kkc [<spell>] <target> [<number>]")
             self.telnetHandler.write("")  # TODO: Keep a prompt up to date so we can print
                                           # immediately instead of sending to mud.
-        # elif length == 1 and theSplit[0] not == "":
-        elif length == 1:
+        # elif n == 1 and theSplit[0] not == "":
+        elif n == 1:
             spell = None
             target = theSplit[0]
-        elif length == 2 and re.match("^\d+$", theSplit[1]):
+        elif n == 2 and re.match("^\d+$", theSplit[1]):
             spell = None
             target = theSplit[0] + " " + theSplit[1]
-        elif length == 2:
-            spell = theSplit[1]
-            target = theSplit[2]
+        elif n == 2:
+            spell = theSplit[0]
+            target = theSplit[1]
         else:
-            spell = theSplit[1]
-            target = theSplit[2] + " " + theSplit[3]
+            spell = theSplit[0]
+            target = theSplit[1] + " " + " ".join(theSplit[2:])
 
-        self.smartCombat.start_thread(target)
+        self.smartCombat.start_thread(target, spell)
 
         # if self.smartCombatThread != None and self.smartCombatThread.is_alive():
         #     magentaprint("CommandHandler calling smartCombatThread.keep_going()")
@@ -346,16 +338,27 @@ class CommandHandler(object):
         #     # I want to start doing threads without inheritance...
         #     self.smartCombatThread.start()
 
+    def user_kk2(self, argv):
+        # Usage: "kk2 target"
+        # Uses smart combat with level 2 spell
+        teh_split = argv.split(" ")
+        self.user_kkc(" ".join(teh_split))
+        if self.smartCombat.favourite_spell is burn:
+            teh_split.insert(0, fireball)
+        elif self.smartCombat.favourite_spell is hurt:
+            teh_split.insert(0, dustgust)
+        elif self.smartCombat.favourite_spell is blister:
+            teh_split.insert(0, waterbolt)
+        elif self.smartCombat.favourite_spell is rumble:
+            teh_split.insert(0, crush)
+        self.user_kkc(" ".join(teh_split))
+
     def user_sc(self):
         # self.stop_CastThread()
         self.cast.stop()
+        self.smartCombat.stop_casting()
         self.telnetHandler.write("")
 
-    def user_skc(self):
-        # self.stop_smartCombatThread()
-        self.smartCombat.stop()
-        self.telnetHandler.write("")
-     
     def user_wie2(self, argv):
         self.telnetHandler.write("wield %s\n" % (argv))
         self.telnetHandler.write("second %s\n" % (argv))

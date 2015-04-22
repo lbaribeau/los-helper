@@ -169,12 +169,14 @@ class Command(BotReactionWithFlag):
         cls.error = False
         cls.please_wait_time = -1
 
-        if target:
-            telnetHandler.write(cls.command + " " + target)  # Hmph... should telnetHandler be class level too??
-        else:
-            telnetHandler.write(cls.command)
+        telnetHandler.write(cls.compose_command(target))
 
         cls.start_timer()
+
+    @classmethod
+    def compose_command(cls, target=None):
+        # Overridden by Go which isn't always "go ____" ie. "out", "up", "d", n/s/e/w
+        return cls.command + " " + target if target else cls.command
 
     def execute(self, target=None):
         # Same as send() but gets called from instance

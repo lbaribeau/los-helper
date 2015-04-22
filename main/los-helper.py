@@ -18,7 +18,6 @@
 #   ANSI color
 
 import sys, time, getpass, threading, atexit, re, os
-from threading import Thread
 
 # from system.import_tools import *
 # import_subdir("../system")
@@ -118,13 +117,16 @@ class LosHelper(object):
         self.mudListenerThread.join(10)
         self.mudReaderThread.join(10)
         self.telnetHandler.close();
+
         try:
             os.remove("no.db")
         except OSError as e:
             if hasattr(e, 'errno') and e.errno != 2:
                 # errno 2 means the file's not there.
                 magentaprint("LosHelper os.remove(\"no.db\") error: " + str(e))
+
         magentaprint("Closed telnet.")
+        magentaprint("Threads remaining: " + str(threading.active_count()))
 
     def main(self):
         stopping = False;
@@ -194,9 +196,14 @@ class LosHelper(object):
             else:
                 try:
                     self.commandHandler.process(user_input)
-                except Exception as e:
-                    magentaprint("LosHelper catching error and quitting: " + str(e))
+                except socket.error as e:
+                    # if hasattr(e, 'errno') and e.errno is 32: # Broken pipe
+                    magentaprint("LosHelper caught telnet error and quitting: " + str(e))
                     stopping = True
+                    if hasattr(e, 'errno'): # Broken pipe
+                        magentaprint("Errno: " + str(e.errno))
+                    # else:
+                    #     raise e
 
     def write_username_and_pass(self):
         args = [s for s in sys.argv[1:] if not s.startswith('-')]
