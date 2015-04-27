@@ -236,13 +236,15 @@ class MudReaderThread(threading.Thread):
             # MudEvents
             # Regexes with lists of objects to notify.
             for key, m in self.mud_events.items():
-                if m.subscribers is not []:  # This isn't necessary
-                    for r in m.regexes:
-                        M_obj = re.search(r, text_buffer)
-                        if M_obj is not None:
-                            for s in m.subscribers:
-                                s.notify(r, M_obj)
-                            text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                for r in m.regexes:
+                    M_obj = re.search(r, text_buffer)
+                    if M_obj is not None:
+                        import RegexStore
+                        if r in RegexStore.haste_fail or r in RegexStore.hastened or r in RegexStore.already_hastened:
+                            magentaprint("MudReaderThread: " + str(r))
+                        for s in m.subscribers:
+                            s.notify(r, M_obj)
+                        text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
             #TODO: continue with MAXHP, MAXMP, GOLD, EXP, LEVELGOLD, LEVELEXP, etc.
             M_obj = re.search("Exp : (\d+)",text_buffer)

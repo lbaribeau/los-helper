@@ -94,8 +94,7 @@ class Command(BotReactionWithFlag):
         # The plan for cooldowns is set it up for success when the command is sent, 
         # but correct it when the text comes back and we know the result.
 
-        magentaprint("Command notified regex " + regex)
-        # magentaprint(str(itertools.chain(self.failure_regexes)))
+        magentaprint(str(self) + " command notified, regex - " + regex[:30] + "...")
 
         # if regex in itertools.chain(self.success_regexes):
         if regex in itertools.chain.from_iterable(self.success_regexes):
@@ -156,7 +155,7 @@ class Command(BotReactionWithFlag):
 
         # magentaprint("Command.send: cls.timer - time.time(): %.1f" % round(cls.timer - time.time(), 1))
 
-        if cls.timer - time.time() < 1.0:
+        if cls.timer - time.time() < 3.0:
             # time.sleep(max(0, cls.timer - time.time()))
             cls.wait_until_ready()
         else:
@@ -164,10 +163,10 @@ class Command(BotReactionWithFlag):
             telnetHandler.write("") 
             return
 
-        cls.success = False
-        cls.failure = False
-        cls.error = False
-        cls.please_wait_time = -1
+        # cls.success = False
+        # cls.failure = False
+        # cls.error = False
+        # cls.please_wait_time = -1
 
         telnetHandler.write(cls.compose_command(target))
 
@@ -196,5 +195,10 @@ class Command(BotReactionWithFlag):
     def wait_until_ready(cls):
         # magentaprint(str(cls) + " wait_until_ready waiting " + str(max(0, cls.timer - time.time())))
         time.sleep(max(0, cls.timer - time.time()))  # timer is a class variable
+
+
+
+
+
 
 

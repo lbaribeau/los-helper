@@ -10,16 +10,14 @@ from CombatObject import Cast
 #         return Assassin(telnetHandler)
 #     elif class_string == "Bar":
 #         return Barbarian(telnetHandler)
-# class Assassin(object):
-#     def __init__(self, telnetHandler):
+# class Assassin(CharacterClass):
+#     def __init__(self, telnetHandler, level):
 #         self.lvl1_maxHP = 19
 #         self.lvl1_maxMP = 2
 #         self.abilities = [Backstab(telnetHandler)]
 
-
 class CharacterClass(object):
-
-    def __init__(self, class_string, level, telnetHandler):
+    def __init__(self, telnetHandler, class_string, level):
         self.id = class_string
         # self.combat_skills = []
         # self.heal_skills = []
@@ -118,7 +116,9 @@ class CharacterClass(object):
         else:
             magentaprint("CharacterClass error: could not recognize class string.")
 
-        self.abilities = [a for a in self.abilities if a.level >= level]
+        self.abilities.append(Search(telnetHandler))
+        self.abilities = [a for a in self.abilities if level >= a.level]
+        magentaprint("CharacterClass abilities: " + str(self.abilities))
 
 
 # OLD IDEAS

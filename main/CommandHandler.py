@@ -14,9 +14,9 @@ import Command
 import RegexStore
 from Go import Go
 from Spells import *
+from Ability import *
 
 class CommandHandler(object):
-
     def __init__(self, character, mudReaderHandler, telnetHandler):
         self.character = character
         self.mudReaderHandler = mudReaderHandler
@@ -72,6 +72,20 @@ class CommandHandler(object):
             self.user_kk2(user_input[4:].strip())
         elif re.match('dro? ', user_input):
             self.user_dr(user_input)
+        elif user_input == 'searc':
+            Search.spam(self.telnetHandler)
+        elif user_input == 'hastec':
+            Haste.spam(self.telnetHandler)
+        elif user_input == 'prayc':
+            Pray.spam(self.telnetHandler)
+        elif user_input == 'bersc':
+            Berserk.spam(self.telnetHandler)
+        elif user_input == 'barkc':
+            Barkskin.spam(self.telnetHandler)
+        elif user_input == 'ss':
+            for a in self.character._class.abilities:
+                a.stop()
+        # Try the class method thing... !  wowee maybe I was being smart before...
         elif self.go.is_direction(user_input) or user_input.startswith('go ') or \
              re.match(str(self.character.EXIT_REGEX), user_input):
             self.user_move(user_input)

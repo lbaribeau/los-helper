@@ -17,7 +17,7 @@
 #       keep that aren't in KEEP_LIST into some bag that IS in KEEP_LIST)
 #   ANSI color
 
-import sys, time, getpass, threading, atexit, re, os
+import sys, time, getpass, threading, atexit, re, os, socket
 
 # from system.import_tools import *
 # import_subdir("../system")
@@ -250,13 +250,16 @@ class LosHelper(object):
         whois = Whois(self.mudReaderHandler, self.telnetHandler, self.character)
         whois.execute(self.character.name)
         whois.wait_for_flag()
-        self.character._class = CharacterClass(self.character.class_string, self.character.level, self.telnetHandler)
+        self.character._class = CharacterClass(self.telnetHandler, self.character.class_string, self.character.level)
         # self.character.CAST_PERIOD = self.character._class.cast_wait
         # self.character.CAST_WAIT = self.character._class.cast_wait
         self.character.configure_health_and_mana_variables()
         self.character.set_monster_kill_list()
+        magentaprint("LosHelper ability list: " + str(self.character._class.abilities))
         for a in self.character._class.abilities:
-            self.mudReaderHandler.register_reaction(a)
+            # self.mudReaderHandler.register_reaction(a)
+            magentaprint("Added subscriber " + str(a))
+            self.mudReaderHandler.add_subscriber(a)
 
     def check_info(self):
         info = Info(self.mudReaderHandler, self.telnetHandler, self.character)

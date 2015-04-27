@@ -1,12 +1,39 @@
 
-import time
+import time, itertools
 
 from Command import Command
+from ThreadingMixin import ThreadingMixin
 from BotReactions import BotReactionWithFlag
 import RegexStore
+from misc_functions import magentaprint
 
-class Ability(Command):
-    regexes = []
+# class Ability(ThreadingMixin2):
+#     def __init__(self):
+#         super().__init__()
+#         self.end_thread_regexes = self.success_regexes + self.error_regexes
+
+class Ability(Command, ThreadingMixin):
+    def __init__(self, telnetHandler):   
+        super().__init__(telnetHandler)
+        self.end_thread_regexes = self.success_regexes + self.error_regexes
+        self.telnetHandler = telnetHandler
+
+    def notify(self, regex, M_obj):
+        super().notify(regex, M_obj)
+        if regex in itertools.chain.from_iterable(self.end_thread_regexes):
+            magentaprint(str(self) + " ending thread.")
+            self.stop()
+
+    @classmethod    
+    def run(cls, telnetHandler, target=None):
+        # The result is only available on the object, not the class level.
+        # Maybe that'll be fine.
+        magentaprint("Sending '" + str(cls.command) + "' in " + str(round(cls.wait_time())) + "seconds.")
+        cls.wait_until_ready()
+        while not cls.stopping:
+            cls.send(telnetHandler, target)
+            cls.wait_for_class_flag()
+            cls.wait_until_ready()
 
 # class BuffAbility(AbilityWithFailure):
 class BuffAbility(Ability):
@@ -19,14 +46,11 @@ class BuffAbility(Ability):
     # def wear_off_regex(self):
     #     raise NotImplementedError() 
 
-    def __init__(self, telnetHandler):
-        self.thread = None
-        super().__init__(telnetHandler)
-
     def notify(self, regex, M_obj):
         if regex in self.success_regexes:
             self.active = True
         elif regex is self.wear_off_regex:
+            # self.__class__.timer = time.time() + self.__class__.cooldown_after_success - self.lasts
             self.active = False
         # elif regex is self.already_buffed_regex:
         #     if self.up():
@@ -117,6 +141,15 @@ class HealAbility(object):
     # @property 
     # def max_amount(self):
     #     raise NotImplementedError()
+
+
+class Search(Ability):
+    command = 'search'
+    cooldown_after_success = 6  # Todo: this is class dependent (8 for Bard)
+    cooldown_after_failure = 6
+    success_regexes = [RegexStore.found_exit]
+    failure_regexes = [RegexStore.search_fail]
+    level = 1
 
 class Meditate(HealAbility, Ability):
     command = "meditate"

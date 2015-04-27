@@ -3,6 +3,9 @@ prompt = ["\[(\d+) H (\d+) M\]"]
 
 you_have = ["You have (.+?)\."]
 
+found_exit = [r"You found an exit: (.+?)\."]
+search_fail = [r"You didn't find anything\."]
+
 hastened = ["You feel yourself moving faster\."]
 already_hastened = ["You're already hastened\."]
 # haste_success = [hastened[0], already_hastened[0]]
@@ -47,6 +50,9 @@ open_what = ["Open what\?"]
 
 
 goodbye = ["Goodbye! Come back soon\."]
+# game_shutdown = ['### Game shutdown in (\d+) seconds\.']
+# game_shutdown2 = ["### Game backup shutdown in \d:\d\d minutes\."]
+# game_shutdown3 = ["### Shutting down now\."]
 
 mob_died = ["Your attack overwhelms (?:the (" + __numbers + " )?)?(.+?) and (s?he|it) collapses!"]
 mob_fled = ["(:?The ?(" + __numbers + " )?)?(.+?) flees to the (.+?)\."] 

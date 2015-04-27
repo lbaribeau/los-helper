@@ -1,6 +1,5 @@
 
 import time
-import CharacterClass
 
 class Character(object):
 

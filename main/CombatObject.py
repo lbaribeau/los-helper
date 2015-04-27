@@ -8,6 +8,7 @@ import itertools
 from misc_functions import magentaprint
 from Command import Command
 import RegexStore
+from ThreadingMixin import ThreadingMixin
 
 class CombatObject(object):
     def __init__(self, telnetHandler):   
@@ -28,45 +29,7 @@ class CombatObject(object):
             magentaprint(str(self) + " ending combat.")
             self.stop()
 
-class CombatObject2(CombatObject):
-    # SmartCombat, Kill, and Cast
-    # (Well, not SmartCombat...)
-    target = None  
-    thread = None
-    stopping = False
-      
-    @classmethod
-    def stop(cls):
-        cls.stopping = True
-
-    @classmethod
-    def keep_going(cls):
-        magentaprint(str(cls) + " keep_going " + str(cls.stopping))
-        
-        if cls.stopping is True:
-            cls.stopping = False
-
-    @classmethod
-    def engage(cls, telnetHandler, target=None):
-        if target:
-            cls.target = target
-            cls.stopping = False
-            # That needs to handle existing threads
-
-        if cls.thread is None or not cls.thread.is_alive():
-            # not is_alive() means it won't look at stopping anymore so we're good.
-            cls.thread = Thread(target = cls.run, args = (telnetHandler, target))
-            cls.thread.start()
-        # else:
-            # Well the other thread CAN stil be sleeping from a kill error.  (ie misspelled target)
-            # That puts it into a 3 second sleep, then the timer gets corrected 0.3s after.
-            # So.... maybe it must poll fast... or we need signals... do we use that thread or a new thread??
-            # Maybe we write its code smarter to handle this case... don't sleep till after the cooldown's verified
-
-    def start_thread(self, target=None):
-        self.engage(self.telnetHandler, target)
-
-class SimpleCombatObject(CombatObject2, Command):
+class SimpleCombatObject(CombatObject, ThreadingMixin, Command):
     # This is for code used by Kill and Cast but not SmartCombat
 
     def __init__(self, telnetHandler):
@@ -85,7 +48,7 @@ class SimpleCombatObject(CombatObject2, Command):
         # magentaprint("SimepleCombatObject end_combat_regexes: " + str(self.end_combat_regexes))
 
     def notify(self, regex, M_obj):
-        CombatObject2.notify(self, regex, M_obj)
+        CombatObject.notify(self, regex, M_obj)
         Command.notify(self, regex, M_obj)
 
     # Needs to be a class method because the human doesn't have the object.

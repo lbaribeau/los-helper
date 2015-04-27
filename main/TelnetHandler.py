@@ -28,8 +28,8 @@ class TelnetHandler(object):
     def read_some(self):
         try:
             return self.tn.read_some()  # read_eager() would miss characters
-        except socket.error:
-            magentaprint("TelnetHandler read_some() error: " + str(error))
+        except socket.error as e:
+            magentaprint("TelnetHandler read_some() error: " + str(e))
             return ''
 
     def write(self, command):
@@ -40,9 +40,9 @@ class TelnetHandler(object):
         # magentaprint("Sending '" + command[:len(command)-1] + "'")
         try:
             self.tn.write(command.encode('ascii'))
-        except error:
-            magentaprint("TelnetHandler write() error: " + str(error))
-            raise error
+        except socket.error:
+            magentaprint("TelnetHandler write() error: " + str(socket.error))
+            raise socket.error
 
     def keep_connection_open(self):
         # The server times out every 5 minutes - I'd prefer it to be 10 minutes,
