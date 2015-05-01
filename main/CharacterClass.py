@@ -33,7 +33,7 @@ class CharacterClass(object):
         if class_string == "Ass":
             self.lvl1_maxHP = 19 
             self.lvl1_maxMP = 2
-            self.abilities = [ Backstab(telnetHandler) ]
+            abilities = [Backstab]
         elif class_string == "Bar":
             self.lvl1_maxHP = 24 
             self.lvl1_maxMP = 0
@@ -54,7 +54,7 @@ class CharacterClass(object):
         elif class_string == "Brd":
             self.lvl1_maxHP = 15 
             self.lvl1_maxMP = 3
-            self.abilities = [ AestersTears(telnetHandler), DanceOfTheCobra(telnetHandler) ]
+            abilities = [ AestersTears, DanceOfTheCobra ]
             Cast.cooldown_after_success = 4
         elif class_string == "Mag":
             self.lvl1_maxHP = 14 
@@ -74,7 +74,7 @@ class CharacterClass(object):
             self.MP_gained_per_level = 3
             self.mana_tick = 2 
             self.mana_tick_chapel = 4 
-            self.abilities = [ Haste(telnetHandler) ]
+            abilities = [ Haste ]
             Cast.cooldown_after_success = 5
             self.WEAPON_SLOTS.append("Second") 
         elif class_string == "Thi":
@@ -116,9 +116,21 @@ class CharacterClass(object):
         else:
             magentaprint("CharacterClass error: could not recognize class string.")
 
-        self.abilities.append(Search(telnetHandler))
-        self.abilities = [a for a in self.abilities if level >= a.level]
-        magentaprint("CharacterClass abilities: " + str(self.abilities))
+        self.abilities = {}
+
+        for a in abilities + [Search]:
+            if level >= a.level:
+                self.abilities[a.command] = a(telnetHandler)
+
+        # self.abilities.append(Search(telnetHandler))
+        # self.abilities = [a for a in self.abilities if level >= a.level]
+        # self.abilities = [c, a for c, a in self.abilities.items() if level >= a.level]
+        # self.abilities = {c: a for c, a in self.abilities.items() if level >= a.level}
+        # for c, a in self.abilities.items:
+        #     if level >= a.level:
+        # magentaprint("CharacterClass abilities before dict comprehension: " + str(self.abilities))
+        # self.abilities = {a.command: a for a in self.abilities if level >= a.level}
+        magentaprint("CharacterClass final abilities: " + str(self.abilities))
 
 
 # OLD IDEAS

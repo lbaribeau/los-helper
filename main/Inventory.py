@@ -45,7 +45,8 @@ class Inventory(BotReactionWithFlag):
         "ring mail hood", "ring mail gauntlets", "leather collar", 
         "enchanted indigo cloak", "fine elven cloak", "light elven cloak",
         'lion charm', "poison ring",
-        "iron shield"
+        "iron shield", 'platinum ring', 'gold ring', 'steel ring',
+        'granite rod', "miner's lamp", 'zinc wand'
         #'steel mask' # the bot slowly collects these 
     ]
 

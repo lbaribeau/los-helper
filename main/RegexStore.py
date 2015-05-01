@@ -116,7 +116,10 @@ attack_miss = [
         "(?s)You use your .+?, but nothing hits (:the )?(" + __numbers + " )?(.+?)\."
 ]
 
-aura = [r"You glow with a (.+?) aura\.", r"The (.+?) glows with a (.+?) aura\."]
+aura = [
+    r"You glow with a (.+?) aura\.", 
+    r"The (.+?) glows with a (.+?) aura\."
+]
 
 cast = [
     r"You cast a (.+?) spell on (.+?)\.",

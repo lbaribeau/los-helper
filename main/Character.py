@@ -273,7 +273,8 @@ class Character(object):
         "market official", "street trader", "field worker", "harvester", 
         "horse", "cow", "doorman", "stilt walker",  "messenger", "cashier",
         "thatcher",  "tax inspector", 'journeyman', "human miner", 
-        "hobbitish miner", "hawk", "stacker", "mill worker"
+        "hobbitish miner", "hawk", "stacker", "mill worker", 'The General',
+        'bouncer'
         #"robed pilgrim",  # Removed for red/blue balance
         #"miner's mule"
         ]
@@ -285,7 +286,7 @@ class Character(object):
         'trader', "butcher", "young knight", "acrobat", "militia soldier", 
         "carpenter", "stagehand", 'hungry spider', 'cook', 'joiner', "ranch hand",
         "old rancher", "tired ranch hand", "drinking ranch hand",
-        "busy ranch hand", "sawmill operator"
+        "busy ranch hand", "sawmill operator", 'vulture'
         #"auctioneer", # They pile up so bad!  
         # Definitely need smart chasing or a path that runs extra around the 
         # market (after healing)
@@ -307,50 +308,62 @@ class Character(object):
     lvl5_red_monsters = [
         'large bandit', "kobold guard", "mugger", 'large spider'
     ]
-    lvl6_monsters = [
+    lvl6_monsters = [  # 100+ exp
         "dwarven field worker", "dwarven bartender", "school teacher",
         'lyrist', "nobleman", "seeker", "bull", "hunter", 'usher',
         'sword swallower', 'archer', "mime artist",
-        "yard supervisor", "sawmill operator", "large spider", "blacksmith",
-        "farm foreman", "yard supervisor", "Old Man James", "dwarven traveller",
+        "yard supervisor", 'sawmill supervisor', "large spider", "blacksmith",
+        "farm foreman", "Old Man James", "dwarven traveller",
         "Goourd", "tourney organiser"
         #'sentry' stand in pairs unfortunately...
     ]
     lvl6_red_monsters = [ #1574 for gnoll camp
         'gnoll sentry', "bandit swordsman", "gnoll spearsman", "gnoll raider"
     ]
-    lvl7_monsters = [
+    lvl7_monsters = [ # ~200 exp
         "dwarven cook", "swordsman", 'fort sergeant', 'oremaster', 
         'giant spider', "rock spider", "Aldo", "dwarven trader",
         "gnoll chaplain", "Cheryn", "robed priest", "orc scout",
+        'bouncer',
         "dwarven shepherd"  # grey
     ] # giant spiders are hostile
     lvl8_monsters = [
+        # There are 2 amethyst guards and 3 amber guards of this level
         'owlbear', "hauler", "Farmer Malbon", "sonneteer", "Tag",
         "mine manager", "Alaran the Market Manager", "artificer", "Dini Stonehammer",
         "Thereze", "Farmer Viladin", "Rancher Renstone", "berzerker",
         "dwarven hunter", "initiate", "Olmer", "berserk orc",
         "old knight", "dusty warrior",  # dusty blue        
         "elven trader",   # pale blue
-        "Thereze", # grey
-        "Farmer Malbon"
+        "Farmer Malbon", 'hedge knight', 'refinery supervisor'
         #'mine manager'
     ]
-    lvl9_monsters = [
-        "dwarven blacksmith", "director", "Elder Barthrodue", "abbot",
-        "orc warrior", "white knight", "hedge knight", "Farmer Calmor"
+    lvl9_monsters = [ # ~300 exp
+        "director", "Elder Barthrodue", 
+        "orc warrior", "Farmer Calmor", 'giant beetle'
+        'white knight' # respect the knights
     ]
-    lvl10_monsters = [
+    lvl10_monsters = [ # 350+
         "Kelluran", "Jerrek",  # all grey
-        "Farmer McDermott"
+        "Farmer McDermott", "abbot", #445
+        'Rimark', 'Dame Brethil', 'dwarven blacksmith', 'silver knight', 'Commander Rilmenson', 
+        'The Master of Ceremonies'
     ]
     lvl11_monsters = [
         "dwarven adventurer",  # dusty blue
-        "enchantress"  # pale blue
+        "enchantress", 'Brotain', 'minstrel'  
     ]
     lvl12_monsters = [
         "barbarian shaman", "barbarian warrior", # grey
-        "Gorban"  # dusty blue
+        "Gorban", # dusty blue
+        'The Amber Mage', 'The Saga Teacher',
+        'Horbuk', 'The Floor Manager'
+    ]
+    lvl13_monsters = [
+        'The Dojo Administrator'
+    ]
+    lvl14_monsters = [
+        'cave troll guard'
     ]
     # A list of monsters redundant to the above lists that
     # I may want to kill even if they are too low of level.
@@ -403,3 +416,6 @@ class Character(object):
 # todo: I don't like caps anymore
 # I think that's because these don't feel like global settings anymore, since 
 # the program is bigger.
+
+# Drops -
+#  Alaran, Aldo, Farmer Calmor for rings (platinum, gold, etc.)

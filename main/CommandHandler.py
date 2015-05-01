@@ -44,24 +44,40 @@ class CommandHandler(object):
         commands.  Also, when the bot is stopped on a flee, the calling layer
         handles stopping the bot."""
 
-        if user_input == 'ga':
-            self.telnetHandler.write('get all')
-        elif re.match('ki? [a-zA-Z]|kill? [a-zA-Z]', user_input):
-            self.ki(user_input)
+        the_split = user_input.split(' ')
+        # user_input = the_split[0]
+        arg1 = the_split[1] if len(the_split) >= 2 else None
+        arg2 = the_split[2] if len(the_split) >= 3 else None
+        # for a in [user_input.startswith(self.character._class.abilities.values()) for test in user_input.startswith)
+        # elif any([user_input.startswith(a.command) for a in self.character._class.abilities.values()]):
+        # for a in [a for a in self.character._class.abilities.values() if user_input().startswith(a.command)]
+        for a in self.character._class.abilities.values():
+            if the_split[0].startswith(a.command):
+                if the_split[0].endswith('c'):
+                    a.spam(arg1)
+                else:
+                    a.execute(arg1)
+                return
+
+        if user_input == 'ss':
+            for a in self.character._class.abilities.values():
+                a.stop()
+            self.telnetHandler.write('')
+        # elif re.match('ki? [a-zA-Z]|kill? [a-zA-Z]', user_input):
+        elif re.match('ki? |kill?', user_input):
+            self.kill.execute(target)
+            # self.ki(user_input)
         elif user_input.startswith('kk '):
             self.kill.start_thread(user_input[3:].strip())
         elif user_input == 'sk' or user_input == 'skc':
             self.kill.stop()
             self.smartCombat.stop()
             self.telnetHandler.write('')
-        elif re.match('ca? [a-zA-Z]|cast? [a-zA-Z]', user_input):
-            the_split = user_input.split(" ")
-            target = the_split[2] if len(the_split) >= 3 else None
-            self.cast.cast(the_split[1], target)
+        # elif re.match('ca? [a-zA-Z]|cast? [a-zA-Z]', user_input):
+        elif re.match('ca? |cast?', user_input):
+            self.cast.cast(arg1, arg2)
         elif user_input.startswith('cc '):
-            the_split = user_input.split(' ')
-            target = the_split[2] if len(the_split) >= 3 else None
-            self.cast.start_thread(the_split[1], target)
+            self.cast.start_thread(arg1, arg2)
         elif user_input == 'sc':
             self.cast.stop()
             self.smartCombat.stop_casting()
@@ -72,25 +88,22 @@ class CommandHandler(object):
             self.user_kk2(user_input[4:].strip())
         elif re.match('dro? ', user_input):
             self.user_dr(user_input)
-        elif user_input == 'searc':
-            Search.spam(self.telnetHandler)
-        elif user_input == 'hastec':
-            Haste.spam(self.telnetHandler)
-        elif user_input == 'prayc':
-            Pray.spam(self.telnetHandler)
-        elif user_input == 'bersc':
-            Berserk.spam(self.telnetHandler)
-        elif user_input == 'barkc':
-            Barkskin.spam(self.telnetHandler)
-        elif user_input == 'ss':
-            for a in self.character._class.abilities:
-                a.stop()
-        # Try the class method thing... !  wowee maybe I was being smart before...
-        elif self.go.is_direction(user_input) or user_input.startswith('go ') or \
-             re.match(str(self.character.EXIT_REGEX), user_input):
+        elif user_input.startswith('Sel'):
+            self.inventory.sell_stuff()
+        elif user_input.startswith('Dr'):
+            self.inventory.drop_stuff()
+        elif user_input == 'ga':
+            self.telnetHandler.write('get all')
+        elif user_input.startswith('go ') or re.match(str(self.character.EXIT_REGEX), user_input):
+            # self.go.super_execute(user_input)
+            self.user_move(user_input)
+        elif self.go.is_direction(user_input):
+            # self.go.super_execute(user_input)
             self.user_move(user_input)
             # routine which does appropriate waiting,
             # printing, and finally sending command.
+        elif re.match('door?', user_input):
+            self.go.super_execute('door')
         elif(re.match("find (.+)", user_input)):
             M_obj = re.search("find (.+)", user_input)
             magentaprint("Finding: " + str(M_obj.group(1)))
@@ -228,16 +241,16 @@ class CommandHandler(object):
         self.kill.start_thread(target)
 
     def user_move(self, user_input):
-        if user_input.startswith("go "):
-            exit = user_input.split(" ")[1]
-            if exit == "nw":
-                user_input = "nw"
-            elif exit == "sw":
-                user_input = "sw"
-            elif exit == "ne":
-                user_input = "ne"
-            elif exit == "se":
-                user_input = "se"
+        # if user_input.startswith("go "):
+        #     exit = user_input.split(" ")[1]
+        #     if exit == "nw":
+        #         user_input = "nw"
+        #     elif exit == "sw":
+        #         user_input = "sw"
+        #     elif exit == "ne":
+        #         user_input = "ne"
+        #     elif exit == "se":
+        #         user_input = "se"
 
         self.character.TRYING_TO_MOVE = True
         self.character.LAST_DIRECTION = user_input.replace("go ", "")
@@ -253,8 +266,9 @@ class CommandHandler(object):
         if time_remaining < 3.0:
             time.sleep(time_remaining)
             self.character.MOVE_CLK = now
-            self.telnetHandler.write(user_input)
+            # self.telnetHandler.write(user_input)
             # self.go.super_execute(self.character.LAST_DIRECTION)
+            self.go.execute(self.character.LAST_DIRECTION)
         else:
             magentaprint("Wait %.1f more seconds." % time_remaining)
 

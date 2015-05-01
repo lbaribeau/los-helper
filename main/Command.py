@@ -113,16 +113,21 @@ class Command(BotReactionWithFlag):
             self.clear_timer()
         elif regex in RegexStore.please_wait:
             self.please_wait_time = int(M_obj.group(1))
-            self.result = 'Please wait ' + str(self.please_wait_time)
+            self.notify_please_wait()
         elif regex in RegexStore.please_wait2:
             self.please_wait_time = 60*int(M_obj.group(1)) + int(M_obj.group(2))
-            self.result = 'Please wait ' + str(self.please_wait_time)
+            self.notify_please_wait()
 
         super().notify(regex, M_obj)   # maintains wait_for_flag()
 
     def notify_failure(self, regex, M_obj):
         # This gets overriden by Cast
         self.__class__.timer = self.__class__.timer - self.cooldown_after_success + self.cooldown_after_failure
+
+    def notify_please_wait(self):
+        if not self.__class__._waiter_flag:
+            self.result = 'Please wait ' + str(self.please_wait_time)
+            self.__class__.timer = time.time() + self.please_wait_time  # Ehrm sometimes this makes it so you can't move
 
     @classmethod
     def clear_timer(cls):
@@ -154,6 +159,10 @@ class Command(BotReactionWithFlag):
         #    - target for Command must be a function argument (no class variable)
 
         # magentaprint("Command.send: cls.timer - time.time(): %.1f" % round(cls.timer - time.time(), 1))
+
+        cls._waiter_flag = False
+            # We set the waiter flag here because the 'Please wait' notify uses it to 
+            # know that the 'Please wait' corresponds to the current command
 
         if cls.timer - time.time() < 3.0:
             # time.sleep(max(0, cls.timer - time.time()))

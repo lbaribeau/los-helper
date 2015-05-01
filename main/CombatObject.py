@@ -135,7 +135,7 @@ class Cast(SimpleCombatObject):
 
     def notify_failure(self, regex, M_obj):
         spell = self.command.split(' ')[1].lower()
-        if re.match("vig?|vigor?", spell) or \
+        if re.match("vi?|vigo?|vigor", spell) or \
            re.match("show-?|show-au?|show-aura?", spell) or \
            re.match("lig?|light?", spell) or \
            re.match("me?|mend?|mend-w?|mend-wou?|mend-wound?|mend-wounds", spell):

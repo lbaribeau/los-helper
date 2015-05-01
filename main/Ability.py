@@ -1,8 +1,8 @@
 
 import time, itertools
 
-from Command import Command
-from ThreadingMixin import ThreadingMixin
+# from Command import Command
+from ThreadingMixin import ThreadingMixin2
 from BotReactions import BotReactionWithFlag
 import RegexStore
 from misc_functions import magentaprint
@@ -12,28 +12,29 @@ from misc_functions import magentaprint
 #         super().__init__()
 #         self.end_thread_regexes = self.success_regexes + self.error_regexes
 
-class Ability(Command, ThreadingMixin):
+class Ability(ThreadingMixin2):
     def __init__(self, telnetHandler):   
-        super().__init__(telnetHandler)
         self.end_thread_regexes = self.success_regexes + self.error_regexes
-        self.telnetHandler = telnetHandler
+        super().__init__(telnetHandler)
+        # ThreadingMixin2.__init__(self, telnetHandler)
+        # super().__init__(telnetHandler)
 
-    def notify(self, regex, M_obj):
-        super().notify(regex, M_obj)
-        if regex in itertools.chain.from_iterable(self.end_thread_regexes):
-            magentaprint(str(self) + " ending thread.")
-            self.stop()
+    # def notify(self, regex, M_obj):
+    #     super().notify(regex, M_obj)
+    #     if regex in itertools.chain.from_iterable(self.end_thread_regexes):
+    #         magentaprint(str(self) + " ending thread.")
+    #         self.stop()
 
-    @classmethod    
-    def run(cls, telnetHandler, target=None):
-        # The result is only available on the object, not the class level.
-        # Maybe that'll be fine.
-        magentaprint("Sending '" + str(cls.command) + "' in " + str(round(cls.wait_time())) + "seconds.")
-        cls.wait_until_ready()
-        while not cls.stopping:
-            cls.send(telnetHandler, target)
-            cls.wait_for_class_flag()
-            cls.wait_until_ready()
+    # @classmethod    
+    # def run(cls, telnetHandler, target=None):
+    #     # The result is only available on the object, not the class level.
+    #     # Maybe that'll be fine.
+    #     magentaprint("Sending '" + str(cls.command) + "' in " + str(round(cls.wait_time())) + "seconds.")
+    #     cls.wait_until_ready()
+    #     while not cls.stopping:
+    #         cls.send(telnetHandler, target)
+    #         cls.wait_for_class_flag()
+    #         cls.wait_until_ready()
 
 # class BuffAbility(AbilityWithFailure):
 class BuffAbility(Ability):
@@ -87,7 +88,7 @@ class CombatAbility(Ability):
 
 class Haste(BuffAbility):
 # haste = BuffAbility()
-    command = "haste"
+    command = "has"
     cooldown_after_success = 600  # can flee
     cooldown_after_failure = 10  # can flee
     # success_regexes = [r"You feel yourself moving faster\."]
@@ -101,7 +102,7 @@ class Haste(BuffAbility):
     level = 1
 
 class Pray(BuffAbility):
-    command = "pray"
+    command = "pra"
     cooldown_after_success = 610
     cooldown_after_failure = 10  # can flee
     success_regexes = [r"You feel extremely pious\."]
@@ -114,7 +115,7 @@ class Pray(BuffAbility):
         # I would do lasts 305 and cooldown 600 but I can't test that right now
    
 class Barkskin(BuffAbility):
-    command = "barkskin" 
+    command = "bar" 
     cooldown_after_success = 600  # can flee, confirmed 10 minutes
     cooldown_after_failure = 10  # can flee
     success_regexes = [r"You feel your skin thickening and hardening\."]
@@ -126,7 +127,7 @@ class Barkskin(BuffAbility):
     level = 1
 
 class Berserk(BuffAbility):
-    command = "berserk"
+    command = "ber"
     cooldown_after_success = 600
     cooldown_after_failure = 20 
     success_regexes = [r"A red mist coats your vision, your heart pounds harder \. \. \."]
@@ -144,7 +145,7 @@ class HealAbility(object):
 
 
 class Search(Ability):
-    command = 'search'
+    command = 'sea'
     cooldown_after_success = 6  # Todo: this is class dependent (8 for Bard)
     cooldown_after_failure = 6
     success_regexes = [RegexStore.found_exit]
@@ -152,7 +153,7 @@ class Search(Ability):
     level = 1
 
 class Meditate(HealAbility, Ability):
-    command = "meditate"
+    command = "me"
     cooldown_after_success = 120
     cooldown_after_failure = 5
     max_amount = 26 #guess
@@ -165,7 +166,7 @@ class Meditate(HealAbility, Ability):
         self.max_amount = 18 + level
 
 class AestersTears(HealAbility, Ability):
-    command = "sing ae"
+    command = "sin a"
     cooldown_after_success = 140  # Can flee/move/attack immediately
     max_amount = 16  # guessed
     success_regexes = [RegexStore.aesters_tears]  # This seems to overwrite Ability...
@@ -176,7 +177,7 @@ class AestersTears(HealAbility, Ability):
 
 # danceOfTheCobra = FastCombatAbility(telnetHandler):
 class DanceOfTheCobra(FastCombatAbility):
-    command = "sing dance"  # needs target
+    command = "sin d"  # needs target
     cooldown_after_success = 570  # can hit right away i believe
     cooldown_after_failure = 30  # can flee/move/attack
     # success_regex = r"The Dance of the Snake ends\.\n\rYou complete the ritual by touching the (.+?) and the charming takes effect\.\.\."
@@ -192,7 +193,7 @@ class DanceOfTheCobra(FastCombatAbility):
     # But if you attacked then you have to wait to use it.
 
 class Turn(FastCombatAbility):
-    command = "turn"  # needs target
+    command = "tu"  # needs target
     cooldown_after_success = 30  # can attack immediately, but flee/move is 3 seconds later
     cooldown_after_failure = 30  # can attack immediately, but flee/move is 3 seconds later
                                  # (Said Please wait 1 sec THEN Please wait 2 sec)
@@ -205,7 +206,7 @@ class Turn(FastCombatAbility):
     valid_targets = ["zombie", "skeleton", "ghast", "poltergeist", "geist", "ghoul"]
 
 class Touch(CombatAbility):
-    command = "touch"
+    command = "to"
     cooldown_after_success = 270
     cooldown_after_failure = 270
     success_regexes = [r"You touched the (.+?) for (.+?) damage\."]
@@ -214,7 +215,7 @@ class Touch(CombatAbility):
     level = 4
 
 class Wither(CombatAbility):
-    command = "wither"
+    command = "withe"
     cooldown_after_success = 300  # Guessed out of the blue
     cooldown_after_failure = 10  # can't attack/flee/move immediately
     success_regexes = [r" the (.+?) for (.+?) damage\."]  # TODO: Obviously needs work
@@ -223,7 +224,7 @@ class Wither(CombatAbility):
     level = 1
 
 class Bash(CombatAbility):
-    command = "bash"
+    command = "bas"
     cooldown_after_success = 3
     cooldown_after_failure = 3
     success_regexes = [r"You bash the (.+?), confusing them\."]

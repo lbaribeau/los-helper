@@ -16,7 +16,7 @@ class SmartCombat(CombatObject):
         self.stopping = None
         self.kill = kill
         self.cast = cast
-        self.abilities = character._class.abilities
+        self.abilities = character._class.abilities.values()
         self._class = character._class
 
         self.heal_abilities = [a for a in self.abilities if isinstance(a, HealAbility)]

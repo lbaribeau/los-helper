@@ -239,12 +239,12 @@ class MudReaderThread(threading.Thread):
                 for r in m.regexes:
                     M_obj = re.search(r, text_buffer)
                     if M_obj is not None:
-                        import RegexStore
-                        if r in RegexStore.haste_fail or r in RegexStore.hastened or r in RegexStore.already_hastened:
-                            magentaprint("MudReaderThread: " + str(r))
                         for s in m.subscribers:
                             s.notify(r, M_obj)
                         text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                        # import RegexStore
+                        # if r in RegexStore.haste_fail or r in RegexStore.hastened or r in RegexStore.already_hastened:
+                        #     magentaprint("MudReaderThread: " + str(r))
 
             #TODO: continue with MAXHP, MAXMP, GOLD, EXP, LEVELGOLD, LEVELEXP, etc.
             M_obj = re.search("Exp : (\d+)",text_buffer)

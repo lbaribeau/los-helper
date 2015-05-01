@@ -313,6 +313,10 @@ class Cartography(BotReactionWithFlag):
             magentaprint("Problem cataloging monster bio")
 
     def catalog_monster_aura(self, name, aura):
+        if aura not in self.character.AURA_LIST:
+            # Deals with "the rod glows with a deep brown aura" bug
+            return
+
         mob = Mob(name=name)
         mob.map()
         mob.aura = self.character.AURA_LIST.index(aura)

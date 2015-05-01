@@ -16,6 +16,7 @@ class Go(Command):
         RegexStore.locked, RegexStore.no_right, RegexStore.in_tune,
         RegexStore.not_authorized, RegexStore.cannot_force
     ]
+    cooldown_after_success = 0.34
 
     def __init__(self, telnetHandler):
         super().__init__(telnetHandler)

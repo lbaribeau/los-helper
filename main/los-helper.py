@@ -65,9 +65,11 @@ class LosHelper(object):
         magentaprint("LosHelper initializing...", False)
         self.mud_map = MudMap()
         self.bot_ready = self.mud_map.ready
-
-        #self.mud_map_thread = threading.Thread(target=self.setup_mud_map)
-        #self.mud_map_thread.start()  # Don't forget to uncomment .join()
+        
+        # Threading the db setup causes a locking error...
+        # self.bot_ready = False
+        # self.mud_map_thread = threading.Thread(target=self.setup_mud_map)
+        # self.mud_map_thread.start()  # Don't forget to uncomment .join()
         # self.mud_map_thread = threading.Thread(target=magentaprint, args=("setting up mud map in main thread",))
         # self.setup_mud_map()
         self.character = Character()
@@ -114,6 +116,7 @@ class LosHelper(object):
     def close(self):
         self.mudListenerThread.stop()
         self.mudReaderThread.stop()
+        # self.mud_map_thread.join()
         self.mudListenerThread.join(10)
         self.mudReaderThread.join(10)
         self.telnetHandler.close();
@@ -256,7 +259,7 @@ class LosHelper(object):
         self.character.configure_health_and_mana_variables()
         self.character.set_monster_kill_list()
         magentaprint("LosHelper ability list: " + str(self.character._class.abilities))
-        for a in self.character._class.abilities:
+        for a in self.character._class.abilities.values():
             # self.mudReaderHandler.register_reaction(a)
             magentaprint("Added subscriber " + str(a))
             self.mudReaderHandler.add_subscriber(a)
