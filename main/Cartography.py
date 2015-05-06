@@ -405,68 +405,54 @@ class Cartography(BotReactionWithFlag):
         return exit_regex
 
     def parse_monster_list(self, MUD_mob_str):
-        try:
-            if (MUD_mob_str is None):
-                return []
+        if MUD_mob_str is None:
+            return []
 
-            MUD_mob_str = replace_newlines_with_spaces(MUD_mob_str)
-            my_monster_regex = r"You see (.*)\."
-            
-            match_monsters = re.match(my_monster_regex, MUD_mob_str)
+        MUD_mob_str = MUD_mob_str.replace("\n\r", ' ')
+        mob_match = re.match(r"(?s)You see (.+?)\.", MUD_mob_str)
 
-            if (match_monsters is None):
-                magentaprint("Match monsers: " + str(match_monsters), False)
-                return self.character.MONSTER_LIST
+        if mob_match is None:
+            return self.character.MONSTER_LIST
 
-            M_LIST = [x.strip() for x in match_monsters.group(1).split(',')]
+        M_LIST = [m.strip() for m in mob_match.group(1).split(',')]
+        singles = ['a ', 'an ', 'some ', 'The ']
+        numbers = ['two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 
+                   'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ', 
+                   'fifteen ' , 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen ', 'twenty ']
+        numbers.extend([str(i) + " " for i in range(21, 200)])
 
-            # Trim the preceding "a" or "some" or "two," s well as the
-            # trailing comma, and the 's' if it was plural and there's an 's'
-            for i in range(0, len(M_LIST)):
-                #M_LIST[i].ljust(0)  # this isn't doing what I thought.
-                if (re.match("a ", M_LIST[i])):
-                    M_LIST[i] = M_LIST[i][2:]
-                elif (re.match("an ", M_LIST[i])):
-                    M_LIST[i] = M_LIST[i][3:]
-                elif (re.match("The ", M_LIST[i])):
-                    M_LIST[i] = M_LIST[i][4:]
-                elif (re.match("two ", M_LIST[i])):
-                    M_LIST[i] = M_LIST[i][4:]
-                    if (M_LIST[i][len(M_LIST[i]) - 4:] == "sses"):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 2]
-                    elif (M_LIST[i][len(M_LIST[i]) - 1] == 's'):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 1]
-                    elif (M_LIST[i][len(M_LIST[i]) - 8:] == "children"):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 3]
-                    M_LIST.append(M_LIST[i])
-                elif (re.match("three ", M_LIST[i])):
-                    M_LIST[i] = M_LIST[i][6:]
-                    if (M_LIST[i][len(M_LIST[i]) - 4:] == "sses"):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 2]
-                    elif (M_LIST[i][len(M_LIST[i]) - 1] == 's'):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 1]
-                    elif (M_LIST[i][len(M_LIST[i]) - 8:] == "children"):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 3]
-                    for j in range(1, 3):
-                        M_LIST.append(M_LIST[i])
-                elif (re.match("four ", M_LIST[i])):
-                    M_LIST[i] = M_LIST[i][5:]
-                    if (M_LIST[i][len(M_LIST[i]) - 4:] == "sses"):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 2]
-                    elif (M_LIST[i][len(M_LIST[i]) - 1] == 's'):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 1]
-                    elif (M_LIST[i][len(M_LIST[i]) - 8:] == "children"):
-                        M_LIST[i] = M_LIST[i][0:len(M_LIST[i]) - 3]
-                    for j in range(1, 4):
-                        M_LIST.append(M_LIST[i])
-                commaindex = M_LIST[i].find(',')
-                if (commaindex != -1):
-                    M_LIST = M_LIST[:commaindex]
-        except Exception:
-            magentaprint("Parse monster Exception: " + str(sys.exc_info()[0]), False)
-            M_LIST = []
+        m_list = []
+        for m in M_LIST:
+            if any([m.startswith(s) for s in singles]):
+                # m_dict[m.partition(' ')[2]] = 1
+                m_list.extend([m.partition(' ')[2]])
+                continue
+            # number_check = [m.startswith(n) for n in numbers]
+            if m.endswith('sses'):
+                m = m[0:len(m)-2]
+            elif m.endswith('s'):
+                m = m[0:len(m)-1]
+            elif m.endswith('children'):
+                m = m[0:len(m)-3]
 
-        return M_LIST
+            for n in range(0, len(numbers)):
+                if m.startswith(numbers[n]):
+                    # m_dict[m.partition(' ')[2]] = n + 2
+                    m_list.extend([m.partition(' ')[2]] * (n + 2))
+                    break
+
+        # return list(m_dict.keys())
+        return m_list
+  
+            # commaindex = M_LIST[i].find(',')
+            # if commaindex != -1:
+            #     M_LIST = M_LIST[:commaindex]
+
+        # except Exception:
+        #     magentaprint("Parse monster Exception: " + str(sys.exc_info()[0]), False)
+        #     M_LIST = []
+
+        # return M_LIST
 
 
 

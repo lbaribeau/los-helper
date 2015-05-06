@@ -45,8 +45,8 @@ class Inventory(BotReactionWithFlag):
         "ring mail hood", "ring mail gauntlets", "leather collar", 
         "enchanted indigo cloak", "fine elven cloak", "light elven cloak",
         'lion charm', "poison ring",
-        "iron shield", 'platinum ring', 'gold ring', 'steel ring',
-        'granite rod', "miner's lamp", 'zinc wand'
+        "iron shield", 'platinum ring', 'gold ring', 'steel ring', 'silver ring',
+        'granite rod', "miner's lamp"
         #'steel mask' # the bot slowly collects these 
     ]
 
@@ -344,54 +344,65 @@ class Inventory(BotReactionWithFlag):
         # inventory_string = inventory_string.replace("  ", ' ') #replace double space with a single one
         inv_list = inventory_string.split(',')
         inv_list = [item.strip(' \t\n\r') for item in inv_list]
-        numbers = ["a ", "an ", "some ", "two ", "three ", "four ", "five ", "six ", "seven ", 
-                   "eight ", "nine ", "ten ", "eleven ", "twelve ", "thirteen ", "fourteen ", 
-                   "fifteen " , "sixteen ", "seventeen ", "eighteen ", "nineteen ", "twenty "]
+        singles = ['a ', 'an ', 'some ']
+        numbers = ['two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 
+                   'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ', 
+                   'fifteen ' , 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen ', 'twenty ']
         numbers.extend([str(i) + " " for i in range(21, 200)])
 
         for item in inv_list:
             number_found = False
-            if (re.match("[\d]* gold coins?", item)) is None:
-                for n in range(0, len(numbers)):
-                    number = numbers[n]
-                    if item[0:len(number)] == number:
-                        number_found = True
-                        if n < 3:
-                            item = item[len(number):]
-                            mud_item = MudItem(item)
-                            mud_item.map()
-                            item_list = GenericMudList([mud_item])
-                            return_dict[mud_item] = item_list
+            gold_coin_match = re.match("(\d+) gold coins?", item)
+            if gold_coin_match:
+                # self.add_to_dict(return_dict, 'gold coin', int(gold_coin_match.group(1)))
+                continue
+            for s in singles:
+                if item[0:len(s)] == s:
+                    number_found = True
+                    self.add_to_dict(return_dict, item[len(s):], 1)
+                    break
+            if number_found:
+                continue
+            for n in range(0, len(numbers)):
+            # for number in numbers:
+                number = numbers[n]
+                if item[0:len(number)] == number:
+                    number_found = True
+                    if "sets of" in item:
+                        item = item.replace("sets of ", "")
+                    item = item[len(number):]
+                    if item[len(item)-1] == 's':
+                        if item[len(item)-3:] == "ses" or item[len(item)-3:] == "xes":
+                            item = item[:len(item)-2]
                         else:
-                            if "sets of" in item:
-                                item = item.replace("sets of ", "")
+                            item = item[:len(item)-1]
 
-                            item = item[len(number):]
-                            if item[len(item)-1] == 's':
-                                if item[len(item)-3:] == "ses" or item[len(item)-3:] == "xes":
-                                    item = item[:len(item)-2]
-                                else:
-                                    item = item[:len(item)-1]
-
-                            mud_item = MudItem(item)
-                            mud_item.map()
-                            mud_items = []
-                            for _ in range(n - 1):
-                                mud_items.append(mud_item)
-                            
-                            item_list = GenericMudList(mud_items)
-                            return_dict[mud_item] = item_list
-                        continue
-
-                if number_found is False:
-                    #if the item wasn't received with a/an/some etc...
-                    #we assume it's just one item
-                    mud_item = MudItem(item)
-                    mud_item.map()
-                    item_list = GenericMudList([mud_item])
-                    return_dict[mud_item] = item_list
+                        # mud_item = MudItem(item)
+                        # mud_item.map()
+                        # # mud_items = []
+                        # # for _ in range(n - 1):
+                        # #     mud_items.append(mud_item)
+                        # # item_list = GenericMudList(mud_items)
+                        # item_list = GenericMudList([mud_item] * (n - 1))
+                        # return_dict[mud_item] = item_list
+                    self.add_to_dict(return_dict, item, n+2)
+                    break
+            if number_found is False:
+                magentaprint("Inventory parsed an item without a/an/some/two... " + item)
+                #if the item wasn't received with a/an/some etc...
+                #we assume it's just one item
+                # mud_item = MudItem(item)
+                # mud_item.map()
+                # item_list = GenericMudList([mud_item])
+                # return_dict[mud_item] = item_list
+                self.add_to_dict(return_dict, item, 1)
 
         return return_dict
+
+    def add_to_dict(self, d, item_str, qty):
+        mud_item = MudItem(item_str)
+        mud_item.map()
+        d[mud_item] = GenericMudList([mud_item] * qty)
 
     def sellable(self):
         return self.inventory.get_unique_references(self.keep_list)

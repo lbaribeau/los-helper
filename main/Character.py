@@ -302,7 +302,7 @@ class Character(object):
         # "vicar",
         "nobleman", "lyrist", "orange picker", "logger",
         "veteran", "bruiser", "axeman", "seeker", "hunter", "bull", "lay priest", "protector",
-        "battered knight",
+        "battered knight", 'bruiser',
         "aspirant"  # grey
     ]
     lvl5_red_monsters = [
@@ -341,22 +341,23 @@ class Character(object):
     lvl9_monsters = [ # ~300 exp
         "director", "Elder Barthrodue", 
         "orc warrior", "Farmer Calmor", 'giant beetle'
-        'white knight' # respect the knights
+        'white knight' # respect the knights! (+1 difficulty)
     ]
     lvl10_monsters = [ # 350+
+        'wounded knight', # -2 difficulty
+        'The Master of Ceremonies', # 280
         "Kelluran", "Jerrek",  # all grey
-        "Farmer McDermott", "abbot", #445
-        'Rimark', 'Dame Brethil', 'dwarven blacksmith', 'silver knight', 'Commander Rilmenson', 
-        'The Master of Ceremonies'
+        "Farmer McDermott", "abbot", # 445
+        'Rimark', 'Dame Brethil', 'dwarven blacksmith', 'silver knight', 'Commander Rilmenson'
     ]
     lvl11_monsters = [
         "dwarven adventurer",  # dusty blue
-        "enchantress", 'Brotain', 'minstrel'  
+        "enchantress", 'Brotain', 'minstrel', 'brutalizer'
     ]
     lvl12_monsters = [
         "barbarian shaman", "barbarian warrior", # grey
         "Gorban", # dusty blue
-        'The Amber Mage', 'The Saga Teacher',
+        'The Amber Mage', 'The Saga Teacher', 'Hurn the Smith',
         'Horbuk', 'The Floor Manager'
     ]
     lvl13_monsters = [
