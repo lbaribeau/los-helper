@@ -55,7 +55,8 @@ goodbye = ["Goodbye! Come back soon\."]
 # game_shutdown3 = ["### Shutting down now\."]
 
 mob_died = ["Your attack overwhelms (?:the (" + __numbers + " )?)?(.+?) and (s?he|it) collapses!"]
-mob_fled = ["(:?The ?(" + __numbers + " )?)?(.+?) flees to the (.+?)\."] 
+# it_fled = ["The (" + numbers + " )?(?P<mob_name>.+?) flees to the (.+?)\."]
+mob_fled = ["(:?The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 
 
 attack_error = [
         r"You don't see that here\.",

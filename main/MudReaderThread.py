@@ -324,9 +324,9 @@ class MudReaderThread(threading.Thread):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 
             #### Check if we're dead ####
-            M_obj = re.search("Obvious exits: amethyst", text_buffer)
-            if(M_obj):
-                print ("Shucks anyhow")
+            M_obj = re.search("You are overwhelmed by (.+?)'s attack and you collapse!", text_buffer)
+            if M_obj:
+                magentaprint("Shucks anyhow")
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 self.character.DEAD = True
                 #self.stop()  # breaks program but allows me to see what happened

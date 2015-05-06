@@ -154,4 +154,13 @@ def key_with_max_val(d):
      k=list(d.keys())
      return k[v.index(max(v))],max(v)
 
+def flush_input():
+    try:
+        import sys, termios
+        termios.tcflush(sys.stdin, termios.TCIOFLUSH)
+    except ImportError:
+        import msvcrt
+        while msvcrt.kbhit():
+            msvcrt.getch()
+
 

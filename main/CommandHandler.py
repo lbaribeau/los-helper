@@ -64,8 +64,8 @@ class CommandHandler(object):
                 a.stop()
             self.telnetHandler.write('')
         # elif re.match('ki? [a-zA-Z]|kill? [a-zA-Z]', user_input):
-        elif re.match('ki? |kill?', user_input):
-            self.kill.execute(target)
+        elif re.match('^ki? |^kill?', user_input):
+            self.kill.execute(arg1)
             # self.ki(user_input)
         elif user_input.startswith('kk '):
             self.kill.start_thread(user_input[3:].strip())

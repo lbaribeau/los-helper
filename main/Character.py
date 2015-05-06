@@ -329,18 +329,17 @@ class Character(object):
     ] # giant spiders are hostile
     lvl8_monsters = [
         # There are 2 amethyst guards and 3 amber guards of this level
-        'owlbear', "hauler", "Farmer Malbon", "sonneteer", "Tag",
-        "mine manager", "Alaran the Market Manager", "artificer", "Dini Stonehammer",
+        "Alaran the Market Manager", "hauler", "Farmer Malbon", "sonneteer", "Tag",
+        "mine manager", "artificer", "Dini Stonehammer", "Olmer",
         "Thereze", "Farmer Viladin", "Rancher Renstone", "berzerker",
-        "dwarven hunter", "initiate", "Olmer", "berserk orc",
+        "dwarven hunter", "initiate", "berserk orc",
         "old knight", "dusty warrior",  # dusty blue        
+        'hedge knight', 'refinery supervisor', 'owlbear'
         "elven trader",   # pale blue
-        "Farmer Malbon", 'hedge knight', 'refinery supervisor'
-        #'mine manager'
     ]
     lvl9_monsters = [ # ~300 exp
-        "director", "Elder Barthrodue", 
-        "orc warrior", "Farmer Calmor", 'giant beetle'
+        "director", "Elder Barthrodue", "Farmer Calmor",
+        "orc warrior", 'giant beetle'
         'white knight' # respect the knights! (+1 difficulty)
     ]
     lvl10_monsters = [ # 350+
@@ -352,7 +351,7 @@ class Character(object):
     ]
     lvl11_monsters = [
         "dwarven adventurer",  # dusty blue
-        "enchantress", 'Brotain', 'minstrel', 'brutalizer'
+        "enchantress", 'Brotain', 'minstrel', 'brutalizer', 'Gregor'
     ]
     lvl12_monsters = [
         "barbarian shaman", "barbarian warrior", # grey

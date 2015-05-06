@@ -19,10 +19,14 @@ class SmartCombat(CombatObject):
         self.abilities = character._class.abilities.values()
         self._class = character._class
 
-        self.heal_abilities = [a for a in self.abilities if isinstance(a, HealAbility)]
-        # self.heal_abilities_that_fail = [a for a in self.abilities if isinstance(a, HealAbility) and isinstance(a, AbilityWithFailure)]
-        self.fast_combat_abilities = [a for a in self.abilities if isinstance(a, FastCombatAbility)]
-        self.combat_abilities = [a for a in self.abilities if isinstance(a, CombatAbility)]
+        # self.heal_abilities = [a for a in self.abilities if isinstance(a, HealAbility)]
+        # # self.heal_abilities_that_fail = [a for a in self.abilities if isinstance(a, HealAbility) and isinstance(a, AbilityWithFailure)]
+        # self.fast_combat_abilities = [a for a in self.abilities if isinstance(a, FastCombatAbility)]
+        # self.combat_abilities = [a for a in self.abilities if isinstance(a, CombatAbility)]
+        self.heal_abilities = character._class.heal_skills
+        self.buff_abilities = character._class.buff_skills
+        self.combat_abilities = character._class.combat_skills
+        self.fast_combat_abilities = character._class.fast_combat_skills
 
         spell_percent = max(character.earth, character.wind, character.fire, character.water)
         self.black_magic = character.pty < 7 or spell_percent >= 20

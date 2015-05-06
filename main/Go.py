@@ -21,11 +21,23 @@ class Go(Command):
     def __init__(self, telnetHandler):
         super().__init__(telnetHandler)
         self.open = Open(telnetHandler)
+        self.regex_cart.append(RegexStore.mob_fled)
 
     def notify(self, regex, M_obj):
-        super().notify(regex, M_obj)
         if regex is RegexStore.open_first:
             self.door = True
+        elif regex is RegexStore.obvious_exits and self.__class__._waiter_flag is True:
+            self.character.chase_mob = ""
+            self.character.chase_dir = ""
+        elif regex is RegexStore.mob_fled:
+            mob = M_obj.group('mob_name')
+            if mob in self.character.MONSTER_LIST:
+                self.character.MONSTER_LIST.remove(mob)
+            if mob in self.character.MOBS_ATTACKING:
+                self.character.MOBS_ATTACKING.remove(mob)
+            self.character.chase_mob = mob
+            self.character.chase_dir = M_obj.group('exit')
+        super().notify(regex, M_obj)
 
     def execute(self, target):
         self.door = False

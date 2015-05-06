@@ -137,7 +137,7 @@ class Berserk(BuffAbility):
     # classes = ["Bar", "Dar"]
     level = 1
 
-class HealAbility(object):
+class HealAbility(Ability):
     pass
     # @property 
     # def max_amount(self):
@@ -152,7 +152,7 @@ class Search(Ability):
     failure_regexes = [RegexStore.search_fail]
     level = 1
 
-class Meditate(HealAbility, Ability):
+class Meditate(HealAbility):
     command = "me"
     cooldown_after_success = 120
     cooldown_after_failure = 5
@@ -165,7 +165,7 @@ class Meditate(HealAbility, Ability):
     def set_level(self, level):
         self.max_amount = 18 + level
 
-class AestersTears(HealAbility, Ability):
+class AestersTears(HealAbility):
     command = "sin a"
     cooldown_after_success = 140  # Can flee/move/attack immediately
     max_amount = 16  # guessed

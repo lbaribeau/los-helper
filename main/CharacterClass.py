@@ -122,6 +122,11 @@ class CharacterClass(object):
             if level >= a.level:
                 self.abilities[a.command] = a(telnetHandler)
 
+        self.heal_skills = [a for a in self.abilities.values() if isinstance(a, HealAbility)]
+        self.buff_skills = [a for a in self.abilities.values() if isinstance(a, BuffAbility)]
+        self.combat_skills = [a for a in self.abilities.values() if isinstance(a, CombatAbility)]
+        self.fast_combat_skills = [a for a in self.abilities.values() if isinstance(a, FastCombatAbility)]
+
         # self.abilities.append(Search(telnetHandler))
         # self.abilities = [a for a in self.abilities if level >= a.level]
         # self.abilities = [c, a for c, a in self.abilities.items() if level >= a.level]

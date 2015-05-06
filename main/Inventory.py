@@ -30,7 +30,7 @@ class Inventory(BotReactionWithFlag):
         "spear", "bolos", 'javelin', "long bow", 
         "heathen amulet",
         "broad sword", "rapier",
-        "crossbow", "horn bow",  # Only keep these if missile is trained (todo)
+        #"crossbow", "horn bow",  # < 70% missile
         # armour
         "hard cap", "hard gloves", "hard boots", "padded hat",
         "mountain gloves", "mountain boots", "mountain boots with crampons",
@@ -40,14 +40,16 @@ class Inventory(BotReactionWithFlag):
         "studded leather gloves",
         # "chain mail armour", 
         'chain mail sleeves', 'chain mail leggings', 
-        'chain mail gloves', 'chain mail hood', 'chain mail boots', 
+        'chain mail gloves', # mill worker
+        'chain mail hood', 'chain mail boots', 
         "ring mail armour", "ring mail sleeves", "ring mail leggings", 
         "ring mail hood", "ring mail gauntlets", "leather collar", 
         "enchanted indigo cloak", "fine elven cloak", "light elven cloak",
         'lion charm', "poison ring",
         "iron shield", 'platinum ring', 'gold ring', 'steel ring', 'silver ring',
-        'granite rod', "miner's lamp"
+        'granite rod', "miner's lamp",
         #'steel mask' # the bot slowly collects these 
+        'large orcish sword'
     ]
 
     def __init__(self, mudReaderHandler, telnetHandler, character):
@@ -371,11 +373,11 @@ class Inventory(BotReactionWithFlag):
                     if "sets of" in item:
                         item = item.replace("sets of ", "")
                     item = item[len(number):]
-                    if item[len(item)-1] == 's':
-                        if item[len(item)-3:] == "ses" or item[len(item)-3:] == "xes":
-                            item = item[:len(item)-2]
-                        else:
-                            item = item[:len(item)-1]
+                    # if item[len(item)-1] == 's':
+                    if item.endswith('ses') or item.endswith('xes'):
+                        item = item[:len(item)-2]
+                    elif item.endswith('s'):
+                        item = item[:len(item)-1]
 
                         # mud_item = MudItem(item)
                         # mud_item.map()

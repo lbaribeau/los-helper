@@ -125,6 +125,9 @@ class Command(BotReactionWithFlag):
         self.__class__.timer = self.__class__.timer - self.cooldown_after_success + self.cooldown_after_failure
 
     def notify_please_wait(self):
+        # The problem with Please wait we can be notified even when it's from a different command.
+        # It's pretty tough to keep things straight,
+        # and it's pretty cool to use the info to deal with things properly.
         if not self.__class__._waiter_flag:
             self.result = 'Please wait ' + str(self.please_wait_time)
             self.__class__.timer = time.time() + self.please_wait_time  # Ehrm sometimes this makes it so you can't move

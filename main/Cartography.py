@@ -23,6 +23,7 @@ class Cartography(BotReactionWithFlag):
         s_numbered = " ?([\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)? ?"
         the = " ?(?:The |the )?" #named mobs have no "The/the"
         self.you_see_the = "You see" + the + s_numbered + "(.+?)\.\n\r(.+?)\n\r(.+?)\n\r(.+?(?:\.|!))"
+        self.mob_fled = RegexStore.mob_fled[0]
         self.mob_aura_check = the + s_numbered + "(.+?) glows with a (.+?) aura\."
         #This regex doesn't work for named mobs....
         self.blocked_path = RegexStore.blocked_path[0]
@@ -46,29 +47,13 @@ class Cartography(BotReactionWithFlag):
         self.store_list = "You may buy:\n((?:.+\n?)*)"
         self.store_item_list = "(?:[\s]*)(?:A |An |Some )?(.+?)(?:[\s]*)(?:(\(.\))?(?:[\s]*))?Cost: ([\d]*)" #well do a re.findall on the list above to iterate through, don't add this to the array below
 
-        self.regexes = [self.area,
-            self.too_dark,
-            self.blocked_path,
-            self.please_wait,
-            self.cant_go,
-            self.no_exit,
-            self.class_prohibited,
-            self.level_too_low,
-            self.not_invited,
-            self.not_open_during_day,
-            self.not_open_during_night,
-            self.no_items_allowed,
-            self.locked,
-            self.no_right,
-            self.not_authorized,
-            self.cannot_force,
-            self.not_here,
-            self.loot_blocked,
-            self.teleported_away,
-            self.in_tune,
-            self.you_see_the,
-            self.mob_aura_check,
-            self.store_list
+        self.regexes = [self.area, self.too_dark, self.blocked_path, self.please_wait,
+            self.cant_go, self.no_exit, self.class_prohibited, self.level_too_low,
+            self.not_invited, self.not_open_during_day, self.not_open_during_night,
+            self.no_items_allowed, self.locked, self.no_right, self.not_authorized,
+            self.cannot_force, self.not_here, self.loot_blocked, self.teleported_away,
+            self.in_tune, self.you_see_the, self.mob_aura_check, self.store_list,
+            self.mob_fled
         ]
 
         self.mudReaderHandler = mudReaderHandler
@@ -190,6 +175,7 @@ class Cartography(BotReactionWithFlag):
             level = M_obj.group(5)
 
             self.catalog_monster_bio(name, description, level)
+        
         elif (regex == self.mob_aura_check):
             name = M_obj.group(2)
             aura = M_obj.group(3)

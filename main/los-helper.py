@@ -120,8 +120,10 @@ class LosHelper(object):
         self.mudListenerThread.join(10)
         self.mudReaderThread.join(10)
         self.telnetHandler.close();
+        flush_input()
 
         try:
+            # Maybe it's better to remove on startup.
             os.remove("no.db")
         except OSError as e:
             if hasattr(e, 'errno') and e.errno != 2:
