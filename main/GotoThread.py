@@ -24,6 +24,7 @@ class GotoThread(BotThread):
             # magentaprint("I/O error({0}): {1}".format(e.errno, e.strerror))
             magentaprint("GotoThread caught exception: " + str(e))
             self.stop()
+            # raise e  # Not sure which exceptions we want to survive...
 
         if "amethyst" in directions:
             magentaprint(directions, False)

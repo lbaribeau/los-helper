@@ -1,5 +1,6 @@
 
 import re
+import time
 
 from misc_functions import magentaprint
 import RegexStore
@@ -7,7 +8,7 @@ from Command import Command
 
 class Go(Command):
     command = 'go'
-    success_regexes = [RegexStore.obvious_exits]
+    success_regexes = [RegexStore.area]
     error_regexes = [RegexStore.no_exit, RegexStore.go_where]
     failure_regexes = [
         RegexStore.blocked_path, RegexStore.cant_go, RegexStore.open_first,
@@ -17,19 +18,28 @@ class Go(Command):
         RegexStore.not_authorized, RegexStore.cannot_force
     ]
     cooldown_after_success = 0.34
+    # timer = 0
 
-    def __init__(self, telnetHandler):
+    def __init__(self, telnetHandler, character):
         super().__init__(telnetHandler)
         self.open = Open(telnetHandler)
         self.regex_cart.append(RegexStore.mob_fled)
+        self.character = character
+
+    def wait_for_flag(self):
+        self.cartography.__class__._waiter_flag = False
+        super().wait_for_flag()
+        if not self.cartography.__class__._waiter_flag:
+            self.cartography.wait_for_flag()
 
     def notify(self, regex, M_obj):
-        if regex is RegexStore.open_first:
+        if regex in RegexStore.open_first:
             self.door = True
-        elif regex is RegexStore.obvious_exits and self.__class__._waiter_flag is True:
+        elif regex in RegexStore.area and not self.__class__._waiter_flag:
             self.character.chase_mob = ""
             self.character.chase_dir = ""
-        elif regex is RegexStore.mob_fled:
+            # time.sleep(0.8)  # Hacked fix to get_heal_path being called before Cartography updates area_id
+        elif regex in RegexStore.mob_fled:
             mob = M_obj.group('mob_name')
             if mob in self.character.MONSTER_LIST:
                 self.character.MONSTER_LIST.remove(mob)
@@ -40,7 +50,17 @@ class Go(Command):
         super().notify(regex, M_obj)
 
     def execute(self, target):
+        magentaprint("Go.execute()")
         self.door = False
+        # while self.character.TRYING_TO_MOVE is True:
+        #     # Hack - wait for Cartography
+        #     time.sleep(0.05)
+
+        # if self.character.TRYING_TO_MOVE:
+        #     self.cartography.wait_for_flag()
+
+        self.character.TRYING_TO_MOVE = True
+        magentaprint("Go.execute() 2")
         super().execute(target)
 
     def super_execute(self, target):

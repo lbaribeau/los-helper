@@ -1,5 +1,8 @@
 
 import time
+from math import floor
+
+from misc_functions import magentaprint
 
 class Character(object):
 
@@ -132,7 +135,7 @@ class Character(object):
                 continue
         self.MONSTER_LIST.sort()
 
-    TRYING_TO_MOVE = True
+    TRYING_TO_MOVE = False
     EXIT_REGEX="self.character.EXIT_REGEX"
     AREA_ID = None
     LAST_DIRECTION = None
@@ -151,7 +154,12 @@ class Character(object):
     # def __init__(self):
     #     self.set_level_health_mana_variables()
     #     self.set_monster_kill_list()
-    
+
+    def process_info(self):
+        magentaprint("Character.process_info()")
+        self.hp_tick = floor((self.con-1)/3)  
+          # chapel adds 3
+
     def configure_equipment_and_spell_preferences(self):
         self.ARMOR_SLOTS = self._class.ARMOR_SLOTS
         self.WEAPON_SLOTS = self._class.WEAPON_SLOTS
@@ -175,26 +183,9 @@ class Character(object):
             else: #more testing needs to be done to determine what other levels are available
                 self.armor_level = 2
           
-    def get_ideal_mana(self):
-        ideal_mana = self.MAX_MANA
-
-        if not (self.BLACK_MAGIC): 
-            ideal_mana = self.MAX_MANA - 1
-
-        return ideal_mana
-
-        # self.character.MAX_MANA / 2
-        #     if self.character.BLACK_MAGIC: 
-        #         MANA_TO_GO = self.character.MAX_MANA 
-        #     else:
-        #         if self.character.MAX_MANA % 2 == 1:
-        #             MANA_TO_GO = self.character.MAX_MANA - 1 
-        #         else:                                        
-        #             MANA_TO_GO = self.character.MAX_MANA  
-
     def configure_health_and_mana_variables(self):
         if self.level <= 2:
-            self.HEALTH_TO_HEAL = 20
+            self.HEALTH_TO_HEAL = 19
             self.HEALTH_TO_FLEE = 8
             self.MAX_MANA = 3
             self.MANA_TO_ENGAGE = 3

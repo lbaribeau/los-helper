@@ -42,7 +42,7 @@ class Command(BotReactionWithFlag):
     # because this ain't the proper scope
     # X - actually... give it a shot!
 
-    timer = 0
+    timer = None
     # success_regexes = []
     failure_regexes = []
     error_regexes = []
@@ -94,7 +94,7 @@ class Command(BotReactionWithFlag):
         # The plan for cooldowns is set it up for success when the command is sent, 
         # but correct it when the text comes back and we know the result.
 
-        magentaprint(str(self) + " command notified, regex - " + regex[:30] + "...")
+        # magentaprint(str(self) + " command notified, regex - " + regex[:30] + "...")
 
         # if regex in itertools.chain(self.success_regexes):
         if regex in itertools.chain.from_iterable(self.success_regexes):
@@ -128,9 +128,29 @@ class Command(BotReactionWithFlag):
         # The problem with Please wait we can be notified even when it's from a different command.
         # It's pretty tough to keep things straight,
         # and it's pretty cool to use the info to deal with things properly.
+        # Better do a hard check if the amount it says to wait makes sense.
+        # It's particularly important for cast and kill, less so for abilities.
+        # Cast and kill could set their timer on startup while abilties shouldn't. 
         if not self.__class__._waiter_flag:
-            self.result = 'Please wait ' + str(self.please_wait_time)
-            self.__class__.timer = time.time() + self.please_wait_time  # Ehrm sometimes this makes it so you can't move
+            # if self.__class__.timer:
+            #     if abs(self.please_wait_time - self.wait_time()) < 2:
+            #         self.result = 'Please wait ' + str(self.please_wait_time)
+            #         self.__class__.timer = time.time() + self.please_wait_time  # Ehrm sometimes this makes it so you can't move
+            #         # This reduces the error caused by the known bug to 2 sec.
+            #         # It's not "complete" but 2 sec of error is much better.
+            #         # However, if timer is ever wrong, it will never be corrected with a Please wait.
+            #         # And the timer of an ability could get set wrong...
+            #         # we should implement the Time command as a corrective measure.
+            # else:
+            #     self.result = 'Please wait ' + str(self.please_wait_time)
+            #     self.__class__.timer = time.time() + self.please_wait_time  
+
+            magentaprint("Command.notify_please_wait() self.please_wait_time is " + str(self.please_wait_time) + ", self.wait_time is " + str(round(self.wait_time(), 1)))
+
+            if (self.__class__.timer and abs(self.please_wait_time - self.wait_time()) < 2) or not self.__class__.timer:
+            # if not self.__class__.timer or (self.__class__.timer and abs(self.please_wait_time - self.wait_time()) < 2):
+                self.result = 'Please wait ' + str(self.please_wait_time)
+                self.__class__.timer = time.time() + self.please_wait_time  # Ehrm sometimes this makes it so you can't move
 
     @classmethod
     def clear_timer(cls):
@@ -144,11 +164,20 @@ class Command(BotReactionWithFlag):
 
     @classmethod
     def up(cls):
-        return cls.timer < time.time()
+        return True if not cls.timer else cls.timer < time.time()
+        # return cls.timer < time.time()
 
     @classmethod
     def wait_time(cls):
-        return cls.timer - time.time()
+        # return cls.timer - time.time()
+        # return 0 if not cls.timer else cls.timer - time.time()
+        if not cls.timer:
+            # magentaprint(str(cls) + ".wait_time() returning 0 because timer is None.")
+            return 0
+        else:
+            # magentaprint(str(cls) + ".wait_time() returning " + str(round(max(0, cls.timer - time.time()), 1)) + ".")
+            return max(0, cls.timer - time.time())
+
 
     @classmethod
     def send(cls, telnetHandler, target=None):
@@ -167,7 +196,7 @@ class Command(BotReactionWithFlag):
             # We set the waiter flag here because the 'Please wait' notify uses it to 
             # know that the 'Please wait' corresponds to the current command
 
-        if cls.timer - time.time() < 3.0:
+        if cls.wait_time() < 3.0:
             # time.sleep(max(0, cls.timer - time.time()))
             cls.wait_until_ready()
         else:
@@ -206,7 +235,9 @@ class Command(BotReactionWithFlag):
     @classmethod
     def wait_until_ready(cls):
         # magentaprint(str(cls) + " wait_until_ready waiting " + str(max(0, cls.timer - time.time())))
-        time.sleep(max(0, cls.timer - time.time()))  # timer is a class variable
+        # return if not cls.timer else time.sleep(max(0, cls.wait_time()))
+        # time.sleep(max(0, cls.timer - time.time()))  # timer is a class variable
+        time.sleep(cls.wait_time())
 
 
 

@@ -3,6 +3,7 @@ from BotReactions import BotReactionWithFlag
 from misc_functions import *
 
 class Whois(BotReactionWithFlag):
+    good_MUD_timeout = 15.0
 
     def __init__(self, mudReaderHandler, telnetHandler, character):
         self.mudReaderHandler = mudReaderHandler

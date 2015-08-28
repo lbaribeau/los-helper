@@ -4,6 +4,7 @@ from threading import Thread
 import atexit 
 
 from misc_functions import magentaprint
+import RegexStore
 
 class CombatThread(threading.Thread):
 
@@ -16,7 +17,7 @@ class CombatThread(threading.Thread):
         self.target = target  # target should be chosen at run() time with an argument and non-inherited threading
         numbers = "(1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th|11th|12th|13th|14th|15th|16th|17th|18th|19th)" 
         self.it_collapsed = "Your attack overwhelms the (" + numbers + " )?(.+?) and (s?he|it) collapses!"
-        self.it_fled = "The (" + numbers + " )?(.+?) flees to the (.+?)\."
+        self.it_fled = RegexStore.it_fled[0]  # Oops... 
         self.regexes = [self.it_collapsed,
                         self.it_fled]
         # atexit.register(self.stop)

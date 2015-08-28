@@ -43,9 +43,10 @@ class GrindThread(BotThread):
         return
 
     def do_pre_go_actions(self):
-        self.rest_and_check_aura()
-        self.check_weapons()
-        self.check_armour()
+        # Why are we resting before every 'go'... (?!)
+        # self.rest_and_check_aura()
+        # self.check_weapons()
+        # self.check_armour()
         return
 
     def decide_where_to_go(self):
@@ -306,7 +307,6 @@ class GrindThread(BotThread):
   
         self.character.MOBS_JOINED_IN = [] 
         self.character.MOBS_ATTACKING = []
-        return
 
     def do_on_blocking_mob(self):
         self.engage_monster(self.character.GO_BLOCKING_MOB)
@@ -322,14 +322,15 @@ class GrindThread(BotThread):
 
     def do_post_go_actions(self):
         #here we would implement combat or whatever other other actions we want to do before we decide where to go again
-        if(self.ready_for_combat()):
+        if self.ready_for_combat():
             new_target = self.decide_which_mob_to_kill(self.character.MONSTER_LIST)
         else:
             new_target = ""
-            self.do_rest_hooks()
+            magentaprint("GrindThread.do_post_go_actions() calling do_rest_hooks()")
+            # Commented - I don't understand what do_rest_hooks is supposed to do at all...
+            # self.do_rest_hooks()
 
-            
-        while (new_target != "" and not self.is_stopping()):
+        while new_target != "" and not self.is_stopping():
             # MudReader maintains MONSTER_LIST pretty well by
             # adding and removing.  
             # It will not remove from MOBS_JOINED_IN nor 

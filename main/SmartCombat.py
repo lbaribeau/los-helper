@@ -2,22 +2,24 @@
 from threading import Thread
 
 from CombatObject import CombatObject
-from Ability import HealAbility, FastCombatAbility, CombatAbility, DanceOfTheCobra
+# from Ability import HealAbility, FastCombatAbility, CombatAbility, DanceOfTheCobra, Circle, Bash, Turn, Touch
+from Ability import *
 from misc_functions import magentaprint
-from Spells import rumble, hurt, burn, blister
+import Spells
+import RegexStore
 
 class SmartCombat(CombatObject):
     black_magic = True
 
-    def __init__(self, telnetHandler, kill, cast, character):
+    def __init__(self, telnetHandler, character, kill, cast, prompt):
         super().__init__(telnetHandler)
         self.thread = None
         self.target = None
         self.stopping = None
         self.kill = kill
         self.cast = cast
+        self.prompt = prompt
         self.abilities = character._class.abilities.values()
-        self._class = character._class
 
         # self.heal_abilities = [a for a in self.abilities if isinstance(a, HealAbility)]
         # # self.heal_abilities_that_fail = [a for a in self.abilities if isinstance(a, HealAbility) and isinstance(a, AbilityWithFailure)]
@@ -30,16 +32,20 @@ class SmartCombat(CombatObject):
 
         spell_percent = max(character.earth, character.wind, character.fire, character.water)
         self.black_magic = character.pty < 7 or spell_percent >= 20
-        self.favourite_spell = rumble if spell_percent == character.earth else \
-                               hurt if spell_percent == character.wind else \
-                               burn if spell_percent == character.fire else blister
+        self.favourite_spell = Spells.rumble if spell_percent == character.earth else \
+                               Spells.hurt if spell_percent == character.wind else \
+                               Spells.burn if spell_percent == character.fire else Spells.blister
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
+        self.character = character
+        self.regex_cart.append(RegexStore.prompt)
 
     def notify(self, regex, M_obj):
         # Notifications are used for healing
         # So SmartCombat needs to be registered/unregistered... or have a boolean for whether we're in combat.
         # I prefer the latter.
         super().notify(regex, M_obj)
+        if regex in RegexStore.prompt:
+            pass
 
     def stop(self):
         self.stopping = True
@@ -51,6 +57,7 @@ class SmartCombat(CombatObject):
     def start_thread(self, target, spell=None):
         self.target = target
         self.spell = spell if spell else self.favourite_spell
+        magentaprint("SmartCombat spell set to " + str(self.spell))
 
         # if self.thread is None or not self.thread.is_alive():
         if self.thread and self.thread.is_alive():
@@ -68,8 +75,7 @@ class SmartCombat(CombatObject):
         self.use_any_fast_combat_abilities()  # ie. Touch
 
         while not self.stopping:
-
-            if self.kill.timer <= self.cast.timer or self.kill.up() or not self.casting:
+            if self.kill.up() or self.kill.timer <= self.cast.timer or not self.casting:
                 self.kill.wait_until_ready()
                 if self.stopping: 
                     break 
@@ -78,14 +84,19 @@ class SmartCombat(CombatObject):
                 # time.sleep(0.1)  
             else:
                 self.cast.wait_until_ready()
-                if self.stopping or self.mob_charmed:
+                if self.stopping:
                     continue
-                if self.black_magic:
-                    self.cast.cast(self.spell, self.target)  # use cast.cast maybe
-                elif self.character.HEALTH <= self.character.maxHP - self.max_vigor:
-                    self.cast.cast('vi')
+                elif not self.black_magic and self.character.HEALTH <= self.character.maxHP - self.prompt.max_vigor() and self.character.MANA >= 2:
+                    self.cast.cast('v')
+                elif self.mob_charmed:
+                    time.sleep(min(0.2, self.kill.wait_time()))
+                elif self.black_magic and ((self.spell in Spells.lvl1 and self.character.MANA >= 3) or 
+                                           (self.spell in Spells.lvl2 and self.character.MANA >= 7)):  # Todo: add oom check
+                    self.cast.cast(self.spell, self.target) 
+                elif self.black_magic and self.spell in Spells.lvl2 and self.character.MANA < 7 and self.character.MANA >= 3:
+                    self.cast.cast(Spells.lvl1[Spells.lvl2.index(self.spell)], self.target)
                 else:
-                    self.kill.wait_until_ready()
+                    time.sleep(min(0.2, self.kill.wait_time()))
 
         magentaprint(str(self) + " ending run.")
 
@@ -93,6 +104,11 @@ class SmartCombat(CombatObject):
         for a in self.fast_combat_abilities:
             # magentaprint("SmartCombat cycling abilities: " + str(a))
             if a.up():
+
+                if isinstance(a, Turn):
+                    if self.target not in a.valid_targets:
+                        continue
+
                 magentaprint("Using " + str(a))
                 a.execute(self.target)
                 a.wait_for_flag()
@@ -118,11 +134,8 @@ class SmartCombat(CombatObject):
                         continue
                     else:
                         self.circled = True
-
-                if isinstance(a, Turn):
-                    if self.target not in a.valid_targets:
-                        continue
-
+                
+                magentaprint("SmartCombat executing " + str(a))
                 a.execute(self.target)
                 a.wait_for_flag()
                 return

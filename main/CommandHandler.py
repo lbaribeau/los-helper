@@ -15,6 +15,7 @@ import RegexStore
 from Go import Go
 from Spells import *
 from Ability import *
+from Prompt import Prompt
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -23,7 +24,7 @@ class CommandHandler(object):
         self.telnetHandler = telnetHandler
         self.inventory = character.inventory
 
-        self.smartCombat = SmartCombat(self.telnetHandler, Kill(telnetHandler), Cast(telnetHandler), self.character)
+        self.smartCombat = SmartCombat(self.telnetHandler, self.character, Kill(telnetHandler), Cast(telnetHandler), Prompt(character))
         # mudReaderHandler.register_reaction(self.smartCombat.kill)
         # mudReaderHandler.register_reaction(self.smartCombat.cast)
         # mudReaderHandler.register_reaction(self.smartCombat)
@@ -31,9 +32,10 @@ class CommandHandler(object):
         self.cast = self.smartCombat.cast
         mudReaderHandler.add_subscriber(self.kill)
         mudReaderHandler.add_subscriber(self.cast)
-        self.go = Go(telnetHandler)
+        self.go = Go(telnetHandler, character)
         mudReaderHandler.add_subscriber(self.go)
         mudReaderHandler.add_subscriber(self.smartCombat)
+        mudReaderHandler.add_subscriber(self.smartCombat.prompt)
 
     def process(self, user_input):
         """ This CommandHandler function is the filter for user input that
@@ -97,6 +99,7 @@ class CommandHandler(object):
         elif user_input.startswith('go ') or re.match(str(self.character.EXIT_REGEX), user_input):
             # self.go.super_execute(user_input)
             self.user_move(user_input)
+        # elif self.go.is_direction(user_input) or re.match(str(self.character.EXIT_REGEX), user_input):
         elif self.go.is_direction(user_input):
             # self.go.super_execute(user_input)
             self.user_move(user_input)
@@ -252,8 +255,8 @@ class CommandHandler(object):
         #     elif exit == "se":
         #         user_input = "se"
 
-        self.character.TRYING_TO_MOVE = True
-        self.character.LAST_DIRECTION = user_input.replace("go ", "")
+        # self.character.TRYING_TO_MOVE = True
+        self.character.LAST_DIRECTION = user_input.replace('go ', '')
         self.kill.stop()
         self.cast.stop()
         now = time.time()

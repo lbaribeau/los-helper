@@ -17,43 +17,44 @@ import RegexStore
 class Cartography(BotReactionWithFlag):
 
     def __init__(self, mudReaderHandler, commandHandler, character):
-        #           .=\n\r   EAT JUNK DATA (death,loginprompts,hptick)               Title       Description        Exit list               Players / Mobs / Signs / Items (optional)
-        self.area = "(?s)(?:(?:.+?Stone\.\n\r|.+?healed\.\n\r|.+?\]:\s+?)\n\r)?([A-Za-z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"
-        self.too_dark = "It's too dark to see\."
-        s_numbered = " ?([\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)? ?"
-        the = " ?(?:The |the )?" #named mobs have no "The/the"
-        self.you_see_the = "You see" + the + s_numbered + "(.+?)\.\n\r(.+?)\n\r(.+?)\n\r(.+?(?:\.|!))"
-        self.mob_fled = RegexStore.mob_fled[0]
-        self.mob_aura_check = the + s_numbered + "(.+?) glows with a (.+?) aura\."
-        #This regex doesn't work for named mobs....
-        self.blocked_path = RegexStore.blocked_path[0]
-        self.please_wait = RegexStore.please_wait[0]
-        self.cant_go = RegexStore.cant_go[0]
-        self.no_exit = RegexStore.no_exit[0]
-        self.class_prohibited = RegexStore.class_prohibited[0]
-        self.level_too_low = RegexStore.level_too_low[0]
-        self.not_invited = RegexStore.not_invited[0]
-        self.not_open_during_day = RegexStore.not_open_during_day[0]
-        self.not_open_during_night = RegexStore.not_open_during_night[0]
-        self.no_items_allowed = RegexStore.no_items_allowed[0]
-        self.locked = RegexStore.locked[0]
-        self.no_right = RegexStore.no_right[0]
-        self.in_tune = RegexStore.in_tune[0]
-        self.not_authorized = RegexStore.not_authorized[0]
-        self.cannot_force = RegexStore.cannot_force[0]
-        self.not_here = "You don't see that here\."
-        self.loot_blocked = "The" + s_numbered + " (.+?) won't let you take anything\."#The spiv won't let you take anything.
-        self.teleported_away = "### (.+?)'s body is teleported away to be healed\."
-        self.store_list = "You may buy:\n((?:.+\n?)*)"
+        # self.area = RegexStore.area[0]
+        # self.too_dark = RegexStore.too_dark[0]
+        # #s_numbered = " ?([\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)? ?"
+        # self.you_see_mob = RegexStore.you_see_mob[0]
+        # self.mob_fled = RegexStore.mob_fled[0]
+        # # self.mob_aura = the + s_numbered + "(.+?) glows with a (.+?) aura\."
+        # self.mob_aura = RegexStore.mob_aura[0]
+        # #This regex doesn't work for named mobs....
+        # self.blocked_path = RegexStore.blocked_path[0]
+        # self.please_wait = RegexStore.please_wait[0]
+        # self.cant_go = RegexStore.cant_go[0]
+        # self.no_exit = RegexStore.no_exit[0]
+        # self.class_prohibited = RegexStore.class_prohibited[0]
+        # self.level_too_low = RegexStore.level_too_low[0]
+        # self.not_invited = RegexStore.not_invited[0]
+        # self.not_open_during_day = RegexStore.not_open_during_day[0]
+        # self.not_open_during_night = RegexStore.not_open_during_night[0]
+        # self.no_items_allowed = RegexStore.no_items_allowed[0]
+        # self.locked = RegexStore.locked[0]
+        # self.no_right = RegexStore.no_right[0]
+        # self.in_tune = RegexStore.in_tune[0]
+        # self.not_authorized = RegexStore.not_authorized[0]
+        # self.cannot_force = RegexStore.cannot_force[0]
+        # self.not_here = RegexStore.not_here[0]
+        # # self.loot_blocked = "The" + s_numbered + " (.+?) won't let you take anything\."#The spiv won't let you take anything.
+        # self.loot_blocked = RegexStore.loot_blocked[0] 
+        # self.teleported = RegexStore.teleported[0]
+        # self.store_list = RegexStore.store_list[0]
         self.store_item_list = "(?:[\s]*)(?:A |An |Some )?(.+?)(?:[\s]*)(?:(\(.\))?(?:[\s]*))?Cost: ([\d]*)" #well do a re.findall on the list above to iterate through, don't add this to the array below
 
-        self.regexes = [self.area, self.too_dark, self.blocked_path, self.please_wait,
-            self.cant_go, self.no_exit, self.class_prohibited, self.level_too_low,
-            self.not_invited, self.not_open_during_day, self.not_open_during_night,
-            self.no_items_allowed, self.locked, self.no_right, self.not_authorized,
-            self.cannot_force, self.not_here, self.loot_blocked, self.teleported_away,
-            self.in_tune, self.you_see_the, self.mob_aura_check, self.store_list,
-            self.mob_fled
+        self.regex_cart = [
+            RegexStore.area, RegexStore.too_dark, RegexStore.blocked_path, RegexStore.please_wait,
+            RegexStore.cant_go, RegexStore.no_exit, RegexStore.class_prohibited, RegexStore.level_too_low,
+            RegexStore.not_invited, RegexStore.not_open_during_day, RegexStore.not_open_during_night,
+            RegexStore.no_items_allowed, RegexStore.locked, RegexStore.no_right, RegexStore.not_authorized,
+            RegexStore.cannot_force, RegexStore.not_here, RegexStore.loot_blocked, RegexStore.teleported,
+            RegexStore.in_tune, RegexStore.you_see_mob, RegexStore.mob_aura, RegexStore.store_list,
+            RegexStore.mob_fled
         ]
 
         self.mudReaderHandler = mudReaderHandler
@@ -63,11 +64,11 @@ class Cartography(BotReactionWithFlag):
         self.good_MUD_timeout = 1.5
         self.__waiter_flag = False
         self.__stopping = False
-        self.mudReaderHandler.register_reaction(self)
+        # self.mudReaderHandler.register_reaction(self)
+        mudReaderHandler.add_subscriber(self)
 
     def notify(self, regex, M_obj):
-        super().notify(regex, M_obj)
-        if regex == self.too_dark:            
+        if regex in RegexStore.too_dark:            
             if self.character.AREA_ID is not None:
                 guessed_area = self.guess_location(self.character.AREA_ID, self.character.LAST_DIRECTION)            
 
@@ -87,7 +88,10 @@ class Cartography(BotReactionWithFlag):
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
             self.character.CAN_SEE = False
             self.character.CONFUSED = False
-        elif regex == self.area:
+
+            if self.character.TRYING_TO_MOVE:  
+                self.character.TRYING_TO_MOVE = False
+        elif regex in RegexStore.area:
             matched_groups = M_obj.groups()
 
             # magentaprint(M_obj.group(0),False,False,True)
@@ -109,9 +113,8 @@ class Cartography(BotReactionWithFlag):
             self.character.CAN_SEE = True
             self.character.CONFUSED = False
 
-            if (self.character.TRYING_TO_MOVE): #we only want to map when user input to move has been registered
-                self.character.TRYING_TO_MOVE = False #we've moved so we're not trying anymore
-                if (exit_list is not []):
+            if self.character.TRYING_TO_MOVE:  
+                if exit_list is not []:
                     area_from = self.character.AREA_ID
                     direction_from = self.character.LAST_DIRECTION
                     cur_mud_area = self.character.MUD_AREA
@@ -119,56 +122,59 @@ class Cartography(BotReactionWithFlag):
                     # area = self.draw_map(area_title, area_description, exit_list)
                     self.character.MUD_AREA = mud_area
                     area = mud_area.area
-
                     self.catalog_monsters(area, monster_list)
-
                     self.character.AREA_ID = area.id
-
-                    # self.catalog_monsters(area, monster_list)
-
                     magentaprint("Cartography area match: " + str(area))
                 else:
                     self.character.AREA_ID = None
-        elif regex is self.blocked_path:
+                self.character.TRYING_TO_MOVE = False
+        elif regex in RegexStore.blocked_path:
             magentaprint("Cartography blocking mob name: " + str(M_obj.group('mob_name')))
             mob_name = M_obj.group('mob_name')
             self.character.GO_BLOCKING_MOB = mob_name
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
             self.catalog_path_blocker(mob_name)
-        elif regex == self.loot_blocked:
+            if self.character.TRYING_TO_MOVE:  
+                self.character.TRYING_TO_MOVE = False
+        elif regex in RegexStore.loot_blocked:
             loot_blocker = M_obj.group(2)
             magentaprint("loot blocker blocking pickup by: " + loot_blocker)
             self.catalog_loot_blocker(loot_blocker)
-        elif regex == self.please_wait:
-            magentaprint("Cartography: unsuccessful go| (please wait) dir="  + str(self.character.LAST_DIRECTION))  
-            magentaprint("Cartography: unsuccessful go| is trying to move?= "  + str(self.character.TRYING_TO_MOVE))  
-            if (self.character.TRYING_TO_MOVE):
+        elif regex in RegexStore.please_wait:
+            if self.character.TRYING_TO_MOVE:
+                magentaprint("Cartography: unsuccessful go| (please wait) dir="  + str(self.character.LAST_DIRECTION))  
+                magentaprint("Cartography: unsuccessful go| is trying to move?= "  + str(self.character.TRYING_TO_MOVE))  
                 self.character.GO_PLEASE_WAIT = True
                 self.character.SUCCESSFUL_GO = False
                 self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
-        elif regex == self.cant_go:
+                self.character.TRYING_TO_MOVE = False
+        elif regex in RegexStore.cant_go:
             # This one is pretty problematic... as it should never happen.
             # Means we're off course.
-            magentaprint("Cartography: unsuccessful go (can't go that way): " + str(self.character.LAST_DIRECTION))
-            self.set_area_exit_as_unusable(regex)
+            # (Erhm - never say never, this triggers all the time)
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
-        elif (regex == self.class_prohibited or
-                regex == self.level_too_low or
-                regex == self.not_invited or
-                regex == self.not_open_during_day or
-                regex == self.not_open_during_night or
-                regex == self.no_items_allowed or
-                regex == self.locked or
-                regex == self.no_right or
-                regex == self.not_authorized or
-                regex == self.cannot_force or
-                regex == self.in_tune):
+            self.set_area_exit_as_unusable(regex)  # TODO: Seems a little harsh... 
+            if self.character.TRYING_TO_MOVE:
+                magentaprint("Cartography: unsuccessful go (can't go that way): " + str(self.character.LAST_DIRECTION))
+                self.character.TRYING_TO_MOVE = False
+        elif (regex in RegexStore.class_prohibited or
+                regex in RegexStore.level_too_low or
+                regex in RegexStore.not_invited or
+                regex in RegexStore.not_open_during_day or
+                regex in RegexStore.not_open_during_night or
+                regex in RegexStore.no_items_allowed or
+                regex in RegexStore.locked or
+                regex in RegexStore.no_right or
+                regex in RegexStore.not_authorized or
+                regex in RegexStore.cannot_force or
+                regex in RegexStore.in_tune):
             self.set_area_exit_as_unusable(M_obj.group(0))
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
-        elif (regex == self.you_see_the):
+            self.character.TRYING_TO_MOVE = False
+        elif regex in RegexStore.you_see_mob:
             name = M_obj.group(2)
             description = M_obj.group(3)
             health = M_obj.group(4)
@@ -176,7 +182,7 @@ class Cartography(BotReactionWithFlag):
 
             self.catalog_monster_bio(name, description, level)
         
-        elif (regex == self.mob_aura_check):
+        elif regex in RegexStore.mob_aura:
             name = M_obj.group(2)
             aura = M_obj.group(3)
 
@@ -185,7 +191,7 @@ class Cartography(BotReactionWithFlag):
             #magentaprint("'" + name + "' => '" + aura + "'",False)
 
             self.catalog_monster_aura(name, aura)
-        elif (regex == self.not_here or regex == self.no_exit):
+        elif regex in RegexStore.not_here or regex in RegexStore.no_exit:
             #The state is confusion is usually caused by bad processing of good data (i.e. bugs)
             #The following is a set of work arounds to smoothe things out until those bugs are fixed
             if self.character.ACTIVELY_BOTTING:
@@ -200,18 +206,18 @@ class Cartography(BotReactionWithFlag):
                 else:
                     self.character.CONFUSED = True
 
-            if regex == self.no_exit:
+            if regex in RegexStore.no_exit:
                 self.character.GO_NO_EXIT = True
 
             self.character.SUCCESSFUL_GO = False
             self.character.TRYING_TO_MOVE = False
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
-        elif regex == self.teleported_away:
+        elif regex in RegexStore.teleported:
             if M_obj.group(1) == self.character.name:
                 self.character.DEAD = True
                 self.character.AREA_ID = 82
                 self.character.MUD_AREA = None
-        elif (regex == self.store_list):
+        elif regex in RegexStore.store_list:
             magentaprint("Cartography store_list is broken")
             # item_list = re.findall(self.store_item_list, M_obj.group(0))
             # #magentaprint("{" + M_obj.group(0) + "}", False)
@@ -225,6 +231,8 @@ class Cartography(BotReactionWithFlag):
             #     self.catalog_area_store_item(area_item, self.character.area)
         else:
             magentaprint("Cartography case missing for regex: " + str(regex))
+        magentaprint("Cartogarphy notify done.")
+        super().notify(regex, M_obj)
 
     #Used if it's dark and / or the current area doesn't appear to be findable
     def guess_location(self, area_from_id, direction_from):

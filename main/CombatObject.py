@@ -31,6 +31,7 @@ class CombatObject(object):
 
 class SimpleCombatObject(CombatObject, ThreadingMixin, Command):
     # This is for code used by Kill and Cast but not SmartCombat
+    timer = time() - 10
 
     def __init__(self, telnetHandler):
         Command.__init__(self, telnetHandler)

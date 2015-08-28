@@ -1,0 +1,15 @@
+checkout WorkingPath, run (fail bad db), copy in good db to main and data, run (works), quit, run (works), (no strange pyc's), rm -r __pycache__, rm __init__.py, run (breaks, MudMap line 56 KeyError 0)
+
+Revert changes (__init__.py and data/maplos.db), copy maplos.db to data, run (works), quit, run (works,) rm -r __pycache__, run (works)
+
+
+Alright... go Programming/los-helper (same branch), rm -r __pycache__, rm *.pyc, run (works)
+
+Checkout LDevMerge, rm -r __pycache__, rm *.pyc, run, "Unable to build a path to that"
+
+Checkout WorkingPath, rm -r __pycache__ *.pyc, (no such *.pyc), run (works)
+
+cd los-helper3/main, revert data/db, run (broken KeyError,) rm -r *.pyc __pycache__, still broken, copy db into main, rm -r __pycache__ *.pyc, still broken, rm -r data, rm -r __pycache__ *.pyc, run (broken KeyError), touch data, cp db into data, rm maplos.db (main), run (OOPS touch didn't make a directory,) rm data, mkdir data, cp db into data, run (broken,) cp data/maplos.db ., rm -r __pycache__ *.pyc, run (works), discard changes to data/maplos.db, rm pycs, run (broken!), cp maplos.db data, rm pycs, run (broken,) cp ../los-helper-flatADev/main/maplos.db ./maplos.db, cp ./maplos.db data/maplos.db, rm pycs, run (broken,).... hmph, tried both dbs out of flatADev, not workin...
+
+Repeating above steps.. can't reproduce "works"... except I skipped the weirdo 'touch data' step, it seemed so unlikely to be necessary.  Another difference is that surely at step "cp data/maplos.db .", they was a different db in main which is not how it was on the repeat.
+

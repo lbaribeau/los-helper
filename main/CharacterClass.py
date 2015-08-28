@@ -30,26 +30,28 @@ class CharacterClass(object):
 
         self.WEAPON_SLOTS = ["Wielded"]
 
+        self.mana_tick = 2
+
         if class_string == "Ass":
             self.lvl1_maxHP = 19 
             self.lvl1_maxMP = 2
-            abilities = [Backstab]
+            abilities = [ Backstab ]
         elif class_string == "Bar":
             self.lvl1_maxHP = 24 
             self.lvl1_maxMP = 0
             self.mana_tick = 0
-            self.mana_tick_chapel = 0
-            self.abilities = [ Bash(telnetHandler), Circle(telnetHandler), Berserk(telnetHandler) ]
+            # self.mana_tick_chapel = 0
+            abilities = [ Bash, Circle, Berserk ]
         elif class_string == "Cle":
             self.lvl1_maxHP = 16 
             self.lvl1_maxMP = 4
             self.mana_tick = 2
-            self.abilities = [ Pray(telnetHandler), Turn(telnetHandler) ]
+            abilities = [ Pray, Turn ]
             Cast.cooldown_after_success = 2
         elif class_string == "Fig":
             self.lvl1_maxHP = 22 
             self.lvl1_maxMP = 2
-            self.abilities = [ Bash(telnetHandler), Circle(telnetHandler) ]
+            abilities = [ Bash, Circle ]
             Cast.cooldown_after_success = 3
         elif class_string == "Brd":
             self.lvl1_maxHP = 15 
@@ -59,35 +61,36 @@ class CharacterClass(object):
         elif class_string == "Mag":
             self.lvl1_maxHP = 14 
             self.lvl1_maxMP = 5
+            self.mana_tick = 3  # unsure
             self.levelPath = [ ["out", "s", "w", "w", "w", "s", "e", "shop", "backroom", "portal"],
                           ["door", "out", "out", "w", "n", "e", "e", "e", "n", "cha"]]
             Cast.cooldown_after_success = 2
         elif class_string == "Pal":
             self.lvl1_maxHP = 19 
             self.lvl1_maxMP = 3
-            self.abilities = [ Pray(telnetHandler), Turn(telnetHandler) ]
-            Cast.cooldown_after_success = 3
+            abilities = [ Pray, Turn ]
+            Cast.cooldown_after_success = 4
         elif class_string == "Ran":
             self.lvl1_maxHP = 18 
             self.lvl1_maxMP = 3
             self.HP_gained_per_level = 6
             self.MP_gained_per_level = 3
             self.mana_tick = 2 
-            self.mana_tick_chapel = 4 
+            # self.mana_tick_chapel = 4  # Assume chapel gives +2 mana tick
             abilities = [ Haste ]
             Cast.cooldown_after_success = 5
             self.WEAPON_SLOTS.append("Second") 
         elif class_string == "Thi":
             self.lvl1_maxHP = 18 
             self.lvl1_maxMP = 3
-            self.abilities = [ Backstab(telnetHandler), Steal(telnetHandler) ]
+            abilities = [ Backstab, Steal ]
             Cast.cooldown_after_success = 3
         elif class_string == "Mon":
             self.lvl1_maxHP = 17 
             self.lvl1_maxMP = 3
             self.HP_gained_per_level = 6
             self.MP_gained_per_level = 3
-            self.abilities = [ Meditate(telnetHandler), Touch(telnetHandler) ]
+            abilities = [ Meditate, Touch ]
             Cast.cooldown_after_success = 3
             # self.heal_skills.extend([ClassSkillReaction(mudReaderHandler, "Meditate",
             #                         SkillTimer("You feel at one with the universe\.", 110),
@@ -103,7 +106,7 @@ class CharacterClass(object):
         elif class_string == "Dru":
             self.lvl1_maxHP = 15
             self.lvl1_maxMP = 4
-            self.abilities = [ Barkskin(telnetHandler) ]
+            abilities = [ Barkskin ]
             Cast.cooldown_after_success = 2
         elif class_string == "Alc":
             self.lvl1_maxHP = 15 
@@ -111,7 +114,7 @@ class CharacterClass(object):
         elif class_string == "Dar":
             self.lvl1_maxHP = 19 
             self.lvl1_maxMP = 4
-            self.abilities = [ Berserk(telnetHandler), Wither(telnetHandler) ]
+            abilities = [ Berserk, Wither ]
             Cast.cooldown_after_success = 3
         else:
             magentaprint("CharacterClass error: could not recognize class string.")

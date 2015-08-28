@@ -187,8 +187,20 @@ class MudReaderThread(threading.Thread):
             ###### Now match the buffer with some REs  #######
             text_buffer_trunc = 0
             
-            #### Bot Reactions ####
+            # MudEvents
+            # Regexes with lists of objects to notify.
+            for key, m in self.mud_events.items():
+                for r in m.regexes:
+                    M_obj = re.search(r, text_buffer)
+                    if M_obj is not None:
+                        for s in m.subscribers:
+                            s.notify(r, M_obj)
+                        text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+                        # import RegexStore
+                        # if r in RegexStore.haste_fail or r in RegexStore.hastened or r in RegexStore.already_hastened:
+                        #     magentaprint("MudReaderThread: " + str(r))
 
+            # Bot Reactions
             # TODO: create a flag that stops other threads from writing the list
             # while I'm in here.  (could cause a missed reaction)
             reactions_to_delete = []
@@ -232,19 +244,6 @@ class MudReaderThread(threading.Thread):
             #     magentaprint("MudReaderThread removed " + str(reaction_counter) + 
             #                  " reactions," + str(len(self.BotReactionList)) + 
             #                  " reactions left.")
-
-            # MudEvents
-            # Regexes with lists of objects to notify.
-            for key, m in self.mud_events.items():
-                for r in m.regexes:
-                    M_obj = re.search(r, text_buffer)
-                    if M_obj is not None:
-                        for s in m.subscribers:
-                            s.notify(r, M_obj)
-                        text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                        # import RegexStore
-                        # if r in RegexStore.haste_fail or r in RegexStore.hastened or r in RegexStore.already_hastened:
-                        #     magentaprint("MudReaderThread: " + str(r))
 
             #TODO: continue with MAXHP, MAXMP, GOLD, EXP, LEVELGOLD, LEVELEXP, etc.
             M_obj = re.search("Exp : (\d+)",text_buffer)

@@ -1,0 +1,14 @@
+Look class
+
+Remember to handle looking at people
+
+You see Derp the Human Brother\.
+He is in general good health\.
+Ob body:   a dress
+On legs:   some shorts
+On neck:   a furry cloak
+On neck:   a furry cloak
+On hands:  some cloth gloves
+On head:   a furry hat
+On feet:   some slippers
+On face:   some spectacles

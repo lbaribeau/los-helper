@@ -75,7 +75,7 @@ class MudMap(object):
             i += 1
 
         #magentaprint("MudMap: Node path: " + str(node_path), False)
-        #magentaprint("MudMap: Edge path: " + str(edge_path), False)
+        self.magentaprint("MudMap.get_path() returning: " + str(edge_path))
 
         return edge_path
 

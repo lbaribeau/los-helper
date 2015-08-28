@@ -49,7 +49,8 @@ class Inventory(BotReactionWithFlag):
         "iron shield", 'platinum ring', 'gold ring', 'steel ring', 'silver ring',
         'granite rod', "miner's lamp",
         #'steel mask' # the bot slowly collects these 
-        'large orcish sword'
+        'large orcish sword',
+        "small mace", "studded leather leggings"
     ]
 
     def __init__(self, mudReaderHandler, telnetHandler, character):
@@ -77,6 +78,7 @@ class Inventory(BotReactionWithFlag):
         self.weapon_breaks = "Your (.+?) breaks and you have to remove it\."
         self.armor_breaks = "Your (.+?) fell apart\."
         self.current_equipment = "You see (.+?) (?:the .+?)\.\n?\r?(?:(?:.+?\.\n?\r?)+)?((?:.+?:.+\n?\r?)+)"
+        self.no_inventory = "You currently have no carried inventory\."
         self.wearing = "\n?\r?(?:On )?(.+?):[\s]*(?:a |an |some )(.+)"
 
         self.regexes = [self.you_have, self.you_get, self.wont_buy, self.wont_buy2, self.sold, 
@@ -84,7 +86,7 @@ class Inventory(BotReactionWithFlag):
             self.not_empty, self.you_wear, self.nothing_to_wear, self.you_remove,  
             self.nothing_to_remove, self.you_wield, self.you_give, self.bought,
             self.you_put_in_bag, self.gave_you, self.you_hold, self.weapon_breaks,
-            self.armor_breaks, self.current_equipment]
+            self.armor_breaks, self.current_equipment, self.no_inventory]
 
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler

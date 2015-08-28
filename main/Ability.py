@@ -103,12 +103,12 @@ class Haste(BuffAbility):
 
 class Pray(BuffAbility):
     command = "pra"
-    cooldown_after_success = 610
+    cooldown_after_success = 600
     cooldown_after_failure = 10  # can flee
-    success_regexes = [r"You feel extremely pious\."]
-    failure_regexes = [r"Your prayers were not answered\."]
-    already_buffed_regex = "You've already prayed\."
-    wear_off_regex = "You feel less pious\."
+    success_regexes = [RegexStore.prayers_answered, RegexStore.already_prayed] # [r"You feel extremely pious\."]
+    failure_regexes = [RegexStore.not_answered] # [r"Your prayers were not answered\."]
+    already_buffed_regex = RegexStore.already_prayed
+    wear_off_regex = RegexStore.feel_less_pious #"You feel less pious\."
     lasts = 310
     # self.classes = ["Cle", "Pal"]
     level = 1
@@ -118,10 +118,10 @@ class Barkskin(BuffAbility):
     command = "bar" 
     cooldown_after_success = 600  # can flee, confirmed 10 minutes
     cooldown_after_failure = 10  # can flee
-    success_regexes = [r"You feel your skin thickening and hardening\."]
-    failure_regexes = [r"Your attempt to invoke barkskin failed\."]
-    already_buffed_regex = "Your skin is already hardened\."
-    wear_off_regex = "Your skin softens\."
+    success_regexes = [RegexStore.skin_thickening, RegexStore.already_hardened]
+    failure_regexes = [RegexStore.barkskin_failed]
+    already_buffed_regex = RegexStore.already_hardened
+    wear_off_regex = RegexStore.skin_softens
     lasts = 120
     # classes = ["Dru"]
     level = 1
@@ -130,9 +130,10 @@ class Berserk(BuffAbility):
     command = "ber"
     cooldown_after_success = 600
     cooldown_after_failure = 20 
-    success_regexes = [r"A red mist coats your vision, your heart pounds harder \. \. \."]
-    failure_regexes = [r"You fail to work yourself into a frenzy\."]
-    wear_off_regex = "The red mist fades from your sight\."  # Neato dark blue colored text
+    success_regexes = [RegexStore.red_mist, RegexStore.already_berserk]
+    failure_regexes = [RegexStore.berserk_fail]
+    already_buffed_regex = RegexStore.already_berserk
+    wear_off_regex =  RegexStore.red_mist_fades
     lasts = 60
     # classes = ["Bar", "Dar"]
     level = 1
@@ -157,8 +158,8 @@ class Meditate(HealAbility):
     cooldown_after_success = 120
     cooldown_after_failure = 5
     max_amount = 26 #guess
-    success_regexes = [r"You feel at one with universe\."]
-    failure_regexes = [r"Your spirit is not at peace\."]
+    success_regexes = [RegexStore.meditate]
+    failure_regexes = [RegexStore.not_at_peace]
     # classes = ["Mon"]
     level = 4
 
@@ -185,6 +186,7 @@ class DanceOfTheCobra(FastCombatAbility):
     success_regexes = [RegexStore.dance_of_the_cobra]
     # failure_regex = r"The Dance of the Snake has no effect on the (.+?)\.\r\n"  # and you can hit right away.
     failure_regexes = [RegexStore.dance_of_the_cobra_fail]
+    error_regexes = [RegexStore.dance_whom]
     # classes = ["Brd"]
     level = 1  # guessed
     # magentaprint("Dance of the Cobra regexes before calling super: " + str(self.regexes))
@@ -197,20 +199,23 @@ class Turn(FastCombatAbility):
     cooldown_after_success = 30  # can attack immediately, but flee/move is 3 seconds later
     cooldown_after_failure = 30  # can attack immediately, but flee/move is 3 seconds later
                                  # (Said Please wait 1 sec THEN Please wait 2 sec)
-    success_regexes = [r"You turned the (.+?) for (.+?) damage\."  ]
-    failure_regexes = [r"You failed to turn the (.+?)\."]
+    success_regexes = [RegexStore.turn]
+    failure_regexes = [RegexStore.turn_fail]
+    error_regexes = [RegexStore.turn_living_target]
     # classes = ["Cle", "Pal"]
     level = 1
 
     # TODO: needs work:
-    valid_targets = ["zombie", "skeleton", "ghast", "poltergeist", "geist", "ghoul"]
+    valid_targets = ['zombie', 'skeleton', 'ghast', 'poltergeist', 'geist', 'ghoul', 'shadow lich', 
+        'shadowed huorn']
 
 class Touch(CombatAbility):
     command = "to"
     cooldown_after_success = 270
     cooldown_after_failure = 270
-    success_regexes = [r"You touched the (.+?) for (.+?) damage\."]
-    failure_regexes = [r"You failed to harm the (.+?)\."]
+    success_regexes = [RegexStore.touch]
+    failure_regexes = [RegexStore.touch_fail]
+    error_regexes = [RegexStore.touch_whom]
     # classes = ["Mon"]
     level = 4
 
@@ -218,8 +223,9 @@ class Wither(CombatAbility):
     command = "withe"
     cooldown_after_success = 300  # Guessed out of the blue
     cooldown_after_failure = 10  # can't attack/flee/move immediately
-    success_regexes = [r" the (.+?) for (.+?) damage\."]  # TODO: Obviously needs work
-    failure_regexes = [r"Your withering touch did not hurt the (\.?)\."]
+    success_regexes = [RegexStore.wither]  # regex needs work
+    failure_regexes = [RegexStore.wither_fail]
+    error_regexes = [RegexStore.wither_whom]
     # classes = ["Dar"]
     level = 1
 
@@ -227,8 +233,9 @@ class Bash(CombatAbility):
     command = "bas"
     cooldown_after_success = 3
     cooldown_after_failure = 3
-    success_regexes = [r"You bash the (.+?), confusing them\."]
-    failure_regexes = [r"You failed to bash it\."]
+    success_regexes = [RegexStore.bash]
+    failure_regexes = [RegexStore.bash_fail]
+    error_regexes = [RegexStore.bash_whom]
     # classes = ["Bar", "Fig"]
     level = 1
 
@@ -236,8 +243,8 @@ class Circle(CombatAbility):
     command = "ci"
     cooldown_after_success = 3
     cooldown_after_failure = 3
-    success_regexes = [r"You circle the (.+?)\."]
-    failure_regexes = [r"You failed to circle it\."]
+    success_regexes = [RegexStore.circle]
+    failure_regexes = [RegexStore.circle_fail]
     # classes = ["Bar", "Fig"]
     level = 1
 

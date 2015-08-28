@@ -52,7 +52,6 @@ from BotReactions import *
 from TelnetHandler import TelnetHandler 
 from FakeTelnetHandler import FakeTelnetHandler 
 from Quit import Quit
-from Prompt import Prompt
 
 from Database import *
 from MudMap import *
@@ -103,6 +102,9 @@ class LosHelper(object):
 
         self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
         self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
+        self.commandHandler.go.cartography = self.cartography  
+            # Cartography shouldn't need commandHandler to fix dependencies
+        self.character.TRYING_TO_MOVE = True  # required for mapping (Hack - look into this - better init for Goto)
         self.telnetHandler.write('l')  # Sets area id for mapping
         self.commandHandler.go.wait_for_flag()
         self.check_inventory()
@@ -242,8 +244,6 @@ class LosHelper(object):
 
     def initialize_reactions(self):
         self.mudReaderHandler.register_reaction(WieldReaction(self.character, self.telnetHandler))
-        self.mudReaderHandler.add_subscriber(Prompt(self.character))
-        magentaprint("LosHelper prompt object:" + str(Prompt))
 
     def check_inventory(self):
         # This prints the inventory.  I like that.  
@@ -269,6 +269,8 @@ class LosHelper(object):
     def check_info(self):
         info = Info(self.mudReaderHandler, self.telnetHandler, self.character)
         info.execute()
+        magentaprint("LosHelper.check_info() calling character.process_info()")
+        self.character.process_info()
 
     def start_grind(self, user_input):
         # if not self.bot_ready:
@@ -285,8 +287,8 @@ class LosHelper(object):
         if self.botThread != None and self.botThread.is_alive():
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
-            # self.botThread = SmartGrindThread(self.character, 
-            self.botThread = GrindThread(self.character, 
+            self.botThread = SmartGrindThread(self.character, 
+            # self.botThread = GrindThread(self.character, 
                                               self.commandHandler, 
                                               self.mudReaderHandler,
                                               self.mud_map,

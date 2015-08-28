@@ -77,6 +77,7 @@ class Area(NamedModel):
                 self.id = area.id
                 self.is_always_dark = area.is_always_dark
                 self.is_dark_at_night = area.is_dark_at_night
+                self.is_restorative = area.is_restorative
                 break
 
         #print ("matching areas: " + str(matching_areas) + " is new mapping: " + str(is_new_mapping))

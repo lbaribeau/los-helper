@@ -7,7 +7,9 @@ import random, math
 
 class SmartGrindThread(GrindThread):
     smart_target_list = []
-
+    # chapel_aid = 2
+    # pawnshop_aid = 130
+    # tip_aid = 266
 
     def __init__(self, character, commandHandler, mudReaderHandler, mud_map, starting_path=0): 
         super().__init__(character, commandHandler, mudReaderHandler, mud_map, starting_path)
@@ -17,7 +19,7 @@ class SmartGrindThread(GrindThread):
         self.cur_target = None
         self.cur_area_id = self.character.AREA_ID
 
-        self.low_level = int(math.ceil(self.character.level / 2)) - 2
+        self.low_level = min(int(math.ceil(self.character.level / 2)) - 2, 1)
         self.high_level = int(math.ceil(self.character.level / 2))# + 1 #risky business
         
         self.low_aura = 0 #how evil the targets are
@@ -38,7 +40,11 @@ class SmartGrindThread(GrindThread):
         if len(self.character.MONSTER_KILL_LIST) == 0:
             self.get_targets()
 
-        return
+
+    def do_on_successful_go(self):
+        super().do_on_successful_go()
+        self.cartography
+
 
     def check_weapons(self):
         weapons_equipped = True
@@ -84,13 +90,14 @@ class SmartGrindThread(GrindThread):
         return
 
     def decide_where_to_go(self):
+        magentaprint("SmartGrindThread.decide_where_to_go()")
         self.cur_area_id = self.character.AREA_ID
 
         if self.is_actually_dumb:
             if self.cur_area_id != 45:
-                self.direction_list = ["areaid45"]
+                self.direction_list = ["areaid2"]
 
-            return super(SmartGrindThread, self).decide_where_to_go()
+            return super().decide_where_to_go()
         else:
             
             directions = []
@@ -103,9 +110,10 @@ class SmartGrindThread(GrindThread):
             if len(sellable) > self.loot_threshold:
                 # magentaprint("Selling", False)
                 directions = self.get_vendor_paths()
-            elif(self.ready_for_combat()):
+            elif self.ready_for_combat():
                 directions = self.get_grind_path()
             else:
+                magentaprint("SmartGrindThread.decide_where_to_go() not ready for combat.")
                 directions = self.get_heal_path()
 
             return directions
@@ -132,7 +140,7 @@ class SmartGrindThread(GrindThread):
         for area_id in self.cur_target.locations:
             try:
                 if from_path == -1:
-                    paths += (self.mud_map.get_path(self.cur_area_id, area_id))
+                    paths += (self.mud_map.get_path(self.character.AREA_ID, area_id))
                 else:
                     paths += (self.mud_map.get_path(from_path, area_id))
             except Exception:
@@ -162,30 +170,34 @@ class SmartGrindThread(GrindThread):
         return directions
 
     def get_heal_path(self, from_path=-1):
-        directions = []
+        magentaprint("SmartGrindThread.get_heal_path() from_path is " + str(from_path) + ", character.AREA_ID is " + str(self.character.AREA_ID) + ".")
         if self.is_actually_dumb:
-            directions = ["areaid45"]
+            return ["areaid2"]
         else:
             try:
                 if from_path == -1:
-                    directions = get_shortest_array(self.mud_map.get_paths_to_nearest_restorative_area(self.cur_area_id))
+                    paths = self.mud_map.get_paths_to_nearest_restorative_area(self.character.AREA_ID)
                 else:
-                    directions = get_shortest_array(self.mud_map.get_paths_to_nearest_restorative_area(from_path))
+                    paths = self.mud_map.get_paths_to_nearest_restorative_area(from_path)
             except Exception as e:
                 #not a good situation - we can't find a way to the chapel from wherever we are
                 #therefore we should just sit and wait here until we can go on the warpath again
-                magentaprint("Exception getting heal path - resting here...", False)
+                magentaprint("Exception getting heal path.") 
                 magentaprint(e, False)
                 raise e
-                self.rest_and_check_aura()
 
-        return directions
+            if not paths:
+                magentaprint("SmartGrindThread.get_heal_path() error... no exception but no path returned... make sure the DB is accessible.")
+                self.rest_and_check_aura()
+                return []
+            else:
+                return get_shortest_array(paths)
 
     def get_vendor_paths(self):
         directions = []
 
         directions.extend(self.get_pawnshop_path())
-        directions.extend(self.get_tip_path(336))
+        directions.extend(self.get_tip_path(130))
 
         return directions
 
@@ -193,9 +205,10 @@ class SmartGrindThread(GrindThread):
         directions = []
 
         try:
-            directions = self.mud_map.get_path(self.cur_area_id, 336)
+            directions = self.mud_map.get_path(self.character.AREA_ID, 130)
             directions.append("sell_items")
-        except Exception:
+        except Exception as e:
+            magentaprint("SmartGrind.get_pawnshop_path() exception.")
             #not a good situation - we can't find a way to the chapel from wherever we are
             #therefore we should just sit and wait here until we can go on the warpath again
             self.get_heal_path()
@@ -207,19 +220,22 @@ class SmartGrindThread(GrindThread):
 
         try:
             if from_path == -1:
-                directions = self.mud_map.get_path(self.cur_area_id, 160)
+                directions = self.mud_map.get_path(self.character.AREA_ID, 266)
             else:
-                directions = self.mud_map.get_path(from_path, 160)
+                directions = self.mud_map.get_path(from_path, 266)
             directions.append("drop_items")
         except Exception:
-            #not a good situation - we can't find a way to the chapel from wherever we are
-            #therefore we should just sit and wait here until we can go on the warpath again
+            magentaprint("SmartGrind.get_tip_path() exception.")
             self.get_heal_path()
 
         return directions
 
     def get_targets(self):
+        magentaprint("SmartGrind getting targets - parameters - {0} {1} {2} {3}".format(self.low_level, self.high_level, self.low_aura, self.high_aura))
         target_list = MudMob.get_mobs_by_level_and_aura_ranges(self.low_level, self.high_level, self.low_aura, self.high_aura)
+
+        # if not target_list:
+
 
         self.character.MONSTER_KILL_LIST = []
 
@@ -245,28 +261,28 @@ class SmartGrindThread(GrindThread):
         magentaprint("Picking new target: " + next_target.to_string())
 
     def aura_updated_hook(self):
-        self.low_aura = 6
-        self.high_aura = 7
         # self.low_level = int(math.ceil(self.character.level / 2)) - 2
-
-
         # magentaprint("Current Aura Scale: " + str(self.character.AURA_SCALE), False)
         # magentaprint("Preferred Aura Scale: " + str(self.character.AURA_PREFERRED_SCALE), False)
 
-        #if character is too evil
-        if self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:
+        if self.character.level < 4:
+            self.low_aura = 0
+            self.high_aura = 12
+        elif self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:
+            # Too evil
             # self.low_level = 2
             self.low_aura = 0
             self.high_aura = 6
-        #if character is too good
         elif self.character.AURA_SCALE > self.character.AURA_PREFERRED_SCALE:
+            # Too good
             # self.low_level = 2
             self.low_aura = 8
             self.high_aura = 15
-
+        else:
+            self.low_aura = 6
+            self.high_aura = 7
 
         self.get_targets()
-
 
     def do_go_hooks(self, exit_str):
         if (re.match("dobuy.+?", exit_str)):
@@ -283,12 +299,15 @@ class SmartGrindThread(GrindThread):
 
         return super(SmartGrindThread, self).do_go_hooks(exit_str)
 
-
     def do_rest_hooks(self):
+        pass
+        # Erhm this is causing me problems.
+
         #this sets us on a path towards the chapel if possible - if not this will return an empty 
         #array that causes the bot to sit and wait to heal
-        if not self.is_actually_dumb:
-            self.direction_list = self.get_heal_path(self.character.AREA_ID)
+        # magentaprint("SmartGrindThread.do_rest_hooks()")
+        # if not self.is_actually_dumb:
+        #     self.direction_list = self.get_heal_path(self.character.AREA_ID)
 
     def do_flee_hook(self):
         unsafe_area = self.character.AREA_ID
@@ -297,7 +316,7 @@ class SmartGrindThread(GrindThread):
         self.direction_list = self.get_heal_path(self.character.AREA_ID)
 
     def do_on_go_no_exit(self):
-        if (self.no_exit_count > 10):
+        if self.no_exit_count > 10:
             magentaprint("Walking back to the chapel")
             self.direction_list = self.get_heal_path(self.character.AREA_ID)
             self.no_exit_count = 0
@@ -310,10 +329,11 @@ class SmartGrindThread(GrindThread):
         self.go_rest_if_not_ready()
 
     def go_rest_if_not_ready(self):
-        if not (self.ready_for_combat()):
+        magentaprint("SmartGrindThread.go_rest_if_not_ready()")
+        if not self.ready_for_combat():
             directions = self.get_heal_path()
             
-            if (len(directions) == 0):
+            if len(directions) == 0:
                 self.rest_and_check_aura()        
 
 class SmartGrindTarget(object):
