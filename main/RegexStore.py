@@ -6,34 +6,6 @@ you_have = ["You have (.+?)\."]
 found_exit = [r"You found an exit: (.+?)\."]
 search_fail = [r"You didn't find anything\."]
 
-# Equipment
-you_arent_wearing_anything = [r"You aren't wearing anything\."]
-# on_body = [r"On body:   (.+?)\n\r"]
-# on_arms = [r"On arms:   (.+?)\n\r"]
-# on_legs = [r"On legs:   (.+?)\n\r"]
-# on_neck = [r"On neck:   (.+?)\n\r(On neck:   (?P<second_neck>.+?)\n\r)?"]
-# on_hands= [r"On hands:  (.+?)\n\r"]
-# on_head = [r"On head:   (.+?)\n\r"]
-# on_feet = [r"On feet:   (.+?)\n\r"]
-# on_finger = [r"On finger: (.+?)\n\r"]
-# shield  = [r"Shield:    (.+?)\n\r"]
-# wielded = [r"Wielded:   (.+?)\n\r"]
-# seconded= [r"Seconded:  (.+?)\n\r"]
-# holding = [r"Holding:   (.+?)\n\r"]
-eq = [r"(On body:   (?P<body>.+?)\n\r)?" \
-      r"(On arms:   (?P<arms>.+?)\n\r)?" \
-      r"(On legs:   (?P<legs>.+?)\n\r)?" \
-      r"(On neck:   (?P<neck>.+?)\n\r)?" \
-      r"(On neck:   (?P<second_neck>.+?)\n\r)?" \
-      r"(On hands:   (?P<hands>.+?)\n\r)?" \
-      r"(On head:   (?P<head>.+?)\n\r)?" \
-      r"(On feet:   (?P<feet>.+?)\n\r)?" \
-      r"(On finger: (?P<finger>.+?)){0,8}" \
-      r"(Wielded:   (?P<weapon>.+?))?" \
-      r"(Seconded:  (?P<seconded>.+?))?" \
-      r"(Holding:   (?P<holding>.+?))"
-]  # m.group('holding') returns None with no error if the holding group didn't occur.
-
 please_wait = [r"Please wait (\d+) more seconds?\."]
 please_wait2 = [r"Please wait (\d+):(\d+) more minutes"]
 
@@ -214,11 +186,130 @@ cast_error = [
     r"They are not here\.",
     r"Cast at whom\?" 
 ]
+# spells = [(
+#     r"\n\r"
+#     r"/=== Combat Spells ======================================================\\\s*\n\r"
+#     r"(?P<black>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+#     r"/================== Healing and Protection ==============================\\\s*\n\r"
+#     r"(?P<white>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+#     r"/======================================= Miscellaneous ==================\\\s*\n\r"
+#     r"(?P<misc>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+#     r"/===================================================== Running Spells ===\\\s*\n\r"
+#     r"(?P<buffs>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+#     r"\\========================================================================/\s*\n\r"
+# )]
+spells = [(
+    r"\n\r"
+    r"/=== Combat Spells ======================================================\\\s+"
+    # r"(?P<black>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+    # r"\|(?P<none>\s+none\s+\|)\s*?\n\r"
+    r"\|\s+none\s+\|\s+"
+    r"/================== Healing"
+),(
+    r"\n\r"
+    r"/=== Combat Spells ======================================================\\\s+"
+    r"\| Level Earth        Wind         Fire         Water        Astral       \|\s+"
+    # r"(?P<black>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+    r"\|   1(?P<black1>.+?)\|\s+"  # . can match spaces, and \s can match newlines
+    r"\|   2(?P<black2>.+?)\|\s+"
+    r"\|   3(?P<black3>.+?)\|\s+"
+    r"\|   4(?P<black4>.+?)\|\s+"
+    r"\|   5(?P<black5>.+?)\|\s+"
+    r"/================== Healing"
+    # A regex without 1-5 specified and done with a quantifier could work if we don't put 
+    # .+ and \s+ next to eachother, like this (maybe) (same with \s and \n/\r):
+    # r"(?P<black>(?:\|.+?\|\s*?)+)"  erhm except I think, we can't use | as the anchor now, 
+    # and same with newline, we'd have to use the Astral    | and the /===== as the anchors 
+    # and match everything in between.  Spells.py would need to deal with the grouped '|'s.
+),(
+    # r"/================== Healing and Protection ==============================\\\s*\n\r"
+    r"/================== Healing and Protection ==============================\\\s+"
+    r"(?P<white>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+    # r"\|(?P<white>.+?)\|\s+"
+    # r"(\|(?P<white2>.+?)\|\s+)?"
+    # r"(\|(?P<white3>.+?)\|\s+)?"
+    r"/======================================= Misc"
+),(
+    r"/======================================= Miscellaneous ==================\\\s*\n\r"
+    r"(?P<misc>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+    # r"\|(?P<misc>.+?)\|\s+"
+    # r"(\|(?P<misc2>.+?)\|\s+)?"
+    # r"(\|(?P<misc3>.+?)\|\s+)?"
+    r"/===================================================== Running"
+),(
+    r"= Running Spells ===\\\s*\n\r"
+    r"(?P<buffs>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+    # r"\|(?P<buffs>.+?)\|\s+"
+    # r"(\|(?P<buffs2>.+?)\|\s+)?"
+    # r"(\|(?P<buffs3>.+?)\|\s+)?"
+    r"\\========================================================================/\s*\n\r"
+)]
+# spells = [(
+#     r"\n\r"
+#     r"/=== Combat Spells ======================================================\\\s*\n\r"
+#     r"(?P<black>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+#     r"/================== Healing and Protection ==============================\\\s*\n\r"
+# )]
+# spells2 = [(
+#     r"/================== Healing and Protection ==============================\\\s*\n\r"
+#     r"(?P<white>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+#     r"/======================================= Miscellaneous ==================\\\s*\n\r"
+# )]
+# spells3 = [(
+#     r"/======================================= Miscellaneous ==================\\\s*\n\r"
+#     r"(?P<misc>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+#     r"/===================================================== Running Spells ===\\\s*\n\r"
+# )]
+# spells4 = [(
+#     r"/===================================================== Running Spells ===\\\s*\n\r"
+#     r"(?P<buffs>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+#     r"\\========================================================================/\s*\n\r"
+# )]
+    # r"\|\s+(?P<black>.+?)+\s+\|\s*?\n\r"
+    # r"\|\s+(?P<white>.+?)+\s+\|\s*?\n\r"
+    # r"\|\s+(?P<misc>.+?)+\s+\|\s*?\n\r"
+    # r"\|\s+(?P<buffs>.+?)+\s+\|\s*?\n\r"
+    # r"/=== Combat Spells ======================================================\\\s*\n\r"
+    # r"\|\s+(?P<black>.+?)\s+\|\s*?\n\r"
+    # r"/================== Healing and Protection ==============================\\\s*\n\r"
+    # r"\|\s+(?P<white>.+?)\s+\|\s*?\n\r"
+    # r"/======================================= Miscellaneous ==================\\\s*\n\r"
+    # r"\|\s+(?P<misc>.+?)\s+\|\s*?\n\r"
+    # r"/===================================================== Running Spells ===\\\s*\n\r"
+    # r"\|\s+(?P<buffs>.+?)\s+\|\s*?\n\r"
+    # r"\\========================================================================/\s*\n\r"
 
 goodbye = ["Goodbye! Come back soon\."]
 # game_shutdown = ['### Game shutdown in (\d+) seconds\.']
 # game_shutdown2 = ["### Game backup shutdown in \d:\d\d minutes\."]
 # game_shutdown3 = ["### Shutting down now\."]
+# Equipment
+you_arent_wearing_anything = [r"You aren't wearing anything\."]
 
+# on_body = [r"On body:   (.+?)\n\r"]
+# on_arms = [r"On arms:   (.+?)\n\r"]
+# on_legs = [r"On legs:   (.+?)\n\r"]
+# on_neck = [r"On neck:   (.+?)\n\r(On neck:   (?P<second_neck>.+?)\n\r)?"]
+# on_hands= [r"On hands:  (.+?)\n\r"]
+# on_head = [r"On head:   (.+?)\n\r"]
+# on_feet = [r"On feet:   (.+?)\n\r"]
+# on_finger = [r"On finger: (.+?)\n\r"]
+# shield  = [r"Shield:    (.+?)\n\r"]
+# wielded = [r"Wielded:   (.+?)\n\r"]
+# seconded= [r"Seconded:  (.+?)\n\r"]
+# holding = [r"Holding:   (.+?)\n\r"]
+eq = [r"(On body:   (?P<body>.+?)\n\r)?" \
+      r"(On arms:   (?P<arms>.+?)\n\r)?" \
+      r"(On legs:   (?P<legs>.+?)\n\r)?" \
+      r"(On neck:   (?P<neck>.+?)\n\r)?" \
+      r"(On neck:   (?P<second_neck>.+?)\n\r)?" \
+      r"(On hands:   (?P<hands>.+?)\n\r)?" \
+      r"(On head:   (?P<head>.+?)\n\r)?" \
+      r"(On feet:   (?P<feet>.+?)\n\r)?" \
+      r"(On finger: (?P<finger>.+?)){0,8}" \
+      r"(Wielded:   (?P<weapon>.+?))?" \
+      r"(Seconded:  (?P<seconded>.+?))?" \
+      r"(Holding:   (?P<holding>.+?))"
+]  # m.group('holding') returns None with no error if the holding group didn't occur.
 
 # "The extreme nature of this place wracks your aura!""  (Bandit Hill)

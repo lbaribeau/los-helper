@@ -32,6 +32,7 @@ class Info(BotReactionWithFlag):
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
         self.character = character
+        # magentaprint(str(self.regexes))
 
     def execute(self):
         self.got_first = False

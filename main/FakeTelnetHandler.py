@@ -27,6 +27,26 @@ class FakeTelnetSocket(object):
             character_name + spaces + "Mon  M  [12]Brother                    16    Human\n"
             # "Derp                  Mon  M  [12]Brother                    16    Human\n")
         )
+        self.spells_string = (
+            "\n\r"
+            "/=== Combat Spells ======================================================\\\n\r"
+            "| Level Earth        Wind         Fire         Water        Astral       |\n\r"
+            "|   1   Rumble       Hurt                      Blister                   |\n\r"
+            "|   2                Dustgust                                            |\n\r"
+            "|   3                                                                    |\n\r"
+            "|   4                                                                    |\n\r"
+            "|   5                                                                    |\n\r"
+            "/================== Healing and Protection ==============================\\\n\r"
+            "|   Vigor            Mend-Wounds                                         |\n\r"
+            "|                                     Protection                         |\n\r"
+            "/======================================= Miscellaneous ==================\\\n\r"
+            "|   Light                                                                |\n\r"
+            "|   Show-Aura                                                            |\n\r"
+            "/===================================================== Running Spells ===\\\n\r"
+            "|                                   none                                 |\n\r"
+            "\========================================================================/\n\r"
+
+        )
 
         self.time_string = '                      Meditate   *READY*\n                         Touch   3:25 minutes remaining\n'
         self.equipment = (
@@ -81,7 +101,6 @@ class FakeTelnetSocket(object):
             "Thanks for recycling.\n"
             "You have 13612 gold.\n"
         )
-
         self.current_area = ""
         self.current_mud_area = None
         self.current_monster_list = []
@@ -104,6 +123,8 @@ class FakeTelnetSocket(object):
             self.content.append(self.inventory_string)
         elif re.match("whois (.+?)", command):
             self.content.append(self.whois_string)
+        elif re.match("spells", command):
+            self.content.append(self.spells_string)
         elif re.match("info", command):
             self.content.append(self.info_string)
         elif re.match("time", command):

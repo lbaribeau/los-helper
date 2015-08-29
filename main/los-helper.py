@@ -47,6 +47,7 @@ from CombatReactions import CombatReactions
 from SmartCombat import SmartCombat
 from Info import Info 
 from Whois import Whois
+from Spells import Spells
 from Cartography import Cartography 
 from BotReactions import *
 from TelnetHandler import TelnetHandler 
@@ -98,6 +99,7 @@ class LosHelper(object):
         self.write_username_and_pass()
         self.initialize_reactions()
         self.check_class_and_level()
+        self.check_spells()
         self.check_info()
 
         self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
@@ -265,6 +267,14 @@ class LosHelper(object):
             # self.mudReaderHandler.register_reaction(a)
             magentaprint("Added subscriber " + str(a))
             self.mudReaderHandler.add_subscriber(a)
+
+    def check_spells(self):
+        # magentaprint("LosHelper.check_spells() sleeping 2 sec.")
+        # time.sleep(2)
+        spells = Spells(self.telnetHandler, self.character)
+        self.mudReaderHandler.add_subscriber(spells)
+        spells.execute()
+        spells.wait_for_flag()
 
     def check_info(self):
         info = Info(self.mudReaderHandler, self.telnetHandler, self.character)

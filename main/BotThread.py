@@ -18,7 +18,6 @@ class BotThread(threading.Thread):
 
     def __init__(self, character, commandHandler, mudReaderHandler, mud_map):
         Thread.__init__(self)
-        # Initialize some variables local to this thread
         self.stopping = False        
         
         self.character = character
@@ -124,7 +123,7 @@ class BotThread(threading.Thread):
             return self.check_for_successful_go()
             # if re.match("(.*?door)", exit_str):
             #     self.commandHandler.process("open " + exit_str)
-            # return self.go.super_execute(exit_str)
+            # return self.go.persistent_execute(exit_str)
         else:
             return hook_found
 
@@ -492,20 +491,27 @@ class BotThread(threading.Thread):
         return
 
     def update_aura(self):
-        if self.stopping or self.character.ACTIVELY_MAPPING:
+        if self.stopping or self.character.ACTIVELY_MAPPING or self.character.level < 3:
             return False
 
-        if(self.character.level < 3 or not
-                BotThread.can_use_timed_ability(self.character.AURA_LAST_UPDATE, 480)):
+        self.cast.update_aura()
+
+        while self.cast.result is 'failure':
+            return False
+
+        if self.character.level < 3 or not \
+                BotThread.can_use_timed_ability(self.character.AURA_LAST_UPDATE, 480):
             magentaprint("Last aura update %d seconds ago." % round(time.time() - self.character.AURA_LAST_UPDATE))
             return True   
 
         self.cast.wait_until_ready()
         aura_matched = False
 
-        while not aura_matched and self.character.MANA > 0:
+        while not aura_matched and self.character.MANA > 0 and not self.stopping:
             self.cast.cast('show')
-            aura_matched = self.mudReaderHandler.wait_for_aura_match() 
+            # aura_matched = self.mudReaderHandler.wait_for_aura_match() 
+            self.cast.wait_for_flag()
+
             
         if aura_matched:
             self.character.AURA_LAST_UPDATE = time.time()

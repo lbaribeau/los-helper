@@ -18,7 +18,6 @@ class Go(Command):
         RegexStore.not_authorized, RegexStore.cannot_force
     ]
     cooldown_after_success = 0.34
-    # timer = 0
 
     def __init__(self, telnetHandler, character):
         super().__init__(telnetHandler)
@@ -63,13 +62,13 @@ class Go(Command):
         magentaprint("Go.execute() 2")
         super().execute(target)
 
-    def super_execute(self, target):
-        super().super_execute(target)
+    def persistent_execute(self, target):
+        super().persistent_execute(target)
         if self.door:
             self.open.execute(target)
             self.open.wait_for_flag()
             if self.open.result is 'success':
-                super().super_execute(target)
+                super().persistent_execute(target)
 
     @classmethod
     def compose_command(cls, target=None):
@@ -88,7 +87,6 @@ class Go(Command):
 
 class Open(Command):
     command = 'open'
-    # success_regexes = [RegexStore]
     success_regexes = [RegexStore.already_open, RegexStore.open_success]
     error_regexes = [RegexStore.no_exit, RegexStore.open_what]
     failure_regexes = [RegexStore.locked]

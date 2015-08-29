@@ -17,7 +17,7 @@ class CombatReactions(BotReaction):
 
         self.spell_type = "You cast a (.+?) spell on (.+?)\."
         self.spell_damage_dealt = "The spell did ([\d]*) damage\."
-        self.spell_fails = "Your spells fails\."
+        self.spell_fails = "Your spell fails\."
 
         numbers = "(?:[\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)" 
         self.enemy_defeated = "Your enemy, (?:the |The )?(" + numbers + " )?(.+?) has been defeated\."

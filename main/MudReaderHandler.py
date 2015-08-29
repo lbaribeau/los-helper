@@ -9,7 +9,7 @@ import RegexStore
 
 class MudReaderHandler(object):
     # This object tells the MudReaderThread what to do.
-    # The reason it exits is because you don't want multiple 
+    # The reason it exists is because you don't want multiple 
     # threads accessing the same buffer so its important for 
     # the MudReader thread to manage that.  This handler 
     # tells the MudReader thread what needs to happen (ie that 
@@ -85,6 +85,7 @@ class MudReaderHandler(object):
     
     
     def check_for_successful_go(self):
+        magentaprint("MudReaderHandler.check_for_successful_go() ... deprecated")
         # This function can be called right after going through an exit
         # to determine whether we successfully entered the next exit.
         
@@ -204,12 +205,11 @@ class MudReaderHandler(object):
         start_time = time.time()
         run_time = 0
         timeout = self.good_MUD_timeout
-        while(self.mudReaderThread.CHECK_AURA_FLAG == 1 and 
-              run_time < timeout):
+        while self.mudReaderThread.CHECK_AURA_FLAG == 1 and run_time < timeout:
             time.sleep(0.05)
             run_time = time.time() - start_time
             
-        if(run_time < timeout and self.mudReaderThread.CHECK_AURA_SUCCESS):
+        if run_time < timeout and self.mudReaderThread.CHECK_AURA_SUCCESS:
             return True
         else:
             return False  

@@ -94,7 +94,7 @@ class SmartGrindThread(GrindThread):
         self.cur_area_id = self.character.AREA_ID
 
         if self.is_actually_dumb:
-            if self.cur_area_id != 45:
+            if self.cur_area_id != 2:
                 self.direction_list = ["areaid2"]
 
             return super().decide_where_to_go()

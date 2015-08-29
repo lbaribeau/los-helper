@@ -97,16 +97,16 @@ class CommandHandler(object):
         elif user_input == 'ga':
             self.telnetHandler.write('get all')
         elif user_input.startswith('go ') or re.match(str(self.character.EXIT_REGEX), user_input):
-            # self.go.super_execute(user_input)
+            # self.go.persistent_execute(user_input)
             self.user_move(user_input)
         # elif self.go.is_direction(user_input) or re.match(str(self.character.EXIT_REGEX), user_input):
         elif self.go.is_direction(user_input):
-            # self.go.super_execute(user_input)
+            # self.go.persistent_execute(user_input)
             self.user_move(user_input)
             # routine which does appropriate waiting,
             # printing, and finally sending command.
         elif re.match('door?', user_input):
-            self.go.super_execute('door')
+            self.go.persistent_execute('door')
         elif(re.match("find (.+)", user_input)):
             M_obj = re.search("find (.+)", user_input)
             magentaprint("Finding: " + str(M_obj.group(1)))
@@ -270,7 +270,7 @@ class CommandHandler(object):
             time.sleep(time_remaining)
             self.character.MOVE_CLK = now
             # self.telnetHandler.write(user_input)
-            # self.go.super_execute(self.character.LAST_DIRECTION)
+            # self.go.persistent_execute(self.character.LAST_DIRECTION)
             self.go.execute(self.character.LAST_DIRECTION)
         else:
             magentaprint("Wait %.1f more seconds." % time_remaining)

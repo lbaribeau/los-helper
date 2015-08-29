@@ -162,6 +162,8 @@ class Cast(SimpleCombatObject):
         if time() > self.aura_timer + self.aura_refresh:
             self.cast('show')
             self.wait_for_flag()
+        else:
+            magentaprint("Last aura update %d seconds ago." % round(time.time() - self.aura_timer))
 
     def spam_spell(self, character, spell, target=None):  # Maybe a prompt object would be better than character
         spell_cost = 2 if re.match("vig?|vigor?", spell) else \

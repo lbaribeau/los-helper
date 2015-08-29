@@ -335,9 +335,9 @@ class MudReaderThread(threading.Thread):
             
             M_obj = re.search("Your enemy, (?:the)?" + s_numbered + " (.+?) has been defeated\.", text_buffer)            
             #M_obj = re.search("Your attack overwhelms the" + s_numbered + " (.+?) and (s?he|it) collapses!", text_buffer)
-            if(M_obj != None):
+            if M_obj != None:
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                if(my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1):
+                if my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1:
                     self.character.remove_from_monster_list(M_obj.group(2))
                     #self.character.MONSTER_LIST.remove(M_obj.group(2))
                 else:
