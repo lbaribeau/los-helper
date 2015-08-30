@@ -270,8 +270,8 @@ class CommandHandler(object):
             time.sleep(time_remaining)
             self.character.MOVE_CLK = now
             # self.telnetHandler.write(user_input)
-            # self.go.persistent_execute(self.character.LAST_DIRECTION)
-            self.go.execute(self.character.LAST_DIRECTION)
+            self.go.persistent_execute(self.character.LAST_DIRECTION)
+            # self.go.execute(self.character.LAST_DIRECTION)
         else:
             magentaprint("Wait %.1f more seconds." % time_remaining)
 

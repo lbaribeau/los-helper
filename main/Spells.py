@@ -27,7 +27,6 @@ class Spells(SimpleCommand):
     def __init__(self, telnetHandler, character):
         self.telnetHandler = telnetHandler
         self.character = character
-        # self.regex_cart = [RegexStore.spells1, RegexStore.spells2, RegexStore.spells3, RegexStore.spells4]
         # self.regex_list = [RegexStore.spells1[0], RegexStore.spells2[0], RegexStore.spells3[0], RegexStore.spells4[0]]
         # magentaprint(str(self.regex_cart))
         # magentaprint(str(self))
@@ -52,7 +51,11 @@ class Spells(SimpleCommand):
         self.regex_checker[self.regex_cart[0].index(regex)] = True
 
         magentaprint("Groups: " + str(M_obj.groups()))
-        spells = ' '.join(M_obj.groups()).lower().split()
+        groups = list(M_obj.groups())
+        while None in groups:
+            groups.remove(None)
+        # spells = ' '.join(M_obj.groups()).lower().split()
+        spells = ' '.join(groups).lower().split()
         magentaprint(str(spells))
         while 'none' in spells:
             spells.remove('none')
@@ -80,7 +83,7 @@ class Spells(SimpleCommand):
         self.spells.extend(spells)
 
         # if all(self.regex_checker):
-        if sum(self.regex_checker) >= 4:
+        if sum(self.regex_checker) >= 1:
             self.character.spells = self.spells
             magentaprint(str(self.character.spells))
             self.init()

@@ -101,65 +101,65 @@ circle_whom = [r"Circle whom\?"]
 # Combat
 mob_died = ["Your attack overwhelms (?:the (" + __numbers + " )?)?(.+?) and (s?he|it) collapses!"]
 # it_fled = ["The (" + numbers + " )?(?P<mob_name>.+?) flees to the (.+?)\."]
-mob_fled = ["(:?The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 
+mob_fled = ["(?:The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 
 
-attack_error = [
+bad_k_target = [
         r"You don't see that here\.",
         r"Attack what\?"
 ]
 attack_hit = [
-        "(?s)You swing with your .+?, hacking (:the )?(" + __numbers + " )?(.+?)\s+for\s+\d+\s+damage\.",
-        "(?s)You slice (:the )?(" + __numbers + " )?(.+?) for \d+\s+damage\s+with\s+your\s+.+?\.",
-        "You slash at (:the )?(" + __numbers + " )?(.+?) and hit for \d+ damage\.",
+        "(?s)You swing with your .+?, hacking (?:the )?(" + __numbers + " )?(.+?)\s+for\s+\d+\s+damage\.",
+        "(?s)You slice (?:the )?(" + __numbers + " )?(.+?) for \d+\s+damage\s+with\s+your\s+.+?\.",
+        "You slash at (?:the )?(" + __numbers + " )?(.+?) and hit for \d+ damage\.",
 
-        "You chop at (:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
-        "(?s)You stab (:the )?(" + __numbers + " )?(.+?) with your .+?,\s+causing\s+\d+\s+damage",
-        "You lunge at (:the )?(" + __numbers + " )?(.+?), striking for \d+ damage\.",
+        "You chop at (?:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
+        "(?s)You stab (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+causing\s+\d+\s+damage",
+        "You lunge at (?:the )?(" + __numbers + " )?(.+?), striking for \d+ damage\.",
 
-        "You lash out and thump (:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
-        "You punch (:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
-        "You kick (:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
-        "You head-butt (:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
-        "You grab (:the )?(" + __numbers + " )?(.+?) and gouge (him|her|it) for \d+\s+damage\.",
+        "You lash out and thump (?:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
+        "You punch (?:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
+        "You kick (?:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
+        "You head-butt (?:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
+        "You grab (?:the )?(" + __numbers + " )?(.+?) and gouge (him|her|it) for \d+\s+damage\.",
 
-        "(?s)You smash your .+? into (:the )?(" + __numbers + " )?(.+?),\s+causing\s+\d+\s+damage\.",
-        "You heave your .+? at (:the )?(" + __numbers + " )?(.+?),\s+smashing\s+(him|her|it)\s+for\s+\d+\s+damage\.",
-        "You bludgeon (:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
+        "(?s)You smash your .+? into (?:the )?(" + __numbers + " )?(.+?),\s+causing\s+\d+\s+damage\.",
+        "You heave your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+smashing\s+(him|her|it)\s+for\s+\d+\s+damage\.",
+        "You bludgeon (?:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
 
-        "You lunge at (:the )?(" + __numbers + " )?(.+?), hitting them for \d+ damage\.",
+        "You lunge at (?:the )?(" + __numbers + " )?(.+?), hitting them for \d+ damage\.",
         "You swing your .+?, striking for \d+ damage\.",
-        "(?s)You sweep (:the )?(" + __numbers + " )?(.+?) with your .+?\s+for\s+\d+\s+damage\.",
+        "(?s)You sweep (?:the )?(" + __numbers + " )?(.+?) with your .+?\s+for\s+\d+\s+damage\.",
 
-        "Your missile slams into (:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
-        "(?s)You attack (:the )?(" + __numbers + " )?(.+?) with your .+?,\s+striking\s+for\s+\d+\s+damage\.",
-        "You use your .+? to strike (:the )?(" + __numbers + " )?(.+?)\s+for\s+\d+\s+damage\."
+        "Your missile slams into (?:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
+        "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+striking\s+for\s+\d+\s+damage\.",
+        "You use your .+? to strike (?:the )?(" + __numbers + " )?(.+?)\s+for\s+\d+\s+damage\."
 ]
 attack_miss = [
         "You hack with your .+?, but your blow swings wide of the mark\.",
-        "You slice your .+? at (:the )?(" + __numbers + " )?(.+?),\s+but\s+miss\.",
-        "You slash at (:the )?(" + __numbers + " )?(.+?), but miss\.",
+        "You slice your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+but\s+miss\.",
+        "You slash at (?:the )?(" + __numbers + " )?(.+?), but miss\.",
 
-        "You chop at (:the )?(" + __numbers + " )?(.+?) but fail to hit them\.",
-        "(?s)You try to stab (:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
-        "You lunge wildly at (:the )?(" + __numbers + " )?(.+?) but mistime\s+the\s+strike\.",
+        "You chop at (?:the )?(" + __numbers + " )?(.+?) but fail to hit them\.",
+        "(?s)You try to stab (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
+        "You lunge wildly at (?:the )?(" + __numbers + " )?(.+?) but mistime\s+the\s+strike\.",
 
-        "You lash out at (:the )?(" + __numbers + " )?(.+?), but miss\.",
-        "You swing a wild punch at (:the )?(" + __numbers + " )?(.+?), but it misses\.",
-        "You kick at (:the )?(" + __numbers + " )?(.+?), but fail to hurt them\.",
-        "You grab at (:the )?(" + __numbers + " )?(.+?), but (s?he|it) escapes your grasp\.",
-        "You try to gouge (:the )?(" + __numbers + " )?(.+?), but can't get a good grip\.",
+        "You lash out at (?:the )?(" + __numbers + " )?(.+?), but miss\.",
+        "You swing a wild punch at (?:the )?(" + __numbers + " )?(.+?), but it misses\.",
+        "You kick at (?:the )?(" + __numbers + " )?(.+?), but fail to hurt them\.",
+        "You grab at (?:the )?(" + __numbers + " )?(.+?), but (s?he|it) escapes your grasp\.",
+        "You try to gouge (?:the )?(" + __numbers + " )?(.+?), but can't get a good grip\.",
 
-        "(?s)You swing your .+? at (:the )?(" + __numbers + " )?(.+?),\s+but\s+miss\.",
+        "(?s)You swing your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+but\s+miss\.",
         "You heave your .+? in a wide arc, but fail to\s+hit\s+anything\.",
-        "You try to bludgeon (:the )?(" + __numbers + " )?(.+?), but miss\.",
+        "You try to bludgeon (?:the )?(" + __numbers + " )?(.+?), but miss\.",
 
-        "You lunge at (:the )?(" + __numbers + " )?(.+?), but you miss\.",
+        "You lunge at (?:the )?(" + __numbers + " )?(.+?), but you miss\.",
         "Your .+? swings, but fails to connect\.",
-        "(?s)You sweep at (:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
+        "(?s)You sweep at (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
 
-        "Your missile arcs towards (:the )?(" + __numbers + " )?(.+?), but fails\s+to\s+hit\s+them\.",
-        "(?s)You attack (:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
-        "(?s)You use your .+?, but nothing hits (:the )?(" + __numbers + " )?(.+?)\."
+        "Your missile arcs towards (?:the )?(" + __numbers + " )?(.+?), but fails\s+to\s+hit\s+them\.",
+        "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
+        "(?s)You use your .+?, but nothing hits (?:the )?(" + __numbers + " )?(.+?)\."
 ]
 
 aura = [
@@ -178,14 +178,53 @@ cast_failure = [
 no_mana = [
     r"You cannot meet the casting cost!"
 ]
-cast_error = [
+bad_target_or_spell = [
     r"That spell does not exist\.",
     r"You don't know that spell\.",
     r"Spell name is not unique\.",
     r"Cast what\?",
-    r"They are not here\.",
     r"Cast at whom\?" 
 ]
+not_here = [
+    r"They are not here\."
+]
+spells = [(
+    r"\n\r"
+    r"/=== Combat Spells ======================================================\\\s+"
+
+    # r"(?P<black>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+    # r"\|(?P<none>\s+none\s+\|)\s*?\n\r"
+    r"\|\s(?:\s+none\s+\|)|(?:Level Earth        Wind         Fire         Water        Astral       \|\s+\|   1(?P<black1>.+?)\|\s+\|   2(?P<black2>.+?)\|\s+\|   3(?P<black3>.+?)\|\s+\|   4(?P<black4>.+?)\|\s+\|   5(?P<black5>.+?)\|)\s+"
+    # r"\|\s(Level Earth        Wind         Fire         Water        Astral       \|\s+\|   1(?P<black1>.+?)\|\s+\s+\|\s+\|   2(?P<black2>.+?)\|\s+\|   3(?P<black3>.+?)\|\s+\|   4(?P<black4>.+?)\|\s+\|   5(?P<black5>.+?)\|)\s+"
+    # r"\|\s(  1(?P<black1>.+?)\|\s+\|\s+\|   2(?P<black2>.+?)\|\s+\|   3(?P<black3>.+?)\|\s+\|   4(?P<black4>.+?)\|\s+\|   5(?P<black5>.+?)\|)\s+"
+    r"/================== Healing and Protection ==============================\\\s+"
+    # r"\|   1(?P<black1>.+?)\|\s+"  # . can match spaces, and \s can match newlines
+    # r"\|   2(?P<black2>.+?)\|\s+"
+    # r"\|   3(?P<black3>.+?)\|\s+"
+    # r"\|   4(?P<black4>.+?)\|\s+"
+    # r"\|   5(?P<black5>.+?)\|\s+"
+    # A regex without 1-5 specified and done with a quantifier could work if we don't put 
+    # .+ and \s+ next to eachother, like this (maybe) (same with \s and \n/\r):
+    # r"(?P<black>(?:\|.+?\|\s*?)+)"  erhm except I think, we can't use | as the anchor now, 
+    # and same with newline, we'd have to use the Astral    | and the /===== as the anchors 
+    # and match everything in between.  Spells.py would need to deal with the grouped '|'s.
+    # r"(?P<white>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+    r"\|(?P<white>.+?)\|\s+"
+    r"(?:\|(?P<white2>.+?)\|\s+)?"
+    # r"(?:\|(?P<white3>.+?)\|\s+)?"
+    r"/======================================= Miscellaneous ==================\\\s+"
+    # r"(?P<misc>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+    r"\|(?P<misc>.+?)\|\s+"
+    r"(?:\|(?P<misc2>.+?)\|\s+)?"
+    # r"(?:\|(?P<misc3>.+?)\|\s+)?"
+    r"/===================================================== Running Spells ===\\\s+"
+    # r"(?P<buffs>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+    r"\|(?P<buffs>.+?)\|\s+"
+    r"(?:\|(?P<buffs2>.+?)\|\s+)?"
+    # r"(?:\|(?P<buffs3>.+?)\|\s+)?"
+    # r"\\========================================================================/\s*\n\r"
+    r"\\="
+)]
 # spells = [(
 #     r"\n\r"
 #     r"/=== Combat Spells ======================================================\\\s*\n\r"
@@ -198,52 +237,52 @@ cast_error = [
 #     r"(?P<buffs>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
 #     r"\\========================================================================/\s*\n\r"
 # )]
-spells = [(
-    r"\n\r"
-    r"/=== Combat Spells ======================================================\\\s+"
-    # r"(?P<black>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
-    # r"\|(?P<none>\s+none\s+\|)\s*?\n\r"
-    r"\|\s+none\s+\|\s+"
-    r"/================== Healing"
-),(
-    r"\n\r"
-    r"/=== Combat Spells ======================================================\\\s+"
-    r"\| Level Earth        Wind         Fire         Water        Astral       \|\s+"
-    # r"(?P<black>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
-    r"\|   1(?P<black1>.+?)\|\s+"  # . can match spaces, and \s can match newlines
-    r"\|   2(?P<black2>.+?)\|\s+"
-    r"\|   3(?P<black3>.+?)\|\s+"
-    r"\|   4(?P<black4>.+?)\|\s+"
-    r"\|   5(?P<black5>.+?)\|\s+"
-    r"/================== Healing"
-    # A regex without 1-5 specified and done with a quantifier could work if we don't put 
-    # .+ and \s+ next to eachother, like this (maybe) (same with \s and \n/\r):
-    # r"(?P<black>(?:\|.+?\|\s*?)+)"  erhm except I think, we can't use | as the anchor now, 
-    # and same with newline, we'd have to use the Astral    | and the /===== as the anchors 
-    # and match everything in between.  Spells.py would need to deal with the grouped '|'s.
-),(
-    # r"/================== Healing and Protection ==============================\\\s*\n\r"
-    r"/================== Healing and Protection ==============================\\\s+"
-    r"(?P<white>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
-    # r"\|(?P<white>.+?)\|\s+"
-    # r"(\|(?P<white2>.+?)\|\s+)?"
-    # r"(\|(?P<white3>.+?)\|\s+)?"
-    r"/======================================= Misc"
-),(
-    r"/======================================= Miscellaneous ==================\\\s*\n\r"
-    r"(?P<misc>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
-    # r"\|(?P<misc>.+?)\|\s+"
-    # r"(\|(?P<misc2>.+?)\|\s+)?"
-    # r"(\|(?P<misc3>.+?)\|\s+)?"
-    r"/===================================================== Running"
-),(
-    r"= Running Spells ===\\\s*\n\r"
-    r"(?P<buffs>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
-    # r"\|(?P<buffs>.+?)\|\s+"
-    # r"(\|(?P<buffs2>.+?)\|\s+)?"
-    # r"(\|(?P<buffs3>.+?)\|\s+)?"
-    r"\\========================================================================/\s*\n\r"
-)]
+# spells = [(
+#     r"\n\r"
+#     r"/=== Combat Spells ======================================================\\\s+"
+#     # r"(?P<black>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+#     # r"\|(?P<none>\s+none\s+\|)\s*?\n\r"
+#     r"\|\s+none\s+\|\s+"
+#     r"/================== Healing"
+# ),(
+#     r"\n\r"
+#     r"/=== Combat Spells ======================================================\\\s+"
+#     r"\| Level Earth        Wind         Fire         Water        Astral       \|\s+"
+#     # r"(?P<black>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+#     r"\|   1(?P<black1>.+?)\|\s+"  # . can match spaces, and \s can match newlines
+#     r"\|   2(?P<black2>.+?)\|\s+"
+#     r"\|   3(?P<black3>.+?)\|\s+"
+#     r"\|   4(?P<black4>.+?)\|\s+"
+#     r"\|   5(?P<black5>.+?)\|\s+"
+#     r"/================== Healing"
+#     # A regex without 1-5 specified and done with a quantifier could work if we don't put 
+#     # .+ and \s+ next to eachother, like this (maybe) (same with \s and \n/\r):
+#     # r"(?P<black>(?:\|.+?\|\s*?)+)"  erhm except I think, we can't use | as the anchor now, 
+#     # and same with newline, we'd have to use the Astral    | and the /===== as the anchors 
+#     # and match everything in between.  Spells.py would need to deal with the grouped '|'s.
+# ),(
+#     # r"/================== Healing and Protection ==============================\\\s*\n\r"
+#     r"/================== Healing and Protection ==============================\\\s+"
+#     r"(?P<white>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+#     # r"\|(?P<white>.+?)\|\s+"
+#     # r"(\|(?P<white2>.+?)\|\s+)?"
+#     # r"(\|(?P<white3>.+?)\|\s+)?"
+#     r"/======================================= Misc"
+# ),(
+#     r"/======================================= Miscellaneous ==================\\\s*\n\r"
+#     r"(?P<misc>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+#     # r"\|(?P<misc>.+?)\|\s+"
+#     # r"(\|(?P<misc2>.+?)\|\s+)?"
+#     # r"(\|(?P<misc3>.+?)\|\s+)?"
+#     r"/===================================================== Running"
+# ),(
+#     r"= Running Spells ===\\\s*\n\r"
+#     r"(?P<buffs>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
+#     # r"\|(?P<buffs>.+?)\|\s+"
+#     # r"(\|(?P<buffs2>.+?)\|\s+)?"
+#     # r"(\|(?P<buffs3>.+?)\|\s+)?"
+#     r"\\========================================================================/\s*\n\r"
+# )]
 # spells = [(
 #     r"\n\r"
 #     r"/=== Combat Spells ======================================================\\\s*\n\r"

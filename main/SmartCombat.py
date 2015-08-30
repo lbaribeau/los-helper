@@ -87,18 +87,24 @@ class SmartCombat(CombatObject):
                 if self.stopping:
                     continue
                 elif not self.black_magic and self.character.HEALTH <= self.character.maxHP - self.prompt.max_vigor() and self.character.MANA >= 2:
-                    self.cast.cast('v')
+                    self.do_cast('v')
                 elif self.mob_charmed:
                     time.sleep(min(0.2, self.kill.wait_time()))
+                    # time.sleep(min(0.2, self.kill.wait_time() + 0.05))
                 elif self.black_magic and ((self.spell in Spells.lvl1 and self.character.MANA >= 3) or 
                                            (self.spell in Spells.lvl2 and self.character.MANA >= 7)):  # Todo: add oom check
-                    self.cast.cast(self.spell, self.target) 
+                    self.do_cast(self.spell, self.target) 
                 elif self.black_magic and self.spell in Spells.lvl2 and self.character.MANA < 7 and self.character.MANA >= 3:
-                    self.cast.cast(Spells.lvl1[Spells.lvl2.index(self.spell)], self.target)
+                    self.do_cast(Spells.lvl1[Spells.lvl2.index(self.spell)], self.target)
                 else:
                     time.sleep(min(0.2, self.kill.wait_time()))
 
         magentaprint(str(self) + " ending run.")
+
+    def do_cast(self, spell, target=None):
+        self.cast.persistent_cast(spell, target)
+        if self.cast.result is 'error':
+            self.stop()
 
     def use_any_fast_combat_abilities(self):
         for a in self.fast_combat_abilities:
@@ -117,7 +123,7 @@ class SmartCombat(CombatObject):
                 if a.result is 'success' and isinstance(a, DanceOfTheCobra):
                     self.mob_charmed = True
                 elif a.result is 'error':
-                    self.stopping = True
+                    self.stop()
                 # if self.stopping:
                 #     return
                 break
@@ -138,13 +144,15 @@ class SmartCombat(CombatObject):
                 magentaprint("SmartCombat executing " + str(a))
                 a.execute(self.target)
                 a.wait_for_flag()
+                if a.result is 'error':
+                    self.stop()
                 return
 
         # self.attack_wait()
         self.kill.execute(self.target)
         self.kill.wait_for_flag()
         if self.kill.result is 'error':
-            self.stopping = True
+            self.stop()
         # self.character.ATTACK_CLK = time.time()  # TODO: Kill should be smart enough to keep the clock set
                                                  # Kill should actually own the clock...
 

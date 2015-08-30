@@ -13,6 +13,7 @@ from Inventory import Inventory
 from Exceptions import *
 from Database import *
 from MudMap import MudMap
+import Spells
 
 class BotThread(threading.Thread):
 
@@ -117,8 +118,9 @@ class BotThread(threading.Thread):
                 self.commandHandler.process("open " + exit_str)
                 # self.commandHandler.process('door')
             # self.commandHandler.process("go " + exit_str)
-            self.commandHandler.go.execute(exit_str)
-            self.commandHandler.go.wait_for_flag()
+            # self.commandHandler.go.execute(exit_str)
+            self.commandHandler.go.persistent_execute(exit_str)
+            # self.commandHandler.go.wait_for_flag()
             return self.commandHandler.go.result is 'success'
             return self.check_for_successful_go()
             # if re.match("(.*?door)", exit_str):
@@ -317,21 +319,21 @@ class BotThread(threading.Thread):
 
     @property
     def mana_to_go(self):
-        if self.character.BLACK_MAGIC: 
-            if self.character.MAX_MANA % 3 == 0 and self.character.MAX_MANA < 13:
-                return self.character.MAX_MANA
-            elif self.character.MAX_MANA < 25:
-                return self.character.MAX_MANA - 1
+        if self.smartCombat.black_magic: 
+            if self.character.maxMP % 3 == 0 and self.character.maxMP < 13:
+                return self.character.maxMP
+            elif self.character.maxMP < 25:
+                return self.character.maxMP - 1
             else:
-                return self.character.MAX_MANA - 2
+                return self.character.maxMP - 2
         else:
-            if self.character.MAX_MANA % 2 == 0 and self.character.MAX_MANA < 13:
-                return self.character.MAX_MANA
+            if self.character.maxMP % 2 == 0 and self.character.maxMP < 13:
+                return self.character.maxMP
                 # We wait for an even number because only cast vigor (2 mana)
-            elif self.character.MAX_MANA < 25:
-                return self.character.MAX_MANA - 1     
+            elif self.character.maxMP < 25:
+                return self.character.maxMP - 1     
             else:
-                return self.character.MAX_MANA - 2
+                return self.character.maxMP - 2
 
     @property
     def health_to_go(self):
@@ -386,23 +388,27 @@ class BotThread(threading.Thread):
         maxHP = self.character.maxHP
         maxMP = self.character.maxMP
         mana_tick = self.character._class.mana_tick
+        magentaprint("Health ticks needed: " + str(self.health_ticks_needed()) + ", Mana ticks needed: " + str(self.mana_ticks_needed()))
 
-        while   ceil(self.health_ticks_needed()) > floor(self.mana_ticks_needed()) or \
-                self.character.MANA - (maxMP % mana_tick+chapel) % (mana_tick+chapel) >= 2 and \
-                self.character.MANA >= vig and \
-                not self.ready_for_combat():
+        # while   (self.health_ticks_needed() > self.mana_ticks_needed() or 
+        #         self.character.MANA - (maxMP % mana_tick+chapel) % (mana_tick+chapel) >= 2) and (
+        while   (self.health_ticks_needed() > self.mana_ticks_needed() and 
+                self.character.MANA >= vig and 
+                not self.ready_for_combat() and 
+                not self.stopping):
                 # self.character.mana_tick+2 % self.character.maxMP - self.character.MANA > 2:
                 # self.character.maxMP - self.character.MANA % self.character.mana_tick+chapel - vig >= 0: #self.character.mana_tick + vig - chapel:
                 # Laurier does math!  (Mathing out whether we should vig or in the chapel)
             self.do_heal_skills()
 
-            if self.engage_any_attacking_mobs():
-                if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
-                    self.cast.start_thread('v')
+            # if self.engage_any_attacking_mobs():
+            #     if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
+            #         self.cast.start_thread('v')
+            self.cast.wait_until_ready()
+            self.engage_any_attacking_mobs()
+            self.cast.cast('v')
 
-            self.sleep(0.05)
-
-        self.cast.stop()
+        self.cast.stop()  # Unnecessary
 
         # while BotThread.should_heal_up(self.character.HEALTH, self.character.HEALTH_TO_HEAL,
         #         self.character.MANA, heal_cost, self.character.KNOWS_VIGOR, self.character.HAS_RESTORE_ITEMS) and not self.stopping:
@@ -491,33 +497,36 @@ class BotThread(threading.Thread):
         return
 
     def update_aura(self):
-        if self.stopping or self.character.ACTIVELY_MAPPING or self.character.level < 3:
+        if self.stopping or self.character.ACTIVELY_MAPPING or not Spells.showaura in self.character.spells:
             return False
 
-        self.cast.update_aura()
+        self.cast.update_aura(self.character)
 
-        while self.cast.result is 'failure':
+        if self.cast.result is not 'success': # Probably no mana since spell fail gets spammed
             return False
-
-        if self.character.level < 3 or not \
-                BotThread.can_use_timed_ability(self.character.AURA_LAST_UPDATE, 480):
-            magentaprint("Last aura update %d seconds ago." % round(time.time() - self.character.AURA_LAST_UPDATE))
-            return True   
-
-        self.cast.wait_until_ready()
-        aura_matched = False
-
-        while not aura_matched and self.character.MANA > 0 and not self.stopping:
-            self.cast.cast('show')
-            # aura_matched = self.mudReaderHandler.wait_for_aura_match() 
-            self.cast.wait_for_flag()
-
-            
-        if aura_matched:
-            self.character.AURA_LAST_UPDATE = time.time()
+        else:
             return True
 
-        return False  # Ran out of mana
+        # if self.character.level < 3 or not \
+        #         BotThread.can_use_timed_ability(self.character.AURA_LAST_UPDATE, 480):
+        # if not Spells.showaura in self.character.spells:
+            # magentaprint("Last aura update %d seconds ago." % round(time.time() - self.character.AURA_LAST_UPDATE))
+            # return True   
+
+        # self.cast.wait_until_ready()
+        # aura_matched = False
+
+        # while not aura_matched and self.character.MANA > 0 and not self.stopping:
+        #     self.cast.cast('show')
+        #     # aura_matched = self.mudReaderHandler.wait_for_aura_match() 
+        #     self.cast.wait_for_flag()
+
+            
+        # if aura_matched:
+        #     self.character.AURA_LAST_UPDATE = time.time()
+        #     return True
+
+        # return False  # Ran out of mana
 
     def heal_up(self):
         magentaprint("In heal_up.")
@@ -627,7 +636,8 @@ class BotThread(threading.Thread):
         for mob in monster_list:
             if re.search("town guard", mob) or \
                re.search("town crier", mob) or \
-               re.search("clown", mob):
+               re.search("clown", mob) or \
+               re.search("bouncer", mob):
                 return ""
 
         if self.character.chase_mob is not "":

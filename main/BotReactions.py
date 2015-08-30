@@ -33,11 +33,19 @@ class BotReaction(object):
 
 
 def wait_for_a_flag(class_with_flag):
+    # magentaprint("wait_for_flag() called on " + str(class_with_flag) + " starting " + str(class_with_flag._waiter_flag) + ".")
     # I dunno why this always gets to 8 seconds and doesn't detect the flag.
     class_with_flag._waiter_flag = False  # Use __class__ for writing or else it will make an instance level flag
     start_time = time.time()
     run_time = 0
 
+    # if not hasattr(class_with_flag, 'stopping'):
+    #     class_with_flag.stopping = False
+
+    # while not class_with_flag._waiter_flag and run_time < class_with_flag.good_MUD_timeout and not class_with_flag.stopping:
+    # Often we are waiting for a flag while 'stopping', since targets get changed... (?)
+        # Maybe that can be addressed. - I should call 'keep going' whenever changing targets.
+        # Well SmartCombat doesn't use use threads
     while not class_with_flag._waiter_flag and run_time < class_with_flag.good_MUD_timeout:
         time.sleep(0.05)
         run_time = time.time() - start_time

@@ -43,7 +43,7 @@ class SmartGrindThread(GrindThread):
 
     def do_on_successful_go(self):
         super().do_on_successful_go()
-        self.cartography
+        # self.cartography
 
 
     def check_weapons(self):

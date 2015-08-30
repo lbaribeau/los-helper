@@ -1,6 +1,7 @@
 
 import re
 import time
+from itertools import chain
 
 from misc_functions import magentaprint
 import RegexStore
@@ -8,7 +9,7 @@ from Command import Command
 
 class Go(Command):
     command = 'go'
-    success_regexes = [RegexStore.area]
+    success_regexes = [RegexStore.area, RegexStore.too_dark]
     error_regexes = [RegexStore.no_exit, RegexStore.go_where]
     failure_regexes = [
         RegexStore.blocked_path, RegexStore.cant_go, RegexStore.open_first,
@@ -26,15 +27,20 @@ class Go(Command):
         self.character = character
 
     def wait_for_flag(self):
+        magentaprint("Go.wait_for_flag()")
         self.cartography.__class__._waiter_flag = False
+        # self.__class__._waiter_flag = False
         super().wait_for_flag()
         if not self.cartography.__class__._waiter_flag:
             self.cartography.wait_for_flag()
 
     def notify(self, regex, M_obj):
+        magentaprint("Go notified.")
         if regex in RegexStore.open_first:
             self.door = True
-        elif regex in RegexStore.area and not self.__class__._waiter_flag:
+        # elif regex in RegexStore.area and not self.__class__._waiter_flag:
+        elif regex in chain.from_iterable(self.success_regexes) and not self.__class__._waiter_flag:
+            # This is confusing - why reinitialize chase variables
             self.character.chase_mob = ""
             self.character.chase_dir = ""
             # time.sleep(0.8)  # Hacked fix to get_heal_path being called before Cartography updates area_id

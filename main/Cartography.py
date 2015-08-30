@@ -17,34 +17,6 @@ import RegexStore
 class Cartography(BotReactionWithFlag):
 
     def __init__(self, mudReaderHandler, commandHandler, character):
-        # self.area = RegexStore.area[0]
-        # self.too_dark = RegexStore.too_dark[0]
-        # #s_numbered = " ?([\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)? ?"
-        # self.you_see_mob = RegexStore.you_see_mob[0]
-        # self.mob_fled = RegexStore.mob_fled[0]
-        # # self.mob_aura = the + s_numbered + "(.+?) glows with a (.+?) aura\."
-        # self.mob_aura = RegexStore.mob_aura[0]
-        # #This regex doesn't work for named mobs....
-        # self.blocked_path = RegexStore.blocked_path[0]
-        # self.please_wait = RegexStore.please_wait[0]
-        # self.cant_go = RegexStore.cant_go[0]
-        # self.no_exit = RegexStore.no_exit[0]
-        # self.class_prohibited = RegexStore.class_prohibited[0]
-        # self.level_too_low = RegexStore.level_too_low[0]
-        # self.not_invited = RegexStore.not_invited[0]
-        # self.not_open_during_day = RegexStore.not_open_during_day[0]
-        # self.not_open_during_night = RegexStore.not_open_during_night[0]
-        # self.no_items_allowed = RegexStore.no_items_allowed[0]
-        # self.locked = RegexStore.locked[0]
-        # self.no_right = RegexStore.no_right[0]
-        # self.in_tune = RegexStore.in_tune[0]
-        # self.not_authorized = RegexStore.not_authorized[0]
-        # self.cannot_force = RegexStore.cannot_force[0]
-        # self.not_here = RegexStore.not_here[0]
-        # # self.loot_blocked = "The" + s_numbered + " (.+?) won't let you take anything\."#The spiv won't let you take anything.
-        # self.loot_blocked = RegexStore.loot_blocked[0] 
-        # self.teleported = RegexStore.teleported[0]
-        # self.store_list = RegexStore.store_list[0]
         self.store_item_list = "(?:[\s]*)(?:A |An |Some )?(.+?)(?:[\s]*)(?:(\(.\))?(?:[\s]*))?Cost: ([\d]*)" #well do a re.findall on the list above to iterate through, don't add this to the array below
 
         self.regex_cart = [
@@ -67,6 +39,10 @@ class Cartography(BotReactionWithFlag):
         self.__stopping = False
         # self.mudReaderHandler.register_reaction(self)
         mudReaderHandler.add_subscriber(self)
+
+    # def wait_for_flag(self):
+    #     magentaprint("Cartography.wait_for_flag()")
+    #     super().wait_for_flag()
 
     def notify(self, regex, M_obj):
         if regex in RegexStore.too_dark:            

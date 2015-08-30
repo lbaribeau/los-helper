@@ -49,8 +49,14 @@ class SimpleCombatObject(CombatObject, ThreadingMixin, Command):
         # magentaprint("SimepleCombatObject end_combat_regexes: " + str(self.end_combat_regexes))
 
     def notify(self, regex, M_obj):
+        magentaprint(str(self) + " notified.")
         CombatObject.notify(self, regex, M_obj)
         Command.notify(self, regex, M_obj)
+
+    # def execute(self, target):
+    #     # self.wait_until_ready()
+    #     if not self.stopping:
+    #         super().execute(target)
 
     # Needs to be a class method because the human doesn't have the object.
     @classmethod
@@ -76,11 +82,11 @@ class Kill(SimpleCombatObject):
     cooldown_after_failure = 3 
     regexes = [] 
 
-    good_MUD_timeout = 1.5  # Kill regexes are complicated and you don't want to fail too badly during combat.
+    good_MUD_timeout = 4  # Kill regexes are complicated and you don't want to fail too badly during combat.
 
     success_regexes = [RegexStore.attack_hit]
     failure_regexes = [RegexStore.attack_miss]
-    error_regexes = [RegexStore.attack_error]
+    error_regexes = [RegexStore.bad_k_target]
 
     def __init__(self, telnetHandler):
         super().__init__(telnetHandler)
@@ -105,7 +111,7 @@ class Cast(SimpleCombatObject):
 
     success_regexes = [RegexStore.cast, RegexStore.aura]
     failure_regexes = [RegexStore.cast_failure, RegexStore.no_mana]
-    error_regexes = [RegexStore.cast_error]
+    error_regexes = [RegexStore.bad_target_or_spell, RegexStore.not_here]
 
     aura = None
     aura_timer = 0
@@ -158,21 +164,39 @@ class Cast(SimpleCombatObject):
 
         # Keep in mind that cls.target is for thread use.
 
-    def update_aura(self):
+    def persistent_cast(self, spell, target=None):
+        # This just spams on Please wait, and spam_spell also deals with Spell failed.
+        self.__class__.command = 'c ' + spell
+        self.persistent_execute(target)
+
+    def update_aura(self, character):
+        if not 'show-aura' in self.character.spells:
+            return
+
         if time() > self.aura_timer + self.aura_refresh:
-            self.cast('show')
-            self.wait_for_flag()
+            self.spam_spell(character, Spells.showaura)
+            # self.cast('show')
+            # self.wait_for_flag()
+            # while self.result is 'failure':
+            #     self.cast('show')
+            #     self.wait_for_flag()
+            if self.result == 'success':
+                self.aura_timer = time.time()
         else:
             magentaprint("Last aura update %d seconds ago." % round(time.time() - self.aura_timer))
 
     def spam_spell(self, character, spell, target=None):  # Maybe a prompt object would be better than character
+        # Spam until success
+        if spell not in self.character.spells:
+            return
+
         spell_cost = 2 if re.match("vig?|vigor?", spell) else \
                      1 if re.match("show?|show-a?|show-aura?", spell) else \
                      5 if re.match("lig?|light?", spell) else 3
 
-        self.result = ''
+        self.result = 'failure'
 
-        while self.result != 'success' and character.MANA >= spell_cost:
+        while self.result == 'failure' and character.MANA >= spell_cost and not self.stopping:
             self.wait_until_ready()
             self.cast(spell, target)
             self.wait_for_flag()

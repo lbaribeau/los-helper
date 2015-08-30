@@ -6,6 +6,8 @@ from ThreadingMixin import ThreadingMixin2
 from BotReactions import BotReactionWithFlag
 import RegexStore
 from misc_functions import magentaprint
+from CombatObject import Kill
+
 
 # class Ability(ThreadingMixin2):
 #     def __init__(self):
@@ -186,7 +188,7 @@ class DanceOfTheCobra(FastCombatAbility):
     success_regexes = [RegexStore.dance_of_the_cobra]
     # failure_regex = r"The Dance of the Snake has no effect on the (.+?)\.\r\n"  # and you can hit right away.
     failure_regexes = [RegexStore.dance_of_the_cobra_fail]
-    error_regexes = [RegexStore.dance_whom]
+    error_regexes = [RegexStore.dance_whom, RegexStore.not_here]
     # classes = ["Brd"]
     level = 1  # guessed
     # magentaprint("Dance of the Cobra regexes before calling super: " + str(self.regexes))
@@ -200,8 +202,8 @@ class Turn(FastCombatAbility):
     cooldown_after_failure = 30  # can attack immediately, but flee/move is 3 seconds later
                                  # (Said Please wait 1 sec THEN Please wait 2 sec)
     success_regexes = [RegexStore.turn]
-    failure_regexes = [RegexStore.turn_fail]
-    error_regexes = [RegexStore.turn_living_target]
+    failure_regexes = [RegexStore.turn_fail, RegexStore.turn_living_target]
+    error_regexes = [RegexStore.turn_whom, RegexStore.not_here]
     # classes = ["Cle", "Pal"]
     level = 1
 
@@ -215,7 +217,7 @@ class Touch(CombatAbility):
     cooldown_after_failure = 270
     success_regexes = [RegexStore.touch]
     failure_regexes = [RegexStore.touch_fail]
-    error_regexes = [RegexStore.touch_whom]
+    error_regexes = [RegexStore.touch_whom, RegexStore.not_here]
     # classes = ["Mon"]
     level = 4
 
@@ -225,7 +227,7 @@ class Wither(CombatAbility):
     cooldown_after_failure = 10  # can't attack/flee/move immediately
     success_regexes = [RegexStore.wither]  # regex needs work
     failure_regexes = [RegexStore.wither_fail]
-    error_regexes = [RegexStore.wither_whom]
+    error_regexes = [RegexStore.wither_whom, RegexStore.not_here]
     # classes = ["Dar"]
     level = 1
 
@@ -235,7 +237,7 @@ class Bash(CombatAbility):
     cooldown_after_failure = 3
     success_regexes = [RegexStore.bash]
     failure_regexes = [RegexStore.bash_fail]
-    error_regexes = [RegexStore.bash_whom]
+    error_regexes = [RegexStore.bash_whom, RegexStore.not_here]
     # classes = ["Bar", "Fig"]
     level = 1
 
@@ -245,6 +247,7 @@ class Circle(CombatAbility):
     cooldown_after_failure = 3
     success_regexes = [RegexStore.circle]
     failure_regexes = [RegexStore.circle_fail]
+    error_regexes = [RegexStore.circle_whom, RegexStore.not_here]
     # classes = ["Bar", "Fig"]
     level = 1
 

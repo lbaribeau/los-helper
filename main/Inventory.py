@@ -392,7 +392,7 @@ class Inventory(BotReactionWithFlag):
                     self.add_to_dict(return_dict, item, n+2)
                     break
             if number_found is False:
-                magentaprint("Inventory parsed an item without a/an/some/two... " + item)
+                magentaprint("Inventory parsed " + item)
                 #if the item wasn't received with a/an/some etc...
                 #we assume it's just one item
                 # mud_item = MudItem(item)
