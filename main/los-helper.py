@@ -31,7 +31,7 @@ import sys, time, getpass, threading, atexit, re, os, socket
 from misc_functions import *
 from Character import Character
 from CharacterClass import CharacterClass
-from GrindThread import GrindThread
+from TrackGrindThread import TrackGrindThread
 from SmartGrindThread import SmartGrindThread
 from SmartCrawlThread import SmartCrawlThread
 from GotoThread import GotoThread
@@ -297,12 +297,10 @@ class LosHelper(object):
         if self.botThread != None and self.botThread.is_alive():
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
-            # self.botThread = SmartGrindThread(self.character, 
-            self.botThread = GrindThread(self.character, 
-                                              self.commandHandler, 
-                                              self.mudReaderHandler,
-                                              self.mud_map,
-                                              starting_path)
+            # self.botThread = TrackGrindThread(self.character, self.commandHandler, 
+            #     self.mudReaderHandler, self.mud_map, starting_path)
+            self.botThread = SmartGrindThread(self.character, self.commandHandler, 
+                self.mudReaderHandler, self.mud_map)
             self.botThread.start()
 
     def start_crawl(self):

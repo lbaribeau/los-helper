@@ -10,7 +10,16 @@ class TelnetHandler(object):
     server_timeout = 299 
 
     def __init__(self):
-        self.tn = telnetlib.Telnet('mud.landsofstone.org', 4801)
+        connected = False
+        while not connected:
+            try:
+                self.tn = telnetlib.Telnet('mud.landsofstone.org', 4801, 25)
+                connected = True
+            except socket.error as e:
+                magentaprint("TelnetHandler connect timeout, retrying.")
+                connected = False
+                time.sleep(5)
+
         self.set_timer()
         self.thread = Thread(target=self.keep_connection_open)
         self.thread.daemon = True

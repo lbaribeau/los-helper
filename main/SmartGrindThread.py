@@ -11,8 +11,8 @@ class SmartGrindThread(GrindThread):
     # pawnshop_aid = 130
     # tip_aid = 266
 
-    def __init__(self, character, commandHandler, mudReaderHandler, mud_map, starting_path=0): 
-        super().__init__(character, commandHandler, mudReaderHandler, mud_map, starting_path)
+    def __init__(self, character, commandHandler, mudReaderHandler, mud_map): 
+        super().__init__(character, commandHandler, mudReaderHandler, mud_map)
 
         self.is_actually_dumb = False
 
@@ -43,7 +43,6 @@ class SmartGrindThread(GrindThread):
     def do_on_successful_go(self):
         super().do_on_successful_go()
         # self.cartography
-
 
     def check_weapons(self):
         weapons_equipped = True
