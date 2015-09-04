@@ -73,7 +73,7 @@ class Go(Command):
         if self.door:
             self.open.execute(target)
             self.open.wait_for_flag()
-            if self.open.result is 'success':
+            if self.open.success:
                 super().persistent_execute(target)
 
     @classmethod

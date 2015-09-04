@@ -165,7 +165,7 @@ class LosHelper(object):
                 # after quit was sent.
                 # self.telnetHandler.write(user_input)
                 quit = Quit(self.mudReaderHandler, self.telnetHandler)
-                stopping = True if quit.result == 'success' else False
+                stopping = True if quit.success else False
 
                 if self.botThread != None and self.botThread.is_alive():
                     self.botThread.stop()

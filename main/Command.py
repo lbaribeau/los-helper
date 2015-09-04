@@ -41,7 +41,7 @@ class SimpleCommand(BotReactionWithFlag):
 
 class Command(SimpleCommand):
     # The main point of this is to write code for the Kill, Cast, Ability, and 
-    # Go timers... ie execute_and_block_serious()
+    # Go timers... ie execute_and_block_serious() (persistent_execute())
 
     # So we're expecting one instance of these objects in the reaction list to 
     # keep the timing class variables up to date. (notify)  Call super just to 
@@ -72,6 +72,7 @@ class Command(SimpleCommand):
 
         self.please_wait_time = -1  # This variable is in case the server tells us to wait
                                     # Keep at -1 unless a "Please wait" message is given
+        self.result = ''
 
         # self.regexes = self.regexes + self.success_regexes
         # self.regexes = self.success_regexes[:]
@@ -111,32 +112,52 @@ class Command(SimpleCommand):
 
         # magentaprint(str(self) + " command notified, regex - " + regex[:30] + "...")
         # if regex in itertools.chain(self.success_regexes):
-        if regex in chain.from_iterable(self.success_regexes):
-            self.result = 'success'
+        self.result = regex
+        self.M_obj = M_obj
+
+        if self.success:
             self.please_wait_time = -1
         # elif regex in [item for sublist in self.failure_regexes for item in self.failure_regexes]
         # elif regex in itertools.chain(*self.failure_regexes):
-        elif regex in chain.from_iterable(self.failure_regexes):
-            self.result = 'failure'
+        elif self.failure:
             self.please_wait_time = -1
             self.notify_failure(regex, M_obj)
             # [item for sublist in l for item in sublist]
         # elif regex in list(itertools.chain(self.error_regexes)):
-        elif regex in chain.from_iterable(self.error_regexes):
-            self.result = 'error'
+        elif self.error:
             self.clear_timer()
-        elif regex in RegexStore.please_wait:
+        elif self.please_wait1:
             self.please_wait_time = int(M_obj.group(1))
             self.notify_please_wait()
-        elif regex in RegexStore.please_wait2:
+        elif self.please_wait2:
             self.please_wait_time = 60*int(M_obj.group(1)) + int(M_obj.group(2))
             self.notify_please_wait()
 
         super().notify(regex, M_obj)   # maintains wait_for_flag()
 
-    def notify_failure(self, regex, M_obj):
+    @property
+    def success(self):
+        return self.result in chain.from_iterable(self.success_regexes)
+    @property
+    def failure(self):
+        return self.result in chain.from_iterable(self.failure_regexes)
+    @property
+    def error(self):
+        return self.result in chain.from_iterable(self.error_regexes)
+    @property
+    def please_wait1(self):
+        return self.result in RegexStore.please_wait
+    @property
+    def please_wait2(self):
+        return self.result in RegexStore.please_wait2
+    @property
+    def please_wait(self):
+        return self.please_wait1 or self.please_wait2
+
+    @classmethod
+    def notify_failure(cls, regex, M_obj):
         # This gets overriden by Cast
-        self.__class__.timer = self.__class__.timer - self.cooldown_after_success + self.cooldown_after_failure
+        cls.timer = cls.timer - cls.cooldown_after_success + cls.cooldown_after_failure
 
     def notify_please_wait(self):
         # The problem with Please wait we can be notified even when it's from a different command.
@@ -163,10 +184,10 @@ class Command(SimpleCommand):
 
             if (self.__class__.timer and abs(self.please_wait_time - self.wait_time()) < 2) or not self.__class__.timer:
             # if not self.__class__.timer or (self.__class__.timer and abs(self.please_wait_time - self.wait_time()) < 2):
-                self.result = 'Please wait ' + str(self.please_wait_time)
+                # self.result = 'Please wait ' + str(self.please_wait_time)
+                self.result = self.please_wait1
                 self.__class__.timer = time.time() + self.please_wait_time  # Ehrm sometimes this makes it so you can't move
 
-    @classmethod
     def clear_timer(cls):
         # Like when the command is ready to be issued
         cls.timer = time.time() - max(cls.cooldown_after_success, cls.cooldown_after_failure)

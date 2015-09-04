@@ -121,7 +121,8 @@ class BotThread(threading.Thread):
             # self.commandHandler.go.execute(exit_str)
             self.commandHandler.go.persistent_execute(exit_str)
             # self.commandHandler.go.wait_for_flag()
-            return self.commandHandler.go.result is 'success'
+            # return self.commandHandler.go.result is 'success'
+            return self.commandHandler.go.success
             return self.check_for_successful_go()
             # if re.match("(.*?door)", exit_str):
             #     self.commandHandler.process("open " + exit_str)
@@ -502,7 +503,7 @@ class BotThread(threading.Thread):
 
         self.cast.update_aura(self.character)
 
-        if self.cast.result is not 'success': # Probably no mana since spell fail gets spammed
+        if not self.cast.success:  # Probably no mana since spell fail gets spammed
             return False
         else:
             return True
@@ -660,7 +661,7 @@ class BotThread(threading.Thread):
                 if skill.up():
                     skill.execute()
                     skill.wait_for_flag()
-                    return skill.result is 'success'
+                    return skill.success
 
     def do_combat_skills(self, target):
         if self.character._class is not None:
@@ -668,7 +669,7 @@ class BotThread(threading.Thread):
                 if skill.up():
                     skill.execute(target)
                     skill.wait_for_flag()
-                    return skill.result is 'success'
+                    return skill.success
         return False
 
     def do_heal_skills(self):
@@ -677,7 +678,7 @@ class BotThread(threading.Thread):
                 if skill.up():
                     skill.execute()
                     skill.wait_for_flag()
-                    return skill.result is 'success'
+                    return skill.success
         return False
 
     def engage_monster(self, monster):

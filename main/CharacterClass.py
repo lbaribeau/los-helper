@@ -69,7 +69,7 @@ class CharacterClass(object):
             self.lvl1_maxHP = 19 
             self.lvl1_maxMP = 3
             abilities = [ Pray, Turn ]
-            Cast.cooldown_after_success = 4
+            Cast.cooldown_after_success = 5
         elif class_string == "Ran":
             self.lvl1_maxHP = 18 
             self.lvl1_maxMP = 3

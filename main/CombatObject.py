@@ -2,8 +2,7 @@
 from threading import Thread
 import re
 from time import time
-# from itertools import chaa
-import itertools
+from itertools import chain
 
 from misc_functions import magentaprint
 from Command import Command
@@ -25,9 +24,24 @@ class CombatObject(object):
         self.regex_cart = self.end_combat_regexes[:]
 
     def notify(self, regex, M_obj):
-        if regex in itertools.chain.from_iterable(self.end_combat_regexes):
+        self.result = regex
+        if self.end_combat:
             magentaprint(str(self) + " ending combat.")
             self.stop()
+
+    @property 
+    def end_combat(self):
+        # magentaprint("CombatObject.end_combat")
+        # # magentaprint(str(self))
+        # magentaprint(str(self.result))
+        return self.result in RegexStore.mob_died or self.result in RegexStore.mob_fled
+
+    @property
+    def mob_died(self):
+        return self.result in chain.from_iterable(RegexStore.mob_died)
+    @property
+    def mob_fled(self):
+        return self.result in chain.from_iterable(RegexStore.mob_fled)
 
 class SimpleCombatObject(CombatObject, ThreadingMixin, Command):
     # This is for code used by Kill and Cast but not SmartCombat
@@ -180,7 +194,7 @@ class Cast(SimpleCombatObject):
             # while self.result is 'failure':
             #     self.cast('show')
             #     self.wait_for_flag()
-            if self.result == 'success':
+            if self.sucess:
                 self.aura_timer = time.time()
         else:
             magentaprint("Last aura update %d seconds ago." % round(time.time() - self.aura_timer))
@@ -194,9 +208,9 @@ class Cast(SimpleCombatObject):
                      1 if re.match("show?|show-a?|show-aura?", spell) else \
                      5 if re.match("lig?|light?", spell) else 3
 
-        self.result = 'failure'
+        self.result = RegexStore.cast_failure
 
-        while self.result == 'failure' and character.MANA >= spell_cost and not self.stopping:
+        while self.failure and character.MANA >= spell_cost and not self.stopping:
             self.wait_until_ready()
             self.cast(spell, target)
             self.wait_for_flag()

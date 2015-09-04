@@ -103,7 +103,7 @@ class SmartCombat(CombatObject):
 
     def do_cast(self, spell, target=None):
         self.cast.persistent_cast(spell, target)
-        if self.cast.result is 'error':
+        if self.cast.error:
             self.stop()
 
     def use_any_fast_combat_abilities(self):
@@ -120,9 +120,9 @@ class SmartCombat(CombatObject):
                 a.wait_for_flag()
                 magentaprint("SmartCombat finished using ability.")
                 # So if we hit with Dance of the Cobra, we should save mana...
-                if a.result is 'success' and isinstance(a, DanceOfTheCobra):
+                if a.success and isinstance(a, DanceOfTheCobra):
                     self.mob_charmed = True
-                elif a.result is 'error':
+                elif a.error:
                     self.stop()
                 # if self.stopping:
                 #     return
@@ -144,14 +144,14 @@ class SmartCombat(CombatObject):
                 magentaprint("SmartCombat executing " + str(a))
                 a.execute(self.target)
                 a.wait_for_flag()
-                if a.result is 'error':
+                if a.error:
                     self.stop()
                 return
 
         # self.attack_wait()
         self.kill.execute(self.target)
         self.kill.wait_for_flag()
-        if self.kill.result is 'error':
+        if self.kill.error:
             self.stop()
         # self.character.ATTACK_CLK = time.time()  # TODO: Kill should be smart enough to keep the clock set
                                                  # Kill should actually own the clock...
