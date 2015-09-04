@@ -95,7 +95,6 @@ class BotThread(threading.Thread):
         magentaprint("BotThread: finished now.")
 
     def go(self, exit_str):
-        
         if self.stopping:
             return True
         
@@ -376,8 +375,6 @@ class BotThread(threading.Thread):
 
             if self.character.HEALTH >= self.health_to_go:
                 return
-
-            self.cast.start_thread('v')
         
         self.character.HAS_RESTORE_ITEMS = False
 
@@ -408,8 +405,6 @@ class BotThread(threading.Thread):
             self.cast.wait_until_ready()
             self.engage_any_attacking_mobs()
             self.cast.cast('v')
-
-        self.cast.stop()  # Unnecessary
 
         # while BotThread.should_heal_up(self.character.HEALTH, self.character.HEALTH_TO_HEAL,
         #         self.character.MANA, heal_cost, self.character.KNOWS_VIGOR, self.character.HAS_RESTORE_ITEMS) and not self.stopping:

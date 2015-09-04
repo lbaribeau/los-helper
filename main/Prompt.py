@@ -4,6 +4,8 @@ import RegexStore
 import time
 from CombatObject import Cast
 
+from misc_functions import magentaprint
+
 class Prompt(object):
     def __init__(self, character):
         self.alert_flag = True

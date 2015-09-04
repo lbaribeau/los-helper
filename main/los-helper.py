@@ -297,8 +297,8 @@ class LosHelper(object):
         if self.botThread != None and self.botThread.is_alive():
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
         else:
-            self.botThread = SmartGrindThread(self.character, 
-            # self.botThread = GrindThread(self.character, 
+            # self.botThread = SmartGrindThread(self.character, 
+            self.botThread = GrindThread(self.character, 
                                               self.commandHandler, 
                                               self.mudReaderHandler,
                                               self.mud_map,

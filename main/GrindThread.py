@@ -5,9 +5,7 @@ from CommandHandler import *
 from Inventory import *
 from Exceptions import *
 
-
 class GrindThread(BotThread):
-
     def __init__(self, character, commandHandler, mudReaderHandler, mud_map, starting_path=None): 
         super().__init__(character, commandHandler, mudReaderHandler, mud_map)
 
@@ -44,9 +42,10 @@ class GrindThread(BotThread):
 
     def do_pre_go_actions(self):
         # Why are we resting before every 'go'... (?!)
-        # self.rest_and_check_aura()
-        # self.check_weapons()
-        # self.check_armour()
+        self.rest_and_check_aura()
+        self.check_weapons()
+        self.check_armour()
+        # Answer: this applies to track grind and not smart grind
         return
 
     def decide_where_to_go(self):
@@ -322,6 +321,7 @@ class GrindThread(BotThread):
 
     def do_post_go_actions(self):
         #here we would implement combat or whatever other other actions we want to do before we decide where to go again
+        # Maybe this is more for do_on_successful_go()(?)
         if self.ready_for_combat():
             new_target = self.decide_which_mob_to_kill(self.character.MONSTER_LIST)
         else:
@@ -369,26 +369,27 @@ class GrindThread(BotThread):
     def do_go_hooks(self, exit_str):
       #if you want to define custom hooks like sell_items / drop_items etc... you can do so here
 
-      if(exit_str == "nw" or exit_str == "ne" or
+      if (exit_str == "nw" or exit_str == "ne" or
            exit_str == "sw" or exit_str == "se" or
            exit_str == 'n' or exit_str == 'e' or
            exit_str == 's' or exit_str == 'w'):
-            self.commandHandler.process(exit_str)
-            return self.check_for_successful_go() 
-
-      elif(exit_str == "prepare"):
+            # self.commandHandler.process(exit_str)
+            # return self.check_for_successful_go() 
+            # return self.check_for_successful_go() 
+            # return self.go(exit_str)   # Erhm self.go calls us, not the other way around
+            self.commandHandler.go.persistent_execute(exit_str)
+            return self.commandHandler.go.success
+      elif exit_str == "prepare":
           self.commandHandler.process(exit_str)
           return True
-
-      elif(exit_str == "sell_items"):
+      elif exit_str == "sell_items":
           self.sell_items()
           return True
-
-      elif(exit_str == "drop_items"):
+      elif exit_str == "drop_items":
           self.drop_items()
           return True
 
-      return super(GrindThread, self).do_go_hooks(exit_str)
+      return super().do_go_hooks(exit_str)
 
 # Just thinking about changing top level...
  

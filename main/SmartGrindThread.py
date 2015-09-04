@@ -40,7 +40,6 @@ class SmartGrindThread(GrindThread):
         if len(self.character.MONSTER_KILL_LIST) == 0:
             self.get_targets()
 
-
     def do_on_successful_go(self):
         super().do_on_successful_go()
         # self.cartography
