@@ -29,36 +29,34 @@ import sys, time, getpass, threading, atexit, re, os, socket
 # import_subdir("../threads")
 
 from misc_functions import *
-from Character import Character
-from CharacterClass import CharacterClass
-from TrackGrindThread import TrackGrindThread
-from SmartGrindThread import SmartGrindThread
-from SmartCrawlThread import SmartCrawlThread
-from GotoThread import GotoThread
-from MixThread import MixThread
-from SlaveThread import SlaveThread
-from CommandHandler import CommandHandler
-from MudReaderHandler import MudReaderHandler 
-from MudReaderThread import MudReaderThread 
-from MudListenerThread import MudListenerThread 
-from MyBuffer import MyBuffer 
-from Inventory import Inventory 
-from CombatReactions import CombatReactions
-from SmartCombat import SmartCombat
-from Info import Info 
-from Whois import Whois
-from Spells import Spells
-from Cartography import Cartography 
-from BotReactions import *
-from TelnetHandler import TelnetHandler 
-from FakeTelnetHandler import FakeTelnetHandler 
-from Quit import Quit
-
-from Database import *
-from MudMap import *
+from comm.Character import Character
+from comm.CharacterClass import CharacterClass
+from bots.TrackGrindThread import TrackGrindThread
+from bots.SmartGrindThread import SmartGrindThread
+from bots.SmartCrawlThread import SmartCrawlThread
+from bots.GotoThread import GotoThread
+from bots.MixThread import MixThread
+from bots.SlaveThread import SlaveThread
+from comm.CommandHandler import CommandHandler
+from comm.MudReaderHandler import MudReaderHandler 
+from comm.MudReaderThread import MudReaderThread 
+from comm.MudListenerThread import MudListenerThread 
+from comm.MyBuffer import MyBuffer 
+from command.Inventory import Inventory 
+from reactions.CombatReactions import CombatReactions
+from combat.SmartCombat import SmartCombat
+from command.Info import Info 
+from command.Whois import Whois
+from command.Spells import Spells
+from command.Quit import Quit
+from reactions.Cartography import Cartography 
+from reactions.BotReactions import *
+from comm.TelnetHandler import TelnetHandler 
+from comm.FakeTelnetHandler import FakeTelnetHandler 
+from db.Database import *
+from db.MudMap import *
 
 class LosHelper(object):
-
     def __init__(self):
         self.botThread = None
         self.mud_map = None

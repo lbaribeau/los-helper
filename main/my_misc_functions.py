@@ -1,9 +1,9 @@
 import time
 import sys
 
-from comm.ConsoleHandler import newConsoleHandler
+from ConsoleHandler import newConsoleHandler
 from datetime import datetime
-from db.Database import *
+from Database import *
 
 debugMode = True
 verboseMode = True
@@ -153,14 +153,5 @@ def key_with_max_val(d):
      v=list(d.values())
      k=list(d.keys())
      return k[v.index(max(v))],max(v)
-
-def flush_input():
-    try:
-        import sys, termios
-        termios.tcflush(sys.stdin, termios.TCIOFLUSH)
-    except ImportError:
-        import msvcrt
-        while msvcrt.kbhit():
-            msvcrt.getch()
 
 
