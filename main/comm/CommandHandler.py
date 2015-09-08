@@ -7,7 +7,8 @@ import re
 
 from misc_functions import magentaprint
 from combat.SmartCombat import SmartCombat
-from combat.CombatObject import Kill, Cast
+from combat.Kill import Kill
+from combat.Cast import Cast
 from db.Database import *
 from db.MudMap import *
 import command.Command

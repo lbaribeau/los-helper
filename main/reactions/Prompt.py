@@ -3,7 +3,7 @@
 
 import time
 
-from combat.CombatObject import Cast
+from combat.Cast import Cast
 from comm import RegexStore
 from misc_functions import magentaprint
 

@@ -173,7 +173,7 @@ cast = [
     r"You cast a (.+?) spell\."
 ]
 cast_failure = [
-    r"Your spell fails\.",
+    r"Your spell fails\."
 ]
 no_mana = [
     r"You cannot meet the casting cost!"

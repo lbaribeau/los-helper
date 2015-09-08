@@ -5,7 +5,7 @@ from bots.BotThread import BotThread
 from misc_functions import magentaprint
 from reactions.BotReactions import GenericBotReaction
 from Exceptions import *
-import command.Spells
+from command import Spells
 from math import floor, ceil
 
 class GrindThread(BotThread):

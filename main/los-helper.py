@@ -121,7 +121,7 @@ class LosHelper(object):
         # self.mud_map_thread.join()
         self.mudListenerThread.join(10)
         self.mudReaderThread.join(10)
-        self.telnetHandler.close();
+        self.telnetHandler.close()
         flush_input()
 
         try:
@@ -323,9 +323,9 @@ class LosHelper(object):
         M_obj = re.search("-?[0-9]+", user_input)
 
         if M_obj:
-            starting_path = int(M_obj.group(0))
+            area_to = int(M_obj.group(0))
         else:
-            starting_path = None
+            area_to = None
 
         if self.botThread != None and self.botThread.is_alive():
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
@@ -334,7 +334,7 @@ class LosHelper(object):
                                         self.commandHandler, 
                                         self.mudReaderHandler,
                                         self.mud_map,
-                                        starting_path,
+                                        area_to,
                                         is_show_to)
             self.botThread.start()
 

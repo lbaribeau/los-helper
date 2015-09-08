@@ -1,5 +1,5 @@
 
-from combat.CombatObject import Cast
+from combat.Cast import Cast
 from command.Ability import *
 from misc_functions import magentaprint
 

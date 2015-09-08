@@ -3,7 +3,7 @@ import time, itertools
 
 # from Command import Command
 from command.ThreadingMixin2 import ThreadingMixin2
-from combat.CombatObject import Kill
+from combat.Kill import Kill
 from reactions.BotReactions import BotReactionWithFlag
 from comm import RegexStore
 from misc_functions import magentaprint

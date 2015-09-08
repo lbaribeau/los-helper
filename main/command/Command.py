@@ -267,7 +267,8 @@ class Command(SimpleCommand):
 
     @classmethod
     def wait_until_ready(cls):
-        # magentaprint(str(cls) + " wait_until_ready waiting " + str(max(0, cls.timer - time.time())))
+        if cls.wait_time() > 0:
+            magentaprint(str(cls) + " wait_until_ready waiting " + str(round(cls.wait_time(), 1)))
         # return if not cls.timer else time.sleep(max(0, cls.wait_time()))
         # time.sleep(max(0, cls.timer - time.time()))  # timer is a class variable
         time.sleep(cls.wait_time())
