@@ -5,9 +5,9 @@ import atexit
 import time
 import re
 import select
+import sys
 
 from misc_functions import *
-
 
 class MudListenerThread(threading.Thread):
     ''' This thread watches the the MUD output and appends it 
@@ -29,11 +29,14 @@ class MudListenerThread(threading.Thread):
         # so we can watch for input.        
         socket_number = self.telnetHandler.get_socket()
         fragment=""
+        magentaprint("MudListenerThread sys.argv " + str(sys.argv))
+        select_timeout = 2.0 if '-fake' not in sys.argv else 0.1
+        magentaprint("MudListenerThread select timeout is " + str(select_timeout))
         
         # Loop forever, just do stuff when the socket says its ready.
         while not self.stopping:
             try:
-                sel_out_triple = select.select([socket_number], [], [], 2)  # A 1 second timeout makes quitting fast
+                sel_out_triple = select.select([socket_number], [], [], select_timeout)  # A 1 second timeout makes quitting fast
             except ValueError:
                 # TODO:  Hmmm, this can get SPAMMED BIGTIME on exit...  (Do not print here)
                 if not self.airbag:
@@ -43,6 +46,7 @@ class MudListenerThread(threading.Thread):
 
             if (sel_out_triple != ([], [], []) or socket_number == 1):
                 try:
+                    # magentaprint("MudListenerThread calling read_some().")  # Can print a LOT
                     fragment = fragment + self.telnetHandler.read_some().decode('ascii', errors='ignore')
                 except (EOFError, OSError) as e:
                     # I think that the server doesn't send these.

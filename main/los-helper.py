@@ -61,23 +61,27 @@ class LosHelper(object):
         self.botThread = None
         self.mud_map = None
         magentaprint("LosHelper initializing...", False)
-        self.mud_map = MudMap()
-        self.bot_ready = self.mud_map.ready
         
         # Threading the db setup causes a locking error...
-        # self.bot_ready = False
-        # self.mud_map_thread = threading.Thread(target=self.setup_mud_map)
+        self.bot_ready = False
+        # self.mud_map = MudMap()
+        # self.bot_ready = self.mud_map.ready
+        self.mud_map_thread = threading.Thread(target=self.setup_mud_map)
         # self.mud_map_thread.start()  # Don't forget to uncomment .join()
+
         # self.mud_map_thread = threading.Thread(target=magentaprint, args=("setting up mud map in main thread",))
         # self.setup_mud_map()
         self.character = Character()
-        
+
+        sys.argv = [s.strip() for s in sys.argv]  # removes \r since git can add them to run.sh
+
         if "-fake" in sys.argv:
             self.telnetHandler = FakeTelnetHandler()
-            sys.argv.remove("-fake")
+            # sys.argv.remove("-fake")
         else:
             self.telnetHandler = TelnetHandler()
 
+        self.mud_map_thread.start()  # Don't forget to uncomment .join()
         self.consoleHandler = newConsoleHandler() 
         self.MUDBuffer = MyBuffer()
         self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
@@ -112,13 +116,13 @@ class LosHelper(object):
     def setup_mud_map(self):
         magentaprint("Generating the mapfile....", False)
         self.mud_map = MudMap()
-        magentaprint("Mapfile generated", False)
+        magentaprint("LosHelper: Mapfile generated", False)
         self.bot_ready = True
     
     def close(self):
         self.mudListenerThread.stop()
         self.mudReaderThread.stop()
-        # self.mud_map_thread.join()
+        self.mud_map_thread.join()
         self.mudListenerThread.join(10)
         self.mudReaderThread.join(10)
         self.telnetHandler.close()
@@ -157,11 +161,9 @@ class LosHelper(object):
 
                 if self.botThread != None and self.botThread.is_alive():
                     self.botThread.stop()
-
             elif user_input == "quit":
-                # TODO:  correct if MUD prints "Please wait x more seconds"
-                # after quit was sent.
                 # self.telnetHandler.write(user_input)
+                # Undesireable waiting for command response (hangs user input for a bit)
                 quit = Quit(self.mudReaderHandler, self.telnetHandler)
                 stopping = True if quit.success else False
 
@@ -281,9 +283,9 @@ class LosHelper(object):
         self.character.process_info()
 
     def start_grind(self, user_input):
-        # if not self.bot_ready:
-        #     magentaprint("Please wait for the Mapfile before using this command", False)
-        #     return False
+        if not self.bot_ready:
+            magentaprint("Please wait for the Mapfile before using this command", False)
+            return False
 
         M_obj = re.search("[0-9]+", user_input)
 

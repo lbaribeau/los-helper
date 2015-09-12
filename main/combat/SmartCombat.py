@@ -52,6 +52,7 @@ class SmartCombat(CombatObject):
 
     def keep_going(self, target=None):
         self.stopping = False
+        self.casting = True
         self.target = target if target else self.target
 
     def start_thread(self, target, spell=None):
@@ -75,7 +76,8 @@ class SmartCombat(CombatObject):
         self.use_any_fast_combat_abilities()  # ie. Touch
 
         while not self.stopping:
-            if self.kill.up() or self.kill.timer <= self.cast.timer or not self.casting:
+            magentaprint("SmartCombat loop kill.timer " + str(round(self.kill.wait_time(), 1)) + " cast.timer " + str(round(self.cast.wait_time(), 1)) + ".")
+            if self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
                 self.kill.wait_until_ready()
                 if self.stopping: 
                     break 
