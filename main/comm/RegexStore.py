@@ -11,7 +11,51 @@ please_wait2 = [r"Please wait (\d+):(\d+) more minutes"]
 
 __numbers = "(1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th|11th|12th|13th|14th|15th|16th|17th|18th|19th)" 
 __numbers2 = "(?:(\d*1st|\d*2nd|\d*3rd|\d+th) )?"
+__numbers3 = "(?P<nth>\d*1st|\d*2nd|\d*3rd|\d+th) "
+__numbers_opt = "(?:" + __numbers3 + ")?"
+__The_mob = "(?:The " + __numbers_opt + ")?(?P<mob>[\w ]+) "
+__the_mob = "(?:the " + __numbers_opt + ")?(?P<mob>[\w ]+) "
+__Numbers = "(:?(?P<N>An?|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten|Eleven|Twelve|Thirteen) )?"
+# __mob_string = "(?P<mob_string>[\w ]+)"  # We don't need this unless there are commas.
 #s_numbered=" ?([\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)? ?"
+
+# Combat / Mobs
+# mob_died = ["Your attack overwhelms (?:the " + __numbers_opt + ")?(?P<mob>.+?) and (s?he|it) collapses!"]
+# # it_fled = ["The (" + numbers + " )?(?P<mob_name>.+?) flees to the (.+?)\."]
+# # mob_fled = ["(?:The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 
+# mob_fled = ["(?:The " + __numbers_opt + ")?(?P<mob>.+?) flees to the (?P<exit>.+?)\."] 
+# mob_defeated = ["Your enemy, (?:the " + __numbers_opt + ")?(?P<mob>.+?) has been defeated\."]
+# mob_wandered = ["(?:The " + __numbers_opt + ")?(?P<mob>.+?) just wandered to the (?P<exit>.+?)\."
+mob_died = ["Your attack overwhelms " + __the_mob + "and (?:s?he|it) collapses!"]
+# it_fled = ["The (" + numbers + " )?(?P<mob_name>.+?) flees to the (.+?)\."]
+# mob_fled = ["(?:The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 
+mob_fled = [__The_mob + "flees to the (?P<exit>[\w ]+)\."] 
+mob_defeated = ["Your enemy, " + __the_mob + "has been defeated\."]
+mob_wandered = [__The_mob + "just wandered to the (?P<exit>[\w ]+)\."]
+# mob_left = ["The (:?(?P<nth>\d*1st|\d*2nd|\d*3rd|\d+th) )?(?P<mob>.+?) just wandered away\."
+mob_left = [__The_mob + " just wandered away\."]
+# mob_arrived = ["An? (?P<mob>.+?) just arrived\."]
+# mob_arrived = [__Numbers + "(?P<mob>[\w ]+?) just arrived\."]
+mob_arrived = ["(?P<mobs>[\w ]+?) just arrived\."]
+# mob_joins1 = ["the" + s_numbered + " (.+?) joins in the fight!"]
+# Lower case 't' grammar error
+mob_joined1 = [__the_mob + "joins in the fight!"]  # A mob standing there joins
+mob_joined2 = [__the_mob + "decides to join in on the fight!"]  # A mob wanders in and joins
+mob_attacked = [
+    # "The" + s_numbered + " (.+?) punches you for (.+?) damage\.",
+    __The_mob + "punches you for (.+?) damage\.",
+    __The_mob + "throws a wild punch at you, but it misses\.",
+    __The_mob + "kicks you for (\d+) damage\.",
+    __The_mob + "kicks at you, but fails to hurt you\.",
+    __The_mob + "grabs you and gouges you for (\d+) damage\.",
+    __The_mob + "tries to grab you, but you break free of (his|her|its) grasp\.",
+    __The_mob + "tries to gouge you, but you shake (him|her|it) off\.",
+    __The_mob + "lashes out and thumps you for (\d+) damage\.",
+    __The_mob + "lashes out at you, but misses\.",               
+    __The_mob + "painfully head-butts you for (\d+) damage\.",
+    __The_mob + "casts a (.+?) on you for (\d+) damage\."
+    # __The_mob + "casts a (.+?) at you for (\d+) damage\."  # I don't think 'at' ever occurs
+] 
 
 # Go and Cartography
 #           .=\n\r   EAT JUNK DATA (death,loginprompts,hptick)              Title           Description               Exit list             Players / Mobs / Signs / Items (optional)
@@ -89,7 +133,7 @@ touch = [r"You touched the (.+?) for (.+?) damage\."]
 touch_fail = [r"You failed to harm the (.+?)\."]
 touch_whom = [r"Touch whom\?"]
 wither = [r" the (.+?) for (.+?) damage\."]  # TODO: Obviously needs work
-wither_fail = [r"Your withering touch did not hurt the (\.?)\."]
+wither_fail = [r"Your withering touch did not hurt the ([\w ]+)\."]
 wither_whom = [r"Wither whom\?"]
 bash = [r"You bash the (.+?), confusing them\."]
 bash_fail = [r"You failed to bash it\."]
@@ -98,11 +142,7 @@ circle = [r"You circle the (.+?)\."]
 circle_fail = [r"You failed to circle it\."]
 circle_whom = [r"Circle whom\?"]
 
-# Combat
-mob_died = ["Your attack overwhelms (?:the (" + __numbers + " )?)?(.+?) and (s?he|it) collapses!"]
-# it_fled = ["The (" + numbers + " )?(?P<mob_name>.+?) flees to the (.+?)\."]
-mob_fled = ["(?:The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 
-
+# Kill / Cast
 bad_k_target = [
         r"You don't see that here\.",
         r"Attack what\?"
@@ -186,7 +226,7 @@ bad_target_or_spell = [
     r"Cast at whom\?" 
 ]
 not_here = [
-    r"They are not here\."
+    "They are not here\."
 ]
 spells = [(
     r"\n\r"

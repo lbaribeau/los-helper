@@ -125,6 +125,7 @@ class Command(SimpleCommand):
             # [item for sublist in l for item in sublist]
         # elif regex in list(itertools.chain(self.error_regexes)):
         elif self.error:
+            magentaprint(str(self) + " clearing timer.")
             self.clear_timer()
         elif self.please_wait1:
             self.please_wait_time = int(M_obj.group(1))
@@ -188,6 +189,7 @@ class Command(SimpleCommand):
                 self.result = self.please_wait1
                 self.__class__.timer = time.time() + self.please_wait_time  # Ehrm sometimes this makes it so you can't move
 
+    @classmethod
     def clear_timer(cls):
         # Like when the command is ready to be issued
         cls.timer = time.time() - max(cls.cooldown_after_success, cls.cooldown_after_failure)

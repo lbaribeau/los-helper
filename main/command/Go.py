@@ -45,7 +45,7 @@ class Go(Command):
             self.character.chase_dir = ""
             # time.sleep(0.8)  # Hacked fix to get_heal_path being called before Cartography updates area_id
         elif regex in RegexStore.mob_fled:
-            mob = M_obj.group('mob_name')
+            mob = M_obj.group('mob')
             if mob in self.character.MONSTER_LIST:
                 self.character.MONSTER_LIST.remove(mob)
             if mob in self.character.MOBS_ATTACKING:

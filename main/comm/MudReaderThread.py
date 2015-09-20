@@ -194,6 +194,7 @@ class MudReaderThread(threading.Thread):
                     if M_obj is not None:
                         for s in m.subscribers:
                             s.notify(r, M_obj)
+                        m.notify()
                         text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                         # import RegexStore
                         # if r in RegexStore.haste_fail or r in RegexStore.hastened or r in RegexStore.already_hastened:
@@ -380,14 +381,17 @@ class MudReaderThread(threading.Thread):
                 else:
                     magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
             # Monster wanders away
-            M_obj = re.search("The" + s_numbered + " (.+?) just wandered away\.", text_buffer)
-            if(M_obj):
+            # M_obj = re.search("The" + s_numbered + " (.+?) just wandered away\.", text_buffer)
+            # M_obj = re.search("The " + RegexStore.__numbers_opt + "(.+?) just wandered away\.", text_buffer)
+            M_obj = re.search("The (:?(?P<nth>\d*1st|\d*2nd|\d*3rd|\d+th) )?(?P<mob>.+?) just wandered away\.", text_buffer)
+            if M_obj:
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                if(my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1):
-                    #self.character.MONSTER_LIST.remove(M_obj.group(2))
-                    self.character.remove_from_monster_list(M_obj.group(2))
+                # if my_list_search(self.character.MONSTER_LIST, M_obj.group('mob') != -1):
+                if M_obj.group('mob') in self.character.MONSTER_LIST:
+                    magentaprint("MudReaderThread: Removed " + M_obj.group('mob') + " from character.MONSTER_LIST.")
+                    self.character.MONSTER_LIST.remove(M_obj.group('mob'))
                 else:
-                    magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
+                    magentaprint("MudReaderThread: Could not remove " + M_obj.group('mob') + " from MONSTER_LIST")
             # Monster arrival
             M_obj = re.search("An? (.+?) just arrived\.", text_buffer)
             if(M_obj):

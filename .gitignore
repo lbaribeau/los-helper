@@ -221,6 +221,7 @@ pip-log.txt
 
 main/__pycache__/*
 main/*.db
+maplos.db
 
 *.plist
 

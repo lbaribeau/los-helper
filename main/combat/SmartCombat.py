@@ -31,7 +31,9 @@ class SmartCombat(CombatObject):
         self.fast_combat_abilities = character._class.fast_combat_skills
 
         spell_percent = max(character.earth, character.wind, character.fire, character.water)
+        # magentaprint("SmartCombat character.pty " + str(character.pty))
         self.black_magic = character.pty < 7 or spell_percent >= 20
+        # self.favourite_spell = Spells.vigor if not self.black_magic else \
         self.favourite_spell = Spells.rumble if spell_percent == character.earth else \
                                Spells.hurt if spell_percent == character.wind else \
                                Spells.burn if spell_percent == character.fire else Spells.blister
@@ -71,7 +73,8 @@ class SmartCombat(CombatObject):
     def run(self):
         self.stopping = False
         self.mob_charmed = False
-        self.casting = True
+        self.circled = False
+        self.casting = self.black_magic or 'vigor' in self.character.spells
 
         self.use_any_fast_combat_abilities()  # ie. Touch
 
