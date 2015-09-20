@@ -44,11 +44,12 @@ class Cast(SimpleCombatObject):
         super().notify(regex, M_obj)
 
     def notify_failure(self, regex, M_obj):
-        spell = self.command.split(' ')[1].lower()
-        if re.match("vi?|vigo?|vigor", spell) or \
-           re.match("show-?|show-au?|show-aura?", spell) or \
-           re.match("lig?|light?", spell) or \
-           re.match("me?|mend?|mend-w?|mend-wou?|mend-wound?|mend-wounds", spell):
+        # spell = self.command.split(' ')[1].lower() if len(self.command.split(' ')) > 0 else ""
+        # 'read paper' 'Your spell fails' causes index error, re.search works around it
+        if re.search("vi?|vigo?|vigor", spell) or \
+           re.search("show-?|show-au?|show-aura?", spell) or \
+           re.search("lig?|light?", spell) or \
+           re.search("me?|mend?|mend-w?|mend-wou?|mend-wound?|mend-wounds", spell):
             magentaprint("Cast notify failure clearing timer.")
             self.clear_timer()
 

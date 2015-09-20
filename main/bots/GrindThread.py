@@ -603,9 +603,13 @@ class GrindThread(BotThread):
             self.commandHandler.process("ga")  
 
     def engage_mobs_who_joined_in(self):
-        while self.character.MOBS_JOINED_IN != []:
-            self.engage_monster(self.character.MOBS_JOINED_IN[0])
-            self.character.MOBS_JOINED_IN = self.character.MOBS_JOINED_IN[1:]
+        # while self.character.MOBS_JOINED_IN != []:
+        #     self.engage_monster(self.character.MOBS_JOINED_IN[0])
+        #     self.character.MOBS_JOINED_IN = self.character.MOBS_JOINED_IN[1:]
+        #     self.get_items()
+        while self.character.mobs.attacking:
+            self.engage_monster(self.character.mobs.attacking[0])
+            # self.character.mobs.attacking = self.character.mobs.attacking[1:]
             self.get_items()
     
     def engage_any_attacking_mobs(self):

@@ -44,6 +44,7 @@ from comm.MudListenerThread import MudListenerThread
 from comm.MyBuffer import MyBuffer 
 from command.Inventory import Inventory 
 from reactions.CombatReactions import CombatReactions
+from reactions.Mobs import Mobs
 from combat.SmartCombat import SmartCombat
 from command.Info import Info 
 from command.Whois import Whois
@@ -89,6 +90,8 @@ class LosHelper(object):
         self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
         self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler, self.character)
         self.character.inventory = self.inventory
+        self.character.mobs = Mobs()
+        self.mudReaderHandler.add_subscriber(self.character.mobs)
         self.combat_reactions = CombatReactions(self.mudReaderHandler, self.character)
 
         # self.mud_map_thread.start()  # Don't forget to uncomment .join()

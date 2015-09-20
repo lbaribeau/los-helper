@@ -49,7 +49,7 @@ class Inventory(BotReactionWithFlag):
         'granite rod', "miner's lamp",
         #'steel mask' # the bot slowly collects these 
         'large orcish sword',
-        "small mace", "studded leather leggings"
+        "small mace", "studded leather leggings", 'plate mail leggings', 'plate mail armor'
     ]
 
     def __init__(self, mudReaderHandler, telnetHandler, character):
@@ -58,7 +58,7 @@ class Inventory(BotReactionWithFlag):
         self.wont_buy2 = "The shopkeep won't buy that from you\."
         self.sold = "The shopkeep gives you (.+?) gold for (.+?)\."
         self.you_drop = "(?s)You drop (.+?)\."
-        self.potion_disintegrates = "A (.+?) disintegrates\."
+        self.disintegrates = "A (.+?) disintegrates\."
         self.gold_from_tip = "You have (.+?) gold\."
         self.not_a_pawn_shop = "This is not a pawn shoppe\."
         self.you_now_have = "You now have (.+?) gold pieces\."
@@ -81,7 +81,7 @@ class Inventory(BotReactionWithFlag):
         self.wearing = "\n?\r?(?:On )?(.+?):[\s]*(?:a |an |some )(.+)"
 
         self.regexes = [self.you_have, self.you_get, self.wont_buy, self.wont_buy2, self.sold, 
-            self.you_drop, self.potion_disintegrates, self.not_a_pawn_shop, self.you_now_have, self.gold_from_tip,
+            self.you_drop, self.disintegrates, self.not_a_pawn_shop, self.you_now_have, self.gold_from_tip,
             self.not_empty, self.you_wear, self.nothing_to_wear, self.you_remove,  
             self.nothing_to_remove, self.you_wield, self.you_give, self.bought,
             self.you_put_in_bag, self.gave_you, self.you_hold, self.weapon_breaks,
@@ -122,7 +122,7 @@ class Inventory(BotReactionWithFlag):
         elif regex is self.you_get:
             item = self.clip_from_a_container(M_obj.group(1))
             self.add(item)
-        elif regex in (self.you_drop, self.you_give, self.you_put_in_bag, self.potion_disintegrates):
+        elif regex in (self.you_drop, self.you_give, self.you_put_in_bag, self.disintegrates):
             # magentaprint(str(M_obj.group(1)), False)
             self.remove(M_obj.group(1))
         elif regex in (self.you_wear, self.you_hold):

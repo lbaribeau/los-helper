@@ -2,6 +2,7 @@
 import time
 from math import floor
 
+from reactions.Mobs import Mobs
 from misc_functions import magentaprint
 
 class Character(object):
@@ -123,6 +124,9 @@ class Character(object):
     AREA_TITLE=""
     EXIT_LIST=[]
     MONSTER_LIST=[]
+
+    def __init__(self):
+        self.mobs = Mobs()
 
     def add_to_monster_list(self, monster_name):
         self.MONSTER_LIST.append(monster_name)
@@ -331,14 +335,17 @@ class Character(object):
     lvl9_monsters = [ # ~300 exp
         "director", "Elder Barthrodue", "Farmer Calmor",
         "orc warrior", 'giant beetle'
-        'white knight' # respect the knights! (+1 difficulty)
+        'white knight'  # 380 # respect the knights! (+1 difficulty)
     ]
     lvl10_monsters = [ # 350+
         'wounded knight', # -2 difficulty
         'The Master of Ceremonies', # 280
         "Kelluran", "Jerrek",  # all grey
         "Farmer McDermott", "abbot", # 445
-        'Rimark', 'Dame Brethil', 'dwarven blacksmith', 'silver knight', 'Commander Rilmenson'
+        'Rimark', 'Dame Brethil', 'dwarven blacksmith', 
+        'silver knight',  # 380, +1 difficulty
+        'Commander Rilmenson'
+        # white knight
     ]
     lvl11_monsters = [
         "dwarven adventurer",  # dusty blue

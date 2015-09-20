@@ -25,7 +25,7 @@ class Cartography(BotReactionWithFlag):
             RegexStore.no_items_allowed, RegexStore.locked, RegexStore.no_right, RegexStore.not_authorized,
             RegexStore.cannot_force, RegexStore.not_here, RegexStore.loot_blocked, RegexStore.teleported,
             RegexStore.in_tune, RegexStore.you_see_mob, RegexStore.mob_aura, RegexStore.store_list,
-            RegexStore.mob_fled
+            RegexStore.mob_fled, RegexStore.open_first
         ]
         magentaprint(str(self.regex_cart))
 
@@ -59,7 +59,7 @@ class Cartography(BotReactionWithFlag):
                     self.character.MUD_AREA = None
                     self.character.EXIT_LIST = []
 
-            self.character.MONSTER_LIST = []
+            self.character.mobs.list = []
             self.character.SUCCESSFUL_GO = True
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
             self.character.CAN_SEE = False
@@ -77,12 +77,11 @@ class Cartography(BotReactionWithFlag):
             exit_list = self.parse_exit_list(matched_groups[2])
             self.character.EXIT_REGEX = self.create_exit_regex_for_character(exit_list)
 
-            monster_list = self.parse_monster_list(matched_groups[3])
-
             self.character.AREA_TITLE = area_title #title
             self.character.EXIT_LIST = exit_list #exits
-            self.character.MONSTER_LIST = monster_list#monster_list #mob list
-            self.character.MONSTER_LIST.sort()
+            self.character.mobs.list = self.parse_monster_list(matched_groups[3])
+            self.character.mobs.list.sort()
+            self.character.mobs.attacking = []
 
             self.character.SUCCESSFUL_GO = True #successful go should be true everytime the area parses
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
@@ -98,7 +97,7 @@ class Cartography(BotReactionWithFlag):
                     # area = self.draw_map(area_title, area_description, exit_list)
                     self.character.MUD_AREA = mud_area
                     area = mud_area.area
-                    self.catalog_monsters(area, monster_list)
+                    self.catalog_monsters(area, self.character.mobs.list)
                     self.character.AREA_ID = area.id
                     magentaprint("Cartography area match: " + str(area))
                 else:
@@ -206,6 +205,7 @@ class Cartography(BotReactionWithFlag):
             #     area_item = self.catalog_item(item_name, item_size, item_value)
             #     self.catalog_area_store_item(area_item, self.character.area)
         else:
+            # This is fine for a shut door - we just want the super().notify in that case.
             magentaprint("Cartography case missing for regex: " + str(regex))
         magentaprint("Cartogarphy notify done.")
         super().notify(regex, M_obj)
@@ -382,47 +382,50 @@ class Cartography(BotReactionWithFlag):
         mob_match = re.match(r"(?s)You see (.+?)\.", MUD_mob_str)
 
         if mob_match is None:
-            return self.character.MONSTER_LIST
+            # return self.character.MONSTER_LIST
+            return []
+        else:
+            return self.character.mobs.parse_mob_string(mob_match.group(1))
 
-        M_LIST = [m.strip() for m in mob_match.group(1).split(',')]
-        singles = ['a ', 'an ', 'some ', 'The ']
-        numbers = ['two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 
-                   'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ', 
-                   'fifteen ' , 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen ', 'twenty ']
-        numbers.extend([str(i) + " " for i in range(21, 200)])
 
-        m_list = []
-        for m in M_LIST:
-            if any([m.startswith(s) for s in singles]):
-                # m_dict[m.partition(' ')[2]] = 1
-                m_list.extend([m.partition(' ')[2]])
-                continue
-            # number_check = [m.startswith(n) for n in numbers]
-            if m.endswith('sses'):
-                m = m[0:len(m)-2]
-            elif m.endswith('s'):
-                m = m[0:len(m)-1]
-            elif m.endswith('children'):
-                m = m[0:len(m)-3]
 
-            for n in range(0, len(numbers)):
-                if m.startswith(numbers[n]):
-                    # m_dict[m.partition(' ')[2]] = n + 2
-                    m_list.extend([m.partition(' ')[2]] * (n + 2))
-                    break
+        # M_LIST = [m.strip() for m in mob_match.group(1).split(',')]
+        # singles = ['a ', 'an ', 'The ']
+        # numbers = ['two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 
+        #            'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ', 
+        #            'fifteen ' , 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen ', 'twenty ']
+        # numbers.extend([str(i) + " " for i in range(21, 200)])
 
-        # return list(m_dict.keys())
-        return m_list
+        # # return [Mobs.remove_plural(m.strip()) for m in mob_match.group(1).split(',')]
+
+        # m_list = []
+        # for m in M_LIST:
+        #     if any([m.startswith(s) for s in singles]):
+        #         # m_dict[m.partition(' ')[2]] = 1
+        #         m_list.extend([m.partition(' ')[2]])
+        #         continue
+        #     # number_check = [m.startswith(n) for n in numbers]
+
+        #     m = Mobs.remove_plural(m)
+
+        #     for n in range(0, len(numbers)):
+        #         if m.startswith(numbers[n]):
+        #             # m_dict[m.partition(' ')[2]] = n + 2
+        #             m_list.extend([m.partition(' ')[2]] * (n + 2))
+        #             break
+
+        # # return list(m_dict.keys())
+        # return m_list
   
-            # commaindex = M_LIST[i].find(',')
-            # if commaindex != -1:
-            #     M_LIST = M_LIST[:commaindex]
+        #     # commaindex = M_LIST[i].find(',')
+        #     # if commaindex != -1:
+        #     #     M_LIST = M_LIST[:commaindex]
 
-        # except Exception:
-        #     magentaprint("Parse monster Exception: " + str(sys.exc_info()[0]), False)
-        #     M_LIST = []
+        # # except Exception:
+        # #     magentaprint("Parse monster Exception: " + str(sys.exc_info()[0]), False)
+        # #     M_LIST = []
 
-        # return M_LIST
+        # # return M_LIST
 
 
 

@@ -28,7 +28,7 @@ class ThreadingMixin(object):
 
         if cls.thread is None or not cls.thread.is_alive():
             # not is_alive() means it won't look at stopping anymore so we're good.
-            cls.thread = Thread(target = cls.run, args = (telnetHandler, target))
+            cls.thread = Thread(target=cls.run, args=(telnetHandler, target))
             cls.thread.daemon = True
             cls.thread.start()
         # else:
