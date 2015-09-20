@@ -36,7 +36,7 @@ class Area(NamedModel):
         #    is_new_mapping = self.search_for_area(mapped_exits)
 
         if is_new_mapping: #this means the search has found the matching area and our Area.ID is set
-            super(Area, self).save()
+            super().save()  # Db can be locked if this happens immediately...
 
             #now we map our area exits
             for exit in mapped_exits:

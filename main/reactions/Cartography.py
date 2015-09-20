@@ -385,7 +385,7 @@ class Cartography(BotReactionWithFlag):
             # return self.character.MONSTER_LIST
             return []
         else:
-            return self.character.mobs.parse_mob_string(mob_match.group(1))
+            return self.character.mobs.parse_mob_string(mob_match.group(1).lower())
 
 
 

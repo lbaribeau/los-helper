@@ -320,7 +320,7 @@ class Character(object):
         'giant spider', "rock spider", "Aldo", "dwarven trader",
         "gnoll chaplain", "Cheryn", "robed priest", "orc scout",
         'bouncer',
-        "dwarven shepherd"  # grey
+        "dwarven shepherd", "clown"  # grey  
     ] # giant spiders are hostile
     lvl8_monsters = [
         # There are 2 amethyst guards and 3 amber guards of this level

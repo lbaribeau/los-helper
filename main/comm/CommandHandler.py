@@ -35,6 +35,7 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.cast)
         self.go = Go(telnetHandler, character)
         mudReaderHandler.add_subscriber(self.go)
+        mudReaderHandler.add_subscriber(self.go.open)
         mudReaderHandler.add_subscriber(self.smartCombat)
         mudReaderHandler.add_subscriber(self.smartCombat.prompt)
 

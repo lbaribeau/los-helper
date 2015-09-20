@@ -80,6 +80,8 @@ class CharacterClass(object):
             abilities = [ Haste ]
             Cast.cooldown_after_success = 5
             self.WEAPON_SLOTS.append("Second") 
+            Search.cooldown_after_success = 6
+            Search.cooldown_after_failure = 6
         elif class_string == "Thi":
             self.lvl1_maxHP = 18 
             self.lvl1_maxMP = 3

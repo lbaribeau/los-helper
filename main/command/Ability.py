@@ -149,8 +149,8 @@ class HealAbility(Ability):
 
 class Search(Ability):
     command = 'sea'
-    cooldown_after_success = 6  # Todo: this is class dependent (8 for Bard)
-    cooldown_after_failure = 6
+    cooldown_after_success = 8
+    cooldown_after_failure = 8
     success_regexes = [RegexStore.found_exit]
     failure_regexes = [RegexStore.search_fail]
     level = 1

@@ -79,7 +79,7 @@ class SmartCombat(CombatObject):
         self.use_any_fast_combat_abilities()  # ie. Touch
 
         while not self.stopping:
-            magentaprint("SmartCombat loop kill.timer " + str(round(self.kill.wait_time(), 1)) + " cast.timer " + str(round(self.cast.wait_time(), 1)) + ".")
+            # magentaprint("SmartCombat loop kill.timer " + str(round(self.kill.wait_time(), 1)) + " cast.timer " + str(round(self.cast.wait_time(), 1)) + ".")
             if self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
                 self.kill.wait_until_ready()
                 if self.stopping: 

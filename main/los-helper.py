@@ -59,19 +59,23 @@ from db.MudMap import *
 
 class LosHelper(object):
     def __init__(self):
+        magentaprint("LosHelper initializing...", False)
+
         self.botThread = None
         self.mud_map = None
-        magentaprint("LosHelper initializing...", False)
-        
-        # Threading the db setup causes a locking error...
-        self.bot_ready = False
-        # self.mud_map = MudMap()
-        # self.bot_ready = self.mud_map.ready
-        self.mud_map_thread = threading.Thread(target=self.setup_mud_map)
-        # self.mud_map_thread.start()  # Don't forget to uncomment .join()
+        self.threaded_map_setup = True
 
-        # self.mud_map_thread = threading.Thread(target=magentaprint, args=("setting up mud map in main thread",))
-        # self.setup_mud_map()
+        if self.threaded_map_setup:
+            # Threading the db setup causes a locking error if the starting area needs to be saved
+            self.bot_ready = False
+            self.mud_map_thread = threading.Thread(target=self.setup_mud_map)
+            # self.mud_map_thread.start()  # Don't forget to uncomment .join()
+        else:
+            # # self.mud_map = MudMap()
+            # # self.bot_ready = self.mud_map.ready  # True
+            # self.mud_map_thread = threading.Thread(target=magentaprint, args=("setting up mud map in main thread",))
+            self.setup_mud_map()
+
         self.character = Character()
 
         sys.argv = [s.strip() for s in sys.argv]  # removes \r since git can add them to run.sh
@@ -82,7 +86,8 @@ class LosHelper(object):
         else:
             self.telnetHandler = TelnetHandler()
 
-        self.mud_map_thread.start()  # Don't forget to uncomment .join()
+        if self.threaded_map_setup:
+            self.mud_map_thread.start()  # Don't forget to uncomment .join()
         self.consoleHandler = newConsoleHandler() 
         self.MUDBuffer = MyBuffer()
         self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
@@ -90,7 +95,6 @@ class LosHelper(object):
         self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
         self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler, self.character)
         self.character.inventory = self.inventory
-        self.character.mobs = Mobs()
         self.mudReaderHandler.add_subscriber(self.character.mobs)
         self.combat_reactions = CombatReactions(self.mudReaderHandler, self.character)
 
@@ -99,8 +103,9 @@ class LosHelper(object):
         self.mudReaderThread.start()
 
         # With the MUDReaderThread going, we have the server's text and prompts now showing
-        # magentaprint("LosHelper joining mud_map_thread.")  # Ha this print can cause the lock error
-        # self.mud_map_thread.join() 
+        # if self.threaded_map_setup:
+        #     magentaprint("LosHelper joining mud_map_thread.")  # Ha this print can cause the lock error
+        #     self.mud_map_thread.join() 
         self.write_username_and_pass()
         self.initialize_reactions()
         self.check_class_and_level()
@@ -125,7 +130,8 @@ class LosHelper(object):
     def close(self):
         self.mudListenerThread.stop()
         self.mudReaderThread.stop()
-        self.mud_map_thread.join()
+        if self.threaded_map_setup:
+            self.mud_map_thread.join()
         self.mudListenerThread.join(10)
         self.mudReaderThread.join(10)
         self.telnetHandler.close()

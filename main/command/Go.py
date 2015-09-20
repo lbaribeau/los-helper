@@ -97,3 +97,7 @@ class Open(Command):
     error_regexes = [RegexStore.no_exit, RegexStore.open_what]
     failure_regexes = [RegexStore.locked]
 
+    def notify(self, r, m):
+        magentaprint("Open notified.")
+        super().notify(r, m)
+
