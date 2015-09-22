@@ -43,6 +43,8 @@ class Go(Command):
             # This is confusing - why reinitialize chase variables
             self.character.chase_mob = ""
             self.character.chase_dir = ""
+            self.character.mobs.list = []
+            self.character.mobs.attacking = []
             # time.sleep(0.8)  # Hacked fix to get_heal_path being called before Cartography updates area_id
         elif regex in RegexStore.mob_fled:
             mob = M_obj.group('mob')

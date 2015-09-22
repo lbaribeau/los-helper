@@ -8,18 +8,18 @@ from reactions.HealSlaveReactions import HealSlaveReactions
 
 class SlaveThread(BotThread):
     def __init__(self, character=None, command_handler=None, mud_reader_handler=None,
-                inventory=None, mud_map=None, master_name=""):
-        super(SlaveThread, self).__init__(character, command_handler, mud_reader_handler, inventory, mud_map)
+                mud_map=None, master_name=""):
+        super().__init__(character, command_handler, mud_reader_handler, mud_map)
 
         self.heal_slave_reactions = HealSlaveReactions(mud_reader_handler, command_handler)
 
     def stop(self):
-        super(SlaveThread, self).stop()
+        super().stop()
 
     def decide_where_to_go(self):
-        while(True):
+        while True:
             self.commandHandler.user_ca('smile')
-            self.sleep(10)
+            self.sleep(60)
         #must do an action every 30 seconds or so to avoid timing out
         #perhaps an emote or something custom like emote "grovels at $master" when the master is around
         #and "curses $master" when he's away

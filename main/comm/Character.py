@@ -236,124 +236,125 @@ class Character(object):
     ### Monster stuff ###
 
     lvl1_monsters = [ # 1-8 exp
-        "dustman", "small girl", "young boy", "old woman", "old man", 
-        "townsman", "stall holder", "duck", "hedgehog", "piglet", 
-        'streetsweeper', "shopper", "window shopper", "window cleaner", 
-        "waitress", "housewife", "squirrel", "milk maid", "rabbit", 
-        "one man band", "heather seller", "irate teenager", 'peasant', 
-        'one-armed beggar', "village elder", "small dog", "tribesman", 
-        "searcher", "delivery boy", "traveller", "wanderer", "villager", 
-        "vagrant", "dropout", "tramp", "serf", 'dishwasher', "punter"]     
+        'dustman', 'small girl', 'young boy', 'old woman', 'old man', 
+        'townsman', 'stall holder', 'duck', 'hedgehog', 'piglet', 
+        'streetsweeper', 'shopper', 'window shopper', 'window cleaner', 
+        'waitress', 'housewife', 'squirrel', 'milk maid', 'rabbit', 
+        'one man band', 'heather seller', 'irate teenager', 'peasant', 
+        'one-armed beggar', 'village elder', 'small dog', 'tribesman', 
+        'searcher', 'delivery boy', 'traveller', 'wanderer', 'villager', 
+        'vagrant', 'dropout', 'tramp', 'serf', 'dishwasher', 'punter']     
     lvl1_red_monsters = [ # 8-15 exp
-        "old kobold", "kobold child", "kobold dam"]
+        'old kobold', 'kobold child', 'kobold dam']
     lvl2_monsters = [
-        "hawker", "barmaid", "smelly beggar", "black crow", "sheep", "goose", 
-        "singer", "musician", "spiv", "bidder", "dairy cow", "scholar", 
-        "juggler", "shepherd", "gazelle", 'dancer', 'jongleur', 'tabby cat', 
-        'clerk', 'stablehand', "rich kid", 'bladesman', "cook's assistant", 
+        'hawker', 'barmaid', 'smelly beggar', 'black crow', 'sheep', 'goose', 
+        'singer', 'musician', 'spiv', 'bidder', 'dairy cow', 'scholar', 
+        'juggler', 'shepherd', 'gazelle', 'dancer', 'jongleur', 'tabby cat', 
+        'clerk', 'stablehand', 'rich kid', 'bladesman', "cook's assistant", 
         "miner's assistant"
         #"acolyte"  # Problem: clumps up on holly lane
         #"penitent"  # Removed for red/blue balance
         ] 
     lvl2_red_monsters = [ 
-        "kobold sentry", "blond hooker", "sultry hooker", "kobold", "spiv", 
-        "drunken miner", "kobold miner", "kobold archer", 'angry hooker',
-        "angry kobold", 'red axer', 'pickpocket', 'thug', "tired hooker"
+        'kobold sentry', 'blond hooker', 'sultry hooker', 'kobold', 'spiv', 
+        'drunken miner', 'kobold miner', 'kobold archer', 'angry hooker',
+        'angry kobold', 'red axer', 'pickpocket', 'thug', 'tired hooker',
+        'scruffy man'
         ] 
     # pickpockets drop leather collars and masks
     # red axer drops studded leather collar
     # cat might be lvl 1 not sure
     # thugs hostile.  They drop leather collar
     lvl3_monsters = [ # 25-35 exp
-        "market official", "street trader", "field worker", "harvester", 
-        "horse", "cow", "doorman", "stilt walker",  "messenger", "cashier",
-        "thatcher",  "tax inspector", 'journeyman', "human miner", 
-        "hobbitish miner", "hawk", "stacker", "mill worker", 'The General',
+        'market official', 'street trader', 'field worker', 'harvester', 
+        'horse', 'cow', 'doorman', 'stilt walker',  'messenger', 'cashier',
+        'thatcher',  'tax inspector', 'journeyman', 'human miner', 
+        'hobbitish miner', 'hawk', 'stacker', 'mill worker', 'The General',
         'bouncer'
-        #"robed pilgrim",  # Removed for red/blue balance
-        #"miner's mule"
+        #'robed pilgrim',  # Removed for red/blue balance
+        #'miner's mule"
         ]
     lvl3_red_monsters = [
-        "large kobold", "insane kobold", "kobold scout", 'drunk'
+        'large kobold', 'insane kobold', 'kobold scout', 'drunk'
         ]
     lvl4_monsters = [ # 45-60 exp
-        "actor", "grip", "theatre goer", "merchant", "journeyman", "logger", 
-        'trader', "butcher", "young knight", "acrobat", "militia soldier", 
-        "carpenter", "stagehand", 'hungry spider', 'cook', 'joiner', "ranch hand",
-        "old rancher", "tired ranch hand", "drinking ranch hand",
-        "busy ranch hand", "sawmill operator", 'vulture'
-        #"auctioneer", # They pile up so bad!  
+        'actor', 'grip', 'theatre goer', 'merchant', 'journeyman', 'logger', 
+        'trader', 'butcher', 'young knight', 'acrobat', 'militia soldier', 
+        'carpenter', 'stagehand', 'hungry spider', 'cook', 'joiner', 'ranch hand',
+        'old rancher', 'tired ranch hand', 'drinking ranch hand',
+        'busy ranch hand', 'sawmill operator', 'vulture'
+        #'auctioneer', # They pile up so bad!  
         # Definitely need smart chasing or a path that runs extra around the 
         # market (after healing)
-        #"actress", # For blue balance
+        #'actress', # For blue balance
         #'miner'
         ]
     # hungry spiders are hostile
     lvl4_red_monsters = [
-        "kobold shaman", "drunken trouble-maker", "kobold champion", "hungry spider"]
+        'kobold shaman', 'drunken trouble-maker', 'kobold champion', 'hungry spider']
     lvl5_monsters = [
-        "dwarven farm hand", "dwarven barmaid", "fort sentry", "fur trader", 
-        "aristocrat", "rancher sentry",
-        # "vicar",
-        "nobleman", "lyrist", "orange picker", "logger",
-        "veteran", "bruiser", "axeman", "seeker", "hunter", "bull", "lay priest", "protector",
-        "battered knight", 'bruiser',
-        "aspirant"  # grey
+        'dwarven farm hand', 'dwarven barmaid', 'fort sentry', 'fur trader', 
+        'aristocrat', 'rancher sentry',
+        # 'vicar',
+        'nobleman', 'lyrist', 'orange picker', 'logger',
+        'veteran', 'bruiser', 'axeman', 'seeker', 'hunter', 'bull', 'lay priest', 'protector',
+        'battered knight', 'bruiser',
+        'aspirant'  # grey
     ]
     lvl5_red_monsters = [
-        'large bandit', "kobold guard", "mugger", 'large spider'
+        'large bandit', 'kobold guard', 'mugger', 'large spider'
     ]
     lvl6_monsters = [  # 100+ exp
-        "dwarven field worker", "dwarven bartender", "school teacher",
-        'lyrist', "nobleman", "seeker", "bull", "hunter", 'usher',
-        'sword swallower', 'archer', "mime artist",
-        "yard supervisor", 'sawmill supervisor', "large spider", "blacksmith",
-        "farm foreman", "Old Man James", "dwarven traveller",
-        "Goourd", "tourney organiser"
+        'dwarven field worker', 'dwarven bartender', 'school teacher',
+        'lyrist', 'nobleman', 'seeker', 'bull', 'hunter', 'usher',
+        'sword swallower', 'archer', 'mime artist',
+        'yard supervisor', 'sawmill supervisor', 'large spider', 'blacksmith',
+        'farm foreman', 'Old Man James', 'dwarven traveller',
+        'Goourd', 'tourney organiser'
         #'sentry' stand in pairs unfortunately...
     ]
     lvl6_red_monsters = [ #1574 for gnoll camp
-        'gnoll sentry', "bandit swordsman", "gnoll spearsman", "gnoll raider"
+        'gnoll sentry', 'bandit swordsman', 'gnoll spearsman', 'gnoll raider'
     ]
     lvl7_monsters = [ # ~200 exp
-        "dwarven cook", "swordsman", 'fort sergeant', 'oremaster', 
-        'giant spider', "rock spider", "Aldo", "dwarven trader",
-        "gnoll chaplain", "Cheryn", "robed priest", "orc scout",
+        'dwarven cook', 'swordsman', 'fort sergeant', 'oremaster', 
+        'giant spider', 'rock spider', 'Aldo', 'dwarven trader',
+        'gnoll chaplain', 'Cheryn', 'robed priest', 'orc scout',
         'bouncer',
-        "dwarven shepherd", "clown"  # grey  
+        'dwarven shepherd', 'clown'  # grey  
     ] # giant spiders are hostile
     lvl8_monsters = [
         # There are 2 amethyst guards and 3 amber guards of this level
-        "Alaran the Market Manager", "hauler", "Farmer Malbon", "sonneteer", "Tag",
-        "mine manager", "artificer", "Dini Stonehammer", "Olmer",
-        "Thereze", "Farmer Viladin", "Rancher Renstone", "berzerker",
-        "dwarven hunter", "initiate", "berserk orc",
-        "old knight", "dusty warrior",  # dusty blue        
+        'Alaran the Market Manager', 'hauler', 'Farmer Malbon', 'sonneteer', 'Tag',
+        'mine manager', 'artificer', 'Dini Stonehammer', 'Olmer',
+        'Thereze', 'Farmer Viladin', 'Rancher Renstone', 'berzerker',
+        'dwarven hunter', 'initiate', 'berserk orc',
+        'old knight', 'dusty warrior',  # dusty blue        
         'hedge knight', 'refinery supervisor', 'owlbear'
-        "elven trader",   # pale blue
+        'elven trader',   # pale blue
     ]
     lvl9_monsters = [ # ~300 exp
-        "director", "Elder Barthrodue", "Farmer Calmor",
-        "orc warrior", 'giant beetle'
+        'director', 'Elder Barthrodue', 'Farmer Calmor',
+        'orc warrior', 'giant beetle'
         'white knight'  # 380 # respect the knights! (+1 difficulty)
     ]
     lvl10_monsters = [ # 350+
         'wounded knight', # -2 difficulty
         'The Master of Ceremonies', # 280
-        "Kelluran", "Jerrek",  # all grey
-        "Farmer McDermott", "abbot", # 445
+        'Kelluran', 'Jerrek',  # all grey
+        'Farmer McDermott', 'abbot', # 445
         'Rimark', 'Dame Brethil', 'dwarven blacksmith', 
         'silver knight',  # 380, +1 difficulty
         'Commander Rilmenson'
         # white knight
     ]
     lvl11_monsters = [
-        "dwarven adventurer",  # dusty blue
-        "enchantress", 'Brotain', 'minstrel', 'brutalizer', 'Gregor'
+        'dwarven adventurer',  # dusty blue
+        'enchantress', 'Brotain', 'minstrel', 'brutalizer', 'Gregor'
     ]
     lvl12_monsters = [
-        "barbarian shaman", "barbarian warrior", # grey
-        "Gorban", # dusty blue
+        'barbarian shaman', 'barbarian warrior', # grey
+        'Gorban', # dusty blue
         'The Amber Mage', 'The Saga Teacher', 'Hurn the Smith',
         'Horbuk', 'The Floor Manager'
     ]
@@ -367,10 +368,10 @@ class Character(object):
     # I may want to kill even if they are too low of level.
     # Mostly hostiles and things that don't let you loot.
     preferred_lvl_1_2_monsters = [
-        "oaf", "wanderer", #"acolyte", 
-        "thug", "spiv", "kobold sentry", "tired hooker", 
-        "blond hooker", "angry hooker", "sultry hooker", 
-        "journeyman" 
+        'oaf', 'wanderer', #'acolyte', 
+        'thug', 'spiv', 'kobold sentry', 'tired hooker', 
+        'blond hooker', 'angry hooker', 'sultry hooker', 
+        'journeyman' 
     ] 
 
     def set_monster_kill_list(self):

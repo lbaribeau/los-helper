@@ -7,14 +7,12 @@ from misc_functions import *
 from comm.ConsoleHandler import newConsoleHandler
 
 class MudMap(object):
-# class MudMap():
-    los_map = None
-    ready = False
-
     def __init__(self):
         # magentaprint("MudMap: initialized.")
+        los_map = None
+        self.ready = False
         self.re_map()
-        print("MudMap initialized, los_map: " + str(self.los_map))
+        # print("MudMap initialized, los_map: " + str(self.los_map))
 
     def re_map(self):
         self.ready = False

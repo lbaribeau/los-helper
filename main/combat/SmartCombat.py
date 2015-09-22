@@ -91,7 +91,9 @@ class SmartCombat(CombatObject):
                 self.cast.wait_until_ready()
                 if self.stopping:
                     continue
-                elif not self.black_magic and self.character.HEALTH <= self.character.maxHP - self.prompt.max_vigor() and self.character.MANA >= 2:
+                elif not self.black_magic and (self.character.MANA >= 2 and self.character.HEALTH <= self.character.maxHP - self.prompt.max_vigor()) or \
+                     (self.character.MANA >= self.character.maxMP - 1 and self.character.HEALTH <= self.character.maxHP - self.prompt.max_vigor()/1.7):
+                    # TODO: cast vigor if a tick is about to come and we're full mana
                     self.do_cast('v')
                 elif self.mob_charmed:
                     time.sleep(min(0.2, self.kill.wait_time()))

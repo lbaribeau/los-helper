@@ -16,9 +16,8 @@ class GrindThread(BotThread):
     def do_run_startup(self):
         if not self.is_character_class("Mon"):
           self.set_up_automatic_ring_wearing()
-
-        if self.direction_list is None:
-          self.direction_list = [] #could append areaid45
+        # if self.direction_list is None:
+        #   self.direction_list = [] #could append areaid45
 
     def do_rest_hooks(self):
         pass
@@ -33,36 +32,31 @@ class GrindThread(BotThread):
             self.check_armour()
 
     def do_go_hooks(self, exit_str):
-      #if you want to define custom hooks like sell_items / drop_items etc... you can do so here
+        # Commenting: return False here to get BotThread (parent) to execute the 'go'
+        # if (exit_str == "nw" or exit_str == "ne" or
+        #    exit_str == "sw" or exit_str == "se" or
+        #    exit_str == 'n' or exit_str == 'e' or
+        #    exit_str == 's' or exit_str == 'w'):
+        #     # self.commandHandler.process(exit_str)
+        #     # return self.check_for_successful_go() 
+        #     # return self.check_for_successful_go() 
+        #     # return self.go(exit_str)   # Erhm self.go calls us, not the other way around
+        #     self.commandHandler.go.persistent_execute(exit_str)
+        #     return self.commandHandler.go.success
+        if exit_str == "prepare":
+            self.commandHandler.process(exit_str)
+            return True
+        elif exit_str == "sell_items":
+            self.sell_items()
+            return True
+        elif exit_str == "drop_items":
+            self.drop_items()
+            return True
+        else:
+            return super().do_go_hooks(exit_str)
 
-      if (exit_str == "nw" or exit_str == "ne" or
-           exit_str == "sw" or exit_str == "se" or
-           exit_str == 'n' or exit_str == 'e' or
-           exit_str == 's' or exit_str == 'w'):
-            # self.commandHandler.process(exit_str)
-            # return self.check_for_successful_go() 
-            # return self.check_for_successful_go() 
-            # return self.go(exit_str)   # Erhm self.go calls us, not the other way around
-            self.commandHandler.go.persistent_execute(exit_str)
-            return self.commandHandler.go.success
-      elif exit_str == "prepare":
-          self.commandHandler.process(exit_str)
-          return True
-      elif exit_str == "sell_items":
-          self.sell_items()
-          return True
-      elif exit_str == "drop_items":
-          self.drop_items()
-          return True
-
-      return super().do_go_hooks(exit_str)
-
-    def do_on_succesful_go(self):
-        if len(self.direction_list) != 0:
-          self.direction_list.pop(0)
-  
-        self.character.MOBS_JOINED_IN = [] 
-        self.character.MOBS_ATTACKING = []
+    # def do_on_succesful_go(self):
+    #     super().do_on_successful_go()
 
     def do_on_blocking_mob(self):
         self.engage_monster(self.character.GO_BLOCKING_MOB)
@@ -75,14 +69,13 @@ class GrindThread(BotThread):
         if not self.character.BLACK_MAGIC:
             self.heal_up()
 
-    def do_post_go_actions(self):
-        #here we would implement combat or whatever other other actions we want to do before we decide where to go again
-        # Maybe this is more for do_on_successful_go()(?)
+    def do_regular_actions(self):
         if self.ready_for_combat():
-            new_target = self.decide_which_mob_to_kill(self.character.MONSTER_LIST)
+            new_target = self.decide_which_mob_to_kill(self.character.mobs.list)
         else:
             new_target = ""
             magentaprint("TrackGrindThread.do_post_go_actions() calling do_rest_hooks()")
+            return
             # Commented - I don't understand what do_rest_hooks is supposed to do at all...
             # self.do_rest_hooks()
 
@@ -112,15 +105,14 @@ class GrindThread(BotThread):
             self.engage_any_attacking_mobs()
             self.check_weapons()
             
-            if (not self.character.BLACK_MAGIC):
+            if not self.character.BLACK_MAGIC:
                 self.heal_up()
             
-            if(self.ready_for_combat()):
+            if self.ready_for_combat():
                 magentaprint("Picking a new target since " + new_target + " was defeated")
                 new_target = self.decide_which_mob_to_kill(self.character.MONSTER_LIST)
             else:
                 new_target = ""
-        return
 
     def set_up_automatic_ring_wearing(self):
         """ Makes some BotReactions so that when MudReaderHandler sees us 

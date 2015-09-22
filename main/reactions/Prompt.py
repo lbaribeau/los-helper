@@ -96,7 +96,7 @@ class Prompt(object):
         if self.vig_amounts:
             return max(self.vig_amounts)
         else:
-            return 5
+            return self.character.pty / 2.3  
     def max_mend(self):
         if self.mend_amounts:
             return max(self.mend_amounts)

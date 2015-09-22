@@ -17,6 +17,14 @@ from command.Spells import *
 from command.Ability import *
 from reactions.Prompt import Prompt
 from comm import RegexStore
+from bots.TrackGrindThread import TrackGrindThread
+from bots.SmartGrindThread import SmartGrindThread
+from bots.CrawlThread import CrawlThread
+from bots.SmartCrawlThread import SmartCrawlThread
+from bots.GotoThread import GotoThread
+from bots.MixThread import MixThread
+from bots.SlaveThread import SlaveThread
+from command.Quit import Quit
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -39,6 +47,42 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.smartCombat)
         mudReaderHandler.add_subscriber(self.smartCombat.prompt)
 
+        self.botThread = None
+        self.mud_map = None
+        self.threaded_map_setup = False
+        self.mud_map_thread = None
+        if self.threaded_map_setup:
+            # Threading the db setup causes a locking error if the starting area needs to be saved
+            self.mud_map_thread = threading.Thread(target=self.setup_mud_map)
+            self.mud_map_thread.start()  # Don't forget to uncomment .join()
+        else:
+            # # self.mud_map = MudMap()
+            # # self.bot_ready = self.mud_map.ready  # True
+            # self.mud_map_thread = threading.Thread(target=magentaprint, args=("setting up mud map in main thread",))
+            self.setup_mud_map()
+
+    def setup_mud_map(self):
+        # magentaprint("CommandHandler generating the mapfile....", False)
+        self.mud_map = MudMap()
+        magentaprint("CommandHandler: Mapfile completed.", False)
+
+    def join_mud_map_thread(self):
+        if self.threaded_map_setup:
+            self.mud_map_thread.join()
+
+    # def process(self, user_input):
+    #     try:
+    #         self.handle_command(user_input)
+    #     except socket.error as e:  # Broken pipe(?)
+    #         # if hasattr(e, 'errno') and e.errno is 32: # Broken pipe
+    #         magentaprint("CommandHandler caught telnet error and quitting: " + str(e))
+    #         self.stopping = True
+    #         if hasattr(e, 'errno'):
+    #             magentaprint("Errno: " + str(e.errno)) 
+    #         # else:
+    #         #     raise e
+
+    # def handle_command(self, user_input):
     def process(self, user_input):
         """ This CommandHandler function is the filter for user input that
         does some matching and calls functions based on that input.  The only
@@ -56,28 +100,26 @@ class CommandHandler(object):
         # elif any([user_input.startswith(a.command) for a in self.character._class.abilities.values()]):
         # for a in [a for a in self.character._class.abilities.values() if user_input().startswith(a.command)]
         for a in self.character._class.abilities.values():
+            # Commands to start a thread trying to use an ability: 'hastec, searc, prayc...'
             if the_split[0].startswith(a.command):
                 if the_split[0].endswith('c'):
                     a.spam(arg1)
                 else:
                     a.execute(arg1)
                 return
-
         if user_input == 'ss':
+            # Stops threads from abilities
             for a in self.character._class.abilities.values():
                 a.stop()
             self.telnetHandler.write('')
-        # elif re.match('ki? [a-zA-Z]|kill? [a-zA-Z]', user_input):
         elif re.match('^ki? |^kill?', user_input):
             self.kill.execute(arg1)
-            # self.ki(user_input)
         elif user_input.startswith('kk '):
-            self.kill.start_thread(user_input[3:].strip())
+            self.kill.start_thread(user_input.partition(' ')[2].strip())
         elif user_input == 'sk' or user_input == 'skc':
             self.kill.stop()
             self.smartCombat.stop()
             self.telnetHandler.write('')
-        # elif re.match('ca? [a-zA-Z]|cast? [a-zA-Z]', user_input):
         elif re.match('ca? |cast?', user_input):
             self.cast.cast(arg1, arg2)
         elif user_input.startswith('cc '):
@@ -87,9 +129,9 @@ class CommandHandler(object):
             self.smartCombat.stop_casting()
             self.telnetHandler.write('')
         elif user_input.startswith('kkc '):
-            self.user_kkc(user_input[4:].strip())
+            self.user_kkc(user_input.partition(' ')[2].strip())
         elif user_input.startswith('kk2 '):
-            self.user_kk2(user_input[4:].strip())
+            self.user_kk2(user_input.partition(' ')[2].strip())
         elif re.match('dro? ', user_input):
             self.user_dr(user_input)
         elif user_input.startswith('Sel'):
@@ -108,23 +150,38 @@ class CommandHandler(object):
             # routine which does appropriate waiting,
             # printing, and finally sending command.
         elif re.match('door?', user_input):
+            # Hmph, I shouldn't have blocking calls here
             self.go.persistent_execute('door')
-        elif(re.match("find (.+)", user_input)):
-            M_obj = re.search("find (.+)", user_input)
-            magentaprint("Finding: " + str(M_obj.group(1)))
-            [areas, mob_locations] = MudMap.find(str(M_obj.group(1)))
-
-            magentaprint("Areas found:", False)
-            for area in areas:
-                magentaprint("<" + str(area.id) + "> - " + area.name, False)
-
-            magentaprint("Mobs found:", False)
-            for mob_location in mob_locations:
-                magentaprint("<" + str(mob_location.area.id) + "> - " + mob_location.mob.name, False)
+        elif re.match("find (.+)", user_input):
+            self.find(user_input)
         elif re.match("wie?2 +[a-zA-Z]+( +\d+)?", user_input):
             self.user_wie2(user_input[4:].lstrip())
         elif re.match("fle?$|flee$", user_input):
+            self.stop_bot()
             self.user_flee()
+        elif re.match("bot ?$|bot [0-9]+$", user_input):
+            self.start_track_grind(user_input)
+        elif re.match("grind$", user_input):
+            self.start_grind(user_input)
+        elif re.match("crawl$", user_input):
+            self.start_crawl()
+        elif re.match("crawl2", user_input):
+            self.start_smart_crawl()
+        elif re.match("goto -?[0-9]+$", user_input):
+            self.start_goto(user_input)
+        elif re.match("showto -?[0-9]+$", user_input):
+            self.start_goto(user_input, True)
+        elif re.match("domix .+?", user_input):
+            #domix 'tree root' berry 50 - first param must be exact match
+            self.start_mix(user_input)
+        elif re.match("slave", user_input):
+            self.start_slave(user_input)
+        elif re.match("bbuy (.+?)", user_input):
+            self.bbuy(user_input)
+        elif re.match("stop$", user_input):
+            self.stop_bot()
+        elif re.match("remap", user_input):
+            self.mud_map.re_map()            
         elif re.match("HASTING", user_input):
             magentaprint(str(self.character.HASTING), False)
         elif re.match("WEAPON1", user_input):
@@ -141,89 +198,46 @@ class CommandHandler(object):
         elif re.match("aid", user_input): #Area ID
             magentaprint("CommandHandler character.AREA_ID: " + str(self.character.AREA_ID), False)
             magentaprint("CommandHandler character.MUD_AREA: " + str(self.character.MUD_AREA), False)
-        elif re.match("LAST_DIR", user_input):
+        elif re.match("(?i)last_dir", user_input):
             magentaprint("CommandHandler character.LAST_DIRECTION: " + str(self.character.LAST_DIRECTION), False)
-        elif re.match("AREA_TITLE", user_input):
+        elif re.match("(?i)area_title", user_input):
             magentaprint("CommandHandler character.AREA_TITLE: " + str(self.character.AREA_TITLE), False)
-        elif re.match("EXIT_LIST", user_input):
+        elif re.match("(?i)exit_list", user_input):
             magentaprint(str(self.character.EXIT_LIST), False)
         elif re.match("hp", user_input):
             magentaprint(str(self.character.HEALTH), False)
-        elif re.match("EXPERIENCE", user_input):
+        elif re.match("(?i)experience", user_input):
             exp = self.character.EXPERIENCE
             expm = str(calculate_vpm(exp))
             magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
             #magentaprint(str(exp), False)
-        elif re.match("GOLD", user_input):
+        elif re.match("(?i)gold", user_input):
             #gold = self.character.GOLD  #Calculating GMP would require us to store gold differently
             #gpm = str(calculate_vpm(gold))
             #magentaprint("Gold this Session: " + str(gold) + " | Gold / MIN: " + gpm, False)
             magentaprint(str(self.character.GOLD), False)
-        elif re.match("KILLS", user_input):
+        elif re.match("(?i)kills", user_input):
             kills = self.character.MOBS_KILLED
             magentaprint("Kills this Session: " + str(kills), False)
-        elif re.match("DUMP", user_input):
+        elif re.match("(?i)dump", user_input):
             for attr in self.character.__dict__:
                 magentaprint(str(attr) + " : " + str(self.character.__dict__[attr]), False)
-        elif re.match("CECHO", user_input):
+        elif re.match("(?i)cecho", user_input):
             self.telnetHandler.echoing = not self.telnetHandler.echoing
-        elif re.match("VERSION", user_input):
+        elif re.match("(?i)version", user_input):
             magentaprint("Version: " + str(misc_functions.VERSION), False)
             magentaprint(self.character.__dict__, False)
-        elif re.match("REPORT", user_input):
-            # self.process("info")
-            # time.sleep(1)
-            exp = self.character.TOTAL_EXPERIENCE
-            gold = self.character.TOTAL_GOLD
-            aura = str(self.character.AURA)
-            magentaprint("Current Aura: " + aura, False)
-            magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), False)
-            exp = self.character.EXPERIENCE
-            expm = str(calculate_vpm(exp))
-            magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
-            kills = len(self.character.MOBS_KILLED)
-            kpm = str(calculate_vpm(kills))
-            magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
-            hits_dealt = self.character.HITS_DEALT
-            hits_missed = self.character.HITS_MISSED
-            damage_dealt = self.character.DAMAGE_DEALT
-            total_phys_attacks = hits_dealt + hits_missed
-            crits_landed = self.character.CRITS_LANDED
-            spells_cast = self.character.SPELLS_CAST
-            spells_failed = self.character.SPELLS_FAILED
-            spells_hit = spells_cast - spells_failed
-            spell_damage_dealt = self.character.SPELL_DAMAGE_DEALT
-
-            try:
-                average_phys_damage = round(damage_dealt / hits_dealt, 2)
-                phys_hit_rate = round(hits_dealt / total_phys_attacks * 100, 2)
-                phys_crit_rate = round(crits_landed / total_phys_attacks * 100, 2)
-                
-                average_spell_damage = round(spell_damage_dealt / spells_hit)
-                spell_hit_rate = round(spells_hit / spells_cast * 100, 2)
-                spell_crit_rate = 0
-            except Exception:
-                average_phys_damage = -1
-                average_spell_damage = -1
-                phys_hit_rate = -1
-                spell_hit_rate = -1
-                phys_crit_rate = -1
-                spell_crit_rate = -1
-
-            magentaprint("Average Phys Damage: " + str(average_phys_damage) + " | Average Spell Damage: " + str(average_spell_damage), False)
-            magentaprint("Phys Hit Rate: " + str(phys_hit_rate) + "% | Spell Hit Rate: " + str(spell_hit_rate) + "%", False)
-            magentaprint("Phys Crit Rate: " + str(phys_crit_rate) + " | Spell Crit Rate: " + str(spell_crit_rate) + "%", False)
-            runtime = round(get_runtime_in_minutes(), 2)
-            magentaprint("Minutes Run: " + str(runtime), False)
-        elif re.match("MOBS_JOINED_IN", user_input):
+        elif re.match("(?i)report", user_input):
+            self.report()
+        elif re.match("(?i)mobs_joined_in", user_input):
             magentaprint(self.character.MOBS_JOINED_IN, False)
-        elif re.match("AURA", user_input):
+        elif re.match("(?i)aura", user_input):
             magentaprint(str(self.character.AURA), False)        
-        elif re.match("MOBS_ATTACKING", user_input):
+        elif re.match("(?i)mobs_attacking", user_input):
             magentaprint(self.character.MOBS_ATTACKING, False)
-        elif re.match("MONSTER_KILL_LIST", user_input):
+        elif re.match("(?i)monster_kill_list", user_input):
             magentaprint(str(self.character.MONSTER_KILL_LIST), False)
-        elif re.match("reactionlist", user_input):
+        elif re.match("(?i)reactionlist", user_input):
             for r in self.mudReaderHandler.MudReaderThread.BotReactionList:
                 magentaprint('    ' + str(r), False)
         elif re.match("cackle", user_input):
@@ -237,13 +251,6 @@ class CommandHandler(object):
             magentaprint("Running go on EXIT_REGEX: " + str(self.character.EXIT_REGEX), False)
         else: # Doesn't match any command we are looking for
             self.telnetHandler.write(user_input) # Just shovel to telnet.
-
-    def ki(self, user_input):
-        self.kill.execute(user_input.split(" ")[1])
-
-    def kk(self, target):
-        # self.kill.engage(self.telnetHandler, user_input[3:])
-        self.kill.start_thread(target)
 
     def user_move(self, user_input):
         # if user_input.startswith("go "):
@@ -359,18 +366,6 @@ class CommandHandler(object):
 
         self.smartCombat.start_thread(target, spell)
 
-        # if self.smartCombatThread != None and self.smartCombatThread.is_alive():
-        #     magentaprint("CommandHandler calling smartCombatThread.keep_going()")
-        #     self.smartCombatThread.set_target(argv)
-        #     self.smartCombatThread.keep_going()
-        # else:
-        #     magentaprint("CommandHandler making new smartCombatThread")
-        #     self.smartCombatThread = SmartCombat(self.character, self.mudReaderHandler, 
-        #                                          self.telnetHandler, self.inventory)
-        #     self.smartCombatThread.target = target  
-        #     # I want to start doing threads without inheritance...
-        #     self.smartCombatThread.start()
-
     def user_kk2(self, argv):
         # Usage: "kk2 target"
         # Uses smart combat with level 2 spell
@@ -387,7 +382,6 @@ class CommandHandler(object):
         self.user_kkc(" ".join(teh_split))
 
     def user_sc(self):
-        # self.stop_CastThread()
         self.cast.stop()
         self.smartCombat.stop_casting()
         self.telnetHandler.write("")
@@ -396,9 +390,6 @@ class CommandHandler(object):
         self.telnetHandler.write("wield %s\n" % (argv))
         self.telnetHandler.write("second %s\n" % (argv))
 
-    def user_hastec(self):        
-        magentaprint("CommandHandler: user_hastec")
-    
     def user_flee(self):
         self.cast.stop()
         # self.smartCombat.flee()
@@ -457,3 +448,179 @@ class CommandHandler(object):
         except Exception:
             magentaprint("I couldn't find a way there (" + str(self.character.AREA_ID) + ") to (" + str(to_area_id) + ")",False)
         return directions
+
+    # Bots
+    # def start_bot(self, )
+    def bot_check(self):
+        if not self.mud_map:
+            magentaprint("Please wait for the Mapfile before using this command", False)
+            return False
+        elif self.botThread and self.botThread.is_alive():
+            magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
+            return False
+        else:
+            return True
+
+    def start_track_grind(self, user_input):
+        magentaprint("CommandHandler start_track_grind()")
+        if not self.bot_check():
+            return 
+
+        M_obj = re.search("[0-9]+", user_input)
+
+        if M_obj:
+            starting_path = int(M_obj.group(0))
+        else:
+            starting_path = 0
+
+        self.botThread = TrackGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, starting_path)
+        self.botThread.start()
+  
+    def start_grind(self, user_input):
+        if not self.bot_check():
+            return
+
+        self.botThread = SmartGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
+        self.botThread.start()
+
+    def start_crawl(self):
+        if not self.bot_check():
+            return
+        self.botThread = CrawlThread(self.character, self, self.mudReaderHandler, self.mud_map)
+        self.botThread.start()
+
+    def start_smart_crawl(self):
+        if not self.bot_check:
+            return
+        self.botThread = SmartCrawlThread(self.character, self, self.mudReaderHandler, self.mud_map)
+        self.botThread.start()
+
+    def start_goto(self, user_input, is_show_to=False):
+        if not self.bot_check():
+            return
+
+        M_obj = re.search("-?[0-9]+", user_input)
+
+        if M_obj:
+            area_to = int(M_obj.group(0))
+        else:
+            area_to = None
+
+        self.botThread = GotoThread(self.character, self, self.mudReaderHandler, self.mud_map, area_to, is_show_to)
+        self.botThread.start()
+
+    def start_slave(self, user_input):
+        if not self.bot_check():
+            return
+        self.botThread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, "")
+        self.botThread.start()
+
+    def start_mix(self, user_input):
+        if not self.bot_check():
+            return
+
+        M_obj = re.search("domix '(.+?)' (.+?)( [\d]*)?$", user_input)
+        can_mix = True
+
+        try:
+            target = M_obj.group(1)
+            mix_target = M_obj.group(2)
+
+            try:
+                quantity = int(M_obj.group(3).strip())
+            except Exception:
+                magentaprint(str(M_obj.groups()),False)
+                quantity = 1
+        except Exception:
+            magentaprint(str(M_obj.groups()),False)
+            can_mix = False
+
+        if can_mix:
+            self.botThread = MixThread(self.character, self, self.mudReaderHandler, self.mud_map, self.telnetHandler, 
+                                       target, mix_target, quantity)
+            self.botThread.start()
+        else:
+            magentaprint("Input not recognized - cannot start the mixer!", False)
+
+    def stop_bot(self):
+        if self.botThread and self.botThread.is_alive():
+            self.botThread.stop()
+
+    def report(self):
+        exp = self.character.TOTAL_EXPERIENCE
+        gold = self.character.TOTAL_GOLD
+        aura = str(self.character.AURA)
+        magentaprint("Current Aura: " + aura, False)
+        magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), False)
+        exp = self.character.EXPERIENCE
+        expm = str(calculate_vpm(exp))
+        magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
+        kills = len(self.character.MOBS_KILLED)
+        kpm = str(calculate_vpm(kills))
+        magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
+        hits_dealt = self.character.HITS_DEALT
+        hits_missed = self.character.HITS_MISSED
+        damage_dealt = self.character.DAMAGE_DEALT
+        total_phys_attacks = hits_dealt + hits_missed
+        crits_landed = self.character.CRITS_LANDED
+        spells_cast = self.character.SPELLS_CAST
+        spells_failed = self.character.SPELLS_FAILED
+        spells_hit = spells_cast - spells_failed
+        spell_damage_dealt = self.character.SPELL_DAMAGE_DEALT
+
+        try:
+            average_phys_damage = round(damage_dealt / hits_dealt, 2)
+            phys_hit_rate = round(hits_dealt / total_phys_attacks * 100, 2)
+            phys_crit_rate = round(crits_landed / total_phys_attacks * 100, 2)
+            
+            average_spell_damage = round(spell_damage_dealt / spells_hit)
+            spell_hit_rate = round(spells_hit / spells_cast * 100, 2)
+            spell_crit_rate = 0
+        except Exception:
+            average_phys_damage = -1
+            average_spell_damage = -1
+            phys_hit_rate = -1
+            spell_hit_rate = -1
+            phys_crit_rate = -1
+            spell_crit_rate = -1
+
+        magentaprint("Average Phys Damage: " + str(average_phys_damage) + " | Average Spell Damage: " + str(average_spell_damage), False)
+        magentaprint("Phys Hit Rate: " + str(phys_hit_rate) + "% | Spell Hit Rate: " + str(spell_hit_rate) + "%", False)
+        magentaprint("Phys Crit Rate: " + str(phys_crit_rate) + " | Spell Crit Rate: " + str(spell_crit_rate) + "%", False)
+        runtime = round(get_runtime_in_minutes(), 2)
+        magentaprint("Minutes Run: " + str(runtime), False)
+
+    def bbuy(self, user_input):
+        try:
+            #bbuy item quant
+            M_obj = re.search("bbuy (.+?) ([\d]*)", user_input)
+            item = M_obj.group(1)
+            quantity = int(M_obj.group(2))
+
+            self.inventory.bulk_buy(item, quantity)
+        except Exception as e:
+            magentaprint("Error in the bulk buy function" + str(M_obj.groups(0)), False)
+            raise e
+
+    def find(self, user_input):           
+        M_obj = re.search("find (.+)", user_input)
+        magentaprint("Finding: " + str(M_obj.group(1)))
+        [areas, mob_locations] = MudMap.find(str(M_obj.group(1)))
+
+        magentaprint("Areas found:", False)
+        for area in areas:
+            magentaprint("<" + str(area.id) + "> - " + area.name, False)
+
+        magentaprint("Mobs found:", False)
+        for mob_location in mob_locations:
+            magentaprint("<" + str(mob_location.area.id) + "> - " + mob_location.mob.name, False)
+
+    def quit(self):
+        # Undesireable waiting for command response (hangs user input for a bit)
+        # self.telnetHandler.write(user_input)
+        magentaprint("CommandHandler quit")
+        quit = Quit(self.mudReaderHandler, self.telnetHandler)
+        magentaprint("CommandHandler quit returned " + str(quit.success))
+        if quit.success:
+            self.stop_bot()
+        return quit.success

@@ -47,7 +47,19 @@ class BotThread(threading.Thread):
 
     def sleep(self, duration):
         time.sleep(duration)
-
+    '''    
+    BotThread hooks.  2 and 3 are the main ones
+    1  run startup
+    2  pre go   (actions when direction list has emptied)
+    3  regular  (actions on every node travelled through)
+    4   on successful go
+    5   on blocking mob
+    6   on go please wait
+    7   on go timeout
+    8   on go no exit
+    9  post go (similar to successful go except also applies to failed go)
+    A  do after directions travelled
+    '''
     def run(self):                    
         self.stopping = False 
         self.character.ACTIVELY_BOTTING = False
@@ -59,13 +71,13 @@ class BotThread(threading.Thread):
                 break
 
             self.do_pre_go_actions()
-            
+
             if len(self.direction_list) is 0:
                 self.direction_list = self.decide_where_to_go()
                 
             while len(self.direction_list) is not 0 and not self.stopping:
+                self.do_regular_actions()
                 if self.go(self.direction_list[0]):
-                    # Successful go.
                     self.do_on_succesful_go()
                 else:
                     if self.character.GO_BLOCKING_MOB != "":
@@ -104,12 +116,14 @@ class BotThread(threading.Thread):
         self.character.GO_TIMEOUT = False
         self.character.SUCCESSFUL_GO = False
 
-        hook_found = self.do_go_hooks(exit_str)  # fans out 'areaidN' into real directions.
+        # A go hook is something other than an exit name in the direction list
+        # Custom actions like prepare, sell, and areaN which gets expanded into real directions
+        hook_found = self.do_go_hooks(exit_str)  
             # ... we need to wait for Cartography before this happens
 
         if not hook_found:
-            if re.match("(.*?door)", exit_str):
-                self.commandHandler.process("open " + exit_str)
+            # if re.match("(.*?door)", exit_str):
+            #     self.commandHandler.process("open " + exit_str)
                 # self.commandHandler.process('door')
             # self.commandHandler.process("go " + exit_str)
             # self.commandHandler.go.execute(exit_str)
@@ -122,7 +136,7 @@ class BotThread(threading.Thread):
             #     self.commandHandler.process("open " + exit_str)
             # return self.go.persistent_execute(exit_str)
         else:
-            return hook_found
+            return hook_found  # (True - well, it's not a successful go but it's assumed to be a successful hook)
 
     ''' STATIC METHODS '''
     @staticmethod
@@ -165,9 +179,7 @@ class BotThread(threading.Thread):
         return BotThread.has_ideal_stat(self.character.HEALTH, self.character.HEALTH_TO_HEAL)
 
     def do_go_hooks(self, exit_str):
-        #if you want to define custom hooks like sell_items / drop_items etc... you can do so here
-
-        #add the path to a given areaid to out current direction_list
+        # add the path to a given areaid to out current direction_list
         if re.match("areaid[\d]*", exit_str):
             #magentaprint("go hook found with: " + str(self.direction_list), False)
             area_id = int(exit_str.replace("areaid", ""))
@@ -202,7 +214,7 @@ class BotThread(threading.Thread):
         # This is not before every go, just before (after) every direction list
         # (I think this in_chapel check will be unnecessary when another fix happens...
             # there's currently a bug where the direction list gets remade too often)
-        return
+        self.do_regular_actions()
         # if self.in_chapel():
         #     self.rest_and_check_aura()
         #     self.check_weapons()
@@ -210,12 +222,15 @@ class BotThread(threading.Thread):
 
     def in_chapel(self):
         magentaprint("BotThread.in_chapel(): MUD_AREA is " + str(self.character.MUD_AREA))
-        return self.character.AREA_ID == 2
+        return self.character.AREA_ID == 4
         # return self.character.MUD_AREA.is_restorative
 
     def decide_where_to_go(self): #each logic thread will have to implement this function
         #self.direction_list = []
         raise NotImplementedError()
+
+    def do_regular_actions(self):
+        return
 
     def do_on_succesful_go(self):
         self.direction_list.pop(0)
@@ -240,10 +255,10 @@ class BotThread(threading.Thread):
         magentaprint("Bot: Got please wait on a go attempt, retrying.", False)
 
     def do_on_go_timeout(self):
-        magentaprint("Bot: Check go timed out.  Could be lag.  Will try again in 6 sec.")
+        magentaprint("Bot: Check go timed out.  Could be sys clock.")
         # This can happen when the system clock makes time.time() inconsistent.
         # Unless I can fix this I have to ignore this case and hope it worked.
-        self.direction_list.pop(0)
+        self.direction_list.pop(0)  
         self.character.MOBS_JOINED_IN = [] 
         self.character.MOBS_ATTACKING = []
         self.sleep(6)
@@ -258,7 +273,6 @@ class BotThread(threading.Thread):
         self.character.MOBS_ATTACKING = []
 
     def do_post_go_actions(self):
-        #here we would implement combat or whatever other other actions we want to do before we decide where to go again
         return
 
     def do_after_directions_travelled(self):

@@ -11,31 +11,26 @@ Similar to SmartBotThread this child class is intended to provide better logic f
 - listing items in shops
 - healing when necessary
 '''
-
 class SmartCrawlThread(CrawlThread):
-    def __init__(self, character_in=None, commandHandler=None, mudReaderHandler_in=None,
-                inventory_in=None, mud_map=None):
-        super(SmartCrawlThread, self).__init__(character_in, commandHandler, mudReaderHandler_in, inventory_in, mud_map)
+    # def __init__(self, character=None, command_handler=None, mud_reader_handler=None, mud_map=None):
+    #     super().__init__(character, command_handler, mud_reader_handler, mud_map)
     
     def do_pre_go_actions(self):
-        if self.character.AREA_ID == 45:
+        if self.character.AREA_ID == 4:
             self.rest_and_check_aura()
-        return  
 
     def do_post_go_actions(self):
         if self.ready_for_combat():
             self.directions = self.get_heal_path()
-
-        return
 
     def get_heal_path(self, from_path=-1):
         directions = []
 
         try:
             if from_path == -1:
-                directions = self.mud_map.get_path(self.cur_area_id, 45)
+                directions = self.mud_map.get_path(self.cur_area_id, 4)
             else:
-                directions = self.mud_map.get_path(from_path, 45)
+                directions = self.mud_map.get_path(from_path, 4)
         except Exception:
             #not a good situation - we can't find a way to the chapel from wherever we are
             #therefore we should just sit and wait here until we can go on the warpath again

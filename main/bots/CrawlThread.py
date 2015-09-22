@@ -8,7 +8,7 @@ from db.MudMap import *
 class CrawlThread(BotThread):
     def __init__(self, character=None, command_handler=None, mud_reader_handler=None,
                 inventory=None, mud_map=None):
-        super(CrawlThread, self).__init__(character, command_handler, mud_reader_handler, inventory, mud_map)
+        super().__init__(character, command_handler, mud_reader_handler, mud_map)
         self.character.ACTIVELY_MAPPING = True
 
     def stop(self):
@@ -16,7 +16,7 @@ class CrawlThread(BotThread):
         self.character.ACTIVELY_MAPPING = False
 
     def decide_where_to_go(self):
-        if (not self.character.CAN_SEE):
+        if not self.character.CAN_SEE:
             magentaprint("I'm bliiiiiinnddddd!!!", False)
             self.commandHandler.process("c light")
             time.sleep(2)
