@@ -12,7 +12,8 @@ from db.MudMap import MudMap
 
 class BotThread(threading.Thread):
     def __init__(self, character, commandHandler, mudReaderHandler, mud_map):
-        Thread.__init__(self)
+        # Thread.__init__(self)
+        super().__init__()
         self.stopping = False        
         
         self.character = character
@@ -234,8 +235,8 @@ class BotThread(threading.Thread):
 
     def do_on_succesful_go(self):
         self.direction_list.pop(0)
-        self.character.MOBS_JOINED_IN = [] 
-        self.character.MOBS_ATTACKING = []
+        # self.character.MOBS_JOINED_IN = [] 
+        # self.character.MOBS_ATTACKING = []
         self.no_exit_count = 0
 
     def do_on_blocking_mob(self):
@@ -259,18 +260,16 @@ class BotThread(threading.Thread):
         # This can happen when the system clock makes time.time() inconsistent.
         # Unless I can fix this I have to ignore this case and hope it worked.
         self.direction_list.pop(0)  
-        self.character.MOBS_JOINED_IN = [] 
-        self.character.MOBS_ATTACKING = []
+        # self.character.MOBS_JOINED_IN = [] 
+        # self.character.MOBS_ATTACKING = []
         self.sleep(6)
 
     def do_on_go_no_exit(self):
-        # This is a tough one.  Hopefully it never 
-        # happens.  I'm gonna assume it happened 
-        # because the last go actually worked and 
-        # was wrongly determined not to.
+        # This is a tough one.  Hopefully it never happens.  I'm gonna assume it happened 
+        # because the last go actually worked and was wrongly determined not to.
         magentaprint("Go no exit on: " + self.direction_list.pop(0), False)
-        self.character.MOBS_JOINED_IN = []
-        self.character.MOBS_ATTACKING = []
+        # self.character.MOBS_JOINED_IN = []
+        # self.character.MOBS_ATTACKING = []
 
     def do_post_go_actions(self):
         return

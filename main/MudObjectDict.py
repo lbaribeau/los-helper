@@ -68,7 +68,7 @@ class MudObjectDict():
                 # magentaprint("Found in exception_list " +  str(obj), False)
                 for index, gobj in enumerate(qty.objs):
                     qty.objs[index].conserve = True
-            MudObjectDict.add_to_qty_dict(references, (obj.reference, qty))
+            self.add_to_qty_dict(references, (obj.reference, qty))
 
         for obj,qty in references.items():
             i = 0

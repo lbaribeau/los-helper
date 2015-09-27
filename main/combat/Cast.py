@@ -41,6 +41,8 @@ class Cast(SimpleCombatObject):
         if regex in RegexStore.aura:
             self.__class__.aura = M_obj.group(1)
             self.__class__.aura_timer = time()
+        elif regex in RegexStore.no_mana:
+            self.stop()
         super().notify(regex, M_obj)
 
     def notify_failure(self, regex, M_obj):
@@ -52,6 +54,7 @@ class Cast(SimpleCombatObject):
            re.search("me?|mend?|mend-w?|mend-wou?|mend-wound?|mend-wounds", self.command):
             magentaprint("Cast notify failure clearing timer.")
             self.clear_timer()
+        # TODO: Erhm I think this can be done smarter - the parent doesn't need to be involved.
 
     def start_thread(self, spell, target=None):
         self.__class__.command = 'c ' + spell

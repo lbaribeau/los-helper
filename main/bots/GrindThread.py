@@ -196,34 +196,18 @@ class GrindThread(BotThread):
         # and in that case, keep resting since benefits should be active.
 
         magentaprint("In chapel_heal_up.")
-        heal_cost = 2
 
-        if self.stopping:
-            return
-
-        if self.character.HEALTH >= self.health_to_go:
+        if self.stopping or self.character.HEALTH >= self.health_to_go:
             return
 
         self.do_heal_skills()
 
-        if self.character.HEALTH >= self.health_to_go:
-            return
-
-        if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
-            self.cast.cast('v')
-            self.cast.wait_for_flag()
-
-            if self.character.HEALTH >= self.health_to_go:
-                return
-        
-        self.character.HAS_RESTORE_ITEMS = False
-
-        if not self.character.KNOWS_VIGOR:
+        if self.character.HEALTH >= self.health_to_go or Spells.vigor not in self.character.spells:
             return
 
         self.cast.wait_until_ready()
         vig = 2
-        chapel = 2
+        chapel = 2  # additional hp tick amount
         maxHP = self.character.maxHP
         maxMP = self.character.maxMP
         mana_tick = self.character._class.mana_tick
@@ -569,7 +553,7 @@ class GrindThread(BotThread):
 
         if self.character.chase_mob is not "":
             #engage mobs which are already fighting us
-            magentaprint("BotThread chasing mob, pushing onto direction list!")
+            magentaprint("BotThread.engage_monster() chasing mob, pushing onto direction list!")
             if self.character.AREA_ID is not None:
                 go_hook = "areaid" + str(self.character.AREA_ID)
                 self.direction_list.insert(0, go_hook) #should be this area
@@ -583,8 +567,9 @@ class GrindThread(BotThread):
 
         # #magentaprint("end of enage dir list: " + str(self.direction_list), False)
 
-        if monster in self.character.MOBS_ATTACKING:
-            self.character.MOBS_ATTACKING.remove(monster)
+        # Commenting: a) Mobs now does it's own removal and b) MOBS_ATTACKING is deprecated
+        # if monster in self.character.MOBS_ATTACKING:
+        #     self.character.MOBS_ATTACKING.remove(monster)
 
     def do_flee_hook(self):
         self.stop()  
@@ -607,9 +592,10 @@ class GrindThread(BotThread):
     def engage_any_attacking_mobs(self):
         engaged = False
 
-        while self.character.MOBS_ATTACKING != []:
+        # while self.character.MOBS_ATTACKING != []:
+        while self.character.mobs.attacking != []:
             engaged = True
-            self.engage_monster(self.character.MOBS_ATTACKING[0])
+            self.engage_monster(self.character.mobs.attacking[0])
             self.get_items()
 
         return engaged

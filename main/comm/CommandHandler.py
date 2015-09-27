@@ -6,16 +6,14 @@ import time
 import re
 
 from misc_functions import magentaprint
+from comm import Report 
 from combat.SmartCombat import SmartCombat
-from combat.Kill import Kill
-from combat.Cast import Cast
 from db.Database import *
 from db.MudMap import *
 import command.Command
 from command.Go import Go
 from command.Spells import *
 from command.Ability import *
-from reactions.Prompt import Prompt
 from comm import RegexStore
 from bots.TrackGrindThread import TrackGrindThread
 from bots.SmartGrindThread import SmartGrindThread
@@ -28,19 +26,23 @@ from command.Quit import Quit
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
+        self.threaded_map_setup = True
+
         self.character = character
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
         self.inventory = character.inventory
 
-        self.smartCombat = SmartCombat(self.telnetHandler, self.character, Kill(telnetHandler), Cast(telnetHandler), Prompt(character))
         # mudReaderHandler.register_reaction(self.smartCombat.kill)
         # mudReaderHandler.register_reaction(self.smartCombat.cast)
         # mudReaderHandler.register_reaction(self.smartCombat)
+        # self.smartCombat = SmartCombat(self.telnetHandler, self.character, Kill(telnetHandler), Cast(telnetHandler), Prompt(character))
+        self.smartCombat = SmartCombat(self.telnetHandler, self.character)
         self.kill = self.smartCombat.kill
         self.cast = self.smartCombat.cast
         mudReaderHandler.add_subscriber(self.kill)
         mudReaderHandler.add_subscriber(self.cast)
+        mudReaderHandler.add_subscriber(self.smartCombat.use)
         self.go = Go(telnetHandler, character)
         mudReaderHandler.add_subscriber(self.go)
         mudReaderHandler.add_subscriber(self.go.open)
@@ -49,7 +51,6 @@ class CommandHandler(object):
 
         self.botThread = None
         self.mud_map = None
-        self.threaded_map_setup = False
         self.mud_map_thread = None
         if self.threaded_map_setup:
             # Threading the db setup causes a locking error if the starting area needs to be saved
@@ -141,6 +142,9 @@ class CommandHandler(object):
         elif user_input == 'ga':
             self.telnetHandler.write('get all')
         elif user_input.startswith('go ') or re.match(str(self.character.EXIT_REGEX), user_input):
+            if not user_input.startswith('go '):
+                magentaprint("User input matched " + str(self.character.EXIT_REGEX) + ", going.")
+            # TODO: Could this make a false positive?
             # self.go.persistent_execute(user_input)
             self.user_move(user_input)
         # elif self.go.is_direction(user_input) or re.match(str(self.character.EXIT_REGEX), user_input):
@@ -159,6 +163,8 @@ class CommandHandler(object):
         elif re.match("fle?$|flee$", user_input):
             self.stop_bot()
             self.user_flee()
+        elif user_input == 'use soup':
+            self.smartCombat.use.healing_potion()  # Temporary, for testing
         elif re.match("bot ?$|bot [0-9]+$", user_input):
             self.start_track_grind(user_input)
         elif re.match("grind$", user_input):
@@ -208,12 +214,12 @@ class CommandHandler(object):
             magentaprint(str(self.character.HEALTH), False)
         elif re.match("(?i)experience", user_input):
             exp = self.character.EXPERIENCE
-            expm = str(calculate_vpm(exp))
+            expm = str(Report.calculate_vpm(exp))
             magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
             #magentaprint(str(exp), False)
         elif re.match("(?i)gold", user_input):
             #gold = self.character.GOLD  #Calculating GMP would require us to store gold differently
-            #gpm = str(calculate_vpm(gold))
+            #gpm = str(Report.calculate_vpm(gold))
             #magentaprint("Gold this Session: " + str(gold) + " | Gold / MIN: " + gpm, False)
             magentaprint(str(self.character.GOLD), False)
         elif re.match("(?i)kills", user_input):
@@ -274,6 +280,7 @@ class CommandHandler(object):
         # magentaprint("user_move: MOVE wait time: %.2f" % round(wait_from_move, 2))
         # magentaprint("user_move: kill.wait_time(): " + str(self.kill.wait_time()))
         # magentaprint("user_move: cast.wait_time(): " + str(self.cast.wait_time()))
+        magentaprint("CommandHandler.user_move waiting %.1f" % round(time_remaining, 1))
 
         if time_remaining < 3.0:
             time.sleep(time_remaining)
@@ -553,10 +560,10 @@ class CommandHandler(object):
         magentaprint("Current Aura: " + aura, False)
         magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), False)
         exp = self.character.EXPERIENCE
-        expm = str(calculate_vpm(exp))
+        expm = str(Report.calculate_vpm(exp))
         magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
         kills = len(self.character.MOBS_KILLED)
-        kpm = str(calculate_vpm(kills))
+        kpm = str(Report.calculate_vpm(kills))
         magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
         hits_dealt = self.character.HITS_DEALT
         hits_missed = self.character.HITS_MISSED
@@ -624,3 +631,4 @@ class CommandHandler(object):
         if quit.success:
             self.stop_bot()
         return quit.success
+    

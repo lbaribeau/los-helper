@@ -13,10 +13,24 @@ __numbers = "(1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th|11th|12th|13th|14th|15th|
 __numbers2 = "(?:(\d*1st|\d*2nd|\d*3rd|\d+th) )?"
 __numbers3 = "(?P<nth>\d*1st|\d*2nd|\d*3rd|\d+th) "
 __numbers_opt = "(?:" + __numbers3 + ")?"
-__The_mob = "(?:The " + __numbers_opt + ")?(?P<mob>[a-z '-]+) "
+# __The_mob = "(?:The " + __numbers_opt + ")?(?P<mob>[a-z '-]+) "
+__Numbered_mob = r"(?P<numbered_mob>[A-Z](?:he " + __numbers_opt + ")?[a-z '-]+) "
 # __The_mob = "[A-Z](?:he " + __numbers_opt + ")?(?P<mob>[a-z '-]+) "
-__the_mob = "(?:the " + __numbers_opt + ")?(?P<mob>[a-z '-]+) "
-__Numbers = "(:?(?P<N>An?|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten|Eleven|Twelve|Thirteen) )?"
+__the_mob = r"(?:the " + __numbers_opt + ")?(?P<mob>[a-z '-]+) "
+# The_mob2 won't try to match 1st/2nd with the regex.  Turns out it gets hairy accounting for that and The mobs and named mobs.
+__The_mob2 = r"(P<mob>[A-Z][\w '-]+) " 
+# __the_mob2 = "(P<mob>[\w '-]+) "
+__mob = r"[a-z '-]+"
+__the_mob2 = r"(P<mob>(?:[A-Z][a-z '-]+)|(?:the " + __numbers_opt + __mob + ")) "
+# __3_possible_mob_strings = r"(P<mob1>[A-Z][a-z '-]+)|(P<mob2>The [A-Z][a-z '-]+)|(?:[Tt]he " + __numbers_opt + r"(P<mob3>([a-z '-]+))) "
+# __3_possible_mob_strings = r"((?P<mob1>The [A-Z][a-z '-]+)|(?P<mob2>[A-Z][a-z '-]+)|(?:[Tt]he " + __numbers_opt + r"(?P<mob3>([a-z '-]+)))) "
+# __3_possible_mob_strings = r"((?P<mob1>The [A-Z][a-z '-]+ )|(?P<mob2>([A-Z][a-z'-]+ )+)|(?:[Tt]he " + __numbers_opt + r"(?P<mob3>([a-z '-]+ ))))"  # Alaran problem... try prioritizing named mob last
+# __3_possible_mob_strings = r"((?P<mob1>The [A-Z][a-z '-]+ )|(?:[Tt]he " + __numbers_opt + r"(?P<mob3>([a-z '-]+ ))|(?P<mob2>[A-Z][a-z'-]+ ([a-z'-]+ )*)))"  # Need 2nd capital letter (The General)
+# __Three_possible_mob_strings = r"((?P<mob1>The [A-Z][a-z '-]+ )|(?:The " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>([A-Z][a-z'-]+ )+)))"  # Still no good for Hef/Alaran (mob3)
+__Three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:The " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>[A-Z][A-Za-z '-]+ )))"  
+__three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:the " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>[A-Z][A-Za-z '-]+ )))"  
+# Separating The and the eliminates mob2 from matching 'the' in Alaran/Hef
+__Numbers = r"(:?(?P<N>An?|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten|Eleven|Twelve|Thirteen) )?"
 # __mob_string = "(?P<mob_string>[\w ]+)"  # We don't need this unless there are commas.
 #s_numbered=" ?([\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)? ?"
 
@@ -27,38 +41,42 @@ __Numbers = "(:?(?P<N>An?|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten|Eleven|Tw
 # mob_fled = ["(?:The " + __numbers_opt + ")?(?P<mob>.+?) flees to the (?P<exit>.+?)\."] 
 # mob_defeated = ["Your enemy, (?:the " + __numbers_opt + ")?(?P<mob>.+?) has been defeated\."]
 # mob_wandered = ["(?:The " + __numbers_opt + ")?(?P<mob>.+?) just wandered to the (?P<exit>.+?)\."
-mob_died = ["Your attack overwhelms " + __the_mob + "and (?:s?he|it) collapses!"]
+mob_died = [r"Your attack overwhelms " + __three_possible_mob_strings + "and (?:s?he|it) collapses!"]
 # it_fled = ["The (" + numbers + " )?(?P<mob_name>.+?) flees to the (.+?)\."]
 # mob_fled = ["(?:The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 
-mob_fled = [__The_mob + "flees to the (?P<exit>[a-z ]+)\."] 
-mob_defeated = ["Your enemy, " + __the_mob + "has been defeated\."]
-mob_wandered = [__The_mob + "just wandered to the (?P<exit>[a-z ]+)\."]
+mob_fled = [__Three_possible_mob_strings + r"flees to the (?P<exit>[a-z ]+)\."] 
+mob_defeated = [r"Your enemy, " + __three_possible_mob_strings + r"has been defeated\."]
+mob_wandered = [__Three_possible_mob_strings + r"just wandered to the (?P<exit>[a-z ]+)\."]
 # mob_left = ["The (:?(?P<nth>\d*1st|\d*2nd|\d*3rd|\d+th) )?(?P<mob>.+?) just wandered away\."
-mob_left = [__The_mob + " just wandered away\."]
+mob_left = [__Three_possible_mob_strings + "just wandered away\."]
 # mob_arrived = ["An? (?P<mob>.+?) just arrived\."]
 # mob_arrived = [__Numbers + "(?P<mob>[\w ]+?) just arrived\."]
 # mob_arrived = ["(?P<mobs>[\w -']+?) just arrived\."]
-mob_arrived = ["(?P<mobs>[a-z]+ [a-z '-]+?) just arrived\."]
+# mob_arrived = [__The_mob2 + "(?P<mobs>[a-z]+ [a-z '-]+?) just arrived\."]
+mob_arrived = [r"(?P<mobs>[A-Z][a-z]* [a-z '-]+?) just arrived\."]  # no 1st/2nd numbers in arrived, but Two/Three is possible
+# mob_arrived = [__3_possible_mob_strings + r" just arrived\."] 
 # mob_joins1 = ["the" + s_numbered + " (.+?) joins in the fight!"]
 # Lower case 't' grammar error
-mob_joined1 = [__the_mob + "joins in the fight!"]  # A mob standing there joins
-mob_joined2 = [__the_mob + "decides to join in on the fight!"]  # A mob wanders in and joins
-you_attack = ["You attack " + __the_mob + "\."]
-mob_aggro = [__The_mob + "attacks you\."]  # TODO: alert here(?)
+# mob_joined1 = [__the_mob + "joins in the fight!"]  # A mob standing there joins
+mob_joined1 = [__three_possible_mob_strings + "joins in the fight!"]  # A mob standing there joins
+mob_joined2 = [__three_possible_mob_strings + "decides to join in on the fight!"]  # A mob wanders in and joins
+# you_attack = ["You attack " + __the_mob + "\."]
+you_attack = ["You attack " + __three_possible_mob_strings + "\."]
+mob_aggro = [__Three_possible_mob_strings + "attacks you\."]  # TODO: alert here(?)
 mob_attacked = [
     # "The" + s_numbered + " (.+?) punches you for (.+?) damage\.",
-    __The_mob + "punches you for (.+?) damage\.",
-    __The_mob + "throws a wild punch at you, but it misses\.",
-    __The_mob + "kicks you for (\d+) damage\.",
-    __The_mob + "kicks at you, but fails to hurt you\.",
-    __The_mob + "grabs you and gouges you for (\d+) damage\.",
-    __The_mob + "tries to grab you, but you break free of (his|her|its) grasp\.",
-    __The_mob + "tries to gouge you, but you shake (him|her|it) off\.",
-    __The_mob + "lashes out and thumps you for (\d+) damage\.",
-    __The_mob + "lashes out at you, but misses\.",               
-    __The_mob + "painfully head-butts you for (\d+) damage\.",
-    __The_mob + "casts a (.+?) on you for (\d+) damage\."
-    # __The_mob + "casts a (.+?) at you for (\d+) damage\."  # I don't think 'at' ever occurs
+    __Three_possible_mob_strings + r"punches you for (.+?) damage\.",
+    __Three_possible_mob_strings + r"throws a wild punch at you, but it misses\.",
+    __Three_possible_mob_strings + r"kicks you for (\d+) damage\.",
+    __Three_possible_mob_strings + r"kicks at you, but fails to hurt you\.",
+    __Three_possible_mob_strings + r"grabs you and gouges you for (\d+) damage\.",
+    __Three_possible_mob_strings + r"tries to grab you, but you break free of (his|her|its) grasp\.",
+    __Three_possible_mob_strings + r"tries to gouge you, but you shake (him|her|it) off\.",
+    __Three_possible_mob_strings + r"lashes out and thumps you for (\d+) damage\.",
+    __Three_possible_mob_strings + r"lashes out at you, but misses\.",               
+    __Three_possible_mob_strings + r"painfully head-butts you for (\d+) damage\.",
+    __Three_possible_mob_strings + r"casts a (.+?) spell on you for (\d+) damage\."
+    # __Three_possible_mob_strings + r"casts a (.+?) at you for (\d+) damage\."  # I don't think 'at' ever occurs
 ] 
 
 # Go and Cartography
@@ -396,3 +414,8 @@ eq = [r"(On body:   (?P<body>.+?)\n\r)?" \
 ]  # m.group('holding') returns None with no error if the holding group didn't occur.
 
 # "The extreme nature of this place wracks your aura!""  (Bandit Hill)
+
+# you_feel_better = [r"You feel better\.\n\r"]
+# you_feel_no_different = [r"You feel no different\."]
+potion_drank = [r"Potion drank\."]
+use_what = [r"Use what\?\n\r"]

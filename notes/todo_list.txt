@@ -1,4 +1,12 @@
 
+Sept 2015
+Death mitigation
+- SmartCombat use items and flee
+Getting lost mitigation
+- Go reliability - check for AID change after Go Timeout and get the exit right instead of guessing
+- TrackGrind can use the map to recover
+BotThread.engage_monster should finish the job on chasing
+
 TODO LIST (WISH LIST):
 
 A hud showing cooldowns for attack, cast, and all coolabilities

@@ -7,18 +7,23 @@ from command.Ability import *
 from misc_functions import magentaprint
 from command import Spells
 from comm import RegexStore
+from combat.Kill import Kill
+from combat.Cast import Cast
+from reactions.Prompt import Prompt
+from command.Use import Use
 
 class SmartCombat(CombatObject):
     black_magic = True
 
-    def __init__(self, telnetHandler, character, kill, cast, prompt):
+    def __init__(self, telnetHandler, character):
         super().__init__(telnetHandler)
         self.thread = None
         self.target = None
         self.stopping = None
-        self.kill = kill
-        self.cast = cast
-        self.prompt = prompt
+        self.kill = Kill(telnetHandler)
+        self.cast = Cast(telnetHandler)
+        self.prompt = Prompt(character)
+        self.use = Use(character, telnetHandler)
         self.abilities = character._class.abilities.values()
 
         # self.heal_abilities = [a for a in self.abilities if isinstance(a, HealAbility)]

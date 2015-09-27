@@ -103,15 +103,9 @@ class Prompt(object):
         else:
             return 9
 
-
-
-
-
         # if self.__class__.tick_times:
 	       #  self.__class__.tick_times.append(time.time() - self.__class__)
         # else:
-
-
 
     def tick_period(self):
         return round(sum(self.tick_periods) / len(self.tick_periods), 1) 

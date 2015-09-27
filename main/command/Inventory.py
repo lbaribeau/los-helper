@@ -24,9 +24,10 @@ class Inventory(BotReactionWithFlag):
         "Elixir of Morinva", "granite potion", "philtre of perception",
         "burnt ochre potion", "milky potion",
         # weapons
-        'war hammer', "adamantine sword", 'adamantine axe', "claymore", 
+        # 'war hammer', 
+        "adamantine sword", 'adamantine axe', "claymore", 
         "spider leg", 'heavy crossbow', 
-        "spear", "bolos", 'javelin', "long bow", 
+        "spear", "bolos", 'javelin', #"long bow", 
         "heathen amulet",
         "broad sword", "rapier",
         #"crossbow", "horn bow",  # < 70% missile
@@ -48,7 +49,8 @@ class Inventory(BotReactionWithFlag):
         "iron shield", 'platinum ring', 'gold ring', 'steel ring', 'silver ring',
         'granite rod', "miner's lamp",
         #'steel mask' # the bot slowly collects these 
-        'large orcish sword',
+        #'bastard sword',
+        'large orcish sword', 
         "small mace", "studded leather leggings", 'plate mail leggings', 'plate mail armor'
     ]
 
@@ -288,7 +290,7 @@ class Inventory(BotReactionWithFlag):
         self.wait_for_flag()
 
     def drop_last(self, item_string):
-        item_ref = self._item_string_to_reference(item_string)
+        item_ref = self._item_string_to_reference(item_string)  # TODO: This looks like it would crash
         self.drop_item_at_position(item_ref, self.inventory[item_string])
 
     def stop(self):
@@ -413,8 +415,8 @@ class Inventory(BotReactionWithFlag):
     def output_inventory(self):
         magentaprint(str(self.inventory),False)
 
-    restoratives = ["chicken soup", "small restorative", "small flask", 
-                    "large restorative", "scarlet potion", "white potion", "tree root"]
+    # restoratives = ["chicken soup", "small restorative", "small flask", 
+    #                 "large restorative", "scarlet potion", "white potion", "tree root"]
     # usable = ["small retorative", "large restorative", "chicken soup", "scarlet potion", 
     #           "steel bottle", "silver chalice", "milky potion",
     #           "glowing potion",
@@ -427,6 +429,33 @@ class Inventory(BotReactionWithFlag):
 
     MUD_RETURN_ITEM_SOLD = False
 
+    def list_form(self):
+        # Assuming {item_name: qty} string:int structure 
+        l = []
+        for k in self.inventory.dictionary.keys():
+            l.extend([k] * len(self.inventory.dictionary[k].objs))
+        return l
+
+    def get_reference(self, item_name):
+        item_words = item_name.split(' ')
+        # self.inventory.sort()  # I think we can assume that proper housekeeping has been done
+        # This would be easier with a simple list than with the qty dict
+        # Algorithm: Use the first word in the item.  Count the items in the inventory that also 
+        # use that word.  Return a word/int pair that will serve as a usable reference (ie. 'steel 6')
+        i=1
+        for k in sorted(self.inventory.dictionary.keys()):  # TODO: We can probably save time here
+            if item_words[0] in k.obj.name.split(' '):
+                if item_name == k.obj.name:
+                    return self._reference_string(item_words[0], i)
+                else:
+                    i = i + len(self.inventory.dictionary[k].objs)
+
+    def _reference_string(self, word, i):
+        # Reference string given the int - this is just a code-saving method
+        if i <= 1:
+            return word
+        else:
+            return word + ' ' + str(i)
 
 # Ok I want to set up reactions to keep myself up to date.
 # I am thinking of steel bottles and restoratives, so I want 
