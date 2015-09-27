@@ -4,8 +4,8 @@ from comm import RegexStore
 
 class Use(Command):
     command = 'use'
-    cooldown_after_success = 0.34
-    cooldown_after_failure = 0.34
+    cooldown_after_success = 0.4
+    cooldown_after_failure = 0.4
     # It's tempting to try to make Inventory smart enough to use healing items...
     success_regexes = [RegexStore.potion_drank]  # Todo: add rods/buffs  (Might be made simpler with a different class, ie. UseRod)
     failure_regexes = []  # TODO: I believe flasks can fail

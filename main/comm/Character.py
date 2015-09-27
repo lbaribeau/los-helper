@@ -350,7 +350,7 @@ class Character(object):
     ]
     lvl11_monsters = [
         'dwarven adventurer',  # dusty blue
-        'enchantress', 'Brotain', 'minstrel', 'brutalizer', 'Gregor'
+        'enchantress', 'Brotain', 'minstrel', 'brutalizer', 'Gregor', 'Bertram Dalrum'
     ]
     lvl12_monsters = [
         'barbarian shaman', 'barbarian warrior', # grey

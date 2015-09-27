@@ -27,28 +27,31 @@ __the_mob2 = r"(P<mob>(?:[A-Z][a-z '-]+)|(?:the " + __numbers_opt + __mob + ")) 
 # __3_possible_mob_strings = r"((?P<mob1>The [A-Z][a-z '-]+ )|(?P<mob2>([A-Z][a-z'-]+ )+)|(?:[Tt]he " + __numbers_opt + r"(?P<mob3>([a-z '-]+ ))))"  # Alaran problem... try prioritizing named mob last
 # __3_possible_mob_strings = r"((?P<mob1>The [A-Z][a-z '-]+ )|(?:[Tt]he " + __numbers_opt + r"(?P<mob3>([a-z '-]+ ))|(?P<mob2>[A-Z][a-z'-]+ ([a-z'-]+ )*)))"  # Need 2nd capital letter (The General)
 # __Three_possible_mob_strings = r"((?P<mob1>The [A-Z][a-z '-]+ )|(?:The " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>([A-Z][a-z'-]+ )+)))"  # Still no good for Hef/Alaran (mob3)
-__Three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:The " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>[A-Z][A-Za-z '-]+ )))"  
-__three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:the " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>[A-Z][A-Za-z '-]+ )))"  
+# __Three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:The " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>[A-Z][A-Za-z '-]+ )))"  
+# __Three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:The " + __numbers_opt + r"((?P<mob2>[a-z '-]+) ))|(?P<mob3>[A-Z][A-Za-z '-]+ ))"  
+__Three_possible_mob_strings = r"((?P<mob1>The( [A-Z][a-z'-]+)+)|(?:The " + __numbers_opt + r"(?P<mob2>[a-z '-]+))|(?P<mob3>[A-Z][A-Za-z '-]+))"  
+# __three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:the " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>[A-Z][A-Za-z '-]+ )))"  
+# __three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:the " + __numbers_opt + r"((?P<mob2>[a-z '-]+) ))|(?P<mob3>[A-Z][A-Za-z '-]+ ))"  
+# __three_possible_mob_strings = r"(?:the " + __numbers_opt + r"((?P<mob1>(?P<mob3>(?P<mob2>[a-z '-]+))) ))"  # Simplefied mob2 only, you_attack not working
+# __three_possible_mob_strings = "(?:the ((?P<mob1>(?P<mob3>(?P<mob2>[a-z '-]+))) ))"  
+# __three_possible_mob_strings = "(?:the ((?P<mob1>(?P<mob3>(?P<mob2>.+?))) ))"  
+# __three_possible_mob_strings = "(?:the ((?P<mob1>(?P<mob3>(?P<mob2>.+?))) ))"  
+__three_possible_mob_strings = r"((?P<mob1>The( [A-Z][a-z'-]+)+)|(?:the " + __numbers_opt + r"(?P<mob2>[a-z '-]+))|(?P<mob3>[A-Z][A-Za-z '-]+))"  
 # Separating The and the eliminates mob2 from matching 'the' in Alaran/Hef
 __Numbers = r"(:?(?P<N>An?|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten|Eleven|Twelve|Thirteen) )?"
 # __mob_string = "(?P<mob_string>[\w ]+)"  # We don't need this unless there are commas.
 #s_numbered=" ?([\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)? ?"
 
 # Combat / Mobs
-# mob_died = ["Your attack overwhelms (?:the " + __numbers_opt + ")?(?P<mob>.+?) and (s?he|it) collapses!"]
-# # it_fled = ["The (" + numbers + " )?(?P<mob_name>.+?) flees to the (.+?)\."]
-# # mob_fled = ["(?:The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 
-# mob_fled = ["(?:The " + __numbers_opt + ")?(?P<mob>.+?) flees to the (?P<exit>.+?)\."] 
-# mob_defeated = ["Your enemy, (?:the " + __numbers_opt + ")?(?P<mob>.+?) has been defeated\."]
+# you_attack = ["You attack " + __the_mob + "\."]
+# you_attack = ["You attack the (?P<mob2>.+?)\."]
+you_attack = ["You attack " + __three_possible_mob_strings + "\."]
+# you_attack = ["You attack (.+?)\."]  # no space!
+mob_aggro = [__Three_possible_mob_strings + " attacks you\."]  # TODO: alert here(?)
 # mob_wandered = ["(?:The " + __numbers_opt + ")?(?P<mob>.+?) just wandered to the (?P<exit>.+?)\."
-mob_died = [r"Your attack overwhelms " + __three_possible_mob_strings + "and (?:s?he|it) collapses!"]
-# it_fled = ["The (" + numbers + " )?(?P<mob_name>.+?) flees to the (.+?)\."]
-# mob_fled = ["(?:The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 
-mob_fled = [__Three_possible_mob_strings + r"flees to the (?P<exit>[a-z ]+)\."] 
-mob_defeated = [r"Your enemy, " + __three_possible_mob_strings + r"has been defeated\."]
-mob_wandered = [__Three_possible_mob_strings + r"just wandered to the (?P<exit>[a-z ]+)\."]
+mob_wandered = [__Three_possible_mob_strings + r" just wandered to the (?P<exit>[a-z ]+)\."]
 # mob_left = ["The (:?(?P<nth>\d*1st|\d*2nd|\d*3rd|\d+th) )?(?P<mob>.+?) just wandered away\."
-mob_left = [__Three_possible_mob_strings + "just wandered away\."]
+mob_left = [__Three_possible_mob_strings + " just wandered away\."]
 # mob_arrived = ["An? (?P<mob>.+?) just arrived\."]
 # mob_arrived = [__Numbers + "(?P<mob>[\w ]+?) just arrived\."]
 # mob_arrived = ["(?P<mobs>[\w -']+?) just arrived\."]
@@ -58,26 +61,33 @@ mob_arrived = [r"(?P<mobs>[A-Z][a-z]* [a-z '-]+?) just arrived\."]  # no 1st/2nd
 # mob_joins1 = ["the" + s_numbered + " (.+?) joins in the fight!"]
 # Lower case 't' grammar error
 # mob_joined1 = [__the_mob + "joins in the fight!"]  # A mob standing there joins
-mob_joined1 = [__three_possible_mob_strings + "joins in the fight!"]  # A mob standing there joins
-mob_joined2 = [__three_possible_mob_strings + "decides to join in on the fight!"]  # A mob wanders in and joins
-# you_attack = ["You attack " + __the_mob + "\."]
-you_attack = ["You attack " + __three_possible_mob_strings + "\."]
-mob_aggro = [__Three_possible_mob_strings + "attacks you\."]  # TODO: alert here(?)
+mob_joined1 = [__three_possible_mob_strings + " joins in the fight!"]  # A mob standing there joins
+mob_joined2 = [__three_possible_mob_strings + " decides to join in on the fight!"]  # A mob wanders in and joins
 mob_attacked = [
     # "The" + s_numbered + " (.+?) punches you for (.+?) damage\.",
-    __Three_possible_mob_strings + r"punches you for (.+?) damage\.",
-    __Three_possible_mob_strings + r"throws a wild punch at you, but it misses\.",
-    __Three_possible_mob_strings + r"kicks you for (\d+) damage\.",
-    __Three_possible_mob_strings + r"kicks at you, but fails to hurt you\.",
-    __Three_possible_mob_strings + r"grabs you and gouges you for (\d+) damage\.",
-    __Three_possible_mob_strings + r"tries to grab you, but you break free of (his|her|its) grasp\.",
-    __Three_possible_mob_strings + r"tries to gouge you, but you shake (him|her|it) off\.",
-    __Three_possible_mob_strings + r"lashes out and thumps you for (\d+) damage\.",
-    __Three_possible_mob_strings + r"lashes out at you, but misses\.",               
-    __Three_possible_mob_strings + r"painfully head-butts you for (\d+) damage\.",
-    __Three_possible_mob_strings + r"casts a (.+?) spell on you for (\d+) damage\."
-    # __Three_possible_mob_strings + r"casts a (.+?) at you for (\d+) damage\."  # I don't think 'at' ever occurs
+    __Three_possible_mob_strings + r" punches you for (?P<d>\d+) damage\.",
+    __Three_possible_mob_strings + r" throws a wild punch at you, but it misses\.",
+    __Three_possible_mob_strings + r" kicks you for (?P<d>\d+) damage\.",
+    __Three_possible_mob_strings + r" kicks at you, but fails to hurt you\.",
+    __Three_possible_mob_strings + r" grabs you and gouges you for (?P<d>\d+) damage\.",
+    __Three_possible_mob_strings + r" tries to grab you, but you break free of (his|her|its) grasp\.",
+    __Three_possible_mob_strings + r" tries to gouge you, but you shake (him|her|it) off\.",
+    __Three_possible_mob_strings + r" lashes out and thumps you for (?P<d>\d+) damage\.",
+    __Three_possible_mob_strings + r" lashes out at you, but misses\.",               
+    __Three_possible_mob_strings + r" painfully head-butts you for (?P<d>\d+) damage\.",
+    __Three_possible_mob_strings + r" casts a (.+?) spell on you for (?P<d>\d+) damage\."
+    # __Three_possible_mob_strings + r" casts a (.+?) at you for (\d+) damage\."  # I don't think 'at' ever occurs
 ] 
+# mob_died = ["Your attack overwhelms (?:the " + __numbers_opt + ")?(?P<mob>.+?) and (s?he|it) collapses!"]
+# # it_fled = ["The (" + numbers + " )?(?P<mob_name>.+?) flees to the (.+?)\."]
+# # mob_fled = ["(?:The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 
+# mob_fled = ["(?:The " + __numbers_opt + ")?(?P<mob>.+?) flees to the (?P<exit>.+?)\."] 
+# mob_defeated = ["Your enemy, (?:the " + __numbers_opt + ")?(?P<mob>.+?) has been defeated\."]
+mob_died = [r"Your attack overwhelms " + __three_possible_mob_strings + " and (?:s?he|it) collapses!"]
+# it_fled = ["The (" + numbers + " )?(?P<mob_name>.+?) flees to the (.+?)\."]
+# mob_fled = ["(?:The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 
+mob_fled = [__Three_possible_mob_strings + r" flees to the (?P<exit>[a-z ]+)\."] 
+mob_defeated = [r"Your enemy, " + __three_possible_mob_strings + r" has been defeated\."]
 
 # Go and Cartography
 #           .=\n\r   EAT JUNK DATA (death,loginprompts,hptick)              Title           Description               Exit list             Players / Mobs / Signs / Items (optional)

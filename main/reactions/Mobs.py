@@ -3,12 +3,6 @@ from reactions.BotReactions import BotReactionWithFlag
 import comm.RegexStore as R
 from misc_functions import magentaprint
 
-singles = ['a ', 'an ', 'some ', 'The ']
-numbers = ['two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 
-    'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ', 
-    'fifteen ' , 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen ', 'twenty ']
-numbers.extend([str(i) + " " for i in range(21, 200)])
-  
 def remove_plural(m):
     # if mob_string.endswith('s'):
     #     mob_string = mob_string[0:len(mob_string)-1]
@@ -62,80 +56,47 @@ class Mobs(BotReactionWithFlag):
                         'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 
                         'fifteen' , 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty']
         self.numbers.extend([str(i) + " " for i in range(21, 200)])
+        self.damage = []
 
     def read_match(self, m):
         if m.group('mob1'):
             return m.group('mob1').strip()
         elif m.group('mob2'):
-            magentaprint("Mobs mob2")
+            # magentaprint("Mobs mob2")
             if m.group('mob2').startswith('The '):
                 return m.group('mob2').partition(' ')[2].strip()
             else:
                 return m.group('mob2').strip()
         elif m.group('mob3'):
-            magentaprint("Mobs mob3")
+            # magentaprint("Mobs mob3")
             return m.group('mob3').strip()
 
     def notify(self, r, m_obj):
         # We'll let Cartography handle the initialization of monster_list with the area regex since it already does a great job.
         if r in R.mob_arrived:
-            # article = m_obj.group('N').lower() if m_obj.group('N') else None
-            # magentaprint("Mob arrived " + m_obj.group('mobs'))
-            # magentaprint("Mobs " + m_obj.group('N') + ' ' + m_obj.group('mobs') + " just arrived.")
             mob_parse = m_obj.group('mobs').partition(' ')
             first_word = mob_parse[0].lower()
             if first_word in self.singles:
-                # self.list.append(' '.join(mob_parse m_obj.group('mob'))
                 self.list.append(mob_parse[2])
             elif first_word in self.numbers:
                 magentaprint("Mobs mobs: " + m_obj.group('mobs') + ", first_word: " + first_word)
-                # self.list.extend([remove_plural(m_obj.group('mobs'))] * (int(self.numbers.index(first_word)) + 2))
                 self.list.extend([remove_plural(mob_parse[2])] * (int(self.numbers.index(first_word)) + 2))
             else:
                 # Named mob
                 magentaprint("Mobs arrived no article: first_word " + first_word + " mobs: " + str(m_obj.group('mobs')))
-                # self.list.append(m_obj.group('mobs'))
                 self.list.append(mob_parse[0])
-            # if article in self.singles:
-            #     self.list.append(m_obj.group('mob'))
-            # elif article in self.numbers:
-            #     magentaprint("Mobs mobs: " + m_obj.group('mob') + ", article: " + m_obj.group('N'))
-            #     self.list.extend([remove_plural(m_obj.group('mob'))] * (int(self.numbers.index(m_obj.group('N'))) + 2))
-
-            #     # if ',' not in m_obj.group('mob'):
-            #     #     # Doesn't handle commas or The
-            #     #     # self.list.extend([remove_plural(m_obj.group('mob'), capitals=True)] * (int(self.numbers.index(m_obj.group('N'))) + 2))
-            #     #     magentaprint("Mobs mobs " + m_obj.group('mob') + ", N " + m_obj.group('N'))
-            #     #     self.list.extend([remove_plural(m_obj.group('mob'))] * (int(self.numbers.index(m_obj.group('N'))) + 2))
-            #     # else:
-            #     #     magentaprint("Mobs mobs " + m_obj.group('mob'))
-            #     #     self.list.extend(self.parse_mob_string(m_obj.group('mob')))
-            #     # # qty = self.numbers.index(m_obj.group('N')) + 2
-            # else:
-            #     # Named mob
-            #     magentaprint("Mobs arrived no article: N " + str(m_obj.group('N')) + " mobs: " + str(m_obj.group('mob')))
-            #     self.list.append(m_obj.group('mob'))
         elif r in R.mob_died:
-            # if m_obj.group('mob') in self.list:
-            #     self.list.remove(m_obj.group('mob'))
-            # if m_obj.group('mob') in self.attacking:
-            #     self.attacking.remove(m_obj.group('mob'))
             if self.read_match(m_obj) in self.list:
                 self.list.remove(self.read_match(m_obj))
             if self.read_match(m_obj) in self.attacking:
                 self.attacking.remove(self.read_match(m_obj))
+            magentaprint('Mobs damage ' + str(self.damage) + ' ' + str(sum(self.damage)))
         elif r in R.mob_fled:  # Leave mobs.attacking populated. (?)  might help to chase mobs that don't block you (chase currently relies on that.)
-            # if m_obj.group('mob') in self.list:
-            #     self.list.remove(m_obj.group('mob'))
             if self.read_match(m_obj) in self.list:
                 self.list.remove(self.read_match(m_obj))
-        # elif (r in R.mob_wandered or r in R.mob_left) and m_obj.group('mob') in self.list:
-        #     magentaprint("Mobs: " + str(m_obj.group(0)))
-        #     self.list.remove(m_obj.group('mob'))
         elif (r in R.mob_wandered or r in R.mob_left) and self.read_match(m_obj) in self.list:
             self.list.remove(self.read_match(m_obj))
         elif r in R.mob_joined1 or r in R.mob_joined2:
-            # self.attacking.append(m_obj.group('mob'))
             self.attacking.append(self.read_match(m_obj))
         elif r in R.mob_attacked:
             # c = self.attacking.count(m_obj.group('mob').strip())
@@ -149,13 +110,14 @@ class Mobs(BotReactionWithFlag):
             c = self.attacking.count(self.read_match(m_obj))
             if c == 0:
                 self.attacking.append(self.read_match(m_obj))
-        # elif r in R.you_attack or r in R.mob_aggro:
-        #     magentaprint('Mob engaged ' + str(m_obj.group('mob')))
-        #     self.attacking.append(m_obj.group('mob'))
-        elif r in R.you_attack:
-            # self.attacking.append(m_obj.group('mob'))
-            self.attacking.append(self.read_match(m_obj))
-        elif r in R.mob_aggro:
+            # TODO: remember if 1st and 2nd mobs are attacking and ensure attacking has length 2 if necessary
+            if 'd' in m_obj.groupdict().keys():
+                self.damage.append(int(m_obj.group('d')))
+            else:
+                self.damage.append(0)
+        if r in R.you_attack or r in R.mob_aggro:
+            magentaprint("Erhm damage should be reset.")
+            self.damage = []
             self.attacking.append(self.read_match(m_obj))
         magentaprint("mobs.list " + str(self.list))
         magentaprint("mobs.attacking " + str(self.attacking))

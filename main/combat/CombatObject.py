@@ -31,9 +31,6 @@ class CombatObject(object):
 
     @property 
     def end_combat(self):
-        # magentaprint("CombatObject.end_combat")
-        # # magentaprint(str(self))
-        # magentaprint(str(self.result))
         return self.result in RegexStore.mob_died or self.result in RegexStore.mob_fled
 
     @property
@@ -42,6 +39,10 @@ class CombatObject(object):
     @property
     def mob_fled(self):
         return self.result in chain.from_iterable(RegexStore.mob_fled)
+
+    def in_combat(self):
+        magentaprint(str(self) + " in combat returning " + str(hasattr(self, 'thread') and self.thread and self.thread.is_alive()))
+        return hasattr(self, 'thread') and self.thread and self.thread.is_alive()
 
 class SimpleCombatObject(CombatObject, ThreadingMixin, Command):
     # This is for code used by Kill and Cast but not SmartCombat
@@ -66,11 +67,13 @@ class SimpleCombatObject(CombatObject, ThreadingMixin, Command):
         magentaprint(str(self) + " notified.")
         CombatObject.notify(self, regex, M_obj)
         Command.notify(self, regex, M_obj)
+        # magentaprint('SimpleCombatObject r ' + regex + ' errors ' + str(self.error_regexes))
+        # if regex in chain.from_iterable(self.error_regexes):
+        #     self.stop()
 
-    # def execute(self, target):
-    #     # self.wait_until_ready()
-    #     if not self.stopping:
-    #         super().execute(target)
+    @property 
+    def end_combat(self):
+        return super().end_combat or self.result in chain.from_iterable(self.error_regexes)
 
     # Needs to be a class method because the human doesn't have the object.
     @classmethod
@@ -89,3 +92,4 @@ class SimpleCombatObject(CombatObject, ThreadingMixin, Command):
             cls.wait_until_ready()
 
         magentaprint(str(cls) + " ending run." )
+

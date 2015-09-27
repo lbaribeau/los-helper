@@ -60,7 +60,7 @@ class Inventory(BotReactionWithFlag):
         self.wont_buy2 = "The shopkeep won't buy that from you\."
         self.sold = "The shopkeep gives you (.+?) gold for (.+?)\."
         self.you_drop = "(?s)You drop (.+?)\."
-        self.disintegrates = "A (.+?) disintegrates\."
+        self.disintegrates = "(?:A|Some) ([a-z ]+?) disintegrates\."
         self.gold_from_tip = "You have (.+?) gold\."
         self.not_a_pawn_shop = "This is not a pawn shoppe\."
         self.you_now_have = "You now have (.+?) gold pieces\."

@@ -51,8 +51,15 @@ class SmartCombat(CombatObject):
         # So SmartCombat needs to be registered/unregistered... or have a boolean for whether we're in combat.
         # I prefer the latter.
         super().notify(regex, M_obj)
-        if regex in RegexStore.prompt:
-            pass
+        if regex in RegexStore.prompt and self.in_combat() and self.needs_heal():
+            self.use.healing_potion()
+
+    def needs_heal(self):
+        if self.character.mobs.damage:
+            return self.character.HEALTH <= max(self.character.mobs.damage)
+        else:
+            return self.character.HEALTH < 0.25 * self.character.maxHP
+        # return self.character.HEALTH < 50  # Test!
 
     def stop(self):
         self.stopping = True
@@ -81,7 +88,7 @@ class SmartCombat(CombatObject):
         self.circled = False
         self.casting = self.black_magic or 'vigor' in self.character.spells
 
-        self.use_any_fast_combat_abilities()  # ie. Touch
+        self.use_any_fast_combat_abilities()  # ie. Touch, Dance
 
         while not self.stopping:
             # magentaprint("SmartCombat loop kill.timer " + str(round(self.kill.wait_time(), 1)) + " cast.timer " + str(round(self.cast.wait_time(), 1)) + ".")
@@ -179,4 +186,3 @@ class SmartCombat(CombatObject):
 
     def stop_casting(self):
         self.casting = False
-

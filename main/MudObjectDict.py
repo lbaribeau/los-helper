@@ -35,12 +35,14 @@ class MudObjectDict():
                 olist = self.dictionary[obj]
                 count += len(olist.objs)
 
+        magentaprint("MudObjectDict counted " + str(count) + " " + str(obj) + ".")
         return count
 
     def add(self, obj_dict):
         for obj, qty in obj_dict.items():
             MudObjectDict.add_to_qty_dict(self.dictionary, (obj, qty))
 
+        magentaprint("MudObjectDict added " + str(obj_dict.keys()))
         self.sort()
 
     def remove(self, obj_dict):
