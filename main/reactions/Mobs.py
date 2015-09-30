@@ -116,7 +116,6 @@ class Mobs(BotReactionWithFlag):
             else:
                 self.damage.append(0)
         if r in R.you_attack or r in R.mob_aggro:
-            magentaprint("Erhm damage should be reset.")
             self.damage = []
             self.attacking.append(self.read_match(m_obj))
         magentaprint("mobs.list " + str(self.list))

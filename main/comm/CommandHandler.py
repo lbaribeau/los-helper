@@ -42,12 +42,12 @@ class CommandHandler(object):
         self.cast = self.smartCombat.cast
         mudReaderHandler.add_subscriber(self.kill)
         mudReaderHandler.add_subscriber(self.cast)
-        mudReaderHandler.add_subscriber(self.smartCombat.use)
         self.go = Go(telnetHandler, character)
         mudReaderHandler.add_subscriber(self.go)
         mudReaderHandler.add_subscriber(self.go.open)
         mudReaderHandler.add_subscriber(self.smartCombat.prompt)  
         mudReaderHandler.add_subscriber(self.smartCombat)
+        mudReaderHandler.add_subscriber(self.smartCombat.use)
 
         self.botThread = None
         self.mud_map = None
@@ -164,7 +164,12 @@ class CommandHandler(object):
             self.stop_bot()
             self.user_flee()
         elif user_input == 'use soup':
-            self.smartCombat.use.healing_potion()  # Temporary, for testing
+            self.smartCombat.use.healing_potion() 
+        elif user_input == 'use heals':
+            self.smartCombat.use.spam_pots()  # testing
+            time.sleep(2.5)  # Also, smartCombat stops the thread even out of combat, so that has to be changed for this test.
+                            # ... don't forget to change it back
+            self.smartCombat.use.stop()
         elif re.match("bot ?$|bot [0-9]+$", user_input):
             self.start_track_grind(user_input)
         elif re.match("grind$", user_input):

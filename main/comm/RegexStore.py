@@ -110,6 +110,8 @@ no_right = ["You have not earned the right to pass this way!"]
 in_tune = ["That way may only be taken by those in tune with the world!"]
 not_authorized = ["You are not authorised to enter here\."]
 cannot_force = ["You cannot force yourself to go through there\."]
+washroom = ["Sorry, only males are allowed to go there\.",
+    "Sorry, only females are allowed to go there\."]
 # __go_failure = blocked_path + open_first + no_exit + class_prohibited + level_too_low + \
 #     class_prohibited + level_too_low + not_invited + not_open_during_day + \
 #     not_open_during_night + no_items_allowed + locked + no_right \
@@ -422,10 +424,13 @@ eq = [r"(On body:   (?P<body>.+?)\n\r)?" \
       r"(Seconded:  (?P<seconded>.+?))?" \
       r"(Holding:   (?P<holding>.+?))"
 ]  # m.group('holding') returns None with no error if the holding group didn't occur.
+# Erhm maybe it's \r\n
 
 # "The extreme nature of this place wracks your aura!""  (Bandit Hill)
 
 # you_feel_better = [r"You feel better\.\n\r"]
 # you_feel_no_different = [r"You feel no different\."]
 potion_drank = [r"Potion drank\."]
-use_what = [r"Use what\?\n\r"]
+# use_what = [r"Use what\?\n\r"]  # didn't match
+use_what = [r"Use what\?"]
+

@@ -25,7 +25,7 @@ class Cartography(BotReactionWithFlag):
             RegexStore.no_items_allowed, RegexStore.locked, RegexStore.no_right, RegexStore.not_authorized,
             RegexStore.cannot_force, RegexStore.not_here, RegexStore.loot_blocked, RegexStore.teleported,
             RegexStore.in_tune, RegexStore.you_see_mob, RegexStore.mob_aura, RegexStore.store_list,
-            RegexStore.mob_fled, RegexStore.open_first
+            RegexStore.mob_fled, RegexStore.open_first, RegexStore.washroom
         ]
         magentaprint(str(self.regex_cart))
 
@@ -143,7 +143,8 @@ class Cartography(BotReactionWithFlag):
                 regex in RegexStore.no_right or
                 regex in RegexStore.not_authorized or
                 regex in RegexStore.cannot_force or
-                regex in RegexStore.in_tune):
+                regex in RegexStore.in_tune,
+                regex in RegexStore.washroom):
             self.set_area_exit_as_unusable(M_obj.group(0))
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0

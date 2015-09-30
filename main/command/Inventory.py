@@ -159,8 +159,11 @@ class Inventory(BotReactionWithFlag):
         super().notify(regex, M_obj)
 
     def get_inventory(self):
+        magentaprint('\n' + str(self.inventory.dictionary))
+        prev_inventory = self.inventory.dictionary
         self.telnetHandler.write("i")
         self.wait_for_flag()
+        magentaprint('\n' + str(self.inventory.dictionary))
         return self.inventory
 
     def get_equipment(self):

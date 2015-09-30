@@ -30,7 +30,20 @@ class BotReaction(object):
 #         text can be used.  
 #         """
 #         raise NotImplementedError()
+    def wait_loop(self, flag_name):
+        start_time = time.time()
+        run_time = 0
 
+        while not getattr(self, flag_name) and run_time < self.good_MUD_timeout:
+            time.sleep(0.05)
+            run_time = time.time() - start_time
+
+        if not getattr(self, flag_name):
+            magentaprint(str(self) + ".wait_loop() timed out!")
+            return False 
+        else:
+            setattr(self, flag_name, False)
+            return True
 
 def wait_for_a_flag(class_with_flag):
     # magentaprint("wait_for_flag() called on " + str(class_with_flag) + " starting " + str(class_with_flag._waiter_flag) + ".")
@@ -58,7 +71,7 @@ def wait_for_a_flag(class_with_flag):
         return True
 
         
-class BotReactionWithFlag(object):
+class BotReactionWithFlag(BotReaction):
     """ wait_for_flag() is useful when you send a telnet command and 
     want to wait for the server's response to that command. """
 

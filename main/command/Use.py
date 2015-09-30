@@ -1,19 +1,32 @@
 
-from command.Command import Command
-from comm import RegexStore
+from threading import Thread
 
-class Use(Command):
+from command.ThreadingMixin2 import ThreadingMixin2
+from comm import RegexStore
+from misc_functions import magentaprint
+
+class Use(ThreadingMixin2):
+    # Erhm, maybe I don't want a Potion thread because it will use too many pots if a prompt is delayed.
+    # Solution - wait for prompt in the thread.
     command = 'use'
-    cooldown_after_success = 0.4
-    cooldown_after_failure = 0.4
+    cooldown_after_success = 0.75
+    cooldown_after_failure = 0.75
     # It's tempting to try to make Inventory smart enough to use healing items...
     success_regexes = [RegexStore.potion_drank]  # Todo: add rods/buffs  (Might be made simpler with a different class, ie. UseRod)
     failure_regexes = []  # TODO: I believe flasks can fail
     error_regexes = [RegexStore.use_what]
 
     def __init__(self, character, telnetHandler):
-        super().__init__(telnetHandler)
         self.character = character
+        self.end_thread_regexes = self.error_regexes
+        super().__init__(telnetHandler)
+        self.prompt_flag = False
+        self.regex_cart.append(RegexStore.prompt)
+
+    def notify(self, r, m):
+        super().notify(r, m)
+        if r in RegexStore.prompt:
+            self.prompt_flag = True
 
     def healing_potion(self):
         pots = ['chicken soup', 'small restorative', 'small flask', 'white potion', 'large restorative', 'scarlet potion']
@@ -36,6 +49,37 @@ class Use(Command):
                 break
 
         return False  # Ran out of pots.  use.result also provides return information
+
+    def run(self):
+        while not self.stopping:
+            magentaprint("Sending '" + str(self.command) + "' in " + str(round(self.wait_time())) + " seconds.")
+            self.wait_until_ready()
+            if not self.stopping:
+                self.healing_potion()
+                self.wait_loop('prompt_flag')
+            self.wait_until_ready()
+
+        # Make sure SmartCombat gets notified first so that it can stop us when the prompt comes in with HP above threshold
+        # so potion_drank has to be after Prompt.
+        # Erhm... that doesn't seem good enough, even though they'll likely come in the same chunk.
+        # I feel like smart combat should do the stopping, because we don't want to worry about mob damage here.
+        # We should wait_for_prompt() and be later in the subscriber list.
+
+    def spam_pots(self):
+        self.stopping = False
+        if not self.thread or not self.thread.is_alive():
+            # not is_alive() means it won't look at stopping anymore so we're good.
+            self.thread = Thread(target=self.run, args=())
+            self.thread.daemon = True
+            self.thread.start()
+        # else:
+        #     # Well the other thread CAN stil be sleeping from a kill error.  (ie misspelled target)
+        #     # That puts it into a 3 second sleep, then the timer gets corrected 0.3s after.
+        #     # So.... maybe it must poll fast... or we need signals... do we use that thread or a new thread??
+        #     # Maybe we write its code smarter to handle this case... don't sleep till after the cooldown's verified
+        #     magentaprint("Command will be sent in " + str(round(self.wait_time())) + " seconds.")
+
+
 
 
 

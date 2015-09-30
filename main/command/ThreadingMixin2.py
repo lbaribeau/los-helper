@@ -25,7 +25,7 @@ class ThreadingMixin2(Command):
 
         if self.thread is None or not self.thread.is_alive():
             # not is_alive() means it won't look at stopping anymore so we're good.
-            self.thread = Thread(target = self.run, args = (target,))
+            self.thread = Thread(target=self.run, args=(target,))
             self.thread.daemon = True
             self.thread.start()
         else:
@@ -34,6 +34,9 @@ class ThreadingMixin2(Command):
             # So.... maybe it must poll fast... or we need signals... do we use that thread or a new thread??
             # Maybe we write its code smarter to handle this case... don't sleep till after the cooldown's verified
             magentaprint("Command will be sent in " + str(round(self.wait_time())) + " seconds.")
+
+    def start_thread(self, target=None):
+        self.spam(target)
 
     # run
         # kk, cc, SmartCombat need a version that stops when combat over.

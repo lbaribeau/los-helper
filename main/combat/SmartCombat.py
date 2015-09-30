@@ -51,17 +51,21 @@ class SmartCombat(CombatObject):
         # So SmartCombat needs to be registered/unregistered... or have a boolean for whether we're in combat.
         # I prefer the latter.
         super().notify(regex, M_obj)
-        if regex in RegexStore.prompt and self.in_combat() and self.needs_heal():
-            self.use.healing_potion()
+        if regex in RegexStore.prompt:
+            if self.in_combat and self.needs_heal():
+                self.use.spam_pots()
+            elif not self.needs_heal():
+                self.use.stop()
 
     def needs_heal(self):
+        # return self.character.HEALTH < 50  # Test!
         if self.character.mobs.damage:
             return self.character.HEALTH <= max(self.character.mobs.damage)
         else:
             return self.character.HEALTH < 0.25 * self.character.maxHP
-        # return self.character.HEALTH < 50  # Test!
 
     def stop(self):
+        self.use.stop()
         self.stopping = True
 
     def keep_going(self, target=None):

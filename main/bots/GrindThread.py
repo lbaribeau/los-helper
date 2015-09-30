@@ -570,6 +570,12 @@ class GrindThread(BotThread):
         # Commenting: a) Mobs now does it's own removal and b) MOBS_ATTACKING is deprecated
         # if monster in self.character.MOBS_ATTACKING:
         #     self.character.MOBS_ATTACKING.remove(monster)
+        if monster in self.character.mobs.attacking:
+            magentaprint("GrindThread doing cleanup on erroneous mobs.attacking list.")
+            self.character.mobs.attacking.remove(monster)
+            # Reason: if Mobs gets notified in the wrong order, smelly beggar gets added after it gets removed, 
+            # and I got a bad mobs.attacking... order has been fixed.
+
 
     def do_flee_hook(self):
         self.stop()  
