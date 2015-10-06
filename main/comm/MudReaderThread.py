@@ -130,8 +130,7 @@ class MudReaderThread(threading.Thread):
                     # Print all the stuff in buffer from before the esc
                     # Must be printed here so that the color change occurse 
                     # at the right point.
-                    #sys.stdout.write(text_out)
-                    manage_telnet_output(text_out)
+                    sys.stdout.write(text_out)
                     text_buffer = text_buffer + text_out
                     text_out = ""
                     self.set_colour(escape_sequence);  # Call subroutine to do this.
@@ -142,9 +141,7 @@ class MudReaderThread(threading.Thread):
                     text_out = text_out + c
             # Check for some colors.
                     
-            # Print to console.
-            #sys.stdout.write(text_out)
-            manage_telnet_output(text_out)
+            sys.stdout.write(text_out)
 
             # Not using print because it inserts extra spaces.
             
@@ -328,20 +325,11 @@ class MudReaderThread(threading.Thread):
                 magentaprint("Shucks anyhow")
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 self.character.DEAD = True
-                #self.stop()  # breaks program but allows me to see what happened
+                # self.stop()  # breaks program but allows me to see what happened
 
             ########    Monster Gets Killed    ######
             s_numbered = "( \d+?1st| \d+?2nd| \d+?3rd| \d+th)?"
             
-            M_obj = re.search("Your enemy, (?:the)?" + s_numbered + " (.+?) has been defeated\.", text_buffer)            
-            #M_obj = re.search("Your attack overwhelms the" + s_numbered + " (.+?) and (s?he|it) collapses!", text_buffer)
-            if(M_obj != None):
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                if(my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1):
-                    self.character.remove_from_monster_list(M_obj.group(2))
-                    #self.character.MONSTER_LIST.remove(M_obj.group(2))
-                else:
-                    magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
             # Experience
             M_obj = re.search("You gain (.+?) experience\.", text_buffer)       
             if(M_obj):
@@ -349,56 +337,7 @@ class MudReaderThread(threading.Thread):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             # Monster flees.
             #TODO chasing function.
-            M_obj = re.search("The" + s_numbered + " (.+?) flees to the (.+?)\.", text_buffer)
-            if(M_obj):
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                if(my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1):
-                    #self.character.MONSTER_LIST.remove(M_obj.group(2))
-                    self.character.remove_from_monster_list(M_obj.group(2))
-                else:
-                    magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
-                # TODO: make sure we're matching damage text for all kinds of attacks.
                 
-            M_obj = re.search("They are not here\.", text_buffer)
-            if(M_obj):
-                self.character.MONSTER_LIST = []
-                self.character.CAST_CLK = time.time() - self.character.CAST_WAIT
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-
-            M_obj = re.search("You don't see that here\.", text_buffer)
-            if M_obj:
-                self.character.MONSTER_LIST = []
-                # self.character.ATTACK_CLK = time.time() - self.character.CAST_WAIT
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-
-            # Monster wanders to specific exit
-            M_obj = re.search("The" + s_numbered + " (.+?) just wandered to the .+?\.", text_buffer)
-            if(M_obj):
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                if(my_list_search(self.character.MONSTER_LIST, M_obj.group(2)) != -1):
-                    #self.character.MONSTER_LIST.remove(M_obj.group(2))
-                    self.character.remove_from_monster_list(M_obj.group(2))
-                else:
-                    magentaprint("MudReaderThread: Could not remove " + M_obj.group(2) + " from MONSTER_LIST")
-            # Monster wanders away
-            # M_obj = re.search("The" + s_numbered + " (.+?) just wandered away\.", text_buffer)
-            # M_obj = re.search("The " + RegexStore.__numbers_opt + "(.+?) just wandered away\.", text_buffer)
-            M_obj = re.search("The (:?(?P<nth>\d*1st|\d*2nd|\d*3rd|\d+th) )?(?P<mob>.+?) just wandered away\.", text_buffer)
-            if M_obj:
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                # if my_list_search(self.character.MONSTER_LIST, M_obj.group('mob') != -1):
-                if M_obj.group('mob') in self.character.MONSTER_LIST:
-                    magentaprint("MudReaderThread: Removed " + M_obj.group('mob') + " from character.MONSTER_LIST.")
-                    self.character.MONSTER_LIST.remove(M_obj.group('mob'))
-                else:
-                    magentaprint("MudReaderThread: Could not remove " + M_obj.group('mob') + " from MONSTER_LIST")
-            # Monster arrival
-            M_obj = re.search("An? (.+?) just arrived\.", text_buffer)
-            if(M_obj):
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                #self.character.MONSTER_LIST.append(M_obj.group(1))
-                self.character.add_to_monster_list(M_obj.group(1))
-            # TODO: handle "Two lay followers just arrived."
             # Monsters joining in
             # Two strings which can occur
             # This one is for when a mob that is present starts fighting
@@ -435,34 +374,6 @@ class MudReaderThread(threading.Thread):
                 temp_buf = temp_buf[new_trunc:]
                 M_obj = re.search(second_join_in_regex, temp_buf)
                 
-            # Mobs Attacking you (not from joining in)
-            
-            mobs_attacking_regexes = [
-                "The" + s_numbered + " (.+?) punches you for (.+?) damage\.",
-                "The" + s_numbered + " (.+?) throws a wild punch at you, but it misses\.",
-                "The" + s_numbered + " (.+?) kicks you for (.+?) damage\.",
-                "The" + s_numbered + " (.+?) kicks at you, but fails to hurt you\.",
-                "The" + s_numbered + " (.+?) grabs you and gouges you for (.+?) damage\.",
-                "The" + s_numbered + " (.+?) tries to grab you, but you break free of (his|her|its) grasp\.",
-                "The" + s_numbered + " (.+?) tries to gouge you, but you shake (him|her|it) off\.",
-                "The" + s_numbered + " (.+?) lashes out and thumps you for (.+?) damage\.",
-                "The" + s_numbered + " (.+?) lashes out at you, but misses\.",               
-                "The" + s_numbered + " (.+?) painfully head-butts you for (.+?) damage\.",
-                "The" + s_numbered + " (.+?) casts a (.+?) on you for (.+?) damage\.",
-                "The" + s_numbered + " (.+?) casts a (.+?) at you for (.+?) damage\."] #not sure if its 'on' or 'at'
-                # Thought:  We know a mob is attacking also on strings where I attack it, 
-                # but it's doubtfully necessary to add that mob to MOBS_ATTACKING.
-            for attacking_regex in mobs_attacking_regexes:
-                # I think it would be difficult to determine here how many of a certain mob are 
-                # attacking so just make sure that there's one instance of the attacking mob 
-                # in ATTACKING_MOBS
-                M_obj = re.search(attacking_regex, text_buffer)
-                if(M_obj):
-                    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-
-                    if(my_list_search(self.character.MOBS_ATTACKING, M_obj.group(2)) == -1):
-                        self.character.MOBS_ATTACKING.append(M_obj.group(2))
-
             M_obj = re.search("You glow with an? (.+?) aura\.", text_buffer)
             if(M_obj):
                 self.character.AURA = M_obj.group(1)
@@ -482,8 +393,6 @@ class MudReaderThread(threading.Thread):
             # Quitting... instead have the caller call stop.
             # M_obj = re.search("Goodbye! Come back soon\.", text_buffer)
             # if M_obj:
-
-
             
             ##### DONE MATCHING RE's  WOOOOOOOO ######
         
@@ -495,7 +404,6 @@ class MudReaderThread(threading.Thread):
             #magentaprint("MudReader loop times: incl wait: %f; iteration time: %f" % 
             #             (time.time()-time_loop_start, time.time()-time_loop_after_waiting))
         # end loop          
-
     # end run  (congrats!)
 
     def copy_MUDBuffer(self):

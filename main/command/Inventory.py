@@ -51,7 +51,9 @@ class Inventory(BotReactionWithFlag):
         #'steel mask' # the bot slowly collects these 
         #'bastard sword',
         'large orcish sword', 
-        "small mace", "studded leather leggings", 'plate mail leggings', 'plate mail armor'
+        "small mace", "studded leather leggings", 'plate mail leggings', 'plate mail armor',
+        "footman's flail", 'morning star'
+        # 'war hammer'
     ]
 
     def __init__(self, mudReaderHandler, telnetHandler, character):
@@ -212,6 +214,8 @@ class Inventory(BotReactionWithFlag):
 
         self.telnetHandler.write("use " + item)
         Inventory.remove_from_qty_dict(self.inventory, (item, 1))
+        # This wouldn't work for flasks or rods which don't disintegrate.
+
     # the following version has 'usable' error checking
     # def use(self, item, target=None):
     #     if item in self.usable:
@@ -439,19 +443,25 @@ class Inventory(BotReactionWithFlag):
             l.extend([k] * len(self.inventory.dictionary[k].objs))
         return l
 
-    def get_reference(self, item_name):
-        item_words = item_name.split(' ')
+    def get_reference(self, item_name, first_or_second_word=1):
+        item_words = item_name.strip().split(' ')
         # self.inventory.sort()  # I think we can assume that proper housekeeping has been done
         # This would be easier with a simple list than with the qty dict
         # Algorithm: Use the first word in the item.  Count the items in the inventory that also 
         # use that word.  Return a word/int pair that will serve as a usable reference (ie. 'steel 6')
         i=1
         for k in sorted(self.inventory.dictionary.keys()):  # TODO: We can probably save time here
-            if item_words[0] in k.obj.name.split(' '):
+            word = item_words[0] if first_or_second_word == 1 or len(item_words) <= 1 else item_words[1]
+            if word in k.obj.name.split(' '):
                 if item_name == k.obj.name:
-                    return self._reference_string(item_words[0], i)
+                    return word if i == 1 else word + ' ' + str(i)
                 else:
                     i = i + len(self.inventory.dictionary[k].objs)
+
+        return None  # Not in inventory - would be easy to check for that before calling
+
+    def get_2nd_word_reference(self, item_name):
+        return self.get_reference(item_name, 2)
 
     def _reference_string(self, word, i):
         # Reference string given the int - this is just a code-saving method

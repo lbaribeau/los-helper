@@ -106,7 +106,8 @@ class BotThread(threading.Thread):
         if self.stopping:
             return True
         
-        wait_for_move_ready(self.character)
+        # wait_for_move_ready(self.character)
+        self.commandHandler.go.wait_until_ready()
         self.kill.wait_until_ready()
         self.cast.wait_until_ready()
         magentaprint("Going " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)), False)

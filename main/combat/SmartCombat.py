@@ -11,6 +11,7 @@ from combat.Kill import Kill
 from combat.Cast import Cast
 from reactions.Prompt import Prompt
 from command.Use import Use
+from command.Wield import Wield
 
 class SmartCombat(CombatObject):
     black_magic = True
@@ -24,6 +25,7 @@ class SmartCombat(CombatObject):
         self.cast = Cast(telnetHandler)
         self.prompt = Prompt(character)
         self.use = Use(character, telnetHandler)
+        self.wield = Wield(character, telnetHandler)
         self.abilities = character._class.abilities.values()
 
         # self.heal_abilities = [a for a in self.abilities if isinstance(a, HealAbility)]
@@ -105,10 +107,12 @@ class SmartCombat(CombatObject):
                 # time.sleep(0.1)  
             else:
                 self.cast.wait_until_ready()
+                damage = self.character.maxHP - self.character.HEALTH
                 if self.stopping:
                     continue
-                elif not self.black_magic and (self.character.MANA >= 2 and self.character.HEALTH <= self.character.maxHP - self.prompt.max_vigor()) or \
-                     (self.character.MANA >= self.character.maxMP - 1 and self.character.HEALTH <= self.character.maxHP - self.prompt.max_vigor()/1.7):
+                elif not self.black_magic and (self.character.MANA >= 2 and damage > self.prompt.max_vigor()) or \
+                     (self.character.MANA >= self.character.maxMP - 1 and damage > self.prompt.max_vigor()/1.7):
+                     # (self.character.MANA >= self.character.maxMP - 1 and damage > self.prompt.max_vigor()/1.7 and damage > self.prompt.hptick()):
                     # TODO: cast vigor if a tick is about to come and we're full mana
                     self.do_cast('v')
                 elif self.mob_charmed:
@@ -190,3 +194,56 @@ class SmartCombat(CombatObject):
 
     def stop_casting(self):
         self.casting = False
+        # vigor_cost = 2
+
+
+        ### Old combat
+        # black_magic_spell_cost = self.character.SPELL_COST
+        
+        # self.buff_up()
+        # self.do_combat_skills(monster)
+
+        # magentaprint("Engage: " + monster)
+        # ifled = False
+
+        # self.commandHandler.user_kk(monster)
+        # self.sleep(0.5)  # Keeps attacking and magic out of sync
+
+        # while(self.commandHandler.KillThread != None and self.commandHandler.KillThread
+        #       and self.commandHandler.KillThread.stopping == False):
+
+        #     if(BotThread.can_cast_spell(self.character.MANA, black_magic_spell_cost, self.character.BLACK_MAGIC)):
+        #         if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
+        #             magentaprint("Starting black magic cast thread: " + monster)
+        #             self.commandHandler.user_cc(self.character.FAVOURITE_SPELL + " " + monster)
+        #         else:
+        #             self.commandHandler.stop_CastThread()
+            
+        #     # TODO: restoratives (use when vig not keeping up or low mana)
+        #     if (not self.has_ideal_health()):
+
+        #         self.do_heal_skills()
+                
+        #         if (BotThread.can_cast_spell(self.character.MANA, vigor_cost, self.character.KNOWS_VIGOR)):
+        #             if( self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
+        #                 magentaprint("Starting vigor cast thread")
+        #                 self.commandHandler.user_cc("vig")
+        #         else:
+        #             self.commandHandler.stop_CastThread()
+        #         #else:
+        #             #self.use_restorative_items()
+
+
+        #     ifled = False
+        #     # FLEE Checks
+        #     if(self.character.HEALTH <= self.character.HEALTH_TO_FLEE):
+        #         # We're done for!  Trust CommandHandler to get us out.  
+        #         # It will turn around and stop botThread.
+        #         self.do_flee_hook()
+        #         ifled = True
+
+        #         # OK the mob died or ran
+        #         self.commandHandler.stop_CastThread() 
+
+        #     self.sleep(0.05)   
+

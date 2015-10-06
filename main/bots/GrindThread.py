@@ -1,5 +1,6 @@
 
 import re
+import pdb
 
 from bots.BotThread import BotThread
 from misc_functions import magentaprint
@@ -70,7 +71,11 @@ class GrindThread(BotThread):
             self.heal_up()
 
     def do_regular_actions(self):
-        if self.ready_for_combat():
+        if self.character.mobs.chase != '':
+            new_target = self.character.mobs.chase
+            self.character.mobs.chase = ''  # It should be a chase list
+            self.character.mobs.chase_exit = ''
+        elif self.ready_for_combat():
             new_target = self.decide_which_mob_to_kill(self.character.mobs.list)
         else:
             new_target = ""
@@ -110,7 +115,7 @@ class GrindThread(BotThread):
             
             if self.ready_for_combat():
                 magentaprint("Picking a new target since " + new_target + " was defeated")
-                new_target = self.decide_which_mob_to_kill(self.character.MONSTER_LIST)
+                new_target = self.decide_which_mob_to_kill(self.character.mobs.list)
             else:
                 new_target = ""
 
@@ -446,16 +451,16 @@ class GrindThread(BotThread):
 
         #avoid fighting around mobs that join in
         for mob in monster_list:
-            if re.search("town guard", mob) or \
-               re.search("town crier", mob) or \
-               re.search("clown", mob) or \
-               re.search("bouncer", mob):
-                return ""
+            if re.search('town guard', mob) or \
+               re.search('town crier', mob) or \
+               re.search('clown', mob) or \
+               re.search('bouncer', mob):
+                return ''
 
-        if self.character.chase_mob is not "":
-            mob = self.character.chase_mob
-            self.character.chase_mob = ""
-            self.character.chase_dir = ""
+        if self.character.mobs.chase != '':
+            mob = self.character.mobs.chase
+            self.character.mobs.chase = ''
+            self.character.mobs.chase_exit = ''
 
             return mob
         
@@ -464,7 +469,7 @@ class GrindThread(BotThread):
             if mob in self.character.MONSTER_KILL_LIST:
                 return mob
             
-        return ""
+        return ''
 
     def do_buff_skills(self):
         if self.character._class is not None:
@@ -493,77 +498,74 @@ class GrindThread(BotThread):
         return False
 
     def engage_monster(self, monster):
+        self.kill.wait_until_ready()
+        self.cast.wait_until_ready()
+        
         if self.stopping:
             return
 
         self.smartCombat.target = monster
         self.smartCombat.spell = self.smartCombat.favourite_spell
         self.smartCombat.run()
-        # self.smartCombat.run()
 
-        # vigor_cost = 2
-        # black_magic_spell_cost = self.character.SPELL_COST
-        
-        # self.buff_up()
-        # self.do_combat_skills(monster)
-
-        # magentaprint("Engage: " + monster)
-        # ifled = False
-
-        # self.commandHandler.user_kk(monster)
-        # self.sleep(0.5)  # Keeps attacking and magic out of sync
-
-        # while(self.commandHandler.KillThread != None and self.commandHandler.KillThread
-        #       and self.commandHandler.KillThread.stopping == False):
-
-        #     if(BotThread.can_cast_spell(self.character.MANA, black_magic_spell_cost, self.character.BLACK_MAGIC)):
-        #         if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
-        #             magentaprint("Starting black magic cast thread: " + monster)
-        #             self.commandHandler.user_cc(self.character.FAVOURITE_SPELL + " " + monster)
-        #         else:
-        #             self.commandHandler.stop_CastThread()
-            
-        #     # TODO: restoratives (use when vig not keeping up or low mana)
-        #     if (not self.has_ideal_health()):
-
-        #         self.do_heal_skills()
-                
-        #         if (BotThread.can_cast_spell(self.character.MANA, vigor_cost, self.character.KNOWS_VIGOR)):
-        #             if( self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
-        #                 magentaprint("Starting vigor cast thread")
-        #                 self.commandHandler.user_cc("vig")
-        #         else:
-        #             self.commandHandler.stop_CastThread()
-        #         #else:
-        #             #self.use_restorative_items()
-
-
-        #     ifled = False
-        #     # FLEE Checks
-        #     if(self.character.HEALTH <= self.character.HEALTH_TO_FLEE):
-        #         # We're done for!  Trust CommandHandler to get us out.  
-        #         # It will turn around and stop botThread.
-        #         self.do_flee_hook()
-        #         ifled = True
-
-        #         # OK the mob died or ran
-        #         self.commandHandler.stop_CastThread() 
-
-        #     self.sleep(0.05)   
-
-        if self.character.chase_mob is not "":
-            #engage mobs which are already fighting us
+        if self.character.mobs.chase != '' and self.character.mobs.chase_exit != '':
             magentaprint("BotThread.engage_monster() chasing mob, pushing onto direction list!")
             if self.character.AREA_ID is not None:
-                go_hook = "areaid" + str(self.character.AREA_ID)
-                self.direction_list.insert(0, go_hook) #should be this area
-            else:
-                go_hook = "areaid45"
-                self.direction_list.insert(0, go_hook) #should be this area
+                # We can't assume it'll work here - we have to check to see if it'll work.
+                magentaprint(str(self.mud_map.los_map[self.character.AREA_ID]))
+                # magentaprint(str(self.mud_map.los_map[self.character.AREA_ID].edges(data=True)))  # dict object has no attribute 'edges'
+                # magentaprint(str(self.mud_map.los_map[self.character.AREA_ID].edges()))
 
-            self.go(self.character.chase_dir)
-            self.character.chase_dir = ""
-            self.character.chase_mob = ""
+                # chase_aid = self.mud_map.los_map[self.character.AREA_ID][self.character.chase_dir]
+                # magentaprint('Current node will definitely have chase node as a neighbor: ' + str(chase_aid in self.mud_map.los_map.neighbors(self.character.AREA_ID)))
+                # magentaprint('Chase node neighbors() should have current node: ' + str(self.character.AREA_ID in self.mud_map.los_map.neighbors(chase_aid)))
+                # return_path = self.mud_map.get_path(chase_aid, self.character.AREA_ID)
+
+                # Should be able to iterate through neighbors to find the one with our edge data (15: {'name': 'east'})
+                # g.neighbors(n) or c.all_neighbors()
+                # for n in neighbors:    
+                #    if c
+                # use G.edges(nbunch) to get the edges adjacent to my node, and pick out the one with the right exit name, and follow it.
+
+                # pdb.set_trace()
+                # area_exits = self.mud_map.los_map.edges(self.character.AREA_ID)
+                # magentaprint('GrindThread area_exits trying area_id to index area: ' + str(area_exit))
+                # area_exits2 = self.mud_map.los_map.edges(self.mud_map.los_map[self.character.AREA_ID])
+                # magentaprint('GrindThread area_exits longer way of getting edges, using whole node to index: ' + str(area_exit2))
+                # area_exit = area_exits
+
+                # return_path = self.
+                # chase_aid = self.mud_map.next_node(self.character.AREA_ID, self.character.chase_dir)
+                # return_path = self.mud_map.get_path(self.character.chase_dir, self.character.AREA_ID)
+
+                # chase_aid = self.mud_map.next_node(self.character.AREA_ID, self.character.chase_dir)
+                # magentaprint("Got chase id! " + str(chase_aid))
+
+                try:
+                    # chase_aid = self.mud_map.los_map[self.character.AREA_ID][self.character.chase_dir]
+                    chase_aid = self.mud_map.next_node(self.character.AREA_ID, self.character.mobs.chase_exit)
+                    magentaprint('engage_monster() chase_aid: ' + str(chase_aid))
+                    # I need to find the edge - the area exit.
+                    return_path = self.mud_map.get_path(chase_aid, self.character.AREA_ID)
+                    magentaprint('engage_monster() return_path: ' + str(return_path))
+
+                    if len(return_path) > 0:
+                        magentaprint("GrindThread.engage_monster adding directions " + str([self.character.mobs.chase_exit] + return_path))
+                        self.direction_list = [self.character.mobs.chase_exit] + return_path + self.direction_list
+                        # buffer necessary?
+                except Exception:
+                    magentaprint("GrindThread.engage_monster() cannot chase because we would then be lost.")
+                    self.character.mobs.chase = ''
+                    self.character.mobs.chase_exit = ''
+            else:
+                # This doesn't make sense to me
+                magentaprint("BotThread.engage_monster() area id is none, so go to chapel after chasing.")
+                go_hook = "areaid2"
+                self.direction_list.insert(0, go_hook) 
+
+            # self.go(self.character.chase_dir)
+            # self.character.chase_dir = ""
+            # self.character.chase_mob = ""
 
         # #magentaprint("end of enage dir list: " + str(self.direction_list), False)
 
@@ -571,19 +573,17 @@ class GrindThread(BotThread):
         # if monster in self.character.MOBS_ATTACKING:
         #     self.character.MOBS_ATTACKING.remove(monster)
         if monster in self.character.mobs.attacking:
-            magentaprint("GrindThread doing cleanup on erroneous mobs.attacking list.")
+            magentaprint("GrindThread doing cleanup on erroneous mobs.attacking list, removing " + monster)
             self.character.mobs.attacking.remove(monster)
             # Reason: if Mobs gets notified in the wrong order, smelly beggar gets added after it gets removed, 
             # and I got a bad mobs.attacking... order has been fixed.
-
 
     def do_flee_hook(self):
         self.stop()  
         self.commandHandler.user_flee() 
 
     def get_items(self):
-        if self.character.chase_mob == "" and not self.stopping: 
-            self.commandHandler.process("ga")  
+        self.commandHandler.process('ga')  
 
     def engage_mobs_who_joined_in(self):
         # while self.character.MOBS_JOINED_IN != []:
@@ -610,5 +610,16 @@ class GrindThread(BotThread):
         return self.character.HEALTH >= self.character.HEALTH_TO_HEAL and self.character.MANA >= self.character.MANA_TO_ENGAGE
         # return (self.has_ideal_health() and
         #         self.has_ideal_mana())
+
+    def find_nearby_node(self, chase_from_aid):
+        # This should help the bot find itself after a chase from TrackGrind.  
+
+        # The chase-from area id is given and is one node away.  However, we don't know the exit to take to return.  
+        # This bot wanders around until it finds the node it came from.  It'll follow normal grindy engagement rules.
+
+        # We can assume the map doesn't work.
+        magentaprint('GrindThread.find_nearby_node()')
+        cur_aid = self.character.AREA_ID
+
 
 

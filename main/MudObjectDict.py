@@ -97,9 +97,16 @@ class MudObjectDict():
 
     @staticmethod
     def remove_from_qty_dict(d, keyvalue):
-        ''' For (key, qty) pairs. '''
+        ''' key/value pair (list of two)
+        First item is the key (string)
+        Second item is the quantity to remove (int)
+        If the quantity is high enough to remove all of that item, then the item name also gets removed from the dictionary.
+        '''
+        # Problem:  Not working
+        # Example: One small knife.  Drop small knife correctly.  18 small knives now in dictionary.  (18 small restoratives the entire time.)
+        # ''' For (key, qty) pairs. '''
 
-        magentaprint(str(keyvalue))
+        # magentaprint(str(keyvalue))
 
         if keyvalue[0] in d:
             if keyvalue[1].qty >= d[keyvalue[0]].qty:
@@ -108,3 +115,11 @@ class MudObjectDict():
                 d[keyvalue[0]].remove() #keyvalue[1]
         else:
             magentaprint("Couldn't remove " + str(keyvalue[0]), False)
+        
+        # if keyvalue[0] in d:
+        #     if keyvalue[1] >= d[keyvalue[0]]:
+        #         del d[keyvalue[0]]
+        #     else:
+        #         d[keyvalue[0]] = d[keyvalue[0]] - keyvalue[1]
+
+

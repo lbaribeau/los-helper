@@ -178,6 +178,6 @@ class WieldReaction(object):
             self.telnetHandler.write("seco " + weapon)
         else:
             if weapon == self.character.WEAPON1:
-                self.telnetHandler.write("wie " + weapon)
+                self.telnetHandler.write("wie " + self.character.inventory.get_2nd_word_reference(weapon))
             else:
-                self.telnetHandler.write("seco " + weapon)
+                self.telnetHandler.write("seco " + self.character.inventory.get_2nd_word_reference(weapon))

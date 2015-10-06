@@ -40,7 +40,8 @@ class Use(ThreadingMixin2):
                 # self.character.inventory.use(pot)   # I want the 'result' feature of Command so I can't use Inventory here.
                 # self.execute(self.character.inventory.)
                 # self.character.inventory.remove_from_qty_dict(self.character.inventory.inventory, (pot, 1))
-                self.execute(self.character.inventory.get_reference(pot))
+                # self.execute(self.character.inventory.get_reference(pot))
+                self.execute(self.character.inventory.get_2nd_word_reference(pot))
                 # Inventory notices on its own 'a small restorative disintegrates'
                 # self.wait_for_flag()  # Waiting to get the inventory upkeep right
                 # if self.success or self.failure:

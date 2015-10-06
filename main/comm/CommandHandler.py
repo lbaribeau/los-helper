@@ -4,9 +4,10 @@ from threading import Thread
 import atexit 
 import time
 import re
+import sys
 
+import misc_functions
 from misc_functions import magentaprint
-from comm import Report 
 from combat.SmartCombat import SmartCombat
 from db.Database import *
 from db.MudMap import *
@@ -23,6 +24,7 @@ from bots.GotoThread import GotoThread
 from bots.MixThread import MixThread
 from bots.SlaveThread import SlaveThread
 from command.Quit import Quit
+from command.Command import Command
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -46,8 +48,13 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.go)
         mudReaderHandler.add_subscriber(self.go.open)
         mudReaderHandler.add_subscriber(self.smartCombat.prompt)  
+        mudReaderHandler.add_subscriber(self.smartCombat.wield)
         mudReaderHandler.add_subscriber(self.smartCombat)
         mudReaderHandler.add_subscriber(self.smartCombat.use)
+
+        if '-fake' in sys.argv:
+            Go.good_mud_timeout = 2.0
+            Command.good_mud_timeout = 2.0
 
         self.botThread = None
         self.mud_map = None
@@ -69,7 +76,10 @@ class CommandHandler(object):
 
     def join_mud_map_thread(self):
         if self.threaded_map_setup:
-            self.mud_map_thread.join()
+            self.mud_map_thread.join(20)
+            return not self.mud_map_thread.is_alive()
+        else:
+            return True
 
     # def process(self, user_input):
     #     try:
@@ -219,12 +229,12 @@ class CommandHandler(object):
             magentaprint(str(self.character.HEALTH), False)
         elif re.match("(?i)experience", user_input):
             exp = self.character.EXPERIENCE
-            expm = str(Report.calculate_vpm(exp))
+            expm = str(misc_functions.calculate_vpm(exp))
             magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
             #magentaprint(str(exp), False)
         elif re.match("(?i)gold", user_input):
             #gold = self.character.GOLD  #Calculating GMP would require us to store gold differently
-            #gpm = str(Report.calculate_vpm(gold))
+            #gpm = str(misc_functions.calculate_vpm(gold))
             #magentaprint("Gold this Session: " + str(gold) + " | Gold / MIN: " + gpm, False)
             magentaprint(str(self.character.GOLD), False)
         elif re.match("(?i)kills", user_input):
@@ -465,8 +475,8 @@ class CommandHandler(object):
     # def start_bot(self, )
     def bot_check(self):
         if not self.mud_map:
-            magentaprint("Please wait for the Mapfile before using this command", False)
-            return False
+            magentaprint("Joining mud map thread.")
+            return self.join_mud_map_thread()
         elif self.botThread and self.botThread.is_alive():
             magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
             return False
@@ -565,10 +575,10 @@ class CommandHandler(object):
         magentaprint("Current Aura: " + aura, False)
         magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), False)
         exp = self.character.EXPERIENCE
-        expm = str(Report.calculate_vpm(exp))
+        expm = str(misc_functions.calculate_vpm(exp))
         magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
         kills = len(self.character.MOBS_KILLED)
-        kpm = str(Report.calculate_vpm(kills))
+        kpm = str(misc_functions.calculate_vpm(kills))
         magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
         hits_dealt = self.character.HITS_DEALT
         hits_missed = self.character.HITS_MISSED

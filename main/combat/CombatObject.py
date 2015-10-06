@@ -11,7 +11,7 @@ from comm import RegexStore
 
 class CombatObject(object):
     def __init__(self, telnetHandler):   
-        self.end_combat_regexes = [RegexStore.mob_died, RegexStore.mob_fled]
+        self.end_combat_regexes = [RegexStore.mob_died, RegexStore.mob_fled, RegexStore.you_died]
         self.telnetHandler = telnetHandler
         # self.regexes.extend(self.end_combat_regexes)
         # self.regex_cart = [RegexStore.mob_died, RegexStore.mob_fled]

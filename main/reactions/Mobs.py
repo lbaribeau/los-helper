@@ -3,41 +3,6 @@ from reactions.BotReactions import BotReactionWithFlag
 import comm.RegexStore as R
 from misc_functions import magentaprint
 
-def remove_plural(m):
-    # if mob_string.endswith('s'):
-    #     mob_string = mob_string[0:len(mob_string)-1]
-    # elif mob_string.endswith('ses'):
-    #     mob_string = mob_string[0:len(mob_string)-3]
-    # m = mob_string
-
-    # if capitals:
-    #     singles = [s.title() for s in singles]
-    #     numbers = [n.title() for n in numbers]
-    # else:
-    #     singles = [s.lower() for s in singles[0:2]]
-    #     singles.append('The ')
-    #     numbers = [n.lower() for n in numbers]
-
-    # if any([m.startswith(s) for s in singles]):
-    #     # m_dict[m.partition(' ')[2]] = 1
-    #     return m.partition(' ')[2]
-    # number_check = [m.startswith(n) for n in numbers]
-    if m.endswith('sses'):
-        return m[0:len(m)-2]
-    elif m.endswith('s'):
-        return m[0:len(m)-1]
-    elif m.endswith('children'):
-        return m[0:len(m)-3]
-    elif m.endswith(' mice'):
-        return m[0:len(m)-4] + 'mouse'
-    else:
-        return m
-
-        # for n in range(0, len(numbers)):
-        #     if m.startswith(numbers[n]):
-        #         # m_dict[m.partition(' ')[2]] = n + 2
-        #         m_list.extend([m.partition(' ')[2]] * (n + 2))
-
 class Mobs(BotReactionWithFlag):
     # I will give this object MONSTER_LIST because that provides a place for possible extended functionality 
     # in the future, such as correcting targets.
@@ -57,6 +22,8 @@ class Mobs(BotReactionWithFlag):
                         'fifteen' , 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty']
         self.numbers.extend([str(i) + " " for i in range(21, 200)])
         self.damage = []
+        self.chase = ''
+        self.chase_exit = ''
 
     def read_match(self, m):
         if m.group('mob1'):
@@ -94,6 +61,8 @@ class Mobs(BotReactionWithFlag):
         elif r in R.mob_fled:  # Leave mobs.attacking populated. (?)  might help to chase mobs that don't block you (chase currently relies on that.)
             if self.read_match(m_obj) in self.list:
                 self.list.remove(self.read_match(m_obj))
+            self.chase = self.read_match(m_obj)
+            self.chase_exit = m_obj.group('exit')
         elif (r in R.mob_wandered or r in R.mob_left) and self.read_match(m_obj) in self.list:
             self.list.remove(self.read_match(m_obj))
         elif r in R.mob_joined1 or r in R.mob_joined2:
@@ -131,6 +100,10 @@ class Mobs(BotReactionWithFlag):
         # return [Mobs.remove_plural(m.strip()) for m in mob_match.group(1).split(',')]
         m_list = []
         for c in comma_items:
+            if c[len(c)-4:len(c)-3] == ' (' and c[len(c)-1] == ')':
+                # c = remove_good_evil(c)
+                c = c[0:len(c)-5]
+
             if any([c.startswith(s + ' ') for s in self.singles]):
                 # m_dict[m.partition(' ')[2]] = 1
                 m_list.extend([c.partition(' ')[2]])
@@ -149,12 +122,45 @@ class Mobs(BotReactionWithFlag):
             #         m_list.extend([c_singular.partition(' ')[2]] * (n + 2))
             #         break
 
-
-
-
-
         # return list(m_dict.keys())
         return m_list 
 
+def remove_plural(m):
+    # if mob_string.endswith('s'):
+    #     mob_string = mob_string[0:len(mob_string)-1]
+    # elif mob_string.endswith('ses'):
+    #     mob_string = mob_string[0:len(mob_string)-3]
+    # m = mob_string
 
+    # if capitals:
+    #     singles = [s.title() for s in singles]
+    #     numbers = [n.title() for n in numbers]
+    # else:
+    #     singles = [s.lower() for s in singles[0:2]]
+    #     singles.append('The ')
+    #     numbers = [n.lower() for n in numbers]
+
+    # if any([m.startswith(s) for s in singles]):
+    #     # m_dict[m.partition(' ')[2]] = 1
+    #     return m.partition(' ')[2]
+    # number_check = [m.startswith(n) for n in numbers]
+    if m.endswith('sses'):
+        return m[0:len(m)-2]
+    elif m.endswith('s'):
+        return m[0:len(m)-1]
+    elif m.endswith('children'):
+        return m[0:len(m)-3]
+    elif m.endswith(' mice'):
+        return m[0:len(m)-4] + 'mouse'
+    else:
+        return m
+
+        # for n in range(0, len(numbers)):
+        #     if m.startswith(numbers[n]):
+        #         # m_dict[m.partition(' ')[2]] = n + 2
+        #         m_list.extend([m.partition(' ')[2]] * (n + 2))
+
+def remove_good_evil(m):
+    if m.lower().endswith(' (g)') or m.lower().endswith(' (e)'):
+        return m[0:len(m)-5]
 

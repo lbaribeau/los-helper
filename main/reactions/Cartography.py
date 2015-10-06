@@ -328,7 +328,7 @@ class Cartography(BotReactionWithFlag):
                 return []
 
             MUD_exit_str = MUD_exit_str.strip()
-            my_exit_regex = r"Obvious exits: (.*[\n\r]?.*)\." #added clause if the exits break onto two lines - likely this will ahve to happen for mobs too
+            my_exit_regex = r"(?s)Obvious exits: (.+?)\." #added clause if the exits break onto two lines - likely this will ahve to happen for mobs too
             match_exits = re.match(my_exit_regex, MUD_exit_str)
             E_LIST = [x.strip() for x in match_exits.group(1).split(',')]
             #technique above is referred to as list comprehension see:
@@ -386,8 +386,6 @@ class Cartography(BotReactionWithFlag):
             return []
         else:
             return self.character.mobs.parse_mob_string(mob_match.group(1).lower())
-
-
 
         # M_LIST = [m.strip() for m in mob_match.group(1).split(',')]
         # singles = ['a ', 'an ', 'The ']

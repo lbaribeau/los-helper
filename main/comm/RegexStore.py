@@ -88,6 +88,7 @@ mob_died = [r"Your attack overwhelms " + __three_possible_mob_strings + " and (?
 # mob_fled = ["(?:The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 
 mob_fled = [__Three_possible_mob_strings + r" flees to the (?P<exit>[a-z ]+)\."] 
 mob_defeated = [r"Your enemy, " + __three_possible_mob_strings + r" has been defeated\."]
+you_died = [r"You are overwhelmed by " + __three_possible_mob_strings + r"'s attack and you collapse!"]
 
 # Go and Cartography
 #           .=\n\r   EAT JUNK DATA (death,loginprompts,hptick)              Title           Description               Exit list             Players / Mobs / Signs / Items (optional)
@@ -152,7 +153,7 @@ berserk_fail = [r"You fail to work yourself into a frenzy\."]
 red_mist_fades = [r"The red mist fades from your sight\."]  # Neato dark blue colored text
 already_berserk = [r"You're already berserk!"]
 
-meditate = [r"You feel at one with universe\."]
+meditate = [r"You feel at one with the universe\."]
 not_at_peace = [r"Your spirit is not at peace\."]
 
 aesters_tears = ["Your music rejuvenates everyone in the room\."]
@@ -433,4 +434,9 @@ eq = [r"(On body:   (?P<body>.+?)\n\r)?" \
 potion_drank = [r"Potion drank\."]
 # use_what = [r"Use what\?\n\r"]  # didn't match
 use_what = [r"Use what\?"]
+
+you_wield = [r"You wield a ([A-Za-z ']+)\."]
+wield_broken = [r"You can't, it's broken\."]
+not_weapon = ["You can't wield that\."]
+dont_have = [r"You don't have that\."]
 

@@ -99,7 +99,7 @@ class Character(object):
     HEALTH = 0
     MANA = 0
 
-    LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096]
+    LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096, 8192]
 
     # MONSTER LISTS
     # All lists are mutually exclusive except for "preferred."

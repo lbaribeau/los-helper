@@ -6,7 +6,7 @@ from peewee import *
 db = Proxy()
 
 from db.BaseModel import *
-from db.Logging import *
+from db.Log import *
 from db.Area import *
 from db.AreaExit import *
 from db.ExitType import *

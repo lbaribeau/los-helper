@@ -14,12 +14,14 @@ class TrackGrindThread(GrindThread):
             self.__TOTALPATHS = 8 # Kobolds are level 1 safe.
         elif self.character.level <= 7:
             self.__TOTALPATHS = 10 # include hookers for level 3   
-        elif self.character.level <= 10:
-            self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8 
-        elif self.character.level > 12:
-            self.__TOTALPATHS = 24
         else:
-            self.__TOTALPATHS = 22 # start the fort and bandits at lvl 8
+            self.__TOTALPATHS = 18
+        # elif self.character.level <= 10:
+        #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8 
+        # elif self.character.level > 12:
+        #     self.__TOTALPATHS = 24
+        # else:
+        #     self.__TOTALPATHS = 22 # start the fort and bandits at lvl 8
 
         if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
             self.__nextpath = starting_path
@@ -33,6 +35,10 @@ class TrackGrindThread(GrindThread):
 
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go", False)
+
+        if self.character.AREA_ID != 2:
+            return ['areaid2']
+
         magentaprint("next path = " + str(self.__nextpath), False)
         
         LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
@@ -43,7 +49,7 @@ class TrackGrindThread(GrindThread):
                           "drop_items",
                           "out", 'north', 'north', 'west', 'west', 'west', 'north', "chapel"]
                           
-        THEATRE_PATH = ["out", "s", "w", "w", "w", "s", "theat", "stair",
+        THEATRE_PATH = ["out", "s", "w", "w", "w", "s", "theat", "stairs",
                           "cubby", "out", "down", "swing", "seat", "out",
                           "down", "seat", "out", "door", "stage",
                           "side 2", "backstage", "door", "out", "curtain",
@@ -194,19 +200,20 @@ class TrackGrindThread(GrindThread):
                         'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
 
         #aid418, 1975, 1979, 1951, 415, 45
-        SPIDER_FOREST = ['areaid418', 'areaid1975', 'areaid1979', 'areaid1951', 'areaid415', 'areaid45']
+        SPIDER_FOREST = ['areaid418', 'areaid1975', 'areaid1979', 'areaid1951', 'areaid415', 'areaid2']
 
         #The following areas repeat a bit because the spawns are fast
         KNIGHTS = ['areaid1904', 'areaid1912', 'areaid1909', 'areaid1913',
                           'areaid1904', 'areaid1912', 'areaid1909', 'areaid1913',
-                          'areaid1904', 'areaid1912', 'areaid1909', 'areaid45',] #end with chapel
+                          'areaid1904', 'areaid1912', 'areaid1909', 'areaid2',] #end with chapel
 
-        GNOLL_CAMP = ['areaid1574', 'areaid800', 'areaid1574', 'areaid800', 'areaid1574', 'areaid45', ]
+        GNOLL_CAMP = ['areaid1574', 'areaid800', 'areaid1574', 'areaid800', 'areaid1574', 'areaid2', ]
 
         PATH_TO_SKIP_WITH = [ 'out', 'chapel' ]
         #return SHOP_AND_TIP_PATH
         
         if (self.character.DEAD):
+            crash
             self.character.DEAD = False
             self.character.DEATHS += 1
             magentaprint("Died; Pulling up my bootstraps and starting again", False)

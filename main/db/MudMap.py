@@ -100,7 +100,6 @@ class MudMap(object):
 
         return paths
 
-
     #static functions
     def find(text):
         areas = Area.get_areas_by_partial_name(text)
@@ -125,3 +124,19 @@ class MudMap(object):
             locations.append(mob_location.area.id)
 
         return locations
+
+    def next_node(self, aid, exit_name):
+        # magentaprint(str(self.mud_map.los_map[self.character.AREA_ID]))
+        node_dict = self.los_map[aid]
+        for n in node_dict.keys():
+            # (Pdb) print g[5]
+            # {15: {'name': 'east'}, 16: {'name': 'town hall'}, 3: {'name': 'north'}, 7: {'name': 'west'}}
+            if node_dict[n]['name'] == exit_name:
+                return n
+        return -1
+
+
+
+
+
+
