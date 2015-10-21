@@ -49,20 +49,18 @@ class Spells(SimpleCommand):
         #         self.regex_checker[self.regex_cart.index()]
         self.regex_checker[self.regex_cart[0].index(regex)] = True
 
-        magentaprint("Groups: " + str(M_obj.groups()))
+        # magentaprint("Groups: " + str(M_obj.groups()), True)
         groups = list(M_obj.groups())
         while None in groups:
             groups.remove(None)
         # spells = ' '.join(M_obj.groups()).lower().split()
         spells = ' '.join(groups).lower().split()
-        magentaprint(str(spells))
         while 'none' in spells:
             spells.remove('none')
-        magentaprint(str(spells))
         while '|' in spells:
             magentaprint(str(spells))
             spells.remove('|')
-        magentaprint(str(spells))
+        magentaprint('Spells: ' + str(spells), True)
         # if 'level' in spells:
         #     try:
         #         # spells.remove('level')
@@ -84,6 +82,6 @@ class Spells(SimpleCommand):
         # if all(self.regex_checker):
         if sum(self.regex_checker) >= 1:
             self.character.spells = self.spells
-            magentaprint(str(self.character.spells))
+            magentaprint(str(self.character.spells), True)
             self.init()
             super().notify(regex, M_obj)

@@ -16,7 +16,7 @@ class Go(Command):
         RegexStore.class_prohibited, RegexStore.level_too_low, RegexStore.not_invited,
         RegexStore.not_open_during_day, RegexStore.not_open_during_night, RegexStore.no_items_allowed, 
         RegexStore.locked, RegexStore.no_right, RegexStore.in_tune,
-        RegexStore.not_authorized, RegexStore.cannot_force, RegexStore.washroom
+        RegexStore.not_authorized, RegexStore.cannot_force, RegexStore.washroom, RegexStore.cliff
     ]
     cooldown_after_success = 0.34
     good_mud_timeout = 20.0  

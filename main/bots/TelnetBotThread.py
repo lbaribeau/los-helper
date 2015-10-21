@@ -3,7 +3,7 @@ from bots.BotThread import BotThread
 from misc_functions import *
 
 class TelnetBotThread(BotThread):
-    def __init__(self, character_in=None, command_handler=None, mud_reader_handler=None,
+    def __init__(self, character=None, command_handler=None, mud_reader_handler=None,
                 mud_map=None, telnet_handler=None):
         super().__init__(character, command_handler, mud_reader_handler, mud_map)
 

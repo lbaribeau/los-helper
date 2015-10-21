@@ -46,48 +46,9 @@ class SmartGrindThread(GrindThread):
         super().do_on_successful_go()
         # self.cartography
 
-    def check_weapons(self):
-        weapons_equipped = True
-
-        # magentaprint("Checking weapons: " + str(self.character.WEAPON_SLOTS), False)
-        # magentaprint("Checking inventory " + str(self.inventory.inventory), False)
-        # magentaprint("Checking equipped items: " + str(self.inventory.equipped_items), False)
-
-        for slot in self.character.WEAPON_SLOTS:
-            if not self.inventory.has_slot_equipped(slot):
-                item = self.inventory.get_item_of_type("weapon",
-                    self.character.weapon_model,
-                    self.character.weapon_level)
-                if item is not None:
-                    self.inventory.equip_item("wie " + item)
-                else:
-                    self.go_purchase_item("weapon", self.character.weapon_model, self.character.weapon_level)
-                    return False
-                
-                break
-
-        return weapons_equipped
-
-    def go_purchase_item(self, model, data, level):
-        items = MudItem.get_suitable_item_of_type(model, data, level)
-
-        direction_list = []
+    def go_purchase_item(self, model, data, level):  # parent
         self.character.MONSTER_KILL_LIST = []
-        item = None
-
-        for itemdict in items:
-            item = items[itemdict]
-            areaid = itemdict
-            break
-
-        if item is not None:
-            direction_list = ["areaid%s" % areaid]
-            direction_list.append("dobuy%s" % item.obj.name)
-
-        self.direction_list = direction_list
-
-    def check_armour(self):
-        return
+        super().go_purchase_item(model, data, level)
 
     def decide_where_to_go(self):
         magentaprint("SmartGrindThread.decide_where_to_go()")
@@ -283,21 +244,6 @@ class SmartGrindThread(GrindThread):
             self.high_aura = 7
 
         self.get_targets()
-
-    def do_go_hooks(self, exit_str):
-        if (re.match("dobuy.+?", exit_str)):
-            #magentaprint("go hook found with: " + str(self.direction_list), False)
-            item = exit_str.replace("dobuy", "")
-            
-            self.inventory.buy(item)
-            self.sleep(2)
-
-            magentaprint(self.inventory.inventory, False)
-
-            self.direction_list = [""]
-            return True
-
-        return super(SmartGrindThread, self).do_go_hooks(exit_str)
 
     def do_rest_hooks(self):
         pass

@@ -259,25 +259,25 @@ class MudReaderThread(threading.Thread):
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 
             #### Set weapon strings ####
-            M_obj = re.search("You wield (.*?)\.", text_buffer)
-            if (M_obj != None and not re.search(" in your off hand", M_obj.group(1))):
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                weap1 = M_obj.group(1)
-                # Clip the "a " or the "some "
-                if(re.match("a ", weap1)):
-                    weap1 = weap1[2:]
-                elif(re.match("some ", weap1)):
-                    weap1 = weap1[5:]
-                self.character.WEAPON1 = weap1
-            M_obj = re.search("You wield (.*?) in your off hand\.", text_buffer)
-            if (M_obj != None):
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                weap2 = M_obj.group(1)
-                if(re.match("a ",weap2)):
-                    weap2 = weap2[2:]
-                elif(re.match("some ",weap2)):
-                    weap2 = weap2[5:]
-                self.character.WEAPON2 = weap2
+            # M_obj = re.search("You wield (.*?)\.", text_buffer)
+            # if (M_obj != None and not re.search(" in your off hand", M_obj.group(1))):
+            #     text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+            #     weap1 = M_obj.group(1)
+            #     # Clip the "a " or the "some "
+            #     if(re.match("a ", weap1)):
+            #         weap1 = weap1[2:]
+            #     elif(re.match("some ", weap1)):
+            #         weap1 = weap1[5:]
+            #     self.character.weapon1 = weap1
+            # M_obj = re.search("You wield (.*?) in your off hand\.", text_buffer)
+            # if (M_obj != None):
+            #     text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+            #     weap2 = M_obj.group(1)
+            #     if(re.match("a ",weap2)):
+            #         weap2 = weap2[2:]
+            #     elif(re.match("some ",weap2)):
+            #         weap2 = weap2[5:]
+            #     self.character.weapon2 = weap2
                       
             #### Shopping stuff ####
             # On gold pickup:

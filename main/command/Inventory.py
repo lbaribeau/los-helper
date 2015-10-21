@@ -7,10 +7,9 @@ from misc_functions import *
 from db.MudItem import *
 from db.GenericMudList import *
 from MudObjectDict import *
+import comm.RegexStore as R
 
 class Inventory(BotReactionWithFlag):
-    equipped_items = {}
-
     # keep_list = ["large bag", "large sack", "black bag",
     #     "silver chalice", "steel bottle", 'glowing potion',
     #     "chicken soup", 'scarlet potion', 'white potion', "tree root",
@@ -27,7 +26,8 @@ class Inventory(BotReactionWithFlag):
         # 'war hammer', 
         "adamantine sword", 'adamantine axe', "claymore", 
         "spider leg", 'heavy crossbow', 
-        "spear", "bolos", 'javelin', #"long bow", 
+        # "spear", 
+        "bolos", 'javelin', #"long bow", 
         "heathen amulet",
         "broad sword", "rapier",
         #"crossbow", "horn bow",  # < 70% missile
@@ -40,10 +40,12 @@ class Inventory(BotReactionWithFlag):
         "studded leather gloves",
         # "chain mail armour", 
         'chain mail sleeves', 'chain mail leggings', 
-        'chain mail gloves', # mill worker
+        # 'chain mail gloves', # mill worker
         'chain mail hood', 'chain mail boots', 
         "ring mail armour", "ring mail sleeves", "ring mail leggings", 
-        "ring mail hood", "ring mail gauntlets", "leather collar", 
+        "ring mail hood", 
+        # "ring mail gauntlets", 
+        "leather collar", 
         "enchanted indigo cloak", "fine elven cloak", "light elven cloak",
         'lion charm', "poison ring",
         "iron shield", 'platinum ring', 'gold ring', 'steel ring', 'silver ring',
@@ -57,94 +59,107 @@ class Inventory(BotReactionWithFlag):
     ]
 
     def __init__(self, mudReaderHandler, telnetHandler, character):
-        self.you_have = "(?s)You have: (.+?)\."
-        self.wont_buy = "The shopkeep says, \"I won't buy that rubbish from you\.\""
-        self.wont_buy2 = "The shopkeep won't buy that from you\."
-        self.sold = "The shopkeep gives you (.+?) gold for (.+?)\."
-        self.you_drop = "(?s)You drop (.+?)\."
-        self.disintegrates = "(?:A|Some) ([a-z ]+?) disintegrates\."
-        self.gold_from_tip = "You have (.+?) gold\."
-        self.not_a_pawn_shop = "This is not a pawn shoppe\."
-        self.you_now_have = "You now have (.+?) gold pieces\."
-        self.not_empty = "It isn't empty!"
-        self.you_wear = "You wear (.+?)\."
-        self.nothing_to_wear = "You have nothing you can wear\."
-        self.you_get = "(?s)[^ ]You get (.+?)\.(?:\nYou now have (.+?) gold pieces\.)?"
-        self.you_remove = "(?s)You removed? (.+?)\."
-        self.nothing_to_remove = "You aren't wearing anything that can be removed\."
-        self.you_wield = "You wield (.+?)( in your off hand)?\."
-        self.you_give = "(?s)You give (.+?) to (.+?)\."
-        self.bought = "Bought\."
-        self.you_put_in_bag = "(?s)You put (.+?) in(to)? (.+?)\."
-        self.gave_you = ".+? gave (.+?) to you\."
-        self.you_hold = "(?s)You hold (.+?)\."
-        self.weapon_breaks = "Your (.+?) breaks and you have to remove it\."
-        self.armor_breaks = "Your (.+?) fell apart\."
-        self.current_equipment = "You see (.+?) (?:the .+?)\.\n?\r?(?:(?:.+?\.\n?\r?)+)?((?:.+?:.+\n?\r?)+)"
-        self.no_inventory = "You currently have no carried inventory\."
-        self.wearing = "\n?\r?(?:On )?(.+?):[\s]*(?:a |an |some )(.+)"
+        # self.you_have = "(?s)You have: (.+?)\."
+        # self.wont_buy = "The shopkeep says, \"I won't buy that rubbish from you\.\""
+        # self.wont_buy2 = "The shopkeep won't buy that from you\."
+        # self.sold = "The shopkeep gives you (.+?) gold for (.+?)\."
+        # self.you_drop = "(?s)You drop (.+?)\."
+        # self.disintegrates = "(?:A|Some) ([a-z ]+?) disintegrates\."
+        # self.gold_from_tip = "You have (.+?) gold\."
+        # self.not_a_pawn_shop = "This is not a pawn shoppe\."
+        # self.you_now_have = "You now have (.+?) gold pieces\."
+        # self.not_empty = "It isn't empty!"
+        # self.you_wear = "You wear (.+?)\."
+        # self.nothing_to_wear = "You have nothing you can wear\."
+        # self.you_get = "(?s)[^ ]You get (.+?)\.(?:\nYou now have (.+?) gold pieces\.)?"
+        # self.you_remove = "(?s)You removed? (.+?)\."
+        # self.nothing_to_remove = "You aren't wearing anything that can be removed\."
+        # self.you_wield = "You wield (.+?)( in your off hand)?\."
+        # self.you_give = "(?s)You give (.+?) to (.+?)\."
+        # self.bought = "Bought\."
+        # self.you_put_in_bag = "(?s)You put (.+?) in(to)? (.+?)\."
+        # self.gave_you = ".+? gave (.+?) to you\."
+        # self.you_hold = "(?s)You hold (.+?)\."
+        # self.weapon_breaks = "Your (.+?) breaks and you have to remove it\."
+        # self.weapon_shatters = "Your (.+?) shatters\."
+        # self.armor_breaks = "Your (.+?) fell apart\."
+        # self.current_equipment = "You see (.+?) (?:the .+?)\.\n?\r?(?:(?:.+?\.\n?\r?)+)?((?:.+?:.+\n?\r?)+)"
+        # self.no_inventory = "You currently have no carried inventory\."
+        # self.wearing = "\n?\r?(?:On )?(.+?):[\s]*(?:a |an |some )(.+)"
 
-        self.regexes = [self.you_have, self.you_get, self.wont_buy, self.wont_buy2, self.sold, 
-            self.you_drop, self.disintegrates, self.not_a_pawn_shop, self.you_now_have, self.gold_from_tip,
-            self.not_empty, self.you_wear, self.nothing_to_wear, self.you_remove,  
-            self.nothing_to_remove, self.you_wield, self.you_give, self.bought,
-            self.you_put_in_bag, self.gave_you, self.you_hold, self.weapon_breaks,
-            self.armor_breaks, self.current_equipment, self.no_inventory]
+        # self.regexes = [self.you_have, self.you_get, self.wont_buy, self.wont_buy2, self.sold, 
+        #     self.you_drop, self.disintegrates, self.not_a_pawn_shop, self.you_now_have, self.gold_from_tip,
+        #     self.not_empty, self.you_wear, self.nothing_to_wear, self.you_remove,  
+        #     self.nothing_to_remove, self.you_wield, self.you_give, self.bought,
+        #     self.you_put_in_bag, self.gave_you, self.you_hold, self.weapon_breaks, self.weapon_shatters,
+        #     self.armor_breaks, self.current_equipment, self.no_inventory]
+        self.regex_cart = [
+            R.you_have, R.wont_buy, R.wont_buy2, R.sold, R.you_drop, R.disintegrates, R.gold_from_tip, R.not_a_pawn_shop, 
+            R.you_now_have, R.not_empty, R.you_wear, R.nothing_to_wear, R.you_get, R.you_remove, R.nothing_to_remove, R.you_wield, 
+            R.you_give, R.bought, R.you_put_in_bag, R.gave_you, R.you_hold, R.weapon_break, R.weapon_shatters, R.armor_breaks, 
+            R.current_equipment, R.no_inventory, R.wearing
+        ]
 
-        self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
         self.character = character
         self.inventory = MudObjectDict()
+        mudReaderHandler.add_subscriber(self)
         self.gold = 0
         self.__stopping = False
-        self.mudReaderHandler.register_reaction(self)
         self.is_bulk_vendoring = False
+        self.equipped_items = {}
+        # equipped_items = {'body': [], 'arms':[], 'legs':[],'neck':[],'hands':[],'head':[],'feet':[],'face':[],'finger':[],'Shield':[],'Wielded':[],'Second':[]}
 
         for index, item in enumerate(self.keep_list):
             self.keep_list[index] = MudItem(item)
 
     def notify(self, regex, M_obj):
-        if regex is self.you_have:
+        if regex in R.you_have:
             self.set_inventory(M_obj.group(1))
-            #magentaprint(str(self.inventory), False)
-        elif regex is self.sold:
+            magentaprint(str(self.inventory), False)
+        elif regex in R.sold:
             self.gold = self.gold + int(M_obj.group(1))
             self.remove(M_obj.group(2))
-        elif regex is self.you_now_have or regex is self.gold_from_tip:
+        elif regex in R.you_now_have or regex in R.gold_from_tip:
             self.gold = int(M_obj.group(1))
-        elif regex is self.you_wield:
-            weapon = M_obj.group(1)
-            
-            if M_obj.group(2) is not None:
-                self.equipped_items["Second"] = [weapon]
-            else:
-                self.equipped_items["Wielded"] = [weapon]
-
-            # magentaprint(weapon, False)
+        elif regex in R.you_wield and not M_obj.group('weapon').endswith('in your off hand'):
+            weapon = M_obj.group('weapon')
+            self.equipped_items["Wielded"] = [MudItem(weapon)]
+            magentaprint('Just made object ' + str(self.equipped_items["Wielded"][0].obj.name))
             self.remove(weapon)
-            self.get_equipment()
-        elif regex is self.you_get:
+            # self.get_equipment()
+        elif regex in R.off_hand:
+            self.equipped_items["Second"] = [MudItem(weapon)]
+            self.remove(weapon)
+            # self.get_equipment()
+        elif regex in R.you_get:
             item = self.clip_from_a_container(M_obj.group(1))
             self.add(item)
-        elif regex in (self.you_drop, self.you_give, self.you_put_in_bag, self.disintegrates):
+        elif regex in R.you_drop + R.you_give + R.you_put_in_bag + R.disintegrates:
             # magentaprint(str(M_obj.group(1)), False)
             self.remove(M_obj.group(1))
-        elif regex in (self.you_wear, self.you_hold):
+        elif regex in R.you_wear + R.you_hold:
             self.remove(M_obj.group(1))
             self.get_equipment()
             #we know this is armor of some kind so we need to find a way to assign it to the right spot
-        elif regex is self.you_remove or regex is self.gave_you:
+        elif regex in R.you_remove or regex in R.gave_you:
             self.add(M_obj.group(1))
-        elif regex is self.bought:
+        elif regex in R.bought:
             pass
             # if not self.is_bulk_vendoring:
             #     self.get_inventory()  # There are some notes about this at the bottom
             #     # I don't like this very much! I can't use ! to buy a lot of a thing.
-        elif regex in (self.weapon_breaks, self.armor_breaks):
+        elif regex in R.weapon_break + R.armor_breaks:
+            magentaprint('Inventory weapon_break')
             item = M_obj.group(1)
             self.add_broken(M_obj.group(1)) 
-            self.get_equipment()
-        elif regex is self.current_equipment:
+            # self.get_equipment()
+            self.unequip_weapon(item)
+        elif regex in R.weapon_shatters:
+            magentaprint('Inventory weapon_shatters')
+            item = M_obj.group(1)
+            self.unequip_weapon(item)
+        elif regex in R.current_equipment:
             character_name = M_obj.group(1)
             equipment_list = re.findall(self.wearing, M_obj.group(2))
 
@@ -155,9 +170,7 @@ class Inventory(BotReactionWithFlag):
 
                     self.equipped_items[slot[0]].append(MudItem(slot[1]))
             # magentaprint(self.equipped_items,False)
-
         # magentaprint(self.inventory, False)
-
         super().notify(regex, M_obj)
 
     def get_inventory(self):
@@ -192,7 +205,9 @@ class Inventory(BotReactionWithFlag):
         has_slot_equipped = False
 
         for slot in self.equipped_items:
+            magentaprint(slot)
             if slot == slot_to_check:
+                magentaprint(str(self.equipped_items))
                 if len(self.equipped_items[slot]) >= quantity:
                     has_slot_equipped = True
                     break
@@ -249,7 +264,7 @@ class Inventory(BotReactionWithFlag):
             self.sell(item_string)
             i += 1
 
-        self.sleep(3) #breathe!
+        time.sleep(3) #breathe!
 
         self.is_bulk_vendoring = False
 
@@ -260,7 +275,7 @@ class Inventory(BotReactionWithFlag):
 
     def buy(self, item_string):
         self.telnetHandler.write("buy " + item_string)
-        self.wait_for_flag
+        self.wait_for_flag()
         self.add(item_string)
 
     def bulk_buy(self, item_string, quantity):
@@ -271,7 +286,7 @@ class Inventory(BotReactionWithFlag):
             self.telnetHandler.write("buy " + item_string)
             i += 1
 
-        self.sleep(3) #breathe!
+        time.sleep(3) #breathe!
 
         self.is_bulk_vendoring = False
 
@@ -297,7 +312,8 @@ class Inventory(BotReactionWithFlag):
         self.wait_for_flag()
 
     def drop_last(self, item_string):
-        item_ref = self._item_string_to_reference(item_string)  # TODO: This looks like it would crash
+        # item_ref = self._item_string_to_reference(item_string)  # TODO: This looks like it would crash
+        item_ref = self.get_last_reference(item_string)
         self.drop_item_at_position(item_ref, self.inventory[item_string])
 
     def stop(self):
@@ -463,12 +479,76 @@ class Inventory(BotReactionWithFlag):
     def get_2nd_word_reference(self, item_name):
         return self.get_reference(item_name, 2)
 
+    def get_last_reference(self, item_name, first_or_second_word=1):
+        # Often you want the most recent item in the stack
+        starting_point = self.get_reference(item_name, first_or_second_word)
+        if starting_point is None:
+            return None
+        c = self.inventory.count(item_name)
+        ref_split = starting_point.split(' ')
+        if len(ref_split) > 1:
+            return starting_point.split[' '][0] + ' ' + str(int(ref_split[1]) + c - 1)
+        else:
+            if c == 1:
+                return starting_point.split[' '][0]
+            else:
+                return starting_point.split[' '][0] + ' ' + str(c)
+        # There would be less code if I didn't treat '1' specially (I prefer 'potion' not 'potion 1' for the 1st potion)
+
     def _reference_string(self, word, i):
         # Reference string given the int - this is just a code-saving method
         if i <= 1:
             return word
         else:
             return word + ' ' + str(i)
+
+    def remove_a_an_some(self, item_string):
+        if item_string.startswith('A '):
+            return item_string[2:]
+        elif item_string.startswith('An '):
+            return item_string[3:]
+        elif item_string.startswith('Some '):
+            return item_string[5:]
+        else:
+            return item_string
+
+    def get_item_name_from_reference(self, ref):
+        # A list would be better
+        ref_split = ref.split(' ')
+        ref_string = ref_split[0]
+
+        if len(ref_split) > 1:
+            ref_n = int(ref_split[1])
+        else:
+            ref_n = 1
+
+        # ilist = sorted(self.inventory.keys())
+        for iname, ivalue in self.inventory.inventory.iteritems():  # Hopefully sorted by keys...
+            if any([w.startswith(ref) for w in iname.split(' ')]):
+                ref_n = ref_n - ivalue.qty 
+                if ref_n <= 0:
+                    return iname
+
+        return None
+
+    def unequip_weapon(self, weapon):
+        # e = self.equipped_items
+        # if 'Wielded' in e.keys():
+        #     if 'Second' in e.keys() and e['Wielded'] == e['Second'] and e['Wielded'] == weapon:
+        #         # Unknown which broke: guess and don't rely on it
+        #         del e['Wielded']  # can't del with just 'e'
+        #     elif e['Wielded'] == weapon:
+        #         del e['Wielded']
+        # if 'Second' in e.keys() and e['Second'] == weapon:
+        #     del e['Second']
+        magentaprint('Inventory.unequip_weapon() ' + str(self.equipped_items.keys()))
+        if 'Wielded' in self.equipped_items.keys() and self.equipped_items['Wielded'] and self.equipped_items['Wielded'][0].obj.name == weapon:
+            # Could be wrong if the second weapon is the same and that broke
+            magentaprint('Inventory.unequip_weapon() deleting Wielded')
+            del self.equipped_items['Wielded']
+            magentaprint(str(self.equipped_items))
+        elif 'Second' in self.equipped_items.keys() and self.equipped_items['Second'] and self.equipped_items['Second'][0].obj.name == weapon:
+            del self.equipped_items['Second']
 
 # Ok I want to set up reactions to keep myself up to date.
 # I am thinking of steel bottles and restoratives, so I want 

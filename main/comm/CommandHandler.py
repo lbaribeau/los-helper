@@ -25,6 +25,7 @@ from bots.MixThread import MixThread
 from bots.SlaveThread import SlaveThread
 from command.Quit import Quit
 from command.Command import Command
+from reactions.CombatReactions import CombatReactions
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -49,8 +50,11 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.go.open)
         mudReaderHandler.add_subscriber(self.smartCombat.prompt)  
         mudReaderHandler.add_subscriber(self.smartCombat.wield)
+        mudReaderHandler.add_subscriber(self.smartCombat.wield.second)
         mudReaderHandler.add_subscriber(self.smartCombat)
         mudReaderHandler.add_subscriber(self.smartCombat.use)
+        self.combat_reactions = CombatReactions(self.character)
+        mudReaderHandler.add_subscriber(self.combat_reactions)
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
@@ -205,10 +209,10 @@ class CommandHandler(object):
             self.mud_map.re_map()            
         elif re.match("HASTING", user_input):
             magentaprint(str(self.character.HASTING), False)
-        elif re.match("WEAPON1", user_input):
-            magentaprint(self.character.WEAPON1, False)
-        elif re.match("WEAPON2", user_input):
-            magentaprint(self.character.WEAPON2, False)
+        elif re.match("weapon1", user_input):
+            magentaprint(self.character.weapon1, False)
+        elif re.match("weapon2", user_input):
+            magentaprint(self.character.weapon2, False)
         elif re.match("MONSTER_CHECK_FLAG", user_input):
             magentaprint(str(self.character.MONSTER_CHECK_FLAG), False)
         elif re.match("ml", user_input): #Monster List
@@ -249,7 +253,7 @@ class CommandHandler(object):
             magentaprint("Version: " + str(misc_functions.VERSION), False)
             magentaprint(self.character.__dict__, False)
         elif re.match("(?i)report", user_input):
-            self.report()
+            self.combat_reactions.report()
         elif re.match("(?i)mobs_joined_in", user_input):
             magentaprint(self.character.MOBS_JOINED_IN, False)
         elif re.match("(?i)aura", user_input):
@@ -290,8 +294,10 @@ class CommandHandler(object):
         self.kill.stop()
         self.cast.stop()
         now = time.time()
-        wait_from_move = self.character.MOVE_WAIT - (now - self.character.MOVE_CLK)
-        time_remaining = max(wait_from_move, self.kill.wait_time(), self.cast.wait_time(), 0);
+        # wait_from_move = self.character.MOVE_WAIT - (now - self.character.MOVE_CLK)
+        wait_from_move = self.go.wait_time()
+        # time_remaining = max(wait_from_move, self.kill.wait_time(), self.cast.wait_time(), 0);
+        time_remaining = max(self.go.wait_time(), self.kill.wait_time(), self.cast.wait_time(), 0);
         # magentaprint("user_move: MOVE wait time: %.2f" % round(wait_from_move, 2))
         # magentaprint("user_move: kill.wait_time(): " + str(self.kill.wait_time()))
         # magentaprint("user_move: cast.wait_time(): " + str(self.cast.wait_time()))
@@ -299,9 +305,9 @@ class CommandHandler(object):
 
         if time_remaining < 3.0:
             time.sleep(time_remaining)
-            self.character.MOVE_CLK = now
+            # self.character.MOVE_CLK = now
             # self.telnetHandler.write(user_input)
-            self.go.persistent_execute(self.character.LAST_DIRECTION)
+            self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
             # self.go.execute(self.character.LAST_DIRECTION)
         else:
             magentaprint("Wait %.1f more seconds." % time_remaining)
@@ -416,8 +422,9 @@ class CommandHandler(object):
         self.cast.stop()
         # self.smartCombat.flee()
         now = time.time()
-        time_remaining = max(self.character.MOVE_WAIT - (now - self.character.MOVE_CLK),
-                             self.kill.wait_time(), self.cast.wait_time())
+        # time_remaining = max(self.character.MOVE_WAIT - (now - self.character.MOVE_CLK),
+        #                      self.kill.wait_time(), self.cast.wait_time())
+        time_remaining = max(self.go.wait_time(), self.kill.wait_time(), self.cast.wait_time())
         self.cast.stop()
         self.smartCombat.stop_casting()
         # self.kill.start_thread(self.smartCombat.target)  # if smartCombat.thread.is_alive()
@@ -432,10 +439,10 @@ class CommandHandler(object):
         self.kill.stop()
         magentaprint("KillThread is stopped, %.1f until escape." % time_remaining, False)
 
-        if self.character.WEAPON1 != "":
-            self.telnetHandler.write("rm " + self.character.WEAPON1)
-        if self.character.WEAPON2 != "":
-            self.telnetHandler.write("rm " + self.character.WEAPON2)
+        if self.character.weapon1 != '':
+            self.telnetHandler.write("rm " + self.character.weapon1)
+        if self.character.weapon2 != '':
+            self.telnetHandler.write("rm " + self.character.weapon2)
 
         if second_sleep < 0.1:
             second_sleep = 0.1
@@ -443,8 +450,9 @@ class CommandHandler(object):
         time.sleep(second_sleep)
         
         now = time.time()
-        time_remaining = max(self.character.MOVE_WAIT - (now - self.character.MOVE_CLK),
-                             self.kill.wait_time(), self.cast.wait_time())
+        # time_remaining = max(self.character.MOVE_WAIT - (now - self.character.MOVE_CLK),
+        #                      self.kill.wait_time(), self.cast.wait_time())
+        time_remaining = max(self.go.wait_time(), self.kill.wait_time(), self.cast.wait_time())
         self.character.MOVE_CLK = now
             
         # Note: in very few rare cases it may be better to flee once.  
@@ -455,10 +463,10 @@ class CommandHandler(object):
 
         time.sleep(0.1)  
 
-        if self.character.WEAPON1 != "":
-            self.telnetHandler.write("wie " + self.character.WEAPON1)
-        if self.character.WEAPON2 != "":
-            self.telnetHandler.write("seco " + self.character.WEAPON2)
+        if self.character.weapon1 != "":
+            self.telnetHandler.write("wie " + self.character.weapon1)
+        if self.character.weapon2 != "":
+            self.telnetHandler.write("seco " + self.character.weapon2)
 
     def get_directions_from_where_we_are_to_area_id(self, to_area_id):
         directions = []
@@ -541,20 +549,23 @@ class CommandHandler(object):
         if not self.bot_check():
             return
 
-        M_obj = re.search("domix '(.+?)' (.+?)( [\d]*)?$", user_input)
+        M_obj = re.search(r"domix (?P<target>[A-Za-z]+) (?P<mix_target>[A-Za-z]+)(?P<qty> \d+)?$", user_input)
         can_mix = True
 
         try:
-            target = M_obj.group(1)
-            mix_target = M_obj.group(2)
+            target = M_obj.group('target')
+            mix_target = M_obj.group('mix_target')
 
             try:
-                quantity = int(M_obj.group(3).strip())
+                quantity = int(M_obj.group('qty').strip())
             except Exception:
                 magentaprint(str(M_obj.groups()),False)
                 quantity = 1
         except Exception:
-            magentaprint(str(M_obj.groups()),False)
+            if M_obj:
+                magentaprint(str(M_obj.groups()),False)
+            else:
+                magentaprint('start_mix(): cannot parse command (use held item as 1st argument and target as 2nd, held item gets worked.)')
             can_mix = False
 
         if can_mix:
@@ -567,50 +578,6 @@ class CommandHandler(object):
     def stop_bot(self):
         if self.botThread and self.botThread.is_alive():
             self.botThread.stop()
-
-    def report(self):
-        exp = self.character.TOTAL_EXPERIENCE
-        gold = self.character.TOTAL_GOLD
-        aura = str(self.character.AURA)
-        magentaprint("Current Aura: " + aura, False)
-        magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), False)
-        exp = self.character.EXPERIENCE
-        expm = str(misc_functions.calculate_vpm(exp))
-        magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
-        kills = len(self.character.MOBS_KILLED)
-        kpm = str(misc_functions.calculate_vpm(kills))
-        magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
-        hits_dealt = self.character.HITS_DEALT
-        hits_missed = self.character.HITS_MISSED
-        damage_dealt = self.character.DAMAGE_DEALT
-        total_phys_attacks = hits_dealt + hits_missed
-        crits_landed = self.character.CRITS_LANDED
-        spells_cast = self.character.SPELLS_CAST
-        spells_failed = self.character.SPELLS_FAILED
-        spells_hit = spells_cast - spells_failed
-        spell_damage_dealt = self.character.SPELL_DAMAGE_DEALT
-
-        try:
-            average_phys_damage = round(damage_dealt / hits_dealt, 2)
-            phys_hit_rate = round(hits_dealt / total_phys_attacks * 100, 2)
-            phys_crit_rate = round(crits_landed / total_phys_attacks * 100, 2)
-            
-            average_spell_damage = round(spell_damage_dealt / spells_hit)
-            spell_hit_rate = round(spells_hit / spells_cast * 100, 2)
-            spell_crit_rate = 0
-        except Exception:
-            average_phys_damage = -1
-            average_spell_damage = -1
-            phys_hit_rate = -1
-            spell_hit_rate = -1
-            phys_crit_rate = -1
-            spell_crit_rate = -1
-
-        magentaprint("Average Phys Damage: " + str(average_phys_damage) + " | Average Spell Damage: " + str(average_spell_damage), False)
-        magentaprint("Phys Hit Rate: " + str(phys_hit_rate) + "% | Spell Hit Rate: " + str(spell_hit_rate) + "%", False)
-        magentaprint("Phys Crit Rate: " + str(phys_crit_rate) + " | Spell Crit Rate: " + str(spell_crit_rate) + "%", False)
-        runtime = round(get_runtime_in_minutes(), 2)
-        magentaprint("Minutes Run: " + str(runtime), False)
 
     def bbuy(self, user_input):
         try:

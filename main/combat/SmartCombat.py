@@ -21,6 +21,7 @@ class SmartCombat(CombatObject):
         self.thread = None
         self.target = None
         self.stopping = None
+        self.broken_weapon = ''
         self.kill = Kill(telnetHandler)
         self.cast = Cast(telnetHandler)
         self.prompt = Prompt(character)
@@ -34,19 +35,24 @@ class SmartCombat(CombatObject):
         # self.combat_abilities = [a for a in self.abilities if isinstance(a, CombatAbility)]
         self.heal_abilities = character._class.heal_skills
         self.buff_abilities = character._class.buff_skills
-        self.combat_abilities = character._class.combat_skills
+        self.slow_combat_abilities = character._class.slow_combat_skills
         self.fast_combat_abilities = character._class.fast_combat_skills
 
         spell_percent = max(character.earth, character.wind, character.fire, character.water)
         # magentaprint("SmartCombat character.pty " + str(character.pty))
-        self.black_magic = character.pty < 7 or spell_percent >= 20
+        self.black_magic = character.pty < 7 or spell_percent >= 5
         # self.favourite_spell = Spells.vigor if not self.black_magic else \
-        self.favourite_spell = Spells.rumble if spell_percent == character.earth else \
-                               Spells.hurt if spell_percent == character.wind else \
-                               Spells.burn if spell_percent == character.fire else Spells.blister
+        if spell_percent == 0 and self.black_magic:
+            self.favourite_spell = Spells.rumble if Spells.rumble in character.spells else \
+                                   Spells.hurt if Spells.hurt in character.spells else \
+                                   Spells.burn if Spells.burn in character.spells else Spells.blister
+        else:
+            self.favourite_spell = Spells.rumble if spell_percent == character.earth else \
+                                   Spells.hurt if spell_percent == character.wind else \
+                                   Spells.burn if spell_percent == character.fire else Spells.blister
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
         self.character = character
-        self.regex_cart.append(RegexStore.prompt)
+        self.regex_cart.extend([RegexStore.prompt, RegexStore.weapon_break, RegexStore.weapon_shatters])
 
     def notify(self, regex, M_obj):
         # Notifications are used for healing
@@ -58,6 +64,9 @@ class SmartCombat(CombatObject):
                 self.use.spam_pots()
             elif not self.needs_heal():
                 self.use.stop()
+        elif regex in RegexStore.weapon_break or regex in RegexStore.weapon_shatters:
+            magentaprint("SmartCombat weapon break: " + str(M_obj.group('weapon')))
+            self.broken_weapon = M_obj.group('weapon')
 
     def needs_heal(self):
         # return self.character.HEALTH < 50  # Test!
@@ -97,12 +106,14 @@ class SmartCombat(CombatObject):
         self.use_any_fast_combat_abilities()  # ie. Touch, Dance
 
         while not self.stopping:
+            if self.broken_weapon:
+                self.reequip_weapon()
             # magentaprint("SmartCombat loop kill.timer " + str(round(self.kill.wait_time(), 1)) + " cast.timer " + str(round(self.cast.wait_time(), 1)) + ".")
             if self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
                 self.kill.wait_until_ready()
                 if self.stopping: 
                     break 
-                self.use_combat_ability_or_attack()
+                self.use_slow_combat_ability_or_attack()
                 # magentaprint("SmartCombat finished attack, stopping: " + str(self.stopping))
                 # time.sleep(0.1)  
             else:
@@ -110,8 +121,8 @@ class SmartCombat(CombatObject):
                 damage = self.character.maxHP - self.character.HEALTH
                 if self.stopping:
                     continue
-                elif not self.black_magic and (self.character.MANA >= 2 and damage > self.prompt.max_vigor()) or \
-                     (self.character.MANA >= self.character.maxMP - 1 and damage > self.prompt.max_vigor()/1.7):
+                elif not self.black_magic and ((self.character.MANA >= 2 and damage > self.prompt.max_vigor()) or \
+                     (self.character.MANA >= self.character.maxMP - 1 and damage > self.prompt.max_vigor()/1.7)):
                      # (self.character.MANA >= self.character.maxMP - 1 and damage > self.prompt.max_vigor()/1.7 and damage > self.prompt.hptick()):
                     # TODO: cast vigor if a tick is about to come and we're full mana
                     self.do_cast('v')
@@ -137,10 +148,11 @@ class SmartCombat(CombatObject):
         for a in self.fast_combat_abilities:
             # magentaprint("SmartCombat cycling abilities: " + str(a))
             if a.up():
-
                 if isinstance(a, Turn):
                     if self.target not in a.valid_targets:
                         continue
+                    else:
+                        magentaprint("SmartCombat " + str(self.target) + " in turn targets " + str(a.valid_targets))
 
                 magentaprint("Using " + str(a))
                 a.execute(self.target)
@@ -155,8 +167,8 @@ class SmartCombat(CombatObject):
                 #     return
                 break
 
-    def use_combat_ability_or_attack(self):
-        for a in self.combat_abilities:
+    def use_slow_combat_ability_or_attack(self):
+        for a in self.slow_combat_abilities:
             if a.up():
                 if isinstance(a, Bash):
                     continue  # For now, don't bash
@@ -196,6 +208,69 @@ class SmartCombat(CombatObject):
         self.casting = False
         # vigor_cost = 2
 
+    def reequip_weapon(self):
+        # Tries to wield all weapons with the same name from inventory
+        magentaprint('SmartCombat.reequip_weapon()... broken, weapons1/2: ' + self.broken_weapon + ', ' + self.character.weapon1 + '/' + self.character.weapon2)
+        ref = self.character.inventory.get_reference(self.broken_weapon, 2)
+        if ref == None:
+            return
+        if self.character.weapon1 == self.broken_weapon:
+            # ref = self.character.inventory.get_reference(self.broken_weapon)
+            self.wield.execute(ref)
+            self.wield.wait_for_flag()
+            if self.wield.success:
+                self.broken_weapon = False
+                return True
+            while self.wield.broken_error:  # found broken one from inventory... this is probably pretty rare
+                # need to try the next one
+                ref_split = ref.split(' ')
+                ref = ref_split[0] + ' '+ str(int(ref_split[1]) + 1)
+                if self.character.inventory.get_item_name_from_reference(ref) == self.broken_weapon:
+                    self.wield.execute(ref)
+                    self.wield.wait_for_flag()
+                    if self.wield.success:
+                        self.broken_weapon = False
+                        return True
+                else:
+                    # Ran through all items with the same name
+                    return False
+            if (self.wield.already_wielding_error and self.character.weapon1 == self.character.weapon2) or \
+               (self.character.weapon2 == self.broken_weapon):
+                self.wield.second.execute(ref)
+                self.wield.second.wait_for_flag()
+                if self.wield.second.success:
+                    self.broken_weapon = False
+                    return True
+                while self.wield.second.broken_error:
+                    ref_split = ref.split(' ')
+                    ref = ref_split[0] + ' '+ str(int(ref_split[1]) + 1)
+                    if self.character.inventory.get_item_name_from_reference(ref) == self.broken_weapon:
+                        self.wield.second.execute(ref)
+                        self.wield.second.wait_for_flag()
+                        if self.wield.second.success:
+                            self.broken_weapon = False
+                            return True
+                    else:
+                        # Ran through all items with the same name
+                        return False
+                # if self.wield.second.already_wielding_error:
+                #     magentaprint('SmartCombat.reequip_weapon wierd case already had weapons.')
+                #     self.broken_weapon = False
+                #     return True
+            # elif self.wield.already_wielding_error:
+            #     magentaprint('SmartCombat.reequip_weapon wierd case already had weapon.')
+            #     self.broken_weapon = False
+            #     return True
+            # else:
+            #     magentaprint('SmartCombat.reequip_weapon error case.')
+            #     return False
+        # elif self.character.weapon2 == self.broken_weapon:
+        #     # seconding a different weapon
+        #     self.wield.second.execute(self.broken_weapon)
+        #     self.wield.second.wait_for_flag()
+        #     if self.wield.second.success:
+        #         self.broken_weapon = False
+        return False
 
         ### Old combat
         # black_magic_spell_cost = self.character.SPELL_COST

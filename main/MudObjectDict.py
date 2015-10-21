@@ -35,7 +35,7 @@ class MudObjectDict():
                 olist = self.dictionary[obj]
                 count += len(olist.objs)
 
-        magentaprint("MudObjectDict counted " + str(count) + " " + str(obj) + ".")
+        # magentaprint("counted MudObjectDict " + str(count) + " " + str(obj) + ".")
         return count
 
     def add(self, obj_dict):

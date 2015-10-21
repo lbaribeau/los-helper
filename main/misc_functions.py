@@ -96,7 +96,7 @@ def key_with_max_val(d):
          b) return the key with the max value"""  
      v=list(d.values())
      k=list(d.keys())
-     return k[v.index(max(v))],max(v)
+     return k[v.index(max(v))]
 
 def flush_input():
     try:

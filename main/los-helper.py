@@ -45,6 +45,7 @@ from command.Whois import Whois
 from command.Spells import Spells
 from reactions.Cartography import Cartography 
 from reactions.BotReactions import *
+# from reactions.WieldReaction import WieldReaction
 from comm.TelnetHandler import TelnetHandler 
 from fake.FakeTelnetHandler import FakeTelnetHandler 
 from db.Database import *
@@ -74,7 +75,6 @@ class LosHelper(object):
         self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler, self.character)
         self.character.inventory = self.inventory
         self.mudReaderHandler.add_subscriber(self.character.mobs)
-        self.combat_reactions = CombatReactions(self.mudReaderHandler, self.character)
 
         # self.mud_map_thread.start()  # Don't forget to uncomment .join()
         self.mudListenerThread.start()
@@ -199,7 +199,8 @@ class LosHelper(object):
         # self.telnetHandler.write(password)
 
     def initialize_reactions(self):
-        self.mudReaderHandler.register_reaction(WieldReaction(self.character, self.telnetHandler))
+        pass
+        # self.mudReaderHandler.register_reaction(WieldReaction(self.character, self.telnetHandler))
 
     def check_inventory(self):
         # This prints the inventory.  I like that.  

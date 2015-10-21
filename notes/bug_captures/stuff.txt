@@ -1,0 +1,340 @@
+Please wait 4 more seconds.
+[73 H 17 M]: 23:10:12.6   | Command.notify_please_wait() self.please_wait_time is 4, self.wait_time is 599.8
+23:10:12.6   | <combat.Kill.Kill object at 0x6fffea82a50> notified.
+23:10:12.6   | <combat.Cast.Cast object at 0x6fffea82b90> notified.
+23:10:12.6   | Command.notify_please_wait() self.please_wait_time is 4, self.wait_time is 0
+23:10:12.6   | Go notified.
+23:10:12.6   | Command.notify_please_wait() self.please_wait_time is 4, self.wait_time is 0
+23:10:12.6   | Open notified.
+23:10:12.6   | Command.notify_please_wait() self.please_wait_time is 4, self.wait_time is 0
+23:10:12.6   | Cartogarphy notify done.
+23:10:12.7   | Sending 'has' in 600 seconds.
+23:10:12.7   | <class 'command.Ability.Haste'> wait_until_ready waiting 599.8
+
+
+Grazing Fields
+
+There is little grass here, it has been mostly stamped down.
+This is due to the much higher level of traffic in the area. There
+is still a lot of coming and going between the ranch and the fields
+even now as you watch.
+Obvious exits: west, north, east, gate.
+
+21:34:26.4   | Go notified.
+21:34:26.4   | Cartography area match: 1530, Grazing Fields
+21:34:26.4   | Cartogarphy notify done.
+21:34:26.4   | TrackGrindThread.do_post_go_actions() calling do_rest_hooks()
+21:34:26.4   | Going gate. 3107.7
+21:34:26.4   | Go.execute()
+21:34:26.4   | Go.execute() 2
+21:34:26.4   | <class 'command.Go.Go'> wait_until_ready waiting 0.1
+[52 H 22 M]: 21:34:26.5   | "go gate"
+21:34:26.5   | Go.wait_for_flag()
+
+Fields Gate
+
+You have reached the boundary between the ranch and the fields it owns.
+The gate is barely open at the moment, and every now and again someone
+comes by and looks out to the north. It seems that all here are expecting
+some sort of problems, possibly soon. Whatever will happen all agree that
+it will come across the fields first.
+Obvious exits: southwest, southeast, gate.
+
+[52 H 22 M]: 21:34:31.5   | BotReaction.wait_for_flag() timed out!<class 'command.Go.Go'>
+21:34:36.6   | BotReaction.wait_for_flag() timed out!<class 'reactions.Cartography.Cartography'>
+21:34:36.6   | TrackGrindThread.do_post_go_actions() calling do_rest_hooks()
+21:34:36.6   | Going gate. 3117.8
+21:34:36.6   | Go.execute()
+21:34:36.6   | Go.execute() 2
+21:34:36.6   | "go gate"
+21:34:36.6   | Go.wait_for_flag()
+
+Grazing Fields
+
+There is little grass here, it has been mostly stamped down.
+This is due to the much higher level of traffic in the area. There
+is still a lot of coming and going between the ranch and the fields
+even now as you watch.
+Obvious exits: west, north, east, gate.
+
+21:34:36.7   | Go notified.
+21:34:36.8   | Cartography area match: 1530, Grazing Fields
+21:34:36.8   | Cartogarphy notify done.
+21:34:36.8   | TrackGrindThread.do_post_go_actions() calling do_rest_hooks()
+21:34:36.8   | Going southwest. 3118.1
+21:34:36.8   | Go.execute()
+21:34:36.8   | Go.execute() 2
+21:34:36.8   | <class 'command.Go.Go'> wait_until_ready waiting 0.1
+21:34:36.9   | "go southwest"
+[52 H 22 M]: 21:34:36.9   | Go.wait_for_flag()
+I don't see that exit.
+C:\Users\Laurier\Documents\Programming\los-helper\main\Inventory.py
+
+
+Lag Spike
+
+
+You see an amber town guard.
+
+21:31:23.5   | Go notified.
+21:31:23.6   | Cartography catalog_monsters: 399, The Watch Walls / Amethyst Street / Ashden Street, amber town guard
+21:31:23.6   | Cartography area match: 1338, The Watch Walls / Amethyst Street / Ashden Street
+21:31:23.6   | Cartogarphy notify done, regex: (?s)(?:(?:...
+21:31:23.6   | False
+21:31:23.6   | <class 'command.Go.Go'> wait_until_ready waiting 0.0
+[52 H 24 M]: 21:31:23.7   | Going w. 4775.5
+21:31:23.7   | Go.execute()
+21:31:23.7   | Go.execute() 2
+21:31:23.7   | "w"
+21:31:23.7   | Go.wait_for_flag()
+
+The Watch Walls / Dominium Way
+
+A butchers has set up at this junction of two roads.
+There is a lot of traffic here, local hunters and farmers go up to the
+butchers to sell their goods. Also quite a lot of the townsfolk buy their
+meat from here too. Even with the Watch Walls in the way you can see the
+cathedral's bell tower from here.
+Obvious exits: northwest, west, east, door.
+
+21:31:23.8   | Go notified.
+21:31:23.9   | Cartography area match: 1340, The Watch Walls / Dominium Way
+21:31:23.9   | Cartogarphy notify done, regex: (?s)(?:(?:...
+21:31:23.9   | False
+21:31:23.9   | <class 'command.Go.Go'> wait_until_ready waiting 0.1
+[52 H 24 M]: 21:31:24.0   | Going w. 4775.8
+21:31:24.0   | Go.execute()
+21:31:24.0   | Go.execute() 2
+21:31:24.0   | "w"
+21:31:24.0   | Go.wait_for_flag()
+
+The Watch Walls
+
+This patch of land has been stripped in preparation for a new building.
+The council, in conjunction with the cathedral, have decided that the
+town should reinstate itself as a patron to the arts. This was one of
+the things for which it was once renowned and they wish to recapture
+the energy that a centre of the arts can generate. At present the
+the land is just a bare area, but once they have the funds they intend
+to build an art centre here.
+Obvious exits: west, east.
+
+21:31:24.2   | Go notified.
+21:31:24.2   | Cartography area match: 1343, The Watch Walls
+21:31:24.2   | Cartogarphy notify done, regex: (?s)(?:(?:...
+21:31:24.2   | False
+21:31:24.2   | <class 'command.Go.Go'> wait_until_ready waiting 0.1
+[52 H 24 M]: 21:31:24.3   | Going w. 4776.2
+21:31:24.3   | Go.execute()
+21:31:24.3   | Go.execute() 2
+21:31:24.3   | "w"
+21:31:24.3   | Go.wait_for_flag()
+
+The Watch Walls
+
+Under the south wall this is a quiet part of town.
+The occasional guard walks past but the only real thing of interest
+here has to be the shop to the north. The front is painted to look
+like a large shield and adds a much needed touch of colour to the
+vicinity.
+Obvious exits: west, east, shop.
+
+21:31:24.6   | Go notified.
+21:31:24.6   | Cartography area match: 1344, The Watch Walls
+21:31:24.6   | Cartogarphy notify done, regex: (?s)(?:(?:...
+21:31:24.6   | False
+21:31:24.7   | <class 'command.Go.Go'> wait_until_ready waiting 0.0
+21:31:24.7   | Going w. 4776.5
+21:31:24.7   | Go.execute()
+21:31:24.7   | Go.execute() 2
+21:31:24.7   | "w"
+21:31:24.7   | Go.wait_for_flag()
+[52 H 24 M]: 21:31:29.7   | BotReaction.wait_for_flag() timed out!<class 'command.Go.Go'>
+21:31:34.7   | BotReaction.wait_for_flag() timed out!<class 'reactions.Cartography.Cartography'>
+21:31:34.7   | Going w. 4786.6
+21:31:34.7   | Go.execute()
+21:31:34.7   | Go.execute() 2
+21:31:34.7   | "w"
+21:31:34.7   | Go.wait_for_flag()
+21:31:39.8   | BotReaction.wait_for_flag() timed out!<class 'command.Go.Go'>
+21:31:44.8   | BotReaction.wait_for_flag() timed out!<class 'reactions.Cartography.Cartography'>
+21:31:44.8   | Going w. 4796.6
+21:31:44.8   | Go.execute()
+21:31:44.8   | Go.execute() 2
+21:31:44.8   | "w"
+21:31:44.8   | Go.wait_for_flag()
+
+21:31:47.1   | LosHelper user_input:
+21:31:47.1   | ""
+
+21:31:47.6   | LosHelper user_input:
+21:31:47.6   | ""
+
+21:31:48.0   | LosHelper user_input:
+21:31:48.0   | ""
+
+21:31:48.2   | LosHelper user_input:
+21:31:48.2   | ""
+
+The Watch Walls / Forest Walk
+
+Here at the junction between walls a tower is being built.
+The tower is about half way to completion. The base is done and it
+just a bit higher than the two walls it sits between. After it was
+pointed out that the junction of the south and west walls was easily
+breach-able the town council decided to erect a tower to resolve the
+problem. This tower will, when complete, be continually manned and
+used to keep a watch out for trouble from the magical plains.
+Obvious exits: north, east.
+
+[52 H 24 M]: 21:31:49.0   | Go notified.
+21:31:49.0   | Cartography area match: 1345, The Watch Walls / Forest Walk
+21:31:49.0   | Cartogarphy notify done, regex: (?s)(?:(?:...
+21:31:49.0   | False
+21:31:49.0   | Going n. 4800.8
+21:31:49.0   | Go.execute()
+21:31:49.0   | Go.execute() 2
+21:31:49.0   | "n"
+21:31:49.0   | Go.wait_for_flag()
+21:31:54.1   | BotReaction.wait_for_flag() timed out!<class 'command.Go.Go'>
+21:31:59.1   | BotReaction.wait_for_flag() timed out!<class 'reactions.Cartography.Cartography'>
+21:31:59.1   | Going n. 4810.9
+21:31:59.1   | Go.execute()
+21:31:59.1   | Go.execute() 2
+21:31:59.1   | "n"
+21:31:59.1   | Go.wait_for_flag()
+21:32:04.1   | BotReaction.wait_for_flag() timed out!<class 'command.Go.Go'>
+You can't go that way.
+[57 H 24 M]: Player saved.
+[57 H 24 M]: 21:32:07.9   | Go notified.
+21:32:07.9   | Cartography: unsuccessful go (can't go that way): ten
+21:32:07.9   | Cartogarphy notify done, regex: You can't ...
+21:32:07.9   | False
+21:32:08.0   | Go no exit on: n
+21:32:08.0   | Going n. 4819.8
+21:32:08.0   | Go.execute()
+21:32:08.0   | Go.execute() 2
+21:32:08.0   | "n"
+21:32:08.0   | Go.wait_for_flag()
+You can't go that way.
+[61 H 24 M]: 21:32:08.1   | Go notified.
+21:32:08.1   | Cartography: unsuccessful go (can't go that way): ten
+21:32:08.1   | Cartogarphy notify done, regex: You can't ...
+21:32:08.1   | False
+21:32:08.1   | Go no exit on: n
+21:32:08.1   | Going s. 4819.9
+21:32:08.1   | Go.execute()
+21:32:08.1   | Go.execute() 2
+21:32:08.1   | "s"
+21:32:08.1   | Go.wait_for_flag()
+[61 H 24 M]: [61 H 24 M]:
+[61 H 24 M]: [61 H 24 M]:
+Forest Walk
+
+You are walking just in the shadows of the towns west walls.
+The wall is supposed to help in defence against attacks from anything
+that may turn up from the magical plains. The town guards are stationed
+around here, and their homes are here too. Should there be problems then
+they won't have far to go. With so many official people around here it
+also explains why you see so few unsavoury characters. Most thieves simply
+avoid this area.
+Obvious exits: north, south.
+
+[61 H 24 M]: 21:32:08.4   | Go notified.
+21:32:08.4   | Cartography area match: 1346, Forest Walk
+21:32:08.4   | Cartogarphy notify done, regex: (?s)(?:(?:...
+21:32:08.4   | False
+21:32:08.5   | Going s. 4820.3
+21:32:08.5   | Go.execute()
+21:32:08.5   | Go.execute() 2
+21:32:08.5   | "s"
+21:32:08.5   | Go.wait_for_flag()
+
+Forest Walk / Dominium Way
+
+The town walls start here, beyond them are fields then trees.
+There is talk of extending the walls further north, but at the moment
+it is just that, talk. The town simply cannot afford yet to add that to
+its active tasks. The wall does end in a small tower which will make it
+easier to add to later. There are many who reckon half a wall is worse
+than no wall, but they don't seem to want to pay for it themselves.
+Obvious exits: south, southeast, east.
+
+[61 H 24 M]: Please wait 1 more second.
+[61 H 24 M]: 21:32:08.6   | Command.notify_please_wait() self.please_wait_time is 1, self.wait_time is 410.3
+21:32:08.6   | <combat.Kill.Kill object at 0x6ffff142fd0> notified.
+21:32:08.6   | Command.notify_please_wait() self.please_wait_time is 1, self.wait_time is 0
+21:32:08.6   | <combat.Cast.Cast object at 0x6ffff15c090> notified.
+21:32:08.6   | Go notified.
+21:32:08.6   | Command.notify_please_wait() self.please_wait_time is 1, self.wait_time is 0.3
+21:32:08.6   | Open notified.
+21:32:08.6   | Command.notify_please_wait() self.please_wait_time is 1, self.wait_time is 0
+21:32:08.6   | Cartography: unsuccessful go| (please wait) dir=ten
+21:32:08.6   | Cartography: unsuccessful go| is trying to move?= True
+21:32:08.6   | Cartogarphy notify done, regex: Please wai...
+21:32:08.6   | False
+21:32:08.6   | Go notified.
+21:32:08.6   | Cartogarphy notify done, regex: (?s)(?:(?:...
+21:32:08.6   | False
+21:32:08.6   | <class 'command.Go.Go'> wait_until_ready waiting 0.9
+Please wait 1 more second.
+[61 H 24 M]: Please wait 1 more second.
+[61 H 24 M]: 21:32:08.7   | <combat.Kill.Kill object at 0x6ffff142fd0> notified.
+21:32:08.7   | <combat.Cast.Cast object at 0x6ffff15c090> notified.
+21:32:08.7   | Go notified.
+21:32:08.7   | Command.notify_please_wait() self.please_wait_time is 1, self.wait_time is 0.9
+21:32:08.7   | Open notified.
+21:32:08.7   | Cartogarphy notify done, regex: Please wai...
+21:32:08.7   | False
+21:32:09.6   | Going e. 4821.4
+21:32:09.6   | Go.execute()
+21:32:09.6   | Go.execute() 2
+21:32:09.6   | <class 'command.Go.Go'> wait_until_ready waiting 0.1
+21:32:09.7   | "e"
+21:32:09.7   | Go.wait_for_flag()
+21:32:09.7   | <combat.Kill.Kill object at 0x6ffff142fd0> notified.
+21:32:09.7   | <combat.Cast.Cast object at 0x6ffff15c090> notified.
+21:32:09.7   | Go notified.
+21:32:09.7   | Command.notify_please_wait() self.please_wait_time is 1, self.wait_time is 0.3
+21:32:09.7   | Open notified.
+21:32:09.7   | Cartography: unsuccessful go| (please wait) dir=ten
+21:32:09.7   | Cartography: unsuccessful go| is trying to move?= True
+21:32:09.7   | Cartogarphy notify done, regex: Please wai...
+21:32:09.7   | False
+21:32:09.8   | Bot: Got please wait on a go attempt, retrying.
+21:32:09.8   | <class 'command.Go.Go'> wait_until_ready waiting 1.0
+
+Dominium Way
+
+The road roughly follows the course of the river.
+On a fine summer's evening you will see many families coming here. With
+the gardens to the back and the live acts there tends to be something for
+everyone to enjoy. For the people living around here there are the
+occasional complaints about too much late night carousing, but no one
+really listens to them as they are some of the worst offenders.
+Obvious exits: northwest, southeast, west, tavern.
+
+21:32:09.9   | Go notified.
+21:32:09.9   | Cartogarphy notify done, regex: (?s)(?:(?:...
+21:32:09.9   | False
+[61 H 24 M]: 21:32:10.7   | Going e. 4822.5
+21:32:10.7   | Go.execute()
+21:32:10.7   | Go.execute() 2
+21:32:10.7   | "e"
+21:32:10.7   | Go.wait_for_flag()
+You can't go that way.
+[61 H 24 M]: 21:32:10.9   | Go notified.
+21:32:10.9   | Cartography: unsuccessful go (can't go that way): ten
+21:32:10.9   | Cartogarphy notify done, regex: You can't ...
+21:32:10.9   | False
+21:32:10.9   | Go no exit on: e
+21:32:10.9   | Going e. 4822.7
+21:32:10.9   | Go.execute()
+21:32:10.9   | Go.execute() 2
+21:32:10.9   | "e"
+21:32:10.9   | Go.wait_for_flag()
+You can't go that way.
+
+
+
+

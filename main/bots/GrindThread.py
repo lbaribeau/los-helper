@@ -1,13 +1,14 @@
 
 import re
 import pdb
+from math import floor, ceil
 
 from bots.BotThread import BotThread
 from misc_functions import magentaprint
 from reactions.BotReactions import GenericBotReaction
 from Exceptions import *
 from command import Spells
-from math import floor, ceil
+from db.MudItem import MudItem
 
 class GrindThread(BotThread):
     def __init__(self, character, commandHandler, mudReaderHandler, mud_map):
@@ -52,6 +53,17 @@ class GrindThread(BotThread):
             return True
         elif exit_str == "drop_items":
             self.drop_items()
+            return True
+        elif re.match("dobuy.+?", exit_str):
+            #magentaprint("go hook found with: " + str(self.direction_list), False)
+            item = exit_str.replace("dobuy", "")
+            
+            self.inventory.buy(item)
+            self.sleep(2)
+
+            magentaprint(self.inventory.inventory, False)
+
+            self.direction_list = [""]
             return True
         else:
             return super().do_go_hooks(exit_str)
@@ -416,8 +428,59 @@ class GrindThread(BotThread):
             self.character.HAS_RESTORE_ITEMS = False
 
     def check_weapons(self):
-        if self.stopping:
+        # I was going to check self.smartCombat.broken_weapon and go shopping if necessary.
+        # This looks better - inventory knows just as well.
+        magentaprint('check_weapons()')
+        weapons_equipped = True
+
+        # magentaprint("Checking weapons: " + str(self.character.WEAPON_SLOTS), False)
+        # magentaprint("Checking inventory " + str(self.inventory.inventory), False)
+        # magentaprint("Checking equipped items: " + str(self.inventory.equipped_items), False)
+        if self.smartCombat.broken_weapon:
+            self.smartCombat.reequip_weapon()
+        if not self.smartCombat.broken_weapon:
+            # Get 2nd weapon
+            magentaprint("Weapon not broken.")
             return
+
+        magentaprint(str(self.character._class.weapon_slots))
+        for slot in self.character._class.weapon_slots:
+            magentaprint(str(slot) + str(self.inventory.has_slot_equipped(slot)))
+            if not self.inventory.has_slot_equipped(slot):
+                magentaprint('weapon_type: ' + self.character.weapon_type + ', weapon_level: ' + str(self.character.weapon_level))
+                item = self.inventory.get_item_of_type("weapon",
+                    self.character.weapon_type,
+                    self.character.weapon_level)
+                if item is not None:
+                    self.inventory.equip_item("wie " + item)
+                else:
+                    self.go_purchase_item(self.character.weapon_type, "weapon", self.character.weapon_level)
+                    return False
+                break
+                
+        return weapons_equipped
+
+    def go_purchase_item(self, model, data, level):  
+        magentaprint('go_purchase_item() model: ' + str(model) + ', data: ' + str(data) + ', level: ' + str(level))
+        possible_weapons = MudItem.get_suitable_item_of_type(model, data, level)
+
+        direction_list = []
+        # self.character.MONSTER_KILL_LIST = []
+        weapon = None
+
+        for itemdict in possible_weapons:
+            # Use the first weapon that fits the model/data/level criteria
+            weapon = possible_weapons[itemdict]
+            areaid = itemdict
+            break
+
+        magentaprint('go_purchase_item() chose ' + str(weapon))
+
+        if weapon is not None:
+            direction_list = ["areaid%s" % areaid]
+            direction_list.append("dobuy%s" % weapon.obj.name)
+
+        self.direction_list = direction_list
 
     def check_armour(self):
         if self.stopping:
@@ -457,11 +520,18 @@ class GrindThread(BotThread):
                re.search('bouncer', mob):
                 return ''
 
-        if self.character.mobs.chase != '':
+        if self.character.mobs.chase and self.character.mobs.chase in self.character.mobs.list:
+            # Issue: Directions get pushed, but the bot tries to hit the juggler again after it's gone.
+            # 1 Push the directions, leave it in mobs.attacking, remove it from mobs.list
+            # 2 Stop killing things and chase
+            # 3 do_regular_actions checks mobs.attacking first
+            # 4 mobs.attacking only gets emptied if the bot engaged and the mobs in it and combat ended
+            # - step 2 only works if nothing else is attacking...  step 2 should be kill everthing in mobs.attacking that hasn't run
+            # hmph.  Quick fix - just don't hit mobs that aren't in mobs.list
+            # This means the chase is low priority.f
             mob = self.character.mobs.chase
             self.character.mobs.chase = ''
             self.character.mobs.chase_exit = ''
-
             return mob
         
         #find a new monster to kill
@@ -481,7 +551,7 @@ class GrindThread(BotThread):
 
     def do_combat_skills(self, target):
         if self.character._class is not None:
-            for skill in self.character._class.combat_skills:
+            for skill in self.character._class.slow_combat_skills:
                 if skill.up():
                     skill.execute(target)
                     skill.wait_for_flag()
@@ -607,7 +677,8 @@ class GrindThread(BotThread):
         return engaged
     
     def ready_for_combat(self):
-        return self.character.HEALTH >= self.character.HEALTH_TO_HEAL and self.character.MANA >= self.character.MANA_TO_ENGAGE
+        return self.character.HEALTH >= self.character.HEALTH_TO_HEAL and self.character.MANA >= self.character.MANA_TO_ENGAGE 
+            # and not self.smartCombat.broken_weapon
         # return (self.has_ideal_health() and
         #         self.has_ideal_mana())
 

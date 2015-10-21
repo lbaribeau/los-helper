@@ -3,10 +3,10 @@ import time
 from math import floor
 
 from reactions.Mobs import Mobs
+import misc_functions
 from misc_functions import magentaprint
 
 class Character(object):
-
     # This is a class that holds a bunch of data,
     # mostly obtained by the MUD read thread.
     race = None
@@ -20,10 +20,11 @@ class Character(object):
     #MAGIC_SKILLS= [0, 0, 0, 0, 0]
     SKILLS = {} 
 
-    AURA_LIST =  ['demonic red', 'ominous red', 'ghastly red', 'murky red',
+    AURA_LIST =  ['demonic red', 'ominous red', 'ghastly red', 'blood red', 'murky red',
                   'red', 'rusty', 'dusty red', 'grey',
                   'dusty blue', 'pale blue', 'blue',
-                  'deep blue', 'bright blue', 'shimmering blue', 'heavenly blue'
+                  'deep blue', 'bright blue', 'shimmering blue', 'blazing blue',
+                  'blazing blue', 'heavenly blue'
     ]  # blood red and blazing blue...
     # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
     LEVEL_LIST = ["You could kill (?:.+?) with a needle\.", #-4 or more levels
@@ -41,9 +42,9 @@ class Character(object):
     ARMOR_SLOTS = []
     ARMOR_SIZE = "m" # todo: set this in info or whois
     
-    WEAPON_SLOTS = []
+    # WEAPON_SLOTS = []  use character._class.weapon_slots
 
-    AURA_SCALE = 8
+    AURA_SCALE = 9
     AURA = AURA_LIST[AURA_SCALE]
     
     AURA_PREFERRED_SCALE = None
@@ -70,31 +71,17 @@ class Character(object):
     MOVE_WAIT = 0.34
     CAST_WAIT = CAST_PERIOD
 
-    MOBS_KILLED = 0
-    HITS_DEALT = 0
-    HITS_MISSED = 0
-    DAMAGE_DEALT = 0
-    HIGHEST_DAMAGE = 0
-    LOWEST_DAMAGE = 0
-    CRITS_LANDED = 0
-    SPELLS_CAST = 0
-    SPELLS_FAILED = 0
-    SPELL_DAMAGE_DEALT = 0
-    SPELLS_CRIT = 0
-    HITS_RECEIVED = 0
-    HITS_EVADED = 0
-    DAMAGE_TAKEN = 0
     DEATHS = 0
 
     HASTING = False 
     DEAD = False
 
-    WEAPON1=""
-    WEAPON2=""
+    weapon1 = ''
+    weapon2 = ''
                             
-    ATTACK_CLK = -ATTACK_WAIT
-    MOVE_CLK = -MOVE_WAIT
-    CAST_CLK = -CAST_WAIT # Last successful cast
+    # ATTACK_CLK = -ATTACK_WAIT
+    # MOVE_CLK = -MOVE_WAIT
+    # CAST_CLK = -CAST_WAIT # Last successful cast
 
     HEALTH = 0
     MANA = 0
@@ -146,12 +133,12 @@ class Character(object):
 
     # LEVEL_UP_EXP = [512, 1024, 2048, 4096] 
 
-    weapon_model = "Blunt"
-    weapon_proficiency = "0"
-    weapon_level = 1
-    armor_level = 1
-    spell_model = "Fire"
-    spell_proficiency = "0"
+    # weapon_type = "Blunt"
+    # weapon_proficiency = 0
+    # weapon_level = 1
+    # armor_level = 1
+    # spell_type = "Fire"
+    # spell_proficiency = 0
 
     START_TIME = time.time()
 
@@ -161,33 +148,70 @@ class Character(object):
 
     def process_info(self):
         magentaprint("Character.process_info()")
-        self.hp_tick = floor((self.con-1)/3)  
-          # chapel adds 3
 
-    def configure_equipment_and_spell_preferences(self):
-        self.ARMOR_SLOTS = self._class.ARMOR_SLOTS
-        self.WEAPON_SLOTS = self._class.WEAPON_SLOTS
+        if self.level <= 3:
+            self.HEALTH_TO_HEAL = 0.85 * self.maxHP
+        else:
+            self.HEALTH_TO_HEAL = 0.75 * self.maxHP  # We can crank this back up when we fight stronger mobs
 
-        if self.weapons is not None:
-            self.weapon_model, self.weapon_proficiency = key_with_max_val(self.weapons)
+        self.hp_tick = floor((self.con-1)/3)  # +3 in chapel
 
-            #more testing needed for weapon level check
-            if int(self.weapon_proficiency) > 15:
-                self.weapon_level = 2
+        # self.ARMOR_SLOTS = self._class.ARMOR_SLOTS
+        # self.WEAPON_SLOTS = self._class.WEAPON_SLOTS
 
-            if int(self.weapon_proficiency) > 30:
-                self.weapon_level = 3
+        self.weapon_proficiencies = {'Sharp':self.sharp, 'Thrust':self.thrust, 'Blunt':self.blunt, 'Pole':self.pole, 'Missile':self.missile}
+        self.spell_proficiencies = {'Earth':self.earth, 'Wind':self.wind, 'Fire':self.fire, 'Water':self.water, 'Astral':self.astral}
 
-        if self.magic is not None:
-            self.spell_model, self.spell_proficiency = key_with_max_val(self.magic)
+        self.weapon_type = misc_functions.key_with_max_val(self.weapon_proficiencies)
+        self.weapon_proficiency = self.weapon_proficiencies[self.weapon_type]
 
-        if self.level is not None:
-            if self.level <= 4:
-                self.armor_level = 1
-            else: #more testing needs to be done to determine what other levels are available
-                self.armor_level = 2
+        if self.weapon_proficiency >= 70:
+            self.weapon_level = 3
+        elif self.weapon_proficiency >= 40:
+            self.weapon_level = 2
+        else:
+            self.weapon_level = 1
+
+        self.spell_type = misc_functions.key_with_max_val(self.spell_proficiencies) 
+        self.spell_proficiency = self.spell_proficiencies[self.spell_type]
+
+        if self.level >= 9:
+            self.armor_level = 3  # steel
+        elif self.level >= 4:
+            self.armor_level = 2  # chain
+        else:
+            self.armor_level = 1  # ring mail wearable immediately
+
+        self.weapon_to_buy = self.pick_weapon()
+
+    def pick_weapon(self):
+        if self.weapon_type == 'Sharp':
+            if self.weapon_level >= 2:
+                return 'leaf blade'
+            else:
+                return 'rapier'  # 'battle axe', cleaver, scimitar
+        elif self.weapon_type == 'Thrust':
+            if self.weapon_level >= 2:
+                return 'long sword'
+            else:
+                return 'broad sword'  # silver dagger (k. shaman) is good, stilleto (sentry) is better
+        elif self.weapon_type == 'Blunt':
+            if self.weapon_level >= 2:
+                return 'morning star'  # expensive, doesn't require 40%, also, war hammer (lvl2), footman's flail, large mace
+            else:
+                return 'small mace'  # large mace (amethyst guards, vicars, Malbon)
+        elif self.weapon_type == 'Pole':
+            return 'quarter staff'
+        elif self.weapon_type == 'Missile':
+            if self.weapon_level >= 3:  
+                return 'heavy crossbow'
+            elif self.weapon_level >= 2:
+                return 'long bow'  # GREAT starting missile weapon, beware of roaming lion though (maybe bad for long-running lowish lvl bot )
+            else:
+                return 'javelin'
           
     def configure_health_and_mana_variables(self):
+        # Health to heal is now a percentage (see process_info)
         if self.level <= 2:
             self.HEALTH_TO_HEAL = 19
             self.HEALTH_TO_FLEE = 8
@@ -204,7 +228,7 @@ class Character(object):
             self.MAX_MANA = 9
             self.MANA_TO_ENGAGE = 3
         elif self.level <= 5:
-            self.HEALTH_TO_HEAL= 31
+            self.HEALTH_TO_HEAL = 31
             self.HEALTH_TO_FLEE = 8
             self.MAX_MANA = 12
             self.MANA_TO_ENGAGE = 6           
@@ -283,7 +307,7 @@ class Character(object):
         'carpenter', 'stagehand', 'hungry spider', 'cook', 'joiner', 'ranch hand',
         'old rancher', 'tired ranch hand', 'drinking ranch hand',
         'busy ranch hand', 'sawmill operator', 'vulture'
-        #'auctioneer', # They pile up so bad!  
+        'auctioneer', # They pile up so bad!  
         # Definitely need smart chasing or a path that runs extra around the 
         # market (after healing)
         #'actress', # For blue balance
@@ -302,12 +326,12 @@ class Character(object):
         'aspirant'  # grey
     ]
     lvl5_red_monsters = [
-        'large bandit', 'kobold guard', 'mugger', 'large spider'
+        'large bandit', 'kobold guard', 'mugger', 'large spider', 'mime artist'
     ]
     lvl6_monsters = [  # 100+ exp
         'dwarven field worker', 'dwarven bartender', 'school teacher',
         'lyrist', 'nobleman', 'seeker', 'bull', 'hunter', 'usher',
-        'sword swallower', 'archer', 'mime artist',
+        'sword swallower', 'archer', 
         'yard supervisor', 'sawmill supervisor', 'large spider', 'blacksmith',
         'farm foreman', 'Old Man James', 'dwarven traveller',
         'Goourd', 'tourney organiser'
@@ -332,6 +356,7 @@ class Character(object):
         'old knight', 'dusty warrior',  # dusty blue        
         'hedge knight', 'refinery supervisor', 'owlbear'
         'elven trader',   # pale blue
+        'sentry'  
     ]
     lvl9_monsters = [ # ~300 exp
         'director', 'Elder Barthrodue', 'Farmer Calmor',

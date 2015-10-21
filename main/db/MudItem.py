@@ -29,12 +29,15 @@ class MudItem(GenericMudObject):
         return is_of_type
 
     def get_suitable_item_of_type(model_name, data_name, level=1):
-        areasstoreitems = AreaStoreItem.get_by_item_type_and_level(model_name, data_name, level)
+        magentaprint("MudItem.get_suitable_item_of_type() model: " + str(model_name) + ', data_name: ' + str(data_name) + ', level: ' + str(level))
+        areastoreitems = AreaStoreItem.get_by_item_type_and_level(model_name, data_name, level)
+        magentaprint("MudItem areastoreitems: " + str(areastoreitems))
 
-        muditems = {}
+        muditems = {}  
 
-        for item in areasstoreitems:
-            muditems[item.area.id] = MudItem(item.item.name)
+        for item in areastoreitems:
+            magentaprint("MudItem loop item: " + str(item))
+            muditems[item.area.id] = MudItem(item.item.name)  
 
         return muditems
 

@@ -56,12 +56,18 @@ class Cast(SimpleCombatObject):
             self.clear_timer()
         # TODO: Erhm I think this can be done smarter - the parent doesn't need to be involved.
 
-    def start_thread(self, spell, target=None):
+    def set_spell(self, spell):
+        magentaprint("Cast setting command to \'" + 'c ' + str(spell) + "\'")
         self.__class__.command = 'c ' + spell
+
+    def start_thread(self, spell, target=None):
+        # self.__class__.command = 'c ' + spell
+        self.set_spell(spell)
         super().start_thread(target)
 
     def cast(self, spell, target=None):
-        self.__class__.command = 'c ' + spell
+        # self.__class__.command = 'c ' + spell
+        self.set_spell(spell)
         self.execute(target)
         # self.wait_for_flag()
         # I think I only need to provide waiting calls since other 
@@ -74,7 +80,8 @@ class Cast(SimpleCombatObject):
 
     def persistent_cast(self, spell, target=None):
         # This just spams on Please wait, and spam_spell also deals with Spell failed.
-        self.__class__.command = 'c ' + spell
+        # self.__class__.command = 'c ' + spell
+        self.set_spell(spell)
         self.persistent_execute(target)
 
     def update_aura(self, character):

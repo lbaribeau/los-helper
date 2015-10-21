@@ -157,27 +157,3 @@ class GenericBotReaction(object):
             
 # add init with character and commandHandler
 # make a reaction type for kill thread
-
-class WieldReaction(object):
-    """ notify will execute wield commands."""
-    
-    def __init__(self, character, telnetHandler):
-        # Note: regex should specify the weapon string in a group.
-        self.regexes = [ "Your (.+?) breaks and you have to remove it\.",
-                         "Your (.+?) shatters\."]
-        self.character = character
-        self.telnetHandler = telnetHandler
-
-    def notify(self, regex, M_obj):
-        magentaprint("Reequiping weapon..." + M_obj.group(1))
-        self.reequip_weapon(M_obj.group(1))
-        
-    def reequip_weapon(self, weapon):        
-        if self.character.WEAPON1 == self.character.WEAPON2:
-            self.telnetHandler.write("wie " + weapon)
-            self.telnetHandler.write("seco " + weapon)
-        else:
-            if weapon == self.character.WEAPON1:
-                self.telnetHandler.write("wie " + self.character.inventory.get_2nd_word_reference(weapon))
-            else:
-                self.telnetHandler.write("seco " + self.character.inventory.get_2nd_word_reference(weapon))

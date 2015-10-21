@@ -1,5 +1,5 @@
 
-import re
+import re, time
 
 from reactions.BotReactions import *
 from misc_functions import *
@@ -22,7 +22,7 @@ class MixingReactions(BotReactionWithFlag):
         self.telnetHandler = telnetHandler
         self.__stopping = False
         self.mudReaderHandler.register_reaction(self)
-        self.good_MUD_timeout = 15.0 #estimate of how long a mix should take
+        self.__class__.good_MUD_timeout = 15.0 #estimate of how long a mix should take
         self.fail_count = 0
         self.finished = False
 
@@ -53,7 +53,7 @@ class MixingReactions(BotReactionWithFlag):
             self.mix_target_to_target(target, mix_target)
 
             if not self.mix_succeeded:
-                self.sleep(2) #give a chance for the remove to register in inventory
+                time.sleep(2) #give a chance for the remove to register in inventory
                 self.inventory.drop_last(target)
                 self.fail_count = self.fail_count + 1
 

@@ -1,10 +1,42 @@
 
 prompt = ["\[(\d+) H (\d+) M\]: (You feel the benefits)?"]
 
-you_have = ["You have (.+?)\."]
+you_have = [r"(?s)You have: (.+?)\."]
+wont_buy = [r'The shopkeep says, "I won\'t buy that rubbish from you\."']
+wont_buy2 = [r"The shopkeep won't buy that from you\."]
+sold = [r"The shopkeep gives you (.+?) gold for (.+?)\."]
+you_drop = [r"(?s)You drop (.+?)\."]
+disintegrates = [r"(?:A|Some) ([a-z ]+?) disintegrates\."]
+gold_from_tip = [r"You have (\d+) gold\."]
+not_a_pawn_shop = [r"This is not a pawn shoppe\."]
+you_now_have = [r"You now have (\d+) gold pieces\."]
+not_empty = [r"It isn't empty!"]
+you_wear = [r"You wear (.+?)\."]
+nothing_to_wear = [r"You have nothing you can wear\."]
+# you_get = [r"(?s)[^ ]You get (.+?)\.(?:\nYou now have (.+?) gold pieces\.)?"]
+you_get = [r"(?s)[^ ]You get (.+?)\."]  # TODO: deal with false positive on "You get the..." 
+you_remove = [r"(?s)You removed? (.+?)\."]
+nothing_to_remove = [r"You aren't wearing anything that can be removed\."]
+# you_wield = [r"You wield (.+?)( in your off hand)?\."]
+you_give = [r"(?s)You give (.+?) to (.+?)\."]
+bought = [r"Bought\."]
+you_put_in_bag = [r"(?s)You put (.+?) in(to)? (.+?)\."]
+gave_you = [r".+? gave (.+?) to you\."]
+you_hold = [r"(?s)You hold (.+?)\."]
+# weapon_breaks = [r"Your (.+?) breaks and you have to remove it\."]
+# weapon_shatters = [r"Your (.+?) shatters\."]
+armor_breaks = [r"Your (.+?) fell apart\."]
+current_equipment = [r"You see (.+?) (?:the .+?)\.\n?\r?(?:(?:.+?\.\n?\r?)+)?((?:.+?:.+\n?\r?)+)"]  # TODO: doesn't work for 'eq' command
+no_inventory = [r"You currently have no carried inventory\."]
+wearing = [r"\n?\r?(?:On )?(.+?):[\s]*(?:a |an |some )(.+)"]  # TODO: Redundant
+you_arent_wearing_anything = [r"You aren't wearing anything\."]
 
 found_exit = [r"You found an exit: (.+?)\."]
 search_fail = [r"You didn't find anything\."]
+hide = [r"You slip into the shadows unnoticed\."]
+hide_fail = [r"You attempt to hide in the shadows\."]  # This occurs on success as well
+prepare = [r"You prepare yourself for traps\."]
+already_prepared = [r"You've already prepared\."]
 
 please_wait = [r"Please wait (\d+) more seconds?\."]
 please_wait2 = [r"Please wait (\d+):(\d+) more minutes"]
@@ -113,6 +145,7 @@ not_authorized = ["You are not authorised to enter here\."]
 cannot_force = ["You cannot force yourself to go through there\."]
 washroom = ["Sorry, only males are allowed to go there\.",
     "Sorry, only females are allowed to go there\."]
+cliff = [r"You fell and hurt yourself for (\d+) damage\."]
 # __go_failure = blocked_path + open_first + no_exit + class_prohibited + level_too_low + \
 #     class_prohibited + level_too_low + not_invited + not_open_during_day + \
 #     not_open_during_night + no_items_allowed + locked + no_right \
@@ -124,7 +157,15 @@ mob_aura = ["(?:The " + __numbers2 + ")?(.+?) glows with a (.+?) aura\."]
 not_here = ["You don't see that here\."]
 loot_blocked = ["(?:The " + __numbers2 + ")?(.+?) won't let you take anything\."] #The spiv won't let you take anything.
 teleported = ["### (.+?)'s body is teleported away to be healed\."]
-store_list = ["You may buy:\n((?:.+\n?)*)"]
+# store_list = ["You may buy:\n\r((?:.+\n?)*)"]
+# store_list = ["You may buy:\s+(A |An |Some)("]
+#     ((?:.+\n?)*)"]
+# store_list = [r"You may buy:(\s+([A-Za-z']+ )+\s+(\([sml]\)\s+)?Cost: \d+)+"]  # Too liberal with \s+ and can't anchor to the end newlines
+# store_list = [r"You may buy:(\n\r +(?P<item>[A-Za-z']+ )+\s+(\([sml]\)\s+)?Cost: \d+)+"]  # Can't get at the items like this... stopped halfway through
+# store_list = [r"You may buy: *[\n\r]{2}(?P<store_list>.+?[\n\r]{2})+[\n\r]{2}"]  # Match until two newlines which indicate the end of the store list
+# store_list = [r"You may buy: *[\n\r]{2}(?P<store_list>.+?[\n\r]{2})+[\n\r]{2}"]  # Wrong grouping only returns last line
+store_list = [r"You may buy: *[\n\r]{2}(?P<store_list>(.+?[\n\r]{2})+)[\n\r]{2}"]  
+# store_list = [r"You may buy:"]
 # store_item_list = "(?:[\s]*)(?:A |An |Some )?(.+?)(?:[\s]*)(?:(\(.\))?(?:[\s]*))?Cost: ([\d]*)" #well do a re.findall on the list above to iterate through, don't add this to the array below
 
 open_success = ["You open the (.+?)\."]
@@ -182,32 +223,36 @@ bad_k_target = [
         r"You don't see that here\.",
         r"Attack what\?"
 ]
+crit = [
+    "You knock the wind out of " + __three_possible_mob_strings + '!!',
+    __Three_possible_mob_strings + " is caught off guard by your attack!!"
+]
 attack_hit = [
-        "(?s)You swing with your .+?, hacking (?:the )?(" + __numbers + " )?(.+?)\s+for\s+\d+\s+damage\.",
-        "(?s)You slice (?:the )?(" + __numbers + " )?(.+?) for \d+\s+damage\s+with\s+your\s+.+?\.",
-        "You slash at (?:the )?(" + __numbers + " )?(.+?) and hit for \d+ damage\.",
+        "(?s)You swing with your .+?, hacking (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\.",
+        "(?s)You slice (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+)\s+damage\s+with\s+your\s+.+?\.",
+        "You slash at (?:the )?(" + __numbers + " )?(.+?) and hit for (?P<d>\d+) damage\.",
 
-        "You chop at (?:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
-        "(?s)You stab (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+causing\s+\d+\s+damage",
-        "You lunge at (?:the )?(" + __numbers + " )?(.+?), striking for \d+ damage\.",
+        "You chop at (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+        "(?s)You stab (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+causing\s+(?P<d>\d+)\s+damage",
+        "You lunge at (?:the )?(" + __numbers + " )?(.+?), striking for (?P<d>\d+) damage\.",
 
-        "You lash out and thump (?:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
-        "You punch (?:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
-        "You kick (?:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
-        "You head-butt (?:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
-        "You grab (?:the )?(" + __numbers + " )?(.+?) and gouge (him|her|it) for \d+\s+damage\.",
+        "You lash out and thump (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+        "You punch (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+        "You kick (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+        "You head-butt (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+        "You grab (?:the )?(" + __numbers + " )?(.+?) and gouge (him|her|it) for (?P<d>\d+)\s+damage\.",
 
-        "(?s)You smash your .+? into (?:the )?(" + __numbers + " )?(.+?),\s+causing\s+\d+\s+damage\.",
-        "You heave your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+smashing\s+(him|her|it)\s+for\s+\d+\s+damage\.",
-        "You bludgeon (?:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
+        "(?s)You smash your .+? into (?:the )?(" + __numbers + " )?(.+?),\s+causing\s+(?P<d>\d+)\s+damage\.",
+        "You heave your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+smashing\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
+        "You bludgeon (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
 
-        "You lunge at (?:the )?(" + __numbers + " )?(.+?), hitting them for \d+ damage\.",
-        "You swing your .+?, striking for \d+ damage\.",
-        "(?s)You sweep (?:the )?(" + __numbers + " )?(.+?) with your .+?\s+for\s+\d+\s+damage\.",
+        "You lunge at (?:the )?(" + __numbers + " )?(.+?), hitting them for (?P<d>\d+) damage\.",
+        "You swing your .+?, striking for (?P<d>\d+) damage\.",
+        "(?s)You sweep (?:the )?(" + __numbers + " )?(.+?) with your .+?\s+for\s+(?P<d>\d+)\s+damage\.",
 
-        "Your missile slams into (?:the )?(" + __numbers + " )?(.+?) for \d+ damage\.",
-        "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+striking\s+for\s+\d+\s+damage\.",
-        "You use your .+? to strike (?:the )?(" + __numbers + " )?(.+?)\s+for\s+\d+\s+damage\."
+        "Your missile slams into (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+        "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
+        "You use your .+? to strike (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\."
 ]
 attack_miss = [
         "You hack with your .+?, but your blow swings wide of the mark\.",
@@ -246,6 +291,9 @@ cast = [
     r"You cast a (.+?) spell on (.+?)\.",
     r"(.+?) spell cast\.",
     r"You cast a (.+?) spell\."
+]
+spell_damage = [
+    r"The spell did (?P<d>\d+) damage."
 ]
 cast_failure = [
     r"Your spell fails\."
@@ -397,9 +445,9 @@ goodbye = ["Goodbye! Come back soon\."]
 # game_shutdown = ['### Game shutdown in (\d+) seconds\.']
 # game_shutdown2 = ["### Game backup shutdown in \d:\d\d minutes\."]
 # game_shutdown3 = ["### Shutting down now\."]
-# Equipment
-you_arent_wearing_anything = [r"You aren't wearing anything\."]
 
+# Equipment
+# you_arent_wearing_anything = [r"You aren't wearing anything\."]
 # on_body = [r"On body:   (.+?)\n\r"]
 # on_arms = [r"On arms:   (.+?)\n\r"]
 # on_legs = [r"On legs:   (.+?)\n\r"]
@@ -435,8 +483,21 @@ potion_drank = [r"Potion drank\."]
 # use_what = [r"Use what\?\n\r"]  # didn't match
 use_what = [r"Use what\?"]
 
-you_wield = [r"You wield a ([A-Za-z ']+)\."]
+you_wield = [r"You wield (an?|some) (?P<weapon>[A-Za-z ']+)\."]  # Gets a positive of the off-hand message
+off_hand = [r"You wield (an?|some) (?P<weapon>[A-Za-z ']+) in your off hand\."]
 wield_broken = [r"You can't, it's broken\."]
 not_weapon = ["You can't wield that\."]
 dont_have = [r"You don't have that\."]
+weapon_break = [r"Your (?P<weapon>[A-Za-z' ]+?) breaks and you have to remove it\."]
+weapon_shatters = [r"Your (?P<weapon>[A-Za-z' ]+?) shatters\."]
+already_wielding = [r"You're already wielding something\."]
+no_primary = [r"You're must be using a primary weapon first\."]
+remove_shield = [r"You must remove your shield first\."]
+cannot_second = [r"You cannot use this weapon at the same time as another"]
+primary_excludes = [r"Your primary weapon excludes the use of this one\."]
+heavier_second = [r"Your second weapon cannot be heavier than your primary one\."]
+already_seconding = [r"You already have something in your off hand\."]
+not_skilled = [r'You are not yet skilled enough to use this!']
+not_ranger = [r'The skill is currently beyond you\.']
+
 

@@ -59,7 +59,7 @@ class Command(SimpleCommand):
     # because this ain't the proper scope
     # X - actually... give it a shot!
 
-    timer = None
+    timer = 0
     # success_regexes = []
     failure_regexes = []
     error_regexes = []
@@ -101,6 +101,7 @@ class Command(SimpleCommand):
             [RegexStore.please_wait, RegexStore.please_wait2]
         # magentaprint(str(self.__class__) + " init regex_cart: " + str(self.regex_cart))
         # self.result = 'success/failure/error'
+        self._executing = False
 
     def notify(self, regex, M_obj):
         # 'success' and 'fail' could be renamed to 'long cooldown' and 'short cooldown'
@@ -124,8 +125,10 @@ class Command(SimpleCommand):
             self.notify_failure(regex, M_obj)
             # [item for sublist in l for item in sublist]
         # elif regex in list(itertools.chain(self.error_regexes)):
-        elif self.error:
-            magentaprint(str(self) + " clearing timer.")
+        elif self.error and self._executing:
+            # if (regex in RegexStore.not_here and not self._waiter_flag) or regex not in RegexStore.not_here:  
+            # if (regex in RegexStore.not_here and not self._waiter_flag) or regex not in RegexStore.not_here:  
+            magentaprint(str(self) + " clearing timer... wf is " + str(self._waiter_flag) + ', class wf is ' + str(self.__class__._waiter_flag) + 'regex is ' + regex[0:10] + '...')
             self.clear_timer()
         elif self.please_wait1:
             self.please_wait_time = int(M_obj.group(1))
@@ -135,6 +138,7 @@ class Command(SimpleCommand):
             self.notify_please_wait()
 
         super().notify(regex, M_obj)   # maintains wait_for_flag()
+        self._executing = False
 
     @property
     def success(self):
@@ -161,13 +165,14 @@ class Command(SimpleCommand):
         cls.timer = cls.timer - cls.cooldown_after_success + cls.cooldown_after_failure
 
     def notify_please_wait(self):
-        # The problem with Please wait we can be notified even when it's from a different command.
+        # A problem with Please wait is we can be notified even when it's from a different command.
         # It's pretty tough to keep things straight,
         # and it's pretty cool to use the info to deal with things properly.
         # Better do a hard check if the amount it says to wait makes sense.
         # It's particularly important for cast and kill, less so for abilities.
         # Cast and kill could set their timer on startup while abilties shouldn't. 
-        if not self.__class__._waiter_flag:
+        # if not self.__class__._waiter_flag:
+        if self._executing:
             # if self.__class__.timer:
             #     if abs(self.please_wait_time - self.wait_time()) < 2:
             #         self.result = 'Please wait ' + str(self.please_wait_time)
@@ -181,17 +186,24 @@ class Command(SimpleCommand):
             #     self.result = 'Please wait ' + str(self.please_wait_time)
             #     self.__class__.timer = time.time() + self.please_wait_time  
 
-            magentaprint("Command.notify_please_wait() self.please_wait_time is " + str(self.please_wait_time) + ", self.wait_time is " + str(round(self.wait_time(), 1)))
+            magentaprint(str(self) + " Command.notify_please_wait(), please_wait_time is " + str(self.please_wait_time) + ", self.wait_time is " + str(round(self.wait_time(), 1)))
 
-            if (self.__class__.timer and abs(self.please_wait_time - self.wait_time()) < 2) or not self.__class__.timer:
+            if not self.__class__.timer or (self.__class__.timer and abs(self.please_wait_time - self.wait_time()) < 2):
             # if not self.__class__.timer or (self.__class__.timer and abs(self.please_wait_time - self.wait_time()) < 2):
+            # If it's a big time it must be an ability - using the cooldown as a ceiling would help a little.
                 # self.result = 'Please wait ' + str(self.please_wait_time)
-                self.result = self.please_wait1
-                self.__class__.timer = time.time() + self.please_wait_time  # Ehrm sometimes this makes it so you can't move
+                # self.result = self.please_wait1
+                # self.__class__.timer = time.time() + self.please_wait_time  # Ehrm sometimes this makes it so you can't move
+                self.__class__.timer = time.time() + min(self.please_wait_time, self.cooldown_after_success, self.cooldown_after_failure) 
+                # We get false positives on this because the waiter flag is not a good indication that Please Wait belongs to us.  
+                # If we were careful about when it gets unset (when super().notify() is called,) we could potentially use that trick
+                # Clipping with the cooldowns helps a bit.
+                magentaprint("Set wait time to " + str(self.wait_time()) + ', self: ' + str(self))
 
     @classmethod
     def clear_timer(cls):
         # Like when the command is ready to be issued
+        # magentaprint('Clearing timer: ' + str(cls))
         cls.timer = time.time() - max(cls.cooldown_after_success, cls.cooldown_after_failure)
 
     @classmethod
@@ -258,12 +270,14 @@ class Command(SimpleCommand):
         # Same as send() but gets called from instance
         # (send() doesn't need an instance but needs telnetHandler put in)
         self.result = ''
+        self._executing = True
         super().execute(target)  # just calls send
 
     def persistent_execute(self, target=None):
         self.execute(target)
         self.wait_for_flag()
         while self.result == "Please wait 1":
+        # while self.please_wait1:
             self.execute(target)
             self.wait_for_flag()
 

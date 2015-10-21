@@ -67,13 +67,31 @@ class BuffAbility(Ability):
     def stop_executing(self):
         pass
 
-class FastCombatAbility(Ability):  
+class CombatAbility(Ability):
+    pass
+    # error_regexes = [RegexStore.not_here]
+    # def notify(self, r, m):
+    #     if r in RegexStore.not_here and not self._waiter_flag:
+    #         # Ability was getting incorrectly reset on 'They are not here'
+    #         self.clear_timer()
+    #     super().notify(r, m)
+
+class FastCombatAbility(CombatAbility):  
     # You can attack immediately after these abilities
     # FastTargetedAbility is another possible name
     pass  # We're just using this for a kind of 'typing' for the smartCombat logic
 
-class CombatAbility(Ability):
+class SlowCombatAbility(CombatAbility):
     # Bash, Circle, Touch, Wither
+
+    # def notify(self, r, m):
+    #     if r in regexstore.not_here and not self._waiter_flag:
+    #         kill.clear_timer()  
+    #         # error case if combatability.execute() is called when not up() this can incorrectly shorten kill's cooldown
+    #         # solution would be to wait for notificiations to adjust the kill timer but that has drawbacks too
+    #         #  (timer in limbo for brief period until server responds)
+    #     super().notify(r, m)
+
     def execute(self, target=None):
         Kill.start_timer()
         super().execute(target)
@@ -105,7 +123,7 @@ class Haste(BuffAbility):
 
 class Pray(BuffAbility):
     command = "pra"
-    cooldown_after_success = 600
+    cooldown_after_success = 604
     cooldown_after_failure = 10  # can flee
     success_regexes = [RegexStore.prayers_answered, RegexStore.already_prayed] # [r"You feel extremely pious\."]
     failure_regexes = [RegexStore.not_answered] # [r"Your prayers were not answered\."]
@@ -154,6 +172,22 @@ class Search(Ability):
     success_regexes = [RegexStore.found_exit]
     failure_regexes = [RegexStore.search_fail]
     level = 1
+class Prepare(Ability):
+    command = 'prep'
+    cooldown_after_success = 8
+    cooldown_after_failure = 8
+    success_regexes = [RegexStore.prepare, RegexStore.already_prepared]
+    failure_regexes = []
+    level = 1
+class Hide(Ability):
+    command = 'hid'
+    cooldown_after_success = 11
+    cooldown_after_failure = 11
+    success_regexes = [RegexStore.hide]
+    failure_regexes = [RegexStore.hide_fail]
+    level = 1
+
+
 
 class Meditate(HealAbility):
     command = "me"
@@ -211,7 +245,7 @@ class Turn(FastCombatAbility):
     valid_targets = ['zombie', 'skeleton', 'ghast', 'poltergeist', 'geist', 'ghoul', 'shadow lich', 
         'shadowed huorn']
 
-class Touch(CombatAbility):
+class Touch(SlowCombatAbility):
     command = "to"
     cooldown_after_success = 270
     cooldown_after_failure = 270
@@ -221,7 +255,12 @@ class Touch(CombatAbility):
     # classes = ["Mon"]
     level = 4
 
-class Wither(CombatAbility):
+    # def notify(self, r, m):
+    #     magentaprint('Touch notified, timer: ' + str(round(self.__class__.timer - time.time(), 0)))
+    #     super().notify(r, m)
+    #     magentaprint('Touch notified 2, timer: ' + str(round(self.__class__.timer - time.time())))
+
+class Wither(SlowCombatAbility):
     command = "withe"
     cooldown_after_success = 300  # Guessed out of the blue
     cooldown_after_failure = 10  # can't attack/flee/move immediately
@@ -231,7 +270,7 @@ class Wither(CombatAbility):
     # classes = ["Dar"]
     level = 1
 
-class Bash(CombatAbility):
+class Bash(SlowCombatAbility):
     command = "bas"
     cooldown_after_success = 3
     cooldown_after_failure = 3
@@ -241,15 +280,20 @@ class Bash(CombatAbility):
     # classes = ["Bar", "Fig"]
     level = 1
 
-class Circle(CombatAbility):
+class Circle(SlowCombatAbility):
     command = "ci"
     cooldown_after_success = 3
-    cooldown_after_failure = 3
+    cooldown_after_failure = 3  # 4 I think
     success_regexes = [RegexStore.circle]
     failure_regexes = [RegexStore.circle_fail]
     error_regexes = [RegexStore.circle_whom, RegexStore.not_here]
     # classes = ["Bar", "Fig"]
     level = 1
+
+    def notify(self, r, m):
+        super().notify(r, m)
+        if r in RegexStore.circle_fail:
+            Kill.timer = Kill.timer + 1
 
 # class Hide(object):
 # class Backstab(object):

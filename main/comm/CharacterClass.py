@@ -19,7 +19,7 @@ from misc_functions import magentaprint
 class CharacterClass(object):
     def __init__(self, telnetHandler, class_string, level):
         self.id = class_string
-        # self.combat_skills = []
+        # self.slow_combat_skills = []
         # self.heal_skills = []
         # self.buff_skills = []
         # class_string = character.class_string
@@ -28,7 +28,7 @@ class CharacterClass(object):
                              "Feet", "Finger", "Shield"
         ]
 
-        self.WEAPON_SLOTS = ["Wielded"]
+        self.weapon_slots = ["Wielded"]
 
         self.mana_tick = 2
 
@@ -36,6 +36,7 @@ class CharacterClass(object):
             self.lvl1_maxHP = 19 
             self.lvl1_maxMP = 2
             abilities = [ Backstab ]
+            Cast.cooldown_after_success = 4
         elif class_string == "Bar":
             self.lvl1_maxHP = 24 
             self.lvl1_maxMP = 0
@@ -47,12 +48,12 @@ class CharacterClass(object):
             self.lvl1_maxMP = 4
             self.mana_tick = 2
             abilities = [ Pray, Turn ]
-            Cast.cooldown_after_success = 2
+            Cast.cooldown_after_success = 3
         elif class_string == "Fig":
             self.lvl1_maxHP = 22 
             self.lvl1_maxMP = 2
             abilities = [ Bash, Circle ]
-            Cast.cooldown_after_success = 3
+            Cast.cooldown_after_success = 5
         elif class_string == "Brd":
             self.lvl1_maxHP = 15 
             self.lvl1_maxMP = 3
@@ -64,7 +65,7 @@ class CharacterClass(object):
             self.mana_tick = 3  # unsure
             self.levelPath = [ ["out", "s", "w", "w", "w", "s", "e", "shop", "backroom", "portal"],
                           ["door", "out", "out", "w", "n", "e", "e", "e", "n", "cha"]]
-            Cast.cooldown_after_success = 2
+            Cast.cooldown_after_success = 3
         elif class_string == "Pal":
             self.lvl1_maxHP = 19 
             self.lvl1_maxMP = 3
@@ -79,37 +80,37 @@ class CharacterClass(object):
             # self.mana_tick_chapel = 4  # Assume chapel gives +2 mana tick
             abilities = [ Haste ]
             Cast.cooldown_after_success = 5
-            self.WEAPON_SLOTS.append("Second") 
+            self.weapon_slots.append("Second") 
             Search.cooldown_after_success = 6
             Search.cooldown_after_failure = 6
         elif class_string == "Thi":
             self.lvl1_maxHP = 18 
             self.lvl1_maxMP = 3
             abilities = [ Backstab, Steal ]
-            Cast.cooldown_after_success = 3
+            Cast.cooldown_after_success = 4
         elif class_string == "Mon":
             self.lvl1_maxHP = 17 
             self.lvl1_maxMP = 3
             self.HP_gained_per_level = 6
             self.MP_gained_per_level = 3
             abilities = [ Meditate, Touch ]
-            Cast.cooldown_after_success = 3
+            Cast.cooldown_after_success = 4
             # self.heal_skills.extend([ClassSkillReaction(mudReaderHandler, "Meditate",
             #                         SkillTimer("You feel at one with the universe\.", 110),
             #                         SkillTimer("Your spirit is not at peace.", 10))])
 
             # I actually remove abilities that are too high in level at the bottom.
             # if self.level > 9:  
-            #     self.combat_skills.extend([ClassSkillReaction(mudReaderHandler, "Touch",
+            #     self.slow_combat_skills.extend([ClassSkillReaction(mudReaderHandler, "Touch",
             #                             SkillTimer("Your? touch(?:ed)? .+?\.", 240),
             #                             SkillTimer("You failed to harm the .+?\.", 240))])
-            self.WEAPON_SLOTS = []
+            self.weapon_slots = []
             self.ARMOR_SLOTS = []
         elif class_string == "Dru":
             self.lvl1_maxHP = 15
             self.lvl1_maxMP = 4
             abilities = [ Barkskin ]
-            Cast.cooldown_after_success = 2
+            Cast.cooldown_after_success = 3
         elif class_string == "Alc":
             self.lvl1_maxHP = 15 
             lvl1_maxMP = 4
@@ -117,19 +118,19 @@ class CharacterClass(object):
             self.lvl1_maxHP = 19 
             self.lvl1_maxMP = 4
             abilities = [ Berserk, Wither ]
-            Cast.cooldown_after_success = 3
+            Cast.cooldown_after_success = 4
         else:
             magentaprint("CharacterClass error: could not recognize class string.")
 
         self.abilities = {}
 
-        for a in abilities + [Search]:
+        for a in abilities + [Search, Prepare, Hide]:
             if level >= a.level:
                 self.abilities[a.command] = a(telnetHandler)
 
         self.heal_skills = [a for a in self.abilities.values() if isinstance(a, HealAbility)]
         self.buff_skills = [a for a in self.abilities.values() if isinstance(a, BuffAbility)]
-        self.combat_skills = [a for a in self.abilities.values() if isinstance(a, CombatAbility)]
+        self.slow_combat_skills = [a for a in self.abilities.values() if isinstance(a, SlowCombatAbility)]
         self.fast_combat_skills = [a for a in self.abilities.values() if isinstance(a, FastCombatAbility)]
 
         # self.abilities.append(Search(telnetHandler))
