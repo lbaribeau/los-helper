@@ -55,21 +55,26 @@ class GrindThread(BotThread):
             self.drop_items()
             return True
         elif re.match("dobuy.+?", exit_str):
-            #magentaprint("go hook found with: " + str(self.direction_list), False)
-            item = exit_str.replace("dobuy", "")
-            
-            self.inventory.buy(item)
-            self.sleep(2)
-
-            magentaprint(self.inventory.inventory, False)
-
-            self.direction_list = [""]
-            return True
+            return self.dobuy(exit_str)
         else:
             return super().do_go_hooks(exit_str)
 
-    # def do_on_succesful_go(self):
-    #     super().do_on_successful_go()
+    def dobuy(self, exit_str):
+        #magentaprint("go hook found with: " + str(self.direction_list), False)
+        item = exit_str.replace("dobuy", "")
+        # self.inventory.buy(item)
+        # self.sleep(2)
+        # magentaprint(self.inventory.inventory, False)
+        self.commandHandler.buy.execute(item)
+        self.commandHandler.buy.wait_for_flag()
+        if self.commandHandler.buy.success:
+            self.inventory.add(item)  
+            return True
+        else:
+            self.commandHandler.write('rest')
+            self.commandHandler.quit.persistent_execute()
+            crash  # failed to buy weapon
+            return False
 
     def do_on_blocking_mob(self):
         self.engage_monster(self.character.GO_BLOCKING_MOB)

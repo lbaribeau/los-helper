@@ -188,13 +188,16 @@ class Command(SimpleCommand):
 
             magentaprint(str(self) + " Command.notify_please_wait(), please_wait_time is " + str(self.please_wait_time) + ", self.wait_time is " + str(round(self.wait_time(), 1)))
 
-            if not self.__class__.timer or (self.__class__.timer and abs(self.please_wait_time - self.wait_time()) < 2):
             # if not self.__class__.timer or (self.__class__.timer and abs(self.please_wait_time - self.wait_time()) < 2):
+            # if not self.__class__.timer or (self.__class__.timer and abs(self.please_wait_time - self.wait_time()) < 2):
+            # timer gets set on execute() so we can assume it's set
+            if self.please_wait_time <= max(self.cooldown_after_success, self.cooldown_after_failure):
             # If it's a big time it must be an ability - using the cooldown as a ceiling would help a little.
                 # self.result = 'Please wait ' + str(self.please_wait_time)
                 # self.result = self.please_wait1
                 # self.__class__.timer = time.time() + self.please_wait_time  # Ehrm sometimes this makes it so you can't move
-                self.__class__.timer = time.time() + min(self.please_wait_time, self.cooldown_after_success, self.cooldown_after_failure) 
+                # self.__class__.timer = time.time() + min(self.please_wait_time, self.cooldown_after_success, self.cooldown_after_failure) 
+                self.__class__.timer = time.time() + self.please_wait_time
                 # We get false positives on this because the waiter flag is not a good indication that Please Wait belongs to us.  
                 # If we were careful about when it gets unset (when super().notify() is called,) we could potentially use that trick
                 # Clipping with the cooldowns helps a bit.

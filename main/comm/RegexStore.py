@@ -220,66 +220,69 @@ circle_whom = [r"Circle whom\?"]
 
 # Kill / Cast
 bad_k_target = [
-        r"You don't see that here\.",
-        r"Attack what\?"
+    r"You don't see that here\.",
+    r"Attack what\?"
 ]
 crit = [
     "You knock the wind out of " + __three_possible_mob_strings + '!!',
     __Three_possible_mob_strings + " is caught off guard by your attack!!"
 ]
+magic_crit = [
+    "Your wind magic buffets " + __three_possible_mob_strings + "\."
+]
 attack_hit = [
-        "(?s)You swing with your .+?, hacking (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\.",
-        "(?s)You slice (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+)\s+damage\s+with\s+your\s+.+?\.",
-        "You slash at (?:the )?(" + __numbers + " )?(.+?) and hit for (?P<d>\d+) damage\.",
+    "(?s)You swing with your .+?, hacking (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\.",
+    "(?s)You slice (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+)\s+damage\s+with\s+your\s+.+?\.",
+    "You slash at (?:the )?(" + __numbers + " )?(.+?) and hit for (?P<d>\d+) damage\.",
 
-        "You chop at (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-        "(?s)You stab (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+causing\s+(?P<d>\d+)\s+damage",
-        "You lunge at (?:the )?(" + __numbers + " )?(.+?), striking for (?P<d>\d+) damage\.",
+    "You chop at (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+    "(?s)You stab (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+causing\s+(?P<d>\d+)\s+damage",
+    "You lunge at (?:the )?(" + __numbers + " )?(.+?), striking for (?P<d>\d+) damage\.",
 
-        "You lash out and thump (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-        "You punch (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-        "You kick (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-        "You head-butt (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-        "You grab (?:the )?(" + __numbers + " )?(.+?) and gouge (him|her|it) for (?P<d>\d+)\s+damage\.",
+    "You lash out and thump (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+    "You punch (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+    "You kick (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+    "You head-butt (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+    "You grab (?:the )?(" + __numbers + " )?(.+?) and gouge (him|her|it) for (?P<d>\d+)\s+damage\.",
 
-        "(?s)You smash your .+? into (?:the )?(" + __numbers + " )?(.+?),\s+causing\s+(?P<d>\d+)\s+damage\.",
-        "You heave your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+smashing\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
-        "You bludgeon (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+    "(?s)You smash your .+? into (?:the )?(" + __numbers + " )?(.+?),\s+causing\s+(?P<d>\d+)\s+damage\.",
+    "You heave your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+smashing\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
+    "You bludgeon (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
 
-        "You lunge at (?:the )?(" + __numbers + " )?(.+?), hitting them for (?P<d>\d+) damage\.",
-        "You swing your .+?, striking for (?P<d>\d+) damage\.",
-        "(?s)You sweep (?:the )?(" + __numbers + " )?(.+?) with your .+?\s+for\s+(?P<d>\d+)\s+damage\.",
+    "You lunge at (?:the )?(" + __numbers + " )?(.+?), hitting them for (?P<d>\d+) damage\.",
+    "You swing your .+?, striking for (?P<d>\d+) damage\.",
+    "(?s)You sweep (?:the )?(" + __numbers + " )?(.+?) with your .+?\s+for\s+(?P<d>\d+)\s+damage\.",
 
-        "Your missile slams into (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-        "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
-        "You use your .+? to strike (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\."
+    "Your missile slams into (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+    "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
+    "You use your .+? to strike (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\."
 ]
 attack_miss = [
-        "You hack with your .+?, but your blow swings wide of the mark\.",
-        "You slice your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+but\s+miss\.",
-        "You slash at (?:the )?(" + __numbers + " )?(.+?), but miss\.",
+    "You hack with your .+?, but your blow swings wide of the mark\.",
+    "You slice your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+but\s+miss\.",
+    "You slash at (?:the )?(" + __numbers + " )?(.+?), but miss\.",
 
-        "You chop at (?:the )?(" + __numbers + " )?(.+?) but fail to hit them\.",
-        "(?s)You try to stab (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
-        "You lunge wildly at (?:the )?(" + __numbers + " )?(.+?) but mistime\s+the\s+strike\.",
+    "You chop at (?:the )?(" + __numbers + " )?(.+?) but fail to hit them\.",
+    "(?s)You try to stab (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
+    "You lunge wildly at (?:the )?(" + __numbers + " )?(.+?) but mistime\s+the\s+strike\.",
 
-        "You lash out at (?:the )?(" + __numbers + " )?(.+?), but miss\.",
-        "You swing a wild punch at (?:the )?(" + __numbers + " )?(.+?), but it misses\.",
-        "You kick at (?:the )?(" + __numbers + " )?(.+?), but fail to hurt them\.",
-        "You grab at (?:the )?(" + __numbers + " )?(.+?), but (s?he|it) escapes your grasp\.",
-        "You try to gouge (?:the )?(" + __numbers + " )?(.+?), but can't get a good grip\.",
+    "You lash out at (?:the )?(" + __numbers + " )?(.+?), but miss\.",
+    "You swing a wild punch at (?:the )?(" + __numbers + " )?(.+?), but it misses\.",
+    "You kick at (?:the )?(" + __numbers + " )?(.+?), but fail to hurt them\.",
+    "You grab at (?:the )?(" + __numbers + " )?(.+?), but (s?he|it) escapes your grasp\.",
+    "You try to gouge (?:the )?(" + __numbers + " )?(.+?), but can't get a good grip\.",
 
-        "(?s)You swing your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+but\s+miss\.",
-        "You heave your .+? in a wide arc, but fail to\s+hit\s+anything\.",
-        "You try to bludgeon (?:the )?(" + __numbers + " )?(.+?), but miss\.",
+    "(?s)You swing your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+but\s+miss\.",
+    "You heave your .+? in a wide arc, but fail to\s+hit\s+anything\.",
+    "You try to bludgeon (?:the )?(" + __numbers + " )?(.+?), but miss\.",
 
-        "You lunge at (?:the )?(" + __numbers + " )?(.+?), but you miss\.",
-        "Your .+? swings, but fails to connect\.",
-        "(?s)You sweep at (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
+    "You lunge at (?:the )?(" + __numbers + " )?(.+?), but you miss\.",
+    "Your .+? swings, but fails to connect\.",
+    "(?s)You sweep at (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
 
-        "Your missile arcs towards (?:the )?(" + __numbers + " )?(.+?), but fails\s+to\s+hit\s+them\.",
-        "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
-        "(?s)You use your .+?, but nothing hits (?:the )?(" + __numbers + " )?(.+?)\."
+    "Your missile arcs towards (?:the )?(" + __numbers + " )?(.+?), but fails\s+to\s+hit\s+them\.",
+    "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
+    "(?s)You use your .+?, but nothing hits (?:the )?(" + __numbers + " )?(.+?)\."
 ]
 
 aura = [
@@ -500,4 +503,7 @@ already_seconding = [r"You already have something in your off hand\."]
 not_skilled = [r'You are not yet skilled enough to use this!']
 not_ranger = [r'The skill is currently beyond you\.']
 
+bought = [r"Bought\."]
+buy_what = [r"Buy what\?"]
+not_for_sale = [r"That item is not for sale\."]  # TODO: this is made up and needs to be checked
 

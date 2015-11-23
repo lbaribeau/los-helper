@@ -33,6 +33,9 @@ class TrackGrindThread(GrindThread):
         self.check_weapons()
         self.check_armour()
 
+    # def dobuy(self, exit_str):
+       # pass
+
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go", False)
 

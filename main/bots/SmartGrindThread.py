@@ -50,6 +50,10 @@ class SmartGrindThread(GrindThread):
         self.character.MONSTER_KILL_LIST = []
         super().go_purchase_item(model, data, level)
 
+    def dobuy(self, exit_str):
+        self.direction_list = [""]
+        return super().dobuy(exit_str)
+
     def decide_where_to_go(self):
         magentaprint("SmartGrindThread.decide_where_to_go()")
         self.cur_area_id = self.character.AREA_ID

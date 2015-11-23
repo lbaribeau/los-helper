@@ -374,6 +374,7 @@ class MudReaderThread(threading.Thread):
                 temp_buf = temp_buf[new_trunc:]
                 M_obj = re.search(second_join_in_regex, temp_buf)
                 
+            # TODO: Cast can do this now without extra caps/flag variables
             M_obj = re.search("You glow with an? (.+?) aura\.", text_buffer)
             if(M_obj):
                 self.character.AURA = M_obj.group(1)

@@ -26,6 +26,7 @@ from bots.SlaveThread import SlaveThread
 from command.Quit import Quit
 from command.Command import Command
 from reactions.CombatReactions import CombatReactions
+from command.Buy import Buy
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -55,6 +56,8 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.smartCombat.use)
         self.combat_reactions = CombatReactions(self.character)
         mudReaderHandler.add_subscriber(self.combat_reactions)
+        self.buy = Buy(telnetHandler)
+        mudReaderHandler.add_subscriber(self.buy)
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
