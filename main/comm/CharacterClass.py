@@ -31,6 +31,7 @@ class CharacterClass(object):
         self.weapon_slots = ["Wielded"]
 
         self.mana_tick = 2
+        abilities = []
 
         if class_string == "Ass":
             self.lvl1_maxHP = 19 

@@ -1,13 +1,13 @@
 
 import random, math
 
-from bots.GrindThread import GrindThread
+from bots.TrackGrindThread import TrackGrindThread
 from misc_functions import *
 from command.Inventory import *
 from Exceptions import *
 from db.MudMob import *
 
-class SmartGrindThread(GrindThread):
+class SmartGrindThread(TrackGrindThread):
     smart_target_list = []
     # chapel_aid = 2
     # pawnshop_aid = 130
@@ -16,7 +16,7 @@ class SmartGrindThread(GrindThread):
     def __init__(self, character, commandHandler, mudReaderHandler, mud_map): 
         super().__init__(character, commandHandler, mudReaderHandler, mud_map)
 
-        self.is_actually_dumb = False
+        self.is_actually_dumb = True
 
         self.cur_target = None
         self.cur_area_id = self.character.AREA_ID
