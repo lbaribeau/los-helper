@@ -32,12 +32,12 @@ class MudItem(GenericMudObject):
         magentaprint("MudItem.get_suitable_item_of_type() model: " + str(model_name) + ', data_name: ' + str(data_name) + ', level: ' + str(level))
         areastoreitems = AreaStoreItem.get_by_item_type_and_level(model_name, data_name, level)
         magentaprint("MudItem areastoreitems: " + str(areastoreitems))
+        # magentaprint("MudItem found " + str(len(areastoreitems)) + " items.")
 
         muditems = {}  
-
         for item in areastoreitems:
             magentaprint("MudItem loop item: " + str(item))
-            muditems[item.area.id] = MudItem(item.item.name)  
+            muditems[item.area.id] = MudItem(item.item.name)  # keyed by area id apparently
 
         return muditems
 

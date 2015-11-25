@@ -65,13 +65,13 @@ class GrindThread(BotThread):
         # self.inventory.buy(item)
         # self.sleep(2)
         # magentaprint(self.inventory.inventory, False)
-        self.commandHandler.buy.execute(item)
+        self.commandHandler.buy.execute(item.partition(' ')[0])  # TODO: ensure that the correct item is bougth
         self.commandHandler.buy.wait_for_flag()
         if self.commandHandler.buy.success:
             self.inventory.add(item)  
             return True
         else:
-            self.commandHandler.write('rest')
+            self.commandHandler.process('rest')
             self.commandHandler.quit.persistent_execute()
             crash  # failed to buy weapon
             return False
@@ -459,13 +459,14 @@ class GrindThread(BotThread):
                 if item is not None:
                     self.inventory.equip_item("wie " + item)
                 else:
-                    self.go_purchase_item(self.character.weapon_type, "weapon", self.character.weapon_level)
+                    self.go_purchase_item("weapon", self.character.weapon_type, self.character.weapon_level)
                     return False
                 break
                 
         return weapons_equipped
 
     def go_purchase_item(self, model, data, level):  
+        # Model is main item type (weapon, s-armor, consumable), Data is sub-type (Blunt, Body, etc)
         magentaprint('go_purchase_item() model: ' + str(model) + ', data: ' + str(data) + ', level: ' + str(level))
         possible_weapons = MudItem.get_suitable_item_of_type(model, data, level)
 

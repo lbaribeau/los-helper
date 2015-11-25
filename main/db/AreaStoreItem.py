@@ -48,18 +48,23 @@ class AreaStoreItem(BaseModel):
 
     def get_by_item_type_and_level(model_name, data_name, level = 1):
         items = []
+        print("AreaStoreItem.get_by_item_type_and_level(): model_name: " + str(model_name) + ", data_name: " + str(data_name) + ", level: " + str(level))
         # magentaprint("ItemTypeModel.get_by_name(model_name).get().id: " + ItemTypeModel.get_by_name(model_name).get().id)
-        print("AreaStoreItem ItemTypeModel.get_by_name(model_name).get().id: model_name: " + str(model_name) + ', data_name: ' + str(data_name))
-        itemtypemodel = ItemTypeModel.get_by_name(model_name).get().id
-        print('AreaStoreItem ItemTypeModel: ' + str(ItemTypeModel))
-        print('AreaStoreItem ItemTypeModel get_by_name: ' + str(ItemTypeModel.get_by_name(model_name)))  
-        myitemtypemodel = ItemTypeModel.get_by_name(model_name)  
-        # print('AreaStoreItem itemtypemodel: ' + str(ItemTypeModel.get_by_name(model_name).get()))  # This one
-        print('AreaStoreItem itemtypemodel: ' + str(myitemtypemodel.get()))  # This one
-        print('AreaStoreItem itemtypemodel.id: ' + str(ItemTypeModel.get_by_name(model_name).get().id))
-        itemtypedata = ItemTypeData.get_by_name(data_name).get().id
-        items = AreaStoreItem.select().join(Item).where(Item.level == level).join(ItemType).where(ItemType.model == itemtypemodel and ItemType.data == itemtypedata)
 
+        # print("AreaStoreItem ItemTypeModel.get_by_name(model_name).get().id: model_name: " + str(model_name) + ', data_name: ' + str(data_name))
+        # print('AreaStoreItem ItemTypeModel: ' + str(ItemTypeModel))
+        # print('AreaStoreItem ItemTypeModel get_by_name: ' + str(ItemTypeModel.get_by_name(model_name)))  
+        # myitemtypemodel = ItemTypeModel.get_by_name(model_name)  
+        # # print('AreaStoreItem itemtypemodel: ' + str(ItemTypeModel.get_by_name(model_name).get()))  # This one
+        # print('AreaStoreItem itemtypemodel: ' + str(myitemtypemodel.get()))  # This one
+        # print('AreaStoreItem itemtypemodel.id: ' + str(ItemTypeModel.get_by_name(model_name).get().id))
+        itemtypemodel = ItemTypeModel.get_by_name(model_name).get().id
+        print('AreaStoreItem itemtypemodel: ' + str(itemtypemodel))
+
+        itemtypedata = ItemTypeData.get_by_name(data_name).get().id
+        print('AreadStoreItem itemtypedata: ' + str(itemtypedata))
+
+        # items = AreaStoreItem.select().join(Item).where(Item.level == level).join(ItemType).where(ItemType.model == itemtypemodel and ItemType.data == itemtypedata)
         items = AreaStoreItem.select().join(Item).where(Item.level == level).join(ItemType).where(ItemType.model == itemtypemodel and ItemType.data == itemtypedata)
         print("AreaStoreItem get_by_item_type_and_level returning " + str(items))
 

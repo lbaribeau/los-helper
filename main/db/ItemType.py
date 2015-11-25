@@ -13,6 +13,7 @@ class ItemType(BaseModel):
         return str(self.model) + ", " + str(self.data)
     
     def has_model_and_data(self, model_name, data_name):
+        print("ItemType.has_model_and_data() model_name: " + str(model_name) + ", data_name: " + str(data_name))
         is_of_type = False
 
         if self.model is not None:

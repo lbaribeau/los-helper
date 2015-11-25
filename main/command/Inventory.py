@@ -26,7 +26,7 @@ class Inventory(BotReactionWithFlag):
         # 'war hammer', 
         "adamantine sword", 'adamantine axe', "claymore", 
         "spider leg", 'heavy crossbow', 
-        # "spear", 
+        "spear", 
         "bolos", 'javelin', #"long bow", 
         "heathen amulet",
         "broad sword", "rapier",
@@ -160,8 +160,8 @@ class Inventory(BotReactionWithFlag):
             item = M_obj.group(1)
             self.unequip_weapon(item)
         elif regex in R.current_equipment:
-            character_name = M_obj.group(1)
-            equipment_list = re.findall(self.wearing, M_obj.group(2))
+            character_name = M_obj.group(1)  # TODO: This works for 'l self' but not for 'eq'
+            equipment_list = re.findall(R.wearing[0], M_obj.group(2))
 
             if character_name == self.character.name:
                 for slot in equipment_list:
