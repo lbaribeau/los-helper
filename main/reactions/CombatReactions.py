@@ -91,10 +91,10 @@ class CombatReactions(object):
         magentaprint("Current Aura: " + aura, False)
         magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), False)
         exp = self.character.EXPERIENCE
-        expm = str(misc_functions.calculate_vpm(exp))
+        expm = str(calculate_vpm(exp))
         magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
         kills = len(self.mobs_killed)
-        kpm = str(misc_functions.calculate_vpm(kills))
+        kpm = str(calculate_vpm(kills))
         magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
         total_phys_attacks = self.hits_dealt + self.hits_missed
         # crits_landed = self.character.CRITS_LANDED
