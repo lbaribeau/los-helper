@@ -7,7 +7,7 @@ from db.MudMap import *
 
 class CrawlThread(BotThread):
     def __init__(self, character=None, command_handler=None, mud_reader_handler=None,
-                inventory=None, mud_map=None):
+                mud_map=None):
         super().__init__(character, command_handler, mud_reader_handler, mud_map)
         self.character.ACTIVELY_MAPPING = True
 
@@ -37,6 +37,8 @@ class CrawlThread(BotThread):
         exit = None
         exits = []
 
+        self.mud_map = MudMap()
+
         #find a null exit
         for area_exit in area_exit_list:
             if (area_exit.area_to is None and area_exit.is_useable):
@@ -46,7 +48,7 @@ class CrawlThread(BotThread):
 
         if exit is None:
             #if we didn't find a null exit we end up here and the magic starts
-            self.mud_map = MudMap() #if we actively update the map in Cartography then we wouldn't have to re-create it here
+            #self.mud_map = MudMap() #if we actively update the map in Cartography then we wouldn't have to re-create it here
 
             while (not self.mud_map.ready):
                 time.sleep(1)
