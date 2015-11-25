@@ -253,7 +253,7 @@ class Touch(SlowCombatAbility):
     failure_regexes = [RegexStore.touch_fail]
     error_regexes = [RegexStore.touch_whom, RegexStore.not_here]
     # classes = ["Mon"]
-    level = 4
+    level = 10
 
     # def notify(self, r, m):
     #     magentaprint('Touch notified, timer: ' + str(round(self.__class__.timer - time.time(), 0)))
