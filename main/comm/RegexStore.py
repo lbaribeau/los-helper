@@ -451,31 +451,33 @@ goodbye = ["Goodbye! Come back soon\."]
 
 # Equipment
 # you_arent_wearing_anything = [r"You aren't wearing anything\."]
-# on_body = [r"On body:   (.+?)\n\r"]
-# on_arms = [r"On arms:   (.+?)\n\r"]
-# on_legs = [r"On legs:   (.+?)\n\r"]
-# on_neck = [r"On neck:   (.+?)\n\r(On neck:   (?P<second_neck>.+?)\n\r)?"]
-# on_hands= [r"On hands:  (.+?)\n\r"]
-# on_head = [r"On head:   (.+?)\n\r"]
-# on_feet = [r"On feet:   (.+?)\n\r"]
-# on_finger = [r"On finger: (.+?)\n\r"]
-# shield  = [r"Shield:    (.+?)\n\r"]
-# wielded = [r"Wielded:   (.+?)\n\r"]
-# seconded= [r"Seconded:  (.+?)\n\r"]
+on_body = [r"On body:   (.+?)\n\r"]
+on_arms = [r"On arms:   (.+?)\n\r"]
+on_legs = [r"On legs:   (.+?)\n\r"]
+on_neck = [r"On neck:   (.+?)\n\r(On neck:   (?P<second_neck>.+?)\n\r)?"]
+on_face = [r"On face:   (.+?)\n\r"]
+on_hands= [r"On hands:  (.+?)\n\r"]
+on_head = [r"On head:   (.+?)\n\r"]
+on_feet = [r"On feet:   (.+?)\n\r"]
+on_finger = [r"On finger: (.+?)\n\r"]
+shield  = [r"Shield:    (.+?)\n\r"]
+wielded = [r"Wielded:   (.+?)\n\r"]
+seconded= [r"Seconded:  (.+?)\n\r"]
 # holding = [r"Holding:   (.+?)\n\r"]
-eq = [r"(On body:   (?P<body>.+?)\n\r)?" \
-      r"(On arms:   (?P<arms>.+?)\n\r)?" \
-      r"(On legs:   (?P<legs>.+?)\n\r)?" \
-      r"(On neck:   (?P<neck>.+?)\n\r)?" \
-      r"(On neck:   (?P<second_neck>.+?)\n\r)?" \
-      r"(On hands:   (?P<hands>.+?)\n\r)?" \
-      r"(On head:   (?P<head>.+?)\n\r)?" \
-      r"(On feet:   (?P<feet>.+?)\n\r)?" \
-      r"(On finger: (?P<finger>.+?)){0,8}" \
-      r"(Wielded:   (?P<weapon>.+?))?" \
-      r"(Seconded:  (?P<seconded>.+?))?" \
-      r"(Holding:   (?P<holding>.+?))"
-]  # m.group('holding') returns None with no error if the holding group didn't occur.
+# eq = [r"(On body:   (?P<body>.+?)\n\r)?" \
+#       r"(On arms:   (?P<arms>.+?)\n\r)?" \
+#       r"(On legs:   (?P<legs>.+?)\n\r)?" \
+#       r"(On neck:   (?P<neck>.+?)\n\r)?" \
+#       r"(On neck:   (?P<second_neck>.+?)\n\r)?" \
+#       r"(On hands:   (?P<hands>.+?)\n\r)?" \
+#       r"(On head:   (?P<head>.+?)\n\r)?" \
+#       r"(On feet:   (?P<feet>.+?)\n\r)?" \
+#       r"(On finger: (?P<finger>.+?)){0,8}" \
+#       r"(Wielded:   (?P<weapon>.+?))?" \
+#       r"(Seconded:  (?P<seconded>.+?))?" \
+#       r"(Holding:   (?P<holding>.+?))"
+# ]  
+# m.group('holding') returns None with no error if the holding group didn't occur.
 # Erhm maybe it's \r\n
 
 # "The extreme nature of this place wracks your aura!""  (Bandit Hill)
@@ -506,4 +508,21 @@ not_ranger = [r'The skill is currently beyond you\.']
 bought = [r"Bought\."]
 buy_what = [r"Buy what\?"]
 not_for_sale = [r"That item is not for sale\."]  # TODO: this is made up and needs to be checked
+cant_carry = [r"You can't carry anymore\."]
+
+repair = [r"The smithy hands an? (?P<weapon>[A-Za-z' ]+?) back to you, almost good as new\."]
+# TODO: The smithy takes \d+ gold pieces from you.
+darnitall = [r'"Darnitall!" shouts the smithy, "I broke another\. Sorry la(d|ss)\.']
+not_a_repair_shop = [r"This is not a repair shop\."]
+
+broken = [r"It is broken\."]
+# terrible_condition = [r"It is in terrible condition\."]
+# bad_condition = [r"It is in bad condition\."]
+# poor_condition = [r"It is in poor condition\."]
+# fair_condition = [r"It is in fair condition\."]
+# fine_condition = [r"It is in fine condition\."]
+# good_condition = [r"It is in good condition\."]
+# excellent_condition = [r"It is in excellent condition\."]
+# pristine_condidtion = [r"It is in pristine condition\."]
+condition = [r"It is in [a-z]+ condition\."]
 

@@ -86,7 +86,7 @@ class FakeTelnetSocket(object):
             " /==== Attributes =====\  /======= Weapons =====\  /======= Magic ========\\\n\r"
             " |       Str : 20      |  |     Sharp   : 0  %  |  |     Earth : 0  %     |\n\r"
             " |       Dex : 19      |  |     Thrust  : 0  %  |  |     Wind  : 0  %     |\n\r"
-            " |       Con : 17      |  |     Blunt   : 86 %  |  |     Fire  : 45 %     |\n\r"
+            " |       Con : 17      |  |     Blunt   : 61 %  |  |     Fire  : 45 %     |\n\r"
             " |       Int : 5       |  |     Pole    : 0  %  |  |     Water : 0  %     |\n\r"
             " |       Pty : 6       |  |     Missile : 0  %  |  |    Astral : 0  %     |\n\r"
             " \=====================/  \=====================/  \======================/\n\r"

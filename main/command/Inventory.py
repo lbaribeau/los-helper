@@ -120,7 +120,7 @@ class Inventory(BotReactionWithFlag):
         elif regex in R.sold:
             self.gold = self.gold + int(M_obj.group(1))
             self.remove(M_obj.group(2))
-        elif regex in R.you_now_have or regex in R.gold_from_tip:
+        elif regex in R.you_now_have + R.gold_from_tip:
             self.gold = int(M_obj.group(1))
         elif regex in R.you_wield and not M_obj.group('weapon').endswith('in your off hand'):
             weapon = M_obj.group('weapon')
@@ -142,7 +142,7 @@ class Inventory(BotReactionWithFlag):
             self.remove(M_obj.group(1))
             self.get_equipment()
             #we know this is armor of some kind so we need to find a way to assign it to the right spot
-        elif regex in R.you_remove or regex in R.gave_you:
+        elif regex in R.you_remove + R.gave_you:
             self.add(M_obj.group(1))
         elif regex in R.bought:
             pass
@@ -334,6 +334,13 @@ class Inventory(BotReactionWithFlag):
             item.is_unusable = True
 
         self.inventory.add(items)
+
+    def mark_broken(self, item_ref):
+        # Untested
+        if len(item_ref.partition(' ')) >= 2:
+            self.inventory.inventory[item_ref.partition(' ')[0]].objs[int(item_ref.partition(' '))].is_unusable = True
+        else:
+            self.inventory.inventory[item_ref.partition(' ')[0]].objs[0].is_unusable = True
 
     def remove(self, item_string):
         item_list = self.parse_item_list(item_string)

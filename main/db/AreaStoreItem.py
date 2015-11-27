@@ -39,10 +39,7 @@ class AreaStoreItem(BaseModel):
         return areastoreitem
 
     def get_by_item(itemid):
-        try:
-            areastoreitem = AreaStoreItem.select().where((AreaStoreItem.item == itemid)).get()
-        except AreaStoreItem.DoesNotExist:
-            areastoreitem = None
+        areastoreitem = AreaStoreItem.select().where(AreaStoreItem.item == itemid).get()
 
         return areastoreitem
 
@@ -69,3 +66,11 @@ class AreaStoreItem(BaseModel):
         print("AreaStoreItem get_by_item_type_and_level returning " + str(items))
 
         return items
+
+    def get_by_name(item_name):
+        print("AreaStoreItem.get_by_name() item_name: " + str(item_name))
+        items = AreaStoreItem.select().join(Item).where(Item.name == item_name)
+        print("AreaStoreItem.get_by_name() returning: " + str(item_name))
+        return items
+
+

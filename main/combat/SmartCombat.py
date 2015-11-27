@@ -60,7 +60,9 @@ class SmartCombat(CombatObject):
         # I prefer the latter.
         super().notify(regex, M_obj)
         if regex in RegexStore.prompt:
-            if self.in_combat and self.needs_heal():
+            if self.in_combat and self.should_use_heal_ability():
+                self.heal_abilities[0].send()
+            elif self.in_combat and self.needs_heal():
                 self.use.spam_pots()
             elif not self.needs_heal():
                 self.use.stop()
@@ -74,6 +76,10 @@ class SmartCombat(CombatObject):
             return self.character.HEALTH <= max(self.character.mobs.damage)
         else:
             return self.character.HEALTH < 0.25 * self.character.maxHP
+
+    def should_use_heal_ability(self):
+        return len(self.heal_abilities) > 0 and self.heal_ability_is_up and \
+            self.character.HEALTH <= self.character.maxHP - 0.9*self.heal_abilities[0].max_amount
 
     def stop(self):
         self.use.stop()
@@ -208,12 +214,82 @@ class SmartCombat(CombatObject):
         self.casting = False
         # vigor_cost = 2
 
+    def try_weapons(self, weapon_name_list):
+        self.to_repair = []
+        for w in weapon_name_list:
+            if self.try_weapon(w):
+                return True
+        return False
+
+    def try_weapon(self, weapon_name):
+        magentaprint("SmartCombat.try_weapon() on " + str(weapon_name))
+        ref = self.character.inventory.get_reference(weapon_name, 2)
+        if ref == None:
+            return False
+        self.wield.execute(ref)
+        self.wield.wait_for_flag()
+        if self.wield.success:
+            self.broken_weapon = False
+            return True
+        elif self.wield.already_wielding_error:
+            self.wield.second.execute(ref)
+            self.wield.second.wait_for_flag()
+            if self.wield.second.success:
+                self.broken_weapon = False
+                return True
+        else:
+            while self.wield.broken_error:
+                self.to_repair.append(ref)
+                ref_split = ref.split(' ')
+                ref = ref_split[0] + ' ' + str(int(ref_split[1]) + 1)  # ref++
+                if self.character.inventory.get_item_from_reference(ref) == weapon_name:
+                    self.wield.execute(ref)
+                    self.wield.weait_for_flag()
+                    if self.wield.success:
+                        self.broken_weapon = False
+                        return True
+                    elif self.wield.already_wielding_error:
+                        self.wield.second.execute(ref)
+                        self.wield.second.wait_for_flag()
+                        if self.wield.second.success:
+                            self.broken_weapon = False
+                            return True
+                else:
+                    break
+        return False
+
+    def wield_weapon(self, weapon_name):
+        # reequip_weapon was checking character.weapon1 and character.weapon2 which I don't want to do here
+        # self.equip_weapon(self.broken_weapon)
+        magentaprint("SmartCombat.equip_weapon()... weapon_name: " + str(weapon_name))
+        ref = self.character.inventory.get_reference(weapon_name, 2)
+        if ref == None:
+            return False
+        self.wield.execute(ref)
+        self.wield.wait_for_flag()
+        if self.wield.success:
+            self.broken_weapon = False
+            return True
+        while self.wield.broken_error:
+            ref_split = ref.split(' ')
+            ref = ref_split[0] + ' ' + str(int(ref_split[1]) + 1)  # ref++
+            if self.character.inventory.get_item_name_from_reference(ref) == weapon_name:
+                self.wield.execute(ref)
+                self.wield.wait_for_flag()
+                if self.wield.success:
+                    self.broken_weapon = False
+                    return True
+            else:
+                return False
+        return False
+
     def reequip_weapon(self):
         # Tries to wield all weapons with the same name from inventory
-        magentaprint('SmartCombat.reequip_weapon()... broken, weapons1/2: ' + self.broken_weapon + ', ' + self.character.weapon1 + '/' + self.character.weapon2)
+        # This could likely be made much shorter using equip_weapon()
+        magentaprint("SmartCombat.reequip_weapon()... broken, weapons1/2: '" + self.broken_weapon + "', '" + self.character.weapon1 + "'/'" + self.character.weapon2 + "'")
         ref = self.character.inventory.get_reference(self.broken_weapon, 2)
         if ref == None:
-            return
+            return False
         if self.character.weapon1 == self.broken_weapon:
             # ref = self.character.inventory.get_reference(self.broken_weapon)
             self.wield.execute(ref)
@@ -221,10 +297,10 @@ class SmartCombat(CombatObject):
             if self.wield.success:
                 self.broken_weapon = False
                 return True
-            while self.wield.broken_error:  # found broken one from inventory... this is probably pretty rare
+            while self.wield.broken_error:  # found broken one from inventory... 
                 # need to try the next one
                 ref_split = ref.split(' ')
-                ref = ref_split[0] + ' '+ str(int(ref_split[1]) + 1)
+                ref = ref_split[0] + ' ' + str(int(ref_split[1]) + 1)  # ref++
                 if self.character.inventory.get_item_name_from_reference(ref) == self.broken_weapon:
                     self.wield.execute(ref)
                     self.wield.wait_for_flag()

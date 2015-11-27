@@ -42,6 +42,7 @@ class MudItem(GenericMudObject):
         return muditems
 
     def get_purchase_location_id(self): #model to help track sizes
+        magentaprint("MudItem get_purchase_location_id() self: " + str(self) + ", self.obj: " + str(self.obj) + ", obj.id: " + str(self.obj.id))
         return AreaStoreItem.get_by_item(self.obj.id).area.id
 
 

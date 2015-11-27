@@ -66,6 +66,7 @@ class CharacterClass(object):
             self.mana_tick = 3  # unsure
             self.levelPath = [ ["out", "s", "w", "w", "w", "s", "e", "shop", "backroom", "portal"],
                           ["door", "out", "out", "w", "n", "e", "e", "e", "n", "cha"]]
+            abilities = []
             Cast.cooldown_after_success = 3
         elif class_string == "Pal":
             self.lvl1_maxHP = 19 
@@ -115,10 +116,11 @@ class CharacterClass(object):
         elif class_string == "Alc":
             self.lvl1_maxHP = 15 
             lvl1_maxMP = 4
+            abilities = []
         elif class_string == "Dar":
             self.lvl1_maxHP = 19 
             self.lvl1_maxMP = 4
-            abilities = [ Berserk, Wither ]
+            abilities = [ Berserk, Wither] 
             Cast.cooldown_after_success = 4
         else:
             magentaprint("CharacterClass error: could not recognize class string.")
@@ -127,12 +129,15 @@ class CharacterClass(object):
 
         for a in abilities + [Search, Prepare, Hide]:
             if level >= a.level:
-                self.abilities[a.command] = a(telnetHandler)
+                self.abilities[a.command] = a(telnetHandler)  # Construct all abilities
 
         self.heal_skills = [a for a in self.abilities.values() if isinstance(a, HealAbility)]
         self.buff_skills = [a for a in self.abilities.values() if isinstance(a, BuffAbility)]
         self.slow_combat_skills = [a for a in self.abilities.values() if isinstance(a, SlowCombatAbility)]
         self.fast_combat_skills = [a for a in self.abilities.values() if isinstance(a, FastCombatAbility)]
+
+        for h in self.heal_skills:
+            h.set_level(level)
 
         # self.abilities.append(Search(telnetHandler))
         # self.abilities = [a for a in self.abilities if level >= a.level]

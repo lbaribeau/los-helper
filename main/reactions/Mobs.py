@@ -1,4 +1,7 @@
 
+# import statistics as stats  # python 3.4
+import math
+
 from reactions.BotReactions import BotReactionWithFlag
 import comm.RegexStore as R
 from misc_functions import magentaprint
@@ -57,7 +60,10 @@ class Mobs(BotReactionWithFlag):
                 self.list.remove(self.read_match(m_obj))
             if self.read_match(m_obj) in self.attacking:
                 self.attacking.remove(self.read_match(m_obj))
-            magentaprint('Mobs damage ' + str(self.damage) + ' ' + str(sum(self.damage)))
+            magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(round(self.mean(self.damage), 1)) + ', stdev=' + str(round(self.stdev(self.damage), 1)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/max(len(self.damage),1), 2)))
+            # m = sum(self.damage) / max(len(self.damage), 1)
+            # s = sum(self.damage - [m]*len(self.damage))
+            # magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(stats.mean(self.damage)) + ', stdev=' + str(stats.stdev(self.damage)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/len(self.damage), 2)))
         elif r in R.mob_fled:  # Leave mobs.attacking populated. (?)  might help to chase mobs that don't block you (chase currently relies on that.)
             if self.read_match(m_obj) in self.list:
                 self.list.remove(self.read_match(m_obj))
@@ -124,6 +130,16 @@ class Mobs(BotReactionWithFlag):
 
         # return list(m_dict.keys())
         return m_list 
+
+    def mean(self, a):
+        return sum(a)/max(len(a),1)
+
+    def stdev(self, a):
+        # stdev excluding zeroes
+        m = self.mean(a)
+        l = len(a) - sum([x==0 for x in a])
+        # return math.sqrt(1/len(a) * sum([(x-m)^2 for x in a]))
+        return math.sqrt(1/max(l,1) * sum([pow((x-m),2) for x in a]))
 
 def remove_plural(m):
     # if mob_string.endswith('s'):

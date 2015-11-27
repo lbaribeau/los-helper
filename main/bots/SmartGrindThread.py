@@ -46,9 +46,9 @@ class SmartGrindThread(TrackGrindThread):
         super().do_on_successful_go()
         # self.cartography
 
-    def go_purchase_item(self, model, data, level):  # parent
+    def go_purchase_item_by_type(self, model, data, level):  # parent
         self.character.MONSTER_KILL_LIST = []
-        super().go_purchase_item(model, data, level)
+        super().go_purchase_item_by_type(model, data, level)
 
     def dobuy(self, exit_str):
         self.direction_list = [""]
