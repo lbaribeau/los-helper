@@ -59,40 +59,6 @@ class Inventory(BotReactionWithFlag):
     ]
 
     def __init__(self, mudReaderHandler, telnetHandler, character):
-        # self.you_have = "(?s)You have: (.+?)\."
-        # self.wont_buy = "The shopkeep says, \"I won't buy that rubbish from you\.\""
-        # self.wont_buy2 = "The shopkeep won't buy that from you\."
-        # self.sold = "The shopkeep gives you (.+?) gold for (.+?)\."
-        # self.you_drop = "(?s)You drop (.+?)\."
-        # self.disintegrates = "(?:A|Some) ([a-z ]+?) disintegrates\."
-        # self.gold_from_tip = "You have (.+?) gold\."
-        # self.not_a_pawn_shop = "This is not a pawn shoppe\."
-        # self.you_now_have = "You now have (.+?) gold pieces\."
-        # self.not_empty = "It isn't empty!"
-        # self.you_wear = "You wear (.+?)\."
-        # self.nothing_to_wear = "You have nothing you can wear\."
-        # self.you_get = "(?s)[^ ]You get (.+?)\.(?:\nYou now have (.+?) gold pieces\.)?"
-        # self.you_remove = "(?s)You removed? (.+?)\."
-        # self.nothing_to_remove = "You aren't wearing anything that can be removed\."
-        # self.you_wield = "You wield (.+?)( in your off hand)?\."
-        # self.you_give = "(?s)You give (.+?) to (.+?)\."
-        # self.bought = "Bought\."
-        # self.you_put_in_bag = "(?s)You put (.+?) in(to)? (.+?)\."
-        # self.gave_you = ".+? gave (.+?) to you\."
-        # self.you_hold = "(?s)You hold (.+?)\."
-        # self.weapon_breaks = "Your (.+?) breaks and you have to remove it\."
-        # self.weapon_shatters = "Your (.+?) shatters\."
-        # self.armor_breaks = "Your (.+?) fell apart\."
-        # self.current_equipment = "You see (.+?) (?:the .+?)\.\n?\r?(?:(?:.+?\.\n?\r?)+)?((?:.+?:.+\n?\r?)+)"
-        # self.no_inventory = "You currently have no carried inventory\."
-        # self.wearing = "\n?\r?(?:On )?(.+?):[\s]*(?:a |an |some )(.+)"
-
-        # self.regexes = [self.you_have, self.you_get, self.wont_buy, self.wont_buy2, self.sold, 
-        #     self.you_drop, self.disintegrates, self.not_a_pawn_shop, self.you_now_have, self.gold_from_tip,
-        #     self.not_empty, self.you_wear, self.nothing_to_wear, self.you_remove,  
-        #     self.nothing_to_remove, self.you_wield, self.you_give, self.bought,
-        #     self.you_put_in_bag, self.gave_you, self.you_hold, self.weapon_breaks, self.weapon_shatters,
-        #     self.armor_breaks, self.current_equipment, self.no_inventory]
         self.regex_cart = [
             R.you_have, R.wont_buy, R.wont_buy2, R.sold, R.you_drop, R.disintegrates, R.gold_from_tip, R.not_a_pawn_shop, 
             R.you_now_have, R.not_empty, R.you_wear, R.nothing_to_wear, R.you_get, R.you_remove, R.nothing_to_remove, R.you_wield, 
@@ -350,7 +316,6 @@ class Inventory(BotReactionWithFlag):
         self.telnetHandler.write(equip_string)
         self.wait_for_flag()
 
-
     def clip_in_your_off_hand(self, wield_string):
         # Example wield_string: a spear in your off hand
         wield_string = wield_string.replace('\n\r', ' ')
@@ -509,6 +474,17 @@ class Inventory(BotReactionWithFlag):
         else:
             return word + ' ' + str(i)
 
+    def get_item_from_reference(self, ref):
+        # !!! Needs improvement!  Use get_item_name_from_reference
+        word, n = ref.partition(' ')[0], int(ref.partition(' ')[2])
+        # Go through ordered keys, counting down, to determine the targeted item
+        for item in self.inventory.dictionary.keys():
+            if any([w.startswith(word) for w in item.to_string().split(' ')]):
+                if n <= self.inventory.dictionary[item].qty:
+                    return self.inventory.dictionary[item]
+                else:
+                    n = n - self.inventory.dictionary[item].qty
+
     def remove_a_an_some(self, item_string):
         if item_string.startswith('A '):
             return item_string[2:]
@@ -530,13 +506,11 @@ class Inventory(BotReactionWithFlag):
             ref_n = 1
 
         # ilist = sorted(self.inventory.keys())
-        for iname, ivalue in self.inventory.inventory.iteritems():  # Hopefully sorted by keys...
-            if any([w.startswith(ref) for w in iname.split(' ')]):
+        for itemkey, ivalue in self.inventory.dictionary.items():  # Hopefully sorted by keys...
+            if any([w.startswith(ref_string) for w in itemkey.to_string().split(' ')]):
+                if ref_n <= ivalue.qty:
+                    return itemkey.to_string()
                 ref_n = ref_n - ivalue.qty 
-                if ref_n <= 0:
-                    return iname
-
-        return None
 
     def unequip_weapon(self, weapon):
         # e = self.equipped_items

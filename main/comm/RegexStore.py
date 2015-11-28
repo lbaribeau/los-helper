@@ -507,6 +507,7 @@ not_ranger = [r'The skill is currently beyond you\.']
 
 bought = [r"Bought\."]
 buy_what = [r"Buy what\?"]
+not_a_shop = [r"This is not a shoppe\."]
 not_for_sale = [r"That item is not for sale\."]  # TODO: this is made up and needs to be checked
 cant_carry = [r"You can't carry anymore\."]
 
@@ -526,3 +527,4 @@ broken = [r"It is broken\."]
 # pristine_condidtion = [r"It is in pristine condition\."]
 condition = [r"It is in [a-z]+ condition\."]
 
+drop_what = [r"Drop what\?"]

@@ -242,9 +242,11 @@ class SmartCombat(CombatObject):
                 self.to_repair.append(ref)
                 ref_split = ref.split(' ')
                 ref = ref_split[0] + ' ' + str(int(ref_split[1]) + 1)  # ref++
-                if self.character.inventory.get_item_from_reference(ref) == weapon_name:
+                magentaprint("SmartCombat try_weapon ref incremented: " + str(ref))
+                magentaprint("weapon_name: " + str(weapon_name) + ", ")
+                if self.character.inventory.get_item_name_from_reference(ref) == weapon_name:
                     self.wield.execute(ref)
-                    self.wield.weait_for_flag()
+                    self.wield.wait_for_flag()
                     if self.wield.success:
                         self.broken_weapon = False
                         return True

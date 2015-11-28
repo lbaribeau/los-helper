@@ -65,8 +65,23 @@ class GrindThread(BotThread):
         # self.inventory.buy(item)
         # self.sleep(2)
         # magentaprint(self.inventory.inventory, False)
-        self.commandHandler.buy.execute(item.partition(' ')[0])  # TODO: ensure that the correct item is bougth
+        self.commandHandler.buy.execute(item.partition(' ')[0])  # TODO: ensure that the correct item is bought
         self.commandHandler.buy.wait_for_flag()
+        # I'm hacking here.  I intend start a new Grind thread to do this properly.
+        if self.commandHandler.buy.cant_carry:
+            # Maybe we're carrying a broken one
+            magentaprint("GrindThread.dobuy() inventory: " + str(self.inventory.inventory))
+            magentaprint("GrindThread.dobuy() reference: " + str(self.inventory.get_reference(item)))
+            self.commandHandler.drop.execute(self.inventory.get_reference(item))
+            self.commandHandler.drop.wait_for_flag()
+            if not self.commandHandler.drop.success:
+                magentaprint("Dobuy failed!")
+                self.commandHandler.process('rest')
+                self.commandHandler.quit()
+                return False
+            else:
+                self.commandHandler.buy.execute(item.partition(' ')[0])
+                self.commandHandler.buy.wait_for_flag()
         if self.commandHandler.buy.success:
             self.inventory.add(item)  
             return True

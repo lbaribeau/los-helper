@@ -15,7 +15,7 @@ class TrackGrindThread(GrindThread):
         elif self.character.level <= 7:
             self.__TOTALPATHS = 10 # include hookers for level 3   
         else:
-            self.__TOTALPATHS = 18
+            self.__TOTALPATHS = 20 
         # elif self.character.level <= 10:
         #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8 
         # elif self.character.level > 12:

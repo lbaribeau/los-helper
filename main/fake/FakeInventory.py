@@ -1,7 +1,7 @@
 
 import re
+
 class FakeInventory(object):
-    
     def __init__(self, d):
         self.d = d
         self.numbers = ['two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen']
@@ -42,3 +42,9 @@ class FakeInventory(object):
                 self.d[item] = self.d[item] - 1
             else:
                 del self.d[item]
+
+    def add(self, item):
+        if item in self.d.keys():
+            self.d[item] = self.d[item] + 1
+        else:
+            self.d[item] = 1
