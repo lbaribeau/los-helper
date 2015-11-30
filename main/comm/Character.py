@@ -318,7 +318,7 @@ class Character(object):
         'kobold shaman', 'drunken trouble-maker', 'kobold champion', 'hungry spider']
     lvl5_monsters = [
         'dwarven farm hand', 'dwarven barmaid', 'fort sentry', 'fur trader', 
-        'aristocrat', 'rancher sentry',
+        'aristocrat', # 'rancher sentry',  # There are also lvl 7 rancher sentries
         # 'vicar',
         'nobleman', 'lyrist', 'orange picker', 'logger',
         'veteran', 'bruiser', 'axeman', 'seeker', 'hunter', 'bull', 'lay priest', 'protector',
@@ -344,7 +344,7 @@ class Character(object):
         'dwarven cook', 'swordsman', 'fort sergeant', 'oremaster', 
         'giant spider', 'rock spider', 'Aldo', 'dwarven trader',
         'gnoll chaplain', 'Cheryn', 'robed priest', 'orc scout',
-        'bouncer',
+        'bouncer', 'rancher sentry',
         'dwarven shepherd', 'clown'  # grey  
     ] # giant spiders are hostile
     lvl8_monsters = [

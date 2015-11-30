@@ -27,6 +27,7 @@ from command.Quit import Quit
 from command.Command import Command
 from reactions.CombatReactions import CombatReactions
 from command.Buy import Buy
+from command.Drop import Drop
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -57,6 +58,7 @@ class CommandHandler(object):
         self.combat_reactions = CombatReactions(self.character)
         mudReaderHandler.add_subscriber(self.combat_reactions)
         self.buy = Buy(telnetHandler)
+        self.drop = Drop(telnetHandler)
         mudReaderHandler.add_subscriber(self.buy)
 
         if '-fake' in sys.argv:
@@ -489,7 +491,11 @@ class CommandHandler(object):
             magentaprint("Joining mud map thread.")
             return self.join_mud_map_thread()
         elif self.botThread and self.botThread.is_alive():
-            magentaprint("It's already going, you'll have to stop it.  Use \"stop\".", False)
+            if self.botThread.stopping:
+                magentaprint("BotThread continuing.")
+                self.botThread.stopping = False
+            else:
+                magentaprint("Bot already going.")
             return False
         else:
             return True

@@ -20,7 +20,7 @@ class FakeTelnetSocket(object):
         self.current_mud_area = None
         self.current_monster_list = ['spiv', 
             # 'acrobat', 'juggler',                                 # chasing
-            'kobold champion', #'kobold sentry', 'large kobold',   # weapon break
+            'kobold champion', #'kobold sentry', 'large kobold',    # weapon break
             # 'militia soldier'                                     # potting
         ]
         self.fso = FakeSocketOutput()
@@ -41,7 +41,7 @@ class FakeTelnetSocket(object):
         self.inventory = FakeInventory({'awl':1, 'small lamp':6, 'small knife':6, 'large sack':2, 'silver chalice':6, 'small flask':2, \
             'small lamp':2, 'small restorative':2, 'steel bottle':6, 'steel ring':6, 'stilleto':2, 'white potion':2, \
             'buckler':1, 'burnt ochre potion':1, 'hammer':1, 'large bag':1, 'large mace':1, 'long sword':1, 'silver torch':1, \
-            'spectacles': 1, 'title deeds': 1, 'morning star': 1
+            'spectacles': 1, 'title deeds': 1, 'morning star': 1, 'maul hammer': 1
         })
         self.equipment = FakeEquipment(character_name)
         self.buy = FakeBuy(self.socket_output)
@@ -86,7 +86,7 @@ class FakeTelnetSocket(object):
             " /==== Attributes =====\  /======= Weapons =====\  /======= Magic ========\\\n\r"
             " |       Str : 20      |  |     Sharp   : 0  %  |  |     Earth : 0  %     |\n\r"
             " |       Dex : 19      |  |     Thrust  : 0  %  |  |     Wind  : 0  %     |\n\r"
-            " |       Con : 17      |  |     Blunt   : 86 %  |  |     Fire  : 45 %     |\n\r"
+            " |       Con : 17      |  |     Blunt   : 61 %  |  |     Fire  : 45 %     |\n\r"
             " |       Int : 5       |  |     Pole    : 0  %  |  |     Water : 0  %     |\n\r"
             " |       Pty : 6       |  |     Missile : 0  %  |  |    Astral : 0  %     |\n\r"
             " \=====================/  \=====================/  \======================/\n\r"
@@ -194,10 +194,12 @@ class FakeTelnetSocket(object):
         elif command.startswith('wie') and len(command.split(' ')) > 1:
             if self.equipment.weapon:
                 self.socket_output.append("You're already wielding something.")
-            elif command.split(' ')[1].startswith('sp'):
+            elif command.partition(' ')[2].startswith('spear'):
                 self.socket_output.append('You wield a spear.\n\r')
                 self.inventory.remove('spear')
                 self.equipment.wield('spear')
+            elif command.partition(' ')[2].startswith('maul') or command.partition(' ')[2].startswith('hammer'):
+                self.socket_output.append("You can't, it's broken.")
             else:
                 self.socket_output.append('You wield a morning star.\n\r')
                 self.inventory.remove('morning star')
@@ -217,6 +219,7 @@ class FakeTelnetSocket(object):
             item = str(M_obj.group(1))
             drop_string = self.drop_string % item
             self.socket_output.append(drop_string)
+            self.buy.cant_carry = False
         elif re.match('sell (.+)', command):
             M_obj = re.search('sell (.+)', command)
             item = str(M_obj.group(1))
@@ -371,6 +374,7 @@ class FakeTelnetSocket(object):
                 self.socket_output.append('[' + str(self.hp) + ' H 27 M]: The large kobold throws a wild punch at you, but it misses.\n\r')
                 if self.rng == 2:
                     self.socket_output.append('Your morning star breaks and you have to remove it.\n\r')
+                    self.inventory.add('morning star')
                     self.equipment.weapon = ''
                 elif self.rng == 0:
                     self.mobdead(mob)

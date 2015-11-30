@@ -8,7 +8,6 @@ from reactions.BotReactions import BotReactionWithFlag
 from comm import RegexStore
 from misc_functions import magentaprint
 
-
 # class Ability(ThreadingMixin2):
 #     def __init__(self):
 #         super().__init__()
@@ -99,7 +98,6 @@ class SlowCombatAbility(CombatAbility):
         # Hmmm.... do abilities need to be constructed with a cooldowns object?
         # How about botThread takes care of that...
 
-
 # Hint: the 'time' command in game tells you how much time is left on your buff
 # Although I don't think I will use the 'lasts' variable.
 
@@ -159,11 +157,11 @@ class Berserk(BuffAbility):
     level = 1
 
 class HealAbility(Ability):
-    pass
+    def set_level(self, level):
+        self.__class__.max_amount = 16 + int(round(1.4*level, 0))
     # @property 
     # def max_amount(self):
     #     raise NotImplementedError()
-
 
 class Search(Ability):
     command = 'sea'
@@ -172,6 +170,7 @@ class Search(Ability):
     success_regexes = [RegexStore.found_exit]
     failure_regexes = [RegexStore.search_fail]
     level = 1
+
 class Prepare(Ability):
     command = 'prep'
     cooldown_after_success = 8
@@ -179,6 +178,7 @@ class Prepare(Ability):
     success_regexes = [RegexStore.prepare, RegexStore.already_prepared]
     failure_regexes = []
     level = 1
+
 class Hide(Ability):
     command = 'hid'
     cooldown_after_success = 11
@@ -187,20 +187,15 @@ class Hide(Ability):
     failure_regexes = [RegexStore.hide_fail]
     level = 1
 
-
-
 class Meditate(HealAbility):
     command = "me"
     cooldown_after_success = 120
     cooldown_after_failure = 5
-    max_amount = 26 #guess
+    max_amount = 26 #guess  ()
     success_regexes = [RegexStore.meditate]
     failure_regexes = [RegexStore.not_at_peace]
     # classes = ["Mon"]
     level = 4
-
-    def set_level(self, level):
-        self.max_amount = 18 + level
 
 class AestersTears(HealAbility):
     command = "sin a"
