@@ -15,7 +15,7 @@ crush = 'crush'
 vigor = 'v'
 mendwounds = 'm'
 light = 'l'
-showaura = 'show'
+showaura = 'show-aura'
 
 lvl1 = [burn, rumble, blister, hurt]
 lvl2 = [fireball, crush, waterbolt, dustgust]
