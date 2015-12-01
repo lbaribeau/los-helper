@@ -15,7 +15,7 @@ class TrackGrindThread(GrindThread):
         elif self.character.level <= 7:
             self.__TOTALPATHS = 10 # include hookers for level 3   
         else:
-            self.__TOTALPATHS = 20 
+            self.__TOTALPATHS = 20
         # elif self.character.level <= 10:
         #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8 
         # elif self.character.level > 12:
@@ -28,31 +28,15 @@ class TrackGrindThread(GrindThread):
         else:
             self.__nextpath = 0
 
-    def do_pre_go_actions(self):
-        self.rest_and_check_aura()
-        self.check_weapons()
-        self.check_armour()
+        self.LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
-    # def dobuy(self, exit_str):
-       # pass
-
-    def decide_where_to_go(self):
-        magentaprint("Inside decide_where_to_go", False)
-
-        if self.character.AREA_ID != 2:
-            return ['areaid2']
-
-        magentaprint("next path = " + str(self.__nextpath), False)
-        
-        LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
-
-        SHOP_AND_TIP_PATH = ["out", "south", "west", 'west', 'west', 'south', 'south', "shop",
+        self.SHOP_AND_TIP_PATH = ["out", "south", "west", 'west', 'west', 'south', 'south', "shop",
                           "sell_items", 
                           "out", "southeast", 'east', 'east', 'east', 'east', "northeast", "tip",
                           "drop_items",
                           "out", 'north', 'north', 'west', 'west', 'west', 'north', "chapel"]
                           
-        THEATRE_PATH = ["out", "s", "w", "w", "w", "s", "theat", "stairs",
+        self.THEATRE_PATH = ["out", "s", "w", "w", "w", "s", "theat", "stairs",
                           "cubby", "out", "down", "swing", "seat", "out",
                           "down", "seat", "out", "door", "stage",
                           "side 2", "backstage", "door", "out", "curtain",
@@ -60,12 +44,12 @@ class TrackGrindThread(GrindThread):
                           "up", "out", "out", "n", "e",
                           "e", "e", "n", "chapel"]
         
-        MARKET_PATH = ["out", 's', 'e', 'e', 'e', 'n', 'w', 'w', 'n', 'n',
+        self.MARKET_PATH = ["out", 's', 'e', 'e', 'e', 'n', 'w', 'w', 'n', 'n',
                           's', 'w', 'e', 's', 'w', 's', 'n', 'w', 'e', 'n',
                           's', 'e', 'e', "out", 's', 'w', 'w', 'w', 'n',
                           "chapel"]
         
-        MILITIA_SOLDIERS_PATH = ["out", "s", "e", "s", "s", "s", "w", "gate",
+        self.MILITIA_SOLDIERS_PATH = ["out", "s", "e", "s", "s", "s", "w", "gate",
                           "s", "s", "sw", "sw", "sw", "sw", "s", "s", 's',"sw", "se",
                           "s", "s", "s", "s", 's', 's', 's', 's', 's', 'w',
                           'w', 'w', 'w', 'n', 'n', 's', 's', 'e', 'e', 'e', 'e', 'n',
@@ -81,7 +65,7 @@ class TrackGrindThread(GrindThread):
                           "nw", 'n', "gate", 'e', 'n', 'n', 'n', 'w', 'n',
                           "chapel"]
         
-        KOBOLD_PATH = ['out', 'south', 'east', 'south', 'south', 'south',
+        self.KOBOLD_PATH = ['out', 'south', 'east', 'south', 'south', 'south',
                         'west', 'gate', 'south', 'southeast', 'southeast', 'east', 'east',
                         'east', 'southeast', 'southeast', 'southeast', 'south', 'south', 'south',
                         'south', 'south', 'east', 'east', 'southeast', 'east', 'south', 'south',
@@ -116,7 +100,7 @@ class TrackGrindThread(GrindThread):
                           'northwest', 'north', 'gate', 'east', 'north', 'north', 'north',
                           'west', 'north', 'chapel']
 
-        CORAL_ALLEY_PATH = ["out", "s", 'e', 's', 's', 's', 'w', 'gate',
+        self.CORAL_ALLEY_PATH = ["out", "s", 'e', 's', 's', 's', 'w', 'gate',
                               's', 'se', 'se', 'e', 'e', 'e',
                               'se', 'se', 'se', 's', 's', 's', 's', 'w',
                               'alley', 's', 's', 'door', 'stairs',
@@ -132,12 +116,12 @@ class TrackGrindThread(GrindThread):
                               'w', 'w', 'w', 'nw', 'nw', 'n',
                               'gate', 'e', 'n', 'n', 'n', 'w', 'n', 'chapel']
         
-        FORT_PATH = ["out", 'n', 'n', 'w', "gate", 'n', 'n', 'n',
+        self.FORT_PATH = ["out", 'n', 'n', 'w', "gate", 'n', 'n', 'n',
                           'n', 'n', "gate", 'n', 'n', 'w', 's', 's', 'e',
                           "gate", 's', 's', 's', 's', 's', 'gate', 'e',
                           's', 's', "chapel"]
         
-        NORTHERN_BANDITS_PATH = ['out', 'n', 'n', 'w', 'gate', 'n', 'n', 'n',
+        self.NORTHERN_BANDITS_PATH = ['out', 'n', 'n', 'w', 'gate', 'n', 'n', 'n',
                           'n', 'n', 'gate', 'n', 'n', 
                           "gate", 'n',
                           "nw", "nw", "sw", "sw", "sw", "sw", 's', "sw", "sw",
@@ -153,7 +137,7 @@ class TrackGrindThread(GrindThread):
                           "gate", 's', 's', 's', 's', 's', "gate", 'e', 's',
                           's', "chapel"]
 
-        DWARVEN_FIELD_WORKERS_PATH = ['out', 'south', 'east', 'south', 'south',
+        self.DWARVEN_FIELD_WORKERS_PATH = ['out', 'south', 'east', 'south', 'south',
                             'south', 'west', 'gate', 'south', 'southeast', 'southeast',
                             'east', 'east', 'east', 'pathway', 'northwest', 'north', 'north',
                             'north', 'southeast', 'east', 'east', 'gate', 'east', 'building',
@@ -165,7 +149,7 @@ class TrackGrindThread(GrindThread):
                             'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
 
         #both gates close at night unforunately...
-        FIELD_WORKERS_PATH = ['out', 'south', 'east', 'south', 'south', 'south','west',
+        self.FIELD_WORKERS_PATH = ['out', 'south', 'east', 'south', 'south', 'south','west',
                             'gate', 'south', 'southeast', 'southeast', 'east', 'east',
                             'east', 'pathway', 'northwest', 'north', 'north', 'north',
                             'northwest', 'northwest', 'north', 'north', 'gate', 'west',
@@ -177,7 +161,7 @@ class TrackGrindThread(GrindThread):
                             'west', 'west', 'gate', 'south', 'west', 'west', 'west', 'north', 'chapel']
 
         #Contains lvl 2&3 mobs (stacker, furniture maker, sawmill operator, mill worker) and lvl 6 mobs (sawmill / mill supervisors)
-        MILL_WORKERS = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate',
+        self.MILL_WORKERS = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate',
                         'south', 'south', 'south', 'south', 'south', 'southwest', 'south',
                         'southeast', 'southwest', 'south', 'south', 'southeast', 'south',
                         'south', 'southwest', 'bridge', 'south', 'southwest', 'west', 'canal',
@@ -188,7 +172,7 @@ class TrackGrindThread(GrindThread):
                         'northeast', 'northeast', 'north', 'north', 'gate', 'east', 'north',
                         'north', 'north', 'west', 'north', 'chapel']
 
-        RANCHER_SENTRY = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate',
+        self.RANCHER_SENTRY = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate',
                         'south', 'southeast', 'southeast', 'east', 'east', 'east', 'pathway',
                         'northwest', 'north','north', 'north', 'northwest', 'northwest', 'north',
                         'north', 'gate', 'northeast', 'north', 'northeast', 'north', 'gate',
@@ -203,95 +187,103 @@ class TrackGrindThread(GrindThread):
                         'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
 
         #aid418, 1975, 1979, 1951, 415, 45
-        SPIDER_FOREST = ['areaid418', 'areaid1975', 'areaid1979', 'areaid1951', 'areaid415', 'areaid2']
+        self.SPIDER_FOREST = ['areaid418', 'areaid1975', 'areaid1979', 'areaid1951', 'areaid415', 'areaid2']
 
         #The following areas repeat a bit because the spawns are fast
-        KNIGHTS = ['areaid1904', 'areaid1912', 'areaid1909', 'areaid1913',
+        self.KNIGHTS = ['areaid1904', 'areaid1912', 'areaid1909', 'areaid1913',
                           'areaid1904', 'areaid1912', 'areaid1909', 'areaid1913',
                           'areaid1904', 'areaid1912', 'areaid1909', 'areaid2',] #end with chapel
 
-        GNOLL_CAMP = ['areaid1574', 'areaid800', 'areaid1574', 'areaid800', 'areaid1574', 'areaid2', ]
+        self.GNOLL_CAMP = ['areaid1574', 'areaid800', 'areaid1574', 'areaid800', 'areaid1574', 'areaid2', ]
 
-        PATH_TO_SKIP_WITH = [ 'out', 'chapel' ]
+        self.PATH_TO_SKIP_WITH = [ 'out', 'chapel' ]
         #return SHOP_AND_TIP_PATH
+
+    def do_pre_go_actions(self):
+        self.rest_and_check_aura()
+        self.check_weapons()
+        self.check_armour()
+
+    # def dobuy(self, exit_str):
+       # pass
+
+    def decide_where_to_go(self):
+        magentaprint("Inside decide_where_to_go", False)
+
+        if self.character.AREA_ID != 2:
+            return ['areaid2']
+
+        magentaprint("next path = " + str(self.__nextpath), False)
         
-        if (self.character.DEAD):
+        if self.character.DEAD:
             crash
             self.character.DEAD = False
             self.character.DEATHS += 1
             magentaprint("Died; Pulling up my bootstraps and starting again", False)
-            return LIMBO_TO_CHAPEL
+            return self.LIMBO_TO_CHAPEL[:]
 
         self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
 
-        if (self.__nextpath % 2 == 0):
-            self.inventory.get_inventory()
+        if self.__nextpath % 2 == 0:
+            # self.inventory.get_inventory()
+            magentaprint(str(int(len(self.inventory.sellable()))) + " items to sell - threshold is " + str(self.loot_threshold) + '.')
             if len(self.inventory.sellable()) > self.loot_threshold:
-                return SHOP_AND_TIP_PATH
+                magentaprint("Trackgrind pawning/dropping!!!")
+                return self.SHOP_AND_TIP_PATH[:]
             else:
-                self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
-
-        #return KOBOLD_PATH
-
-        if(self.__nextpath == 1):
-            return THEATRE_PATH
-
-        elif(self.__nextpath == 3):
-            return MARKET_PATH 
-
-        elif(self.__nextpath == 5):
-            return MILITIA_SOLDIERS_PATH 
-
-        elif(self.__nextpath == 7):
+                magentaprint("Trackgrind skipped pawning/dropping!!!")
+        elif self.__nextpath == 1:
+            return self.THEATRE_PATH[:]
+        elif self.__nextpath == 3:
+            return self.MARKET_PATH[:]
+        elif self.__nextpath == 5:
+            return self.MILITIA_SOLDIERS_PATH[:]
+        elif self.__nextpath == 7:
             if self.character.AURA_SCALE < self.character.AURA_LIST.index('pale blue') and \
                self.character.AURA_SCALE <= self.character.AURA_PREFERRED_SCALE: 
-                return KOBOLD_PATH
+                return self.KOBOLD_PATH[:]
             else:
                 magentaprint("Not going to do kobolds. Current aura, and preferred: %s,  %s" % 
                              (self.character.AURA_SCALE, self.character.AURA_PREFERRED_SCALE))
                 self.__nextpath = self.__nextpath + 1  # So that we don't go selling
-                return PATH_TO_SKIP_WITH
-
-        elif(self.__nextpath == 9):
+                return self.PATH_TO_SKIP_WITH[:]
+        elif self.__nextpath == 9:
             # hookers ... I would avoid the drunken trouble makers, but I don't
             # quite remember where they are and don't want to go through Amber
             # Also I think it's safe enough in the dark... maybe just lvl 4 
             # there are thugs
-            if(self.character.level <= 6):
-                return CORAL_ALLEY_PATH
+            if self.character.level <= 6:
+                return self.CORAL_ALLEY_PATH[:]
             else:            
                 self.__nextpath = self.__nextpath + 1  # So that we don't go selling
-                return PATH_TO_SKIP_WITH 
-
-        elif(self.__nextpath == 11):
-            return FORT_PATH
-
-        elif(self.__nextpath == 13):
+                return self.PATH_TO_SKIP_WITH[:]
+        elif self.__nextpath == 11:
+            return self.FORT_PATH[:]
+        elif self.__nextpath == 13:
             if self.character.AURA_SCALE < self.character.AURA_LIST.index('pale blue') or \
                self.character.AURA_SCALE <= self.character.AURA_PREFERRED_SCALE:
-                return NORTHERN_BANDITS_PATH
+                return self.NORTHERN_BANDITS_PATH[:]
             else:
                 magentaprint("Not going to do bandits. Current aura, and preferred: %s,  %s" % 
                              (self.character.AURA_SCALE, self.character.AURA_PREFERRED_SCALE))
                 self.__nextpath = self.__nextpath + 1   # So that we don't go selling
-                return PATH_TO_SKIP_WITH
-        elif(self.__nextpath == 15):
-            return DWARVEN_FIELD_WORKERS_PATH
-        elif(self.__nextpath == 17):
-            return MILL_WORKERS
-        elif(self.__nextpath == 19):
-            return RANCHER_SENTRY
-        elif(self.__nextpath == 21):
-            return SPIDER_FOREST
-        elif(self.__nextpath == 23):
-            return GNOLL_CAMP
-        # elif(self.__nextpath == 25):
-        #     return KNIGHTS
+                return self.PATH_TO_SKIP_WITH[:]
+        elif self.__nextpath == 15:
+            return self.DWARVEN_FIELD_WORKERS_PATH[:]
+        elif self.__nextpath == 17:
+            return self.MILL_WORKERS[:]
+        elif self.__nextpath == 19:
+            return self.RANCHER_SENTRY[:]
+        elif self.__nextpath == 21:
+            return self.SPIDER_FOREST[:]
+        elif self.__nextpath == 23:
+            return self.GNOLL_CAMP[:]
+        elif self.__nextpath == 25:
+            return self.KNIGHTS[:]
         else:
-            magentaprint("Unexpected case in decide_where_to_go, nextpath==" +
-                         str(self.__nextpath))
-            return PATH_TO_SKIP_WITH
-        return PATH_TO_SKIP_WITH
+            magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.__nextpath))
+            return list(self.PATH_TO_SKIP_WITH[:])
+        return list(self.PATH_TO_SKIP_WITH[:])
 
 # Just thinking about changing top level...
  

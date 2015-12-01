@@ -30,7 +30,7 @@ class GrindThread(BotThread):
     def do_pre_go_actions(self):
         if self.in_chapel():
             self.rest_and_check_aura()
-            self.check_weapons()
+            # self.check_weapons()  TODO: shopping doesn't work everywhere
             self.check_armour()
 
     def do_go_hooks(self, exit_str):
@@ -93,11 +93,10 @@ class GrindThread(BotThread):
 
     def do_on_blocking_mob(self):
         self.engage_monster(self.character.GO_BLOCKING_MOB)
-        self.get_items()
         self.character.GO_BLOCKING_MOB = ""
         self.engage_mobs_who_joined_in()
         self.engage_any_attacking_mobs()
-        self.check_weapons()
+        # self.check_weapons()  # TODO: shopping doesn't work everywhere
         
         if not self.character.BLACK_MAGIC:
             self.heal_up()
@@ -137,10 +136,9 @@ class GrindThread(BotThread):
             magentaprint("Targeting: " + new_target)
 
             self.engage_monster(new_target)
-            self.get_items()
             self.engage_mobs_who_joined_in()
             self.engage_any_attacking_mobs()
-            self.check_weapons()
+            # self.check_weapons()  # TODO: shopping doesn't work everywhere
             
             if not self.character.BLACK_MAGIC:
                 self.heal_up()
@@ -228,9 +226,10 @@ class GrindThread(BotThread):
         # we tick our way up to max hp/mp.  (It won't stupidly drain all mana on vigging)
 
         # If we can get hp/mp in sync to the same # of ticks, then do that.
-        # If too much hp, go fight to bring hp down.  If too much mp, vig to balance.
+        # If too much hp, go fight to bring hp down*.  If too much mp, vig to balance.
         # After vigging and resting a full mana pool, hp may still not be very high, 
         # and in that case, keep resting since benefits should be active.
+        # *requires strong enemy for black magic users
 
         magentaprint("In chapel_heal_up.")
 
@@ -396,7 +395,7 @@ class GrindThread(BotThread):
             return
 
         if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
-            self.cast.execute('v')
+            self.cast.cast('v')
             self.cast.wait_for_flag()
 
             if self.has_ideal_health():
@@ -727,12 +726,33 @@ class GrindThread(BotThread):
             # Reason: if Mobs gets notified in the wrong order, smelly beggar gets added after it gets removed, 
             # and I got a bad mobs.attacking... order has been fixed.
 
+        if not self.character.mobs.attacking:
+            self.get_items()
+
     def do_flee_hook(self):
         self.stop()  
         self.commandHandler.user_flee() 
 
     def get_items(self):
-        self.commandHandler.process('ga')  
+        # self.commandHandler.process('ga')  
+        self.commandHandler.get.execute('all')
+        self.commandHandler.get.wait_for_flag()
+        while self.commandHandler.get.cant_carry and not self.stopping:
+            magentaprint("Number of steel bottles: " + str(self.inventory.count('steel bottle')))
+            if self.inventory.count('steel bottle') > 3:
+                # TODO: make an Ability for steel bottle (protection spell)
+                self.commandHandler.use.execute('steel bottle')
+                self.commandHandler.use.wait_for_flag()
+            elif self.inventory.count_restoratives() > 5:
+                self.commandHandler.use.healing_potion()
+                self.commandHandler.use.wait_for_flag()
+                if self.commandHandler.use.error:
+                    return
+            else:
+                # just leave it there
+                return
+            self.commandHandler.get.execute('all')
+            self.commandHandler.get.wait_for_flag()
 
     def engage_mobs_who_joined_in(self):
         # while self.character.MOBS_JOINED_IN != []:
@@ -751,6 +771,8 @@ class GrindThread(BotThread):
         while self.character.mobs.attacking != []:
             engaged = True
             self.engage_monster(self.character.mobs.attacking[0])
+
+        if engaged:
             self.get_items()
 
         return engaged
@@ -771,6 +793,4 @@ class GrindThread(BotThread):
         # We can assume the map doesn't work.
         magentaprint('GrindThread.find_nearby_node()')
         cur_aid = self.character.AREA_ID
-
-
 

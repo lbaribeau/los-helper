@@ -75,6 +75,7 @@ class BotThread(threading.Thread):
 
             if len(self.direction_list) is 0:
                 self.direction_list = self.decide_where_to_go()
+                magentaprint('decide_where_to_go returned ' + str(self.direction_list))
                 
             while len(self.direction_list) is not 0 and not self.stopping:
                 self.do_regular_actions()

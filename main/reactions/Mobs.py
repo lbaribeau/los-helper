@@ -101,25 +101,26 @@ class Mobs(BotReactionWithFlag):
         # You see (two kobold children, a dustman).
         # (Two lay followers) just arrived.
         s = s.replace("\n\r", ' ')
-        comma_items = [comma_item.strip().lower() for comma_item in s.split(',')]
+        # comma_items = [comma_item.strip().lower() for comma_item in s.split(',')]
 
         # return [Mobs.remove_plural(m.strip()) for m in mob_match.group(1).split(',')]
         m_list = []
-        for c in comma_items:
-            if c[len(c)-4:len(c)-3] == ' (' and c[len(c)-1] == ')':
-                # c = remove_good_evil(c)
-                c = c[0:len(c)-5]
+        # for c in comma_items:
+        for comma_item in s.split(','):
+            m = comma_item.strip().lower()
+            
+            if m[len(m)-4:len(m)-2] == ' (' and m[len(m)-1] == ')':
+                # m = remove_good_evil(m)
+                m = m[0:len(m)-4]  
 
-            if any([c.startswith(s + ' ') for s in self.singles]):
+            if any(m.startswith(a_an_some + ' ') for a_an_some in self.singles):
                 # m_dict[m.partition(' ')[2]] = 1
-                m_list.extend([c.partition(' ')[2]])
-                continue
-            # number_check = [m.startswith(n) for n in numbers]
-
-            if any(c.startswith(n + ' ') for n in self.numbers):
-                m_list.extend([remove_plural(c.partition(' ')[2])] * (self.numbers.index(c.split(' ')[0]) + 2))
+                m_list.extend([m.partition(' ')[2]])
+                # number_check = [m.startswith(n) for n in numbers]
+            elif any(m.startswith(n + ' ') for n in self.numbers):
+                m_list.extend([remove_plural(m.partition(' ')[2])] * (self.numbers.index(m.split(' ')[0]) + 2))
             else:
-                m_list.append(c)
+                m_list.append(m)
 
             # for n in range(0, len(numbers)):
             #     if c.startswith(numbers[n] + ' '):

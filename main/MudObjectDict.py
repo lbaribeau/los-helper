@@ -28,12 +28,14 @@ class MudObjectDict():
 
         if (obj is not None):
             if obj in self.dictionary.keys():
-                count = len(self.dictionary[obj])
+                # count = len(self.dictionary[obj])
+                count = self.dictionary[obj].qty
         #count everything
         else:
             for obj,qty in self.dictionary.items():
-                olist = self.dictionary[obj]
-                count += len(olist.objs)
+                # olist = self.dictionary[obj]
+                # count += len(olist.objs)
+                count += qty
 
         # magentaprint("counted MudObjectDict " + str(count) + " " + str(obj) + ".")
         return count
@@ -64,6 +66,7 @@ class MudObjectDict():
     def get_unique_references(self, exception_list = []):
         references = collections.OrderedDict(sorted({}))
         numbered_references = []
+        magentaprint("Inventory.get_unique_references() dicitionary: " + str(self.dictionary.items()))
 
         for obj,qty in self.dictionary.items():
             if obj in exception_list:

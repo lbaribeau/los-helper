@@ -16,7 +16,8 @@ class Inventory(BotReactionWithFlag):
     #     "Elixir of Morinva", "granite potion", "philtre of perception",
     #     "burnt ochre potion", "milky potion"]
 
-    keep_list = ["large bag", "large sack", "black bag",
+    keep_list = [
+        "large bag", "large sack", "black bag",
         "silver chalice", "steel bottle", "glowing potion",
         "chicken soup", "small restorative", "small flask", 
         "large restorative", "scarlet potion", "white potion", "tree root",
@@ -78,6 +79,10 @@ class Inventory(BotReactionWithFlag):
 
         for index, item in enumerate(self.keep_list):
             self.keep_list[index] = MudItem(item)
+
+        self.restoratives = [
+            "chicken soup", "small restorative", "small flask", "large restorative", "scarlet potion", "white potion"
+        ] # , "tree root"]
 
     def notify(self, regex, M_obj):
         if regex in R.you_have:
@@ -152,12 +157,6 @@ class Inventory(BotReactionWithFlag):
         # self.telnetHandler.write("l " + self.character.name)
         # self.wait_for_flag()
 
-    # def has_restorative(self):
-    #     return self.has(self.restoratives)
-
-    # def use_restorative(self):
-    #     self.use(self.restoratives)
-
     def has(self, mud_item_string):
         mud_item = MudItem(mud_item_string)
         mud_item.map()
@@ -166,6 +165,15 @@ class Inventory(BotReactionWithFlag):
             return True
 
         return False
+
+    def has_restorative(self):
+        return any([self.has(r) for r in self.restoratives])
+
+    def count_restoratives(self):
+        return sum(self.count(r) for r in self.restoratives)
+
+    def has_any(self, item_name_list):
+        return any([self.has(i) for i in item_name_list])  
 
     def has_slot_equipped(self, slot_to_check, quantity=1):
         has_slot_equipped = False
@@ -260,6 +268,7 @@ class Inventory(BotReactionWithFlag):
     # def sell_fast(self):
 
     def drop_stuff(self):
+        magentaprint("Inventory.drop_stuff()")
         self.__stopping = False
         self.get_inventory()  # Maybe unnecessary, except I see "You don't have that" if removed
 
@@ -290,8 +299,7 @@ class Inventory(BotReactionWithFlag):
         self.inventory.add(self.parse_item_list(item_string))
 
     def add(self, item_string):
-        items = self.parse_item_list(item_string)
-        self.inventory.add(items)
+        self.inventory.add(self.parse_item_list(item_string))
 
     def add_broken(self, item_string):
         items = self.parse_item_list(item_string)
@@ -405,13 +413,15 @@ class Inventory(BotReactionWithFlag):
         d[mud_item] = GenericMudList([mud_item] * qty)
 
     def sellable(self):
-        return self.inventory.get_unique_references(self.keep_list)
+        self.get_inventory()
+        slist = self.inventory.get_unique_references(self.keep_list)
+        magentaprint("Sellable items: " + str(slist))
+        # return self.inventory.get_unique_references(self.keep_list)
+        return slist
 
     def output_inventory(self):
         magentaprint(str(self.inventory),False)
 
-    # restoratives = ["chicken soup", "small restorative", "small flask", 
-    #                 "large restorative", "scarlet potion", "white potion", "tree root"]
     # usable = ["small retorative", "large restorative", "chicken soup", "scarlet potion", 
     #           "steel bottle", "silver chalice", "milky potion",
     #           "glowing potion",
@@ -419,8 +429,7 @@ class Inventory(BotReactionWithFlag):
 
     # should probably depend on level.
     #keep_list = ["small restorative", "silver chalice", "steel bottle", "milky potion"] 
-
-    #thick liquid silences you !!!
+    #thick liquid silences you !!!  (mimes are funny)
 
     MUD_RETURN_ITEM_SOLD = False
 
@@ -462,9 +471,9 @@ class Inventory(BotReactionWithFlag):
             return starting_point.split[' '][0] + ' ' + str(int(ref_split[1]) + c - 1)
         else:
             if c == 1:
-                return starting_point.split[' '][0]
+                return starting_point.split(' ')[0]
             else:
-                return starting_point.split[' '][0] + ' ' + str(c)
+                return starting_point.split(' ')[0] + ' ' + str(c)
         # There would be less code if I didn't treat '1' specially (I prefer 'potion' not 'potion 1' for the 1st potion)
 
     def _reference_string(self, word, i):
@@ -530,6 +539,11 @@ class Inventory(BotReactionWithFlag):
             magentaprint(str(self.equipped_items))
         elif 'Second' in self.equipped_items.keys() and self.equipped_items['Second'] and self.equipped_items['Second'][0].obj.name == weapon:
             del self.equipped_items['Second']
+
+    def count(self, item_string):
+        mud_item = MudItem(item_string)
+        mud_item.map()
+        return self.inventory.count(mud_item)
 
 # Ok I want to set up reactions to keep myself up to date.
 # I am thinking of steel bottles and restoratives, so I want 

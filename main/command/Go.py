@@ -13,7 +13,7 @@ class Go(Command):
     error_regexes = [RegexStore.no_exit, RegexStore.go_where]
     failure_regexes = [
         RegexStore.blocked_path, RegexStore.cant_go, RegexStore.open_first,
-        RegexStore.class_prohibited, RegexStore.level_too_low, RegexStore.not_invited,
+        RegexStore.class_prohibited, RegexStore.level_too_low, RegexStore.level_too_high, RegexStore.not_invited,
         RegexStore.not_open_during_day, RegexStore.not_open_during_night, RegexStore.no_items_allowed, 
         RegexStore.locked, RegexStore.no_right, RegexStore.in_tune,
         RegexStore.not_authorized, RegexStore.cannot_force, RegexStore.washroom, RegexStore.cliff

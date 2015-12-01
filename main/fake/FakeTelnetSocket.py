@@ -19,9 +19,11 @@ class FakeTelnetSocket(object):
         self.current_area = ""
         self.current_mud_area = None
         self.current_monster_list = ['spiv', 
-            # 'acrobat', 'juggler',                                 # chasing
-            'kobold champion', #'kobold sentry', 'large kobold',    # weapon break
-            # 'militia soldier'                                     # potting
+            'acrobat', 'juggler',                                 # chasing
+            'kobold champion', # weapon shatter
+            # 'kobold sentry', # spear break
+            'large kobold',    # maul hammer break
+            'militia soldier'                                     # potting
         ]
         self.fso = FakeSocketOutput()
         self.rng = 0
@@ -34,17 +36,20 @@ class FakeTelnetSocket(object):
         #     "a hammer, a large bag, a large mace, two large sacks, a long sword, seven silver chalices, a silver torch, \n\r" \
         #     "two small flasks, two small lamps, two small restoratives, six steel bottles, five steel rings, two stilletos, \n\r" \
         #     "two white potions.\n"
-        # self.inventory = ['awl'] + ['small lamp'] * 6 + ['small knive'] * 6 + ['large sack'] * 2 + \
-        #     ['silver chalice'] * 7 + ['small flask'] * 2 + ['small lamp'] * 2 + ['small restorative'] * 2 + \
-        #     ['steel bottle'] * 6 + ['steel ring'] * 6 + ['stilleto'] * 2 + ['white potion'] * 2 + \
-        #     ['buckler', 'burnt ochre potion', 'hammer', 'large bag', 'large mace', 'long sword', 'silver torch']
-        self.inventory = FakeInventory({'awl':1, 'small lamp':6, 'small knife':6, 'large sack':2, 'silver chalice':6, 'small flask':2, \
-            'small lamp':2, 'small restorative':2, 'steel bottle':6, 'steel ring':6, 'stilleto':2, 'white potion':2, \
-            'buckler':1, 'burnt ochre potion':1, 'hammer':1, 'large bag':1, 'large mace':1, 'long sword':1, 'silver torch':1, \
-            'spectacles': 1, 'title deeds': 1, 'morning star': 1, 'maul hammer': 1
-        })
+        self.inventory = FakeInventory(['awl'] + ['small lamp'] * 6 + ['small knive'] * 6 + ['large sack'] * 2 + \
+            ['silver chalice'] * 7 + ['small flask'] * 2 + ['small lamp'] * 2 + ['small restorative'] * 2 + \
+            ['steel bottle'] * 6 + ['steel ring'] * 6 + ['stilleto'] * 2 + ['white potion'] * 2 + ['maul hammer'] * 2 + \
+            ['buckler', 'burnt ochre potion', 'hammer', 'large bag', 'large mace', 'long sword', 'silver torch', \
+             'spectacles', 'title deeds', 'morning star'])
+        self.inventory.set_unusable('morning')
+        self.inventory.set_unusable('maul 2')
+        # self.inventory = FakeInventory({'awl':1, 'small lamp':6, 'small knife':6, 'large sack':2, 'silver chalice':6, 'small flask':2, \
+        #     'small lamp':2, 'small restorative':2, 'steel bottle':6, 'steel ring':6, 'stilleto':2, 'white potion':2, \
+        #     'buckler':1, 'burnt ochre potion':1, 'hammer':1, 'large bag':1, 'large mace':1, 'long sword':1, 'silver torch':1, \
+        #     'spectacles': 1, 'title deeds': 1, 'morning star': 1, 'maul hammer': 2
+        # })
         self.equipment = FakeEquipment(character_name)
-        self.buy = FakeBuy(self.socket_output)
+        self.buy = FakeBuy(self.inventory, self.socket_output)
         spaces = "                      "[0:22 - len(character_name)]
         
         self.whois_string = (
@@ -52,7 +57,7 @@ class FakeTelnetSocket(object):
             "-----------------------------------------------------------------------------\n" + 
             # "Derp                  Mon  M  [12]Brother                    16    Human\n")
             # character_name + spaces + "Mon  M  [12]Brother                    16    Human\n"
-            character_name + spaces + "Pal  M  [08]Keeper                    16    Human\n"
+            character_name + spaces + "Ran  M  [08]Keeper                    16    Human\n"
         )
         self.spells_string = (
             "\n\r"
@@ -132,7 +137,6 @@ class FakeTelnetSocket(object):
             self.initialize_socket_output(command)
             self.write('genaid 2')
             # self.write('addmob spiv')
-
         if command == '':
             self.socket_output.append('[' + str(self.hp) + ' H 27 M]: ')
         elif re.match('whois (.+?)', command):
@@ -175,6 +179,8 @@ class FakeTelnetSocket(object):
                 self.socket_output.append('You touched the ' + self.get_mob_name(m.group('mob')) + ' for 102 damage.\n\r')
             else:
                 self.socket_output.append('Touch whom?')
+        elif command.startswith('has'):
+            self.socket_output.append('You feel yourself moving faster.\n\r')
         elif command == 'rest':
             self.hp = 89
             self.socket_output.append('[89 H 27 M]: You feel the benefits of resting.\n\r')
@@ -194,17 +200,17 @@ class FakeTelnetSocket(object):
         elif command.startswith('wie') and len(command.split(' ')) > 1:
             if self.equipment.weapon:
                 self.socket_output.append("You're already wielding something.")
-            elif command.partition(' ')[2].startswith('spear'):
-                self.socket_output.append('You wield a spear.\n\r')
-                self.inventory.remove('spear')
-                self.equipment.wield('spear')
-            elif command.partition(' ')[2].startswith('maul') or command.partition(' ')[2].startswith('hammer'):
-                self.socket_output.append("You can't, it's broken.")
             else:
-                self.socket_output.append('You wield a morning star.\n\r')
-                self.inventory.remove('morning star')
-                self.equipment.wield('morning star')
-                magentaprint('Wielded morning star: ' + self.equipment.weapon)
+                w = self.inventory.get(command.partition(' ')[2])
+                if w:
+                    if w.unusable:
+                        self.socket_output.append("You can't. It's broken.\n\r")
+                    else:
+                        self.socket_output.append("You wield a " + w.name + ".\n\r")
+                        self.inventory.remove(command.split(' ')[1])
+                        self.equipment.wield(w.name)
+                else:
+                    self.socket_output.append("You don't have that.")
         elif command.startswith('seco') and len(command.split(' ')) > 1:
             self.socket_output.append('You wield a spear in your off hand.')
             self.inventory.remove('spear')
@@ -215,16 +221,21 @@ class FakeTelnetSocket(object):
             break_string = 'Your ' + item + ' fell apart.\n'
             self.socket_output.append(break_string)
         elif re.match('drop (.+)', command):
-            M_obj = re.search('drop (.+)', command)
-            item = str(M_obj.group(1))
-            drop_string = self.drop_string % item
-            self.socket_output.append(drop_string)
-            self.buy.cant_carry = False
+            i = self.inventory.index(command.partition(' ')[2])
+            if i > -1:
+                self.socket_output.append(self.drop_string % self.inventory.l[i].name)
+                self.buy.cant_carry = False
+                self.inventory.remove(command.partition(' ')[2])
+            else:
+                self.socket_output.append("You don't have that.")
         elif re.match('sell (.+)', command):
-            M_obj = re.search('sell (.+)', command)
-            item = str(M_obj.group(1))
-            sell_string = 'The shopkeep gives you 30 gold for ' + item + '.'
-            self.socket_output.append(sell_string)
+            i = self.inventory.index(command.partition(' ')[2])
+            if i > -1:
+                self.socket_output.append('The shopkeep gives you 30 gold for a ' + self.inventory.l[i].name + '.')
+                self.buy.cant_carry = False
+                self.inventory.remove(command.partition(' ')[2])
+            else:
+                self.socket_output.append("You don't have that.")
         elif command == 'use restorative':
             if 'small restorative' in self.pots:
                 self.pots.remove('small restorative')
@@ -241,12 +252,19 @@ class FakeTelnetSocket(object):
                     self.pots.remove('small flask')
                     self.socket_output.append('Potion drank.\n\rYou feel much better.\n\rA small flask disintegrates.\n\r')
                 self.socket_output.append('[' + str(self.hp) + ' H 27 M]: ')
+        elif command == 'use white':
+            if 'white potion' in self.pots:
+                self.hp = self.hp + 10
+                self.socket_output.append('Potion drank,\n\rYou feel much better.\n\rA white potion disintegrates.\n\r')
+                self.socket_output.append('[' + str(self.hp) + ' H 27 M]: ')
         elif command.startswith('buy '):
             self.buy.do(command.partition(' ')[2])
         elif re.match('echo (.+)', command):
             M_obj = re.search('echo (.+)', command)
             echo = str(M_obj.group(1))
             self.socket_output.append(echo + '\n')
+        elif command == 'get all':
+            self.socket_output.append("There's nothing here.\n\r")
         elif re.match('quit', command) or re.match('quilt', command):
             self.socket_output.append('Goodbye! Come back soon.')
 
@@ -264,7 +282,7 @@ class FakeTelnetSocket(object):
         area_string += self.current_mud_area.area_exits[i].exit_type.name + "."
 
         self.current_area = area_string
-        self.socket_output.append(str(self.show_current_area()))
+        self.socket_output.append(str(self.show_current_area()))  # one more newline?
 
     def gen_next_area(self, direction):
         exit = ExitType(name=self.get_whole_exit_name(direction))
@@ -360,21 +378,21 @@ class FakeTelnetSocket(object):
                 self.socket_output.append('[' + str(self.hp) + ' H 27 M]: The space marine painfully head-butts you for 47 damage.\n\r')
                 if self.hp == 0:
                     self.hp = 1
-                    self.socket_output.append("You are overwhelmed by the sword swallower's attack and you collapse!\n\r")
+                    self.socket_output.append("You are overwhelmed by the space marine's attack and you collapse!\n\r")
                 self.socket_output.append('[1 H 27 M]: ')
             elif mob == 'kobold champion':
                 self.rng = (self.rng + 1) % 4
                 self.socket_output.append('[' + str(self.hp) + ' H 27 M]: The kobold champion throws a wild punch at you, but it misses.\n\r')
                 if self.rng == 0:
-                    self.socket_output.append('Your morning star shatters.\n\r')
+                    self.socket_output.append('Your maul hammer shatters.\n\r')
                     self.equipment.weapon = ''
                     self.mobdead(mob)
             elif mob == 'large kobold':
                 self.rng = (self.rng + 1) % 4
                 self.socket_output.append('[' + str(self.hp) + ' H 27 M]: The large kobold throws a wild punch at you, but it misses.\n\r')
                 if self.rng == 2:
-                    self.socket_output.append('Your morning star breaks and you have to remove it.\n\r')
-                    self.inventory.add('morning star')
+                    self.socket_output.append('Your maul hammer breaks and you have to remove it.\n\r')
+                    self.inventory.add('maul hammer')
                     self.equipment.weapon = ''
                 elif self.rng == 0:
                     self.mobdead(mob)

@@ -31,7 +31,7 @@ class CombatObject(object):
 
     @property 
     def end_combat(self):
-        return self.result in RegexStore.mob_died or self.result in RegexStore.mob_fled
+        return self.result in RegexStore.mob_died or self.result in RegexStore.mob_fled or self.result in RegexStore.you_died
 
     @property
     def mob_died(self):

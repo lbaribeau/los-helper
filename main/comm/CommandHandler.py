@@ -28,6 +28,7 @@ from command.Command import Command
 from reactions.CombatReactions import CombatReactions
 from command.Buy import Buy
 from command.Drop import Drop
+from command.Get import Get
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -58,8 +59,12 @@ class CommandHandler(object):
         self.combat_reactions = CombatReactions(self.character)
         mudReaderHandler.add_subscriber(self.combat_reactions)
         self.buy = Buy(telnetHandler)
-        self.drop = Drop(telnetHandler)
         mudReaderHandler.add_subscriber(self.buy)
+        self.drop = Drop(telnetHandler)
+        mudReaderHandler.add_subscriber(self.drop)
+        self.get = Get(telnetHandler)
+        mudReaderHandler.add_subscriber(self.get)
+        self.use = self.smartCombat.use
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
@@ -125,6 +130,7 @@ class CommandHandler(object):
                 if the_split[0].endswith('c'):
                     a.spam(arg1)
                 else:
+                    magentaprint("CommandHandler executed " + str(a))
                     a.execute(arg1)
                 return
         if user_input == 'ss':
@@ -154,12 +160,15 @@ class CommandHandler(object):
             self.user_kk2(user_input.partition(' ')[2].strip())
         elif re.match('dro? ', user_input):
             self.user_dr(user_input)
+        elif user_input.startswith('sellable'):
+            magentaprint(str(self.inventory.sellable()))
         elif user_input.startswith('Sel'):
             self.inventory.sell_stuff()
         elif user_input.startswith('Dr'):
             self.inventory.drop_stuff()
         elif user_input == 'ga':
-            self.telnetHandler.write('get all')
+            # self.telnetHandler.write('get all')
+            self.get.execute('all')
         elif user_input.startswith('go ') or re.match(str(self.character.EXIT_REGEX), user_input):
             if not user_input.startswith('go '):
                 magentaprint("User input matched " + str(self.character.EXIT_REGEX) + ", going.")
@@ -184,10 +193,11 @@ class CommandHandler(object):
             self.user_flee()
         elif user_input == 'use soup':
             self.smartCombat.use.healing_potion() 
-        elif user_input == 'use heals':
-            self.smartCombat.use.spam_pots()  # testing
-            time.sleep(2.5)  # Also, smartCombat stops the thread even out of combat, so that has to be changed for this test.
-                            # ... don't forget to change it back
+        elif re.match("usec$", user_input):  # 'use c' following my pet syntax: end a command with 'c' to start a thread
+            self.smartCombat.use.spam_pots()
+        elif re.match("usec2$", user_input):
+            self.smartCombat.use.spam_pots(prefer_big=True)
+        elif re.match("su$", user_input):
             self.smartCombat.use.stop()
         elif re.match("bot ?$|bot [0-9]+$", user_input):
             self.start_track_grind(user_input)
@@ -424,6 +434,7 @@ class CommandHandler(object):
         self.telnetHandler.write("second %s\n" % (argv))
 
     def user_flee(self):
+        self.smartCombat.stop()
         self.cast.stop()
         # self.smartCombat.flee()
         now = time.time()
@@ -493,9 +504,11 @@ class CommandHandler(object):
         elif self.botThread and self.botThread.is_alive():
             if self.botThread.stopping:
                 magentaprint("BotThread continuing.")
-                self.botThread.stopping = False
+                # self.botThread.stopping = False
             else:
                 magentaprint("Bot already going.")
+                # self.botThread.stop()
+                # self.botThread.join()
             return False
         else:
             return True

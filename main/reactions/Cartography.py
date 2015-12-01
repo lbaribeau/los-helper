@@ -50,8 +50,9 @@ class Cartography(BotReactionWithFlag):
         elif regex in RegexStore.blocked_path:
             self.blocked_path(regex, M_obj)
         elif regex in RegexStore.loot_blocked:
-            loot_blocker = M_obj.group(2)
-            magentaprint("loot blocker blocking pickup by: " + loot_blocker)
+            # loot_blocker = M_obj.group(2)
+            loot_blocker = self.character.mobs.read_match(M_obj)
+            magentaprint("Cartography loot blocker blocking pickup: " + loot_blocker)
             self.catalog_loot_blocker(loot_blocker)
         elif regex in RegexStore.please_wait:
             if self.character.TRYING_TO_MOVE:
@@ -83,12 +84,13 @@ class Cartography(BotReactionWithFlag):
             level = M_obj.group(5)
             self.catalog_monster_bio(name, description, level)
         elif regex in RegexStore.mob_aura:
-            name = M_obj.group(2)
-            aura = M_obj.group(3)
+            # name = M_obj.group(2)
+            # aura = M_obj.group(3)
             #magentaprint("{" + M_obj.group(0) + "}", False)
             #magentaprint("{" + regex + "}", False)
             #magentaprint("'" + name + "' => '" + aura + "'",False)
-            self.catalog_monster_aura(name, aura)
+            magentaprint("Cartography mob aura: " + self.character.mobs.read_match(M_obj) + ', ' + M_obj.group('aura'))
+            self.catalog_monster_aura(self.character.mobs.read_match(M_obj), M_obj.group('aura'))
         elif regex in RegexStore.not_here or regex in RegexStore.no_exit:
             #The state is confusion is usually caused by bad processing of good data (i.e. bugs)
             #The following is a set of work arounds to smoothe things out until those bugs are fixed
@@ -120,7 +122,7 @@ class Cartography(BotReactionWithFlag):
         else:
             # This is fine for a shut door - we just want the super().notify in that case.
             magentaprint("Cartography case missing for regex: " + str(regex))
-        magentaprint("Cartogarphy notify done, regex: " + str(regex[:min(len(regex), 10)]) + '...')
+        magentaprint("Cartogarphy notify done, regex: " + str(regex[:min(len(regex), 20)]) + '...')
         super().notify(regex, M_obj)
 
     def too_dark(self, regex, M_obj):
@@ -186,8 +188,9 @@ class Cartography(BotReactionWithFlag):
             self.character.TRYING_TO_MOVE = False
 
     def blocked_path(self, regex, M_obj):
-        magentaprint("Cartography blocking mob name: " + str(M_obj.group('mob_name')))
-        mob_name = M_obj.group('mob_name')
+        # mob_name = M_obj.group('mob_name')
+        mob_name = self.character.mobs.read_match(M_obj)
+        magentaprint("Cartography blocking mob name: " + mob_name)
         self.character.GO_BLOCKING_MOB = mob_name
         self.character.SUCCESSFUL_GO = False
         self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0

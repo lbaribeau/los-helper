@@ -275,7 +275,7 @@ class Character(object):
         'singer', 'musician', 'spiv', 'bidder', 'dairy cow', 'scholar', 
         'juggler', 'shepherd', 'gazelle', 'dancer', 'jongleur', 'tabby cat', 
         'clerk', 'stablehand', 'rich kid', 'bladesman', "cook's assistant", 
-        "miner's assistant"
+        "miner's assistant", 'mare'
         #"acolyte"  # Problem: clumps up on holly lane
         #"penitent"  # Removed for red/blue balance
         ] 
@@ -299,7 +299,7 @@ class Character(object):
         #'miner's mule"
         ]
     lvl3_red_monsters = [
-        'large kobold', 'insane kobold', 'kobold scout', 'drunk'
+        'large kobold', 'insane kobold', 'kobold scout', 'drunk', 'drunken trouble-maker'
         ]
     lvl4_monsters = [ # 45-60 exp
         'actor', 'grip', 'theatre goer', 'merchant', 'journeyman', 'logger', 
@@ -315,7 +315,7 @@ class Character(object):
         ]
     # hungry spiders are hostile
     lvl4_red_monsters = [
-        'kobold shaman', 'drunken trouble-maker', 'kobold champion', 'hungry spider']
+        'kobold shaman', 'kobold champion', 'hungry spider']
     lvl5_monsters = [
         'dwarven farm hand', 'dwarven barmaid', 'fort sentry', 'fur trader', 
         'aristocrat', # 'rancher sentry',  # There are also lvl 7 rancher sentries
@@ -366,11 +366,13 @@ class Character(object):
     lvl10_monsters = [ # 350+
         'wounded knight', # -2 difficulty
         'The Master of Ceremonies', # 280
+        'Dame Brethil', 
         'Kelluran', 'Jerrek',  # all grey
         'Farmer McDermott', 'abbot', # 445
-        'Rimark', 'Dame Brethil', 'dwarven blacksmith', 
+        'Rimark', 
         'silver knight',  # 380, +1 difficulty
-        'Commander Rilmenson'
+        'Commander Rilmenson', 
+        'dwarven blacksmith'   # 400
         # white knight
     ]
     lvl11_monsters = [

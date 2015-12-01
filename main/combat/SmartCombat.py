@@ -22,6 +22,7 @@ class SmartCombat(CombatObject):
         self.target = None
         self.stopping = None
         self.broken_weapon = ''
+        self.activated = False
         self.kill = Kill(telnetHandler)
         self.cast = Cast(telnetHandler)
         self.prompt = Prompt(character)
@@ -52,7 +53,9 @@ class SmartCombat(CombatObject):
                                    Spells.burn if spell_percent == character.fire else Spells.blister
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
         self.character = character
-        self.regex_cart.extend([RegexStore.prompt, RegexStore.weapon_break, RegexStore.weapon_shatters])
+        self.regex_cart.extend([
+            RegexStore.prompt, RegexStore.weapon_break, RegexStore.weapon_shatters, RegexStore.mob_attacked, RegexStore.armor_breaks
+        ])
 
     def notify(self, regex, M_obj):
         # Notifications are used for healing
@@ -60,27 +63,68 @@ class SmartCombat(CombatObject):
         # I prefer the latter.
         super().notify(regex, M_obj)
         if regex in RegexStore.prompt:
-            if self.in_combat and self.should_use_heal_ability():
-                self.heal_abilities[0].send()
-            elif self.in_combat and self.needs_heal():
-                self.use.spam_pots()
-            elif not self.needs_heal():
-                self.use.stop()
+            if self.activated:
+                if self.should_use_heal_ability():
+                    self.heal_abilities[0].send()
+                elif self.needs_heal():
+                    if self.broken_weapon or not self.character.inventory.has_restorative():
+                        self.fleeing = True  # TODO: Do pots interfere with the flee timer?  (Should I use a pot?)
+                    if self.needs_big_heal():
+                        self.use.spam_pots(prefer_big=True)  
+                    else:
+                        self.use.spam_pots()
+                else:
+                    self.use.stop()
+        elif regex in self.end_combat_regexes and self.activated:
+            self.use.stop()
+            self.activated = False
+            self.check_rings()
+        elif regex in RegexStore.mob_attacked and self.needs_heal():
+            self.fleeing = True
         elif regex in RegexStore.weapon_break or regex in RegexStore.weapon_shatters:
             magentaprint("SmartCombat weapon break: " + str(M_obj.group('weapon')))
             self.broken_weapon = M_obj.group('weapon')
+        elif regex in RegexStore.armor_breaks:
+            magentaprint("SmartCombat armor break: " + str(M_obj.group(1)) + ' ' + str(len(M_obj.group(1).split(' '))))
+            if len(M_obj.group(1).split(' ')) >= 2:
+                if M_obj.group(1).split(' ')[1] == 'ring':
+                    self.broke_ring = True
 
-    def needs_heal(self):
-        # return self.character.HEALTH < 50  # Test!
-        if self.character.mobs.damage:
-            return self.character.HEALTH <= max(self.character.mobs.damage)
-        else:
-            return self.character.HEALTH < 0.25 * self.character.maxHP
+    def stop(self):
+        super().stop()
+        self.activated = False
 
     def should_use_heal_ability(self):
         return len(self.heal_abilities) > 0 and self.heal_ability_is_up and \
             self.character.HEALTH <= self.character.maxHP - 0.9*self.heal_abilities[0].max_amount
 
+    def needs_big_heal(self):
+        return self.potion_threshold() - self.character.HEALTH > 6
+
+    def needs_heal(self):
+        return self.potion_threshold() - self.character.HEALTH > 0
+        # return self.character.HEALTH < 50  # Test!
+        # if self.character.mobs.damage:
+        #     return self.character.HEALTH <= 1.3*max(self.character.mobs.damage)  
+        # else:
+        #     return self.character.HEALTH < 0.20 * self.character.maxHP
+            # This algorithm isn't completely guaranteed and fails on horrible luck, hoping the extra *0.30 and stdev from mob damage
+            # gives restoratives enough time to get above the mob's attack damage... if we get hit when below 1.3x, we run
+            # (Usually hps > dps, but if hps < dps, we end up running, and if hps << dps, we could die)
+            # I could just switch to large restoratives.  How about use mob damage to determine which restoratives.  
+            # But when do I flee?  Only when out of restoratives?  Sure.  Maybe if no weapon?  Sure.  No mana?  Nope.  
+            # So it's basically flee if needs_heal and (broken_weapon or no_restoratives or mob_attacked_before_healing_caught_up)
+            # How about use health needed to pick the restorative... well time till next mob attack is also relevant...
+            # try large restorative if >5 needed
+        # Use restoratives starting at 1.3* mob damage.
+        # If we get hit while restoratives are 'on', then flee (mob dps > hps)
+
+    def potion_threshold(self):
+        if self.character.mobs.damage:
+            return 1.3*max(self.character.mobs.damage)  
+        else:
+            return 0.20 * self.character.maxHP
+    
     def stop(self):
         self.use.stop()
         self.stopping = True
@@ -107,15 +151,20 @@ class SmartCombat(CombatObject):
         self.stopping = False
         self.mob_charmed = False
         self.circled = False
+        self.activated = True
+        self.fleeing = False
+        self.broke_ring = False
         self.casting = self.black_magic or 'vigor' in self.character.spells
 
         self.use_any_fast_combat_abilities()  # ie. Touch, Dance
 
         while not self.stopping:
             if self.broken_weapon:
-                self.reequip_weapon()
+                self.reequip_weapon()  # TODO: This can get spammed... answer on to unset is_usable on weapon objects in inventory 
             # magentaprint("SmartCombat loop kill.timer " + str(round(self.kill.wait_time(), 1)) + " cast.timer " + str(round(self.cast.wait_time(), 1)) + ".")
-            if self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
+            if self.fleeing and not self.cast.wait_time() - self.kill.wait_time() > self.kill.cooldown_after_success:
+                self.escape()
+            elif self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
                 self.kill.wait_until_ready()
                 if self.stopping: 
                     break 
@@ -400,3 +449,29 @@ class SmartCombat(CombatObject):
 
         #     self.sleep(0.05)   
 
+    def escape(self):
+        self.stop()
+        self.cast.stop()
+        self.kill.stop()
+        self.cast.wait_until_ready()
+        self.kill.wait_until_ready()
+
+        if self.character.weapon1 != '':
+            self.telnetHandler.write("rm " + self.character.weapon1)
+        if self.character.weapon2 != '':
+            self.telnetHandler.write("rm " + self.character.weapon2)
+
+        self.telnetHandler.write("fl")
+        self.telnetHandler.write("fl")
+        self.telnetHandler.write("fl")
+
+        time.sleep(0.1)
+
+        if self.character.weapon1 != "":
+            self.wield.execute(self.character.inventory.get_last_reference(self.character.weapon1))
+        if self.character.weapon2 != "":
+            self.wield.second.execute(self.character.inventory.get_last_reference(self.character.weapon2))
+
+    def check_rings(self):
+        if self.broke_ring:
+            self.telnetHandler.write('wear all')

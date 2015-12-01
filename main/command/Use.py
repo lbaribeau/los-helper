@@ -9,8 +9,8 @@ class Use(ThreadingMixin2):
     # Erhm, maybe I don't want a Potion thread because it will use too many pots if a prompt is delayed.
     # Solution - wait for prompt in the thread.
     command = 'use'
-    cooldown_after_success = 0.75
-    cooldown_after_failure = 0.75
+    cooldown_after_success = 0.79  # .78 too fast
+    cooldown_after_failure = 0.79
     # It's tempting to try to make Inventory smart enough to use healing items...
     success_regexes = [RegexStore.potion_drank]  # Todo: add rods/buffs  (Might be made simpler with a different class, ie. UseRod)
     failure_regexes = []  # TODO: I believe flasks can fail
@@ -22,6 +22,7 @@ class Use(ThreadingMixin2):
         super().__init__(telnetHandler)
         self.prompt_flag = False
         self.regex_cart.append(RegexStore.prompt)
+        self.prefer_big = False
 
     def notify(self, r, m):
         super().notify(r, m)
@@ -29,19 +30,33 @@ class Use(ThreadingMixin2):
             self.prompt_flag = True
 
     def healing_potion(self):
+        # big_pots = ['large restorative', 'scarlet potion']
+        # small_pots = ['chicken soup', 'small restorative', 'small flask', 'white potion']
         pots = ['chicken soup', 'small restorative', 'small flask', 'white potion', 'large restorative', 'scarlet potion']
+
+        if self.prefer_big:
+            pots.reverse()
+
         # # if 'bowl of chicken soup' in self.character.inventory.inventory:
         # if self.character.inventory.has('bowl of chicken soup'):
         #     self.character.inventory.use('bowl of chicken soup')
         #     # self.execute(self.character.inventory.)
         #     self.wait_for_flag()
         for pot in pots:
+            magentaprint("Use pot: " + str(pot))
             if self.character.inventory.has(pot):
                 # self.character.inventory.use(pot)   # I want the 'result' feature of Command so I can't use Inventory here.
                 # self.execute(self.character.inventory.)
                 # self.character.inventory.remove_from_qty_dict(self.character.inventory.inventory, (pot, 1))
                 # self.execute(self.character.inventory.get_reference(pot))
-                self.execute(self.character.inventory.get_2nd_word_reference(pot))
+                # ref = self.character.inventory.get_2nd_word_reference(pot)
+                # magentaprint('Use.healing_potion() ref: ' + str(ref))
+                # if ref:  # not sure why 'has' or get ref is currently problematic... (error no target)
+                #     self.execute(ref)
+                #     # self.wait_for_flag()
+                # else:
+                #     continue
+                self.execute(pot)
                 # Inventory notices on its own 'a small restorative disintegrates'
                 # self.wait_for_flag()  # Waiting to get the inventory upkeep right
                 # if self.success or self.failure:
@@ -50,6 +65,9 @@ class Use(ThreadingMixin2):
                 break
 
         return False  # Ran out of pots.  use.result also provides return information
+
+    # def can_heal(self):
+    #     pots = ['chicken soup', 'small restorative', 'small flask', 'white potion', 'scarlet potion', 'large restorative']
 
     def run(self):
         while not self.stopping:
@@ -66,8 +84,9 @@ class Use(ThreadingMixin2):
         # I feel like smart combat should do the stopping, because we don't want to worry about mob damage here.
         # We should wait_for_prompt() and be later in the subscriber list.
 
-    def spam_pots(self):
+    def spam_pots(self, prefer_big=False):
         self.stopping = False
+        self.prefer_big = prefer_big
         if not self.thread or not self.thread.is_alive():
             # not is_alive() means it won't look at stopping anymore so we're good.
             self.thread = Thread(target=self.run, args=())
@@ -80,7 +99,7 @@ class Use(ThreadingMixin2):
         #     # Maybe we write its code smarter to handle this case... don't sleep till after the cooldown's verified
         #     magentaprint("Command will be sent in " + str(round(self.wait_time())) + " seconds.")
 
-
-
+    def execute(self, target=None):
+        super().execute(self.character.inventory.get_reference(target))
 
 
