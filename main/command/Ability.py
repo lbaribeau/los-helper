@@ -191,7 +191,7 @@ class Meditate(HealAbility):
     command = "me"
     cooldown_after_success = 120
     cooldown_after_failure = 5
-    max_amount = 26 #guess  ()
+    max_amount = 15 #guess  ()
     success_regexes = [RegexStore.meditate]
     failure_regexes = [RegexStore.not_at_peace]
     # classes = ["Mon"]
