@@ -61,7 +61,7 @@ class SmartCombat(CombatObject):
         super().notify(regex, M_obj)
         if regex in RegexStore.prompt:
             if self.in_combat and self.should_use_heal_ability():
-                self.heal_abilities[0].send()
+                self.heal_abilities[0].execute()
             elif self.in_combat and self.needs_heal():
                 self.use.spam_pots()
             elif not self.needs_heal():

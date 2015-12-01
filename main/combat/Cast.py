@@ -4,6 +4,7 @@ from time import time
 
 from combat.CombatObject import SimpleCombatObject
 from comm import RegexStore
+from command import Spells
 from misc_functions import magentaprint
 
 class Cast(SimpleCombatObject):
@@ -85,7 +86,7 @@ class Cast(SimpleCombatObject):
         self.persistent_execute(target)
 
     def update_aura(self, character):
-        if not 'show-aura' in self.character.spells:
+        if not 'show-aura' in character.spells:
             return
 
         if time() > self.aura_timer + self.aura_refresh:
@@ -95,14 +96,14 @@ class Cast(SimpleCombatObject):
             # while self.result is 'failure':
             #     self.cast('show')
             #     self.wait_for_flag()
-            if self.sucess:
-                self.aura_timer = time.time()
+            # if self.success:
+            #     self.aura_timer = time.time()
         else:
             magentaprint("Last aura update %d seconds ago." % round(time.time() - self.aura_timer))
 
     def spam_spell(self, character, spell, target=None):  # Maybe a prompt object would be better than character
         # Spam until success
-        if spell not in self.character.spells:
+        if spell not in character.spells:
             return
 
         spell_cost = 2 if re.match("vig?|vigor?", spell) else \
