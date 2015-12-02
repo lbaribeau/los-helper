@@ -65,7 +65,7 @@ class SmartCombat(CombatObject):
         if regex in RegexStore.prompt:
             if self.activated:
                 if self.should_use_heal_ability():
-                    self.heal_abilities[0].send()
+                    self.heal_abilities[0].execute()
                 elif self.needs_heal():
                     if self.broken_weapon or not self.character.inventory.has_restorative():
                         self.fleeing = True  # TODO: Do pots interfere with the flee timer?  (Should I use a pot?)

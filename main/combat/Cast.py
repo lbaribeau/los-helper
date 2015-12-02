@@ -102,8 +102,8 @@ class Cast(SimpleCombatObject):
             # while self.result is 'failure':
             #     self.cast('show')
             #     self.wait_for_flag()
-            if self.success:
-                self.aura_timer = time()
+            # if self.success:
+            #     self.aura_timer = time()
         else:
             magentaprint("Last aura update %d seconds ago." % round(time() - self.aura_timer))
 
