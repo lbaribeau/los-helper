@@ -23,8 +23,8 @@ class MudMap(object):
     def populate_map(self):
         areas = Area.raw('select * from v_areas_for_graph')
         area_exits = AreaExit.raw('select * from v_areaexits_for_graph')
-        self.magentaprint("MudMap populate_map areas:" + str(areas))
-        self.magentaprint("MudMap populate_map area_exits:" + str(area_exits))
+        # self.magentaprint("MudMap populate_map areas:" + str(areas))
+        # self.magentaprint("MudMap populate_map area_exits:" + str(area_exits))
 
         for area in areas:
             self.los_map.add_node(area.id)

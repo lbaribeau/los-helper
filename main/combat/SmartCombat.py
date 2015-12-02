@@ -5,7 +5,7 @@ from combat.CombatObject import CombatObject
 # from Ability import HealAbility, FastCombatAbility, CombatAbility, DanceOfTheCobra, Circle, Bash, Turn, Touch
 from command.Ability import *
 from misc_functions import magentaprint
-from command import Spells
+import comm.Spells as Spells
 from comm import RegexStore
 from combat.Kill import Kill
 from combat.Cast import Cast
@@ -154,7 +154,7 @@ class SmartCombat(CombatObject):
         self.activated = True
         self.fleeing = False
         self.broke_ring = False
-        self.casting = self.black_magic or 'vigor' in self.character.spells
+        self.casting = self.black_magic or Spells.vigor in self.character.spells
 
         self.use_any_fast_combat_abilities()  # ie. Touch, Dance
 
@@ -184,11 +184,11 @@ class SmartCombat(CombatObject):
                 elif self.mob_charmed:
                     time.sleep(min(0.2, self.kill.wait_time()))
                     # time.sleep(min(0.2, self.kill.wait_time() + 0.05))
-                elif self.black_magic and ((self.spell in Spells.lvl1 and self.character.MANA >= 3) or 
-                                           (self.spell in Spells.lvl2 and self.character.MANA >= 7)):  # Todo: add oom check
+                elif self.black_magic and ((self.spell in Spells._lvl1 and self.character.MANA >= 3) or 
+                                           (self.spell in Spells._lvl2 and self.character.MANA >= 7)):  # Todo: add oom check
                     self.do_cast(self.spell, self.target) 
-                elif self.black_magic and self.spell in Spells.lvl2 and self.character.MANA < 7 and self.character.MANA >= 3:
-                    self.do_cast(Spells.lvl1[Spells.lvl2.index(self.spell)], self.target)
+                elif self.black_magic and self.spell in Spells._lvl2 and self.character.MANA < 7 and self.character.MANA >= 3:
+                    self.do_cast(Spells._lvl1[Spells._lvl2.index(self.spell)], self.target)
                 else:
                     time.sleep(min(0.2, self.kill.wait_time()))
 

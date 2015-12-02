@@ -27,8 +27,6 @@ class Cartography(BotReactionWithFlag):
             RegexStore.in_tune, RegexStore.you_see_mob, RegexStore.mob_aura, RegexStore.store_list,
             RegexStore.mob_fled, RegexStore.open_first, RegexStore.washroom
         ]
-        magentaprint(str(self.regex_cart))
-
         self.mudReaderHandler = mudReaderHandler
         self.commandHandler = commandHandler
         self.character = character

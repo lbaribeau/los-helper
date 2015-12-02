@@ -5,9 +5,10 @@ from time import time
 from combat.CombatObject import SimpleCombatObject
 from comm import RegexStore
 from misc_functions import magentaprint
+from comm import Spells
 
 class Cast(SimpleCombatObject):
-    command = 'c'  # This gets rewritten to append the spellname alot
+    command = 'c v'  # This gets rewritten to append the spellname alot
     cooldown_after_success = 4  # Gets rewritten by characterClass...
     cooldown_after_failure = 0
     regexes = []  
@@ -48,10 +49,16 @@ class Cast(SimpleCombatObject):
     def notify_failure(self, regex, M_obj):
         # spell = self.command.split(' ')[1].lower() if len(self.command.split(' ')) > 0 else ""
         # 'read paper' 'Your spell fails' causes index error, re.search works around it
-        if re.search("vi?|vigo?|vigor", self.command) or \
-           re.search("show-?|show-au?|show-aura?", self.command) or \
-           re.search("lig?|light?", self.command) or \
-           re.search("me?|mend?|mend-w?|mend-wou?|mend-wound?|mend-wounds", self.command):
+        # if re.search("vi?|vigo?|vigor", self.command) or \
+        #    re.search("show-?|show-au?|show-aura?", self.command) or \
+        #    re.search("lig?|light?", self.command) or \
+        #    re.search("me?|mend?|mend-w?|mend-wou?|mend-wound?|mend-wounds", self.command):
+        # if self.command.split(' ')[1].startswith(Spells.vigor) or \
+        #    self.command.split(' ')[1].startswith(Spells.showaura) or \
+        #    self.command.split(' ')[1].startswith(Spells.light) or \
+        #    self.command.split(' ')[1].startswith(Spells.mendwounds):
+        # if any(self.command.split(' ')[1].startswith(s) for s in Spells.vigor, Spells.showaura, Spells.light, Spells.mendwounds):
+        if any(self.command.split(' ')[1].startswith(s) for s in (Spells.vigor, Spells.showaura, Spells.light, Spells.mendwounds)):
             magentaprint("Cast notify failure clearing timer.")
             self.clear_timer()
         # TODO: Erhm I think this can be done smarter - the parent doesn't need to be involved.
@@ -85,7 +92,7 @@ class Cast(SimpleCombatObject):
         self.persistent_execute(target)
 
     def update_aura(self, character):
-        if not 'show-aura' in self.character.spells:
+        if Spells.showaura not in character.spells:
             return
 
         if time() > self.aura_timer + self.aura_refresh:
@@ -95,19 +102,23 @@ class Cast(SimpleCombatObject):
             # while self.result is 'failure':
             #     self.cast('show')
             #     self.wait_for_flag()
-            if self.sucess:
-                self.aura_timer = time.time()
+            if self.success:
+                self.aura_timer = time()
         else:
-            magentaprint("Last aura update %d seconds ago." % round(time.time() - self.aura_timer))
+            magentaprint("Last aura update %d seconds ago." % round(time() - self.aura_timer))
 
     def spam_spell(self, character, spell, target=None):  # Maybe a prompt object would be better than character
         # Spam until success
-        if spell not in self.character.spells:
+        # if spell not in character.spells:
+        if not any(spell.startswith(s) for s in character.spells):
             return
 
-        spell_cost = 2 if re.match("vig?|vigor?", spell) else \
-                     1 if re.match("show?|show-a?|show-aura?", spell) else \
-                     5 if re.match("lig?|light?", spell) else 3
+        # spell_cost = 2 if re.match("vig?|vigor?", spell) else \
+        #              1 if re.match("show?|show-a?|show-aura?", spell) else \
+        #              5 if re.match("lig?|light?", spell) else 3
+        spell_cost = 2 if spell.startswith(Spells.vigor) else \
+                     1 if spell.startswith(Spells.showaura) else \
+                     5 if spell.startswith(Spells.light) else 3
 
         self.result = RegexStore.cast_failure[0]
 

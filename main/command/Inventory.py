@@ -87,7 +87,7 @@ class Inventory(BotReactionWithFlag):
     def notify(self, regex, M_obj):
         if regex in R.you_have:
             self.set_inventory(M_obj.group(1))
-            magentaprint(str(self.inventory), False)
+            magentaprint(str(self.inventory))
         elif regex in R.sold:
             self.gold = self.gold + int(M_obj.group(1))
             self.remove(M_obj.group(2))

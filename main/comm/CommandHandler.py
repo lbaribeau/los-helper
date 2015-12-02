@@ -11,10 +11,7 @@ from misc_functions import magentaprint
 from combat.SmartCombat import SmartCombat
 from db.Database import *
 from db.MudMap import *
-import command.Command
 from command.Go import Go
-from command.Spells import *
-from command.Ability import *
 from comm import RegexStore
 from bots.TrackGrindThread import TrackGrindThread
 from bots.SmartGrindThread import SmartGrindThread
@@ -29,6 +26,7 @@ from reactions.CombatReactions import CombatReactions
 from command.Buy import Buy
 from command.Drop import Drop
 from command.Get import Get
+from comm.Spells import *
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -378,11 +376,7 @@ class CommandHandler(object):
             self.CastThread.set_target(target)
             self.CastThread.keep_going()
         else:
-            self.CastThread = CastThread(self.character, 
-                                         self.mudReaderHandler, 
-                                         self.telnetHandler, 
-                                         spell, 
-                                         target)
+            self.CastThread = CastThread(self.character, self.mudReaderHandler, self.telnetHandler, spell, target)
             self.CastThread.start()      
 
     def user_kkc(self, argv):

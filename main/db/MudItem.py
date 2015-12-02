@@ -45,9 +45,7 @@ class MudItem(GenericMudObject):
         magentaprint("MudItem get_purchase_location_id() self: " + str(self) + ", self.obj: " + str(self.obj) + ", obj.id: " + str(self.obj.id))
         return AreaStoreItem.get_by_item(self.obj.id).area.id
 
-
 # class MudItemMeta():
 #     def __init__(self, id, is_unusable=False):
 #         self.id = id
 #         self.is_unusable = is_unusable
-

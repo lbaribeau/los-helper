@@ -7,7 +7,7 @@ from bots.BotThread import BotThread
 from misc_functions import magentaprint
 from reactions.BotReactions import GenericBotReaction
 from Exceptions import *
-from command import Spells
+from comm import Spells
 from db.MudItem import MudItem
 
 class GrindThread(BotThread):
@@ -238,6 +238,7 @@ class GrindThread(BotThread):
 
         self.do_heal_skills()
 
+        # if self.character.HEALTH >= self.health_to_go or not any(s.startswith(Spells.vigor) for s in self.character.spells):
         if self.character.HEALTH >= self.health_to_go or Spells.vigor not in self.character.spells:
             return
 
@@ -348,7 +349,9 @@ class GrindThread(BotThread):
         return
 
     def update_aura(self):
-        if self.stopping or self.character.ACTIVELY_MAPPING or not Spells.showaura in self.character.spells:
+        # if self.stopping or self.character.ACTIVELY_MAPPING or not Spells.showaura in self.character.spells:
+        # if self.stopping or self.character.ACTIVELY_MAPPING or not any(s.startswith(Spells.showaura) for s in self.character.spells):
+        if self.stopping or self.character.ACTIVELY_MAPPING or Spells.showaura not in self.character.spells:
             return False
 
         self.cast.update_aura(self.character)

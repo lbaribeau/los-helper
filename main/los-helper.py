@@ -42,7 +42,7 @@ from reactions.Mobs import Mobs
 from combat.SmartCombat import SmartCombat
 from command.Info import Info 
 from command.Whois import Whois
-from command.Spells import Spells
+from command.SpellsCommand import SpellsCommand
 from reactions.Cartography import Cartography 
 from reactions.BotReactions import *
 # from reactions.WieldReaction import WieldReaction
@@ -140,7 +140,7 @@ class LosHelper(object):
                 user_input = ""
 
             user_input = user_input.strip()
-            magentaprint("LosHelper user_input: " + str(user_input))
+            # magentaprint("LosHelper user_input: " + str(user_input))
 
             if not self.mudReaderThread.is_alive():
                 magentaprint("\nRead thread is dead, we're cooked.\n")
@@ -217,16 +217,16 @@ class LosHelper(object):
         # self.character.CAST_WAIT = self.character._class.cast_wait
         self.character.configure_health_and_mana_variables()
         self.character.set_monster_kill_list()
-        magentaprint("LosHelper ability list: " + str(self.character._class.abilities))
+        # magentaprint("LosHelper ability list: " + str(self.character._class.abilities))
         for a in self.character._class.abilities.values():
             # self.mudReaderHandler.register_reaction(a)
-            magentaprint("Added subscriber " + str(a))
+            # magentaprint("Added subscriber " + str(a))
             self.mudReaderHandler.add_subscriber(a)
 
     def check_spells(self):
         # magentaprint("LosHelper.check_spells() sleeping 2 sec.")
         # time.sleep(2)
-        spells = Spells(self.telnetHandler, self.character)
+        spells = SpellsCommand(self.telnetHandler, self.character)
         self.mudReaderHandler.add_subscriber(spells)
         spells.execute()
         spells.wait_for_flag()
@@ -234,7 +234,7 @@ class LosHelper(object):
     def check_info(self):
         info = Info(self.mudReaderHandler, self.telnetHandler, self.character)
         info.execute()
-        magentaprint("LosHelper.check_info() calling character.process_info()")
+        # magentaprint("LosHelper.check_info() calling character.process_info()")
         self.character.process_info()
 
 L = LosHelper()
