@@ -72,7 +72,10 @@ class FakeInventory(object):
         else:
             refw, n = ref, 1
 
-        for i in self.l:
+        # magentaprint("FakeInventory n: " + str(n))
+
+        for i in sorted(list(set(self.l))):
+            # magentaprint("FakeInventory i, l.count(i): %s, %s" % (str(i), str(self.l.count(i))))
             if any(w.startswith(refw) for w in i.name.split()):
                 if n <= self.l.count(i):
                     return self.l.index(i) + n - 1

@@ -86,6 +86,7 @@ class Inventory(BotReactionWithFlag):
 
     def notify(self, regex, M_obj):
         if regex in R.you_have:
+            magentaprint("Inventory you_have item list: " + M_obj.group(1))
             self.set_inventory(M_obj.group(1))
             magentaprint(str(self.inventory))
         elif regex in R.sold:
@@ -295,8 +296,12 @@ class Inventory(BotReactionWithFlag):
         self.__stopping = True
 
     def set_inventory(self, item_string):
-        self.inventory = MudObjectDict()
-        self.inventory.add(self.parse_item_list(item_string))
+        # self.inventory = MudObjectDict()
+        # self.inventory.add(self.parse_item_list(item_string))
+        # self.inventory = MudObjectDict().add(self.parse_item_list(item_string))  # constructor doesn't return self
+        d = MudObjectDict()
+        d.add(self.parse_item_list(item_string))
+        self.inventory = d
 
     def add(self, item_string):
         self.inventory.add(self.parse_item_list(item_string))

@@ -38,11 +38,12 @@ class FakeTelnetSocket(object):
         #     "two white potions.\n"
         self.inventory = FakeInventory(['awl'] + ['small lamp'] * 6 + ['small knive'] * 6 + ['large sack'] * 2 + \
             ['silver chalice'] * 7 + ['small flask'] * 2 + ['small lamp'] * 2 + ['small restorative'] * 2 + \
-            ['steel bottle'] * 6 + ['steel ring'] * 6 + ['stilleto'] * 2 + ['white potion'] * 2 + ['maul hammer'] * 2 + \
+            ['steel bottle'] * 6 + ['steel ring'] * 6 + ['stilleto'] * 2 + ['white potion'] * 2 + ['maul hammer'] * 3 + \
             ['buckler', 'burnt ochre potion', 'hammer', 'large bag', 'large mace', 'long sword', 'silver torch', \
              'spectacles', 'title deeds', 'morning star'])
         self.inventory.set_unusable('morning')
         self.inventory.set_unusable('maul 2')
+        self.inventory.set_unusable('maul 3')
         # self.inventory = FakeInventory({'awl':1, 'small lamp':6, 'small knife':6, 'large sack':2, 'silver chalice':6, 'small flask':2, \
         #     'small lamp':2, 'small restorative':2, 'steel bottle':6, 'steel ring':6, 'stilleto':2, 'white potion':2, \
         #     'buckler':1, 'burnt ochre potion':1, 'hammer':1, 'large bag':1, 'large mace':1, 'long sword':1, 'silver torch':1, \
@@ -57,7 +58,7 @@ class FakeTelnetSocket(object):
             "-----------------------------------------------------------------------------\n" + 
             # "Derp                  Mon  M  [12]Brother                    16    Human\n")
             # character_name + spaces + "Mon  M  [12]Brother                    16    Human\n"
-            character_name + spaces + "Ran  M  [08]Keeper                    16    Human\n"
+            character_name + spaces + "Mag  M  [08]Keeper                    16    Human\n"
         )
         self.spells_string = (
             "\n\r"
@@ -404,6 +405,11 @@ class FakeTelnetSocket(object):
                     self.equipment.seconded = ''
                 elif self.rng == 0:
                     self.mobdead(mob)
+            elif mob == 'bruiser':
+                self.bruiser.do()
+                self.rng = (self.rng + 1) % 4
+                self.socket_output.append('[' + str(self.hp) + ' H 27 M]: The bruiser throws a wild punch at you, but it misses.\n\r')
+
             else:
                 self.rng = (self.rng + 1) % 3
                 if self.rng == 0:
