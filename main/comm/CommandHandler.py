@@ -287,6 +287,8 @@ class CommandHandler(object):
         elif re.match(str(self.character.EXIT_REGEX), user_input):
             self.user_move("go " + self.character.LAST_DIRECTION)
             magentaprint("Running go on EXIT_REGEX: " + str(self.character.EXIT_REGEX), False)
+        elif user_input.startswith('item '):
+            magentaprint('get_item_name_from_ref: ' + str(self.character.inventory.get_item_name_from_reference(user_input.partition(' ')[2])))
         else: # Doesn't match any command we are looking for
             self.telnetHandler.write(user_input) # Just shovel to telnet.
 

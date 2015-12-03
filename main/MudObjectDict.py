@@ -118,7 +118,8 @@ class MudObjectDict():
                 d[keyvalue[0]].remove() #keyvalue[1]
         else:
             magentaprint("Couldn't remove " + str(keyvalue[0]), False)
-        
+
+        # Unorderable types
         # if keyvalue[0] in d:
         #     if keyvalue[1] >= d[keyvalue[0]]:
         #         del d[keyvalue[0]]

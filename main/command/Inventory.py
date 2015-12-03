@@ -191,21 +191,18 @@ class Inventory(BotReactionWithFlag):
 
     def get_item_of_type(self, itemModel, itemData, level=1):
         return self.inventory.get_object_of_type(itemModel, itemData, level)
-
-    def use(self, item_or_list):
-        item = ""
-        if type(item) is list:
-            for i in item_or_list:
-                if i in self.inventory:
-                    item = i
-                    break
-        else:
-            item = item_or_list
-
-        self.telnetHandler.write("use " + item)
-        Inventory.remove_from_qty_dict(self.inventory, (item, 1))
-        # This wouldn't work for flasks or rods which don't disintegrate.
-
+    # def use(self, item_or_list):
+    #     item = ""
+    #     if type(item) is list:
+    #         for i in item_or_list:
+    #             if i in self.inventory:
+    #                 item = i
+    #                 break
+    #     else:
+    #         item = item_or_list
+    #     self.telnetHandler.write("use " + item)
+    #     # Inventory.remove_from_qty_dict(self.inventory, (item, 1))
+    #     self.remove(item)
     # the following version has 'usable' error checking
     # def use(self, item, target=None):
     #     if item in self.usable:
@@ -360,7 +357,7 @@ class Inventory(BotReactionWithFlag):
         singles = ['a ', 'an ', 'some ']
         numbers = ['two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 
                    'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ', 
-                   'fifteen ' , 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen ', 'twenty ']
+                   'fifteen ' , 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen ', 'twenty ']  # isn't it '20'?
         numbers.extend([str(i) + " " for i in range(21, 200)])
 
         for item in inv_list:
@@ -475,8 +472,8 @@ class Inventory(BotReactionWithFlag):
         if len(ref_split) > 1:
             return starting_point.split[' '][0] + ' ' + str(int(ref_split[1]) + c - 1)
         else:
-            if c == 1:
-                return starting_point.split(' ')[0]
+            if c <= 1:
+                return starting_point.split(' ')[0]  # Had a buggy c as 0 case - and the served targets odd things with n=0
             else:
                 return starting_point.split(' ')[0] + ' ' + str(c)
         # There would be less code if I didn't treat '1' specially (I prefer 'potion' not 'potion 1' for the 1st potion)

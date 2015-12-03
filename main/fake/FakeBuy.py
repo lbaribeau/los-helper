@@ -9,7 +9,7 @@ class FakeBuy(FakeCommand):
 
     def do(self, target):
         if self.cant_carry:
-            self.socket_output.append("You can't carry anymore.")
+            self.socket_output.append("You can't carry anymore.\n\r")
         else:
             if target == 'maul':
                 self.inventory.add('maul hammer')

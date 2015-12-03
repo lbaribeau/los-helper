@@ -322,7 +322,7 @@ class Character(object):
         # 'vicar',
         'nobleman', 'lyrist', 'orange picker', 'logger',
         'veteran', 'bruiser', 'axeman', 'seeker', 'hunter', 'bull', 'lay priest', 'protector',
-        'battered knight', 'bruiser',
+        'battered knight',
         'aspirant'  # grey
     ]
     lvl5_red_monsters = [
@@ -430,14 +430,8 @@ class Character(object):
         if self.level > 11:
             self.MONSTER_KILL_LIST.extend(self.lvl7_monsters)
         if self.level > 12:
-            self.MONSTER_KILL_LIST.extend(self.lvl5_monsters)
-            self.MONSTER_KILL_LIST.extend(self.lvl5_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.lvl6_monsters)
-            self.MONSTER_KILL_LIST.extend(self.lvl6_red_monsters)
-            self.MONSTER_KILL_LIST.extend(self.lvl7_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl8_monsters)
             # self.MONSTER_KILL_LIST.extend(self.lvl9_monsters)
-
 
 # todo: I don't like caps anymore
 # I think that's because these don't feel like global settings anymore, since 

@@ -75,7 +75,8 @@ class SmartCombat(CombatObject):
                         self.use.spam_pots()
                 else:
                     self.use.stop()
-        elif regex in self.end_combat_regexes and self.activated:
+        # elif regex in itertools.chain(self.end_combat_regexes) and self.activated:
+        elif self.end_combat and self.activated:  # requires super() to be called
             self.use.stop()
             self.activated = False
             self.check_rings()
@@ -85,7 +86,7 @@ class SmartCombat(CombatObject):
             magentaprint("SmartCombat weapon break: " + str(M_obj.group('weapon')))
             self.broken_weapon = M_obj.group('weapon')
         elif regex in RegexStore.armor_breaks:
-            magentaprint("SmartCombat armor break: " + str(M_obj.group(1)) + ' ' + str(len(M_obj.group(1).split(' '))))
+            magentaprint("SmartCombat armor break: " + str(M_obj.group(1)) + ', len ' + str(len(M_obj.group(1).split(' '))))
             if len(M_obj.group(1).split(' ')) >= 2:
                 if M_obj.group(1).split(' ')[1] == 'ring':
                     self.broke_ring = True
@@ -473,5 +474,6 @@ class SmartCombat(CombatObject):
             self.wield.second.execute(self.character.inventory.get_last_reference(self.character.weapon2))
 
     def check_rings(self):
+        # magentaprint("SmartCombat check_rings()")
         if self.broke_ring:
             self.telnetHandler.write('wear all')

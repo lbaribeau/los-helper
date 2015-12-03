@@ -82,6 +82,8 @@ class FakeInventory(object):
                 else:
                     n = n - self.l.count(i)
 
+        return -1
+
     def get(self, ref):
         i = self.index(ref)
         if i:
