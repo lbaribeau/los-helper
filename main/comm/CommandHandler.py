@@ -160,6 +160,8 @@ class CommandHandler(object):
             self.user_dr(user_input)
         elif user_input.startswith('sellable'):
             magentaprint(str(self.inventory.sellable()))
+        elif user_input.startswith('droppable'):
+            magentaprint(str(self.inventory.droppable()))
         elif user_input.startswith('Sel'):
             self.inventory.sell_stuff()
         elif user_input.startswith('Dr'):

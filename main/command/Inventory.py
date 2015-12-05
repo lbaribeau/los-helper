@@ -421,6 +421,12 @@ class Inventory(BotReactionWithFlag):
         # return self.inventory.get_unique_references(self.keep_list)
         return slist
 
+    def droppable(self):
+        self.get_inventory()
+        for item_list in self.inventory.dictionary.values():
+            magentaprint("Inventory droppable item list: " + str(self.inventory.dictionary.values()))
+        return None
+
     def output_inventory(self):
         magentaprint(str(self.inventory),False)
 

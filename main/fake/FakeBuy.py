@@ -1,5 +1,5 @@
 
-from fake.FakeCommand import FakeCommand
+from fake.fake_command import FakeCommand
 
 class FakeBuy(FakeCommand):
     def __init__(self, inventory, socket_output):

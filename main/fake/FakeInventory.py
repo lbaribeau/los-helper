@@ -51,7 +51,10 @@ class FakeInventory(object):
     def remove(self, ref):
         # if item in self.l:
         #     self.l.remove(item)
-        self.l.pop(self.index(ref))
+        self.remove_by_index(self.index(ref))
+
+    def remove_by_index(self, i):
+        self.l.pop(i)
 
     def add(self, item):
         if isinstance(item, str):

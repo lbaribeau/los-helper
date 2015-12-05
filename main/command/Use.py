@@ -14,7 +14,7 @@ class Use(ThreadingMixin2):
     # It's tempting to try to make Inventory smart enough to use healing items...
     success_regexes = [RegexStore.potion_drank]  # Todo: add rods/buffs  (Might be made simpler with a different class, ie. UseRod)
     failure_regexes = []  # TODO: I believe flasks can fail
-    error_regexes = [RegexStore.use_what]
+    error_regexes = [RegexStore.use_what, RegexStore.cant_use]
 
     def __init__(self, character, telnetHandler):
         self.character = character
@@ -56,13 +56,15 @@ class Use(ThreadingMixin2):
                 #     # self.wait_for_flag()
                 # else:
                 #     continue
-                self.execute(pot)
+                # self.execute(pot)  # execute should definitely take a reference
+                self.execute(self.character.inventory.get_reference(pot))
                 # Inventory notices on its own 'a small restorative disintegrates'
                 # self.wait_for_flag()  # Waiting to get the inventory upkeep right
                 # if self.success or self.failure:
                 #     self.character.inventory.remove(pot)
                 # return True
-                break
+                # break
+                return True
 
         return False  # Ran out of pots.  use.result also provides return information
 
@@ -74,8 +76,10 @@ class Use(ThreadingMixin2):
             magentaprint("Sending '" + str(self.command) + "' in " + str(round(self.wait_time())) + " seconds.")
             self.wait_until_ready()
             if not self.stopping:
-                self.healing_potion()
-                self.wait_loop('prompt_flag')
+                if self.healing_potion():
+                    self.wait_loop('prompt_flag')
+                else:
+                    self.stop()
             self.wait_until_ready()
 
         # Make sure SmartCombat gets notified first so that it can stop us when the prompt comes in with HP above threshold
@@ -99,7 +103,7 @@ class Use(ThreadingMixin2):
         #     # Maybe we write its code smarter to handle this case... don't sleep till after the cooldown's verified
         #     magentaprint("Command will be sent in " + str(round(self.wait_time())) + " seconds.")
 
-    def execute(self, target=None):
-        super().execute(self.character.inventory.get_reference(target))
+    # def execute(self, target=None):
+    #     super().execute(self.character.inventory.get_reference(target))
 
 

@@ -7,7 +7,8 @@ from fake.FakeInventory import FakeInventory
 from fake.FakeEquipment import FakeEquipment
 from command.Go import Go
 from fake.FakeBuy import FakeBuy
-from fake.fake_mobs.fake_mobs import Bruiser
+from fake.fake_use import FakeUse
+from fake.fake_mobs.fake_mobs import Actor
 from fake.fake_character import FakeCharacter
 
 class FakeTelnetSocket(object):
@@ -16,19 +17,20 @@ class FakeTelnetSocket(object):
         self.socket_output = ["[%s H %s M]: " % (self.char.hp, self.char.mp)]
         self.mud_map = mud_map
         self.whois_string = None
-        self.bruiser = Bruiser(self.char, self.socket_output)
+        self.actor = Actor(self.char, self.socket_output)
 
     def initialize_socket_output(self, character_name):
         self.char.name = character_name
         self.current_area = ""
         self.current_mud_area = None
-        self.current_monster_list = ['spiv', 
+        self.current_monster_list = [
             'acrobat', 'juggler',                                 # chasing
             'kobold champion', # weapon shatter
             # 'kobold sentry', # spear break
             'large kobold',    # maul hammer break
-            'militia soldier',                                    # potting
-            self.bruiser.name
+            # 'militia soldier',                                    # potting
+            'tabby cat', 
+            self.actor.name,
         ]
         self.fso = FakeSocketOutput()
         self.rng = 0
@@ -47,13 +49,16 @@ class FakeTelnetSocket(object):
         self.inventory.set_unusable('morning')
         self.inventory.set_unusable('maul 2')
         self.inventory.set_unusable('maul 3')
+        self.char.inventory = self.inventory
         # self.inventory = FakeInventory({'awl':1, 'small lamp':6, 'small knife':6, 'large sack':2, 'silver chalice':6, 'small flask':2, \
         #     'small lamp':2, 'small restorative':2, 'steel bottle':6, 'steel ring':6, 'stilleto':2, 'white potion':2, \
         #     'buckler':1, 'burnt ochre potion':1, 'hammer':1, 'large bag':1, 'large mace':1, 'long sword':1, 'silver torch':1, \
         #     'spectacles': 1, 'title deeds': 1, 'morning star': 1, 'maul hammer': 2
         # })
-        self.equipment = FakeEquipment(self.char.name)
+        self.char.equipment = FakeEquipment(self.char.name)
         self.buy = FakeBuy(self.inventory, self.socket_output)
+        self.use = FakeUse(self.char, self.socket_output)
+
         spaces = "                      "[0:22 - len(self.char.name)]
         
         self.whois_string = (
@@ -154,7 +159,7 @@ class FakeTelnetSocket(object):
         elif re.match('c show', command):
             self.socket_output.append('You glow with a grey aura.\n\r')
         elif re.match('c (vi?|vigo?|vigor)', command):
-            self.char.hp = min(self.char.maxhp, self.char.hp + 5)
+            self.char.hp = min(self.char.maxhp, self.char.hp + 15)
             self.socket_output.append('Vigor spell cast.\n\r')
             self.socket_output.append('[%s H %s M]: ' % (str(self.char.hp), str(self.char.mp)))
         elif re.match('genaid [\d]+', command): #OUTPUT AN AREA
@@ -164,10 +169,10 @@ class FakeTelnetSocket(object):
         elif command == 'l':
             self.socket_output.append(str(self.show_current_area()))
         elif command == 'lself':
-            self.socket_output.append(self.equipment.lself())
+            self.socket_output.append(self.char.equipment.lself())
         elif command == 'eq':
-            magentaprint(self.equipment.output_string())
-            self.socket_output.append(self.equipment.output_string())
+            magentaprint(self.char.equipment.output_string())
+            self.socket_output.append(self.char.equipment.output_string())
         elif command.startswith('addmob '):
             self.addmob(command[7:])
         elif re.match('mobflee .+? .+', command):
@@ -203,7 +208,7 @@ class FakeTelnetSocket(object):
         elif command == 'i':
             self.socket_output.append(self.inventory.output_string())
         elif command.startswith('wie') and len(command.split(' ')) > 1:
-            if self.equipment.weapon:
+            if self.char.equipment.weapon:
                 self.socket_output.append("You're already wielding something.\n\r")
             else:
                 w = self.inventory.get(command.partition(' ')[2])
@@ -213,13 +218,13 @@ class FakeTelnetSocket(object):
                     else:
                         self.socket_output.append("You wield a " + w.name + ".\n\r")
                         self.inventory.remove(command.split(' ')[1])
-                        self.equipment.wield(w.name)
+                        self.char.equipment.wield(w.name)
                 else:
                     self.socket_output.append("You don't have that.\n\r")
         elif command.startswith('seco') and len(command.split(' ')) > 1:
             self.socket_output.append('You wield a spear in your off hand.\n\r')
             self.inventory.remove('spear')
-            self.equipment.second('spear')
+            self.char.equipment.second('spear')
         elif re.match('break (.+)', command):
             M_obj = re.search('break (.+)', command)
             item = str(M_obj.group(1))
@@ -241,27 +246,8 @@ class FakeTelnetSocket(object):
                 self.inventory.remove(command.partition(' ')[2])
             else:
                 self.socket_output.append("You don't have that\n\r.")
-        elif command == 'use restorative':
-            if 'small restorative' in self.pots:
-                self.pots.remove('small restorative')
-                self.char.hp = self.char.hp + 1
-                self.socket_output.append('Potion drank.\n\rYou feel much better.\n\rA small restorative disintegrates.\n\r')
-                self.socket_output.append('[%s H %s M]: ' % (str(self.char.hp), str(self.char.mp)))
-        elif command == 'use flask':
-            if 'small flask' in self.pots:
-                self.flask_rng = self.flask_rng + 1 % 2
-                self.char.hp = self.char.hp + 2
-                if self.flask_rng == 1:
-                    self.socket_output.append('Potion drank.\n\rYou feel much better.\n\r')
-                else:
-                    self.pots.remove('small flask')
-                    self.socket_output.append('Potion drank.\n\rYou feel much better.\n\rA small flask disintegrates.\n\r')
-                self.socket_output.append('[%s H %s M]: ' % (str(self.char.hp), str(self.char.mp)))
-        elif command == 'use white':
-            if 'white potion' in self.pots:
-                self.char.hp = self.char.hp + 10
-                self.socket_output.append('Potion drank,\n\rYou feel much better.\n\rA white potion disintegrates.\n\r')
-                self.socket_output.append('[%s H %s M]: ' % (str(self.char.hp), str(self.char.mp)))
+        elif command.startswith('use '):
+            self.use.do(command.partition(' ')[2])
         elif command.startswith('buy '):
             self.buy.do(command.partition(' ')[2])
         elif re.match('echo (.+)', command):
@@ -335,6 +321,7 @@ class FakeTelnetSocket(object):
         self.mob_lost_battle(mob, dead_string)
     
     def mob_lost_battle(self, mob, lost_string):
+        self.rng = 0
         if mob in self.current_monster_list:
             self.current_monster_list.remove(mob)
         # else:
@@ -377,20 +364,31 @@ class FakeTelnetSocket(object):
                     self.socket_output.append('[' + str(self.char.hp) + ' H 27 M]: The militia soldier painfully head-butts you for 47 damage.\n\r')
                 elif self.rng == 0:
                     self.mobdead(mob)
-            elif mob == 'space marine':
-                self.rng = (self.rng + 1) % 3
-                self.char.hp = max(self.char.hp - 47, 0)
-                self.socket_output.append('[' + str(self.char.hp) + ' H 27 M]: The space marine painfully head-butts you for 47 damage.\n\r')
-                if self.char.hp == 0:
-                    self.char.hp = 1
-                    self.socket_output.append("You are overwhelmed by the space marine's attack and you collapse!\n\r")
-                self.socket_output.append('[1 H 27 M]: ')
+            elif mob == 'tabby cat':
+                magentaprint("Fake rng: " + str(self.rng))
+                self.rng = (self.rng + 1) % 5  # He only needs to hit you twice unless you heal super quick
+                if self.rng == 4:
+                    self.mobdead(mob)
+                # elif self.rng == 1:
+                #     self.char.hp = max(self.char.hp - 60, 0)
+                #     self.socket_output.append('[%s H %s M]: The tabby cat painfully head-butts you for 60 damage.\n\r' % (self.char.hp, self.char.mp))
+                #     if self.char.hp == 0:
+                #         self.char.hp = 1
+                #         self.socket_output.append("You are overwhelmed by the tabby cat's attack and you collapse!\n\r")
+                elif not self.rng % 2:
+                    dmg = self.char.hp - 2
+                    self.char.hp = 2
+                    self.socket_output.append('[%s H %s M]: The tabby cat painfully head-butts you for %s damage.\n\r' % (self.char.hp, self.char.mp, dmg))
+                    # if self.char.hp == 0:
+                    #     self.char.hp = 1
+                    #     self.socket_output.append("You are overwhelmed by the tabby cat's attack and you collapse!\n\r")
+                self.socket_output.append('[%s H %s M]: ' % (self.char.hp, self.char.mp))
             elif mob == 'kobold champion':
                 self.rng = (self.rng + 1) % 4
                 self.socket_output.append('[' + str(self.char.hp) + ' H 27 M]: The kobold champion throws a wild punch at you, but it misses.\n\r')
                 if self.rng == 0:
                     self.socket_output.append('Your maul hammer shatters.\n\r')
-                    self.equipment.weapon = ''
+                    self.char.equipment.weapon = ''
                     self.mobdead(mob)
             elif mob == 'large kobold':
                 self.rng = (self.rng + 1) % 4
@@ -398,7 +396,7 @@ class FakeTelnetSocket(object):
                 if self.rng == 2:
                     self.socket_output.append('Your maul hammer breaks and you have to remove it.\n\r')
                     self.inventory.add('maul hammer')
-                    self.equipment.weapon = ''
+                    self.char.equipment.weapon = ''
                 elif self.rng == 0:
                     self.mobdead(mob)
             elif mob == 'kobold sentry':
@@ -406,13 +404,13 @@ class FakeTelnetSocket(object):
                 self.socket_output.append('[' + str(self.char.hp) + ' H 27 M]: The kobold sentry throws a wild punch at you, but it misses.\n\r')
                 if self.rng == 1:
                     self.socket_output.append('Your spear breaks and you have to remove it.\n\r')
-                    self.equipment.seconded = ''
+                    self.char.equipment.seconded = ''
                 elif self.rng == 0:
                     self.mobdead(mob)
-            elif mob == self.bruiser.name:
-                if self.bruiser.do_combat():
-                    if self.bruiser.name in self.current_monster_list:
-                        self.current_monster_list.remove(self.bruiser.name)
+            elif mob == self.actor.name:
+                if self.actor.do_combat():
+                    if self.actor.name in self.current_monster_list:
+                        self.current_monster_list.remove(self.actor.name)
             # self.mobflee(mob, str(self.current_mud_area.area_exits[0].exit_type.name))
             else:
                 self.rng = (self.rng + 1) % 3

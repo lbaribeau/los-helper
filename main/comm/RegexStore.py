@@ -17,7 +17,8 @@ not_empty = [r"It isn't empty!"]
 you_wear = [r"You wear " + __items + r"\."]
 nothing_to_wear = [r"You have nothing you can wear\."]
 # you_get = [r"(?s)[^ ]You get (.+?)\.(?:\nYou now have (.+?) gold pieces\.)?"]
-you_get = [r"[^ ]You get " + __items + r"\."]  # TODO: deal with false positive on "You get the vague..." ... hard to deal with in regex
+# you_get = [r"[^ ]You get " + __items + r"\."]  # We don't want this to miss because getting can happen in combat - maybe it shouldn't
+you_get = [r"You get " + __items + r"\."]  # still TODO: deal with false positive on "You get the vague..." ... hard to deal with in regex
 you_remove = [r"You removed? " + __items + r"\."]
 nothing_to_remove = [r"You aren't wearing anything that can be removed\."]
 # you_wield = [r"You wield (.+?)( in your off hand)?\."]
@@ -506,6 +507,7 @@ seconded= [r"Seconded:  (.+?)\n\r"]
 potion_drank = [r"Potion drank\."]
 # use_what = [r"Use what\?\n\r"]  # didn't match
 use_what = [r"Use what\?"]
+cant_use = [r"How does one use that\?"]
 
 you_wield = [r"You wield (an?|some) (?P<weapon>[A-Za-z ']+)\."]  # Gets a positive of the off-hand message
 off_hand = [r"You wield (an?|some) (?P<weapon>[A-Za-z ']+) in your off hand\."]
