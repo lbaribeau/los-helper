@@ -49,7 +49,9 @@ class FakeTelnetSocket(object):
         self.inventory.set_unusable('morning')
         self.inventory.set_unusable('maul 2')
         self.inventory.set_unusable('maul 3')
-        self.char.inventory = self.inventory
+        self.inventory.set_unusable('ring 3') 
+        self.inventory.set_unusable('ring 5')
+        self.char.inv = self.inventory
         # self.inventory = FakeInventory({'awl':1, 'small lamp':6, 'small knife':6, 'large sack':2, 'silver chalice':6, 'small flask':2, \
         #     'small lamp':2, 'small restorative':2, 'steel bottle':6, 'steel ring':6, 'stilleto':2, 'white potion':2, \
         #     'buckler':1, 'burnt ochre potion':1, 'hammer':1, 'large bag':1, 'large mace':1, 'long sword':1, 'silver torch':1, \
@@ -230,6 +232,7 @@ class FakeTelnetSocket(object):
             item = str(M_obj.group(1))
             break_string = 'Your ' + item + ' fell apart.\n\r'
             self.socket_output.append(break_string)
+            self.char.inv.add(command.partition(' ')[2])
         elif re.match('drop (.+)', command):
             i = self.inventory.index(command.partition(' ')[2])
             if i > -1:
@@ -250,12 +253,15 @@ class FakeTelnetSocket(object):
             self.use.do(command.partition(' ')[2])
         elif command.startswith('buy '):
             self.buy.do(command.partition(' ')[2])
+        elif command == 'get all':
+            self.socket_output.append("There's nothing here.\n\r")
+        elif command.startswith('get '):
+            self.socket_output.append("You get a %s." % command.partition(' ')[2])
+            self.char.inv.add(command.partition(' ')[2])
         elif re.match('echo (.+)', command):
             M_obj = re.search('echo (.+)', command)
             echo = str(M_obj.group(1))
             self.socket_output.append(echo + '\n\r')
-        elif command == 'get all':
-            self.socket_output.append("There's nothing here.\n\r")
         elif re.match('quit', command) or re.match('quilt', command):
             self.socket_output.append('Goodbye! Come back soon.\n\r')
 

@@ -5,7 +5,7 @@ class FakeUse(FakeCommand):
     def __init__(self, character, socket_output):
         super().__init__(socket_output)
         self.char = character
-        self.inv = character.inventory
+        self.inv = character.inv
         self.pots = [
             "small restorative", "large restorative", "chicken soup", "scarlet potion", "small flask",
             "white potion", "steel bottle", "silver chalice", "milky potion"

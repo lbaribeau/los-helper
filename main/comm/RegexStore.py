@@ -507,7 +507,10 @@ seconded= [r"Seconded:  (.+?)\n\r"]
 potion_drank = [r"Potion drank\."]
 # use_what = [r"Use what\?\n\r"]  # didn't match
 use_what = [r"Use what\?"]
-cant_use = [r"How does one use that\?"]
+cant_use = [
+    r"How does one use that\?",
+    r"You can only use a potion on yourself\."
+]
 
 you_wield = [r"You wield (an?|some) (?P<weapon>[A-Za-z ']+)\."]  # Gets a positive of the off-hand message
 off_hand = [r"You wield (an?|some) (?P<weapon>[A-Za-z ']+) in your off hand\."]

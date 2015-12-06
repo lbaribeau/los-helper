@@ -1,14 +1,14 @@
+
 from peewee import *
 from db.Database import *
 from db.GenericMudObject import *
-from misc_functions import *
+from misc_functions import magentaprint
 
 class MudItem(GenericMudObject):
-    is_unusable = False
-
     def __init__(self, name):
         self.obj = Item(name=name)
-        self.reference = get_first_word(self.obj.name)
+        self.reference = self.obj.name.split(' ')[0]  # ... this reference is likely incorrect without an integer
+        self.is_unusable = False
 
     def map(self):
         self.obj.map()

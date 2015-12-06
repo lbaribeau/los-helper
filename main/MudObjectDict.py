@@ -73,7 +73,7 @@ class MudObjectDict():
                 # magentaprint("Found in exception_list " +  str(obj), False)
                 for index, gobj in enumerate(qty.objs):
                     qty.objs[index].conserve = True
-            self.add_to_qty_dict(references, (obj.reference, qty))
+            MudObjectDict.add_to_qty_dict(references, (obj.reference, qty))  # I don't like it
 
         for obj,qty in references.items():
             i = 0
@@ -89,7 +89,6 @@ class MudObjectDict():
 
         return numbered_references
 
-    @staticmethod
     def add_to_qty_dict(d, keyvalue):
         ''' For (key, qty) pairs. '''
 

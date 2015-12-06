@@ -744,7 +744,7 @@ class GrindThread(BotThread):
             magentaprint("Number of steel bottles: " + str(self.inventory.count('steel bottle')))
             if self.inventory.count('steel bottle') > 3:
                 # TODO: make an Ability for steel bottle (protection spell)
-                self.commandHandler.use.execute('steel bottle')
+                self.commandHandler.use.by_name('steel bottle')
                 self.commandHandler.use.wait_for_flag()
             elif self.inventory.count_restoratives() > 5:
                 self.commandHandler.use.healing_potion()

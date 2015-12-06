@@ -4,9 +4,6 @@ from db.NamedModel import NamedModel
 from misc_functions import *
 
 class GenericMudList():
-    objs = []
-    qty = 1
-
     def __init__(self, objs):
         self.objs = objs
         self.set_quantity()
@@ -36,3 +33,15 @@ class GenericMudList():
 
     def __len__(self):
         return self.qty
+
+    # Why are we using this and not a built in list []
+    def __iter__(self):
+        self.current_iter = 0
+        return iter(self.objs)
+
+    def __next__(self):
+        if self.current_iter > self.qty:
+            raise StopIteration
+        else:
+            self.current_iter += 1
+            return self.objs[self.current_iter - 1]

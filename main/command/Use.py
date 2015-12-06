@@ -103,7 +103,5 @@ class Use(ThreadingMixin2):
         #     # Maybe we write its code smarter to handle this case... don't sleep till after the cooldown's verified
         #     magentaprint("Command will be sent in " + str(round(self.wait_time())) + " seconds.")
 
-    # def execute(self, target=None):
-    #     super().execute(self.character.inventory.get_reference(target))
-
-
+    def by_name(self, name):
+        self.execute(self.character.inventory.get_reference(name))
