@@ -82,6 +82,7 @@ class GrindThread(BotThread):
             else:
                 self.commandHandler.buy.execute(item.partition(' ')[0])
                 self.commandHandler.buy.wait_for_flag()
+
         if self.commandHandler.buy.success:
             self.inventory.add(item)  
             return True
@@ -115,7 +116,7 @@ class GrindThread(BotThread):
             # Commented - I don't understand what do_rest_hooks is supposed to do at all...
             # self.do_rest_hooks()
 
-        while new_target != "" and not self.is_stopping():
+        while new_target != "" and not self.stopping:
             # MudReader maintains MONSTER_LIST pretty well by
             # adding and removing.  
             # It will not remove from MOBS_JOINED_IN nor 
@@ -319,13 +320,16 @@ class GrindThread(BotThread):
     def wait_for_mana(self):
         magentaprint("BotThread.wait_for_mana()")
         while self.character.MANA < self.mana_to_go and not self.stopping:
-            self.sleep(3.5)
+            for i in range(0,20):
+                self.sleep(0.25)
+                if self.stopping:
+                    return
             self.engage_any_attacking_mobs()
             self.commandHandler.process('')
-            self.sleep(1.2)  # Wait for prompt to respond before checking MANA again.
         
     def rest_for_health(self):
         magentaprint("BotThread.rest_for_health()")
+
         if self.has_ideal_health():
             return
 
@@ -335,11 +339,10 @@ class GrindThread(BotThread):
 
         # magentaprint(self.has_ideal_health(), False)
 
-        while(not self.has_ideal_health() and not self.stopping):            
-
-            if(self.engage_any_attacking_mobs()):
+        while not self.has_ideal_health() and not self.stopping:
+            if self.engage_any_attacking_mobs():
                 self.commandHandler.process("rest")
-            elif (self.do_heal_skills()):
+            elif self.do_heal_skills():
                 self.commandHandler.process("rest")
 
             self.sleep(1.2)
@@ -504,7 +507,12 @@ class GrindThread(BotThread):
         # # magentaprint('weapon_type: ' + self.character.weapon_type + ', weapon_level: ' + str(self.character.weapon_level))
         # # self.go_purchase_item_by_name(chosen_weapon)
         # self.go_purchase_item(chosen_weapon)
-        self.go_purchase_item_by_type('weapon', self.character.weapon_type, self.character.weapon_level)
+        if not self.go_purchase_item_by_type('weapon', self.character.weapon_type, self.character.weapon_level):
+            magentaprint("No weapon error - couldn't find anything in inventory or repair or shop...")
+            self.pause()
+            # Well, we don't want to travel unarmed, quitting out is too drastic,
+            # We should stay awake enough to engage any attackers but we can wait for a server timeout here, or 
+            # wait for user intervention
 
         # Not sure we need this slot business
         # magentaprint("check_weapons() weapon slots: " + str(self.character._class.weapon_slots))
@@ -543,15 +551,23 @@ class GrindThread(BotThread):
     def go_purchase_item_by_type(self, model, data, level):  
         # Model is main item type (weapon, s-armor, consumable), Data is sub-type (Blunt, Body, etc)
         magentaprint('go_purchase_item_by_type() model: ' + str(model) + ', data: ' + str(data) + ', level: ' + str(level))
-        possible_weapons = MudItem.get_suitable_item_of_type(model, data, level)
+        suitable_weapons = MudItem.get_suitable_item_of_type(model, data, level)
+
+        while not suitable_weapons and level >= 0 and not self.stopping:
+            # Got nothing from db, so try lower level items
+            level = level - 1
+            suitable_weapons = MudItem.get_suitable_item_of_type(model, data, level)
+
+        if not suitable_weapons:
+            return False
 
         direction_list = []
         # self.character.MONSTER_KILL_LIST = []
         weapon = None
 
-        for itemdict in possible_weapons:
+        for itemdict in suitable_weapons:
             # Use the first weapon that fits the model/data/level criteria
-            weapon = possible_weapons[itemdict]
+            weapon = suitable_weapons[itemdict]
             areaid = itemdict
             break
 
@@ -563,6 +579,8 @@ class GrindThread(BotThread):
 
         self.direction_list = direction_list
 
+        return True
+
     def check_armour(self):
         if self.stopping:
             return
@@ -570,8 +588,18 @@ class GrindThread(BotThread):
     def sell_items(self):
         if self.stopping:
             return
-        
+
         self.inventory.sell_stuff()
+        # This is too much authority for Inventory, but this is also not a job for grind thread.
+        # Time to make a mini bot (?) to support human Sel
+
+        # self.inventory.get_inventory()  # Unnecessary if inventory is well tracked
+
+        # for item_ref in self.sellable():
+        #     if not self.__stopping:
+        #         self.sell(item_ref)
+        #     else:
+        #         return
         
     def item_was_sold(self):
         # TODO: class Sell(Command)  - Get rid of these all caps flag variables and copypasta polling code
@@ -771,7 +799,7 @@ class GrindThread(BotThread):
         engaged = False
 
         # while self.character.MOBS_ATTACKING != []:
-        while self.character.mobs.attacking != []:
+        while self.character.mobs.attacking != [] and not self.stopping:
             engaged = True
             self.engage_monster(self.character.mobs.attacking[0])
 
@@ -796,4 +824,13 @@ class GrindThread(BotThread):
         # We can assume the map doesn't work.
         magentaprint('GrindThread.find_nearby_node()')
         cur_aid = self.character.AREA_ID
+
+    def pause(self):
+        # Wait for server timeout, engaging any attacking mobs
+        magentaprint("GrindThread pausing forever.")
+        self.commandHandler.process('rest')
+        while not self.stopping:
+            self.sleep(1)
+            if self.engage_any_attacking_mobs():
+                self.commandHandler.process('rest')
 

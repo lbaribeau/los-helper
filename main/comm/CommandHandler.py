@@ -60,7 +60,7 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.buy)
         self.drop = Drop(telnetHandler)
         mudReaderHandler.add_subscriber(self.drop)
-        self.get = Get(telnetHandler)
+        self.get = Get(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.get)
         self.use = self.smartCombat.use
 

@@ -27,10 +27,12 @@ class Inventory(BotReactionWithFlag):
         # 'war hammer', 
         "adamantine sword", 'adamantine axe', "claymore", 
         "spider leg", 'heavy crossbow', 
-        "spear", 
-        "bolos", 'javelin', #"long bow", 
+        # "spear", 
+        # "bolos", 
+        'javelin', #"long bow", 
         "heathen amulet",
-        "broad sword", "rapier",
+        # "broad sword", 
+        "rapier",
         #"crossbow", "horn bow",  # < 70% missile
         # armour
         "hard cap", "hard gloves", "hard boots", "padded hat",

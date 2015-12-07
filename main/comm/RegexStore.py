@@ -514,7 +514,7 @@ cant_use = [
 
 you_wield = [r"You wield (an?|some) (?P<weapon>[A-Za-z ']+)\."]  # Gets a positive of the off-hand message
 off_hand = [r"You wield (an?|some) (?P<weapon>[A-Za-z ']+) in your off hand\."]
-wield_broken = [r"You can't\. It's broken\."]
+wield_broken = [r"You can't\. Its broken\."]  # grammatical error
 not_weapon = ["You can't wield that\."]
 dont_have = [r"You don't have that\."]
 weapon_break = [r"Your (?P<weapon>[A-Za-z' ]+?) breaks and you have to remove it\."]

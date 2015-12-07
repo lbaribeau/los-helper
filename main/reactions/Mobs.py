@@ -93,8 +93,9 @@ class Mobs(BotReactionWithFlag):
         if r in R.you_attack or r in R.mob_aggro:
             self.damage = []
             self.attacking.append(self.read_match(m_obj))
-        # magentaprint("mobs.list " + str(self.list))
-        # magentaprint("mobs.attacking " + str(self.attacking))
+        magentaprint("mobs.list " + str(self.list))
+        if self.attacking:
+            magentaprint("mobs.attacking " + str(self.attacking))
         super().notify(r, m_obj)
 
     def parse_mob_string(self, s):

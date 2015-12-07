@@ -276,7 +276,7 @@ class Character(object):
         'juggler', 'shepherd', 'gazelle', 'dancer', 'jongleur', 'tabby cat', 
         'clerk', 'stablehand', 'rich kid', 'bladesman', "cook's assistant", 
         "miner's assistant", 'mare'
-        #"acolyte"  # Problem: clumps up on holly lane
+        # "acolyte"  # Problem: clumps up on holly lane
         #"penitent"  # Removed for red/blue balance
         ] 
     lvl2_red_monsters = [ 
@@ -310,7 +310,7 @@ class Character(object):
         'auctioneer', # They pile up so bad!  
         # Definitely need smart chasing or a path that runs extra around the 
         # market (after healing)
-        #'actress', # For blue balance
+        'actress', # For blue balance
         #'miner'
         ]
     # hungry spiders are hostile
@@ -320,8 +320,11 @@ class Character(object):
         'dwarven farm hand', 'dwarven barmaid', 'fort sentry', 'fur trader', 
         'aristocrat', # 'rancher sentry',  # There are also lvl 7 rancher sentries
         # 'vicar',
-        'nobleman', 'lyrist', 'orange picker', 'logger',
-        'veteran', 'bruiser', 'axeman', 'seeker', 'hunter', 'bull', 'lay priest', 'protector',
+        'nobleman', 'lyrist', 
+        'orange picker',  # makes trackgrind too red?
+        'logger',
+        'veteran', 'bruiser', 'axeman', 'seeker', 'hunter', 'bull', 
+        # 'lay priest', 'protector',
         'battered knight',
         'aspirant'  # grey
     ]
@@ -343,7 +346,9 @@ class Character(object):
     lvl7_monsters = [ # ~200 exp
         'dwarven cook', 'swordsman', 'fort sergeant', 'oremaster', 
         'giant spider', 'rock spider', 'Aldo', 'dwarven trader',
-        'gnoll chaplain', 'Cheryn', 'robed priest', 'orc scout',
+        'gnoll chaplain', 'Cheryn', 
+        # 'robed priest', 
+        'orc scout',
         'bouncer', 'rancher sentry',
         'dwarven shepherd', 'clown'  # grey  
     ] # giant spiders are hostile
@@ -398,15 +403,16 @@ class Character(object):
         'oaf', 'wanderer', #'acolyte', 
         'thug', 'spiv', 'kobold sentry', 'tired hooker', 
         'blond hooker', 'angry hooker', 'sultry hooker', 
-        'journeyman' 
+        'journeyman', 'housewife'
     ] 
 
     def set_monster_kill_list(self):
         self.MONSTER_KILL_LIST = []
 
+        self.MONSTER_KILL_LIST.extend(self.lvl1_red_monsters)
+
         if self.level <= 7:
             self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
-            self.MONSTER_KILL_LIST.extend(self.lvl1_red_monsters)
 
         if self.level > 3:
             self.MONSTER_KILL_LIST.extend(self.lvl2_monsters)
@@ -414,20 +420,20 @@ class Character(object):
         if self.level > 4:
             self.MONSTER_KILL_LIST.extend(self.lvl3_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl3_red_monsters)
-        if self.level > 6:
+        if self.level > 5:
             # self.MONSTER_KILL_LIST = [m for m in self.MONSTER_KILL_LIST \
             #                           if m not in self.lvl1_monsters    \
             #                           and m not in self.lvl2_monsters]
             self.MONSTER_KILL_LIST.extend(self.preferred_lvl_1_2_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl4_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl4_red_monsters)
-        if self.level > 8:
+        if self.level > 6:
             self.MONSTER_KILL_LIST.extend(self.lvl5_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl5_red_monsters)
-        if self.level > 9:
+        if self.level > 8:
             self.MONSTER_KILL_LIST.extend(self.lvl6_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl6_red_monsters)
-        if self.level > 11:
+        if self.level > 10:
             self.MONSTER_KILL_LIST.extend(self.lvl7_monsters)
         if self.level > 12:
             self.MONSTER_KILL_LIST.extend(self.lvl8_monsters)

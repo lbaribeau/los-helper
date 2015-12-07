@@ -85,19 +85,28 @@ class FakeInventory(object):
                 else:
                     n = n - self.l.count(i)
 
-        return -1
-
     def get(self, ref):
         i = self.index(ref)
         if i:
             return self.l[i]
 
-    # def has(self, ref):
-    #     return self.index(ref) + 1
-
     def set_unusable(self, ref):
         self.get(ref).unusable = True
 
-    # def set_unusable(self, obj, val=False):
-    #     obj.unusable = val
-    #     return obj
+    def has(self, item_string):
+        for i in self.l:
+            if i.name == item_string:
+                return True
+                
+        return False
+
+    def remove_all(self, name):
+        self.l = [x for x in self.l if x.name != name]
+
+    def add_many(self, name, qty):
+        for i in range(0,qty):
+            self.add(name)
+            # ... the easy way
+
+    def count(self, item_string):
+        return self.l.count(item_string)

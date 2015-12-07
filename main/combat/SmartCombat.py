@@ -266,7 +266,9 @@ class SmartCombat(CombatObject):
 
     def try_weapons(self, weapon_name_list):
         self.to_repair = []
+        magentaprint("SmartCombat try weapons: " + str(weapon_name_list))
         for w in weapon_name_list:
+            # magentaprint("SmartCombat trying weapon " + w)
             if self.try_weapon(w):
                 return True
         return False
@@ -290,8 +292,7 @@ class SmartCombat(CombatObject):
         else:
             while self.wield.broken_error:
                 self.to_repair.append(ref)
-                ref_split = ref.split(' ')
-                ref = ref_split[0] + ' ' + str(int(ref_split[1]) + 1)  # ref++
+                ref = self.increment_ref(ref)  # ref++
                 magentaprint("SmartCombat try_weapon ref incremented: " + str(ref))
                 magentaprint("weapon_name: " + str(weapon_name) + ", ")
                 if self.character.inventory.get_item_name_from_reference(ref) == weapon_name:
@@ -309,6 +310,12 @@ class SmartCombat(CombatObject):
                 else:
                     break
         return False
+
+    def increment_ref(self, ref):
+        if len(ref.split(' ')) > 1:
+            return ref.split(' ')[0] + ' ' + str(int(ref.split(' ')[1]) + 1)  # ref++
+        else:
+            return ref + ' 2'
 
     def wield_weapon(self, weapon_name):
         # reequip_weapon was checking character.weapon1 and character.weapon2 which I don't want to do here

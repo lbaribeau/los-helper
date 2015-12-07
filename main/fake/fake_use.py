@@ -1,5 +1,6 @@
 
 from fake.fake_command import FakeCommand
+from misc_functions import magentaprint
 
 class FakeUse(FakeCommand):
     def __init__(self, character, socket_output):
@@ -14,11 +15,12 @@ class FakeUse(FakeCommand):
 
     def do(self, target):
         i = self.inv.index(target)
+        magentaprint("FakeUse.do i " + str(i))
         
         if i is None:
-            self.socket_output.append("Use what?")
+            self.socket_output.append("Use what?\n\r")
         elif self.inv.l[i].to_string() not in self.pots:
-            self.socket_output.append("How does one use that?")
+            self.socket_output.append("How does one use that?\n\r")
         else:
             if self.inv.l[i].to_string() in self.large_pots:
                 self.char.hp = self.char.hp + 20
