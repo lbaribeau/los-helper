@@ -31,7 +31,16 @@ class Get(Command):
             # some reaction based things - healing, ring wearing... so... it does it when 
             # a mob breaks a ring... the human should do get all, but not ring management, 
             # since it's annoying... so sure, get all could spawn a thread to do ring management.
-            # It could be a mini bot.
+            # It could be a mini bot.  
+
+            # SmartCombat needs wear.
+            # Get needs wear.... ???? maybe not!  What would ring bot do.  
+
+            # Smart combat shouldn't do get all.... the bot should do that differently... like 
+            # we want the human to do.  The bot should hit get all, then get should start a 
+            # ring bot, and smart combat should remain
+            # Smart combat does it on ring break.
+            # Get does it on new ring
             pass
         super().notify(regex, match)
 

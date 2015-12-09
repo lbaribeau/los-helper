@@ -17,48 +17,30 @@ class Inventory(BotReactionWithFlag):
     #     "burnt ochre potion", "milky potion"]
 
     keep_list = [
-        "large bag", "large sack", "black bag",
-        "silver chalice", "steel bottle", "glowing potion",
-        "chicken soup", "small restorative", "small flask", 
-        "large restorative", "scarlet potion", "white potion", "tree root",
-        "Elixir of Morinva", "granite potion", "philtre of perception",
-        "burnt ochre potion", "milky potion",
-        # weapons
+        'large bag', 'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
+        'chicken soup', 'small restorative', 'small flask', 'large restorative', 'scarlet potion', 'white potion', 'tree root', 
+        'Elixir of Morinva', 'granite potion', 'philtre of perception', 'burnt ochre potion', 'granite rod', 'heathen amulet',
+        # 'spear', 
+        # 'bolos', 
+        'javelin', 'heavy crossbow', 
+        #'crossbow', 'horn bow', 'long bow' # < 70% missile
+        # 'broad sword', 
+        'rapier', 'long sword', 'adamantine sword', 'adamantine axe', 'claymore', 'spider leg', 'large orcish sword', 
+        #'bastard sword',  # bandits
+        'small mace', 'morning star'
         # 'war hammer', 
-        "adamantine sword", 'adamantine axe', "claymore", 
-        "spider leg", 'heavy crossbow', 
-        # "spear", 
-        # "bolos", 
-        'javelin', #"long bow", 
-        "heathen amulet",
-        # "broad sword", 
-        "rapier",
-        #"crossbow", "horn bow",  # < 70% missile
-        # armour
-        "hard cap", "hard gloves", "hard boots", "padded hat",
-        "mountain gloves", "mountain boots", "mountain boots with crampons",
-        "travellers cross", "leather mask", "leather collar",
-        "studded leather collar", "studded leather sleeves",
-        "studded leather boots", "studded leather pants",
-        "studded leather gloves",
-        # "chain mail armour", 
-        'chain mail sleeves', 'chain mail leggings', 
+        'hard cap', 'hard gloves', 'hard boots', 'padded hat', 'mountain gloves', 'mountain boots', 
+        'mountain boots with crampons', 'travellers cross', 'leather mask', 'leather collar', 'studded leather collar', 
+        'studded leather sleeves', 'studded leather boots', 'studded leather pants', 'studded leather gloves', 
+        'studded leather leggings' 'plate mail leggings', 'plate mail armor',
+        'ring mail armour', 'ring mail sleeves', 'ring mail leggings', 'ring mail hood', 
+        # 'ring mail gauntlets', 
+        # 'chain mail armour',  # sawmill
+        'chain mail sleeves', 'chain mail leggings', 'chain mail hood', 'chain mail boots', 
         # 'chain mail gloves', # mill worker
-        'chain mail hood', 'chain mail boots', 
-        "ring mail armour", "ring mail sleeves", "ring mail leggings", 
-        "ring mail hood", 
-        # "ring mail gauntlets", 
-        "leather collar", 
-        "enchanted indigo cloak", "fine elven cloak", "light elven cloak",
-        'lion charm', "poison ring",
-        "iron shield", 'platinum ring', 'gold ring', 'steel ring', 'silver ring',
-        'granite rod', "miner's lamp",
-        #'steel mask' # the bot slowly collects these 
-        #'bastard sword',
-        'large orcish sword', 
-        "small mace", "studded leather leggings", 'plate mail leggings', 'plate mail armor',
-        "footman's flail", 'morning star'
-        # 'war hammer'
+        'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring',
+        'iron shield', 'platinum ring', 'gold ring', 'steel ring', 'silver ring',
+        #'steel mask' # spiv, sawmill
     ]
 
     def __init__(self, mudReaderHandler, telnetHandler, character):
@@ -68,7 +50,6 @@ class Inventory(BotReactionWithFlag):
             R.you_give, R.bought, R.you_put_in_bag, R.gave_you, R.you_hold, R.weapon_break, R.weapon_shatters, R.armor_breaks, 
             R.current_equipment, R.no_inventory, R.wearing
         ]
-
         self.telnetHandler = telnetHandler
         self.character = character
         self.inventory = MudObjectDict()
@@ -83,12 +64,12 @@ class Inventory(BotReactionWithFlag):
             self.keep_list[index] = MudItem(item)
 
         self.restoratives = [
-            "chicken soup", "small restorative", "small flask", "large restorative", "scarlet potion", "white potion"
-        ] # , "tree root"]
+            'chicken soup', 'small restorative', 'small flask', 'large restorative', 'scarlet potion', 'white potion'
+        ] # , 'tree root']
 
     def notify(self, regex, M_obj):
         if regex in R.you_have:
-            magentaprint("Inventory you_have item list: " + M_obj.group(1))
+            magentaprint('Inventory you_have item list: ' + M_obj.group(1))
             self.set_inventory(M_obj.group(1))
             magentaprint(str(self.inventory))
         elif regex in R.sold:
@@ -98,12 +79,12 @@ class Inventory(BotReactionWithFlag):
             self.gold = int(M_obj.group(1))
         elif regex in R.you_wield and not M_obj.group('weapon').endswith('in your off hand'):
             weapon = M_obj.group('weapon')
-            self.equipped_items["Wielded"] = [MudItem(weapon)]
-            magentaprint('Just made object ' + str(self.equipped_items["Wielded"][0].obj.name))
+            self.equipped_items['Wielded'] = [MudItem(weapon)]
+            magentaprint('Just made object ' + str(self.equipped_items['Wielded'][0].obj.name))
             self.remove(weapon)
             # self.get_equipment()
         elif regex in R.off_hand:
-            self.equipped_items["Second"] = [MudItem(weapon)]
+            self.equipped_items['Second'] = [MudItem(weapon)]
             self.remove(weapon)
             # self.get_equipment()
         elif regex in R.you_get:
@@ -150,14 +131,14 @@ class Inventory(BotReactionWithFlag):
     def get_inventory(self):
         magentaprint('\n' + str(self.inventory.dictionary))
         prev_inventory = self.inventory.dictionary
-        self.telnetHandler.write("i")
+        self.telnetHandler.write('i')
         self.wait_for_flag()
         magentaprint('\n' + str(self.inventory.dictionary))
         return self.inventory
 
     def get_equipment(self):
         return
-        # self.telnetHandler.write("l " + self.character.name)
+        # self.telnetHandler.write("l ' + self.character.name)
         # self.wait_for_flag()
 
     def has(self, mud_item_string):
@@ -318,6 +299,7 @@ class Inventory(BotReactionWithFlag):
         for itemkey, itemlist in self.parse_item_list(item_string).items():
             for item in itemlist:
                 self.add(item.to_string())
+                magentaprint("Inv add broken on ref " + self.get_last_reference(item.to_string()))
                 self.set_broken(self.get_last_reference(item.to_string()))
                 # This is something crazy like O(n^4) but I'm having a hard time... 
                 # so I'm avoiding constructing MudItem, GenericMudList, MudObjectDict in order to avoid adding to 
@@ -490,6 +472,7 @@ class Inventory(BotReactionWithFlag):
             for index, gobj in enumerate(qty.objs):
                 item_name_split = qty.objs[index].obj.name.split(' ')
                 if len(item_name_split) > 1:
+                    magentaprint("broken junk %s unusable: %s" % (qty.objs[index].obj.name, str(qty.objs[index].is_unusable)))
                     if item_name_split[1] == 'ring' and qty.objs[index].is_unusable:
                         # Build a reference from an index... maybe this could be a separate method for future use
                         first_ref = self.get_reference(qty.objs[index].to_string())  # Hopefully the item order is legit... 
@@ -537,7 +520,7 @@ class Inventory(BotReactionWithFlag):
         # This would be easier with a simple list than with the qty dict
         # Algorithm: Use the first word in the item.  Count the items in the inventory that also 
         # use that word.  Return a word/int pair that will serve as a usable reference (ie. 'steel 6')
-        i=1
+        i = 1
         for k in sorted(self.inventory.dictionary.keys()):  # TODO: We can probably save time here
             word = item_words[0] if first_or_second_word == 1 or len(item_words) <= 1 else item_words[1]
             if word in k.obj.name.split(' '):
@@ -556,7 +539,8 @@ class Inventory(BotReactionWithFlag):
         starting_point = self.get_reference(item_name, first_or_second_word)
         if starting_point is None:
             return None
-        c = self.inventory.count(item_name)
+        c = self.count(item_name)
+        magentaprint("Inv get_last_reference counted " + str(c))
         ref_split = starting_point.split(' ')
         if len(ref_split) > 1:
             return starting_point.split(' ')[0] + ' ' + str(int(ref_split[1]) + c - 1)
@@ -584,8 +568,7 @@ class Inventory(BotReactionWithFlag):
         else:
             return item_string
 
-    def get_item_name_from_reference(self, ref):
-        # A list would be better
+    def item_from_reference(self, ref):
         ref_split = ref.split(' ')
         ref_string = ref_split[0]
 
@@ -597,9 +580,30 @@ class Inventory(BotReactionWithFlag):
         # ilist = sorted(self.inventory.keys())
         for itemkey, ivalue in self.inventory.dictionary.items():  # Hopefully sorted by keys...
             if any([w.startswith(ref_string) for w in itemkey.to_string().split(' ')]):
-                if ref_n <= ivalue.qty:
-                    return itemkey.to_string()
+                if ref_n < ivalue.qty:
+                    return ivalue.objs[ref_n-1]
                 ref_n = ref_n - ivalue.qty 
+
+    def name_from_reference(self, ref):
+        return self.item_from_reference(ref).to_string()
+
+    def get_item_name_from_reference(self, ref):
+        # # A list would be better
+        # ref_split = ref.split(' ')
+        # ref_string = ref_split[0]
+
+        # if len(ref_split) > 1:
+        #     ref_n = int(ref_split[1])
+        # else:
+        #     ref_n = 1
+
+        # # ilist = sorted(self.inventory.keys())
+        # for itemkey, ivalue in self.inventory.dictionary.items():  # Hopefully sorted by keys...
+        #     if any([w.startswith(ref_string) for w in itemkey.to_string().split(' ')]):
+        #         if ref_n <= ivalue.qty:
+        #             return itemkey.to_string()
+        #         ref_n = ref_n - ivalue.qty 
+        return self.get_item_from_reference(ref).to_string()
 
     def get_item_from_reference(self, ref):
         # # !!! Needs improvement!  Use get_item_name_from_reference
@@ -624,8 +628,8 @@ class Inventory(BotReactionWithFlag):
         for itemkey, ivalue in self.inventory.dictionary.items():  # Hopefully sorted by keys...
             if any([w.startswith(ref_string) for w in itemkey.to_string().split(' ')]):
                 if ref_n <= ivalue.qty:
-                    return itemkey # TODO: get_item_name_from_reference should be able to use this - I copied this code from there
-                ref_n = ref_n - ivalue.qty 
+                    return ivalue.objs[ref_n-1]
+                ref_n = ref_n - ivalue.qty  # This "overloads" ref_n a bit, counting it down as we loop
 
     def unequip_weapon(self, weapon):
         # e = self.equipped_items

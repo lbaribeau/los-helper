@@ -292,7 +292,7 @@ class SmartCombat(CombatObject):
         else:
             while self.wield.broken_error:
                 self.to_repair.append(ref)
-                ref = self.increment_ref(ref)  # ref++
+                ref = self.increment_ref(ref) 
                 magentaprint("SmartCombat try_weapon ref incremented: " + str(ref))
                 magentaprint("weapon_name: " + str(weapon_name) + ", ")
                 if self.character.inventory.get_item_name_from_reference(ref) == weapon_name:
@@ -330,8 +330,7 @@ class SmartCombat(CombatObject):
             self.broken_weapon = False
             return True
         while self.wield.broken_error:
-            ref_split = ref.split(' ')
-            ref = ref_split[0] + ' ' + str(int(ref_split[1]) + 1)  # ref++
+            ref = self.increment_ref(ref)
             if self.character.inventory.get_item_name_from_reference(ref) == weapon_name:
                 self.wield.execute(ref)
                 self.wield.wait_for_flag()
@@ -358,8 +357,7 @@ class SmartCombat(CombatObject):
                 return True
             while self.wield.broken_error:  # found broken one from inventory... 
                 # need to try the next one
-                ref_split = ref.split(' ')
-                ref = ref_split[0] + ' ' + str(int(ref_split[1]) + 1)  # ref++
+                ref = self.increment_ref(ref)
                 if self.character.inventory.get_item_name_from_reference(ref) == self.broken_weapon:
                     self.wield.execute(ref)
                     self.wield.wait_for_flag()
@@ -377,8 +375,7 @@ class SmartCombat(CombatObject):
                     self.broken_weapon = False
                     return True
                 while self.wield.second.broken_error:
-                    ref_split = ref.split(' ')
-                    ref = ref_split[0] + ' '+ str(int(ref_split[1]) + 1)
+                    ref = self.increment_ref(ref)
                     if self.character.inventory.get_item_name_from_reference(ref) == self.broken_weapon:
                         self.wield.second.execute(ref)
                         self.wield.second.wait_for_flag()

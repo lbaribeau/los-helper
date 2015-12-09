@@ -45,7 +45,7 @@ class MudObjectDict():
             MudObjectDict.add_to_qty_dict(self.dictionary, (obj, qty))
 
         # magentaprint("MudObjectDict added " + str(obj_dict.keys()))
-        self.sort()
+        self.sort()  # This should just sort the keys and not the item stacks
 
     def remove(self, obj_dict):
         for keyvalue in obj_dict:

@@ -290,7 +290,30 @@ class CommandHandler(object):
             self.user_move("go " + self.character.LAST_DIRECTION)
             magentaprint("Running go on EXIT_REGEX: " + str(self.character.EXIT_REGEX), False)
         elif user_input.startswith('item '):
-            magentaprint('get_item_name_from_ref: ' + str(self.character.inventory.get_item_name_from_reference(user_input.partition(' ')[2])))
+            magentaprint('get_item_name_from_ref: ' + \
+                str(self.character.inventory.get_item_name_from_reference(user_input.partition(' ')[2]))
+            )
+            magentaprint('item_from_ref: ' + \
+                str(self.character.inventory.item_from_reference(user_input.partition(' ')[2]))
+            )
+            magentaprint('name_from_ref: ' + \
+                str(self.character.inventory.name_from_reference(user_input.partition(' ')[2]))
+            )
+        elif user_input.startswith('ref '):
+        # elif user_input.startswith('lastref '):
+            magentaprint("get_last_reference('%s'): %s" % \
+                (user_input.partition(' ')[2], self.character.inventory.get_last_reference(user_input.partition(' ')[2]))
+            )
+        # elif user_input.startswith('count '):
+            magentaprint("inventory.count('%s'): %s" % \
+                (user_input.partition(' ')[2], self.character.inventory.count(user_input.partition(' ')[2]))
+            )
+        # elif user_input.startswith('ref '):
+            magentaprint("inventory.ref('%s'): %s" % \
+                (user_input.partition(' ')[2], self.character.inventory.get_reference(user_input.partition(' ')[2]))
+            )
+        elif user_input == 'i':
+            self.inventory.get_inventory()
         else: # Doesn't match any command we are looking for
             self.telnetHandler.write(user_input) # Just shovel to telnet.
 
