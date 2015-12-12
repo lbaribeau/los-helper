@@ -23,7 +23,7 @@ class FakeUse(FakeCommand):
             self.socket_output.append("How does one use that?\n\r")
         else:
             if self.inv.l[i].to_string() in self.large_pots:
-                self.char.hp = self.char.hp + 20
+                self.char.hp = self.char.hp + 10
             else:
                 self.char.hp = self.char.hp + 4
             self.socket_output.append('Potion drank.\n\rYou feel much better.\n\rA %s disintegrates.\n\r' % self.inv.l[i].to_string())

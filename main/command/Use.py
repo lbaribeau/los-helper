@@ -104,4 +104,4 @@ class Use(ThreadingMixin2):
         #     magentaprint("Command will be sent in " + str(round(self.wait_time())) + " seconds.")
 
     def by_name(self, name):
-        self.execute(self.character.inventory.get_reference(name))
+        self.execute(self.character.inventory.get_reference(name))  # error checking...

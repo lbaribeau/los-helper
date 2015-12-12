@@ -25,7 +25,8 @@ class Inventory(BotReactionWithFlag):
         'javelin', 'heavy crossbow', 
         #'crossbow', 'horn bow', 'long bow' # < 70% missile
         # 'broad sword', 
-        'rapier', 'long sword', 'adamantine sword', 'adamantine axe', 'claymore', 'spider leg', 'large orcish sword', 
+        'rapier', 'adamantine sword', 'adamantine axe', 'claymore', 'spider leg', 'large orcish sword', 
+        # 'long sword',  these pile up
         #'bastard sword',  # bandits
         'small mace', 'morning star'
         # 'war hammer', 
@@ -603,7 +604,8 @@ class Inventory(BotReactionWithFlag):
         #         if ref_n <= ivalue.qty:
         #             return itemkey.to_string()
         #         ref_n = ref_n - ivalue.qty 
-        return self.get_item_from_reference(ref).to_string()
+
+        return self.get_item_from_reference(ref).to_string() if self.get_item_from_reference(ref) else None
 
     def get_item_from_reference(self, ref):
         # # !!! Needs improvement!  Use get_item_name_from_reference
