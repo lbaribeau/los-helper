@@ -160,7 +160,7 @@ class GrindThread(BotThread):
     def rest_and_check_aura(self):
         # This method is only efficient in a healing area
         magentaprint("BotThread.rest_and_check_aura()")
-        mana_to_wait = self.character.MAX_MANA - 2*(self.character._class.mana_tick + 2) 
+        mana_to_wait = self.character.maxMP - 2*(self.character._class.mana_tick + 2) 
             # MANA_TO_WAIT differentiates between hitting 'rest' and just hitting 
             # 'enter' a bunch (waiting vs resting)
 
@@ -182,7 +182,7 @@ class GrindThread(BotThread):
         if aura_updated:
             self.aura_updated_hook()
     
-        if self.character.level > 3 and self.character.MAX_MANA > 10:
+        if self.character.level > 3 and self.character.maxMP > 10:
             self.heal_up()
             self.wait_for_mana()  
         else:
@@ -617,6 +617,13 @@ class GrindThread(BotThread):
         if self.stopping:
             return
         self.inventory.drop_stuff()
+
+        # This should maybe be a mini bot...
+        # self.drop_refs(self.inventory.sellable())
+        # self.drop_refs(self.inventory.droppable())
+
+    def drop_refs(self):
+        pass
 
     def decide_which_mob_to_kill(self, monster_list):
         monster_list = monster_list[:]                 

@@ -3,7 +3,7 @@ from db.Database import *
 from db.NamedModel import NamedModel
 from misc_functions import *
 
-class GenericMudObject():
+class GenericMudObject(object):
     obj = None
     reference = None
     conserve = False

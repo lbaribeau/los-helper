@@ -1,8 +1,13 @@
+
 import collections
 from Exceptions import *
 from misc_functions import *
 
-class MudObjectDict():
+class MudObjectDict(object):
+    # This is a structure that should help with any set of objects the way the mud server deals with them:
+    #  - inventory, mob list, equipment, shop list...
+    # these all have similar "word n" object targeting mechanisms, ie. ring 5.
+
     dictionary = {}
 
     def __init__(self):
@@ -48,6 +53,7 @@ class MudObjectDict():
         self.sort()  # This should just sort the keys and not the item stacks
 
     def remove(self, obj_dict):
+        magentaprint("MudObjectDict.remove(): Deprecated - this function doesn't update qty fields.")
         for keyvalue in obj_dict:
             try:
                 MudObjectDict.remove_from_qty_dict(self.dictionary, (keyvalue, obj_dict[keyvalue]) )
@@ -124,5 +130,10 @@ class MudObjectDict():
         #         del d[keyvalue[0]]
         #     else:
         #         d[keyvalue[0]] = d[keyvalue[0]] - keyvalue[1]
+
+    def remove_by_reference(self, ref):
+        pass
+
+
 
 

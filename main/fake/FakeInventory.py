@@ -87,7 +87,8 @@ class FakeInventory(object):
 
     def get(self, ref):
         i = self.index(ref)
-        if i:
+
+        if i is not None:
             return self.l[i]
 
     def set_unusable(self, ref):

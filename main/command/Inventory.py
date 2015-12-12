@@ -199,7 +199,7 @@ class Inventory(BotReactionWithFlag):
     #             self.telnetHandler.write("use " + item)
     def sell_stuff(self):
         self.__stopping = False
-        self.get_inventory()  # Unnecessary if inventory is well tracked
+        # self.get_inventory()  # Unnecessary if inventory is well tracked
 
         for item_ref in self.sellable():
             if not self.__stopping:
@@ -246,13 +246,12 @@ class Inventory(BotReactionWithFlag):
 
         self.is_bulk_vendoring = False
 
-
     # def sell_fast(self):
 
     def drop_stuff(self):
         magentaprint("Inventory.drop_stuff()")
         self.__stopping = False
-        self.get_inventory()  # Maybe unnecessary, except I see "You don't have that" if removed
+        # self.get_inventory()  # Maybe unnecessary, except I see "You don't have that" if removed
 
         for item_ref in self.sellable():
             if not self.__stopping:
@@ -330,7 +329,7 @@ class Inventory(BotReactionWithFlag):
 
         for k in d1.dictionary.keys():
             if k in d2.dictionary.keys():
-                if len(d1.dictionary[k]) != len(d2.dictionary[k]):
+                if len(d1.dictionary[k].objs) != len(d2.dictionary[k].objs):
                     return False
             else:
                 return False
