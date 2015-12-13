@@ -309,8 +309,11 @@ class CommandHandler(object):
                 (user_input.partition(' ')[2], self.character.inventory.count(user_input.partition(' ')[2]))
             )
         # elif user_input.startswith('ref '):
-            magentaprint("inventory.ref('%s'): %s" % \
+            magentaprint("inventory.get_reference('%s'): %s" % \
                 (user_input.partition(' ')[2], self.character.inventory.get_reference(user_input.partition(' ')[2]))
+            )
+            magentaprint("inventory.get_first_reference('%s'): %s" % \
+                (user_input.partition(' ')[2], self.character.inventory.get_first_reference(user_input.partition(' ')[2]))
             )
         elif user_input == 'i':
             self.inventory.get_inventory()

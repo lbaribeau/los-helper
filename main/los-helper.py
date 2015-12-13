@@ -72,8 +72,9 @@ class LosHelper(object):
         self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
         self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
         self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
-        self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler, self.character)
+        self.inventory = Inventory(self.telnetHandler, self.character)
         self.character.inventory = self.inventory
+        self.mudReaderHandler.add_subscriber(self.inventory)
         self.mudReaderHandler.add_subscriber(self.character.mobs)
 
         # self.mud_map_thread.start()  # Don't forget to uncomment .join()
@@ -206,7 +207,7 @@ class LosHelper(object):
         # This prints the inventory.  I like that.  
         # Inventory needs this to be up to date.
         self.character.inventory.get_inventory()
-        self.character.inventory.output_inventory()
+        # self.character.inventory.output_inventory()
 
     def check_class_and_level(self):
         whois = Whois(self.mudReaderHandler, self.telnetHandler, self.character)

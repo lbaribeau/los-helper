@@ -206,7 +206,8 @@ class TrackGrindThread(GrindThread):
         elif self.__nextpath == 5:
             return self.MILITIA_SOLDIERS_PATH[:]
         elif self.__nextpath == 7:
-            if self.character.AURA_SCALE < self.character.AURA_LIST.index('pale blue') and \
+            if (self.character.level >= 4 or \
+                self.character.AURA_SCALE < self.character.AURA_LIST.index('pale blue')) and \
                self.character.AURA_SCALE <= self.character.AURA_PREFERRED_SCALE: 
                 return self.KOBOLD_PATH[:]
             else:
@@ -227,8 +228,9 @@ class TrackGrindThread(GrindThread):
         elif self.__nextpath == 11:
             return self.FORT_PATH[:]
         elif self.__nextpath == 13:
-            if self.character.AURA_SCALE < self.character.AURA_LIST.index('pale blue') or \
-               self.character.AURA_SCALE <= self.character.AURA_PREFERRED_SCALE:
+            if (self.character.level >= 8 or \
+                self.character.AURA_SCALE < self.character.AURA_LIST.index('pale blue')) and \
+               self.character.AURA_SCALE <= self.character.AURA_PREFERRED_SCALE: 
                 return self.NORTHERN_BANDITS_PATH[:]
             else:
                 magentaprint("Not going to do bandits. Current aura, and preferred: %s,  %s" % 

@@ -275,8 +275,9 @@ class SmartCombat(CombatObject):
 
     def try_weapon(self, weapon_name):
         magentaprint("SmartCombat.try_weapon() on " + str(weapon_name))
-        ref = self.character.inventory.get_reference(weapon_name, 2)
+        ref = self.character.inventory.get_first_reference(weapon_name, 2)
         if ref == None:
+            magentaprint("SmartCombat got ref == None for weapon " + weapon_name)
             return False
         self.wield.execute(ref)
         self.wield.wait_for_flag()

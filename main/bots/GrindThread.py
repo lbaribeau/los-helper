@@ -64,14 +64,12 @@ class GrindThread(BotThread):
         item = exit_str.replace("dobuy", "")
         # self.inventory.buy(item)
         # self.sleep(2)
-        # magentaprint(self.inventory.inventory, False)
         self.commandHandler.buy.execute(item.partition(' ')[0])  # TODO: ensure that the correct item is bought
         self.commandHandler.buy.wait_for_flag()
         # I'm hacking here.  I intend start a new Grind thread to do this properly.
         if self.commandHandler.buy.cant_carry:
             # Maybe we're carrying a broken one
-            magentaprint("GrindThread.dobuy() inventory: " + str(self.inventory.inventory))
-            magentaprint("GrindThread.dobuy() reference: " + str(self.inventory.get_reference(item)))
+            # magentaprint("GrindThread.dobuy() reference: " + str(self.inventory.get_reference(item)))
             self.commandHandler.drop.execute(self.inventory.get_reference(item))
             self.commandHandler.drop.wait_for_flag()
             if not self.commandHandler.drop.success:
@@ -84,6 +82,7 @@ class GrindThread(BotThread):
                 self.commandHandler.buy.wait_for_flag()
 
         if self.commandHandler.buy.success:
+            magentaprint("GrindThread.dobuy adding %s." % str(item))
             self.inventory.add(item)  
             return True
         else:
@@ -258,7 +257,7 @@ class GrindThread(BotThread):
                 # self.character.mana_tick+2 % self.character.maxMP - self.character.MANA > 2:
                 # self.character.maxMP - self.character.MANA % self.character.mana_tick+chapel - vig >= 0: #self.character.mana_tick + vig - chapel:
                 # Laurier does math!  (Mathing out whether we should vig or in the chapel)
-            magentaprint("Health ticks needed: " + str(self.health_ticks_needed()) + ", Mana ticks needed: " + str(self.mana_ticks_needed()))
+            magentaprint("Health ticks needed: " + str(round(self.health_ticks_needed(), 1)) + ", Mana ticks needed: " + str(round(self.mana_ticks_needed(), 1)))
             self.do_heal_skills()
 
             # if self.engage_any_attacking_mobs():
@@ -658,29 +657,26 @@ class GrindThread(BotThread):
         return ''
 
     def do_buff_skills(self):
-        if self.character._class is not None:
-            for skill in self.character._class.buff_skills:
-                if skill.up():
-                    skill.execute()
-                    skill.wait_for_flag()
-                    return skill.success
+        for skill in self.character._class.buff_skills:
+            if skill.up():
+                skill.execute()
+                skill.wait_for_flag()
+                return skill.success
 
     def do_combat_skills(self, target):
-        if self.character._class is not None:
-            for skill in self.character._class.slow_combat_skills:
-                if skill.up():
-                    skill.execute(target)
-                    skill.wait_for_flag()
-                    return skill.success
+        for skill in self.character._class.slow_combat_skills:
+            if skill.up():
+                skill.execute(target)
+                skill.wait_for_flag()
+                return skill.success
         return False
 
     def do_heal_skills(self):
-        if self.character._class is not None:
-            for skill in self.character._class.heal_skills:
-                if skill.up():
-                    skill.execute()
-                    skill.wait_for_flag()
-                    return skill.success
+        for skill in self.character._class.heal_skills:
+            if skill.up():
+                skill.execute()
+                skill.wait_for_flag()
+                return skill.success
         return False
 
     def engage_monster(self, monster):

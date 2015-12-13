@@ -44,8 +44,8 @@ class AreaStoreItem(BaseModel):
         return areastoreitem
 
     def get_by_item_type_and_level(model_name, data_name, level = 1):
+        # print("AreaStoreItem.get_by_item_type_and_level(): model_name: " + str(model_name) + ", data_name: " + str(data_name) + ", level: " + str(level))
         items = []
-        print("AreaStoreItem.get_by_item_type_and_level(): model_name: " + str(model_name) + ", data_name: " + str(data_name) + ", level: " + str(level))
         # magentaprint("ItemTypeModel.get_by_name(model_name).get().id: " + ItemTypeModel.get_by_name(model_name).get().id)
 
         # print("AreaStoreItem ItemTypeModel.get_by_name(model_name).get().id: model_name: " + str(model_name) + ', data_name: ' + str(data_name))
@@ -56,10 +56,10 @@ class AreaStoreItem(BaseModel):
         # print('AreaStoreItem itemtypemodel: ' + str(myitemtypemodel.get()))  # This one
         # print('AreaStoreItem itemtypemodel.id: ' + str(ItemTypeModel.get_by_name(model_name).get().id))
         itemtypemodel = ItemTypeModel.get_by_name(model_name).get().id
-        print('AreaStoreItem itemtypemodel: ' + str(itemtypemodel))
+        # print('AreaStoreItem itemtypemodel: ' + str(itemtypemodel))
 
         itemtypedata = ItemTypeData.get_by_name(data_name).get().id
-        print('AreadStoreItem itemtypedata: ' + str(itemtypedata))
+        # print('AreadStoreItem itemtypemodel: %s, itemtypedata: %s' % (str(itemtypemodel), str(itemtypedata)))
 
         # items = AreaStoreItem.select().join(Item).where(Item.level == level).join(ItemType).where(ItemType.model == itemtypemodel and ItemType.data == itemtypedata)
         items = AreaStoreItem.select().join(Item).where(Item.level == level).join(ItemType).where(ItemType.model == itemtypemodel and ItemType.data == itemtypedata)

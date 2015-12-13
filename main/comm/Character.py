@@ -271,7 +271,7 @@ class Character(object):
         'dwarven cook', 'swordsman', 'fort sergeant', 'oremaster', 'giant spider', 'rock spider', 'Aldo', 'dwarven trader',
         'gnoll chaplain', 'Cheryn', 'orc scout', 'bouncer', 'rancher sentry',  'dwarven shepherd', 'clown'  
         # 'robed priest', 
-    ]  # There are also lvl 5 rancher sentries
+    ]  # There are also lvl 5 rancher sentries... they're a bit blue
     lvl8_monsters = [  # There are 2 amethyst guards and 3 amber guards of this level
         'Alaran the Market Manager', 'hauler', 'Farmer Malbon', 'sonneteer', 'Tag', 'mine manager', 'artificer', 
         'Dini Stonehammer', 'Olmer', 'Thereze', 'Farmer Viladin', 'Rancher Renstone', 'berzerker', 'dwarven hunter', 

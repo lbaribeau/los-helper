@@ -17,7 +17,7 @@ class FakeInventory(object):
 
     def output_string(self):
         if len(self.l) <= 0:
-            return "You currently have no carried inventory."
+            return "You currently have no carried inventory.\n\r"
         else:
             # return "You have: " + ", ".join([self.mini_inventory_string(i) for i in self.inventory]) + '.'
             return "You have: " + self.item_string() + '.\n\r'

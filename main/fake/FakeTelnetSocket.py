@@ -241,7 +241,7 @@ class FakeTelnetSocket(object):
             self.char.inv.add(command.partition(' ')[2])
         elif re.match('drop (.+)', command):
             i = self.inventory.index(command.partition(' ')[2])
-            if i > -1:
+            if i is not None:
                 self.socket_output.append(self.drop_string % self.inventory.l[i].name)
                 self.buy.cant_carry = False
                 self.inventory.remove(command.partition(' ')[2])
@@ -249,12 +249,12 @@ class FakeTelnetSocket(object):
                 self.socket_output.append("You don't have that.\n\r")
         elif re.match('sell (.+)', command):
             i = self.inventory.index(command.partition(' ')[2])
-            if i > -1:
+            if i is not None:
                 self.socket_output.append('The shopkeep gives you 30 gold for a ' + self.inventory.l[i].name + '.\n\r')
                 self.buy.cant_carry = False
                 self.inventory.remove(command.partition(' ')[2])
             else:
-                self.socket_output.append("You don't have that\n\r.")
+                self.socket_output.append("You don't have that.\n\r")
         elif command.startswith('use '):
             self.use.do(command.partition(' ')[2])
         elif command.startswith('buy '):

@@ -5,11 +5,10 @@ from Exceptions import *
 from reactions.BotReactions import *
 from misc_functions import *
 from db.MudItem import *
-from db.GenericMudList import *
-from MudObjectDict import *
+from reactions.referencing_list import ReferencingList
 import comm.RegexStore as R
 
-class Inventory(BotReactionWithFlag):
+class Inventory(BotReactionWithFlag, ReferencingList):
     # keep_list = ["large bag", "large sack", "black bag",
     #     "silver chalice", "steel bottle", 'glowing potion',
     #     "chicken soup", 'scarlet potion', 'white potion', "tree root",
@@ -25,7 +24,8 @@ class Inventory(BotReactionWithFlag):
         'javelin', 'heavy crossbow', 
         #'crossbow', 'horn bow', 'long bow' # < 70% missile
         # 'broad sword', 
-        'rapier', 'adamantine sword', 'adamantine axe', 'claymore', 'spider leg', 'large orcish sword', 
+        'adamantine axe', 'rapier', 'adamantine sword', 'claymore', 'spider leg', 'large orcish sword', 
+        'silver dagger',
         # 'long sword',  these pile up
         #'bastard sword',  # bandits
         'small mace', 'morning star'
@@ -44,7 +44,7 @@ class Inventory(BotReactionWithFlag):
         #'steel mask' # spiv, sawmill
     ]
 
-    def __init__(self, mudReaderHandler, telnetHandler, character):
+    def __init__(self, telnetHandler, character):
         self.regex_cart = [
             R.you_have, R.wont_buy, R.wont_buy2, R.sold, R.you_drop, R.disintegrates, R.gold_from_tip, R.not_a_pawn_shop, 
             R.you_now_have, R.not_empty, R.you_wear, R.nothing_to_wear, R.you_get, R.you_remove, R.nothing_to_remove, R.you_wield, 
@@ -53,8 +53,6 @@ class Inventory(BotReactionWithFlag):
         ]
         self.telnetHandler = telnetHandler
         self.character = character
-        self.inventory = MudObjectDict()
-        mudReaderHandler.add_subscriber(self)
         self.gold = 0
         self.__stopping = False
         self.is_bulk_vendoring = False
@@ -68,34 +66,41 @@ class Inventory(BotReactionWithFlag):
             'chicken soup', 'small restorative', 'small flask', 'large restorative', 'scarlet potion', 'white potion'
         ] # , 'tree root']
 
+        BotReactionWithFlag.__init__(self)
+        ReferencingList.__init__(self)
+
     def notify(self, regex, M_obj):
         if regex in R.you_have:
-            magentaprint('Inventory you_have item list: ' + M_obj.group(1))
+            # magentaprint('Inventory you_have item list: ' + M_obj.group(1))
             self.set_inventory(M_obj.group(1))
-            magentaprint(str(self.inventory))
+            # magentaprint(str(self.list))
         elif regex in R.sold:
             self.gold = self.gold + int(M_obj.group(1))
-            self.remove(M_obj.group(2))
+            self.remove_many(M_obj.group(2))
         elif regex in R.you_now_have + R.gold_from_tip:
             self.gold = int(M_obj.group(1))
         elif regex in R.you_wield and not M_obj.group('weapon').endswith('in your off hand'):
             weapon = M_obj.group('weapon')
             self.equipped_items['Wielded'] = [MudItem(weapon)]
             magentaprint('Just made object ' + str(self.equipped_items['Wielded'][0].obj.name))
-            self.remove(weapon)
+            self.remove_many(weapon)
             # self.get_equipment()
         elif regex in R.off_hand:
             self.equipped_items['Second'] = [MudItem(weapon)]
-            self.remove(weapon)
+            self.remove_many(weapon)
             # self.get_equipment()
         elif regex in R.you_get:
             item = self.clip_from_a_container(M_obj.group(1))
             self.add(item)
         elif regex in R.you_drop + R.you_give + R.you_put_in_bag + R.disintegrates:
             # magentaprint(str(M_obj.group(1)), False)
-            self.remove(M_obj.group(1))
+            # Problem: we don't know which item was dropped, so it's hard to keep track of is_usable
+            # Maybe we just want to reset everthing after dropping... or the bot needs to manage things,
+            # or inventory needs full control of many commands (drop, sell...) ... hmph ... preferring to 
+            # ask the server
+            self.remove_many(M_obj.group(1))
         elif regex in R.you_wear + R.you_hold:
-            self.remove(M_obj.group(1))
+            self.remove_many(M_obj.group(1))
             self.get_equipment()
             #we know this is armor of some kind so we need to find a way to assign it to the right spot
         elif regex in R.you_remove + R.gave_you:
@@ -126,30 +131,29 @@ class Inventory(BotReactionWithFlag):
 
                     self.equipped_items[slot[0]].append(MudItem(slot[1]))
             # magentaprint(self.equipped_items,False)
-        # magentaprint(self.inventory, False)
+        # magentaprint(self.list, False)
         super().notify(regex, M_obj)
 
     def get_inventory(self):
-        magentaprint('\n' + str(self.inventory.dictionary))
-        prev_inventory = self.inventory.dictionary
+        # magentaprint('\n' + str(self.list))
         self.telnetHandler.write('i')
         self.wait_for_flag()
-        magentaprint('\n' + str(self.inventory.dictionary))
-        return self.inventory
+        # magentaprint('\n' + str(self.list))
+        return self.list
 
     def get_equipment(self):
         return
         # self.telnetHandler.write("l ' + self.character.name)
         # self.wait_for_flag()
 
-    def has(self, mud_item_string):
-        mud_item = MudItem(mud_item_string)
-        mud_item.map()
+    # def has(self, mud_item_string):
+    #     mud_item = MudItem(mud_item_string)
+    #     mud_item.map()
 
-        if self.inventory.count(mud_item) > 0:
-            return True
+    #     if self.inventory.count(mud_item) > 0:
+    #         return True
 
-        return False
+    #     return False
 
     def has_restorative(self):
         return any([self.has(r) for r in self.restoratives])
@@ -173,8 +177,10 @@ class Inventory(BotReactionWithFlag):
 
         return has_slot_equipped
 
-    def get_item_of_type(self, itemModel, itemData, level=1):
-        return self.inventory.get_object_of_type(itemModel, itemData, level)
+    def get_item_of_type(self, item_model, item_data, level=1):
+    #     return self.inventory.get_object_of_type(itemModel, itemData, level)
+        return self.get_object_of_type(item_model, item_data, level)
+
     # def use(self, item_or_list):
     #     item = ""
     #     if type(item) is list:
@@ -197,9 +203,11 @@ class Inventory(BotReactionWithFlag):
     #     else:
     #         magentaprint("Inventory: Error: " + item + " not usable.")
     #             self.telnetHandler.write("use " + item)
+
     def sell_stuff(self):
         self.__stopping = False
         # self.get_inventory()  # Unnecessary if inventory is well tracked
+          # also - sellable does this
 
         for item_ref in self.sellable():
             if not self.__stopping:
@@ -263,14 +271,11 @@ class Inventory(BotReactionWithFlag):
         self.telnetHandler.write("drop " + item_ref)
         self.wait_for_flag()
 
-    def drop_item_at_position(self, item_string, position):
-        self.telnetHandler.write("drop " + item_string  + " " + str(position))
-        self.wait_for_flag()
-
     def drop_last(self, item_string):
         # item_ref = self._item_string_to_reference(item_string)  # TODO: This looks like it would crash
         item_ref = self.get_last_reference(item_string)
-        self.drop_item_at_position(item_ref, self.inventory[item_string])
+        self.telnetHandler.write("drop " + item_string  + " " + str(position))
+        self.wait_for_flag()
 
     def stop(self):
         self.__stopping = True
@@ -283,11 +288,29 @@ class Inventory(BotReactionWithFlag):
     #     # self.sort()
     #     # pass
 
+    # def add(self, item_string):
+    #     # Unfortunately there are a few (three) formats to keep track of.
+    #     # ReferencingList isn't smart enough to make objects, so we have to overwrite add.
+    #     # We sometimes add MudItems, we sometimes add strings from the mud, and we sometimes 
+    #     # want to add items by name.  
+    #     self.add_by_string_list(self.parse_item_names)
+
     def add(self, item_string):
-        items = self.parse_item_list(item_string)
-        self.inventory.add(items)
+        magentaprint("Inventory.add %s parsed as %s." % (item_string, str(self.parse_item_list(item_string))))
+
+        items = self.parse_item_list(item_string)  # This is overloaded for "hammer" and "a hammer"
+        for i in items:
+            # magentaprint("Inventory adding %s" % str(i))
+            super().add(i)
 
     def add_broken(self, item_string):
+        items = self.parse_item_list(item_string)
+
+        for i in items:
+            i.is_unusable = True
+            super().add(i)
+
+    def add_broken_to_dict(self, item_string):
         # items = self.parse_item_list(item_string)
 
         # for name, qty in items:
@@ -296,7 +319,7 @@ class Inventory(BotReactionWithFlag):
         #         item.is_unusable = True
         #         self.add(item)
         # for name in item_string: # separates out letters...
-        for itemkey, itemlist in self.parse_item_list(item_string).items():
+        for itemkey, itemlist in self.parse_item_list_dict(item_string).items():
             for item in itemlist:
                 self.add(item.to_string())
                 magentaprint("Inv add broken on ref " + self.get_last_reference(item.to_string()))
@@ -310,13 +333,33 @@ class Inventory(BotReactionWithFlag):
 
     def set_inventory(self, item_string):  
         # self.inventory = MudObjectDict()
-        # self.inventory.add(self.parse_item_list(item_string))
-        # self.inventory = MudObjectDict().add(self.parse_item_list(item_string))  # constructor doesn't return self
-        d = MudObjectDict()
-        d.add(self.parse_item_list(item_string))
-        # This overwrites all state information (is_unusable), so only overwrite when the new dict is somehow different.
-        if not self.compare_mud_object_dicts(d, self.inventory):
-            self.inventory = d
+        # self.inventory.add(self.parse_item_list_dict(item_string))
+        # self.inventory = MudObjectDict().add(self.parse_item_list_dict(item_string))  # constructor doesn't return self
+
+        # d = MudObjectDict()
+        # d.add(self.parse_item_list_dict(item_string))
+        # # This overwrites all state information (is_unusable), so only overwrite when the new dict is somehow different.
+        # if not self.compare_mud_object_dicts(d, self.inventory):
+        #     self.inventory = d
+
+        l = []
+        l.extend(self.parse_item_list(item_string))
+        if not self.compare_lists(self.list, l):
+            magentaprint("Inventory.set_inventory overwriting self.list, len %s." % len(l))
+            magentaprint(str(self.to_dict()))
+            self.list = l
+        else:
+            magentaprint("Inventory.set_inventory didn't overwrite self.list, lengths: %s, %s." % (len(l), len(self.list)))
+
+    def compare_lists(self, l1, l2):
+        if len(l1) != len(l2):
+            return False
+
+        for i in range(0, len(l1)):
+            if l1[i] != l2[i]:
+                return False
+
+        return True
 
     def compare_mud_object_dicts(self, d1, d2):
         # This won't check is_usuable as desired
@@ -338,11 +381,11 @@ class Inventory(BotReactionWithFlag):
         return True
 
     # def add(self, item_string):
-    #     self.inventory.add(self.parse_item_list(item_string))
+    #     self.inventory.add(self.parse_item_list_dict(item_string))
 
     # def add_broken(self, item_string):
     #     # Hmph - this would be the simple way to do it...
-    #     items = self.parse_item_list(item_string)
+    #     items = self.parse_item_list_dict(item_string)
 
     #     for item in items:
     #         item.is_unusable = True
@@ -356,9 +399,13 @@ class Inventory(BotReactionWithFlag):
         else:
             self.inventory.inventory[item_ref.partition(' ')[0]].objs[0].is_unusable = True
 
-    def remove(self, item_string):
-        item_list = self.parse_item_list(item_string)
-        self.inventory.remove(item_list)
+    def remove_many(self, item_string):
+        item_list = self.parse_item_names(item_string)
+
+        for s in item_list:
+            magentaprint("Inventory.remove_many() calling remove on " + str(self.get_reference(s)))
+            if self.get_reference(s) is not None:  # Happens if inv is not up to date (ie. Bought.)
+                self.remove(self.get_reference(s))
 
     def equip_item(self, equip_string):
         self.telnetHandler.write(equip_string)
@@ -385,7 +432,64 @@ class Inventory(BotReactionWithFlag):
         else:
             return get_string
 
+    def construct_items(self, string_list):
+        items = []
+
+        for i in string_list:
+            item = MudItem(i)
+            item.map()
+            items.append(item)
+
+        return items
+
     def parse_item_list(self, inventory_string):
+        return self.construct_items(self.parse_item_names(inventory_string))
+
+    def parse_item_names(self, inventory_string):
+        # returns a list of strings (MudItems can be constructed outside)
+
+        return_list = []
+        inventory_string = inventory_string.replace("\n\r", ' ')
+        inv_list = inventory_string.split(',')
+        inv_list = [item.strip(' \t\n\r') for item in inv_list]
+        singles = ['a ', 'an ', 'some ']
+        numbers = ['two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 
+                   'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ', 
+                   'fifteen ' , 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen ', 'twenty '] 
+        numbers.extend([str(i) + " " for i in range(21, 200)])
+
+        for item in inv_list:
+            if item.endswith(" gold coin") or item.endswith(" gold coins"):
+                continue
+            if item.endswith(" platinum coins"):
+                continue
+
+            if not any(item.startswith(s) for s in singles + numbers):
+                return_list.append(item)  # ie 'maul hammer'
+                continue
+
+            if any(item.startswith(s) for s in singles):
+                return_list.append(item.partition(' ')[2])  # ie 'a maul hammer'
+                continue
+
+            for n in range(0, len(numbers)):
+                number = numbers[n]
+                if item.startswith(number):
+                    item = item[len(number):]
+
+                    if item.startswith("sets of"):
+                        item = item.replace("sets of ", "")
+
+                    if item.endswith('ses') or item.endswith('xes'):
+                        item = item[:len(item)-2]
+                    elif item.endswith('s'):
+                        item = item[:len(item)-1]
+
+                    return_list.extend([item]*(n+2))
+
+        return return_list
+
+    def parse_item_list_dict(self, inventory_string):
         ''' Returns a dict {item: quantity} ie. {"chicken soup": 5, steel bottle: 1} '''
         return_dict = {}
         inventory_string = inventory_string.replace("\n\r", ' ')
@@ -454,7 +558,8 @@ class Inventory(BotReactionWithFlag):
 
     def sellable(self):
         self.get_inventory()
-        slist = self.inventory.get_unique_references(self.keep_list)
+        slist = self.get_unique_references(self.keep_list)
+        slist.reverse()
         magentaprint("Sellable items: " + str(slist))
         # return self.inventory.get_unique_references(self.keep_list)
         return slist
@@ -463,6 +568,34 @@ class Inventory(BotReactionWithFlag):
         return self.broken_junk()
 
     def broken_junk(self):
+        refs = []
+        # unique_refs = self.get_unique_references(self.list)
+        # for uref in unique_refs:
+        for item in self.list:
+            item_name_split = item.name.split(' ')
+            if len(item_name_split) > 1:
+                magentaprint("broken junk %s unusable: %s" % (item, str(item.is_unusable)))
+                if item_name_split[1] == 'ring' and item.is_unusable:
+                    magentaprint("broken_junk appending " + str(self.get_reference(item)))
+                    refs.append(self.get_reference(item))
+                    # first_ref = self.get_reference(item)
+                    # if len(first_ref.split(' ')) > 1:
+                    #     refs.append(first_ref.split(' ')[0] + ' ' + str(int(first_ref.split(' ')[1]) + index))
+                    # else:
+                    #     if index > 0:
+                    #         # refs.append(first_ref.split(' ')[0] + ' ' + str(index + 1))
+                    #         refs.append(first_ref + ' ' + str(index + 1))
+                    #     else:
+                    #         refs.append(first_ref)
+                # elif item_name == 'small inhaler' and not qty.objs[index].is_usable::
+                # drop_item_at_index(item, index)  # This would require a get_reference_from_index method
+
+        refs.reverse()
+        magentaprint("broken junk returning " + str(refs))
+        return refs  # Bot can drop these references without reversing
+        # TODO: use small inhalers
+
+    def broken_junk_dict(self):
         # self.get_inventory()
         # for item_list in self.inventory.dictionary.values():
         #     magentaprint("Inventory droppable item list: " + str(self.inventory.dictionary.values()))
@@ -494,7 +627,7 @@ class Inventory(BotReactionWithFlag):
         # TODO: use small inhalers
 
     def output_inventory(self):
-        magentaprint(str(self.inventory),False)
+        magentaprint(str(self.list), False)
 
     # usable = ["small retorative", "large restorative", "chicken soup", "scarlet potion", 
     #           "steel bottle", "silver chalice", "milky potion",
@@ -514,49 +647,51 @@ class Inventory(BotReactionWithFlag):
             l.extend([k] * len(self.inventory.dictionary[k].objs))
         return l
 
-    def get_reference(self, item_name, first_or_second_word=1):
-        item_words = item_name.strip().split(' ')
-        # self.inventory.sort()  # I think we can assume that proper housekeeping has been done
-        # This would be easier with a simple list than with the qty dict
-        # Algorithm: Use the first word in the item.  Count the items in the inventory that also 
-        # use that word.  Return a word/int pair that will serve as a usable reference (ie. 'steel 6')
-        i = 1
-        for k in sorted(self.inventory.dictionary.keys()):  # TODO: We can probably save time here
-            word = item_words[0] if first_or_second_word == 1 or len(item_words) <= 1 else item_words[1]
-            if word in k.obj.name.split(' '):
-                if item_name == k.obj.name:
-                    return word if i == 1 else word + ' ' + str(i)
-                else:
-                    i = i + len(self.inventory.dictionary[k].objs)
+    # def get_reference(self, item_name, first_or_second_word=1):
+    #     return self.list.get_reference(item_name, first_or_second_word)
 
-        return None  # Not in inventory - would be easy to check for that before calling
+    #     item_words = item_name.strip().split(' ')
+    #     # self.inventory.sort()  # I think we can assume that proper housekeeping has been done
+    #     # This would be easier with a simple list than with the qty dict
+    #     # Algorithm: Use the first word in the item.  Count the items in the inventory that also 
+    #     # use that word.  Return a word/int pair that will serve as a usable reference (ie. 'steel 6')
+    #     i = 1
+    #     word = item_words[0] if first_or_second_word == 1 or len(item_words) <= 1 else item_words[1]
+    #     for k in sorted(self.inventory.dictionary.keys()):  # TODO: We can probably save time here
+    #         if word in k.obj.name.split(' '):
+    #             if item_name == k.obj.name:
+    #                 return word if i == 1 else word + ' ' + str(i)
+    #             else:
+    #                 i = i + len(self.inventory.dictionary[k].objs)
 
-    def get_2nd_word_reference(self, item_name):
-        return self.get_reference(item_name, 2)
+    #     return None  # Not in inventory - would be easy to check for that before calling
 
-    def get_last_reference(self, item_name, first_or_second_word=1):
-        # Often you want the most recent item in the stack
-        starting_point = self.get_reference(item_name, first_or_second_word)
-        if starting_point is None:
-            return None
-        c = self.count(item_name)
-        magentaprint("Inv get_last_reference counted " + str(c))
-        ref_split = starting_point.split(' ')
-        if len(ref_split) > 1:
-            return starting_point.split(' ')[0] + ' ' + str(int(ref_split[1]) + c - 1)
-        else:
-            if c <= 1:
-                return starting_point.split(' ')[0]  # Had a buggy c as 0 case - and the served targets odd things with n=0
-            else:
-                return starting_point.split(' ')[0] + ' ' + str(c)
-        # There would be less code if I didn't treat '1' specially (I prefer 'potion' not 'potion 1' for the 1st potion)
+    # def get_2nd_word_reference(self, item_name):
+    #     return self.get_reference(item_name, 2)
 
-    def _reference_string(self, word, i):
-        # Reference string given the int - this is just a code-saving method
-        if i <= 1:
-            return word
-        else:
-            return word + ' ' + str(i)
+    # def get_last_reference(self, item_name, first_or_second_word=1):
+    #     # Often you want the most recent item in the stack
+    #     starting_point = self.get_reference(item_name, first_or_second_word)
+    #     if starting_point is None:
+    #         return None
+    #     c = self.count(item_name)
+    #     magentaprint("Inv get_last_reference counted " + str(c))
+    #     ref_split = starting_point.split(' ')
+    #     if len(ref_split) > 1:
+    #         return starting_point.split(' ')[0] + ' ' + str(int(ref_split[1]) + c - 1)
+    #     else:
+    #         if c <= 1:
+    #             return starting_point.split(' ')[0]  # Had a buggy c as 0 case - and the served targets odd things with n=0
+    #         else:
+    #             return starting_point.split(' ')[0] + ' ' + str(c)
+    #     # There would be less code if I didn't treat '1' specially (I prefer 'potion' not 'potion 1' for the 1st potion)
+
+    # def _reference_string(self, word, i):
+    #     # Reference string given the int - this is just a code-saving method
+    #     if i <= 1:
+    #         return word
+    #     else:
+    #         return word + ' ' + str(i)
 
     def remove_a_an_some(self, item_string):
         if item_string.startswith('A '):
@@ -569,23 +704,24 @@ class Inventory(BotReactionWithFlag):
             return item_string
 
     def item_from_reference(self, ref):
-        ref_split = ref.split(' ')
-        ref_string = ref_split[0]
+        return self.get(ref)
+    #     ref_split = ref.split(' ')
+    #     ref_string = ref_split[0]
 
-        if len(ref_split) > 1:
-            ref_n = int(ref_split[1])
-        else:
-            ref_n = 1
+    #     if len(ref_split) > 1:
+    #         ref_n = int(ref_split[1])
+    #     else:
+    #         ref_n = 1
 
-        # ilist = sorted(self.inventory.keys())
-        for itemkey, ivalue in self.inventory.dictionary.items():  # Hopefully sorted by keys...
-            if any([w.startswith(ref_string) for w in itemkey.to_string().split(' ')]):
-                if ref_n < ivalue.qty:
-                    return ivalue.objs[ref_n-1]
-                ref_n = ref_n - ivalue.qty 
+    #     # ilist = sorted(self.inventory.keys())
+    #     for itemkey, ivalue in self.inventory.dictionary.items():  # Hopefully sorted by keys...
+    #         if any([w.startswith(ref_string) for w in itemkey.to_string().split(' ')]):
+    #             if ref_n < ivalue.qty:
+    #                 return ivalue.objs[ref_n-1]
+    #             ref_n = ref_n - ivalue.qty 
 
     def name_from_reference(self, ref):
-        return self.item_from_reference(ref).to_string()
+        return str(self.item_from_reference(ref))
 
     def get_item_name_from_reference(self, ref):
         # # A list would be better
@@ -607,6 +743,7 @@ class Inventory(BotReactionWithFlag):
         return self.get_item_from_reference(ref).to_string() if self.get_item_from_reference(ref) else None
 
     def get_item_from_reference(self, ref):
+        return self.get(ref)
         # # !!! Needs improvement!  Use get_item_name_from_reference
         # word, n = ref.partition(' ')[0], int(ref.partition(' ')[2])
         # # Go through ordered keys, counting down, to determine the targeted item
@@ -642,6 +779,7 @@ class Inventory(BotReactionWithFlag):
         #         del e['Wielded']
         # if 'Second' in e.keys() and e['Second'] == weapon:
         #     del e['Second']
+
         magentaprint('Inventory.unequip_weapon() ' + str(self.equipped_items.keys()))
         if 'Wielded' in self.equipped_items.keys() and self.equipped_items['Wielded'] and self.equipped_items['Wielded'][0].obj.name == weapon:
             # Could be wrong if the second weapon is the same and that broke
@@ -654,7 +792,7 @@ class Inventory(BotReactionWithFlag):
     def count(self, item_string):
         mud_item = MudItem(item_string)
         mud_item.map()
-        return self.inventory.count(mud_item)
+        return self.list.count(mud_item)
 
 # Ok I want to set up reactions to keep myself up to date.
 # I am thinking of steel bottles and restoratives, so I want 

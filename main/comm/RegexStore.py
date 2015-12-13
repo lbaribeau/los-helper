@@ -245,6 +245,7 @@ bad_k_target = [
 ]
 crit = [
     "You knock the wind out of " + __three_possible_mob_strings + '!!',
+    "Your attack knocks " + __three_possible_mob_strings + ' off balance!!',
     __Three_possible_mob_strings + " is caught off guard by your attack!!"
 ]
 magic_crit = [
