@@ -269,14 +269,14 @@ class Character(object):
     ]
     lvl7_monsters = [ # ~200 exp
         'dwarven cook', 'swordsman', 'fort sergeant', 'oremaster', 'giant spider', 'rock spider', 'Aldo', 'dwarven trader',
-        'gnoll chaplain', 'Cheryn', 'orc scout', 'bouncer', 'rancher sentry',  'dwarven shepherd', 'clown'  
+        'gnoll chaplain', 'Cheryn', 'orc scout', 'bouncer', 'rancher sentry', 'dwarven shepherd', 'clown', 
+        'top ranch hand'  # dusty blue
         # 'robed priest', 
     ]  # There are also lvl 5 rancher sentries... they're a bit blue
     lvl8_monsters = [  # There are 2 amethyst guards and 3 amber guards of this level
         'Alaran the Market Manager', 'hauler', 'Farmer Malbon', 'sonneteer', 'Tag', 'mine manager', 'artificer', 
         'Dini Stonehammer', 'Olmer', 'Thereze', 'Farmer Viladin', 'Rancher Renstone', 'berzerker', 'dwarven hunter', 
-        'initiate', 'berserk orc', 'hedge knight', 'refinery supervisor', 'owlbear'
-        'sentry'  
+        'initiate', 'berserk orc', 'hedge knight', 'refinery supervisor', 'owlbear', 'sentry'
         # 'elven trader', 'old knight', 'dusty warrior'
     ]  # elves are very blue
     lvl9_monsters = [ # ~300 exp
@@ -296,6 +296,7 @@ class Character(object):
     lvl12_monsters = [
         'barbarian shaman', 'barbarian warrior', 'The Amber Mage', 'The Saga Teacher', 'Hurn the Smith',
         'Horbuk', 'The Floor Manager', 'Tardan', 'ranch foreman', 'Trent the Merchant', 'Gorban', # dusty blue
+        'Boris Ironfounder'
     ]
     lvl13_monsters = [
         'The Dojo Administrator'
@@ -307,7 +308,7 @@ class Character(object):
     # I may want to kill even if they are too low of level.
     # Mostly hostiles and things that don't let you loot.
     preferred_lvl_1_2_monsters = [
-        'oaf', 'wanderer', 'thug', 'spiv', 'kobold sentry', 'tired hooker', 
+        'oaf', 'wanderer', 'thug', 'spiv', 'kobold sentry', 'tired hooker', 'waitress',
         'blond hooker', 'angry hooker', 'sultry hooker', 'journeyman', 'housewife', # 'acolyte'
     ] 
 

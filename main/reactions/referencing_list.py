@@ -137,9 +137,11 @@ class ReferencingList(object):
             for list_obj in self.list:
                 if obj is list_obj:
                     # return _reference_string(obj.name, count_similar_obj+1)
-                    first_ref = self.get_first_reference(obj.name)
+                    first_ref = self.get_first_reference(obj.name, first_or_second_word)
+                    word = first_ref.split(' ')[0]
                     ref_n = int(first_ref.split(' ')[1]) if len(first_ref.split(' ')) >= 2 else 1
-                    return self._reference_string(first_ref[0], ref_n + count_similar_obj)
+                    return self._reference_string(word, ref_n + count_similar_obj)
+                    # return self._reference_string(first_ref[0], ref_n + count_similar_obj)
 
                 if obj.name == list_obj.name:
                     count_similar_obj = count_similar_obj + 1

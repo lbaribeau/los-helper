@@ -25,7 +25,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         #'crossbow', 'horn bow', 'long bow' # < 70% missile
         # 'broad sword', 
         'adamantine axe', 'rapier', 'adamantine sword', 'claymore', 'spider leg', 'large orcish sword', 
-        'silver dagger',
+        # 'silver dagger',
         # 'long sword',  these pile up
         #'bastard sword',  # bandits
         'small mace', 'morning star'
@@ -262,6 +262,12 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         # self.get_inventory()  # Maybe unnecessary, except I see "You don't have that" if removed
 
         for item_ref in self.sellable():
+            if not self.__stopping:
+                self.drop(item_ref)
+            else:
+                return
+
+        for item_ref in self.droppable():
             if not self.__stopping:
                 self.drop(item_ref)
             else:
