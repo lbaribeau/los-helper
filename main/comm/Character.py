@@ -280,7 +280,8 @@ class Character(object):
         # 'elven trader', 'old knight', 'dusty warrior'
     ]  # elves are very blue
     lvl9_monsters = [ # ~300 exp
-        'director', 'Elder Barthrodue', 'Farmer Calmor', 'orc warrior', 'giant beetle', 'white knight'  # 380 
+        'director', 'Elder Barthrodue', 'Farmer Calmor', 'orc warrior', 'giant beetle', 'white knight',  # 380 
+        'weathered barbarian', #'old man'
     ]  # respect the knights! (+1 difficulty)
     lvl10_monsters = [ # 350+
         'wounded knight', # -2 difficulty
@@ -288,21 +289,23 @@ class Character(object):
         'Dame Brethil', 'Kelluran', 'Jerrek', 'Rimark', 'Commander Rilmenson', 'Farmer McDermott', 'dwarven blacksmith'   # 400
         'abbot', # 445
         'silver knight',  # 380, +1 difficulty
+        'barbarian cook', "shaman's assistant"
     ]  # wounded knight -2 difficulty
     lvl11_monsters = [
         'dwarven adventurer',  # dusty blue
-        'enchantress', 'Brotain', 'minstrel', 'brutalizer', 'Gregor', 'Bertram Dalrum', 'Annette Plover', 'The Combat Master'
+        'enchantress', 'Brotain', 'minstrel', 'brutalizer', 'Gregor', 'Bertram Dalrum', 'Annette Plover', 'The Combat Master', 
+        'brother'
     ]
     lvl12_monsters = [
         'barbarian shaman', 'barbarian warrior', 'The Amber Mage', 'The Saga Teacher', 'Hurn the Smith',
         'Horbuk', 'The Floor Manager', 'Tardan', 'ranch foreman', 'Trent the Merchant', 'Gorban', # dusty blue
-        'Boris Ironfounder'
+        'Boris Ironfounder', 
     ]
     lvl13_monsters = [
-        'The Dojo Administrator'
+        'The Dojo Administrator', 'Elsuria'
     ]
     lvl14_monsters = [
-        'cave troll guard', 'Rancher Plover', 'Team Leader Egan'
+        'cave troll guard', 'Rancher Plover', 'Team Leader Egan', 'Qimoth', "Th'kit the HorseMaster"
     ]
     # A list of monsters redundant to the above lists that
     # I may want to kill even if they are too low of level.
