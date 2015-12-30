@@ -306,10 +306,8 @@ attack_miss = [
     "(?s)You use your .+?, but nothing hits (?:the )?(" + __numbers + " )?(.+?)\."
 ]
 
-aura = [
-    r"You glow with a (.+?) aura\.", 
-    r"The (.+?) glows with a (.+?) aura\."
-]
+aura = [r"You glow with a " + __aura + " aura\."]
+mob_aura = [__Three_possible_mob_strings + r" glows with a " + __aura + " aura\."]
 
 cast = [
     r"You cast a (.+?) spell on (.+?)\.",

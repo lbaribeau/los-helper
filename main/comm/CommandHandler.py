@@ -49,7 +49,6 @@ class CommandHandler(object):
         self.go = Go(telnetHandler, character)
         mudReaderHandler.add_subscriber(self.go)
         mudReaderHandler.add_subscriber(self.go.open)
-        mudReaderHandler.add_subscriber(self.smartCombat.prompt)  
         mudReaderHandler.add_subscriber(self.smartCombat.wield)
         mudReaderHandler.add_subscriber(self.smartCombat.wield.second)
         mudReaderHandler.add_subscriber(self.smartCombat)
@@ -272,7 +271,8 @@ class CommandHandler(object):
         elif re.match("(?i)mobs_joined_in", user_input):
             magentaprint(self.character.MOBS_JOINED_IN, False)
         elif re.match("(?i)aura", user_input):
-            magentaprint(str(self.character.AURA), False)        
+            magentaprint(str(self.cast.aura))        
+            magentaprint(str(self.character.preferred_aura))        
         elif re.match("(?i)mobs_attacking", user_input):
             magentaprint(self.character.MOBS_ATTACKING, False)
         elif re.match("(?i)monster_kill_list", user_input):

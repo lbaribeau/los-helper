@@ -6,6 +6,7 @@ from misc_functions import *
 from command.Inventory import *
 from Exceptions import *
 from db.MudMob import *
+import Aura
 
 class SmartGrindThread(TrackGrindThread):
     smart_target_list = []
@@ -25,7 +26,7 @@ class SmartGrindThread(TrackGrindThread):
         self.high_level = int(math.ceil(self.character.level / 2))# + 1 #risky business
         
         self.low_aura = 0 #how evil the targets are
-        self.high_aura = 15 #how good the targets are
+        self.high_aura = len(Aura.auras) #how good the targets are
 
         self.update_aura()
         self.aura_updated_hook()
@@ -50,9 +51,9 @@ class SmartGrindThread(TrackGrindThread):
         self.character.MONSTER_KILL_LIST = []
         super().go_purchase_item_by_type(model, data, level)
 
-    def dobuy(self, exit_str):
+    def buy_and_wield(self, exit_str):
         self.direction_list = [""]
-        return super().dobuy(exit_str)
+        return super().buy_and_wield(exit_str)
 
     def decide_where_to_go(self):
         magentaprint("SmartGrindThread.decide_where_to_go()")
@@ -94,8 +95,7 @@ class SmartGrindThread(TrackGrindThread):
             if len(directions) > 10:
                 break
             
-
-        magentaprint(directions)
+        magentaprint("SmartGrind directions: " + str(directions))
 
         return directions
 
@@ -232,20 +232,21 @@ class SmartGrindThread(TrackGrindThread):
 
         if self.character.level < 4:
             self.low_aura = 0
-            self.high_aura = 12
-        elif self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:
+            self.high_aura = len(Aura.auras)
+        # elif self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:
+        elif self.cast.aura < self.character.preferred_aura:
             # Too evil
             # self.low_level = 2
             self.low_aura = 0
-            self.high_aura = 6
-        elif self.character.AURA_SCALE > self.character.AURA_PREFERRED_SCALE:
+            self.high_aura = math.floor(len(Aura.auras) / 2)
+        elif self.cast.aura > self.character.preferred_aura:
             # Too good
             # self.low_level = 2
-            self.low_aura = 8
-            self.high_aura = 15
+            self.low_aura = math.ceil(len(Aura.auras) / 2)
+            self.high_aura = len(Aura.auras) - 1
         else:
-            self.low_aura = 6
-            self.high_aura = 7
+            self.low_aura = math.floor(len(Aura.auras) / 2)
+            self.high_aura = math.ceil(len(Aura.auras) / 2)
 
         self.get_targets()
 

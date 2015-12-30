@@ -6,6 +6,7 @@ from combat.CombatObject import SimpleCombatObject
 from comm import RegexStore
 from misc_functions import magentaprint
 from comm import Spells
+from Aura import Aura
 
 class Cast(SimpleCombatObject):
     command = 'c v'  # This gets rewritten to append the spellname alot
@@ -13,13 +14,21 @@ class Cast(SimpleCombatObject):
     cooldown_after_failure = 0
     regexes = []  
 
-    success_regexes = [RegexStore.cast, RegexStore.aura]
+    success_regexes = [RegexStore.cast, RegexStore.aura, RegexStore.mob_aura]
     failure_regexes = [RegexStore.cast_failure, RegexStore.no_mana]
     error_regexes = [RegexStore.bad_target_or_spell, RegexStore.not_here]
 
     aura = None
     aura_timer = 0
     aura_refresh = 480
+
+    vig_amount = 2
+    mend_amount = 5
+    # showaura_amount = 1
+    # light_amount = 5
+    # lvl1_black_amount = 3
+    # lvl2_black_amount = 7
+    # prot_amount = 10
 
     def __init__(self, telnetHandler):
         super().__init__(telnetHandler)
@@ -40,11 +49,17 @@ class Cast(SimpleCombatObject):
 
     def notify(self, regex, M_obj):
         if regex in RegexStore.aura:
-            self.__class__.aura = M_obj.group(1)
+            self.__class__.aura = Aura(M_obj.group('aura'))
             self.__class__.aura_timer = time()
         elif regex in RegexStore.no_mana:
             self.stop()
         super().notify(regex, M_obj)
+        
+        # TODO: Having a red aura in the chapel will kill the bot.  
+        #M_obj = re.search("The goodness here sickens and repels you!", text_buffer)
+        #if(M_obj):
+        #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+        ##    self.CommandHandler_inst.process("ou")
 
     def notify_failure(self, regex, M_obj):
         # spell = self.command.split(' ')[1].lower() if len(self.command.split(' ')) > 0 else ""
@@ -113,12 +128,11 @@ class Cast(SimpleCombatObject):
         if not any(spell.startswith(s) for s in character.spells):
             return
 
-        # spell_cost = 2 if re.match("vig?|vigor?", spell) else \
-        #              1 if re.match("show?|show-a?|show-aura?", spell) else \
-        #              5 if re.match("lig?|light?", spell) else 3
-        spell_cost = 2 if spell.startswith(Spells.vigor) else \
+        spell_cost = self.vig_amount if spell.startswith(Spells.vigor) else \
                      1 if spell.startswith(Spells.showaura) else \
-                     5 if spell.startswith(Spells.light) else 3
+                     5 if spell.startswith(Spells.light) else \
+                     10 if spell.startswith(Spells.protection) else \
+                     self.mend_amount if spell.startswith(Spells.mendwounds) else 3
 
         self.result = RegexStore.cast_failure[0]
 
@@ -126,4 +140,3 @@ class Cast(SimpleCombatObject):
             self.wait_until_ready()
             self.cast(spell, target)
             self.wait_for_flag()
-

@@ -50,6 +50,9 @@ from comm.TelnetHandler import TelnetHandler
 from fake.FakeTelnetHandler import FakeTelnetHandler 
 from db.Database import *
 from db.MudMap import *
+from reactions.Prompt import Prompt
+from reactions.health_monitor import HealthMonitor
+from comm.analyser import Analyser
 
 class LosHelper(object):
     def __init__(self):
@@ -57,6 +60,7 @@ class LosHelper(object):
 
         # self.initializer = Initializer()
         self.character = Character()
+        self.character.prompt = Prompt()
         sys.argv = [s.strip() for s in sys.argv]  # removes \r since git can add them to run.sh
 
         if '-fake' in sys.argv:
@@ -71,11 +75,13 @@ class LosHelper(object):
         self.MUDBuffer = MyBuffer()
         self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
         self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
-        self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
+        self.mud_reader_handler = MudReaderHandler(self.mudReaderThread, self.character)
         self.inventory = Inventory(self.telnetHandler, self.character)
         self.character.inventory = self.inventory
-        self.mudReaderHandler.add_subscriber(self.inventory)
-        self.mudReaderHandler.add_subscriber(self.character.mobs)
+        self.analyser = Analyser(self.mud_reader_handler, self.character)
+        self.mud_reader_handler.add_subscriber(self.character.prompt)
+        self.mud_reader_handler.add_subscriber(self.inventory)
+        self.mud_reader_handler.add_subscriber(self.character.mobs)
 
         # self.mud_map_thread.start()  # Don't forget to uncomment .join()
         self.mudListenerThread.start()
@@ -91,8 +97,8 @@ class LosHelper(object):
         self.check_spells()
         self.check_info()
 
-        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
-        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
+        self.commandHandler = CommandHandler(self.character, self.mud_reader_handler, self.telnetHandler)
+        self.cartography = Cartography(self.mud_reader_handler, self.commandHandler, self.character)
         self.commandHandler.go.cartography = self.cartography  
             # Cartography shouldn't need commandHandler to fix dependencies
 
@@ -201,7 +207,7 @@ class LosHelper(object):
 
     def initialize_reactions(self):
         pass
-        # self.mudReaderHandler.register_reaction(WieldReaction(self.character, self.telnetHandler))
+        # self.mud_reader_handler.register_reaction(WieldReaction(self.character, self.telnetHandler))
 
     def check_inventory(self):
         # This prints the inventory.  I like that.  
@@ -210,7 +216,7 @@ class LosHelper(object):
         # self.character.inventory.output_inventory()
 
     def check_class_and_level(self):
-        whois = Whois(self.mudReaderHandler, self.telnetHandler, self.character)
+        whois = Whois(self.mud_reader_handler, self.telnetHandler, self.character)
         whois.execute(self.character.name)
         whois.wait_for_flag()
         self.character._class = CharacterClass(self.telnetHandler, self.character.class_string, self.character.level)
@@ -220,22 +226,23 @@ class LosHelper(object):
         self.character.set_monster_kill_list()
         # magentaprint("LosHelper ability list: " + str(self.character._class.abilities))
         for a in self.character._class.abilities.values():
-            # self.mudReaderHandler.register_reaction(a)
+            # self.mud_reader_handler.register_reaction(a)
             # magentaprint("Added subscriber " + str(a))
-            self.mudReaderHandler.add_subscriber(a)
+            self.mud_reader_handler.add_subscriber(a)
 
     def check_spells(self):
         # magentaprint("LosHelper.check_spells() sleeping 2 sec.")
         # time.sleep(2)
         spells = SpellsCommand(self.telnetHandler, self.character)
-        self.mudReaderHandler.add_subscriber(spells)
+        self.mud_reader_handler.add_subscriber(spells)
         spells.execute()
         spells.wait_for_flag()
 
     def check_info(self):
-        info = Info(self.mudReaderHandler, self.telnetHandler, self.character)
+        info = Info(self.mud_reader_handler, self.telnetHandler)
         info.execute()
         # magentaprint("LosHelper.check_info() calling character.process_info()")
+        self.character.info = info
         self.character.process_info()
 
 L = LosHelper()

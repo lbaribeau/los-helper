@@ -13,6 +13,7 @@ from db.MudArea import *
 from db.MudItem import *
 from db.MudMob import *
 from comm import RegexStore
+from Aura import Aura
 
 class Cartography(BotReactionWithFlag):
     def __init__(self, mudReaderHandler, commandHandler, character):
@@ -294,13 +295,13 @@ class Cartography(BotReactionWithFlag):
             magentaprint("Problem cataloging monster bio")
 
     def catalog_monster_aura(self, name, aura):
-        if aura not in self.character.AURA_LIST:
+        if aura not in Aura.auras:
             # Deals with "the rod glows with a deep brown aura" bug
             return
 
         mob = Mob(name=name)
         mob.map()
-        mob.aura = self.character.AURA_LIST.index(aura)
+        mob.aura = Aura.auras.index(aura)
 
         mob.save()
 

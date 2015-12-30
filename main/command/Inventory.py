@@ -25,8 +25,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         #'crossbow', 'horn bow', 'long bow' # < 70% missile
         # 'broad sword', 
         'adamantine axe', 'rapier', 'adamantine sword', 'claymore', 'spider leg', 'large orcish sword', 
-        # 'silver dagger',
-        # 'long sword',  these pile up
+        'silver dagger', 'long sword',  #these pile up
         #'bastard sword',  # bandits
         'small mace', 'morning star'
         # 'war hammer', 

@@ -58,7 +58,9 @@ class TabbyCat(FakeMob):
         elif not self.rng % 2:
             dmg = self.char.hp - 2
             self.char.hp = 2
-            self.socket_output.append('[%s H %s M]: The %s painfully head-butts you for %s damage.\n\r' % (self.char.hp, self.char.mp, self.name, dmg))
+            # self.socket_output.append('[%s H %s M]: The %s painfully head-butts you for %s damage.\n\r' % (self.char.hp, self.char.mp, self.name, dmg))
+            self.socket_output.append('The %s painfully head-butts you for %s damage.\n\r' % (self.name, dmg))
+            # self.socket_output.append('[%s H %s M]: ' % (self.char.hp, self.char.mp))
             # if self.char.hp == 0:
             #     self.char.hp = 1
             #     self.socket_output.append("You are overwhelmed by the tabby cat's attack and you collapse!\n\r")

@@ -26,8 +26,6 @@ class MudReaderThread(threading.Thread):
         
         #TODO: change these all to mud waiter flags
         self.CHECK_GO_FLAG = False
-        self.CHECK_AURA_FLAG = False
-        self.CHECK_AURA_SUCCESS = False
         self.CHECK_SELL_FLAG = False
         self.CHECK_INVENTORY_FLAG = False
         #self.CHECK_KILL_MONSTER_GONE = False # This one isn't used yet, I think it's to react to when a monster flees
@@ -251,13 +249,6 @@ class MudReaderThread(threading.Thread):
             if (M_obj != None):
                 self.character.TOTAL_GOLD = M_obj.group(1)
 
-            M_obj = re.search("Your spell fails\.", text_buffer)
-            if M_obj:
-                if self.CHECK_AURA_FLAG:
-                    self.CHECK_AURA_FLAG=0;
-                    self.CHECK_AURA_SUCCESS=0;
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-                
             #### Set weapon strings ####
             # M_obj = re.search("You wield (.*?)\.", text_buffer)
             # if (M_obj != None and not re.search(" in your off hand", M_obj.group(1))):
@@ -374,23 +365,6 @@ class MudReaderThread(threading.Thread):
                 temp_buf = temp_buf[new_trunc:]
                 M_obj = re.search(second_join_in_regex, temp_buf)
                 
-            # TODO: Cast can do this now without extra caps/flag variables
-            M_obj = re.search("You glow with an? (.+?) aura\.", text_buffer)
-            if(M_obj):
-                self.character.AURA = M_obj.group(1)
-                self.character.AURA_SCALE = self.character.AURA_LIST.index(self.character.AURA)#my_list_search(self.character.AURA_LIST, self.character.AURA)
-                if(self.character.AURA_SCALE == -1):
-                    magentaprint('Error in reading aura (not in list), came out as ' + self.character.AURA + '.')
-                self.CHECK_AURA_FLAG = 0
-                self.CHECK_AURA_SUCCESS = 1
-                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-        
-            # TODO: Having a red aura in the chapel will kill the bot.  
-            #M_obj = re.search("The goodness here sickens and repels you!", text_buffer)
-            #if(M_obj):
-            #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
-            ##    self.CommandHandler_inst.process("ou")
-
             # Quitting... instead have the caller call stop.
             # M_obj = re.search("Goodbye! Come back soon\.", text_buffer)
             # if M_obj:

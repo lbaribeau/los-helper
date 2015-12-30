@@ -7,111 +7,103 @@ import misc_functions
 from misc_functions import magentaprint
 
 class Character(object):
-    # This is a class that holds a bunch of data,
-    # mostly obtained by the MUD read thread.
-    race = None
-    title = None
-    _class = None
-    level = None
-    preferred_alignment = None
-    BLACK_MAGIC = True
-    KNOWS_VIGOR = True
-    #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
-    #MAGIC_SKILLS= [0, 0, 0, 0, 0]
-    SKILLS = {} 
-
-    AURA_LIST =  ['demonic red', 'ominous red', 'ghastly red', 'blood red', 'murky red',
-                  'red', 'rusty', 'dusty red', 'grey',
-                  'dusty blue', 'pale blue', 'blue',
-                  'deep blue', 'bright blue', 'shimmering blue', 'blazing blue', 'heavenly blue'
-    ] # note... never uses "an"  (ie. "You glow with _a_ ominous red aura") 
-    LEVEL_LIST = ["You could kill (?:.+?) with a needle\.", #-4 or more levels
-                  "(?:.+?) should be easy to kill\.", #-2 level from this character
-                  "(?:.+?) shouldn't be too tough to kill\.", #-2 level from this character
-                  "(?:.+?) is not quite as good as you\.", #-1 level from this character
-                  "(?:.+?) is a perfect match for you!", #same level as character
-                  "(?:.+?) is a little better than you\.", #+1 level from this character
-                  "(?:.+?) might be tough to kill\.", #+2 level from this character
-                  "(?:.+?) should be really hard to kill\.", #+3 levels from this character
-                  "(?:.+?) could kill you with a needle\." #+4 or more levels from this character
-    ]
-    WEAPON_TYPES = ["Sharp", "Thrust", "Blunt", "Pole", "Missile" ]
-
-    ARMOR_SLOTS = []
-    ARMOR_SIZE = "m" # todo: set this in info or whois
-    
-    # WEAPON_SLOTS = []  use character._class.weapon_slots
-
-    AURA_SCALE = 9
-    AURA = AURA_LIST[AURA_SCALE]
-    
-    AURA_PREFERRED_SCALE = None
-    AURA_PREFERRED = None
-    
-    AURA_LAST_UPDATE = -300
-    LAST_BUFF = -150
-    LAST_MEDITATE = -150
-
-    HAS_BUFF_ITEMS = False
-    HAS_RESTORE_ITEMS = False
-
-    EXPERIENCE = 0
-    GOLD = 0
-    TOTAL_EXPERIENCE = 0
-    TOTAL_GOLD = 0
-
-    ATTACK_PERIOD = 3 #sec
-    ATTACK_PERIOD_HASTE = 2 #sec
-    CAST_PERIOD = 6
-
-    ATTACK_WAIT = ATTACK_PERIOD   # Used by timer.  Same as ATTACK_PERIOD.
-                                # Amount of time to wait to walk after attacking
-    MOVE_WAIT = 0.34
-    CAST_WAIT = CAST_PERIOD
-
-    DEATHS = 0
-
-    HASTING = False 
-    DEAD = False
-
-    weapon1 = ''
-    weapon2 = ''
-                            
-    # ATTACK_CLK = -ATTACK_WAIT
-    # MOVE_CLK = -MOVE_WAIT
-    # CAST_CLK = -CAST_WAIT # Last successful cast
-
-    HEALTH = 0
-    MANA = 0
-
-    LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096, 8192]
-
-    # MONSTER LISTS
-    # All lists are mutually exclusive except for "preferred."
-    # Monsters may be placed in a higher level group if they are 
-    # difficult to kill.
-
-    MOBS_JOINED_IN = []
-    MOBS_ATTACKING = []
-
-    SUCCESSFUL_GO = True
-    GO_BLOCKING_MOB = ""
-    GO_PLEASE_WAIT = False
-    GO_NO_EXIT = False
-    GO_TIMEOUT = False
-
-    CONFUSED = False
-    CAN_SEE = True
-    ACTIVELY_MAPPING = False
-    ACTIVELY_BOTTING = False
-
-    MUD_AREA = None
-    AREA_TITLE=""
-    EXIT_LIST=[]
-    MONSTER_LIST=[]
-
     def __init__(self):
         self.mobs = Mobs()
+
+        # This is a class that holds a bunch of data,
+        # mostly obtained by the MUD read thread.
+        self.race = None
+        self.title = None
+        self._class = None
+        self.level = None
+
+        self.BLACK_MAGIC = True
+        self.KNOWS_VIGOR = True
+        #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
+        #MAGIC_SKILLS= [0, 0, 0, 0, 0]
+        self.SKILLS = {} 
+
+        self.LEVEL_LIST = ["You could kill (?:.+?) with a needle\.", #-4 or more levels
+                      "(?:.+?) should be easy to kill\.", #-2 level from this character
+                      "(?:.+?) shouldn't be too tough to kill\.", #-2 level from this character
+                      "(?:.+?) is not quite as good as you\.", #-1 level from this character
+                      "(?:.+?) is a perfect match for you!", #same level as character
+                      "(?:.+?) is a little better than you\.", #+1 level from this character
+                      "(?:.+?) might be tough to kill\.", #+2 level from this character
+                      "(?:.+?) should be really hard to kill\.", #+3 levels from this character
+                      "(?:.+?) could kill you with a needle\." #+4 or more levels from this character
+        ]
+        self.WEAPON_TYPES = ["Sharp", "Thrust", "Blunt", "Pole", "Missile" ]
+
+        self.ARMOR_SLOTS = []
+        self.ARMOR_SIZE = "m" # todo: set this in info or whois
+        
+        # WEAPON_SLOTS = []  use character._class.weapon_slots
+
+        self.LAST_BUFF = -150
+        self.LAST_MEDITATE = -150
+
+        self.HAS_BUFF_ITEMS = False
+        self.HAS_RESTORE_ITEMS = False
+
+        self.EXPERIENCE = 0
+        self.GOLD = 0
+        self.TOTAL_EXPERIENCE = 0
+        self.TOTAL_GOLD = 0
+
+        self.ATTACK_PERIOD = 3 #sec
+        self.ATTACK_PERIOD_HASTE = 2 #sec
+        self.CAST_PERIOD = 6
+
+        self.ATTACK_WAIT = self.ATTACK_PERIOD   # Used by timer.  Same as ATTACK_PERIOD.
+                                    # Amount of time to wait to walk after attacking
+        self.MOVE_WAIT = 0.34
+        self.CAST_WAIT = self.CAST_PERIOD
+
+        self.DEATHS = 0
+
+        self.HASTING = False 
+        self.DEAD = False
+
+        self.weapon1 = ''
+        self.weapon2 = ''
+                                
+        # ATTACK_CLK = -ATTACK_WAIT
+        # MOVE_CLK = -MOVE_WAIT
+        # CAST_CLK = -CAST_WAIT # Last successful cast
+
+        self.LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096, 8192]
+
+        # MONSTER LISTS
+        # All lists are mutually exclusive except for "preferred."
+        # Monsters may be placed in a higher level group if they are 
+        # difficult to kill.
+
+        self.MOBS_JOINED_IN = []
+        self.MOBS_ATTACKING = []
+
+        self.SUCCESSFUL_GO = True
+        self.GO_BLOCKING_MOB = ""
+        self.GO_PLEASE_WAIT = False
+        self.GO_NO_EXIT = False
+        self.GO_TIMEOUT = False
+
+        self.CONFUSED = False
+        self.CAN_SEE = True
+        self.ACTIVELY_MAPPING = False
+        self.ACTIVELY_BOTTING = False
+
+        self.MUD_AREA = None
+        self.AREA_TITLE=""
+        self.EXIT_LIST=[]
+        self.MONSTER_LIST=[]
+
+        self.TRYING_TO_MOVE = False
+        self.EXIT_REGEX="self.character.EXIT_REGEX"
+        self.AREA_ID = None
+        self.LAST_DIRECTION = None
+
+        self.START_TIME = time.time()
 
     def add_to_monster_list(self, monster_name):
         self.MONSTER_LIST.append(monster_name)
@@ -124,11 +116,6 @@ class Character(object):
                 continue
         self.MONSTER_LIST.sort()
 
-    TRYING_TO_MOVE = False
-    EXIT_REGEX="self.character.EXIT_REGEX"
-    AREA_ID = None
-    LAST_DIRECTION = None
-
     # LEVEL_UP_EXP = [512, 1024, 2048, 4096] 
 
     # weapon_type = "Blunt"
@@ -138,8 +125,6 @@ class Character(object):
     # spell_type = "Fire"
     # spell_proficiency = 0
 
-    START_TIME = time.time()
-
     # def __init__(self):
     #     self.set_level_health_mana_variables()
     #     self.set_monster_kill_list()
@@ -147,19 +132,26 @@ class Character(object):
     def process_info(self):
         magentaprint("Character.process_info()")
 
-        if self.level <= 3:
-            self.HEALTH_TO_HEAL = 0.85 * self.maxHP
-        else:
-            self.HEALTH_TO_HEAL = 0.75 * self.maxHP  # We can crank this back up when we fight stronger mobs
+        self.preferred_aura = self.info.preferred_alignment
 
-        self.hp_tick = floor((self.con-1)/3)  # +3 in chapel
+        if self.level <= 3:
+            self.HEALTH_TO_HEAL = 0.85 * self.info.maxHP
+        else:
+            self.HEALTH_TO_HEAL = 0.75 * self.info.maxHP  # We can crank this back up when we fight stronger mobs
+
+        self.hp_tick = floor((self.info.con-1)/3)  # +3 in chapel
 
         # self.ARMOR_SLOTS = self._class.ARMOR_SLOTS
         # self.WEAPON_SLOTS = self._class.WEAPON_SLOTS
 
-        self.weapon_proficiencies = {'Sharp':self.sharp, 'Thrust':self.thrust, 'Blunt':self.blunt, 'Pole':self.pole, 'Missile':self.missile}
-        self.spell_proficiencies = {'Earth':self.earth, 'Wind':self.wind, 'Fire':self.fire, 'Water':self.water, 'Astral':self.astral}
-
+        self.weapon_proficiencies = {
+            'Sharp':self.info.sharp, 'Thrust':self.info.thrust, 'Blunt':self.info.blunt, 
+            'Pole':self.info.pole, 'Missile':self.info.missile
+        }
+        self.spell_proficiencies = {
+            'Earth':self.info.earth, 'Wind':self.info.wind, 'Fire':self.info.fire, 
+            'Water':self.info.water, 'Astral':self.info.astral
+        }
         self.weapon_type = misc_functions.key_with_max_val(self.weapon_proficiencies)
         self.weapon_proficiency = self.weapon_proficiencies[self.weapon_type]
 
@@ -299,7 +291,7 @@ class Character(object):
     lvl12_monsters = [
         'barbarian shaman', 'barbarian warrior', 'The Amber Mage', 'The Saga Teacher', 'Hurn the Smith',
         'Horbuk', 'The Floor Manager', 'Tardan', 'ranch foreman', 'Trent the Merchant', 'Gorban', # dusty blue
-        'Boris Ironfounder', 
+        'Boris Ironfounder', 'The Forest Master'
     ]
     lvl13_monsters = [
         'The Dojo Administrator', 'Elsuria'
@@ -396,4 +388,44 @@ class Character(object):
             #adam.HEALTH_TO_FLEE = 15
             #adam.MAX_MANA = 4
             #adam.MANA_TO_ENGAGE = 0
-        
+
+    @property
+    def hp(self):
+        return self.prompt.hp
+    @property
+    def mp(self):
+        return self.prompt.mp
+    @property
+    def maxHP(self):
+        return self.info.maxHP
+    @property
+    def maxMP(self):
+        return self.info.maxMP
+
+    def max_vigor(self):
+        if self.health_monitor.vig_amounts:
+            return max(self.health_monitor.vig_amounts)
+        else:
+            return self.info.pty / 2.3  
+
+    def max_mend(self):
+        if self.health_monitor.mend_amounts:
+            return max(self.mend_amounts)
+        else:
+            return 9
+
+        # if self.__class__.tick_times:
+           #  self.__class__.tick_times.append(time.time() - self.__class__)
+
+    def hp_maxed(self):
+        return self.hp == self.info.maxHP
+    def mp_maxed(self):
+        return self.mp == self.info.maxMP
+       # else:
+
+    @property
+    def HEALTH(self):
+        return self.hp
+    @property
+    def MANA(self):
+        return self.mp

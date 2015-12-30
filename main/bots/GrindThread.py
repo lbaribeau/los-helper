@@ -55,15 +55,20 @@ class GrindThread(BotThread):
             self.drop_items()
             return True
         elif re.match("dobuy.+?", exit_str):
-            return self.dobuy(exit_str)
+            return self.buy_and_wield(exit_str)
         else:
             return super().do_go_hooks(exit_str)
 
-    def dobuy(self, exit_str):
-        #magentaprint("go hook found with: " + str(self.direction_list), False)
+    def buy_and_wield(self, exit_str):
+        magentaprint("go hook found with: " + str(self.direction_list), False)
         item = exit_str.replace("dobuy", "")
-        # self.inventory.buy(item)
-        # self.sleep(2)
+
+        if self.buy(item):
+            return self.wield(item)
+        else:
+            return False
+
+    def buy(self, item):
         self.commandHandler.buy.execute(item.partition(' ')[0])  # TODO: ensure that the correct item is bought
         self.commandHandler.buy.wait_for_flag()
         # I'm hacking here.  I intend start a new Grind thread to do this properly.
@@ -73,7 +78,7 @@ class GrindThread(BotThread):
             self.commandHandler.drop.execute(self.inventory.get_reference(item))
             self.commandHandler.drop.wait_for_flag()
             if not self.commandHandler.drop.success:
-                magentaprint("Dobuy failed!")
+                magentaprint("buy_and_wield() failed!")
                 self.commandHandler.process('rest')
                 self.commandHandler.quit()
                 return False
@@ -82,7 +87,7 @@ class GrindThread(BotThread):
                 self.commandHandler.buy.wait_for_flag()
 
         if self.commandHandler.buy.success:
-            magentaprint("GrindThread.dobuy adding %s." % str(item))
+            magentaprint("GrindThread.buy_and_wield adding %s." % str(item))
             self.inventory.add(item)  
             return True
         else:
@@ -90,6 +95,9 @@ class GrindThread(BotThread):
             self.commandHandler.quit()
             crash  # failed to buy weapon
             return False
+
+    def wield(self, item):
+        return self.smartCombat.try_weapon(item)
 
     def do_on_blocking_mob(self):
         self.engage_monster(self.character.GO_BLOCKING_MOB)
@@ -452,100 +460,66 @@ class GrindThread(BotThread):
             self.character.HAS_RESTORE_ITEMS = False
 
     def check_weapons(self):
-        # I was going to check self.smartCombat.broken_weapon and go shopping if necessary.
-        # This looks better - inventory knows just as well.
-        # This method can change our location.  (TrackGrind should explicitly return to chapel, SmartGrind just needs to be aware of that.)
         magentaprint('check_weapons()')
-        weapons_equipped = True
-
-        # if self.smartCombat.broken_weapon:
-        #     self.smartCombat.reequip_weapon()  # Tries to equip the same sort of weapon 
-
-        # Hit 'wie' on all eligible weapons.  If we get 'already wielding' then try to second it.
 
         if not self.smartCombat.broken_weapon:
-            # Successfully found another in inventory
-            # TODO: ensure we have a backup weapon on hand
             return True
 
-        # Check if we have a suitable weapon already
-        # We can't do main hand / off hand in a loop because the checks are different
-        # We need a way to know if there's a problem so we don't have to check here
-        possible_weapons = list(MudItem.get_suitable_item_of_type('weapon', self.character.weapon_type, self.character.weapon_level).values())
-        # possible_weapons = [i.to_string() for i in MudItem.get_suitable_item_of_type('weapon', self.character.weapon_type, self.character.weapon_level).values()]
+        possible_weapons = self.decide_possible_weapons()
 
-        # Skip looking - just go through trying to wield - SmartCombat can do that already
+        if not possible_weapons:
+            magentaprint("check_weapons() couldn't find level 1 weapon.")
+            self.pause()
+
         magentaprint('check_weapons() possible weapons: ' + str(possible_weapons))
-        # for w in possible_weapons:
-        #     # if self.inventory.update_status(w)  # Seems like there's no getting around giving Inventory some power
-        #     if self.smartCombat.try_weapon(w.to_string()):
-        #         return True
+
         if self.smartCombat.try_weapons([w.to_string() for w in possible_weapons]):
             return True
 
-        # Ok - no good weapon in inventory - maybe repair
-        # If we got this far, we don't actually know if we're seconding.  Leave that as a TODO
-        # if self.smartCombat.broken_weapon in [p.to_string() for p in possible_weapons]:
-        #     chosen_weapon = MudItem(self.smartCombat.broken_weapon)
-        # else:
-        #     chosen_weapon = possible_weapons[0]  
-            # chosen_weapon = possible_weapons.pop()  
         if self.smartCombat.to_repair:
-            # get repair node from db
-            # travel to repair shop - keep fragile repair list - no combat(?)
-            # execute repair
-            # while fail, repair list
-            # Success -> finish by wielding, return True
-            pass  # With the chance of repair failure plus only halfish durability on success, maybe it's better to always buy new and tip drop
-            # But this is a good way to get infinite weapons for the first time... (solves inventory weight problem)
-            # Mmmmmmmmmm well, for smithy finding and tip finding there is still a fair bit to do.
-            # How about just dropping the weapon in the shop to deal with overweight
+            pass 
 
-        # Repair didn't help - go purchase
-        # magentaprint('check_weapons() chosen_weapon: ' + str(chosen_weapon))
-        # # magentaprint('weapon_type: ' + self.character.weapon_type + ', weapon_level: ' + str(self.character.weapon_level))
-        # # self.go_purchase_item_by_name(chosen_weapon)
-        # self.go_purchase_item(chosen_weapon)
-        if not self.go_purchase_item_by_type('weapon', self.character.weapon_type, self.character.weapon_level):
+        # if not self.go_purchase_item_by_type('weapon', self.character.weapon_type, self.character.weapon_level):
+        possible_weapons[0].map()
+
+        if self.go_purchase_item(possible_weapons[0]):
+            magentaprint("check_weapons stacked shop path and dobuy onto purchase path, returning.")
+            return True
+            # if self.smartCombat.try_weapon(possible_weapons[0].name):  # I can't wield because I don't have the weapon yet.
+            #     return True
+            # else:
+            #     magentaprint("Check weapons had trouble wielding bought weapon.")
+            #     self.pause()
+        else:
             magentaprint("No weapon error - couldn't find anything in inventory or repair or shop...")
             self.pause()
-            # Well, we don't want to travel unarmed, quitting out is too drastic,
-            # We should stay awake enough to engage any attackers but we can wait for a server timeout here, or 
-            # wait for user intervention
 
-        # Not sure we need this slot business
-        # magentaprint("check_weapons() weapon slots: " + str(self.character._class.weapon_slots))
-        # for slot in self.character._class.weapon_slots:
-        #     magentaprint("check_weapons() slot "+ str(slot) + str(self.inventory.has_slot_equipped(slot)))
-        #     if not self.inventory.has_slot_equipped(slot):
-        #         magentaprint('weapon_type: ' + self.character.weapon_type + ', weapon_level: ' + str(self.character.weapon_level))
-        #         item = self.inventory.get_item_of_type("weapon", self.character.weapon_type, self.character.weapon_level)
-        #         if item is not None:
-        #             self.inventory.equip_item("wie " + item)
-        #         else:
-        #             self.go_purchase_item_by_type("weapon", self.character.weapon_type, self.character.weapon_level)
-        #             return False
-        #         break
-        return weapons_equipped
-        # Use 'eq' to figure whether we need to second or wield
-        # if self.smartCombat.broken_weapon:
-        #     self.eq.execute()
-        #     self.eq.wait_for_flag()
-        #     if not self.eq.wielded:
-        #         second_weapon_broke = False
-        #         self.smartCombat.wield_weapon(self.smartCombat.broken_weapon)
-        #     else:
-        #         second_weapon_broke = True
-        #         self.smartCombat.second_weapon(self.smartCombat.broken_weapon)
+        return False
+
+    def decide_possible_weapons(self):
+        possible_weapons = []
+        level = self.character.weapon_level
+
+        while not possible_weapons and level > 0:
+            magentaprint("check_weapons() trying lower level weapons.")
+            possible_weapons = list(MudItem.get_suitable_item_of_type('weapon', self.character.weapon_type, level).values())
+            level = level - 1
+
+        return possible_weapons
 
     def go_purchase_item(self, item):
-        direction_list = ["areaid%s" % item.get_purchase_location_id(), "dobuy%s" % item.to_string(), "areaid2"]
+        magentaprint("GrindThread.go_purchase_item() got location id: " + str(item.get_purchase_location_id()))
+        if item.get_purchase_location_id():
+            self.direction_list = ["areaid%s" % item.get_purchase_location_id(), "dobuy%s" % item.to_string(), "areaid2"]
+            return True
+        else:
+            return False
 
     def go_purchase_item_by_name(self, name):
         places = AreaStoreItem.get_by_name(name)
         magentaprint("GrindThread going to buy " + str(places))
 
-        direction_list = ["areaid%s" % places.values()[0] , "dobuy%s" % name, "areaid2"]  # Something like Thatt
+        self.direction_list = ["areaid%s" % places.values()[0] , "dobuy%s" % name, "areaid2"]  # Something like Thatt
 
     def go_purchase_item_by_type(self, model, data, level):  
         # Model is main item type (weapon, s-armor, consumable), Data is sub-type (Blunt, Body, etc)

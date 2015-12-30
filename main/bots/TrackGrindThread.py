@@ -1,6 +1,7 @@
 
 from bots.GrindThread import GrindThread
 from misc_functions import magentaprint
+from Aura import Aura 
 
 class TrackGrindThread(GrindThread):
     def __init__(self, character, commandHandler, mudReaderHandler, mud_map, starting_path=None): 
@@ -171,9 +172,6 @@ class TrackGrindThread(GrindThread):
         self.check_weapons()
         self.check_armour()
 
-    # def dobuy(self, exit_str):
-       # pass
-
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go", False)
 
@@ -206,13 +204,19 @@ class TrackGrindThread(GrindThread):
         elif self.__nextpath == 5:
             return self.MILITIA_SOLDIERS_PATH[:]
         elif self.__nextpath == 7:
-            if (self.character.level >= 4 or \
-                self.character.AURA_SCALE < self.character.AURA_LIST.index('pale blue')) and \
-               self.character.AURA_SCALE <= self.character.AURA_PREFERRED_SCALE: 
+            if not self.cast.aura:
+                if self.character.level >= 4:
+                    return self.KOBOLD_PATH[:]
+                else:
+                    magentaprint("Not going to do kobolds - aura unknown.")
+                    self.__nextpath = self.__nextpath + 1  # So that we don't go selling
+                    return self.PATH_TO_SKIP_WITH[:]
+            elif (self.character.level >= 4 or self.cast.aura < Aura('pale blue')) or \
+                self.cast.aura <= self.character.preferred_aura:
                 return self.KOBOLD_PATH[:]
             else:
-                magentaprint("Not going to do kobolds. Current aura, and preferred: %s,  %s" % 
-                             (self.character.AURA_SCALE, self.character.AURA_PREFERRED_SCALE))
+                magentaprint("Not going to do kobolds. Current aura, and preferred, comparison: %s,  %s, %s" % 
+                             (str(self.cast.aura), str(self.character.preferred_aura), str(self.cast.aura <= self.character.preferred_aura)))
                 self.__nextpath = self.__nextpath + 1  # So that we don't go selling
                 return self.PATH_TO_SKIP_WITH[:]
         elif self.__nextpath == 9:
@@ -228,13 +232,19 @@ class TrackGrindThread(GrindThread):
         elif self.__nextpath == 11:
             return self.FORT_PATH[:]
         elif self.__nextpath == 13:
-            if (self.character.level >= 8 or \
-                self.character.AURA_SCALE < self.character.AURA_LIST.index('pale blue')) and \
-               self.character.AURA_SCALE <= self.character.AURA_PREFERRED_SCALE: 
+            if not self.cast.aura:
+                if self.character.level >= 8:
+                    return self.NORTHERN_BANDITS_PATH[:]
+                else:
+                    magentaprint("Not going to do bandits - aura unknown.")
+                    self.__nextpath = self.__nextpath + 1  # So that we don't go selling
+                    return self.PATH_TO_SKIP_WITH[:]
+            elif (self.character.level >= 8 or self.cast.aura < Aura('pale blue')) or \
+                self.cast.aura <= self.character.preferred_aura:
                 return self.NORTHERN_BANDITS_PATH[:]
             else:
                 magentaprint("Not going to do bandits. Current aura, and preferred: %s,  %s" % 
-                             (self.character.AURA_SCALE, self.character.AURA_PREFERRED_SCALE))
+                             (self.cast.aura, self.character.preferred))
                 self.__nextpath = self.__nextpath + 1   # So that we don't go selling
                 return self.PATH_TO_SKIP_WITH[:]
         elif self.__nextpath == 15:

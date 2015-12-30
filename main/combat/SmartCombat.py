@@ -9,7 +9,6 @@ import comm.Spells as Spells
 from comm import RegexStore
 from combat.Kill import Kill
 from combat.Cast import Cast
-from reactions.Prompt import Prompt
 from command.Use import Use
 from command.Wield import Wield
 
@@ -25,7 +24,6 @@ class SmartCombat(CombatObject):
         self.activated = False
         self.kill = Kill(telnetHandler)
         self.cast = Cast(telnetHandler)
-        self.prompt = Prompt(character)
         self.use = Use(character, telnetHandler)
         self.wield = Wield(character, telnetHandler)
         self.abilities = character._class.abilities.values()
@@ -39,18 +37,19 @@ class SmartCombat(CombatObject):
         self.slow_combat_abilities = character._class.slow_combat_skills
         self.fast_combat_abilities = character._class.fast_combat_skills
 
-        spell_percent = max(character.earth, character.wind, character.fire, character.water)
+        # spell_percent = max(character.earth, character.wind, character.fire, character.water)
+        spell_percent = max(character.spell_proficiencies.values())
         # magentaprint("SmartCombat character.pty " + str(character.pty))
-        self.black_magic = character.pty < 7 or spell_percent >= 5
+        self.black_magic = character.info.pty < 7 or spell_percent >= 5
         # self.favourite_spell = Spells.vigor if not self.black_magic else \
         if spell_percent == 0 and self.black_magic:
             self.favourite_spell = Spells.rumble if Spells.rumble in character.spells else \
                                    Spells.hurt if Spells.hurt in character.spells else \
                                    Spells.burn if Spells.burn in character.spells else Spells.blister
         else:
-            self.favourite_spell = Spells.rumble if spell_percent == character.earth else \
-                                   Spells.hurt if spell_percent == character.wind else \
-                                   Spells.burn if spell_percent == character.fire else Spells.blister
+            self.favourite_spell = Spells.rumble if spell_percent == character.info.earth else \
+                                   Spells.hurt if spell_percent == character.info.wind else \
+                                   Spells.burn if spell_percent == character.info.fire else Spells.blister
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
         self.character = character
         self.regex_cart.extend([
@@ -81,6 +80,7 @@ class SmartCombat(CombatObject):
             self.activated = False
             self.check_rings()
         elif regex in RegexStore.mob_attacked and self.needs_heal():
+            magentaprint("SmartCombat.fleeing = True")
             self.fleeing = True
         elif regex in RegexStore.weapon_break or regex in RegexStore.weapon_shatters:
             magentaprint("SmartCombat weapon break: " + str(M_obj.group('weapon')))
@@ -177,9 +177,9 @@ class SmartCombat(CombatObject):
                 damage = self.character.maxHP - self.character.HEALTH
                 if self.stopping:
                     continue
-                elif not self.black_magic and ((self.character.MANA >= 2 and damage > self.prompt.max_vigor()) or \
-                     (self.character.MANA >= self.character.maxMP - 1 and damage > self.prompt.max_vigor()/1.7)):
-                     # (self.character.MANA >= self.character.maxMP - 1 and damage > self.prompt.max_vigor()/1.7 and damage > self.prompt.hptick()):
+                elif not self.black_magic and ((self.character.MANA >= 2 and damage > self.character.max_vigor()) or \
+                     (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7)):
+                     # (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7 and damage > self.character.hptick()):
                     # TODO: cast vigor if a tick is about to come and we're full mana
                     self.do_cast('v')
                 elif self.mob_charmed:
