@@ -9,8 +9,8 @@ class Use(ThreadingMixin2):
     # Erhm, maybe I don't want a Potion thread because it will use too many pots if a prompt is delayed.
     # Solution - wait for prompt in the thread.
     command = 'use'
-    cooldown_after_success = 0.80  # .79 too fast
-    cooldown_after_failure = 0.80
+    cooldown_after_success = 0.81  # .80 too fast
+    cooldown_after_failure = 0.81
     # It's tempting to try to make Inventory smart enough to use healing items...
     success_regexes = [RegexStore.potion_drank]  # Todo: add rods/buffs  (Might be made simpler with a different class, ie. UseRod)
     failure_regexes = []  # TODO: I believe flasks can fail
@@ -43,7 +43,7 @@ class Use(ThreadingMixin2):
         #     # self.execute(self.character.inventory.)
         #     self.wait_for_flag()
         for pot in pots:
-            magentaprint("Use pot: " + str(pot))
+            # magentaprint("Use pot: " + str(pot))
             if self.character.inventory.has(pot):
                 # self.character.inventory.use(pot)   # I want the 'result' feature of Command so I can't use Inventory here.
                 # self.execute(self.character.inventory.)

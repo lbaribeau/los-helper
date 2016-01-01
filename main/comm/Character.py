@@ -403,10 +403,11 @@ class Character(object):
         return self.info.maxMP
 
     def max_vigor(self):
-        if self.health_monitor.vig_amounts:
-            return max(self.health_monitor.vig_amounts)
-        else:
-            return self.info.pty / 2.3  
+        return self.info.pty / 2.3
+        # if self.health_monitor.vig_amounts:
+        #     return max(self.health_monitor.vig_amounts)
+        # else:
+        #     return self.info.pty / 2.3  
 
     def max_mend(self):
         if self.health_monitor.mend_amounts:
