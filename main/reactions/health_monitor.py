@@ -31,12 +31,12 @@ class HealthMonitor(object):
             # Better not to rely on cast command... use mp amount and hp/mp deltas 
             # if Cast.command.split(' ')[1].startswith('v'):
             # elif Cast.command.split(' ')[1].startswith('m'):
-            if self.mp_delta == Cast.vig_amount:
+            if self.mp_delta() == Cast.vig_amount:
                 self.do_vig()
-            elif self.mp_delta == Cast.mend_amount:
+            elif self.mp_delta() == Cast.mend_amount:
                 self.do_mend()
             else:
-                magentaprint("HealthMonitor: weirdo situation in mana decrease and health increase.")
+                magentaprint("HealthMonitor: weirdo situation in mana decrease and health increase. mp delta is %s" % self.mp_delta())
         elif self.hp_delta() < 0:
             self.do_mob_hit()
 
