@@ -579,9 +579,9 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         for item in self.list:
             item_name_split = item.name.split(' ')
             if len(item_name_split) > 1:
-                magentaprint("broken junk %s unusable: %s" % (item, str(item.is_unusable)))
+                # magentaprint("broken junk %s unusable: %s" % (item, str(item.is_unusable)))
                 if item_name_split[1] == 'ring' and item.is_unusable:
-                    magentaprint("broken_junk appending " + str(self.get_reference(item)))
+                    # magentaprint("broken_junk appending " + str(self.get_reference(item)))
                     refs.append(self.get_reference(item))
                     # first_ref = self.get_reference(item)
                     # if len(first_ref.split(' ')) > 1:
