@@ -1,8 +1,7 @@
 
 class UnixConsoleHandler(object):
-
     def black(self):
-        print("\033[30m", end='')
+        print('\033[30m', end='')
     def blue(self):
         print("\033[34m", end='')
     def green(self):
@@ -22,7 +21,7 @@ class UnixConsoleHandler(object):
     #way to reset it without also resetting the color
     #we can get around this by having this class remember it's color and then reset it
     #but I'll leave that for later -kb (TODO)
-    def set_bright(self):                      
+    def set_bright(self):
         pass
     def set_dark(self):
         pass

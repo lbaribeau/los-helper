@@ -11,6 +11,7 @@ from combat.Kill import Kill
 from combat.Cast import Cast
 from command.Use import Use
 from command.Wield import Wield
+from combat.mob_target_determinator import MobTargetDeterminator
 
 class SmartCombat(CombatObject):
     black_magic = True
@@ -53,8 +54,10 @@ class SmartCombat(CombatObject):
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
         self.character = character
         self.regex_cart.extend([
-            RegexStore.prompt, RegexStore.weapon_break, RegexStore.weapon_shatters, RegexStore.mob_attacked, RegexStore.armor_breaks
+            RegexStore.prompt, RegexStore.weapon_break, RegexStore.weapon_shatters, RegexStore.mob_attacked, RegexStore.armor_breaks,
+            RegexStore.mob_arrived, RegexStore.mob_wandered, RegexStore.mob_left
         ])
+        self.mob_target_determinator = MobTargetDeterminator()
 
     def notify(self, regex, M_obj):
         # Notifications are used for healing
@@ -69,7 +72,7 @@ class SmartCombat(CombatObject):
                     if self.broken_weapon or not self.character.inventory.has_restorative():
                         self.fleeing = True  # TODO: Do pots interfere with the flee timer?  (Should I use a pot?)
                     if self.needs_big_heal():
-                        self.use.spam_pots(prefer_big=True)  
+                        self.use.spam_pots(prefer_big=True)
                     else:
                         self.use.spam_pots()
                 else:
@@ -90,6 +93,20 @@ class SmartCombat(CombatObject):
             if len(M_obj.group(1).split(' ')) >= 2:
                 if M_obj.group(1).split(' ')[1] == 'ring':
                     self.broke_ring = True
+        elif regex in RegexStore.mob_arrived:
+            # self.target = self.mob_target_determinator.on_mob_arrival(
+            #     self.target,
+            #     self.character.mobs.read_mobs(M_obj.group('mobs')),
+            #     self.character.mobs.list
+            # )
+            magentaprint("SmartCombat mob arrived, new target: " + str(self.target))
+        elif regex in RegexStore.mob_wandered + RegexStore.mob_left:
+            # self.target = self.mob_target_determinator.on_mob_departure(
+            #     self.target,
+            #     self.character.mobs.read_match(M_obj),
+            #     self.character.mobs.list
+            # )
+            pass
 
     def stop(self):
         super().stop()
@@ -106,14 +123,14 @@ class SmartCombat(CombatObject):
         return self.potion_threshold() - self.character.HEALTH > 0
         # return self.character.HEALTH < 50  # Test!
         # if self.character.mobs.damage:
-        #     return self.character.HEALTH <= 1.3*max(self.character.mobs.damage)  
+        #     return self.character.HEALTH <= 1.3*max(self.character.mobs.damage)
         # else:
         #     return self.character.HEALTH < 0.20 * self.character.maxHP
             # This algorithm isn't completely guaranteed and fails on horrible luck, hoping the extra *0.30 and stdev from mob damage
             # gives restoratives enough time to get above the mob's attack damage... if we get hit when below 1.3x, we run
             # (Usually hps > dps, but if hps < dps, we end up running, and if hps << dps, we could die)
-            # I could just switch to large restoratives.  How about use mob damage to determine which restoratives.  
-            # But when do I flee?  Only when out of restoratives?  Sure.  Maybe if no weapon?  Sure.  No mana?  Nope.  
+            # I could just switch to large restoratives.  How about use mob damage to determine which restoratives.
+            # But when do I flee?  Only when out of restoratives?  Sure.  Maybe if no weapon?  Sure.  No mana?  Nope.
             # So it's basically flee if needs_heal and (broken_weapon or no_restoratives or mob_attacked_before_healing_caught_up)
             # How about use health needed to pick the restorative... well time till next mob attack is also relevant...
             # try large restorative if >5 needed
@@ -122,10 +139,10 @@ class SmartCombat(CombatObject):
 
     def potion_threshold(self):
         if self.character.mobs.damage:
-            return 1.3*max(self.character.mobs.damage)  
+            return 1.3*max(self.character.mobs.damage)
         else:
             return 0.20 * self.character.maxHP
-    
+
     def stop(self):
         self.use.stop()
         self.stopping = True
@@ -133,10 +150,10 @@ class SmartCombat(CombatObject):
     def keep_going(self, target=None):
         self.stopping = False
         self.casting = True
-        self.target = target if target else self.target
+        self.set_target(target)
 
     def start_thread(self, target, spell=None):
-        self.target = target
+        self.set_target(target)
         self.spell = spell if spell else self.favourite_spell
         magentaprint("SmartCombat spell set to " + str(self.spell))
 
@@ -147,6 +164,18 @@ class SmartCombat(CombatObject):
             # not is_alive() means it won't look at stopping anymore so we're good.
             self.thread = Thread(target = self.run)
             self.thread.start()
+
+    def set_target(self, target=None):
+        if target:
+            if len(target.split(' ')) > 1:
+                try:
+                    self.target = target.split()[0] + ' '+ str(int(target.split(' ')[1]))
+                except ValueError:
+                    self.target = target.split()[0]
+            else:
+                self.target = target
+        else:
+            self.target = None
 
     def run(self):
         self.stopping = False
@@ -161,17 +190,17 @@ class SmartCombat(CombatObject):
 
         while not self.stopping:
             if self.broken_weapon:
-                self.reequip_weapon()  # TODO: This can get spammed... answer on to unset is_usable on weapon objects in inventory 
+                self.reequip_weapon()  # TODO: This can get spammed... answer on to unset is_usable on weapon objects in inventory
             # magentaprint("SmartCombat loop kill.timer " + str(round(self.kill.wait_time(), 1)) + " cast.timer " + str(round(self.cast.wait_time(), 1)) + ".")
             if self.fleeing and not self.cast.wait_time() - self.kill.wait_time() > self.kill.cooldown_after_success:
                 self.escape()
             elif self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
                 self.kill.wait_until_ready()
-                if self.stopping: 
-                    break 
+                if self.stopping:
+                    break
                 self.use_slow_combat_ability_or_attack()
                 # magentaprint("SmartCombat finished attack, stopping: " + str(self.stopping))
-                # time.sleep(0.1)  
+                # time.sleep(0.1)
             else:
                 self.cast.wait_until_ready()
                 damage = self.character.maxHP - self.character.HEALTH
@@ -185,9 +214,9 @@ class SmartCombat(CombatObject):
                 elif self.mob_charmed:
                     time.sleep(min(0.2, self.kill.wait_time()))
                     # time.sleep(min(0.2, self.kill.wait_time() + 0.05))
-                elif self.black_magic and ((self.spell in Spells._lvl1 and self.character.MANA >= 3) or 
+                elif self.black_magic and ((self.spell in Spells._lvl1 and self.character.MANA >= 3) or
                                            (self.spell in Spells._lvl2 and self.character.MANA >= 7)):  # Todo: add oom check
-                    self.do_cast(self.spell, self.target) 
+                    self.do_cast(self.spell, self.target)
                 elif self.black_magic and self.spell in Spells._lvl2 and self.character.MANA < 7 and self.character.MANA >= 3:
                     self.do_cast(Spells._lvl1[Spells._lvl2.index(self.spell)], self.target)
                 else:
@@ -210,10 +239,10 @@ class SmartCombat(CombatObject):
                     else:
                         magentaprint("SmartCombat " + str(self.target) + " in turn targets " + str(a.valid_targets))
 
-                magentaprint("Using " + str(a))
+                # magentaprint("Using " + str(a))
                 a.execute(self.target)
                 a.wait_for_flag()
-                magentaprint("SmartCombat finished using ability.")
+                # magentaprint("SmartCombat finished using ability.")
                 # So if we hit with Dance of the Cobra, we should save mana...
                 if a.success and isinstance(a, DanceOfTheCobra):
                     self.mob_charmed = True
@@ -235,7 +264,7 @@ class SmartCombat(CombatObject):
                         continue
                     else:
                         self.circled = True
-                
+
                 magentaprint("SmartCombat executing " + str(a))
                 a.execute(self.target)
                 a.wait_for_flag()
@@ -293,7 +322,7 @@ class SmartCombat(CombatObject):
         else:
             while self.wield.broken_error:
                 self.to_repair.append(ref)
-                ref = self.increment_ref(ref) 
+                ref = self.mob_target_determinator.increment_ref(ref)
                 magentaprint("SmartCombat try_weapon ref incremented: " + str(ref))
                 magentaprint("weapon_name: " + str(weapon_name) + ", ")
                 if self.character.inventory.get_item_name_from_reference(ref) == weapon_name:
@@ -312,12 +341,6 @@ class SmartCombat(CombatObject):
                     break
         return False
 
-    def increment_ref(self, ref):
-        if len(ref.split(' ')) > 1:
-            return ref.split(' ')[0] + ' ' + str(int(ref.split(' ')[1]) + 1)  # ref++
-        else:
-            return ref + ' 2'
-
     def wield_weapon(self, weapon_name):
         # reequip_weapon was checking character.weapon1 and character.weapon2 which I don't want to do here
         # self.equip_weapon(self.broken_weapon)
@@ -331,7 +354,7 @@ class SmartCombat(CombatObject):
             self.broken_weapon = False
             return True
         while self.wield.broken_error:
-            ref = self.increment_ref(ref)
+            ref = self.mob_target_determinator.increment_ref(ref)
             if self.character.inventory.get_item_name_from_reference(ref) == weapon_name:
                 self.wield.execute(ref)
                 self.wield.wait_for_flag()
@@ -356,9 +379,9 @@ class SmartCombat(CombatObject):
             if self.wield.success:
                 self.broken_weapon = False
                 return True
-            while self.wield.broken_error:  # found broken one from inventory... 
+            while self.wield.broken_error:  # found broken one from inventory...
                 # need to try the next one
-                ref = self.increment_ref(ref)
+                ref = self.mob_target_determinator.increment_ref(ref)
                 if self.character.inventory.get_item_name_from_reference(ref) == self.broken_weapon:
                     self.wield.execute(ref)
                     self.wield.wait_for_flag()
@@ -376,7 +399,7 @@ class SmartCombat(CombatObject):
                     self.broken_weapon = False
                     return True
                 while self.wield.second.broken_error:
-                    ref = self.increment_ref(ref)
+                    ref = self.mob_target_determinator.increment_ref(ref)
                     if self.character.inventory.get_item_name_from_reference(ref) == self.broken_weapon:
                         self.wield.second.execute(ref)
                         self.wield.second.wait_for_flag()
@@ -407,7 +430,7 @@ class SmartCombat(CombatObject):
 
         ### Old combat
         # black_magic_spell_cost = self.character.SPELL_COST
-        
+
         # self.buff_up()
         # self.do_combat_skills(monster)
 
@@ -426,12 +449,12 @@ class SmartCombat(CombatObject):
         #             self.commandHandler.user_cc(self.character.FAVOURITE_SPELL + " " + monster)
         #         else:
         #             self.commandHandler.stop_CastThread()
-            
+
         #     # TODO: restoratives (use when vig not keeping up or low mana)
         #     if (not self.has_ideal_health()):
 
         #         self.do_heal_skills()
-                
+
         #         if (BotThread.can_cast_spell(self.character.MANA, vigor_cost, self.character.KNOWS_VIGOR)):
         #             if( self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
         #                 magentaprint("Starting vigor cast thread")
@@ -445,15 +468,15 @@ class SmartCombat(CombatObject):
         #     ifled = False
         #     # FLEE Checks
         #     if(self.character.HEALTH <= self.character.HEALTH_TO_FLEE):
-        #         # We're done for!  Trust CommandHandler to get us out.  
+        #         # We're done for!  Trust CommandHandler to get us out.
         #         # It will turn around and stop botThread.
         #         self.do_flee_hook()
         #         ifled = True
 
         #         # OK the mob died or ran
-        #         self.commandHandler.stop_CastThread() 
+        #         self.commandHandler.stop_CastThread()
 
-        #     self.sleep(0.05)   
+        #     self.sleep(0.05)
 
     def escape(self):
         self.stop()

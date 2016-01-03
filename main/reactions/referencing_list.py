@@ -1,6 +1,7 @@
 
-from misc_functions import magentaprint
-from reactions.game_object import GameObject
+# from main.misc_functions import magentaprint
+from main.print_magenta import magentaprint
+from main.reactions.game_object import GameObject
 # from db.GenericMudObject import GenericMudObject
 
 class ReferencingList(object):
@@ -18,7 +19,7 @@ class ReferencingList(object):
         elif isinstance(initializer[0], 'str'.__class__):
             self.list = sorted(GameObject(s) for s in initializer)
         else:
-            self.list = initializer
+            self.list = sorted(initializer)
 
         # Children need to support parse methods
 
@@ -38,21 +39,35 @@ class ReferencingList(object):
         for i in range(0, len(self.list)):
             if self.list[i] > obj:
                 self.list.insert(i, obj)
-                magentaprint("RefList inserted %s at index %s." % (str(obj), str(i)))
+                # magentaprint("RefList inserted %s at index %s." % (str(obj), str(i)))
                 return
 
         # magentaprint("RefList appended %s." % str(obj))
-        self.list.append(obj)
         # self.list.append(FakeItem(item))
         # self.list.sort()  # We want to keep broken items sorted properly by inserting manually
+        # self.list.append(obj)
+        self.list = sorted(self.list + [obj])
 
-    def remove(self, ref):
+    def add_from_list(self, list):
+        # Could be made more efficient by separating sorting from obj/string managing in add()
+        for x in list:
+            self.add(x)
+
+    def remove(self, obj):
+        # magentaprint("ReferencingList removing " + str(obj))
+        self.list.remove(obj)
+
+    def remove_by_ref(self, ref):
         # if item in self.list:
         #     self.list.remove(item)
         self.remove_by_index(self.index(ref))
 
     def remove_by_index(self, ind):
         self.list.pop(ind)
+
+    def remove_from_list(self, list):
+        for x in list:
+            self.remove(x)
 
     def index(self, ref):
         # magentaprint("RefList.index() ref: " + ref)
@@ -91,7 +106,7 @@ class ReferencingList(object):
         for i in self.list:
             if i.name == string:
                 return True
-                
+
         return False
 
     def remove_all(self, name):
@@ -126,7 +141,7 @@ class ReferencingList(object):
             if obj.is_of_type(model, data, level):
                 for instance in self.dictionary[obj].objs:
                     if not instance.is_unusable:
-                        return obj.obj.name
+                        return str(obj.obj)
 
     def get_reference(self, obj, first_or_second_word=1):
         if isinstance(obj, 'str'.__class__):
@@ -137,13 +152,13 @@ class ReferencingList(object):
             for list_obj in self.list:
                 if obj is list_obj:
                     # return _reference_string(obj.name, count_similar_obj+1)
-                    first_ref = self.get_first_reference(obj.name, first_or_second_word)
+                    first_ref = self.get_first_reference(str(obj), first_or_second_word)
                     word = first_ref.split(' ')[0]
                     ref_n = int(first_ref.split(' ')[1]) if len(first_ref.split(' ')) >= 2 else 1
                     return self._reference_string(word, ref_n + count_similar_obj)
                     # return self._reference_string(first_ref[0], ref_n + count_similar_obj)
 
-                if obj.name == list_obj.name:
+                if str(obj) == str(list_obj):
                     count_similar_obj = count_similar_obj + 1
 
     def get_first_reference(self, name, first_or_second_word=1):
@@ -155,7 +170,7 @@ class ReferencingList(object):
         word = words[0] if first_or_second_word == 1 or len(words) <= 1 else words[1]
 
         # for obj in self.list:
-        for list_name in sorted(list(set(x.name for x in self.list))):
+        for list_name in sorted(list(set(str(x) for x in self.list))):
             if word in list_name.split(' '):
                 if name == list_name:
                     return word if i == 1 else word + ' ' + str(i)
@@ -163,7 +178,7 @@ class ReferencingList(object):
                     # i = i + len(self.inventory.dictionary[k].objs)
                     i = i + self.count(list_name)
 
-        return None 
+        return None
 
     def get_2nd_word_reference(self, item_name):
         return self.get_reference(item_name, 2)
@@ -190,12 +205,12 @@ class ReferencingList(object):
         # magentaprint("RefList.get_unique_references() on: " + str(self.list))
         # magentaprint("RefList.get_unique_references() on len %s, list %s " % (str(len(self.list)), str(sorted(list(set(x.name for x in self.list))))))
 
-        for name in sorted(list(set(x.name for x in self.list))):
+        for name in sorted(list(set(str(x) for x in self.list))):
             if name not in exception_list:
                 first_ref = self.get_reference(name)
                 last_ref = self.get_last_reference(name)
                 if first_ref is not None and last_ref is not None:
-                    first_num = int(first_ref.split(' ')[1]) if len(first_ref.split(' ')) >= 2 else 1  
+                    first_num = int(first_ref.split(' ')[1]) if len(first_ref.split(' ')) >= 2 else 1
                     # Nonetype has no attribute split
                     last_num = int(last_ref.split(' ')[1]) if len(last_ref.split(' ')) >= 2 else 1
                     word = first_ref.split(' ')[0]
@@ -221,10 +236,26 @@ class ReferencingList(object):
 
     def to_dict(self):
         d = {}
-        for name in sorted(list(set(x.name for x in self.list))):
+        for name in sorted(list(set(str(x) for x in self.list))):
             d[name] = self.count(name)
         return d
 
     # def __str__(self):
     #     return str(self.to_dict)
 
+    # def extend(self, new_entries):
+    #     # new_entries_sorted = sorted(new_entries)
+    #     # for e in new_entries_sorted:
+    #     self.list = sorted(self.list + new_entries)
+
+    def __contains__(self, item):
+        return item in self.list
+
+    def append(self, new_entry):
+        self.list = sorted(self.list + [new_entry])
+
+    def reset(self):
+        self.list = []
+
+    def __iter__(self):
+        return iter(self.list)

@@ -32,7 +32,7 @@ class Use(ThreadingMixin2):
     def healing_potion(self):
         # big_pots = ['large restorative', 'scarlet potion']
         # small_pots = ['chicken soup', 'small restorative', 'small flask', 'white potion']
-        pots = ['chicken soup', 'small restorative', 'small flask', 'white potion', 'large restorative', 'scarlet potion']
+        pots = ['chicken soup', 'small restorative', 'white potion', 'small flask', 'large restorative', 'scarlet potion']
 
         if self.prefer_big:
             pots.reverse()

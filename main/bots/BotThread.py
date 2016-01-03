@@ -14,8 +14,8 @@ class BotThread(threading.Thread):
     def __init__(self, character, commandHandler, mudReaderHandler, mud_map):
         # Thread.__init__(self)
         super().__init__()
-        self.stopping = False        
-        
+        self.stopping = False
+
         self.character = character
         self.commandHandler = commandHandler
         self.mudReaderHandler = mudReaderHandler
@@ -48,7 +48,7 @@ class BotThread(threading.Thread):
 
     def sleep(self, duration):
         time.sleep(duration)
-    '''    
+    '''
     BotThread hooks.  2 and 3 are the main ones
     1  run startup
     2  pre go   (actions when direction list has emptied)
@@ -61,8 +61,8 @@ class BotThread(threading.Thread):
     9  post go (similar to successful go except also applies to failed go)
     A  do after directions travelled
     '''
-    def run(self):                    
-        self.stopping = False 
+    def run(self):
+        self.stopping = False
         self.character.ACTIVELY_BOTTING = False
         self.do_run_startup()
 
@@ -76,7 +76,7 @@ class BotThread(threading.Thread):
             if len(self.direction_list) is 0:
                 self.direction_list = self.decide_where_to_go()
                 magentaprint('decide_where_to_go returned ' + str(self.direction_list))
-                
+
             while len(self.direction_list) is not 0 and not self.stopping:
                 self.do_regular_actions()
                 if self.go(self.direction_list[0]):
@@ -92,12 +92,12 @@ class BotThread(threading.Thread):
                         continue
                     elif self.character.GO_TIMEOUT:
                         self.do_on_go_timeout()
-                    elif self.character.GO_NO_EXIT: 
+                    elif self.character.GO_NO_EXIT:
                         self.no_exit_count += 1
                         self.do_on_go_no_exit()
                         continue
 
-                #now we add a hook for any actions in this new area    
+                #now we add a hook for any actions in this new area
                 self.do_post_go_actions()
             self.do_after_directions_travelled()
 
@@ -106,7 +106,7 @@ class BotThread(threading.Thread):
     def go(self, exit_str):
         if self.stopping:
             return True
-        
+
         # wait_for_move_ready(self.character)
         self.commandHandler.go.wait_until_ready()
         self.kill.wait_until_ready()
@@ -121,7 +121,7 @@ class BotThread(threading.Thread):
 
         # A go hook is something other than an exit name in the direction list
         # Custom actions like prepare, sell, and areaN which gets expanded into real directions
-        hook_found = self.do_go_hooks(exit_str)  
+        hook_found = self.do_go_hooks(exit_str)
             # ... we need to wait for Cartography before this happens
 
         if not hook_found:
@@ -144,7 +144,7 @@ class BotThread(threading.Thread):
     ''' STATIC METHODS '''
     @staticmethod
     def has_ideal_stat(cur_value, ideal_value):
-        return cur_value >= ideal_value 
+        return cur_value >= ideal_value
 
     @staticmethod
     def can_use_timed_ability(last_use, timeout):
@@ -159,7 +159,7 @@ class BotThread(threading.Thread):
     @staticmethod
     def can_cast_spell(current_mana, spell_cost, knows_spell):
         return knows_spell and current_mana >= spell_cost
-    
+
     @staticmethod
     def should_heal_up(current_health, ideal_health, current_mana, heal_cost, knows_spell,
                         has_healing_items):
@@ -187,10 +187,10 @@ class BotThread(threading.Thread):
             #magentaprint("go hook found with: " + str(self.direction_list), False)
             area_id = int(exit_str.replace("areaid", ""))
             self.direction_list.pop(0)
-            
+
             try:
                 path = self.mud_map.get_path(self.character.AREA_ID, area_id)
-                
+
                 if len(path) == 0:
                     self.direction_list = ["buffer"] + self.direction_list
                 else:
@@ -237,7 +237,7 @@ class BotThread(threading.Thread):
 
     def do_on_succesful_go(self):
         self.direction_list.pop(0)
-        # self.character.MOBS_JOINED_IN = [] 
+        # self.character.MOBS_JOINED_IN = []
         # self.character.MOBS_ATTACKING = []
         self.no_exit_count = 0
 
@@ -248,7 +248,7 @@ class BotThread(threading.Thread):
         #self.engage_mobs_who_joined_in()
         #self.engage_any_attacking_mobs()
         #self.check_weapons()
-        
+
         #if (not self.character.BLACK_MAGIC):
         #    self.heal_up()
         return
@@ -261,13 +261,13 @@ class BotThread(threading.Thread):
         magentaprint("Bot: Check go timed out.  Could be sys clock.")
         # This can happen when the system clock makes time.time() inconsistent.
         # Unless I can fix this I have to ignore this case and hope it worked.
-        self.direction_list.pop(0)  
-        # self.character.MOBS_JOINED_IN = [] 
+        self.direction_list.pop(0)
+        # self.character.MOBS_JOINED_IN = []
         # self.character.MOBS_ATTACKING = []
         self.sleep(6)
 
     def do_on_go_no_exit(self):
-        # This is a tough one.  Hopefully it never happens.  I'm gonna assume it happened 
+        # This is a tough one.  Hopefully it never happens.  I'm gonna assume it happened
         # because the last go actually worked and was wrongly determined not to.
         magentaprint("Go no exit on: " + self.direction_list.pop(0), False)
         # self.character.MOBS_JOINED_IN = []

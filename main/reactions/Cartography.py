@@ -14,6 +14,7 @@ from db.MudItem import *
 from db.MudMob import *
 from comm import RegexStore
 from Aura import Aura
+from reactions.referencing_list import ReferencingList
 
 class Cartography(BotReactionWithFlag):
     def __init__(self, mudReaderHandler, commandHandler, character):
@@ -127,7 +128,7 @@ class Cartography(BotReactionWithFlag):
     def too_dark(self, regex, M_obj):
         magentaprint("Cartography - too dark")
         if self.character.AREA_ID is not None:
-            guessed_area = self.guess_location(self.character.AREA_ID, self.character.LAST_DIRECTION)            
+            guessed_area = self.guess_location(self.character.AREA_ID, self.character.LAST_DIRECTION)
 
             if guessed_area is not None:
                 self.character.AREA_ID = guessed_area.area.id
@@ -140,13 +141,15 @@ class Cartography(BotReactionWithFlag):
                 self.character.MUD_AREA = None
                 self.character.EXIT_LIST = []
 
-        self.character.mobs.list = []
+        self.character.mobs.list = ReferencingList([])
+        self.character.mobs.attacking = []
+
         self.character.SUCCESSFUL_GO = True
         self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
         self.character.CAN_SEE = False
         self.character.CONFUSED = False
 
-        if self.character.TRYING_TO_MOVE:  
+        if self.character.TRYING_TO_MOVE:
             self.character.TRYING_TO_MOVE = False
 
     def area(self, regex, M_obj):
@@ -161,8 +164,7 @@ class Cartography(BotReactionWithFlag):
 
         self.character.AREA_TITLE = area_title #title
         self.character.EXIT_LIST = exit_list #exits
-        self.character.mobs.list = self.parse_monster_list(matched_groups[3])
-        self.character.mobs.list.sort()
+        self.character.mobs.list = ReferencingList(self.parse_monster_list(matched_groups[3]))
         self.character.mobs.attacking = []
 
         self.character.SUCCESSFUL_GO = True #successful go should be true everytime the area parses
@@ -170,7 +172,7 @@ class Cartography(BotReactionWithFlag):
         self.character.CAN_SEE = True
         self.character.CONFUSED = False
 
-        if self.character.TRYING_TO_MOVE:  
+        if self.character.TRYING_TO_MOVE:
             if exit_list is not []:
                 area_from = self.character.AREA_ID
                 direction_from = self.character.LAST_DIRECTION
@@ -369,7 +371,7 @@ class Cartography(BotReactionWithFlag):
                             #magentaprint(exit_list[i], False)
                         count += 1 #I miss my i++
 
-        return exit_list 
+        return exit_list
 
     def create_exit_regex_for_character(self, E_LIST):
         exit_regex = "(NEVERMATCHTHISEVEREVER)"
@@ -401,8 +403,8 @@ class Cartography(BotReactionWithFlag):
 
         # M_LIST = [m.strip() for m in mob_match.group(1).split(',')]
         # singles = ['a ', 'an ', 'The ']
-        # numbers = ['two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 
-        #            'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ', 
+        # numbers = ['two ', 'three ', 'four ', 'five ', 'six ', 'seven ',
+        #            'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ',
         #            'fifteen ' , 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen ', 'twenty ']
         # numbers.extend([str(i) + " " for i in range(21, 200)])
 
@@ -426,7 +428,7 @@ class Cartography(BotReactionWithFlag):
 
         # # return list(m_dict.keys())
         # return m_list
-  
+
         #     # commaindex = M_LIST[i].find(',')
         #     # if commaindex != -1:
         #     #     M_LIST = M_LIST[:commaindex]

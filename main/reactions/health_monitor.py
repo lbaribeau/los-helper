@@ -14,7 +14,7 @@ class HealthMonitor(object):
         # first_tick = None
         self.tick_times = []
         self.tick_periods = []
-        self.hpticks = []  
+        self.hpticks = []
         self.mpticks = []  # How to determine chapel ticks
         self.rest_hpticks = []
         self.rest_mpticks = []
@@ -28,7 +28,7 @@ class HealthMonitor(object):
             else:
                 self.do_tick()
         elif self.hp_delta() > 0 and self.mp_delta() < 0:
-            # Better not to rely on cast command... use mp amount and hp/mp deltas 
+            # Better not to rely on cast command... use mp amount and hp/mp deltas
             # if Cast.command.split(' ')[1].startswith('v'):
             # elif Cast.command.split(' ')[1].startswith('m'):
             if self.mp_delta == Cast.vig_amount:
