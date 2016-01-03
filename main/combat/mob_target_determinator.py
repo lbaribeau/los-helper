@@ -1,8 +1,8 @@
 
 # from main.misc_functions import magentaprint
 
-from main.print_magenta import magentaprint
-from main.reactions.referencing_list import ReferencingList
+from print_magenta import magentaprint
+from reactions.referencing_list import ReferencingList
 
 class MobTargetDeterminator(object):
     def on_mob_arrival(self, old_target_reference, arrived_mobs, mob_list):

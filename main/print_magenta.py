@@ -1,5 +1,5 @@
 
-from main.comm.ConsoleHandler import newConsoleHandler
+from comm.ConsoleHandler import newConsoleHandler
 
 class PrintMagenta(object):
     def do(self, output):

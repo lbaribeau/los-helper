@@ -5,8 +5,8 @@ import unittest
 # import main
 # from main import los_helper
 
-from main.combat.mob_target_determinator import MobTargetDeterminator
-from main.reactions.referencing_list import ReferencingList
+from combat.mob_target_determinator import MobTargetDeterminator
+from reactions.referencing_list import ReferencingList
 # import los_helper
 # from main.misc_functions import magentaprint
 

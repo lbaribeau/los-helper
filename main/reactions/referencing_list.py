@@ -1,7 +1,7 @@
 
 # from main.misc_functions import magentaprint
-from main.print_magenta import magentaprint
-from main.reactions.game_object import GameObject
+from print_magenta import magentaprint
+from reactions.game_object import GameObject
 # from db.GenericMudObject import GenericMudObject
 
 class ReferencingList(object):
