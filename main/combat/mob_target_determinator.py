@@ -5,6 +5,7 @@ from print_magenta import magentaprint
 from reactions.referencing_list import ReferencingList
 
 class MobTargetDeterminator(object):
+    # TODO: the wrong enemy can still be engaged when an enemy arrives immediately after the kill command is sent
     def on_mob_arrival(self, old_target_reference, arrived_mobs, mob_list):
         magentaprint("MobTargetDeterminator old ref: " + str(old_target_reference))
         if old_target_reference:
@@ -31,6 +32,7 @@ class MobTargetDeterminator(object):
 
             if old_target_name:
                 if departed_mob_name < old_target_name and any([s.startswith(old_target_reference.split()[0]) for s in departed_mob_name.split(' ')]):
+                    magentaprint("MobTargetDeterminator new ref: " + str(self.decrement_ref(old_target_reference)))
                     return self.decrement_ref(old_target_reference)
                 else:
                     return old_target_reference

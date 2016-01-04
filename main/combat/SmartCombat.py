@@ -94,18 +94,18 @@ class SmartCombat(CombatObject):
                 if M_obj.group(1).split(' ')[1] == 'ring':
                     self.broke_ring = True
         elif regex in RegexStore.mob_arrived:
-            # self.target = self.mob_target_determinator.on_mob_arrival(
-            #     self.target,
-            #     self.character.mobs.read_mobs(M_obj.group('mobs')),
-            #     self.character.mobs.list
-            # )
-            magentaprint("SmartCombat mob arrived, new target: " + str(self.target))
+            self.target = self.mob_target_determinator.on_mob_arrival(
+                self.target,
+                self.character.mobs.read_mobs(M_obj.group('mobs')),
+                self.character.mobs.list
+            )
+            # magentaprint("SmartCombat mob arrived, new target: " + str(self.target))
         elif regex in RegexStore.mob_wandered + RegexStore.mob_left:
-            # self.target = self.mob_target_determinator.on_mob_departure(
-            #     self.target,
-            #     self.character.mobs.read_match(M_obj),
-            #     self.character.mobs.list
-            # )
+            self.target = self.mob_target_determinator.on_mob_departure(
+                self.target,
+                self.character.mobs.read_match(M_obj),
+                self.character.mobs.list
+            )
             pass
 
     def stop(self):

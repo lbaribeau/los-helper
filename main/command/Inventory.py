@@ -26,7 +26,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         # 'broad sword',
         'adamantine axe', 'rapier', 'adamantine sword', 'claymore', 'spider leg', 'large orcish sword',
         # 'silver dagger', 'long sword',  #these pile up
-        'bastard sword',  # bandits
+        # 'bastard sword',  # bandits
         'small mace', 'morning star'
         # 'war hammer',
         'hard cap', 'hard gloves', 'hard boots', 'padded hat', 'mountain gloves', 'mountain boots',
