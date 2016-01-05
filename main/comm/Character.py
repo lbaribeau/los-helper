@@ -37,7 +37,7 @@ class Character(object):
 
         self.ARMOR_SLOTS = []
         self.ARMOR_SIZE = "m" # todo: set this in info or whois
-        
+
         # WEAPON_SLOTS = []  use character._class.weapon_slots
 
         self.LAST_BUFF = -150
@@ -62,12 +62,12 @@ class Character(object):
 
         self.DEATHS = 0
 
-        self.HASTING = False 
+        self.HASTING = False
         self.DEAD = False
 
         self.weapon1 = ''
         self.weapon2 = ''
-                                
+
         # ATTACK_CLK = -ATTACK_WAIT
         # MOVE_CLK = -MOVE_WAIT
         # CAST_CLK = -CAST_WAIT # Last successful cast
@@ -116,7 +116,7 @@ class Character(object):
                 continue
         self.MONSTER_LIST.sort()
 
-    # LEVEL_UP_EXP = [512, 1024, 2048, 4096] 
+    # LEVEL_UP_EXP = [512, 1024, 2048, 4096]
 
     # weapon_type = "Blunt"
     # weapon_proficiency = 0
@@ -145,11 +145,11 @@ class Character(object):
         # self.WEAPON_SLOTS = self._class.WEAPON_SLOTS
 
         self.weapon_proficiencies = {
-            'Sharp':self.info.sharp, 'Thrust':self.info.thrust, 'Blunt':self.info.blunt, 
+            'Sharp':self.info.sharp, 'Thrust':self.info.thrust, 'Blunt':self.info.blunt,
             'Pole':self.info.pole, 'Missile':self.info.missile
         }
         self.spell_proficiencies = {
-            'Earth':self.info.earth, 'Wind':self.info.wind, 'Fire':self.info.fire, 
+            'Earth':self.info.earth, 'Wind':self.info.wind, 'Fire':self.info.fire,
             'Water':self.info.water, 'Astral':self.info.astral
         }
         self.weapon_type = misc_functions.key_with_max_val(self.weapon_proficiencies)
@@ -162,7 +162,7 @@ class Character(object):
         else:
             self.weapon_level = 1
 
-        self.spell_type = misc_functions.key_with_max_val(self.spell_proficiencies) 
+        self.spell_type = misc_functions.key_with_max_val(self.spell_proficiencies)
         self.spell_proficiency = self.spell_proficiencies[self.spell_type]
 
         if self.level >= 9:
@@ -193,38 +193,38 @@ class Character(object):
         elif self.weapon_type == 'Pole':
             return 'quarter staff'
         elif self.weapon_type == 'Missile':
-            if self.weapon_level >= 3:  
+            if self.weapon_level >= 3:
                 return 'heavy crossbow'
             elif self.weapon_level >= 2:
                 return 'long bow'  # GREAT starting missile weapon, beware of roaming lion though (maybe bad for long-running lowish lvl bot )
             else:
                 return 'javelin'
-   
+
     lvl1_monsters = [ # 1-8 exp
-        'dustman', 'small girl', 'young boy', 'old woman', 'old man', 'townsman', 'stall holder', 'duck', 'hedgehog', 'piglet', 
-        'streetsweeper', 'shopper', 'window shopper', 'window cleaner', 'waitress', 'housewife', 'squirrel', 'milk maid', 'rabbit', 
-        'one man band', 'heather seller', 'irate teenager', 'peasant', 'one-armed beggar', 'village elder', 'small dog', 'tribesman', 
-        'searcher', 'delivery boy', 'traveller', 'wanderer', 'villager', 'vagrant', 'dropout', 'tramp', 'serf', 'dishwasher', 
+        'dustman', 'small girl', 'young boy', 'old woman', 'old man', 'townsman', 'stall holder', 'duck', 'hedgehog', 'piglet',
+        'streetsweeper', 'shopper', 'window shopper', 'window cleaner', 'waitress', 'housewife', 'squirrel', 'milk maid', 'rabbit',
+        'one man band', 'heather seller', 'irate teenager', 'peasant', 'one-armed beggar', 'village elder', 'small dog', 'tribesman',
+        'searcher', 'delivery boy', 'traveller', 'wanderer', 'villager', 'vagrant', 'dropout', 'tramp', 'serf', 'dishwasher',
         'punter'
-    ]     
+    ]
     lvl1_red_monsters = [ # 8-15 exp
         'old kobold', 'kobold child', 'kobold dam'
     ]
     lvl2_monsters = [
-        'hawker', 'barmaid', 'smelly beggar', 'black crow', 'sheep', 'goose', 'singer', 'musician', 'spiv', 'bidder', 'dairy cow', 
-        'scholar', 'juggler', 'shepherd', 'gazelle', 'dancer', 'jongleur', 'clerk', 'stablehand', 'rich kid', 'bladesman', 
-        "cook's assistant", "miner's assistant", 'mare', 'tabby cat' #, 'acolyte', 'penitent'  # aura
-    ] 
-    lvl2_red_monsters = [ 
-        'kobold sentry', 'blond hooker', 'sultry hooker', 'kobold', 'spiv', 'drunken miner', 'kobold miner', 'kobold archer', 
+        'hawker', 'barmaid', 'smelly beggar', 'black crow', 'sheep', 'goose', 'singer', 'musician', 'spiv', 'bidder', 'dairy cow',
+        'scholar', 'juggler', 'shepherd', 'gazelle', 'dancer', 'jongleur', 'clerk', 'stablehand', 'rich kid', 'bladesman',
+        "cook's assistant", "miner's assistant", 'mare', 'tabby cat' #, 'acolyte', 'penitent'  # aur
+    ]
+    lvl2_red_monsters = [
+        'kobold sentry', 'blond hooker', 'sultry hooker', 'kobold', 'spiv', 'drunken miner', 'kobold miner', 'kobold archer',
         'angry hooker', 'angry kobold', 'red axer', 'pickpocket', 'thug', 'tired hooker', 'scruffy man'
-    ] 
+    ]
     # pickpockets drop leather collars and masks
     # red axer drops studded leather collar
     # thugs hostile.  They drop leather collar
     lvl3_monsters = [ # 25-35 exp
-        'market official', 'street trader', 'field worker', 'harvester', 'horse', 'cow', 'doorman', 'stilt walker',  'messenger', 
-        'cashier', 'thatcher',  'tax inspector', 'journeyman', 'human miner', 'hobbitish miner', 'hawk', 'stacker', 'mill worker', 
+        'market official', 'street trader', 'field worker', 'harvester', 'horse', 'cow', 'doorman', 'stilt walker',  'messenger',
+        'cashier', 'thatcher',  'tax inspector', 'journeyman', 'human miner', 'hobbitish miner', 'hawk', 'stacker', 'mill worker',
         'The General', 'bouncer', 'yard worker', #'robed pilgrim'  # aura
         #'miner's mule"
     ]
@@ -232,8 +232,8 @@ class Character(object):
         'large kobold', 'insane kobold', 'kobold scout', 'drunk', 'drunken trouble-maker'
     ]
     lvl4_monsters = [ # 45-60 exp
-        'actor', 'grip', 'theatre goer', 'merchant', 'journeyman', 'logger', 'trader', 'butcher', 'acrobat', 'militia soldier', 
-        'carpenter', 'stagehand', 'hungry spider', 'cook', 'joiner', 'ranch hand', 'old rancher', 'tired ranch hand', 
+        'actor', 'grip', 'theatre goer', 'merchant', 'journeyman', 'logger', 'trader', 'butcher', 'acrobat', 'militia soldier',
+        'carpenter', 'stagehand', 'hungry spider', 'cook', 'joiner', 'ranch hand', 'old rancher', 'tired ranch hand',
         'drinking ranch hand', 'busy ranch hand', 'sawmill operator', 'vulture', 'auctioneer'
         # 'actress', 'young knight' # For blue balance
         #'miner'
@@ -252,7 +252,7 @@ class Character(object):
     ]
     lvl6_monsters = [  # 100+ exp
         'dwarven field worker', 'dwarven bartender', 'school teacher', 'lyrist', 'nobleman', 'seeker', 'bull', 'hunter', 'usher',
-        'sword swallower', 'archer', 'yard supervisor', 'sawmill supervisor', 'large spider', 'blacksmith', 'farm foreman', 
+        'sword swallower', 'archer', 'yard supervisor', 'sawmill supervisor', 'large spider', 'blacksmith', 'farm foreman',
         'Old Man James', 'dwarven traveller', 'Goourd', 'tourney organiser'
         #'sentry' stand in pairs unfortunately...
     ]
@@ -261,18 +261,18 @@ class Character(object):
     ]
     lvl7_monsters = [ # ~200 exp
         'dwarven cook', 'swordsman', 'fort sergeant', 'oremaster', 'giant spider', 'rock spider', 'Aldo', 'dwarven trader',
-        'gnoll chaplain', 'Cheryn', 'orc scout', 'bouncer', 'rancher sentry', 'dwarven shepherd', 'clown', 
+        'gnoll chaplain', 'Cheryn', 'orc scout', 'bouncer', 'rancher sentry', 'dwarven shepherd', 'clown',
         'top ranch hand'  # dusty blue
-        # 'robed priest', 
+        # 'robed priest',
     ]  # There are also lvl 5 rancher sentries... they're a bit blue
     lvl8_monsters = [  # There are 2 amethyst guards and 3 amber guards of this level
-        'Alaran the Market Manager', 'hauler', 'Farmer Malbon', 'sonneteer', 'Tag', 'mine manager', 'artificer', 
-        'Dini Stonehammer', 'Olmer', 'Thereze', 'Farmer Viladin', 'Rancher Renstone', 'berzerker', 'dwarven hunter', 
+        'Alaran the Market Manager', 'hauler', 'Farmer Malbon', 'sonneteer', 'Tag', 'mine manager', 'artificer',
+        'Dini Stonehammer', 'Olmer', 'Thereze', 'Farmer Viladin', 'Rancher Renstone', 'berzerker', 'dwarven hunter',
         'initiate', 'berserk orc', 'hedge knight', 'refinery supervisor', 'owlbear', 'sentry'
         # 'elven trader', 'old knight', 'dusty warrior'
     ]  # elves are very blue
     lvl9_monsters = [ # ~300 exp
-        'director', 'Elder Barthrodue', 'Farmer Calmor', 'orc warrior', 'giant beetle', 'white knight',  # 380 
+        'director', 'Elder Barthrodue', 'Farmer Calmor', 'orc warrior', 'giant beetle', 'white knight',  # 380
         'weathered barbarian', #'old man'
     ]  # respect the knights! (+1 difficulty)
     lvl10_monsters = [ # 350+
@@ -285,7 +285,7 @@ class Character(object):
     ]  # wounded knight -2 difficulty
     lvl11_monsters = [
         'dwarven adventurer',  # dusty blue
-        'enchantress', 'Brotain', 'minstrel', 'brutalizer', 'Gregor', 'Bertram Dalrum', 'Annette Plover', 'The Combat Master', 
+        'enchantress', 'Brotain', 'minstrel', 'brutalizer', 'Gregor', 'Bertram Dalrum', 'Annette Plover', 'The Combat Master',
         'brother'
     ]
     lvl12_monsters = [

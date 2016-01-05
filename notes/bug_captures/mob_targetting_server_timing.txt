@@ -1,0 +1,41 @@
+[19 H 7 M]: You chop at the large bandit but fail to hit them.
+[19 H 7 M]: 16:41:39.1   | <combat.Kill.Kill object at 0x6fffecb8c50> notified.
+16:41:39.1   | "sin a"
+16:41:39.2   | <class 'combat.Cast.Cast'> wait_until_ready waiting 1.0
+Your music rejuvenates everyone in the room.
+[36 H 7 M]: sin 16:41:40.2   | Cast setting command to 'c burn'
+16:41:40.2   | "c burn b 3"
+You cast a burn spell on large bandit.
+The spell did 15 damage.
+[36 H 4 M]: 16:41:40.4   | <combat.Cast.Cast object at 0x6fffecb8dd0> notified.                                                                                                                16:41:40.4   | <class 'combat.Kill.Kill'> wait_until_ready waiting 1.3                                                                                                                        16:41:41.7   | "k b 3"
+The large bandit kicks at you, but fails to hurt you.
+The 2nd bandit swordsman just wandered to the south.
+16:41:41.9   | mobs.list [bandit swordsman, bandit swordsman, large bandit]; notification from regex ((?P<mob1>
+16:41:41.9   | mobs.attacking ['large bandit']
+16:41:41.9   | mobs.list [bandit swordsman, large bandit]; notification from regex ((?P<mob1>
+16:41:41.9   | mobs.attacking ['large bandit']
+[36 H 4 M]: You don't see that here.
+[36 H 4 M]: 16:41:42.1   | <combat.Kill.Kill object at 0x6fffecb8c50> notified.
+16:41:42.1   | <combat.Kill.Kill object at 0x6fffecb8c50> ending combat.
+16:41:42.1   | <combat.Kill.Kill object at 0x6fffecb8c50> clearing timer... wf is False, class wf is Falseregex is You don't ...
+16:41:42.2   | <combat.SmartCombat.SmartCombat object at 0x6fffecb8b90> ending run.
+The large bandit throws a wild punch at you, but it misses.
+16:41:45.0   | mobs.list [bandit swordsman, large bandit]; notification from regex ((?P<mob1>
+16:41:45.0   | mobs.attacking ['large bandit']
+[36 H 4 M]: The large bandit kicks you for 2 damage.
+16:41:47.9   | mobs.list [bandit swordsman, large bandit]; notification from regex ((?P<mob1>
+16:41:47.9   | mobs.attacking ['large bandit']
+16:41:47.9   | mobs.list [bandit swordsman, large bandit]; notification from regex ((?P<mob1>
+16:41:47.9   | mobs.attacking ['large bandit']
+[34 H 4 M]: l
+16:41:49.2   | "l"
+
+Secret Trail
+
+The trail widens out a little the further south you go.
+There is less twistyness to the trail as well, the route north of here
+looks to have been created to confuse and throw off any pursuers. This
+far down the trail the bandits want speed so they can alert their comrades
+in their camp to the south.
+Obvious exits: north, south.
+You see a bandit swordsman, a large bandit.

@@ -658,10 +658,16 @@ class GrindThread(BotThread):
             return
 
         # self.smartCombat.target = monster
-        self.smartCombat.target = self.character.mobs.list.get_first_reference(monster)
+        new_target = self.character.mobs.list.get_first_reference(monster)
 
-        if not self.smartCombat.target:
-            return
+        if new_target:
+            self.smartCombat.target = new_target
+        else:
+            # ie. dark room
+            if len(monster.split(' ')) > 1:
+                self.smartCombat.target = str(monster).split(' ')[0]
+            else:
+                self.smartCombat.target = str(monster)
 
         self.smartCombat.spell = self.smartCombat.favourite_spell
         self.smartCombat.run()
