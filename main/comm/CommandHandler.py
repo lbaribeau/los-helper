@@ -1,7 +1,7 @@
 
 import threading
 from threading import Thread
-import atexit 
+import atexit
 import time
 import re
 import sys
@@ -190,8 +190,8 @@ class CommandHandler(object):
         elif re.match("fle?$|flee$", user_input):
             self.stop_bot()
             self.user_flee()
-        elif user_input == 'use soup':
-            self.smartCombat.use.healing_potion() 
+        elif user_input == 'pot':
+            self.smartCombat.use.healing_potion()
         elif re.match("usec$", user_input):  # 'use c' following my pet syntax: end a command with 'c' to start a thread
             self.smartCombat.use.spam_pots()
         elif re.match("usec2$", user_input):

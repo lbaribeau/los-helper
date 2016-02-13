@@ -17,17 +17,18 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 
     keep_list = [
         'large bag', 'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
-        'chicken soup', 'small restorative', 'small flask', 'large restorative', 'scarlet potion', 'white potion', 'tree root',
+        'chicken soup', 'small flask', 'large restorative', 'scarlet potion', 'tree root', 'white potion', 'small restorative',
         'Elixir of Morinva', 'granite potion', 'philtre of perception', 'burnt ochre potion', 'granite rod', 'heathen amulet',
         # 'spear',
         # 'bolos',
-        'javelin', 'heavy crossbow',
+        'javelin', 'heavy crossbow', 'throwing stars', 'throwing star',
         #'crossbow', 'horn bow', 'long bow' # < 70% missile
         # 'broad sword',
         'adamantine axe', 'rapier', 'adamantine sword', 'claymore', 'spider leg', 'large orcish sword',
         # 'silver dagger', 'long sword',  #these pile up
         # 'bastard sword',  # bandits
-        'small mace', 'morning star', 'superior dwarven hammer',
+        # 'small mace',
+        'morning star', 'superior dwarven hammer',
         # 'war hammer',
         'hard cap', 'hard gloves', 'hard boots', 'padded hat', 'mountain gloves', 'mountain boots',
         'mountain boots with crampons', 'travellers cross', 'leather mask', 'leather collar', 'studded leather collar',
@@ -62,7 +63,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             self.keep_list[index] = MudItem(item)
 
         self.restoratives = [
-            'chicken soup', 'small restorative', 'small flask', 'large restorative', 'scarlet potion', 'white potion'
+            'chicken soup', 'small restorative', 'white potion', 'small flask', 'large restorative', 'scarlet potion'
         ] # , 'tree root']
 
         BotReactionWithFlag.__init__(self)
@@ -159,6 +160,9 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 
     def count_restoratives(self):
         return sum(self.count(r) for r in self.restoratives)
+
+    def count_small_restoratives(self):
+        return sum(self.count(r) for r in self.restoratives if r not in ['large restorative', 'scarlet potion'])
 
     def has_any(self, item_name_list):
         return any([self.has(i) for i in item_name_list])

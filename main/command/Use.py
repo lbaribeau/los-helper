@@ -35,6 +35,7 @@ class Use(ThreadingMixin2):
         pots = ['chicken soup', 'small restorative', 'white potion', 'small flask', 'large restorative', 'scarlet potion']
 
         if self.prefer_big:
+            # I think self.prefer_big needs to be an argument to healing_potion()
             pots.reverse()
 
         # # if 'bowl of chicken soup' in self.character.inventory.inventory:
@@ -67,6 +68,16 @@ class Use(ThreadingMixin2):
                 return True
 
         return False  # Ran out of pots.  use.result also provides return information
+
+    def small_healing_potion(self):
+        pots = ['chicken soup', 'small restorative', 'white potion', 'small flask']
+
+        for pot in pots:
+            if self.character.inventory.has(pot):
+                self.execute(self.character.inventory.get_reference(pot))
+                return True
+
+        return False
 
     # def can_heal(self):
     #     pots = ['chicken soup', 'small restorative', 'small flask', 'white potion', 'scarlet potion', 'large restorative']

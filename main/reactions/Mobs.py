@@ -103,7 +103,7 @@ class Mobs(BotReactionWithFlag):
             self.damage = []
 
             self.attacking.append(self.read_match(m_obj))
-        magentaprint("mobs.list " + str(self.list) + "; notification from regex " + str(r[0:min(10, len(r))]))
+        magentaprint("mobs.list " + str(self.list) + "; notification from regex: " + str(r[0:min(10, len(r))]))
         if self.attacking:
             magentaprint("mobs.attacking " + str(self.attacking))
         super().notify(r, m_obj)

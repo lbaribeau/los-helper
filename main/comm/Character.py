@@ -21,7 +21,7 @@ class Character(object):
         self.KNOWS_VIGOR = True
         #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #MAGIC_SKILLS= [0, 0, 0, 0, 0]
-        self.SKILLS = {} 
+        self.SKILLS = {}
 
         self.LEVEL_LIST = ["You could kill (?:.+?) with a needle\.", #-4 or more levels
                       "(?:.+?) should be easy to kill\.", #-2 level from this character
@@ -213,7 +213,8 @@ class Character(object):
     lvl2_monsters = [
         'hawker', 'barmaid', 'smelly beggar', 'black crow', 'sheep', 'goose', 'singer', 'musician', 'spiv', 'bidder', 'dairy cow',
         'scholar', 'juggler', 'shepherd', 'gazelle', 'dancer', 'jongleur', 'clerk', 'stablehand', 'rich kid', 'bladesman',
-        "cook's assistant", "miner's assistant", 'mare', 'tabby cat' #, 'acolyte', 'penitent'  # aur
+        "cook's assistant", "miner's assistant", 'mare', 'tabby cat',
+        'acolyte' #, 'penitent'  # aur
     ]
     lvl2_red_monsters = [
         'kobold sentry', 'blond hooker', 'sultry hooker', 'kobold', 'spiv', 'drunken miner', 'kobold miner', 'kobold archer',
@@ -225,7 +226,8 @@ class Character(object):
     lvl3_monsters = [ # 25-35 exp
         'market official', 'street trader', 'field worker', 'harvester', 'horse', 'cow', 'doorman', 'stilt walker',  'messenger',
         'cashier', 'thatcher',  'tax inspector', 'journeyman', 'human miner', 'hobbitish miner', 'hawk', 'stacker', 'mill worker',
-        'The General', 'bouncer', 'yard worker', #'robed pilgrim'  # aura
+        'The General', 'bouncer', 'yard worker'
+        # 'robed pilgrim'  # aura
         #'miner's mule"
     ]
     lvl3_red_monsters = [
@@ -235,7 +237,7 @@ class Character(object):
         'actor', 'grip', 'theatre goer', 'merchant', 'journeyman', 'logger', 'trader', 'butcher', 'acrobat', 'militia soldier',
         'carpenter', 'stagehand', 'hungry spider', 'cook', 'joiner', 'ranch hand', 'old rancher', 'tired ranch hand',
         'drinking ranch hand', 'busy ranch hand', 'sawmill operator', 'vulture', 'auctioneer'
-        # 'actress', 'young knight' # For blue balance
+        # 'actress', #'young knight' # For blue balance
         #'miner'
     ]
     # hungry spiders are hostile
@@ -243,7 +245,7 @@ class Character(object):
         'kobold shaman', 'kobold champion', 'hungry spider'
     ]
     lvl5_monsters = [
-        'dwarven farm hand', 'dwarven barmaid', 'fort sentry', 'fur trader', 'aristocrat', 
+        'dwarven farm hand', 'dwarven barmaid', 'fort sentry', 'fur trader', 'aristocrat',
         'nobleman', 'lyrist', 'logger', 'veteran', 'bruiser', 'axeman', 'seeker', 'hunter', 'bull', 'aspirant'
         # 'vicar', 'lay priest', 'protector', 'battered knight', 'orange picker' # makes trackgrind too red?
     ]
@@ -268,7 +270,7 @@ class Character(object):
     lvl8_monsters = [  # There are 2 amethyst guards and 3 amber guards of this level
         'Alaran the Market Manager', 'hauler', 'Farmer Malbon', 'sonneteer', 'Tag', 'mine manager', 'artificer',
         'Dini Stonehammer', 'Olmer', 'Thereze', 'Farmer Viladin', 'Rancher Renstone', 'berzerker', 'dwarven hunter',
-        'initiate', 'berserk orc', 'hedge knight', 'refinery supervisor', 'owlbear', 'sentry'
+        'initiate', 'berserk orc', 'hedge knight', 'refinery supervisor', 'owlbear', #'sentry'
         # 'elven trader', 'old knight', 'dusty warrior'
     ]  # elves are very blue
     lvl9_monsters = [ # ~300 exp
@@ -285,13 +287,13 @@ class Character(object):
     ]  # wounded knight -2 difficulty
     lvl11_monsters = [
         'dwarven adventurer',  # dusty blue
-        'enchantress', 'Brotain', 'minstrel', 'brutalizer', 'Gregor', 'Bertram Dalrum', 'Annette Plover', 'The Combat Master',
+        'enchantress', 'Brotain', 'minstrel', 'brutalizer', 'Gregor', 'Bertram Dalrum', 'Annette Plover',
         'brother'
     ]
     lvl12_monsters = [
         'barbarian shaman', 'barbarian warrior', 'The Amber Mage', 'The Saga Teacher', 'Hurn the Smith',
         'Horbuk', 'The Floor Manager', 'Tardan', 'ranch foreman', 'Trent the Merchant', 'Gorban', # dusty blue
-        'Boris Ironfounder', 'The Forest Master'
+        'Boris Ironfounder'
     ]
     lvl13_monsters = [
         'The Dojo Administrator', 'Elsuria'
@@ -305,7 +307,7 @@ class Character(object):
     preferred_lvl_1_2_monsters = [
         'oaf', 'wanderer', 'thug', 'spiv', 'kobold sentry', 'tired hooker', 'waitress',
         'blond hooker', 'angry hooker', 'sultry hooker', 'journeyman', 'housewife', # 'acolyte'
-    ] 
+    ]
 
     def set_monster_kill_list(self):
         self.MONSTER_KILL_LIST = []

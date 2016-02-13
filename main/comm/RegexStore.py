@@ -95,7 +95,7 @@ mob_left = [__Three_possible_mob_strings + " just wandered away\."]
 # mob_arrived = ["(?P<mobs>[\w -']+?) just arrived\."]
 # mob_arrived = [__The_mob2 + "(?P<mobs>[a-z]+ [a-z '-]+?) just arrived\."]
 mob_arrived = [r"(?P<mobs>[A-Z][a-z]* [a-z '-]+?) just arrived\."]  # no 1st/2nd numbers in arrived, but Two/Three is possible
-# mob_arrived = [__3_possible_mob_strings + r" just arrived\."] 
+# mob_arrived = [__3_possible_mob_strings + r" just arrived\."]
 # mob_joins1 = ["the" + s_numbered + " (.+?) joins in the fight!"]
 # Lower case 't' grammar error
 # mob_joined1 = [__the_mob + "joins in the fight!"]  # A mob standing there joins
@@ -112,7 +112,7 @@ mob_attacked = [  # TODO: do any mobs wield weapons? (different text)
     __Three_possible_mob_strings + r" painfully head-butts you for (?P<d>\d+) damage\.",
     __Three_possible_mob_strings + r" tries to grab you, but you break free of (his|her|its) grasp\.",
     __Three_possible_mob_strings + r" lashes out and thumps you for (?P<d>\d+) damage\.",
-    __Three_possible_mob_strings + r" lashes out at you, but misses\.",               
+    __Three_possible_mob_strings + r" lashes out at you, but misses\.",
     __Three_possible_mob_strings + r" tramples you for (?P<d>\d+) damage\.",
     __Three_possible_mob_strings + r" tries to trample you\.",
     __Three_possible_mob_strings + r" bites you for (?P<d>\d+) damage\.",
@@ -366,7 +366,7 @@ spells = [(
     # r"(?P<buffs>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
     r"\|(?P<buffs>.+?)\|\s+"
     r"(?:\|(?P<buffs2>.+?)\|\s+)?"
-    # r"(?:\|(?P<buffs3>.+?)\|\s+)?"
+    r"(?:\|(?P<buffs3>.+?)\|\s+)?"
     # r"\\========================================================================/\s*\n\r"
     r"\\="
 )]

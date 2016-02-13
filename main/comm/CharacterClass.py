@@ -34,34 +34,34 @@ class CharacterClass(object):
         abilities = []
 
         if class_string == "Ass":
-            self.lvl1_maxHP = 19 
+            self.lvl1_maxHP = 19
             self.lvl1_maxMP = 2
             abilities = [ Backstab ]
             Cast.cooldown_after_success = 4
         elif class_string == "Bar":
-            self.lvl1_maxHP = 24 
+            self.lvl1_maxHP = 24
             self.lvl1_maxMP = 0
             self.mana_tick = 0
             # self.mana_tick_chapel = 0
             abilities = [ Bash, Circle, Berserk ]
         elif class_string == "Cle":
-            self.lvl1_maxHP = 16 
+            self.lvl1_maxHP = 16
             self.lvl1_maxMP = 4
             self.mana_tick = 2
             abilities = [ Pray, Turn ]
             Cast.cooldown_after_success = 3
         elif class_string == "Fig":
-            self.lvl1_maxHP = 22 
+            self.lvl1_maxHP = 22
             self.lvl1_maxMP = 2
             abilities = [ Bash, Circle ]
             Cast.cooldown_after_success = 5
         elif class_string == "Brd":
-            self.lvl1_maxHP = 15 
+            self.lvl1_maxHP = 15
             self.lvl1_maxMP = 3
             abilities = [ AestersTears, DanceOfTheCobra ]
             Cast.cooldown_after_success = 4
         elif class_string == "Mag":
-            self.lvl1_maxHP = 14 
+            self.lvl1_maxHP = 14
             self.lvl1_maxMP = 5
             self.mana_tick = 3  # unsure
             self.levelPath = [ ["out", "s", "w", "w", "w", "s", "e", "shop", "backroom", "portal"],
@@ -69,40 +69,40 @@ class CharacterClass(object):
             abilities = []
             Cast.cooldown_after_success = 3
         elif class_string == "Pal":
-            self.lvl1_maxHP = 19 
+            self.lvl1_maxHP = 19
             self.lvl1_maxMP = 3
             abilities = [ Pray, Turn ]
             Cast.cooldown_after_success = 5
         elif class_string == "Ran":
-            self.lvl1_maxHP = 18 
+            self.lvl1_maxHP = 18
             self.lvl1_maxMP = 3
             self.HP_gained_per_level = 6
             self.MP_gained_per_level = 3
-            self.mana_tick = 2 
+            self.mana_tick = 2
             # self.mana_tick_chapel = 4  # Assume chapel gives +2 mana tick
             abilities = [ Haste ]
             Cast.cooldown_after_success = 5
-            self.weapon_slots.append("Second") 
+            self.weapon_slots.append("Second")
             Search.cooldown_after_success = 6
             Search.cooldown_after_failure = 6
         elif class_string == "Thi":
-            self.lvl1_maxHP = 18 
+            self.lvl1_maxHP = 18
             self.lvl1_maxMP = 3
             abilities = [ Backstab, Steal ]
             Cast.cooldown_after_success = 4
         elif class_string == "Mon":
-            self.lvl1_maxHP = 17 
+            self.lvl1_maxHP = 17
             self.lvl1_maxMP = 3
             self.HP_gained_per_level = 6
             self.MP_gained_per_level = 3
             abilities = [ Meditate, Touch ]
-            Cast.cooldown_after_success = 4
+            Cast.cooldown_after_success = 5
             # self.heal_skills.extend([ClassSkillReaction(mudReaderHandler, "Meditate",
             #                         SkillTimer("You feel at one with the universe\.", 110),
             #                         SkillTimer("Your spirit is not at peace.", 10))])
 
             # I actually remove abilities that are too high in level at the bottom.
-            # if self.level > 9:  
+            # if self.level > 9:
             #     self.slow_combat_skills.extend([ClassSkillReaction(mudReaderHandler, "Touch",
             #                             SkillTimer("Your? touch(?:ed)? .+?\.", 240),
             #                             SkillTimer("You failed to harm the .+?\.", 240))])

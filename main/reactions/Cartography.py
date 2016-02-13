@@ -122,7 +122,7 @@ class Cartography(BotReactionWithFlag):
         else:
             # This is fine for a shut door - we just want the super().notify in that case.
             magentaprint("Cartography case missing for regex: " + str(regex))
-        magentaprint("Cartogarphy notify done, regex: " + str(regex[:min(len(regex), 20)]) + '...')
+        magentaprint("Cartography notify done on: " + str(regex[:min(len(regex), 20)]) + '...')
         super().notify(regex, M_obj)
 
     def too_dark(self, regex, M_obj):
