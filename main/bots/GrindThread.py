@@ -28,6 +28,7 @@ class GrindThread(BotThread):
         pass
 
     def do_pre_go_actions(self):
+        # TrackGrind overrides this...
         if self.in_chapel():
             self.rest_and_check_aura()
             # self.check_weapons()  TODO: shopping doesn't work everywhere
@@ -40,8 +41,8 @@ class GrindThread(BotThread):
         #    exit_str == 'n' or exit_str == 'e' or
         #    exit_str == 's' or exit_str == 'w'):
         #     # self.commandHandler.process(exit_str)
-        #     # return self.check_for_successful_go() 
-        #     # return self.check_for_successful_go() 
+        #     # return self.check_for_successful_go()
+        #     # return self.check_for_successful_go()
         #     # return self.go(exit_str)   # Erhm self.go calls us, not the other way around
         #     self.commandHandler.go.persistent_execute(exit_str)
         #     return self.commandHandler.go.success
@@ -445,6 +446,10 @@ class GrindThread(BotThread):
             self.use_buff_items()
             self.character.LAST_BUFF = time.time()
 
+    def use_buff_ability(self):
+        magentaprint("GrindThread.use_buff_ability()")
+        return self.do_buff_skills()
+
     def use_buff_items(self):
         if self.inventory.has("milky potion"):
             self.commandHandler.process('drink milky')
@@ -452,6 +457,21 @@ class GrindThread(BotThread):
             self.commandHandler.process('drink steel')
         else:
             self.character.HAS_BUFF_ITEMS = False
+
+    def use_extra_bless_item(self):
+        magentaprint("GrindThread.use_extra_bless_item()")
+        if self.inventory.count('milky potion') + self.inventory.count('silver chalice') > 3:
+            if self.inventory.has('milky potion'):
+                self.commandHandler.use.execute(self.inventory.get_first_reference('milky potion'))
+            else:
+                self.commandHandler.use.execute(self.inventory.get_first_reference('silver chalice'))
+            self.commandHandler.use.wait_for_flag()
+
+    def use_extra_steel_bottle(self):
+        magentaprint("GrindThread.use_extra_steel_bottle()")
+        if self.inventory.count('steel bottle') > 3:
+            self.commandHandler.use.execute(self.inventory.get_first_reference('steel bottle'))
+            self.commandHandler.use.wait_for_flag()
 
     def use_restorative_items(self):
         if self.inventory.has("small restorative"):
@@ -635,6 +655,8 @@ class GrindThread(BotThread):
         return ''
 
     def do_buff_skills(self):
+        # buff_skills hasn't been maintained - there are new ways to do this
+        magentaprint("GrindThread.do_buff_skills() skill array length: " + str(len(self.character._class.buff_skills)))
         for skill in self.character._class.buff_skills:
             if skill.up():
                 skill.execute()

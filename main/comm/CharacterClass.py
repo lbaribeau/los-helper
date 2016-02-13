@@ -114,13 +114,13 @@ class CharacterClass(object):
             abilities = [ Barkskin ]
             Cast.cooldown_after_success = 3
         elif class_string == "Alc":
-            self.lvl1_maxHP = 15 
+            self.lvl1_maxHP = 15
             lvl1_maxMP = 4
             abilities = []
         elif class_string == "Dar":
-            self.lvl1_maxHP = 19 
+            self.lvl1_maxHP = 19
             self.lvl1_maxMP = 4
-            abilities = [ Berserk, Wither] 
+            abilities = [ Berserk, Wither]
             Cast.cooldown_after_success = 4
         else:
             magentaprint("CharacterClass error: could not recognize class string.")
@@ -155,12 +155,12 @@ class CharacterClass(object):
 # CombatAbility class?
 #class CombatAbility:
 #    ''' CombatAbilities are things that will affect how a character fights,
-#    like circle, bash, steal, backstab, ''' 
+#    like circle, bash, steal, backstab, '''
 #    def getCommand(self):
 #        abstract()
 #    def getCombatAlgorithm
-# CombatAbility would be kind of like CoolAbility, but I can't imagine how 
-# that approach would work for BotThread.  Instead use this CharacterClass 
+# CombatAbility would be kind of like CoolAbility, but I can't imagine how
+# that approach would work for BotThread.  Instead use this CharacterClass
 # structure (canCircle, canBash, canSteal, etc.)
 
 

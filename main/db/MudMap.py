@@ -32,7 +32,7 @@ class MudMap(object):
         for area_exit in area_exits:
             name = area_exit.exit_type.name
             self.los_map.add_edge(area_exit.area_from.id, area_exit.area_to.id, name=name)
-            
+
             # area_to_id = -1 #this is a marker for a null / unexplored area
             # area_is_useable = True
 

@@ -68,13 +68,13 @@ class FakeTelnetSocket(object):
         self.use = FakeUse(self.char, self.socket_output)
 
         spaces = "                      "[0:22 - len(self.char.name)]
-        
+
         self.whois_string = (
             "Player                Cls Gen [Lv]Title                      Age   Race      \n"
             "-----------------------------------------------------------------------------\n" + 
             # "Derp                  Mon  M  [12]Brother                    16    Human\n")
             # self.char.name + spaces + "Mon  M  [12]Brother                    16    Human\n"
-            self.char.name + spaces + "Mag  M  [08]Keeper                    16    Human\n"
+            self.char.name + spaces + "Ran  M  [08]Keeper                    16    Human\n"
         )
         self.spells_string = (
             "\n\r"

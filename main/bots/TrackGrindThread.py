@@ -1,7 +1,7 @@
 
 from bots.GrindThread import GrindThread
 from misc_functions import magentaprint
-from Aura import Aura 
+from Aura import Aura
 
 class TrackGrindThread(GrindThread):
     def __init__(self, character, commandHandler, mudReaderHandler, mud_map, starting_path=None): 
@@ -14,7 +14,7 @@ class TrackGrindThread(GrindThread):
         if self.character.level <= 2:
             self.__TOTALPATHS = 8 # Kobolds are level 1 safe.
         elif self.character.level <= 6:
-            self.__TOTALPATHS = 12 # include hookers for level 3   
+            self.__TOTALPATHS = 12 # include hookers for level 3
         elif self.character.level <= 7:
             # lvl 7 strong enough for bandits
             self.__TOTALPATHS = 16
@@ -23,7 +23,7 @@ class TrackGrindThread(GrindThread):
         else:
             self.__TOTALPATHS = 22
         # elif self.character.level <= 10:
-        #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8 
+        #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
         # elif self.character.level > 12:
         #     self.__TOTALPATHS = 24
         # else:
@@ -60,23 +60,23 @@ class TrackGrindThread(GrindThread):
         ]
         self.KOBOLD_PATH = [
             'out','south','east','south','south','south','west','gate','south','southeast','southeast','east',
-            'east','east','southeast','southeast','southeast','south','south','south','south','south','east', 
+            'east','east','southeast','southeast','southeast','south','south','south','south','south','east',
             'east','southeast','east','south','south','south','south','glowing portal','passage','mines',
             'down','n','n','n','n','ne','n','w','n','n','e','door','w','gully','up','boulder','up',
             'cave 3','ne','ne','n','s','up','e','se','cave','out',
             # Note: You can remove the following line of code to remove the kobold guards and priests fights.
             # Priests turn you very blue.  These fights may be difficult.
             # Also useful to test mobs who join in.
-            # They're commented because kobolds are allowed when you're pale blue, which is one off of blue... and these guards 
-            # and priests are dangerous unless the bot decides on his own to engage.  Todo: check aura here (if health is 
-            # high enough,) and go in if all's good.  Even fight the priests - because the more 'good' we can get the 
+            # They're commented because kobolds are allowed when you're pale blue, which is one off of blue... and these guards
+            # and priests are dangerous unless the bot decides on his own to engage.  Todo: check aura here (if health is
+            # high enough,) and go in if all's good.  Even fight the priests - because the more 'good' we can get the
             # more chalices we can farm.
             #'prepare', 'e', 'ne', 'door', 'door', 'prepare', 'sw','w',
-            'ladder','cave','out','sw','w', 
+            'ladder','cave','out','sw','w',
             # 'cave', 'out',  # Comment out insane kobold (TODO: check level here)
             'sw','se','nw','w','out','down','boulder','down','down','e','door','w','s','s','e','s','sw','s','s','s',
             's','gully','glowing portal','passage','coral','north','north','north','north','west','northwest','west','west',
-            'north','north','north','north','north','northwest','northwest', 'northwest', 'west', 'west', 'west', 
+            'north','north','north','north','north','northwest','northwest', 'northwest', 'west', 'west', 'west',
             'northwest','northwest', 'north', 'gate', 'east', 'north', 'north', 'north','west', 'north', 'chapel'
         ]
         self.CORAL_ALLEY_PATH = [
@@ -160,7 +160,7 @@ class TrackGrindThread(GrindThread):
         self.SPIDER_FOREST = ['areaid418', 'areaid1975', 'areaid1979', 'areaid1951', 'areaid415', 'areaid2']
         #The following areas repeat a bit because the spawns are fast
         self.KNIGHTS = [
-            'areaid1904', 'areaid1912', 'areaid1909', 'areaid1913','areaid1904', 'areaid1912', 'areaid1909', 
+            'areaid1904', 'areaid1912', 'areaid1909', 'areaid1913','areaid1904', 'areaid1912', 'areaid1909',
             'areaid1913', 'areaid1904', 'areaid1912', 'areaid1909', 'areaid2'  # end with chapel
         ]
         self.GNOLL_CAMP = ['areaid1574', 'areaid800', 'areaid1574', 'areaid800', 'areaid1574', 'areaid2']
@@ -172,6 +172,21 @@ class TrackGrindThread(GrindThread):
         self.check_weapons()
         self.check_armour()
 
+        if self.has_buff_ability():
+            if self.use_buff_ability():
+                self.use_extra_buff_items()
+        else:
+            pass
+            # Need a timer for this...
+            # self.use_extra_buff_items()
+
+    def has_buff_ability(self):
+        return len(self.character._class.buff_skills) > 0
+
+    def use_extra_buff_items(self):
+        self.use_extra_bless_item()
+        self.use_extra_steel_bottle()
+
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go", False)
 
@@ -179,7 +194,7 @@ class TrackGrindThread(GrindThread):
             return ['areaid2']
 
         magentaprint("next path = " + str(self.__nextpath), False)
-        
+
         if self.character.DEAD:
             crash
             self.character.DEAD = False
@@ -215,18 +230,18 @@ class TrackGrindThread(GrindThread):
                 self.cast.aura <= self.character.preferred_aura:
                 return self.KOBOLD_PATH[:]
             else:
-                magentaprint("Not going to do kobolds. Current aura, and preferred, comparison: %s,  %s, %s" % 
+                magentaprint("Not going to do kobolds. Current aura, and preferred, comparison: %s,  %s, %s" %
                              (str(self.cast.aura), str(self.character.preferred_aura), str(self.cast.aura <= self.character.preferred_aura)))
                 self.__nextpath = self.__nextpath + 1  # So that we don't go selling
                 return self.PATH_TO_SKIP_WITH[:]
         elif self.__nextpath == 9:
             # hookers ... I would avoid the drunken trouble makers, but I don't
             # quite remember where they are and don't want to go through Amber
-            # Also I think it's safe enough in the dark... maybe just lvl 4 
+            # Also I think it's safe enough in the dark... maybe just lvl 4
             # there are thugs
             if self.character.level <= 6:
                 return self.CORAL_ALLEY_PATH[:]
-            else:            
+            else:
                 self.__nextpath = self.__nextpath + 1  # So that we don't go selling
                 return self.PATH_TO_SKIP_WITH[:]
         elif self.__nextpath == 11:
@@ -243,7 +258,7 @@ class TrackGrindThread(GrindThread):
                 self.cast.aura <= self.character.preferred_aura:
                 return self.NORTHERN_BANDITS_PATH[:]
             else:
-                magentaprint("Not going to do bandits. Current aura, and preferred: %s,  %s" % 
+                magentaprint("Not going to do bandits. Current aura, and preferred: %s,  %s" %
                              (self.cast.aura, self.character.preferred))
                 self.__nextpath = self.__nextpath + 1   # So that we don't go selling
                 return self.PATH_TO_SKIP_WITH[:]
@@ -267,7 +282,7 @@ class TrackGrindThread(GrindThread):
         return list(self.PATH_TO_SKIP_WITH[:])
 
 # Just thinking about changing top level...
- 
+
 # I don't like this version because mobs will leave and arrive while in
 # combat.  It makes more sense to recheck list every time I enter combat...
 # right?  That means doing a look between every mob.  I want to avoid the
@@ -293,5 +308,5 @@ class TrackGrindThread(GrindThread):
 # departures, ideally,) and then changing logic to say, decide on WHICH
 # mob to kill.  That also doubles as deciding whether to engage.  Its a
 # sensible way to check for guards.
- 
+
 # You can't.  Its broken.  (Means the bot ran out of weapons.)
