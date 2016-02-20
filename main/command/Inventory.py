@@ -32,8 +32,8 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         # 'war hammer',
         'hard cap', 'hard gloves', 'hard boots', 'padded hat', 'mountain gloves', 'mountain boots',
         'mountain boots with crampons', 'travellers cross', 'leather mask', 'leather collar', 'studded leather collar',
-        'studded leather sleeves', 'studded leather boots', 'studded leather pants', 'studded leather gloves',
-        'studded leather leggings' 'plate mail leggings', 'plate mail armor',
+        # 'studded leather sleeves', 'studded leather boots', 'studded leather pants', 'studded leather gloves','studded leather leggings' 
+        'plate mail leggings', 'plate mail armor',
         'ring mail armour', 'ring mail sleeves', 'ring mail leggings', 'ring mail hood',
         # 'ring mail gauntlets',
         # 'chain mail armour',  # sawmill

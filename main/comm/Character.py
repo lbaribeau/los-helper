@@ -228,7 +228,7 @@ class Character(object):
         'cashier', 'thatcher',  'tax inspector', 'journeyman', 'human miner', 'hobbitish miner', 'hawk', 'stacker', 'mill worker',
         'The General', 'bouncer', 'yard worker'
         # 'robed pilgrim'  # aura
-        #'miner's mule"
+        #'miner's mule"  # mill worker drops chain mail gloves
     ]
     lvl3_red_monsters = [
         'large kobold', 'insane kobold', 'kobold scout', 'drunk', 'drunken trouble-maker'
@@ -366,12 +366,12 @@ class Character(object):
             # self.HEALTH_TO_HEAL = 31
             self.HEALTH_TO_FLEE = 8
             self.MAX_MANA = 12
-            self.MANA_TO_ENGAGE = 6           
+            self.MANA_TO_ENGAGE = 6
         elif self.level <= 6:
             # self.HEALTH_TO_HEAL = 35 # was 43 for Ruorg
             self.HEALTH_TO_FLEE = 15
             self.MAX_MANA = 18
-            self.MANA_TO_ENGAGE = 9     
+            self.MANA_TO_ENGAGE = 9
         elif self.level <= 7: # has the same enemy list as 6
             # self.HEALTH_TO_HEAL= 40 # was 45
             self.HEALTH_TO_FLEE =  15
@@ -381,7 +381,7 @@ class Character(object):
             # self.HEALTH_TO_HEAL= 45
             self.HEALTH_TO_FLEE = 30
             self.MAX_MANA = 24
-            self.MANA_TO_ENGAGE = 15        
+            self.MANA_TO_ENGAGE = 15
         else:
             # self.HEALTH_TO_HEAL = 62
             self.HEALTH_TO_FLEE = 27
@@ -409,7 +409,7 @@ class Character(object):
         # if self.health_monitor.vig_amounts:
         #     return max(self.health_monitor.vig_amounts)
         # else:
-        #     return self.info.pty / 2.3  
+        #     return self.info.pty / 2.3
 
     def max_mend(self):
         if self.health_monitor.mend_amounts:
