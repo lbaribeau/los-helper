@@ -183,14 +183,15 @@ class GrindThread(BotThread):
         if aura_updated:
             self.aura_updated_hook()
     
-        if self.character.level > 3 and self.character.MAX_MANA > 10:
-            self.heal_up()
-            self.wait_for_mana()  
-        else:
+        # if self.character.level > 3 and self.character.MAX_MANA > 10:
+        #     self.heal_up()
+        #     self.wait_for_mana()  
+        # else:
             # magentaprint("Resting for health", False)
             # Probably not the greatest logic but low level characters will need 
             # to gain health other than healing up.
-            self.rest_for_health()
+        self.heal_up()
+        self.rest_for_health()
 
         # self.buff_up()
 
@@ -757,8 +758,7 @@ class GrindThread(BotThread):
     
     def ready_for_combat(self):
         return self.character.HEALTH >= self.character.HEALTH_TO_HEAL and \
-               self.character.MANA >= self.character.MANA_TO_ENGAGE and \
-               not self.smartCombat.broken_weapon
+               self.character.MANA >= self.character.MANA_TO_ENGAGE
         # return (self.has_ideal_health() and
         #         self.has_ideal_mana())
 

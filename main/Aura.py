@@ -3,12 +3,12 @@
 
 class Aura(object):
 
-    auras = ['demonic red', 'ominous red', 'ghastly red', 'murky red',
-             'red', 'rusty', 'dusty red', 'grey',
-             'dusty blue', 'pale blue', 'blue',
-             'deep blue', 'bright blue', 'shimmering blue',
-             'heavenly blue', 'blazing blue', 'blood red']
-             # 0-6 red, 7 grey, 9-14 blue
+    auras = ['demonic red', 'ominous red', 'ghastly red', 'blood red', 'murky red',
+              'red', 'rusty', 'dusty red', 'grey',
+              'dusty blue', 'pale blue', 'blue',
+              'deep blue', 'bright blue', 'shimmering blue', 'blazing blue',
+              'blazing blue', 'heavenly blue']
+             # 0-8 red, 9 grey, 10-18 blue
 
     def __init__(self, s):
         if s in self.auras:

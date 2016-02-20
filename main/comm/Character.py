@@ -248,14 +248,14 @@ class Character(object):
             self.MAX_MANA = 24
             self.MANA_TO_ENGAGE = 15        
         else:
-            self.HEALTH_TO_HEAL = 62
-            self.HEALTH_TO_FLEE = 27
-            self.MAX_MANA = 27 - 4 + 1
-            self.MANA_TO_ENGAGE = 18
-            #adam.HEALTH_TO_HEAL = 65
-            #adam.HEALTH_TO_FLEE = 15
-            #adam.MAX_MANA = 4
-            #adam.MANA_TO_ENGAGE = 0
+            # self.HEALTH_TO_HEAL = 62
+            # self.HEALTH_TO_FLEE = 27
+            # self.MAX_MANA = 27 - 4 + 1
+            # self.MANA_TO_ENGAGE = 18
+            self.HEALTH_TO_HEAL = 65
+            self.HEALTH_TO_FLEE = 15
+            self.MAX_MANA = 4
+            self.MANA_TO_ENGAGE = 0
     
     ### Monster stuff ###
 

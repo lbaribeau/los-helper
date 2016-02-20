@@ -22,8 +22,8 @@ class SmartGrindThread(TrackGrindThread):
         self.cur_area_id = self.character.AREA_ID
 
         self.low_level = min(int(math.ceil(self.character.level / 2)) - 2, 1)
-        self.high_level = int(math.ceil(self.character.level / 2))# + 1 #risky business
-        
+        self.high_level = int(math.ceil(self.character.level / 2)) #+ 1 #risky business
+
         self.low_aura = 0 #how evil the targets are
         self.high_aura = 15 #how good the targets are
 
@@ -227,25 +227,25 @@ class SmartGrindThread(TrackGrindThread):
 
     def aura_updated_hook(self):
         # self.low_level = int(math.ceil(self.character.level / 2)) - 2
-        # magentaprint("Current Aura Scale: " + str(self.character.AURA_SCALE), False)
-        # magentaprint("Preferred Aura Scale: " + str(self.character.AURA_PREFERRED_SCALE), False)
+        magentaprint("Current Aura Scale: " + str(self.character.AURA_SCALE), False)
+        magentaprint("Preferred Aura Scale: " + str(self.character.AURA_PREFERRED_SCALE), False)
 
         if self.character.level < 4:
             self.low_aura = 0
-            self.high_aura = 12
+            self.high_aura = 18
         elif self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:
             # Too evil
             # self.low_level = 2
             self.low_aura = 0
-            self.high_aura = 6
+            self.high_aura = 8
         elif self.character.AURA_SCALE > self.character.AURA_PREFERRED_SCALE:
             # Too good
             # self.low_level = 2
-            self.low_aura = 8
-            self.high_aura = 15
+            self.low_aura = 10
+            self.high_aura = 18
         else:
-            self.low_aura = 6
-            self.high_aura = 7
+            self.low_aura = 1
+            self.high_aura = 17
 
         self.get_targets()
 
