@@ -1,7 +1,7 @@
 
 import threading
 from threading import Thread
-import atexit 
+import atexit
 import time
 import re
 import sys
@@ -11,10 +11,7 @@ from misc_functions import magentaprint
 from combat.SmartCombat import SmartCombat
 from db.Database import *
 from db.MudMap import *
-import command.Command
 from command.Go import Go
-from command.Spells import *
-from command.Ability import *
 from comm import RegexStore
 from bots.TrackGrindThread import TrackGrindThread
 from bots.SmartGrindThread import SmartGrindThread
@@ -28,6 +25,8 @@ from command.Command import Command
 from reactions.CombatReactions import CombatReactions
 from command.Buy import Buy
 from command.Drop import Drop
+from command.Get import Get
+from comm.Spells import *
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -50,7 +49,6 @@ class CommandHandler(object):
         self.go = Go(telnetHandler, character)
         mudReaderHandler.add_subscriber(self.go)
         mudReaderHandler.add_subscriber(self.go.open)
-        mudReaderHandler.add_subscriber(self.smartCombat.prompt)  
         mudReaderHandler.add_subscriber(self.smartCombat.wield)
         mudReaderHandler.add_subscriber(self.smartCombat.wield.second)
         mudReaderHandler.add_subscriber(self.smartCombat)
@@ -58,8 +56,12 @@ class CommandHandler(object):
         self.combat_reactions = CombatReactions(self.character)
         mudReaderHandler.add_subscriber(self.combat_reactions)
         self.buy = Buy(telnetHandler)
-        self.drop = Drop(telnetHandler)
         mudReaderHandler.add_subscriber(self.buy)
+        self.drop = Drop(telnetHandler)
+        mudReaderHandler.add_subscriber(self.drop)
+        self.get = Get(telnetHandler, character.inventory)
+        mudReaderHandler.add_subscriber(self.get)
+        self.use = self.smartCombat.use
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
@@ -125,6 +127,7 @@ class CommandHandler(object):
                 if the_split[0].endswith('c'):
                     a.spam(arg1)
                 else:
+                    magentaprint("CommandHandler executed " + str(a))
                     a.execute(arg1)
                 return
         if user_input == 'ss':
@@ -154,12 +157,17 @@ class CommandHandler(object):
             self.user_kk2(user_input.partition(' ')[2].strip())
         elif re.match('dro? ', user_input):
             self.user_dr(user_input)
+        elif user_input.startswith('sellable'):
+            magentaprint(str(self.inventory.sellable()))
+        elif user_input.startswith('droppable'):
+            magentaprint(str(self.inventory.droppable()))
         elif user_input.startswith('Sel'):
             self.inventory.sell_stuff()
         elif user_input.startswith('Dr'):
             self.inventory.drop_stuff()
         elif user_input == 'ga':
-            self.telnetHandler.write('get all')
+            # self.telnetHandler.write('get all')
+            self.get.execute('all')
         elif user_input.startswith('go ') or re.match(str(self.character.EXIT_REGEX), user_input):
             if not user_input.startswith('go '):
                 magentaprint("User input matched " + str(self.character.EXIT_REGEX) + ", going.")
@@ -182,12 +190,13 @@ class CommandHandler(object):
         elif re.match("fle?$|flee$", user_input):
             self.stop_bot()
             self.user_flee()
-        elif user_input == 'use soup':
-            self.smartCombat.use.healing_potion() 
-        elif user_input == 'use heals':
-            self.smartCombat.use.spam_pots()  # testing
-            time.sleep(2.5)  # Also, smartCombat stops the thread even out of combat, so that has to be changed for this test.
-                            # ... don't forget to change it back
+        elif user_input == 'pot':
+            self.smartCombat.use.healing_potion()
+        elif re.match("usec$", user_input):  # 'use c' following my pet syntax: end a command with 'c' to start a thread
+            self.smartCombat.use.spam_pots()
+        elif re.match("usec2$", user_input):
+            self.smartCombat.use.spam_pots(prefer_big=True)
+        elif re.match("su$", user_input):
             self.smartCombat.use.stop()
         elif re.match("bot ?$|bot [0-9]+$", user_input):
             self.start_track_grind(user_input)
@@ -262,7 +271,8 @@ class CommandHandler(object):
         elif re.match("(?i)mobs_joined_in", user_input):
             magentaprint(self.character.MOBS_JOINED_IN, False)
         elif re.match("(?i)aura", user_input):
-            magentaprint(str(self.character.AURA), False)        
+            magentaprint(str(self.cast.aura))        
+            magentaprint(str(self.character.preferred_aura))        
         elif re.match("(?i)mobs_attacking", user_input):
             magentaprint(self.character.MOBS_ATTACKING, False)
         elif re.match("(?i)monster_kill_list", user_input):
@@ -279,6 +289,34 @@ class CommandHandler(object):
         elif re.match(str(self.character.EXIT_REGEX), user_input):
             self.user_move("go " + self.character.LAST_DIRECTION)
             magentaprint("Running go on EXIT_REGEX: " + str(self.character.EXIT_REGEX), False)
+        elif user_input.startswith('item '):
+            magentaprint('get_item_name_from_ref: ' + \
+                str(self.character.inventory.get_item_name_from_reference(user_input.partition(' ')[2]))
+            )
+            magentaprint('item_from_ref: ' + \
+                str(self.character.inventory.item_from_reference(user_input.partition(' ')[2]))
+            )
+            magentaprint('name_from_ref: ' + \
+                str(self.character.inventory.name_from_reference(user_input.partition(' ')[2]))
+            )
+        elif user_input.startswith('ref '):
+        # elif user_input.startswith('lastref '):
+            magentaprint("get_last_reference('%s'): %s" % \
+                (user_input.partition(' ')[2], self.character.inventory.get_last_reference(user_input.partition(' ')[2]))
+            )
+        # elif user_input.startswith('count '):
+            magentaprint("inventory.count('%s'): %s" % \
+                (user_input.partition(' ')[2], self.character.inventory.count(user_input.partition(' ')[2]))
+            )
+        # elif user_input.startswith('ref '):
+            magentaprint("inventory.get_reference('%s'): %s" % \
+                (user_input.partition(' ')[2], self.character.inventory.get_reference(user_input.partition(' ')[2]))
+            )
+            magentaprint("inventory.get_first_reference('%s'): %s" % \
+                (user_input.partition(' ')[2], self.character.inventory.get_first_reference(user_input.partition(' ')[2]))
+            )
+        elif user_input == 'i':
+            self.inventory.get_inventory()
         else: # Doesn't match any command we are looking for
             self.telnetHandler.write(user_input) # Just shovel to telnet.
 
@@ -368,11 +406,7 @@ class CommandHandler(object):
             self.CastThread.set_target(target)
             self.CastThread.keep_going()
         else:
-            self.CastThread = CastThread(self.character, 
-                                         self.mudReaderHandler, 
-                                         self.telnetHandler, 
-                                         spell, 
-                                         target)
+            self.CastThread = CastThread(self.character, self.mudReaderHandler, self.telnetHandler, spell, target)
             self.CastThread.start()      
 
     def user_kkc(self, argv):
@@ -424,6 +458,7 @@ class CommandHandler(object):
         self.telnetHandler.write("second %s\n" % (argv))
 
     def user_flee(self):
+        self.smartCombat.stop()
         self.cast.stop()
         # self.smartCombat.flee()
         now = time.time()
@@ -493,9 +528,11 @@ class CommandHandler(object):
         elif self.botThread and self.botThread.is_alive():
             if self.botThread.stopping:
                 magentaprint("BotThread continuing.")
-                self.botThread.stopping = False
+                # self.botThread.stopping = False
             else:
                 magentaprint("Bot already going.")
+                # self.botThread.stop()
+                # self.botThread.join()
             return False
         else:
             return True

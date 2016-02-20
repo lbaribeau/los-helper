@@ -1,0 +1,84 @@
+    # def check_weapons(selNo weapon error - couldn't find anything in inventory or repair or shop...")f):
+    #     magentaprint('check_weapons()')
+
+    #     if not self.smartCombat.broken_weapon:
+    #         # Successfully found another in inventory
+    #         return True
+
+    #     # Check if we have a suitable weapon already
+    #     # We can't do main hand / off hand in a loop because the checks are different
+    #     # We need a way to know if there's a problem so we don't have to check here
+    #     possible_weapons = list(MudItem.get_suitable_item_of_type('weapon', self.character.weapon_type, self.character.weapon_level).values())
+    #     # possible_weapons = [i.to_string() for i in MudItem.get_suitable_item_of_type('weapon', self.character.weapon_type, self.character.weapon_level).values()]
+
+    #     # Skip looking - just go through trying to wield - SmartCombat can do that already
+    #     magentaprint('check_weapons() possible weapons: ' + str(possible_weapons))
+    #     if self.smartCombat.try_weapons([w.to_string() for w in possible_weapons]):
+    #         return True
+
+    #     # Ok - no good weapon in inventory - maybe repair
+    #     # If we got this far, we don't actually know if we're seconding.  Leave that as a TODO
+    #     # if self.smartCombat.broken_weapon in [p.to_string() for p in possible_weapons]:
+    #     #     chosen_weapon = MudItem(self.smartCombat.broken_weapon)
+    #     # else:
+    #     #     chosen_weapon = possible_weapons[0]  
+    #         # chosen_weapon = possible_weapons.pop()  
+    #     if self.smartCombat.to_repair:
+    #         # get repair node from db
+    #         # travel to repair shop - keep fragile repair list - no combat(?)
+    #         # execute repair
+    #         # while fail, repair list
+    #         # Success -> finish by wielding, return True
+    #         pass  # With the chance of repair failure plus only halfish durability on success, maybe it's better to always buy new and tip drop
+    #         # But this is a good way to get infinite weapons for the first time... (solves inventory weight problem)
+    #         # Mmmmmmmmmm well, for smithy finding and tip finding there is still a fair bit to do.
+    #         # How about just dropping the weapon in the shop to deal with overweight
+
+    #     # Repair didn't help - go purchase
+    #     # magentaprint('check_weapons() chosen_weapon: ' + str(chosen_weapon))
+    #     # # magentaprint('weapon_type: ' + self.character.weapon_type + ', weapon_level: ' + str(self.character.weapon_level))
+    #     # # self.go_purchase_item_by_name(chosen_weapon)
+    #     # self.go_purchase_item(chosen_weapon)
+    #     if not self.go_purchase_item_by_type('weapon', self.character.weapon_type, self.character.weapon_level):
+    #         magentaprint("No weapon error - couldn't find anything in inventory or repair or shop...")
+    #         self.pause()
+    #         # Well, we don't want to travel unarmed, quitting out is too drastic,
+    #         # We should stay awake enough to engage any attackers but we can wait for a server timeout here, or 
+    #         # wait for user intervention
+
+    #     # Not sure we need this slot business
+    #     # magentaprint("check_weapons() weapon slots: " + str(self.character._class.weapon_slots))
+    #     # for slot in self.character._class.weapon_slots:
+    #     #     magentaprint("check_weapons() slot "+ str(slot) + str(self.inventory.has_slot_equipped(slot)))
+    #     #     if not self.inventory.has_slot_equipped(slot):
+    #     #         magentaprint('weapon_type: ' + self.character.weapon_type + ', weapon_level: ' + str(self.character.weapon_level))
+    #     #         item = self.inventory.get_item_of_type("weapon", self.character.weapon_type, self.character.weapon_level)
+    #     #         if item is not None:
+    #     #             self.inventory.equip_item("wie " + item)
+    #     #         else:
+    #     #             self.go_purchase_item_by_type("weapon", self.character.weapon_type, self.character.weapon_level)
+    #     #             return False
+    #     #         break
+    #     return False
+    #     # Use 'eq' to figure whether we need to second or wield
+    #     # if self.smartCombat.broken_weapon:
+    #     #     self.eq.execute()
+    #     #     self.eq.wait_for_flag()
+    #     #     if not self.eq.wielded:
+    #     #         second_weapon_broke = False
+    #     #         self.smartCombat.wield_weapon(self.smartCombat.broken_weapon)
+    #     #     else:
+    #     #         second_weapon_broke = True
+    #     #         self.smartCombat.second_weapon(self.smartCombat.broken_weapon)
+
+    #     # I was going to check self.smartCombat.broken_weapon and go shopping if necessary.
+    #     # This looks better - inventory knows just as well.
+    #     # This method can change our location.  (TrackGrind should explicitly return to chapel, SmartGrind just needs to be aware of that.)
+
+    #     # if self.smartCombat.broken_weapon:
+    #     #     self.smartCombat.reequip_weapon()  # Tries to equip the same sort of weapon 
+
+    #     # Hit 'wie' on all eligible weapons.  If we get 'already wielding' then try to second it.
+
+    # def possible_weapons(self):
+

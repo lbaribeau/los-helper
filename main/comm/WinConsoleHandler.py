@@ -22,7 +22,7 @@ class WinConsoleHandler(object):
     BACKGROUND_INTENSITY = 0x80 # background color is intensified.
 
     __brightness = 0x00;
-    
+
     __std_out_handle = ctypes.windll.kernel32.GetStdHandle(STD_OUTPUT_HANDLE)
 
     def set_color(self, color):
@@ -61,13 +61,13 @@ class WinConsoleHandler(object):
         self.set_color(0x06 | self.__brightness)
         return
 
-    def white(self): 
+    def white(self):
         self.set_color(0x07 | self.__brightness)
-        return    
+        return
 
     # Hopefully not misleading - you have to call these BEFORE calling colors to
     # have an effect.. default is dark.
-    def set_bright(self):                      
+    def set_bright(self):
         self.__brightness = 0x08
         return
 

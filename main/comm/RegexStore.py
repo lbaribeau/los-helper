@@ -1,37 +1,43 @@
 
-prompt = ["\[(\d+) H (\d+) M\]: (You feel the benefits)?"]
+prompt = [r"\[(\d+) H (\d+) M\]: (You feel the benefits)?"]
 
-you_have = [r"(?s)You have: (.+?)\."]
+__item = r"(?P<item>[A-Za-z0-9\-'\s]+)"
+__items = r"(?P<items>[A-Za-z0-9\-'\s,]+)"
+__player = r"(?P<player>[A-Za-z]+)"
+you_have = [r"You have: " + __items + r"\."]
 wont_buy = [r'The shopkeep says, "I won\'t buy that rubbish from you\."']
 wont_buy2 = [r"The shopkeep won't buy that from you\."]
-sold = [r"The shopkeep gives you (.+?) gold for (.+?)\."]
-you_drop = [r"(?s)You drop (.+?)\."]
-disintegrates = [r"(?:A|Some) ([a-z ]+?) disintegrates\."]
+sold = [r"The shopkeep gives you (\d+) gold for " + __item + r'\.']
+you_drop = [r"You drop " + __items + r"\."]
+disintegrates = [r"(?:A|Some) " + __item + r" disintegrates\."]
 gold_from_tip = [r"You have (\d+) gold\."]
 not_a_pawn_shop = [r"This is not a pawn shoppe\."]
 you_now_have = [r"You now have (\d+) gold pieces\."]
 not_empty = [r"It isn't empty!"]
-you_wear = [r"You wear (.+?)\."]
+you_wear = [r"You wear " + __items + r"\."]
 nothing_to_wear = [r"You have nothing you can wear\."]
 # you_get = [r"(?s)[^ ]You get (.+?)\.(?:\nYou now have (.+?) gold pieces\.)?"]
-you_get = [r"(?s)[^ ]You get (.+?)\."]  # TODO: deal with false positive on "You get the..." 
-you_remove = [r"(?s)You removed? (.+?)\."]
+# you_get = [r"[^ ]You get " + __items + r"\."]  # We don't want this to miss because getting can happen in combat - maybe it shouldn't
+you_get = [r"You get " + __items + r"\."]  # still TODO: deal with false positive on "You get the vague..." ... hard to deal with in regex
+you_remove = [r"You removed? " + __items + r"\."]
 nothing_to_remove = [r"You aren't wearing anything that can be removed\."]
 # you_wield = [r"You wield (.+?)( in your off hand)?\."]
-you_give = [r"(?s)You give (.+?) to (.+?)\."]
+you_give = [r"You give " + __items + r" to " + __player + r"\."]
 bought = [r"Bought\."]
-you_put_in_bag = [r"(?s)You put (.+?) in(to)? (.+?)\."]
-gave_you = [r".+? gave (.+?) to you\."]
-you_hold = [r"(?s)You hold (.+?)\."]
+you_put_in_bag = [r"You put " + __items + r" in(:?to)? " + __item + r"\."]
+gave_you = [__player + r" gave " + __items + r" to you\."]
+you_hold = [r"You hold " + __items + r"\."]
 # weapon_breaks = [r"Your (.+?) breaks and you have to remove it\."]
 # weapon_shatters = [r"Your (.+?) shatters\."]
-armor_breaks = [r"Your (.+?) fell apart\."]
-current_equipment = [r"You see (.+?) (?:the .+?)\.\n?\r?(?:(?:.+?\.\n?\r?)+)?((?:.+?:.+\n?\r?)+)"]  # TODO: doesn't work for 'eq' command
+armor_breaks = [r"Your " + __item + r" fell apart\."]
+
+current_equipment = [r"You see " + __player + r" (?:the [A-Za-z'\-]+)\.\n?\r?(?:(?:.+?\.\n?\r?)+)?((?:.+?:.+\n?\r?)+)"]  # TODO: doesn't work for 'eq' command
 no_inventory = [r"You currently have no carried inventory\."]
 wearing = [r"\n?\r?(?:On )?(.+?):[\s]*(?:a |an |some )(.+)"]  # TODO: Redundant
 you_arent_wearing_anything = [r"You aren't wearing anything\."]
 
-found_exit = [r"You found an exit: (.+?)\."]
+__exit = r"(?P<exit>[A-Za-z ]+)"
+found_exit = [r"You found an exit: " + __exit + r"\."]
 search_fail = [r"You didn't find anything\."]
 hide = [r"You slip into the shadows unnoticed\."]
 hide_fail = [r"You attempt to hide in the shadows\."]  # This occurs on success as well
@@ -61,14 +67,14 @@ __the_mob2 = r"(P<mob>(?:[A-Z][a-z '-]+)|(?:the " + __numbers_opt + __mob + ")) 
 # __Three_possible_mob_strings = r"((?P<mob1>The [A-Z][a-z '-]+ )|(?:The " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>([A-Z][a-z'-]+ )+)))"  # Still no good for Hef/Alaran (mob3)
 # __Three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:The " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>[A-Z][A-Za-z '-]+ )))"  
 # __Three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:The " + __numbers_opt + r"((?P<mob2>[a-z '-]+) ))|(?P<mob3>[A-Z][A-Za-z '-]+ ))"  
-__Three_possible_mob_strings = r"((?P<mob1>The( [A-Z][a-z'-]+)+)|(?:The " + __numbers_opt + r"(?P<mob2>[a-z '-]+))|(?P<mob3>[A-Z][A-Za-z '-]+))"  
+__Three_possible_mob_strings = r"((?P<mob1>The( [A-Z][a-z'-]+)+)|(?:The " + __numbers_opt + r"(?P<mob2>[a-z '-]+))|(?P<mob3>[A-Z][A-Za-z '-]+))"
 # __three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:the " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>[A-Z][A-Za-z '-]+ )))"  
 # __three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:the " + __numbers_opt + r"((?P<mob2>[a-z '-]+) ))|(?P<mob3>[A-Z][A-Za-z '-]+ ))"  
 # __three_possible_mob_strings = r"(?:the " + __numbers_opt + r"((?P<mob1>(?P<mob3>(?P<mob2>[a-z '-]+))) ))"  # Simplefied mob2 only, you_attack not working
-# __three_possible_mob_strings = "(?:the ((?P<mob1>(?P<mob3>(?P<mob2>[a-z '-]+))) ))"  
-# __three_possible_mob_strings = "(?:the ((?P<mob1>(?P<mob3>(?P<mob2>.+?))) ))"  
-# __three_possible_mob_strings = "(?:the ((?P<mob1>(?P<mob3>(?P<mob2>.+?))) ))"  
-__three_possible_mob_strings = r"((?P<mob1>The( [A-Z][a-z'-]+)+)|(?:the " + __numbers_opt + r"(?P<mob2>[a-z '-]+))|(?P<mob3>[A-Z][A-Za-z '-]+))"  
+# __three_possible_mob_strings = "(?:the ((?P<mob1>(?P<mob3>(?P<mob2>[a-z '-]+))) ))"
+# __three_possible_mob_strings = "(?:the ((?P<mob1>(?P<mob3>(?P<mob2>.+?))) ))"
+# __three_possible_mob_strings = "(?:the ((?P<mob1>(?P<mob3>(?P<mob2>.+?))) ))"
+__three_possible_mob_strings = r"((?P<mob1>The( [A-Z][a-z'-]+)+)|(?:the " + __numbers_opt + r"(?P<mob2>[a-z '-]+))|(?P<mob3>[A-Z][A-Za-z '-]+))"
 # Separating The and the eliminates mob2 from matching 'the' in Alaran/Hef
 __Numbers = r"(:?(?P<N>An?|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten|Eleven|Twelve|Thirteen) )?"
 # __mob_string = "(?P<mob_string>[\w ]+)"  # We don't need this unless there are commas.
@@ -89,26 +95,32 @@ mob_left = [__Three_possible_mob_strings + " just wandered away\."]
 # mob_arrived = ["(?P<mobs>[\w -']+?) just arrived\."]
 # mob_arrived = [__The_mob2 + "(?P<mobs>[a-z]+ [a-z '-]+?) just arrived\."]
 mob_arrived = [r"(?P<mobs>[A-Z][a-z]* [a-z '-]+?) just arrived\."]  # no 1st/2nd numbers in arrived, but Two/Three is possible
-# mob_arrived = [__3_possible_mob_strings + r" just arrived\."] 
+# mob_arrived = [__3_possible_mob_strings + r" just arrived\."]
 # mob_joins1 = ["the" + s_numbered + " (.+?) joins in the fight!"]
 # Lower case 't' grammar error
 # mob_joined1 = [__the_mob + "joins in the fight!"]  # A mob standing there joins
 mob_joined1 = [__three_possible_mob_strings + " joins in the fight!"]  # A mob standing there joins
 mob_joined2 = [__three_possible_mob_strings + " decides to join in on the fight!"]  # A mob wanders in and joins
-mob_attacked = [
+mob_attacked = [  # TODO: do any mobs wield weapons? (different text)
     # "The" + s_numbered + " (.+?) punches you for (.+?) damage\.",
     __Three_possible_mob_strings + r" punches you for (?P<d>\d+) damage\.",
     __Three_possible_mob_strings + r" throws a wild punch at you, but it misses\.",
     __Three_possible_mob_strings + r" kicks you for (?P<d>\d+) damage\.",
     __Three_possible_mob_strings + r" kicks at you, but fails to hurt you\.",
     __Three_possible_mob_strings + r" grabs you and gouges you for (?P<d>\d+) damage\.",
-    __Three_possible_mob_strings + r" tries to grab you, but you break free of (his|her|its) grasp\.",
     __Three_possible_mob_strings + r" tries to gouge you, but you shake (him|her|it) off\.",
-    __Three_possible_mob_strings + r" lashes out and thumps you for (?P<d>\d+) damage\.",
-    __Three_possible_mob_strings + r" lashes out at you, but misses\.",               
     __Three_possible_mob_strings + r" painfully head-butts you for (?P<d>\d+) damage\.",
-    __Three_possible_mob_strings + r" casts a (.+?) spell on you for (?P<d>\d+) damage\."
-    # __Three_possible_mob_strings + r" casts a (.+?) at you for (\d+) damage\."  # I don't think 'at' ever occurs
+    __Three_possible_mob_strings + r" tries to grab you, but you break free of (his|her|its) grasp\.",
+    __Three_possible_mob_strings + r" lashes out and thumps you for (?P<d>\d+) damage\.",
+    __Three_possible_mob_strings + r" lashes out at you, but misses\.",
+    __Three_possible_mob_strings + r" tramples you for (?P<d>\d+) damage\.",
+    __Three_possible_mob_strings + r" tries to trample you\.",
+    __Three_possible_mob_strings + r" bites you for (?P<d>\d+) damage\.",
+    __Three_possible_mob_strings + r" tries to bite you\.",
+    __Three_possible_mob_strings + r" kicks you for (?P<d>\d+) damage\.",
+    __Three_possible_mob_strings + r" kicks at you, but fails to connect\.",
+    __Three_possible_mob_strings + r" charges at you and butts for (?P<d>\d+) damage\.",  # TODO - missing no dmg version of this one
+    __Three_possible_mob_strings + r" casts a [A-Za-z\-]+ spell on you for (?P<d>\d+) damage\."
 ] 
 # mob_died = ["Your attack overwhelms (?:the " + __numbers_opt + ")?(?P<mob>.+?) and (s?he|it) collapses!"]
 # # it_fled = ["The (" + numbers + " )?(?P<mob_name>.+?) flees to the (.+?)\."]
@@ -121,42 +133,50 @@ mob_died = [r"Your attack overwhelms " + __three_possible_mob_strings + " and (?
 mob_fled = [__Three_possible_mob_strings + r" flees to the (?P<exit>[a-z ]+)\."] 
 mob_defeated = [r"Your enemy, " + __three_possible_mob_strings + r" has been defeated\."]
 you_died = [r"You are overwhelmed by " + __three_possible_mob_strings + r"'s attack and you collapse!"]
+loot_blocked = [__Three_possible_mob_strings + r" won't let you take anything\."]
+nothing_here = [r"There's nothing here\."]
 
 # Go and Cartography
 #           .=\n\r   EAT JUNK DATA (death,loginprompts,hptick)              Title           Description               Exit list             Players / Mobs / Signs / Items (optional)
 area = ["(?s)(?:(?:.+?Stone\.\n\r|.+?healed\.\n\r|.+?\]:\s+?)\n\r)?([A-Za-z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"]
-obvious_exits = [r"(?s)Obvious exits: (.+?)\.\n\r"]
+obvious_exits = [r"(?s)Obvious exits: ([A-Za-z\s,]+)\.\n\r"]
 go_where = [r"Go where\?"]
 cant_go = [r"You can't go that way\."]
 # blocked_path = ["(?:The " + __numbers2 + ")?(.+?) blocks your exit\."]  # Make the The optional is hard
-blocked_path = ["(?:The )" + __numbers2 + "(?P<mob_name>.+?) blocks your exit\."]
-open_first = ["You have to open it first\."]
-no_exit = ["I don't see that exit\."]
-class_prohibited = ["Your class prohibits you from entering there\."]
-level_too_low = ["You must be at least level \d+ to go that way\."]
-not_invited = ["You have not been invited in\."]
-not_open_during_day = ["That exit is not open during the day\."]
-not_open_during_night = ["That exit is closed for the night\."]
-no_items_allowed = ["You cannot bring anything through that exit\."]
-locked = ["It's locked\."]
-no_right = ["You have not earned the right to pass this way!"]
-in_tune = ["That way may only be taken by those in tune with the world!"]
-not_authorized = ["You are not authorised to enter here\."]
-cannot_force = ["You cannot force yourself to go through there\."]
-washroom = ["Sorry, only males are allowed to go there\.",
-    "Sorry, only females are allowed to go there\."]
+# blocked_path = [r"(?:The )" + __numbers2 + r"(?P<mob_name>.+?) blocks your exit\."]
+blocked_path = [__Three_possible_mob_strings + r" blocks your exit\."]
+open_first = [r"You have to open it first\."]
+no_exit = [r"I don't see that exit\."]
+class_prohibited = [r"Your class prohibits you from entering there\."]
+level_too_low = [r"You must be at least level (\d+) to go that way\."]
+level_too_high = [r"Only players under level (\d+) may go that way\."]
+not_invited = [r"You have not been invited in\."]
+not_open_during_day = [r"That exit is not open during the day\."]
+not_open_during_night = [r"That exit is closed for the night\."]
+no_items_allowed = [r"You cannot bring anything through that exit\."]
+locked = [r"It's locked\."]
+no_right = [r"You have not earned the right to pass this way!"]
+in_tune = [r"That way may only be taken by those in tune with the world!"]
+not_authorized = [r"You are not authorised to enter here\."]
+cannot_force = [r"You cannot force yourself to go through there\."]
+washroom = [
+    r"Sorry, only males are allowed to go there\.",
+    r"Sorry, only females are allowed to go there\."]
 cliff = [r"You fell and hurt yourself for (\d+) damage\."]
 # __go_failure = blocked_path + open_first + no_exit + class_prohibited + level_too_low + \
 #     class_prohibited + level_too_low + not_invited + not_open_during_day + \
 #     not_open_during_night + no_items_allowed + locked + no_right \
 #     in_tune + not_authorized + cannot_force
-too_dark = ["It's too dark to see\."]
+too_dark = [r"It's too dark to see\."]
 # the = "?(?:The |the )?" #named mobs have no "The/the"
-you_see_mob = ["You see (?:[Tt]he )?" + __numbers2 + "(.+?)\.\n\r(.+?)\n\r(.+?)\n\r(.+?(?:\.|!))"]
-mob_aura = ["(?:The " + __numbers2 + ")?(.+?) glows with a (.+?) aura\."]
-not_here = ["You don't see that here\."]
-loot_blocked = ["(?:The " + __numbers2 + ")?(.+?) won't let you take anything\."] #The spiv won't let you take anything.
-teleported = ["### (.+?)'s body is teleported away to be healed\."]
+you_see_mob = ["You see (?:[Tt]he )?" + __numbers2 + "(.+?)\.\n\r(.+?)\n\r(.+?)\n\r(.+?(?:\.|!))"]  
+# mob_aura = ["(?:The " + __numbers2 + ")?(.+?) glows with a (.+?) aura\."]
+__aura = r"(?P<aura>[A-Za-z ]+)"
+mob_aura = [__Three_possible_mob_strings + r" glows with a " + __aura + r" aura\."]
+not_here = [r"You don't see that here\."]
+# loot_blocked = [r"(?:The " + __numbers2 + ")?(.+?) won't let you take anything\."] #The spiv won't let you take anything.
+loot_blocked = [__Three_possible_mob_strings + r"won't let you take anything\."] #The spiv won't let you take anything.
+teleported = [r"### " + __player + r"'s body is teleported away to be healed\."]
 # store_list = ["You may buy:\n\r((?:.+\n?)*)"]
 # store_list = ["You may buy:\s+(A |An |Some)("]
 #     ((?:.+\n?)*)"]
@@ -168,14 +188,14 @@ store_list = [r"You may buy: *[\n\r]{2}(?P<store_list>(.+?[\n\r]{2})+)[\n\r]{2}"
 # store_list = [r"You may buy:"]
 # store_item_list = "(?:[\s]*)(?:A |An |Some )?(.+?)(?:[\s]*)(?:(\(.\))?(?:[\s]*))?Cost: ([\d]*)" #well do a re.findall on the list above to iterate through, don't add this to the array below
 
-open_success = ["You open the (.+?)\."]
+open_success = [r"You open the " + __exit + r"\."]
 already_open = ["It's already open\."]
-open_what = ["Open what\?"]
+open_what = [r"Open what\?"]
 
 # Skills
-hastened = ["You feel yourself moving faster\."]
+hastened = [r"You feel yourself moving faster\."]
 # haste_success = [hastened[0], already_hastened[0]]
-haste_fail = ["Your attempt to hasten failed\."]
+haste_fail = [r"Your attempt to hasten failed\."]
 feel_slower = ["You feel slower\."]
 already_hastened = ["You're already hastened\."]
 
@@ -225,6 +245,7 @@ bad_k_target = [
 ]
 crit = [
     "You knock the wind out of " + __three_possible_mob_strings + '!!',
+    "Your attack knocks " + __three_possible_mob_strings + ' off balance!!',
     __Three_possible_mob_strings + " is caught off guard by your attack!!"
 ]
 magic_crit = [
@@ -285,10 +306,8 @@ attack_miss = [
     "(?s)You use your .+?, but nothing hits (?:the )?(" + __numbers + " )?(.+?)\."
 ]
 
-aura = [
-    r"You glow with a (.+?) aura\.", 
-    r"The (.+?) glows with a (.+?) aura\."
-]
+aura = [r"You glow with a " + __aura + " aura\."]
+mob_aura = [__Three_possible_mob_strings + r" glows with a " + __aura + " aura\."]
 
 cast = [
     r"You cast a (.+?) spell on (.+?)\.",
@@ -347,7 +366,7 @@ spells = [(
     # r"(?P<buffs>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
     r"\|(?P<buffs>.+?)\|\s+"
     r"(?:\|(?P<buffs2>.+?)\|\s+)?"
-    # r"(?:\|(?P<buffs3>.+?)\|\s+)?"
+    r"(?:\|(?P<buffs3>.+?)\|\s+)?"
     # r"\\========================================================================/\s*\n\r"
     r"\\="
 )]
@@ -487,10 +506,14 @@ seconded= [r"Seconded:  (.+?)\n\r"]
 potion_drank = [r"Potion drank\."]
 # use_what = [r"Use what\?\n\r"]  # didn't match
 use_what = [r"Use what\?"]
+cant_use = [
+    r"How does one use that\?",
+    r"You can only use a potion on yourself\."
+]
 
 you_wield = [r"You wield (an?|some) (?P<weapon>[A-Za-z ']+)\."]  # Gets a positive of the off-hand message
 off_hand = [r"You wield (an?|some) (?P<weapon>[A-Za-z ']+) in your off hand\."]
-wield_broken = [r"You can't, it's broken\."]
+wield_broken = [r"You can't\. Its broken\."]  # grammatical error
 not_weapon = ["You can't wield that\."]
 dont_have = [r"You don't have that\."]
 weapon_break = [r"Your (?P<weapon>[A-Za-z' ]+?) breaks and you have to remove it\."]
@@ -509,7 +532,11 @@ bought = [r"Bought\."]
 buy_what = [r"Buy what\?"]
 not_a_shop = [r"This is not a shoppe\."]
 not_for_sale = [r"That item is not for sale\."]  # TODO: this is made up and needs to be checked
-cant_carry = [r"You can't carry anymore\."]
+cant_carry = [
+    r"You can't carry anymore\.",
+    r"You weren't able to carry everything\."
+]
+isnt_here = [r"That isn't here\."]
 
 repair = [r"The smithy hands an? (?P<weapon>[A-Za-z' ]+?) back to you, almost good as new\."]
 # TODO: The smithy takes \d+ gold pieces from you.
@@ -528,3 +555,5 @@ broken = [r"It is broken\."]
 condition = [r"It is in [a-z]+ condition\."]
 
 drop_what = [r"Drop what\?"]
+# fled = [r"You run like a chicken\."]
+

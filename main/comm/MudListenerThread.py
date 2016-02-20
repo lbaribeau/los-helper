@@ -29,9 +29,9 @@ class MudListenerThread(threading.Thread):
         # so we can watch for input.        
         socket_number = self.telnetHandler.get_socket()
         fragment=""
-        magentaprint("MudListenerThread sys.argv " + str(sys.argv))
+        # magentaprint("MudListenerThread sys.argv " + str(sys.argv))
         select_timeout = 2.0 if '-fake' not in sys.argv else 0.1
-        magentaprint("MudListenerThread select timeout is " + str(select_timeout))
+        # magentaprint("MudListenerThread select timeout is " + str(select_timeout))
         
         # Loop forever, just do stuff when the socket says its ready.
         while not self.stopping:

@@ -1,8 +1,13 @@
+
 import collections
 from Exceptions import *
 from misc_functions import *
 
-class MudObjectDict():
+class MudObjectDict(object):
+    # This is a structure that should help with any set of objects the way the mud server deals with them:
+    #  - inventory, mob list, equipment, shop list...
+    # these all have similar "word n" object targeting mechanisms, ie. ring 5.
+
     dictionary = {}
 
     def __init__(self):
@@ -28,12 +33,14 @@ class MudObjectDict():
 
         if (obj is not None):
             if obj in self.dictionary.keys():
-                count = len(self.dictionary[obj])
+                # count = len(self.dictionary[obj])
+                count = self.dictionary[obj].qty
         #count everything
         else:
             for obj,qty in self.dictionary.items():
-                olist = self.dictionary[obj]
-                count += len(olist.objs)
+                # olist = self.dictionary[obj]
+                # count += len(olist.objs)
+                count += qty
 
         # magentaprint("counted MudObjectDict " + str(count) + " " + str(obj) + ".")
         return count
@@ -43,9 +50,10 @@ class MudObjectDict():
             MudObjectDict.add_to_qty_dict(self.dictionary, (obj, qty))
 
         # magentaprint("MudObjectDict added " + str(obj_dict.keys()))
-        self.sort()
+        self.sort()  # This should just sort the keys and not the item stacks
 
     def remove(self, obj_dict):
+        magentaprint("MudObjectDict.remove(): Deprecated - this function doesn't update qty fields.")
         for keyvalue in obj_dict:
             try:
                 MudObjectDict.remove_from_qty_dict(self.dictionary, (keyvalue, obj_dict[keyvalue]) )
@@ -64,13 +72,14 @@ class MudObjectDict():
     def get_unique_references(self, exception_list = []):
         references = collections.OrderedDict(sorted({}))
         numbered_references = []
+        magentaprint("Inventory.get_unique_references() dicitionary: " + str(self.dictionary.items()))
 
         for obj,qty in self.dictionary.items():
             if obj in exception_list:
                 # magentaprint("Found in exception_list " +  str(obj), False)
                 for index, gobj in enumerate(qty.objs):
                     qty.objs[index].conserve = True
-            self.add_to_qty_dict(references, (obj.reference, qty))
+            MudObjectDict.add_to_qty_dict(references, (obj.reference, qty))  # I don't like it
 
         for obj,qty in references.items():
             i = 0
@@ -86,7 +95,6 @@ class MudObjectDict():
 
         return numbered_references
 
-    @staticmethod
     def add_to_qty_dict(d, keyvalue):
         ''' For (key, qty) pairs. '''
 
@@ -115,11 +123,17 @@ class MudObjectDict():
                 d[keyvalue[0]].remove() #keyvalue[1]
         else:
             magentaprint("Couldn't remove " + str(keyvalue[0]), False)
-        
+
+        # Unorderable types
         # if keyvalue[0] in d:
         #     if keyvalue[1] >= d[keyvalue[0]]:
         #         del d[keyvalue[0]]
         #     else:
         #         d[keyvalue[0]] = d[keyvalue[0]] - keyvalue[1]
+
+    def remove_by_reference(self, ref):
+        pass
+
+
 
 

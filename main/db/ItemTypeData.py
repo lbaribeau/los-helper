@@ -9,7 +9,7 @@ class ItemTypeData(NamedModel):
         return str(self.name)
 
     def get_by_name(name):
-        print('ItemTypeData get_by_name(name) ItemTypeData.name: ' + str(ItemTypeData.name) + ', arg: ' + str(name))
+        # print('ItemTypeData get_by_name(name) ItemTypeData.name: ' + str(ItemTypeData.name) + ', arg: ' + str(name))
         try:
             # obj = ItemTypeData.select().where(fn.Lower(ItemTypeData.name) == fn.Lower(name))
             obj = ItemTypeData.select().where(ItemTypeData.name == name)

@@ -13,13 +13,13 @@ class Go(Command):
     error_regexes = [RegexStore.no_exit, RegexStore.go_where]
     failure_regexes = [
         RegexStore.blocked_path, RegexStore.cant_go, RegexStore.open_first,
-        RegexStore.class_prohibited, RegexStore.level_too_low, RegexStore.not_invited,
+        RegexStore.class_prohibited, RegexStore.level_too_low, RegexStore.level_too_high, RegexStore.not_invited,
         RegexStore.not_open_during_day, RegexStore.not_open_during_night, RegexStore.no_items_allowed, 
         RegexStore.locked, RegexStore.no_right, RegexStore.in_tune,
         RegexStore.not_authorized, RegexStore.cannot_force, RegexStore.washroom, RegexStore.cliff
     ]
     cooldown_after_success = 0.34
-    good_mud_timeout = 20.0  
+    good_mud_timeout = 20.0
         # There's a rancher gate node that seems to take quite a while
 
     def __init__(self, telnetHandler, character):
@@ -29,7 +29,7 @@ class Go(Command):
         self.character = character
 
     def wait_for_flag(self):
-        magentaprint("Go.wait_for_flag()")
+        # magentaprint("Go.wait_for_flag()")
         self.cartography.__class__._waiter_flag = False
         # self.__class__._waiter_flag = False
         super().wait_for_flag()
@@ -40,26 +40,14 @@ class Go(Command):
         magentaprint("Go notified.")
         if regex in RegexStore.open_first:
             self.door = True
-        # elif regex in RegexStore.area and not self.__class__._waiter_flag:
-        elif regex in chain.from_iterable(self.success_regexes) and not self.__class__._waiter_flag:
-            # This is confusing - why reinitialize chase variables
-            # self.character.chase_mob = ""  # Go shouldn't do chase variables, bot should, because they aren't unset on every Go, so the bot can engage the chased mob first
-            # self.character.chase_dir = ""
-            self.character.mobs.list = []
-            self.character.mobs.attacking = []
-            # time.sleep(0.8)  # Hacked fix to get_heal_path being called before Cartography updates area_id
-        # elif regex in RegexStore.mob_fled:
-        #     # mob = M_obj.group('mob')
-        #     # if mob in self.character.MONSTER_LIST:
-        #     #     self.character.MONSTER_LIST.remove(mob)
-        #     # if mob in self.character.MOBS_ATTACKING:
-        #     #     self.character.MOBS_ATTACKING.remove(mob)
-        #     self.character.chase_mob = self.character.mobs.read_match(M_obj)
-        #     self.character.chase_dir = M_obj.group('exit')
+        # elif regex in chain.from_iterable(self.success_regexes) and not self.__class__._waiter_flag:
+        #     self.character.mobs.list.reset()
+        #     self.character.mobs.attacking.reset()
+        #     # time.sleep(0.8)  # Hacked fix to get_heal_path being called before Cartography updates area_id
         super().notify(regex, M_obj)
 
     def execute(self, target):
-        magentaprint("Go.execute()")
+        # magentaprint("Go.execute()")
         self.door = False
         # while self.character.TRYING_TO_MOVE is True:
         #     # Hack - wait for Cartography

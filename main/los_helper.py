@@ -2,18 +2,18 @@
 # FEATURES of this program
 
 #   timed attaking and casting (kk and cc commands)
-#       These commands will continue until certain MUD output including 
-#           mob being killed 
-#           spell not known 
+#       These commands will continue until certain MUD output including
+#           mob being killed
+#           spell not known
 #           if you move to a new area
-#   timed attacking includes change to hasted attack timing 
+#   timed attacking includes change to hasted attack timing
 #   internal timers to eliminate "Please wait 1 second."
 #   Keeps track of weapon so you can flee.
-#   Guaranteed-to-work flee function available to user and keeps weapon(s). 
+#   Guaranteed-to-work flee function available to user and keeps weapon(s).
 #       command is "fl"
 #       will wait the exact right amount of time if you cannot yet flee
 #       spams flee command 3 times to ensure you get out :)
-#   Bot can be used to do selling and dropping at tip (put items you want to 
+#   Bot can be used to do selling and dropping at tip (put items you want to
 #       keep that aren't in KEEP_LIST into some bag that IS in KEEP_LIST)
 #   ANSI color
 
@@ -32,24 +32,27 @@ from misc_functions import *
 from comm.Character import Character
 from comm.CharacterClass import CharacterClass
 from comm.CommandHandler import CommandHandler
-from comm.MudReaderHandler import MudReaderHandler 
-from comm.MudReaderThread import MudReaderThread 
-from comm.MudListenerThread import MudListenerThread 
-from comm.MyBuffer import MyBuffer 
-from command.Inventory import Inventory 
+from comm.MudReaderHandler import MudReaderHandler
+from comm.MudReaderThread import MudReaderThread
+from comm.MudListenerThread import MudListenerThread
+from comm.MyBuffer import MyBuffer
+from command.Inventory import Inventory
 from reactions.CombatReactions import CombatReactions
 from reactions.Mobs import Mobs
 from combat.SmartCombat import SmartCombat
 from command.Info import Info 
 from command.Whois import Whois
-from command.Spells import Spells
-from reactions.Cartography import Cartography 
+from command.SpellsCommand import SpellsCommand
+from reactions.Cartography import Cartography
 from reactions.BotReactions import *
 # from reactions.WieldReaction import WieldReaction
-from comm.TelnetHandler import TelnetHandler 
-from fake.FakeTelnetHandler import FakeTelnetHandler 
+from comm.TelnetHandler import TelnetHandler
+from fake.FakeTelnetHandler import FakeTelnetHandler
 from db.Database import *
 from db.MudMap import *
+from reactions.Prompt import Prompt
+from reactions.health_monitor import HealthMonitor
+from comm.analyser import Analyser
 
 class LosHelper(object):
     def __init__(self):
@@ -57,6 +60,7 @@ class LosHelper(object):
 
         # self.initializer = Initializer()
         self.character = Character()
+        self.character.prompt = Prompt()
         sys.argv = [s.strip() for s in sys.argv]  # removes \r since git can add them to run.sh
 
         if '-fake' in sys.argv:
@@ -67,14 +71,17 @@ class LosHelper(object):
 
         # if self.threaded_map_setup:
         #     self.mud_map_thread.start()  # Don't forget to uncomment .join()
-        self.consoleHandler = newConsoleHandler() 
+        self.consoleHandler = newConsoleHandler()
         self.MUDBuffer = MyBuffer()
         self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
         self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
-        self.mudReaderHandler = MudReaderHandler(self.mudReaderThread, self.character)
-        self.inventory = Inventory(self.mudReaderHandler, self.telnetHandler, self.character)
+        self.mud_reader_handler = MudReaderHandler(self.mudReaderThread, self.character)
+        self.inventory = Inventory(self.telnetHandler, self.character)
         self.character.inventory = self.inventory
-        self.mudReaderHandler.add_subscriber(self.character.mobs)
+        self.analyser = Analyser(self.mud_reader_handler, self.character)
+        self.mud_reader_handler.add_subscriber(self.character.prompt)
+        self.mud_reader_handler.add_subscriber(self.inventory)
+        self.mud_reader_handler.add_subscriber(self.character.mobs)
 
         # self.mud_map_thread.start()  # Don't forget to uncomment .join()
         self.mudListenerThread.start()
@@ -83,16 +90,16 @@ class LosHelper(object):
         # With the MUDReaderThread going, we have the server's text and prompts now showing
         # if self.threaded_map_setup:
         #     magentaprint("LosHelper joining mud_map_thread.")  # Ha this print can cause the lock error
-        #     self.mud_map_thread.join() 
+        #     self.mud_map_thread.join()
         self.write_username_and_pass()
         self.initialize_reactions()
         self.check_class_and_level()
         self.check_spells()
         self.check_info()
 
-        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
-        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
-        self.commandHandler.go.cartography = self.cartography  
+        self.commandHandler = CommandHandler(self.character, self.mud_reader_handler, self.telnetHandler)
+        self.cartography = Cartography(self.mud_reader_handler, self.commandHandler, self.character)
+        self.commandHandler.go.cartography = self.cartography
             # Cartography shouldn't need commandHandler to fix dependencies
 
         self.character.TRYING_TO_MOVE = True  # required for mapping (Hack - look into this - better init for Goto)
@@ -134,13 +141,13 @@ class LosHelper(object):
 
         while not stopping:
             try:
-                user_input = input() 
+                user_input = input()
             except (EOFError, KeyboardInterrupt) as e:
                 magentaprint("LosHelper: " + str(e))
                 user_input = ""
 
             user_input = user_input.strip()
-            magentaprint("LosHelper user_input: " + str(user_input))
+            # magentaprint("LosHelper user_input: " + str(user_input))
 
             if not self.mudReaderThread.is_alive():
                 magentaprint("\nRead thread is dead, we're cooked.\n")
@@ -200,16 +207,16 @@ class LosHelper(object):
 
     def initialize_reactions(self):
         pass
-        # self.mudReaderHandler.register_reaction(WieldReaction(self.character, self.telnetHandler))
+        # self.mud_reader_handler.register_reaction(WieldReaction(self.character, self.telnetHandler))
 
     def check_inventory(self):
-        # This prints the inventory.  I like that.  
+        # This prints the inventory.  I like that.
         # Inventory needs this to be up to date.
         self.character.inventory.get_inventory()
-        self.character.inventory.output_inventory()
+        # self.character.inventory.output_inventory()
 
     def check_class_and_level(self):
-        whois = Whois(self.mudReaderHandler, self.telnetHandler, self.character)
+        whois = Whois(self.mud_reader_handler, self.telnetHandler, self.character)
         whois.execute(self.character.name)
         whois.wait_for_flag()
         self.character._class = CharacterClass(self.telnetHandler, self.character.class_string, self.character.level)
@@ -217,24 +224,25 @@ class LosHelper(object):
         # self.character.CAST_WAIT = self.character._class.cast_wait
         self.character.configure_health_and_mana_variables()
         self.character.set_monster_kill_list()
-        magentaprint("LosHelper ability list: " + str(self.character._class.abilities))
+        # magentaprint("LosHelper ability list: " + str(self.character._class.abilities))
         for a in self.character._class.abilities.values():
-            # self.mudReaderHandler.register_reaction(a)
-            magentaprint("Added subscriber " + str(a))
-            self.mudReaderHandler.add_subscriber(a)
+            # self.mud_reader_handler.register_reaction(a)
+            # magentaprint("Added subscriber " + str(a))
+            self.mud_reader_handler.add_subscriber(a)
 
     def check_spells(self):
         # magentaprint("LosHelper.check_spells() sleeping 2 sec.")
         # time.sleep(2)
-        spells = Spells(self.telnetHandler, self.character)
-        self.mudReaderHandler.add_subscriber(spells)
+        spells = SpellsCommand(self.telnetHandler, self.character)
+        self.mud_reader_handler.add_subscriber(spells)
         spells.execute()
         spells.wait_for_flag()
 
     def check_info(self):
-        info = Info(self.mudReaderHandler, self.telnetHandler, self.character)
+        info = Info(self.mud_reader_handler, self.telnetHandler)
         info.execute()
-        magentaprint("LosHelper.check_info() calling character.process_info()")
+        # magentaprint("LosHelper.check_info() calling character.process_info()")
+        self.character.info = info
         self.character.process_info()
 
 L = LosHelper()

@@ -28,10 +28,9 @@ class Info(BotReactionWithFlag):
     got_first = False
     got_second = False
 
-    def __init__(self, mudReaderHandler, telnetHandler, character):
+    def __init__(self, mudReaderHandler, telnetHandler):
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
-        self.character = character
         # magentaprint(str(self.regexes))
 
     def execute(self):
@@ -45,50 +44,51 @@ class Info(BotReactionWithFlag):
     def notify(self, regex, M_obj):
         # pass in character, or just edit self?
         if regex is self.header:
-            self.character.name = M_obj.group(1)
-            self.character.race = M_obj.group(2)
-            self.character.title = M_obj.group(3)
-            # self.character.level = int(re.search("\d+",M_obj.group(4)).group(0))
-            self.character.level = int(M_obj.group(4)[:len(M_obj.group(4))-2])
+            self.name = M_obj.group(1)
+            self.race = M_obj.group(2)
+            self.title = M_obj.group(3)
+            # self.level = int(re.search("\d+",M_obj.group(4)).group(0))
+            self.level = int(M_obj.group(4)[:len(M_obj.group(4))-2])
         elif regex is self.your_preferred:
-            self.character.preferred_alignment = M_obj.group(1)
-            # self.character.AURA_PREFERRED_SCALE = self.auras.index(preferred_alignment)
-            self.character.AURA_PREFERRED_SCALE = Aura(M_obj.group(1)).auras.index(M_obj.group(1))
-            self.character.AURA_PREFERRED = M_obj.group(1)
+            self.preferred_alignment = M_obj.group(1)
+            # self.AURA_PREFERRED_SCALE = self.auras.index(preferred_alignment)
+            # self.AURA_PREFERRED_SCALE = Aura(M_obj.group(1)).auras.index(M_obj.group(1))
+            # self.AURA_PREFERRED = M_obj.group(1)
+            # magentaprint("Info aura matched: %s index is %s." % (M_obj.group(1), Aura.auras.index(M_obj.group(1))))
         elif regex is self.first:
             self.got_stats_skills = True
-            self.character.str = int(M_obj.group(1))
-            self.character.dex = int(M_obj.group(4))
-            self.character.con = int(M_obj.group(7))
-            self.character.int = int(M_obj.group(10))
-            self.character.pty = int(M_obj.group(13))
-            self.character.sharp = int(M_obj.group(2))
-            self.character.thrust = int(M_obj.group(5))
-            self.character.blunt = int(M_obj.group(8))
-            self.character.pole = int(M_obj.group(11))
-            self.character.missile = int(M_obj.group(14))
-            self.character.earth = int(M_obj.group(3))
-            self.character.wind = int(M_obj.group(6))
-            self.character.fire = int(M_obj.group(9))
-            self.character.water = int(M_obj.group(12))
-            self.character.astral = int(M_obj.group(15))
+            self.str = int(M_obj.group(1))
+            self.dex = int(M_obj.group(4))
+            self.con = int(M_obj.group(7))
+            self.int = int(M_obj.group(10))
+            self.pty = int(M_obj.group(13))
+            self.sharp = int(M_obj.group(2))
+            self.thrust = int(M_obj.group(5))
+            self.blunt = int(M_obj.group(8))
+            self.pole = int(M_obj.group(11))
+            self.missile = int(M_obj.group(14))
+            self.earth = int(M_obj.group(3))
+            self.wind = int(M_obj.group(6))
+            self.fire = int(M_obj.group(9))
+            self.water = int(M_obj.group(12))
+            self.astral = int(M_obj.group(15))
             self.got_first = True
             # magentaprint(self.character.astral)
         elif regex is self.second:
-            self.character.exp = int(M_obj.group(1))
-            self.character.gametime = M_obj.group(2)
-            self.character.maxHP = int(M_obj.group(3))
-            self.character.gold = int(M_obj.group(4))
-            self.character.age = int(M_obj.group(5))
-            self.character.maxMP = int(M_obj.group(6))
-            self.character.exp_to_level = int(M_obj.group(7))
-            self.character.weight = int(M_obj.group(8))
-            self.character.AC = int(M_obj.group(9))
-            self.character.gold_to_level = int(M_obj.group(10))
-            self.character.objects = int(M_obj.group(11))
+            self.exp = int(M_obj.group(1))
+            self.gametime = M_obj.group(2)
+            self.maxHP = int(M_obj.group(3))
+            self.gold = int(M_obj.group(4))
+            self.age = int(M_obj.group(5))
+            self.maxMP = int(M_obj.group(6))
+            self.exp_to_level = int(M_obj.group(7))
+            self.weight = int(M_obj.group(8))
+            self.AC = int(M_obj.group(9))
+            self.gold_to_level = int(M_obj.group(10))
+            self.objects = int(M_obj.group(11))
             self.got_second = True
             super().notify(regex, M_obj)
-            # magentaprint("Objects: " + str(self.character.objects))   
+            # magentaprint("Objects: " + str(self.objects))   
 
         @property 
         def success(self):

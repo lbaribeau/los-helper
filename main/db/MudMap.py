@@ -23,8 +23,8 @@ class MudMap(object):
     def populate_map(self):
         areas = Area.raw('select * from v_areas_for_graph')
         area_exits = AreaExit.raw('select * from v_areaexits_for_graph')
-        self.magentaprint("MudMap populate_map areas:" + str(areas))
-        self.magentaprint("MudMap populate_map area_exits:" + str(area_exits))
+        # self.magentaprint("MudMap populate_map areas:" + str(areas))
+        # self.magentaprint("MudMap populate_map area_exits:" + str(area_exits))
 
         for area in areas:
             self.los_map.add_node(area.id)
@@ -32,7 +32,7 @@ class MudMap(object):
         for area_exit in area_exits:
             name = area_exit.exit_type.name
             self.los_map.add_edge(area_exit.area_from.id, area_exit.area_to.id, name=name)
-            
+
             # area_to_id = -1 #this is a marker for a null / unexplored area
             # area_is_useable = True
 

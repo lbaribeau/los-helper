@@ -13,6 +13,8 @@ from db.MudArea import *
 from db.MudItem import *
 from db.MudMob import *
 from comm import RegexStore
+from Aura import Aura
+from reactions.referencing_list import ReferencingList
 
 class Cartography(BotReactionWithFlag):
     def __init__(self, mudReaderHandler, commandHandler, character):
@@ -27,8 +29,6 @@ class Cartography(BotReactionWithFlag):
             RegexStore.in_tune, RegexStore.you_see_mob, RegexStore.mob_aura, RegexStore.store_list,
             RegexStore.mob_fled, RegexStore.open_first, RegexStore.washroom
         ]
-        magentaprint(str(self.regex_cart))
-
         self.mudReaderHandler = mudReaderHandler
         self.commandHandler = commandHandler
         self.character = character
@@ -50,8 +50,9 @@ class Cartography(BotReactionWithFlag):
         elif regex in RegexStore.blocked_path:
             self.blocked_path(regex, M_obj)
         elif regex in RegexStore.loot_blocked:
-            loot_blocker = M_obj.group(2)
-            magentaprint("loot blocker blocking pickup by: " + loot_blocker)
+            # loot_blocker = M_obj.group(2)
+            loot_blocker = self.character.mobs.read_match(M_obj)
+            magentaprint("Cartography loot blocker blocking pickup: " + loot_blocker)
             self.catalog_loot_blocker(loot_blocker)
         elif regex in RegexStore.please_wait:
             if self.character.TRYING_TO_MOVE:
@@ -83,12 +84,13 @@ class Cartography(BotReactionWithFlag):
             level = M_obj.group(5)
             self.catalog_monster_bio(name, description, level)
         elif regex in RegexStore.mob_aura:
-            name = M_obj.group(2)
-            aura = M_obj.group(3)
+            # name = M_obj.group(2)
+            # aura = M_obj.group(3)
             #magentaprint("{" + M_obj.group(0) + "}", False)
             #magentaprint("{" + regex + "}", False)
             #magentaprint("'" + name + "' => '" + aura + "'",False)
-            self.catalog_monster_aura(name, aura)
+            magentaprint("Cartography mob aura: " + self.character.mobs.read_match(M_obj) + ', ' + M_obj.group('aura'))
+            self.catalog_monster_aura(self.character.mobs.read_match(M_obj), M_obj.group('aura'))
         elif regex in RegexStore.not_here or regex in RegexStore.no_exit:
             #The state is confusion is usually caused by bad processing of good data (i.e. bugs)
             #The following is a set of work arounds to smoothe things out until those bugs are fixed
@@ -120,13 +122,13 @@ class Cartography(BotReactionWithFlag):
         else:
             # This is fine for a shut door - we just want the super().notify in that case.
             magentaprint("Cartography case missing for regex: " + str(regex))
-        magentaprint("Cartogarphy notify done, regex: " + str(regex[:min(len(regex), 10)]) + '...')
+        magentaprint("Cartography notify done on: " + str(regex[:min(len(regex), 20)]) + '...')
         super().notify(regex, M_obj)
 
     def too_dark(self, regex, M_obj):
         magentaprint("Cartography - too dark")
         if self.character.AREA_ID is not None:
-            guessed_area = self.guess_location(self.character.AREA_ID, self.character.LAST_DIRECTION)            
+            guessed_area = self.guess_location(self.character.AREA_ID, self.character.LAST_DIRECTION)
 
             if guessed_area is not None:
                 self.character.AREA_ID = guessed_area.area.id
@@ -139,13 +141,15 @@ class Cartography(BotReactionWithFlag):
                 self.character.MUD_AREA = None
                 self.character.EXIT_LIST = []
 
-        self.character.mobs.list = []
+        self.character.mobs.list = ReferencingList([])
+        self.character.mobs.attacking = []
+
         self.character.SUCCESSFUL_GO = True
         self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
         self.character.CAN_SEE = False
         self.character.CONFUSED = False
 
-        if self.character.TRYING_TO_MOVE:  
+        if self.character.TRYING_TO_MOVE:
             self.character.TRYING_TO_MOVE = False
 
     def area(self, regex, M_obj):
@@ -160,8 +164,7 @@ class Cartography(BotReactionWithFlag):
 
         self.character.AREA_TITLE = area_title #title
         self.character.EXIT_LIST = exit_list #exits
-        self.character.mobs.list = self.parse_monster_list(matched_groups[3])
-        self.character.mobs.list.sort()
+        self.character.mobs.list = ReferencingList(self.parse_monster_list(matched_groups[3]))
         self.character.mobs.attacking = []
 
         self.character.SUCCESSFUL_GO = True #successful go should be true everytime the area parses
@@ -169,7 +172,7 @@ class Cartography(BotReactionWithFlag):
         self.character.CAN_SEE = True
         self.character.CONFUSED = False
 
-        if self.character.TRYING_TO_MOVE:  
+        if self.character.TRYING_TO_MOVE:
             if exit_list is not []:
                 area_from = self.character.AREA_ID
                 direction_from = self.character.LAST_DIRECTION
@@ -186,8 +189,9 @@ class Cartography(BotReactionWithFlag):
             self.character.TRYING_TO_MOVE = False
 
     def blocked_path(self, regex, M_obj):
-        magentaprint("Cartography blocking mob name: " + str(M_obj.group('mob_name')))
-        mob_name = M_obj.group('mob_name')
+        # mob_name = M_obj.group('mob_name')
+        mob_name = self.character.mobs.read_match(M_obj)
+        magentaprint("Cartography blocking mob name: " + mob_name)
         self.character.GO_BLOCKING_MOB = mob_name
         self.character.SUCCESSFUL_GO = False
         self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
@@ -293,13 +297,13 @@ class Cartography(BotReactionWithFlag):
             magentaprint("Problem cataloging monster bio")
 
     def catalog_monster_aura(self, name, aura):
-        if aura not in self.character.AURA_LIST:
+        if aura not in Aura.auras:
             # Deals with "the rod glows with a deep brown aura" bug
             return
 
         mob = Mob(name=name)
         mob.map()
-        mob.aura = self.character.AURA_LIST.index(aura)
+        mob.aura = Aura.auras.index(aura)
 
         mob.save()
 
@@ -367,7 +371,7 @@ class Cartography(BotReactionWithFlag):
                             #magentaprint(exit_list[i], False)
                         count += 1 #I miss my i++
 
-        return exit_list 
+        return exit_list
 
     def create_exit_regex_for_character(self, E_LIST):
         exit_regex = "(NEVERMATCHTHISEVEREVER)"
@@ -399,8 +403,8 @@ class Cartography(BotReactionWithFlag):
 
         # M_LIST = [m.strip() for m in mob_match.group(1).split(',')]
         # singles = ['a ', 'an ', 'The ']
-        # numbers = ['two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 
-        #            'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ', 
+        # numbers = ['two ', 'three ', 'four ', 'five ', 'six ', 'seven ',
+        #            'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ',
         #            'fifteen ' , 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen ', 'twenty ']
         # numbers.extend([str(i) + " " for i in range(21, 200)])
 
@@ -424,7 +428,7 @@ class Cartography(BotReactionWithFlag):
 
         # # return list(m_dict.keys())
         # return m_list
-  
+
         #     # commaindex = M_LIST[i].find(',')
         #     # if commaindex != -1:
         #     #     M_LIST = M_LIST[:commaindex]

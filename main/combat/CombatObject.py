@@ -10,7 +10,7 @@ from misc_functions import magentaprint
 from comm import RegexStore
 
 class CombatObject(object):
-    def __init__(self, telnetHandler):   
+    def __init__(self, telnetHandler):
         self.end_combat_regexes = [RegexStore.mob_died, RegexStore.mob_fled, RegexStore.you_died]
         self.telnetHandler = telnetHandler
         # self.regexes.extend(self.end_combat_regexes)
@@ -26,12 +26,12 @@ class CombatObject(object):
     def notify(self, regex, M_obj):
         self.result = regex
         if self.end_combat:
-            magentaprint(str(self) + " ending combat.")
+            # magentaprint(str(self) + " ending combat.")
             self.stop()
 
-    @property 
+    @property
     def end_combat(self):
-        return self.result in RegexStore.mob_died or self.result in RegexStore.mob_fled
+        return self.result in RegexStore.mob_died or self.result in RegexStore.mob_fled or self.result in RegexStore.you_died
 
     @property
     def mob_died(self):
@@ -71,7 +71,7 @@ class SimpleCombatObject(CombatObject, ThreadingMixin, Command):
         # if regex in chain.from_iterable(self.error_regexes):
         #     self.stop()
 
-    @property 
+    @property
     def end_combat(self):
         return super().end_combat or self.result in chain.from_iterable(self.error_regexes)
 

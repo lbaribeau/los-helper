@@ -5,24 +5,27 @@ import math
 from reactions.BotReactions import BotReactionWithFlag
 import comm.RegexStore as R
 from misc_functions import magentaprint
+from reactions.referencing_list import ReferencingList
 
 class Mobs(BotReactionWithFlag):
-    # I will give this object MONSTER_LIST because that provides a place for possible extended functionality 
+# class Mobs(BotReactionWithFlag, ReferencingList):
+    # I will give this object MONSTER_LIST because that provides a place for possible extended functionality
     # in the future, such as correcting targets.
 
-    # The main reason for this object is too further clean up MudReaderThread, which is ALMOST readable/maintainable now. 
+    # The main reason for this object is too further clean up MudReaderThread, which is ALMOST readable/maintainable now.
     regex_cart = [
-        R.mob_arrived, R.mob_died, R.mob_fled, R.mob_defeated, R.mob_wandered, R.mob_left, 
+        R.mob_arrived, R.mob_died, R.mob_fled, R.mob_defeated, R.mob_wandered, R.mob_left,
         R.mob_joined1, R.mob_joined2, R.mob_attacked, R.you_attack, R.mob_aggro
     ]
 
     def __init__(self):
-        self.list = []
+        self.list = ReferencingList([])
         self.attacking = []
         self.singles = ['a', 'an', 'the']
-        self.numbers = ['two', 'three', 'four', 'five', 'six', 'seven', 
-                        'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 
-                        'fifteen' , 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty']
+        self.numbers = [
+            'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen',
+            'fourteen', 'fifteen' , 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'
+        ]
         self.numbers.extend([str(i) + " " for i in range(21, 200)])
         self.damage = []
         self.chase = ''
@@ -41,25 +44,31 @@ class Mobs(BotReactionWithFlag):
             # magentaprint("Mobs mob3")
             return m.group('mob3').strip()
 
+    def read_mobs(self, arrived_mobs):
+        mob_parse = arrived_mobs.partition(' ')
+        first_word = mob_parse[0].lower()
+
+        if first_word in self.singles:
+            return [mob_parse[2]]
+        elif first_word in self.numbers:
+            magentaprint("Mobs mobs: " + arrived_mobs + ", first_word: " + first_word)
+            return [remove_plural(mob_parse[2])] * (int(self.numbers.index(first_word)) + 2)
+        else:
+            # Named mob
+            magentaprint("Mobs arrived no article: first_word " + first_word + " mobs: " + arrived_mobs)
+            # self.list.append(mob_parse[0])
+            return [mob_parse[0]]
+
     def notify(self, r, m_obj):
         # We'll let Cartography handle the initialization of monster_list with the area regex since it already does a great job.
         if r in R.mob_arrived:
-            mob_parse = m_obj.group('mobs').partition(' ')
-            first_word = mob_parse[0].lower()
-            if first_word in self.singles:
-                self.list.append(mob_parse[2])
-            elif first_word in self.numbers:
-                magentaprint("Mobs mobs: " + m_obj.group('mobs') + ", first_word: " + first_word)
-                self.list.extend([remove_plural(mob_parse[2])] * (int(self.numbers.index(first_word)) + 2))
-            else:
-                # Named mob
-                magentaprint("Mobs arrived no article: first_word " + first_word + " mobs: " + str(m_obj.group('mobs')))
-                self.list.append(mob_parse[0])
+            self.list.add_from_list(self.read_mobs(m_obj.group('mobs')))
         elif r in R.mob_died:
             if self.read_match(m_obj) in self.list:
                 self.list.remove(self.read_match(m_obj))
+            magentaprint("Mobs notify matched " + str(self.read_match(m_obj)) + " in self.attacking: " + str(self.read_match(m_obj) in self.attacking) + ", self.attacking: " + str(self.attacking))
             if self.read_match(m_obj) in self.attacking:
-                self.attacking.remove(self.read_match(m_obj))
+                self.attacking.remove(self.read_match(m_obj))  # TODO: if a mob is one-shot, it's not removed because the You attacked notify is after
             magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(round(self.mean(self.damage), 1)) + ', stdev=' + str(round(self.stdev(self.damage), 1)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/max(len(self.damage),1), 2)))
             # m = sum(self.damage) / max(len(self.damage), 1)
             # s = sum(self.damage - [m]*len(self.damage))
@@ -92,34 +101,37 @@ class Mobs(BotReactionWithFlag):
                 self.damage.append(0)
         if r in R.you_attack or r in R.mob_aggro:
             self.damage = []
+
             self.attacking.append(self.read_match(m_obj))
-        magentaprint("mobs.list " + str(self.list))
-        magentaprint("mobs.attacking " + str(self.attacking))
+        magentaprint("mobs.list " + str(self.list) + "; notification from regex: " + str(r[0:min(10, len(r))]))
+        if self.attacking:
+            magentaprint("mobs.attacking " + str(self.attacking))
         super().notify(r, m_obj)
 
     def parse_mob_string(self, s):
         # You see (two kobold children, a dustman).
         # (Two lay followers) just arrived.
         s = s.replace("\n\r", ' ')
-        comma_items = [comma_item.strip().lower() for comma_item in s.split(',')]
+        # comma_items = [comma_item.strip().lower() for comma_item in s.split(',')]
 
         # return [Mobs.remove_plural(m.strip()) for m in mob_match.group(1).split(',')]
         m_list = []
-        for c in comma_items:
-            if c[len(c)-4:len(c)-3] == ' (' and c[len(c)-1] == ')':
-                # c = remove_good_evil(c)
-                c = c[0:len(c)-5]
+        # for c in comma_items:
+        for comma_item in s.split(','):
+            m = comma_item.strip().lower()
 
-            if any([c.startswith(s + ' ') for s in self.singles]):
+            if m[len(m)-4:len(m)-2] == ' (' and m[len(m)-1] == ')':
+                # m = remove_good_evil(m)
+                m = m[0:len(m)-4]
+
+            if any(m.startswith(single + ' ') for single in self.singles):
                 # m_dict[m.partition(' ')[2]] = 1
-                m_list.extend([c.partition(' ')[2]])
-                continue
-            # number_check = [m.startswith(n) for n in numbers]
-
-            if any(c.startswith(n + ' ') for n in self.numbers):
-                m_list.extend([remove_plural(c.partition(' ')[2])] * (self.numbers.index(c.split(' ')[0]) + 2))
+                m_list.extend([m.partition(' ')[2]])
+                # number_check = [m.startswith(n) for n in numbers]
+            elif any(m.startswith(n + ' ') for n in self.numbers):
+                m_list.extend([remove_plural(m.partition(' ')[2])] * (self.numbers.index(m.split(' ')[0]) + 2))
             else:
-                m_list.append(c)
+                m_list.append(m)
 
             # for n in range(0, len(numbers)):
             #     if c.startswith(numbers[n] + ' '):
@@ -129,7 +141,7 @@ class Mobs(BotReactionWithFlag):
             #         break
 
         # return list(m_dict.keys())
-        return m_list 
+        return m_list
 
     def mean(self, a):
         return sum(a)/max(len(a),1)
@@ -179,4 +191,3 @@ def remove_plural(m):
 def remove_good_evil(m):
     if m.lower().endswith(' (g)') or m.lower().endswith(' (e)'):
         return m[0:len(m)-5]
-

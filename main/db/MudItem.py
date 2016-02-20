@@ -1,14 +1,14 @@
+
 from peewee import *
 from db.Database import *
 from db.GenericMudObject import *
-from misc_functions import *
+from misc_functions import magentaprint
 
 class MudItem(GenericMudObject):
-    is_unusable = False
-
     def __init__(self, name):
         self.obj = Item(name=name)
-        self.reference = get_first_word(self.obj.name)
+        self.reference = self.obj.name.split(' ')[0]  # ... this reference is likely incorrect without an integer
+        self.is_unusable = False
 
     def map(self):
         self.obj.map()
@@ -45,9 +45,11 @@ class MudItem(GenericMudObject):
         magentaprint("MudItem get_purchase_location_id() self: " + str(self) + ", self.obj: " + str(self.obj) + ", obj.id: " + str(self.obj.id))
         return AreaStoreItem.get_by_item(self.obj.id).area.id
 
+    @property
+    def name(self):
+        return self.obj.name
 
 # class MudItemMeta():
 #     def __init__(self, id, is_unusable=False):
 #         self.id = id
 #         self.is_unusable = is_unusable
-

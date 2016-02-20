@@ -32,6 +32,12 @@ def do_magentaprint(text):
     print(output)
     newConsoleHandler().white()
 
+def greenprint(text):
+    newConsoleHandler().magenta()
+    output = str(get_timestamp() + "   | " + str(text))  
+    print(output)
+    newConsoleHandler().white()
+
 def get_timestamp():
     curtime = datetime.now().time().strftime("%H:%M:%S.%f")
     return curtime[:len(curtime)-5]

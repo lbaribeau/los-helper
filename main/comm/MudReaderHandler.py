@@ -434,9 +434,9 @@ class MudReaderHandler(object):
     def initialize_mud_events(self):
         # eh this converts them to strings
         # magentaprint("MudReaderHandler RegexStore.__dict__:" + str(RegexStore.__dict__))
-        # for regex in dir(RegexStore):  
+        # for regex in dir(RegexStore):
         # magentaprint("MudReaderHandler loop: " + str([s for s in dir(RegexStore) if s[1] != '_']))
-        # for regex in [s in dir(RegexStore) if s[1] != '_' and (len(s) > 1 and s[2] != '_' or len(s) == 1)]:  
+        # for regex in [s in dir(RegexStore) if s[1] != '_' and (len(s) > 1 and s[2] != '_' or len(s) == 1)]:
         # for regex in [s for s in dir(RegexStore) if s[1] != '_']:
         # for regex in [s for s in dir(RegexStore) if s[1] != '_' and (len(s) > 1 and s[2] != '_' or len(s) == 1)]:
 
@@ -453,11 +453,6 @@ class MudReaderHandler(object):
 
         # magentaprint("MudReaderHandler mud_events: " + str(self.mudReaderThread.mud_events))
 
-
-
-        
-
 # TODO
 #    def check_for_text(possibility1, possibility2
 
-    

@@ -1,3 +1,4 @@
 #!/bin/bash
 
-python3 /cygdrive/c/Users/Laurier/Documents/Programming/los-helper/main/los-helper.py $@
+python3 ./main/los_helper.py $@
+
