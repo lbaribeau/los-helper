@@ -6,7 +6,7 @@ from misc_functions import *
 from command.Inventory import *
 from Exceptions import *
 from db.MudMob import *
-import Aura
+from Aura import Aura
 
 class SmartGrindThread(TrackGrindThread):
     smart_target_list = []
@@ -24,9 +24,9 @@ class SmartGrindThread(TrackGrindThread):
 
         self.low_level = min(int(math.ceil(self.character.level / 2)) - 2, 1)
         self.high_level = int(math.ceil(self.character.level / 2))# + 1 #risky business
-        
-        self.low_aura = 0 #how evil the targets are
-        self.high_aura = len(Aura.auras) #how good the targets are
+
+        self.min_target_aura = Aura('demonic red')
+        self.max_target_aura = Aura('heavenly blue')
 
         self.update_aura()
         self.aura_updated_hook()
@@ -196,11 +196,14 @@ class SmartGrindThread(TrackGrindThread):
         return directions
 
     def get_targets(self):
-        magentaprint("SmartGrind getting targets - parameters - {0} {1} {2} {3}".format(self.low_level, self.high_level, self.low_aura, self.high_aura))
-        target_list = MudMob.get_mobs_by_level_and_aura_ranges(self.low_level, self.high_level, self.low_aura, self.high_aura)
+        magentaprint("SmartGrind getting targets - parameters - {0} {1} {2} {3}".format(\
+            self.low_level, self.high_level, self.min_target_aura, self.max_target_aura)
+        )
+        target_list = MudMob.get_mobs_by_level_and_aura_ranges(
+            self.low_level, self.high_level, self.min_target_aura, self.max_target_aura
+        )
 
         # if not target_list:
-
 
         self.character.MONSTER_KILL_LIST = []
 
@@ -231,22 +234,22 @@ class SmartGrindThread(TrackGrindThread):
         # magentaprint("Preferred Aura Scale: " + str(self.character.AURA_PREFERRED_SCALE), False)
 
         if self.character.level < 4:
-            self.low_aura = 0
-            self.high_aura = len(Aura.auras)
+            self.min_target_aura = 0
+            self.max_target_aura = len(Aura.auras)
         # elif self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:
         elif self.cast.aura < self.character.preferred_aura:
             # Too evil
             # self.low_level = 2
-            self.low_aura = 0
-            self.high_aura = math.floor(len(Aura.auras) / 2)
+            self.min_target_aura = 0
+            self.max_target_aura = math.floor(len(Aura.auras) / 2)
         elif self.cast.aura > self.character.preferred_aura:
             # Too good
             # self.low_level = 2
-            self.low_aura = math.ceil(len(Aura.auras) / 2)
-            self.high_aura = len(Aura.auras) - 1
+            self.min_target_aura = math.ceil(len(Aura.auras) / 2)
+            self.max_target_aura = len(Aura.auras) - 1
         else:
-            self.low_aura = math.floor(len(Aura.auras) / 2)
-            self.high_aura = math.ceil(len(Aura.auras) / 2)
+            self.min_target_aura = math.floor(len(Aura.auras) / 2)
+            self.max_target_aura = math.ceil(len(Aura.auras) / 2)
 
         self.get_targets()
 
