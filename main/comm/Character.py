@@ -213,8 +213,8 @@ class Character(object):
     lvl2_monsters = [
         'hawker', 'barmaid', 'smelly beggar', 'black crow', 'sheep', 'goose', 'singer', 'musician', 'spiv', 'bidder', 'dairy cow',
         'scholar', 'juggler', 'shepherd', 'gazelle', 'dancer', 'jongleur', 'clerk', 'stablehand', 'rich kid', 'bladesman',
-        "cook's assistant", "miner's assistant", 'mare', 'tabby cat',
-        'acolyte' #, 'penitent'  # aur
+        "cook's assistant", "miner's assistant", 'mare', 'tabby cat'
+        # 'acolyte' #, 'penitent'  # aur
     ]
     lvl2_red_monsters = [
         'kobold sentry', 'blond hooker', 'sultry hooker', 'kobold', 'spiv', 'drunken miner', 'kobold miner', 'kobold archer',

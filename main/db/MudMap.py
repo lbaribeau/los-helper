@@ -100,6 +100,21 @@ class MudMap(object):
 
         return paths
 
+    def get_smithy_paths(self, start_area_id):
+        paths = []
+
+        areas = Area.get_smithy_areas()
+
+        for area in areas:
+            try:
+                paths.append(self.get_path(start_area_id, area.id))
+            except Exception as e:
+                continue
+                # print ("couldn't path to area")
+                # magentaprint("couldn't path to area")
+
+        return paths
+
     #static functions
     def find(text):
         areas = Area.get_areas_by_partial_name(text)

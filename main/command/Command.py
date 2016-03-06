@@ -39,6 +39,10 @@ class SimpleCommand(BotReactionWithFlag):
         self.send(self.telnetHandler, target)
         # self.wait_for_flag()  # Just expect caller to call wait.
 
+    def execute_and_wait(self, target=None):
+        self.execute(target)
+        self.wait_for_flag()
+
 class Command(SimpleCommand):
     # The main point of this is to write code for the Kill, Cast, Ability, and 
     # Go timers... ie execute_and_block_serious() (persistent_execute())

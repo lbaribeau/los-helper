@@ -8,6 +8,7 @@ class Area(NamedModel):
     is_always_dark = BooleanField(default=False)
     is_dark_at_night = BooleanField(default=False)
     is_restorative = BooleanField(default=False)
+    # is_smithy = BooleanField(default=False)
     #does_damage_on_entry = BooleanField(default=False)
     #teleports_character = Area(null=True)
 
@@ -72,12 +73,13 @@ class Area(NamedModel):
         if len(matching_areas) > 0:
             self.metadata.is_dirty = True
             is_new_mapping = False
-            
+
             for area in matching_areas:
                 self.id = area.id
                 self.is_always_dark = area.is_always_dark
                 self.is_dark_at_night = area.is_dark_at_night
                 self.is_restorative = area.is_restorative
+                # self.is_smithy = area.is_smithy
                 break
 
         #print ("matching areas: " + str(matching_areas) + " is new mapping: " + str(is_new_mapping))
@@ -224,6 +226,16 @@ having count(*) = %s
         try:
             areas = Area.select().where((Area.is_restorative == 1))
 
+        except Area.DoesNotExist:
+            areas = []
+
+        return areas
+
+    def get_smithy_areas():
+        areas = []
+
+        try:
+            areas = Area.select().where((Area.is_smithy == 1))
         except Area.DoesNotExist:
             areas = []
 

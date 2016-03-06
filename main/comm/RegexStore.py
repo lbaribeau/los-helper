@@ -557,3 +557,5 @@ condition = [r"It is in [a-z]+ condition\."]
 drop_what = [r"Drop what\?"]
 # fled = [r"You run like a chicken\."]
 
+no_gold = [r"You don't have enough gold\."]
+

@@ -20,6 +20,7 @@ from bots.SmartCrawlThread import SmartCrawlThread
 from bots.GotoThread import GotoThread
 from bots.MixThread import MixThread
 from bots.SlaveThread import SlaveThread
+from bots.TopDownGrind import TopDownGrind
 from command.Quit import Quit
 from command.Command import Command
 from reactions.CombatReactions import CombatReactions
@@ -104,6 +105,11 @@ class CommandHandler(object):
     #         # else:
     #         #     raise e
 
+    def stop_abilities(self):
+        for a in self.character._class.abilities.values():
+            a.stop()
+            self.telnetHandler.write("")
+
     # def handle_command(self, user_input):
     def process(self, user_input):
         """ This CommandHandler function is the filter for user input that
@@ -121,6 +127,24 @@ class CommandHandler(object):
         # for a in [user_input.startswith(self.character._class.abilities.values()) for test in user_input.startswith)
         # elif any([user_input.startswith(a.command) for a in self.character._class.abilities.values()]):
         # for a in [a for a in self.character._class.abilities.values() if user_input().startswith(a.command)]
+
+        # Try making a data structure that we can loop through for this command business
+        # Problem: then the thing that we do has constraints...
+
+        # command_iterator = [
+        #     (lambda uinput : uinput == 'ss', self.stop_abilities()),
+        #     (lambda uinput : re.match('^ki? |^kill?', uinput), self.kill.execute(arg1)),
+        #     (lambda uinput : uinput.startswith('kk '), self.kill.start_thread(uinput.partition(' ')[2].strip())),
+        #     (lambda uinput : any(uinput.split(' ')[0].startswith(a.command) for a in self.character._class.abilities.values())
+
+        # ]
+
+        # for a in self.character._class.abilities.values():
+        #     command_iterator.extend([
+        #         (lambda uinput: uinput.split(' ')[0].startswith(a.command) + 'c', a.spam(arg1)),
+        #         (lambda uinput: uinput.split(' ')[0].startswith(a.command), a.execute(arg1))
+        #     ])
+
         for a in self.character._class.abilities.values():
             # Commands to start a thread trying to use an ability: 'hastec, searc, prayc...'
             if the_split[0].startswith(a.command):
@@ -202,6 +226,8 @@ class CommandHandler(object):
             self.start_track_grind(user_input)
         elif re.match("grind$", user_input):
             self.start_grind(user_input)
+        elif re.match("bot2$", user_input):
+            self.start_top_down_grind(user_input)
         elif re.match("crawl$", user_input):
             self.start_crawl()
         elif re.match("crawl2", user_input):
@@ -540,7 +566,7 @@ class CommandHandler(object):
     def start_track_grind(self, user_input):
         magentaprint("CommandHandler start_track_grind()")
         if not self.bot_check():
-            return 
+            return
 
         M_obj = re.search("[0-9]+", user_input)
 
@@ -551,13 +577,21 @@ class CommandHandler(object):
 
         self.botThread = TrackGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, starting_path)
         self.botThread.start()
-  
+
     def start_grind(self, user_input):
         if not self.bot_check():
             return
 
         self.botThread = SmartGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
         self.botThread.start()
+
+    def start_top_down_grind(self, user_input):
+        if not self.bot_check():
+            return
+
+        # self.botthread = Thread(target=, args=())
+        self.botthread = TopDownGrind(self.character, self, self.mudReaderHandler, self.mud_map)
+        self.botthread.start()
 
     def start_crawl(self):
         if not self.bot_check():

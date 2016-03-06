@@ -65,7 +65,6 @@ class SmartGrindThread(TrackGrindThread):
 
             return super().decide_where_to_go()
         else:
-            
             directions = []
 
             #get pawnshop path then tip path if necessary.
@@ -94,7 +93,7 @@ class SmartGrindThread(TrackGrindThread):
             directions.append("areaid%s" % location)
             if len(directions) > 10:
                 break
-            
+
         magentaprint("SmartGrind directions: " + str(directions))
 
         return directions

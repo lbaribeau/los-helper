@@ -12,8 +12,8 @@ class CombatReactions(object):
         # self.physical_miss = "You (.+?) the (.+?), but (.+?)\." #keyword "but" means ignore everything - you missed
         self.physical_critical = "(The|Your?).+?!!"  # Todo: more specific crit regex
 
-        #self.mob_physical_hit_type = " (kicks|punches|lashes out|throws a wild punch at) you"        
-        # self.mob_physical_damage = "The (.+?) ([\d]) damage\." 
+        #self.mob_physical_hit_type = " (kicks|punches|lashes out|throws a wild punch at) you"
+        # self.mob_physical_damage = "The (.+?) ([\d]) damage\."
         # self.mob_physical_miss = "The (.+?) you, but (.+?)\."
         # self.spell_damage_dealt = "The spell did ([\d]*) damage\."
         # self.regexes = [self.physical_damage,
@@ -27,7 +27,7 @@ class CombatReactions(object):
 
         self.spell_type = "You cast a (.+?) spell on (.+?)\."
 
-        numbers = "(?:[\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)" 
+        numbers = "(?:[\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)"
         # self.enemy_defeated = "Your enemy, (?:the |The )?(" + numbers + " )?(.+?) has been defeated\."
 
         self.character = character
