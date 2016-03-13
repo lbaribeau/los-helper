@@ -7,3 +7,6 @@ class DatabaseHandler(object):
         self.map = map
         create_tables()
         db.close()
+
+    def get_smithy_paths(self):
+        return self.map.get_smithy_paths

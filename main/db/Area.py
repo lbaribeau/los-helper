@@ -8,7 +8,7 @@ class Area(NamedModel):
     is_always_dark = BooleanField(default=False)
     is_dark_at_night = BooleanField(default=False)
     is_restorative = BooleanField(default=False)
-    # is_smithy = BooleanField(default=False)
+    is_smithy = BooleanField(default=False)
     #does_damage_on_entry = BooleanField(default=False)
     #teleports_character = Area(null=True)
 
@@ -79,7 +79,7 @@ class Area(NamedModel):
                 self.is_always_dark = area.is_always_dark
                 self.is_dark_at_night = area.is_dark_at_night
                 self.is_restorative = area.is_restorative
-                # self.is_smithy = area.is_smithy
+                self.is_smithy = area.is_smithy
                 break
 
         #print ("matching areas: " + str(matching_areas) + " is new mapping: " + str(is_new_mapping))

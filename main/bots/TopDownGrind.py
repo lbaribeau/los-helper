@@ -9,6 +9,7 @@ from misc_functions import *
 from Exceptions import *
 from comm import RegexStore as R
 from combat.mob_target_determinator import MobTargetDeterminator
+from mini_bots.travel_bot import TravelBot
 
 class TopDownGrind(Thread):
     def __init__(self, char, command_handler, mrh, db_handler):
@@ -88,7 +89,7 @@ class TopDownGrind(Thread):
                     self.second = w
                     return True
             else:
-                self.command_handler.wield.execute_and_wait(self.character.inventory.get_reference(w, 2))
+                self.command_handler.wield.execute_and_wait(self.char.inventory.get_reference(w, 2))
 
                 if self.command_handler.wield.result in R.already_wielding:
                     if self.second:
@@ -109,7 +110,7 @@ class TopDownGrind(Thread):
         return self.try_rewielding(self.command_handler.wield.second, w)
 
     def try_rewielding(self, command_object, weapon_name):
-        ref = self.character.inventory.get_reference(w, 2)
+        ref = self.char.inventory.get_reference(w, 2)
 
         command_object.execute_and_wait(ref)
         if command_object.success:
@@ -118,7 +119,7 @@ class TopDownGrind(Thread):
         while command_object.broken_error:
             self.inventory.set_broken(ref)
             ref = self.mob_target_determinator.increment_ref(ref)
-            if self.character.inventory.get_item_name_from_reference(ref) == w:
+            if self.char.inventory.get_item_name_from_reference(ref) == w:
                 command_object.execute_and_wait(ref)
                 if command_object.success:
                     return True
@@ -166,8 +167,29 @@ class TopDownGrind(Thread):
             else:
                 self.go_hunting()
 
-    def go_to_nearest_smithy(self):
-        pass
+    def go_to_nearest_smithy(self, grinding=False):
+        magentaprint("TopDownGrind.go_to_nearest_smithy()")
+        smithy_path = self.get_smithy_path()
+        magentaprint("TopDownGrind.get_smithy_path(): " + str(smithy_path))
+        travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.db_handler)
+        travel_bot.follow_path(smithy_path)
+
+    def get_smithy_path(self):
+        try:
+            paths = self.db_handler.get_smithy_paths(self.char.AREA_ID)
+        except Exception as e:
+            #not a good situation - we can't find a way to the chapel from wherever we are
+            #therefore we should just sit and wait here until we can go on the warpath again
+            magentaprint("Exception getting smithy path.")
+            magentaprint(e, False)
+            raise e
+
+        if paths:
+            return get_shortest_array(paths)
+        else:
+            magentaprint("SmartGrindThread.get_smithy_path() error... no exception but no path returned... make sure the DB is accessible.")
+            self.rest_and_check_aura()
+            return []
 
     def go_repair_armour(self):
         pass

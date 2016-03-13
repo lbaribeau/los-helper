@@ -28,6 +28,7 @@ from command.Buy import Buy
 from command.Drop import Drop
 from command.Get import Get
 from comm.Spells import *
+from comm.thread_maker import ThreadMaker
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -81,6 +82,10 @@ class CommandHandler(object):
             # self.mud_map_thread = threading.Thread(target=magentaprint, args=("setting up mud map in main thread",))
             self.setup_mud_map()
 
+        self.actions = {
+            'go_smithy' : self.go_smithy
+        }
+
     def setup_mud_map(self):
         # magentaprint("CommandHandler generating the mapfile....", False)
         self.mud_map = MudMap()
@@ -124,36 +129,46 @@ class CommandHandler(object):
         # user_input = the_split[0]
         arg1 = the_split[1] if len(the_split) >= 2 else None
         arg2 = the_split[2] if len(the_split) >= 3 else None
+        args = user_input.partition(' ')[2] if len(the_split) >= 2 else None
         # for a in [user_input.startswith(self.character._class.abilities.values()) for test in user_input.startswith)
         # elif any([user_input.startswith(a.command) for a in self.character._class.abilities.values()]):
         # for a in [a for a in self.character._class.abilities.values() if user_input().startswith(a.command)]
 
         # Try making a data structure that we can loop through for this command business
-        # Problem: then the thing that we do has constraints...
-
+        # >>> Problem: then the thing that we do has constraints...
         # command_iterator = [
         #     (lambda uinput : uinput == 'ss', self.stop_abilities()),
         #     (lambda uinput : re.match('^ki? |^kill?', uinput), self.kill.execute(arg1)),
         #     (lambda uinput : uinput.startswith('kk '), self.kill.start_thread(uinput.partition(' ')[2].strip())),
         #     (lambda uinput : any(uinput.split(' ')[0].startswith(a.command) for a in self.character._class.abilities.values())
-
         # ]
-
         # for a in self.character._class.abilities.values():
         #     command_iterator.extend([
         #         (lambda uinput: uinput.split(' ')[0].startswith(a.command) + 'c', a.spam(arg1)),
         #         (lambda uinput: uinput.split(' ')[0].startswith(a.command), a.execute(arg1))
         #     ])
+        # actions = {
+        # }
+        # for a in self.character._class.abilities.values():
+        #     actions[a.command] = lambda : a.execute()
+        #     actions[a.command + 'c']
+        # >>> Another: the ability commands have many compositions
+        # Answer: do both
 
-        for a in self.character._class.abilities.values():
+        # for action in self.actions.keys():
+        if the_split[0] in self.actions.keys():
+            self.actions[the_split[0]](args)
+
+        for ability in self.character._class.abilities.values():
             # Commands to start a thread trying to use an ability: 'hastec, searc, prayc...'
-            if the_split[0].startswith(a.command):
+            if the_split[0].startswith(ability.command):
                 if the_split[0].endswith('c'):
-                    a.spam(arg1)
+                    ability.spam(arg1)
                 else:
-                    magentaprint("CommandHandler executed " + str(a))
-                    a.execute(arg1)
+                    magentaprint("CommandHandler executed " + str(ability))
+                    ability.execute(arg1)
                 return
+
         if user_input == 'ss':
             # Stops threads from abilities
             for a in self.character._class.abilities.values():
@@ -565,95 +580,88 @@ class CommandHandler(object):
 
     def start_track_grind(self, user_input):
         magentaprint("CommandHandler start_track_grind()")
-        if not self.bot_check():
-            return
+        if self.bot_check():
+            M_obj = re.search("[0-9]+", user_input)
 
-        M_obj = re.search("[0-9]+", user_input)
+            if M_obj:
+                starting_path = int(M_obj.group(0))
+            else:
+                starting_path = 0
 
-        if M_obj:
-            starting_path = int(M_obj.group(0))
-        else:
-            starting_path = 0
-
-        self.botThread = TrackGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, starting_path)
-        self.botThread.start()
+            self.botThread = TrackGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, starting_path)
+            self.botThread.start()
 
     def start_grind(self, user_input):
-        if not self.bot_check():
-            return
-
-        self.botThread = SmartGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
-        self.botThread.start()
+        if self.bot_check():
+            self.botThread = SmartGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.botThread.start()
 
     def start_top_down_grind(self, user_input):
-        if not self.bot_check():
-            return
+        if self.bot_check():
+            # self.botthread = Thread(target=, args=())
+            self.botthread = TopDownGrind(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.botthread.start()
 
-        # self.botthread = Thread(target=, args=())
-        self.botthread = TopDownGrind(self.character, self, self.mudReaderHandler, self.mud_map)
-        self.botthread.start()
+    def go_smithy(self, args):
+        if self.bot_check():
+            tdg = TopDownGrind(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.botthread = ThreadMaker(tdg, 'go_to_nearest_smithy')
+            self.botthread.start()
 
     def start_crawl(self):
-        if not self.bot_check():
-            return
-        self.botThread = CrawlThread(self.character, self, self.mudReaderHandler, self.mud_map)
-        self.botThread.start()
+        if self.bot_check():
+            self.botThread = CrawlThread(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.botThread.start()
 
     def start_smart_crawl(self):
-        if not self.bot_check:
-            return
-        self.botThread = SmartCrawlThread(self.character, self, self.mudReaderHandler, self.mud_map)
-        self.botThread.start()
+        if self.bot_check:
+            self.botThread = SmartCrawlThread(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.botThread.start()
 
     def start_goto(self, user_input, is_show_to=False):
-        if not self.bot_check():
-            return
+        if self.bot_check():
+            M_obj = re.search("-?[0-9]+", user_input)
 
-        M_obj = re.search("-?[0-9]+", user_input)
+            if M_obj:
+                area_to = int(M_obj.group(0))
+            else:
+                area_to = None
 
-        if M_obj:
-            area_to = int(M_obj.group(0))
-        else:
-            area_to = None
-
-        self.botThread = GotoThread(self.character, self, self.mudReaderHandler, self.mud_map, area_to, is_show_to)
-        self.botThread.start()
+            self.botThread = GotoThread(self.character, self, self.mudReaderHandler, self.mud_map, area_to, is_show_to)
+            self.botThread.start()
 
     def start_slave(self, user_input):
-        if not self.bot_check():
-            return
-        self.botThread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, "")
-        self.botThread.start()
+        if self.bot_check():
+            self.botThread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, "")
+            self.botThread.start()
 
     def start_mix(self, user_input):
-        if not self.bot_check():
-            return
-
-        M_obj = re.search(r"domix (?P<target>[A-Za-z]+) (?P<mix_target>[A-Za-z]+)(?P<qty> \d+)?$", user_input)
-        can_mix = True
-
-        try:
-            target = M_obj.group('target')
-            mix_target = M_obj.group('mix_target')
+        if self.bot_check():
+            M_obj = re.search(r"domix (?P<target>[A-Za-z]+) (?P<mix_target>[A-Za-z]+)(?P<qty> \d+)?$", user_input)
+            can_mix = True
 
             try:
-                quantity = int(M_obj.group('qty').strip())
-            except Exception:
-                magentaprint(str(M_obj.groups()),False)
-                quantity = 1
-        except Exception:
-            if M_obj:
-                magentaprint(str(M_obj.groups()),False)
-            else:
-                magentaprint('start_mix(): cannot parse command (use held item as 1st argument and target as 2nd, held item gets worked.)')
-            can_mix = False
+                target = M_obj.group('target')
+                mix_target = M_obj.group('mix_target')
 
-        if can_mix:
-            self.botThread = MixThread(self.character, self, self.mudReaderHandler, self.mud_map, self.telnetHandler, 
-                                       target, mix_target, quantity)
-            self.botThread.start()
-        else:
-            magentaprint("Input not recognized - cannot start the mixer!", False)
+                try:
+                    quantity = int(M_obj.group('qty').strip())
+                except Exception:
+                    magentaprint(str(M_obj.groups()),False)
+                    quantity = 1
+            except Exception:
+                if M_obj:
+                    magentaprint(str(M_obj.groups()),False)
+                else:
+                    magentaprint('start_mix(): cannot parse command (use held item as 1st argument and target as 2nd, held item gets worked.)')
+                can_mix = False
+
+            if can_mix:
+                self.botThread = MixThread(self.character, self, self.mudReaderHandler, self.mud_map, self.telnetHandler, 
+                                           target, mix_target, quantity)
+                self.botThread.start()
+            else:
+                magentaprint("Input not recognized - cannot start the mixer!", False)
 
     def stop_bot(self):
         if self.botThread and self.botThread.is_alive():
@@ -671,7 +679,7 @@ class CommandHandler(object):
             magentaprint("Error in the bulk buy function" + str(M_obj.groups(0)), False)
             raise e
 
-    def find(self, user_input):           
+    def find(self, user_input):
         M_obj = re.search("find (.+)", user_input)
         magentaprint("Finding: " + str(M_obj.group(1)))
         [areas, mob_locations] = MudMap.find(str(M_obj.group(1)))

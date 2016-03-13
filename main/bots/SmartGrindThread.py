@@ -146,7 +146,7 @@ class SmartGrindThread(TrackGrindThread):
             except Exception as e:
                 #not a good situation - we can't find a way to the chapel from wherever we are
                 #therefore we should just sit and wait here until we can go on the warpath again
-                magentaprint("Exception getting heal path.") 
+                magentaprint("Exception getting heal path.")
                 magentaprint(e, False)
                 raise e
 
