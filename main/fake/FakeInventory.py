@@ -45,7 +45,7 @@ class FakeInventory(object):
                 else:
                     output += self.numbers[count-1] + ' ' + i.name + 's'
             output += ', '
-            
+
         return output[:len(output)-2]
 
     def remove(self, ref):
@@ -68,6 +68,13 @@ class FakeInventory(object):
         self.l.append(item)
         # self.l.append(FakeItem(item))
         # self.l.sort()  # We want to keep broken items sorted properly by inserting manually
+
+    def add_broken(self, item):
+        if isinstance(item, str):
+            item = FakeItem(item)
+
+        item.unusable = True
+        self.add(item)
 
     def index(self, ref):
         if len(ref.split()) >= 2:
@@ -98,7 +105,7 @@ class FakeInventory(object):
         for i in self.l:
             if i.name == item_string:
                 return True
-                
+
         return False
 
     def remove_all(self, name):

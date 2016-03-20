@@ -3,7 +3,7 @@ from bots.GotoThread import GotoThread
 from mini_bots.mini_bot import MiniBot
 
 class TravelBot(MiniBot):
-    # Should make use of goto thread
+    # This bot can kill enemies on the way
 
     def __init__(self, char, command_handler, mud_reader_handler, map):
         super().__init__()

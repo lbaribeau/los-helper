@@ -31,7 +31,7 @@ import sys, time, getpass, threading, atexit, re, os, socket
 from misc_functions import *
 from comm.Character import Character
 from comm.CharacterClass import CharacterClass
-from comm.CommandHandler import CommandHandler
+from comm.command_handler import CommandHandler
 from comm.MudReaderHandler import MudReaderHandler
 from comm.MudReaderThread import MudReaderThread
 from comm.MudListenerThread import MudListenerThread
@@ -40,7 +40,7 @@ from command.Inventory import Inventory
 from reactions.CombatReactions import CombatReactions
 from reactions.Mobs import Mobs
 from combat.SmartCombat import SmartCombat
-from command.Info import Info 
+from command.Info import Info
 from command.Whois import Whois
 from command.SpellsCommand import SpellsCommand
 from reactions.Cartography import Cartography

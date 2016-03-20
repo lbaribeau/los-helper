@@ -1,6 +1,6 @@
 
 from command.Command import Command
-from comm.RegexStore import RegexStore as R
+from comm import RegexStore as R
 
 class Repair(Command):
     command = 'repair'

@@ -54,7 +54,7 @@ class SmartCombat(CombatObject):
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
         self.character = character
         self.regex_cart.extend([
-            RegexStore.prompt, RegexStore.weapon_break, RegexStore.weapon_shatters, RegexStore.mob_attacked, RegexStore.armor_breaks,
+            RegexStore.prompt, RegexStore.weapon_break, RegexStore.weapon_shatters, RegexStore.mob_attacked, RegexStore.armour_breaks,
             RegexStore.mob_arrived, RegexStore.mob_wandered, RegexStore.mob_left
         ])
         self.mob_target_determinator = MobTargetDeterminator()
@@ -88,8 +88,8 @@ class SmartCombat(CombatObject):
         elif regex in RegexStore.weapon_break or regex in RegexStore.weapon_shatters:
             magentaprint("SmartCombat weapon break: " + str(M_obj.group('weapon')))
             self.broken_weapon = M_obj.group('weapon')
-        elif regex in RegexStore.armor_breaks:
-            magentaprint("SmartCombat armor break: " + str(M_obj.group(1)) + ', len ' + str(len(M_obj.group(1).split(' '))))
+        elif regex in RegexStore.armour_breaks:
+            magentaprint("SmartCombat armour break: " + str(M_obj.group(1)) + ', len ' + str(len(M_obj.group(1).split(' '))))
             if len(M_obj.group(1).split(' ')) >= 2:
                 if M_obj.group(1).split(' ')[1] == 'ring':
                     self.broke_ring = True

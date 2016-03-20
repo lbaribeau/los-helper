@@ -4,7 +4,7 @@ from misc_functions import magentaprint
 from Aura import Aura
 
 class TrackGrindThread(GrindThread):
-    def __init__(self, character, commandHandler, mudReaderHandler, mud_map, starting_path=None): 
+    def __init__(self, character, commandHandler, mudReaderHandler, mud_map, starting_path=None):
         super().__init__(character, commandHandler, mudReaderHandler, mud_map)
 
         # Set TOTALPATHS.  Setting it lower than the actual number

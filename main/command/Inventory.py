@@ -48,7 +48,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         self.regex_cart = [
             R.you_have, R.wont_buy, R.wont_buy2, R.sold, R.you_drop, R.disintegrates, R.gold_from_tip, R.not_a_pawn_shop,
             R.you_now_have, R.not_empty, R.you_wear, R.nothing_to_wear, R.you_get, R.you_remove, R.nothing_to_remove, R.you_wield,
-            R.you_give, R.bought, R.you_put_in_bag, R.gave_you, R.you_hold, R.weapon_break, R.weapon_shatters, R.armor_breaks,
+            R.you_give, R.bought, R.you_put_in_bag, R.gave_you, R.you_hold, R.weapon_break, R.weapon_shatters, R.armour_breaks,
             R.current_equipment, R.no_inventory, R.wearing
         ]
         self.telnetHandler = telnetHandler
@@ -102,7 +102,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         elif regex in R.you_wear + R.you_hold:
             self.remove_many(M_obj.group(1))
             self.get_equipment()
-            #we know this is armor of some kind so we need to find a way to assign it to the right spot
+            #we know this is armour of some kind so we need to find a way to assign it to the right spot
         elif regex in R.you_remove + R.gave_you:
             self.add(M_obj.group(1))
         elif regex in R.bought:
@@ -110,8 +110,8 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             # if not self.is_bulk_vendoring:
             #     self.get_inventory()  # There are some notes about this at the bottom
             #     # I don't like this very much! I can't use ! to buy a lot of a thing.
-        elif regex in R.weapon_break + R.armor_breaks:
-            magentaprint('Inventory weapon / armor break')
+        elif regex in R.weapon_break + R.armour_breaks:
+            magentaprint('Inventory weapon / armour break')
             item = M_obj.group(1)
             self.add_broken(M_obj.group(1))
             # self.get_equipment()

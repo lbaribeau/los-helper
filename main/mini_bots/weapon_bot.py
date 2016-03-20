@@ -1,28 +1,17 @@
 
 import time
 import re
-import threading
-from threading import Thread
-import atexit
 
 from misc_functions import *
 from Exceptions import *
 from comm import RegexStore as R
 from combat.mob_target_determinator import MobTargetDeterminator
 from mini_bots.travel_bot import TravelBot
+from mini_bots.equipment_bot import EquipmentBot
 
-class TopDownGrind(Thread):
+class WeaponBot(EquipmentBot):
     def __init__(self, char, command_handler, mrh, db_handler):
-        super().__init__()
-        self.char = char
-        self.command_handler = command_handler
-        self.mrh = mrh
-        self.db_handler = db_handler
-        self.smartCombat = command_handler.smartCombat
-        self.kill = command_handler.smartCombat.kill
-        self.cast = command_handler.smartCombat.cast
-        self.stopping = False
-        self.broken_armour = []
+        super().__init__(char, command_handler, mrh, db_handler)
 
         self.actions = {
             # R.you_wield: (lambda self, match : self.weapon = match.group('weapon')),
@@ -31,10 +20,10 @@ class TopDownGrind(Thread):
             R.off_hand[0]: self.react_to_off_hand,
             R.weapon_break[0]: self.react_to_weapon_break,
             # R.weapon_break: lambda match : if
-            R.weapon_shatters[0]: self.react_to_weapon_break,
-            R.armour_breaks[0]: self.react_to_armour_break
+            R.weapon_shatters[0]: self.react_to_weapon_break
         }
-        self.regex_cart = self.actions.keys()
+        # self.regex_cart = self.actions.keys()
+        self.regex_cart = [R.you_wield, R.off_hand, R.weapon_break, R.weapon_shatters]
 
     def notify(self, regex, match):
         self.actions[regex](match)
@@ -52,9 +41,6 @@ class TopDownGrind(Thread):
             del self.weapon  # self.weapon can be incorrectly deleted if th offhand is the same
         elif hasattr(self, 'second') and self.second == match.group('weapon'):
             del self.second
-
-    def react_to_armour_break(self, match):
-        self.broken_armour.add(match.group('item'))
 
     def go_repair_or_replace_weapon(self):
         if hasattr(self, 'broken_weapon'):
@@ -153,31 +139,19 @@ class TopDownGrind(Thread):
         else:
             self.weapon = weapon_name
 
-    def stop(self):
-        self.stopping = True
-
     def run(self):
-        self.stopping = False
+        # Better to use smaller bits of this bot
+        self.go_repair_or_replace_weapon()
 
-        while not self.stopping:
-            if self.stopping:
-                break
-
-            self.go_repair_or_replace_weapon()
-            self.go_repair_armour()
-            self.go_sell_and_drop()
-
-            if self.should_rest():
-                self.go_rest()
-            else:
-                self.go_hunting()
+    def stop(self):
+        self.travel_bot.stop()
 
     def go_to_nearest_smithy(self, grinding=False):
         magentaprint("TopDownGrind.go_to_nearest_smithy()")
         smithy_path = self.get_smithy_path()
         magentaprint("TopDownGrind.get_smithy_path(): " + str(smithy_path))
-        travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.db_handler)
-        travel_bot.follow_path(smithy_path)
+        self.travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.db_handler)
+        self.travel_bot.follow_path(smithy_path)
 
     def get_smithy_path(self):
         try:
@@ -195,16 +169,6 @@ class TopDownGrind(Thread):
             magentaprint("SmartGrindThread.get_smithy_path() error... no exception but no path returned... make sure the DB is accessible.")
             self.rest_and_check_aura()
             return []
-
-    def go_repair_armour(self):
-        # Make a broken armour array
-        pass
-
-    def go_sell_and_drop(self):
-        pass
-
-    # def should_rest(self):
-    #     pass
 
     # Commented - algorithm change - we can do the same thing on shattered or broken
     # (try items in inventory, repair items in inventory, then go shopping)

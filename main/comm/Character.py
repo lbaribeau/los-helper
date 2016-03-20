@@ -22,16 +22,16 @@ class Character(object):
         #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #MAGIC_SKILLS= [0, 0, 0, 0, 0]
         self.SKILLS = {}
-
-        self.LEVEL_LIST = ["You could kill (?:.+?) with a needle\.", #-4 or more levels
-                      "(?:.+?) should be easy to kill\.", #-2 level from this character
-                      "(?:.+?) shouldn't be too tough to kill\.", #-2 level from this character
-                      "(?:.+?) is not quite as good as you\.", #-1 level from this character
-                      "(?:.+?) is a perfect match for you!", #same level as character
-                      "(?:.+?) is a little better than you\.", #+1 level from this character
-                      "(?:.+?) might be tough to kill\.", #+2 level from this character
-                      "(?:.+?) should be really hard to kill\.", #+3 levels from this character
-                      "(?:.+?) could kill you with a needle\." #+4 or more levels from this character
+        self.LEVEL_LIST = [
+            "You could kill (?:.+?) with a needle\.",   #-4 or more levels
+            "(?:.+?) should be easy to kill\.",         #-3 level from this character
+            "(?:.+?) shouldn't be too tough to kill\.", #-2 level from this character
+            "(?:.+?) is not quite as good as you\.",    #-1 level from this character
+            "(?:.+?) is a perfect match for you!",      #same level as character
+            "(?:.+?) is a little better than you\.",    #+1 level from this character
+            "(?:.+?) might be tough to kill\.",         #+2 level from this character
+            "(?:.+?) should be really hard to kill\.",  #+3 levels from this character
+            "(?:.+?) could kill you with a needle\."    #+4 or more levels from this character
         ]
         self.WEAPON_TYPES = ["Sharp", "Thrust", "Blunt", "Pole", "Missile" ]
 
@@ -301,6 +301,8 @@ class Character(object):
     lvl14_monsters = [
         'cave troll guard', 'Rancher Plover', 'Team Leader Egan', 'Qimoth', "Th'kit the HorseMaster"
     ]
+    lvl15_monsters = []
+    lvl16_monsters = ['Holbyn']
     # A list of monsters redundant to the above lists that
     # I may want to kill even if they are too low of level.
     # Mostly hostiles and things that don't let you loot.

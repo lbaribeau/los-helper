@@ -11,6 +11,7 @@ class FakeMob(object):
 
     def do_combat(self):
         self.increment_rng()
+        magentaprint("FakeMob rng: " + str(self.rng))
         if self.rng == 0:
             self.mobdead()
             return True
@@ -18,7 +19,7 @@ class FakeMob(object):
             self.sub_combat(self.rng)
 
     def increment_rng(self):
-        return (self.rng + 1) % 4
+        self.rng = (self.rng + 1) % 3
 
     def mobdead(self):
         self.socket_output.append('Your attack overwhelms the ' + self.name + ' and he collapses!\nYour enemy, the ' + self.name + ' has been defeated.\nYou gain 11 experience.\n')
@@ -96,6 +97,17 @@ class Stablehand(TabbyCat):
     #     if self.rng == 1:
     #         self.socket_output.append('[%s H %s M]: You get 20 scarlet potions.\n\r' % (self.char.hp, self.char.mp))
     #     super().do_combat()
+
+class BarbarianWarrior(FakeMob):
+    def __init__(self, fake_character, socket):
+        super().__init__(fake_character, socket)
+        self.name = 'barbarian warrior'
+
+    def sub_combat(self, rng):
+        self.socket_output.append('[%s H %s M]: The %s throws a wild punch at you, but it misses.\n\r' % (str(self.char.hp), str(self.char.mp), str(self.name)))
+        if rng == 2:
+            self.socket_output.append('[%s H %s M]: Your chain mail armour fell apart.\n\r' % (self.char.hp, self.char.mp))
+            self.char.inv.add_broken('chain mail armour')
 
 
 

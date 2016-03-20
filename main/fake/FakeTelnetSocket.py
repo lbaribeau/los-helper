@@ -20,6 +20,7 @@ class FakeTelnetSocket(object):
         self.actor = Actor(self.char, self.socket_output)
         self.tabby_cat = TabbyCat(self.char, self.socket_output)
         self.stablehand = Stablehand(self.char, self.socket_output)
+        self.barbarian_warrior = BarbarianWarrior(self.char, self.socket_output)
 
     def initialize_socket_output(self, character_name):
         self.char.name = character_name
@@ -28,6 +29,7 @@ class FakeTelnetSocket(object):
         self.current_monster_list = [
             'acrobat', # chasing
             self.actor.name,
+            self.barbarian_warrior.name,
             'juggler', # chasing
             'kobold champion', # weapon shatter
             # 'kobold sentry', # spear break
@@ -53,9 +55,9 @@ class FakeTelnetSocket(object):
         self.inventory.set_unusable('morning')
         self.inventory.set_unusable('maul 2')
         self.inventory.set_unusable('maul 3')
-        self.inventory.set_unusable('ring 3') 
+        self.inventory.set_unusable('ring 3')
         self.inventory.set_unusable('ring 5')
-        self.inventory.set_unusable('crossbow 2') 
+        self.inventory.set_unusable('crossbow 2')
         self.inventory.set_unusable('crossbow 3')
         self.char.inv = self.inventory
         # self.inventory = FakeInventory({'awl':1, 'small lamp':6, 'small knife':6, 'large sack':2, 'silver chalice':6, 'small flask':2, \
@@ -270,6 +272,12 @@ class FakeTelnetSocket(object):
             self.socket_output.append(echo + '\n\r')
         elif re.match('quit', command) or re.match('quilt', command):
             self.socket_output.append('Goodbye! Come back soon.\n\r')
+        elif re.match('repair ', command):
+            # self.socket_output.append("\"Darnitall!\" shouts the smithy, \"I broke another. Sorry lad.\"")
+            magentaprint("FakeTelnet command: " + str(command))
+            item = self.char.inv.get(command.partition(' ')[1])
+            item.usable = True
+            self.socket_output.append("The smithy hands a " + str(item) + " back to you, almost good as new.")
 
     def gen_area(self, area):
         self.current_mud_area = MudArea(area)
@@ -431,6 +439,10 @@ class FakeTelnetSocket(object):
                 if self.actor.do_combat():
                     if self.actor.name in self.current_monster_list:
                         self.current_monster_list.remove(self.actor.name)
+            elif mob == self.barbarian_warrior.name:
+                if self.barbarian_warrior.do_combat():
+                    if self.barbarian_warrior.name in self.current_monster_list:
+                        self.current_monster_list.remove(self.barbarian_warrior.name)
             # self.mobflee(mob, str(self.current_mud_area.area_exits[0].exit_type.name))
             else:
                 self.rng = (self.rng + 1) % 3

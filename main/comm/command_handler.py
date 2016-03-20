@@ -29,6 +29,9 @@ from command.Drop import Drop
 from command.Get import Get
 from comm.Spells import *
 from comm.thread_maker import ThreadMaker
+from command.repair import Repair
+from command.wear import Wear
+from mini_bots.armour_bot import ArmourBot
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -43,6 +46,8 @@ class CommandHandler(object):
         # mudReaderHandler.register_reaction(self.smartCombat.cast)
         # mudReaderHandler.register_reaction(self.smartCombat)
         # self.smartCombat = SmartCombat(self.telnetHandler, self.character, Kill(telnetHandler), Cast(telnetHandler), Prompt(character))
+        self.combat_reactions = CombatReactions(self.character)
+        mudReaderHandler.add_subscriber(self.combat_reactions)
         self.smartCombat = SmartCombat(self.telnetHandler, self.character)
         self.kill = self.smartCombat.kill
         self.cast = self.smartCombat.cast
@@ -55,8 +60,6 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.smartCombat.wield.second)
         mudReaderHandler.add_subscriber(self.smartCombat)
         mudReaderHandler.add_subscriber(self.smartCombat.use)
-        self.combat_reactions = CombatReactions(self.character)
-        mudReaderHandler.add_subscriber(self.combat_reactions)
         self.buy = Buy(telnetHandler)
         mudReaderHandler.add_subscriber(self.buy)
         self.drop = Drop(telnetHandler)
@@ -64,6 +67,10 @@ class CommandHandler(object):
         self.get = Get(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.get)
         self.use = self.smartCombat.use
+        self.repair = Repair(telnetHandler)
+        mudReaderHandler.add_subscriber(self.repair)
+        self.wear = Wear(telnetHandler)
+        mudReaderHandler.add_subscriber(self.wear)
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
@@ -74,21 +81,24 @@ class CommandHandler(object):
         self.mud_map_thread = None
         if self.threaded_map_setup:
             # Threading the db setup causes a locking error if the starting area needs to be saved
-            self.mud_map_thread = threading.Thread(target=self.setup_mud_map)
+            self.mud_map_thread = threading.Thread(target=self.init_map_and_bots)
             self.mud_map_thread.start()  # Don't forget to uncomment .join()
         else:
             # # self.mud_map = MudMap()
             # # self.bot_ready = self.mud_map.ready  # True
             # self.mud_map_thread = threading.Thread(target=magentaprint, args=("setting up mud map in main thread",))
-            self.setup_mud_map()
+            self.init_map_and_bots()
 
         self.actions = {
-            'go_smithy' : self.go_smithy
+            'go_smithy' : self.go_smithy,
+            'suit_up': self.suit_up
         }
 
-    def setup_mud_map(self):
+    def init_map_and_bots(self):
         # magentaprint("CommandHandler generating the mapfile....", False)
         self.mud_map = MudMap()
+        self.armour_bot = ArmourBot(self.character, self, self.mudReaderHandler, self.mud_map)
+        self.mudReaderHandler.add_subscriber(self.armour_bot)
         magentaprint("CommandHandler: Mapfile completed.", False)
 
     def join_mud_map_thread(self):
@@ -158,6 +168,7 @@ class CommandHandler(object):
         # for action in self.actions.keys():
         if the_split[0] in self.actions.keys():
             self.actions[the_split[0]](args)
+            return
 
         for ability in self.character._class.abilities.values():
             # Commands to start a thread trying to use an ability: 'hastec, searc, prayc...'
@@ -261,7 +272,7 @@ class CommandHandler(object):
         elif re.match("stop$", user_input):
             self.stop_bot()
         elif re.match("remap", user_input):
-            self.mud_map.re_map()            
+            self.mud_map.re_map()
         elif re.match("HASTING", user_input):
             magentaprint(str(self.character.HASTING), False)
         elif re.match("weapon1", user_input):
@@ -312,8 +323,8 @@ class CommandHandler(object):
         elif re.match("(?i)mobs_joined_in", user_input):
             magentaprint(self.character.MOBS_JOINED_IN, False)
         elif re.match("(?i)aura", user_input):
-            magentaprint(str(self.cast.aura))        
-            magentaprint(str(self.character.preferred_aura))        
+            magentaprint(str(self.cast.aura))
+            magentaprint(str(self.character.preferred_aura))
         elif re.match("(?i)mobs_attacking", user_input):
             magentaprint(self.character.MOBS_ATTACKING, False)
         elif re.match("(?i)monster_kill_list", user_input):
@@ -606,6 +617,11 @@ class CommandHandler(object):
         if self.bot_check():
             tdg = TopDownGrind(self.character, self, self.mudReaderHandler, self.mud_map)
             self.botthread = ThreadMaker(tdg, 'go_to_nearest_smithy')
+            self.botthread.start()
+
+    def suit_up(self, args):
+        if self.bot_check():
+            self.botthread = ThreadMaker(self.armour_bot, 'suit_up')
             self.botthread.start()
 
     def start_crawl(self):
