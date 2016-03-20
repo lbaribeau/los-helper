@@ -57,6 +57,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         self.__stopping = False
         self.is_bulk_vendoring = False
         self.equipped_items = {}
+        self.is_dropping = False
         # equipped_items = {'body': [], 'arms':[], 'legs':[],'neck':[],'hands':[],'head':[],'feet':[],'face':[],'finger':[],'Shield':[],'Wielded':[],'Second':[]}
 
         for index, item in enumerate(self.keep_list):
@@ -98,7 +99,10 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             # Maybe we just want to reset everthing after dropping... or the bot needs to manage things,
             # or inventory needs full control of many commands (drop, sell...) ... hmph ... preferring to
             # ask the server
-            self.remove_many(M_obj.group(1))
+            if self.already_removed_dropped_item:
+                self.already_removed_dropped_item = False
+            else:
+                self.remove_many(M_obj.group(1))
         elif regex in R.you_wear + R.you_hold:
             self.remove_many(M_obj.group(1))
             self.get_equipment()
@@ -285,6 +289,14 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         item_ref = self.get_last_reference(item_string)
         self.telnetHandler.write("drop " + item_string  + " " + str(position))
         self.wait_for_flag()
+
+    def bulk_drop(self, unique_word, qty):
+        # item_ref = self.get_first_reference(unique_word)
+        for i in range(qty):
+            self.already_removed_dropped_item = True
+            self.telnetHandler.write("drop " + unique_word)
+            self.wait_for_flag()
+            self.remove_by_ref(unique_word)
 
     def stop(self):
         self.__stopping = True

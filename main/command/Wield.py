@@ -13,7 +13,7 @@ class Arm(Command):
         super().__init__(telnetHandler)
 
     def notify(self, r, m):
-        if r in RegexStore.equipment_broken:
+        if r in RegexStore.weapon_broken:
             # self.character.inventory  # set is_unusable perhaps
             self.broken_error = True
         elif r in RegexStore.already_wielding or r in RegexStore.already_seconding:
@@ -28,7 +28,7 @@ class Arm(Command):
 class Wield(Arm):
     command = 'wie'
     success_regexes = [RegexStore.you_wield]
-    failure_regexes = [RegexStore.equipment_broken, RegexStore.cannot_second, RegexStore.not_skilled]
+    failure_regexes = [RegexStore.weapon_broken, RegexStore.cannot_second, RegexStore.not_skilled]
     error_regexes = [RegexStore.dont_have, RegexStore.not_weapon, RegexStore.already_wielding]
 
     def __init__(self, character, telnetHandler):
@@ -56,7 +56,7 @@ class Wield(Arm):
 class Second(Arm):
     command = 'seco'
     success_regexes = [RegexStore.off_hand]
-    failure_regexes = [RegexStore.equipment_broken, RegexStore.no_primary, RegexStore.remove_shield, RegexStore.cannot_second, \
+    failure_regexes = [RegexStore.weapon_broken, RegexStore.no_primary, RegexStore.remove_shield, RegexStore.cannot_second, \
                        RegexStore.primary_excludes, RegexStore.not_skilled, RegexStore.not_ranger]
     error_regexes = [RegexStore.dont_have, RegexStore.not_weapon, RegexStore.already_seconding]
 

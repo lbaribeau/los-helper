@@ -513,7 +513,7 @@ cant_use = [
 
 you_wield = [r"You wield (an?|some) (?P<weapon>[A-Za-z ']+)\."]  # Gets a positive of the off-hand message
 off_hand = [r"You wield (an?|some) (?P<weapon>[A-Za-z ']+) in your off hand\."]
-equipment_broken = [r"You can't\. Its broken\."]  # grammatical error
+weapon_broken = [r"You can't\. Its broken\."]  # grammatical error
 not_weapon = ["You can't wield that\."]
 dont_have = [r"You don't have that\."]
 weapon_break = [r"Your (?P<weapon>[A-Za-z' ]+?) breaks and you have to remove it\."]
@@ -558,6 +558,7 @@ repair_what = [r"Repair what\?"]
 drop_what = [r"Drop what\?"]
 # fled = [r"You run like a chicken\."]
 wear_what = [r"Wear what\?"]
+no_room = [r"There is no room to wear that\!"]
 in_combat = [r"You are fighting\! you can't do that now\!"]
 doesnt_fit = [__item + r" doesn't fit you\."]
 

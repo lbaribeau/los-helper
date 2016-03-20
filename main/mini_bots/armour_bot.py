@@ -26,7 +26,10 @@ class ArmourBot(EquipmentBot):
         self.actions[regex](match)
 
     def react_to_armour_break(self, match):
-        self.broken_armour.append(match.group('item'))
+        if len(match.group('item').split()) == 2 and match.group('item').split()[1] == 'ring':
+            return
+        else:
+            self.broken_armour.append(match.group('item'))
 
     def suit_up(self):
         magentaprint("ArmourBot suit_up()")

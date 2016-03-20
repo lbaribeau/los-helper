@@ -91,7 +91,8 @@ class CommandHandler(object):
 
         self.actions = {
             'go_smithy' : self.go_smithy,
-            'suit_up': self.suit_up
+            'suit_up': self.suit_up,
+            'bdrop' : self.bulk_drop
         }
 
     def init_map_and_bots(self):
@@ -673,7 +674,7 @@ class CommandHandler(object):
                 can_mix = False
 
             if can_mix:
-                self.botThread = MixThread(self.character, self, self.mudReaderHandler, self.mud_map, self.telnetHandler, 
+                self.botThread = MixThread(self.character, self, self.mudReaderHandler, self.mud_map, self.telnetHandler,
                                            target, mix_target, quantity)
                 self.botThread.start()
             else:
@@ -694,6 +695,18 @@ class CommandHandler(object):
         except Exception as e:
             magentaprint("Error in the bulk buy function" + str(M_obj.groups(0)), False)
             raise e
+
+    def bulk_drop(self, arg_string):
+        if arg_string:
+            unique_word = arg_string.split(' ')[0]
+            if ' ' in arg_string:
+                qty = int(arg_string.split(' ')[1])
+            else:
+                qty = 1
+
+            self.inventory.bulk_drop(unique_word, qty)
+        else:
+            magentaprint("Bulk drop missing arguments")
 
     def find(self, user_input):
         M_obj = re.search("find (.+)", user_input)
