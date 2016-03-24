@@ -7,7 +7,7 @@ from misc_functions import magentaprint
 class Info(BotReactionWithFlag):
     header = "     (\S+) the (.+?), a (.+?) of the (1st|2nd|3rd|\d\d?th) level    "
     your_preferred = "Your preferred alignment is (.+?)     "
-    
+
     first = (
         " \|       Str : (\d+) +\|  \|     Sharp   : (\d+) *%  \|  \|     Earth : (\d+) *%     \|\n\r"
         " \|       Dex : (\d+) +\|  \|     Thrust  : (\d+) *%  \|  \|     Wind  : (\d+) *%     \|\n\r"
@@ -88,9 +88,9 @@ class Info(BotReactionWithFlag):
             self.objects = int(M_obj.group(11))
             self.got_second = True
             super().notify(regex, M_obj)
-            # magentaprint("Objects: " + str(self.objects))   
+            # magentaprint("Objects: " + str(self.objects))
 
-        @property 
+        @property
         def success(self):
             return got_first and got_second
 

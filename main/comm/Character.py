@@ -74,11 +74,6 @@ class Character(object):
 
         self.LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096, 8192]
 
-        # MONSTER LISTS
-        # All lists are mutually exclusive except for "preferred."
-        # Monsters may be placed in a higher level group if they are 
-        # difficult to kill.
-
         self.MOBS_JOINED_IN = []
         self.MOBS_ATTACKING = []
 
@@ -200,6 +195,9 @@ class Character(object):
             else:
                 return 'javelin'
 
+    # All monster lists are mutually exclusive except for "preferred."
+    # Monsters may be placed in a higher level group if they are difficult to kill.
+
     lvl1_monsters = [ # 1-8 exp
         'dustman', 'small girl', 'young boy', 'old woman', 'old man', 'townsman', 'stall holder', 'duck', 'hedgehog', 'piglet',
         'streetsweeper', 'shopper', 'window shopper', 'window cleaner', 'waitress', 'housewife', 'squirrel', 'milk maid', 'rabbit',
@@ -214,7 +212,7 @@ class Character(object):
         'hawker', 'barmaid', 'smelly beggar', 'black crow', 'sheep', 'goose', 'singer', 'musician', 'spiv', 'bidder', 'dairy cow',
         'scholar', 'juggler', 'shepherd', 'gazelle', 'dancer', 'jongleur', 'clerk', 'stablehand', 'rich kid', 'bladesman',
         "cook's assistant", "miner's assistant", 'mare', 'tabby cat'
-        # 'acolyte' #, 'penitent'  # aur
+        'acolyte' #, 'penitent'  # aur
     ]
     lvl2_red_monsters = [
         'kobold sentry', 'blond hooker', 'sultry hooker', 'kobold', 'spiv', 'drunken miner', 'kobold miner', 'kobold archer',

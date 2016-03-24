@@ -6,6 +6,7 @@ from math import floor, ceil
 from bots.BotThread import BotThread
 from misc_functions import magentaprint
 from reactions.BotReactions import GenericBotReaction
+from reactions.ring_reaction import RingWearingReaction
 from Exceptions import *
 from comm import Spells
 from db.MudItem import MudItem
@@ -161,8 +162,10 @@ class GrindThread(BotThread):
     def set_up_automatic_ring_wearing(self):
         """ Makes some BotReactions so that when MudReaderHandler sees us
         pick up a ring, we'll wear it."""
-        ringReaction = GenericBotReaction("(?s)You get .+? an? .+? ring((,.+?\.)|(\.))", self.commandHandler, "wear all")
-        self.mudReaderHandler.register_reaction(ringReaction)
+        # r = GenericBotReaction("(?s)You get .+? an? .+? ring((,.+?\.)|(\.))", self.commandHandler, "wear all")  # Regex problem
+        # self.mudReaderHandler.register_reaction(r)
+        ring_reaction = RingWearingReaction(self.character.inventory, self.commandHandler)
+        self.mudReaderHandler.register_reaction(ring_reaction)
         #Todo: fix for case where there's ring mail in the inventory or multiple rings are dropped
 
     def rest_and_check_aura(self):

@@ -122,22 +122,22 @@ class BotReactionWithFlag(BotReaction):
         # magentaprint("wait_for_class_flag done ")
 
 
-    # * A high MUD_timeout allows for big lag, which is nice. 
+    # * A high MUD_timeout allows for big lag, which is nice.
     # You can get stuck on the road if you get impatient and send extra commands.
-    # Remember that commands don't timeout unless there's lag or a regex is 
-    # missing, so having this high shouldn't slow anything down.  If it does, 
+    # Remember that commands don't timeout unless there's lag or a regex is
+    # missing, so having this high shouldn't slow anything down.  If it does,
     # a regex can be handled better.
 
 # class BotReactionWithClassFlag(BotReaction):
-#     """ This reaction provides a flag that can be watched at the class level, 
+#     """ This reaction provides a flag that can be watched at the class level,
 #     so you don't need to have the reaction object on hand to watch the flag."""
 
 
 class GenericBotReaction(object):
-    """ BotReaction which takes telnet_commands as an additional argument, 
-    and uses it to define notify.  This type of BotReaction can't make 
+    """ BotReaction which takes telnet_commands as an additional argument,
+    and uses it to define notify.  This type of BotReaction can't make
     use of M_obj."""
-    
+
     def __init__(self, regexes, commandHandler, telnet_commands):
 
         if isinstance(regexes, str):
@@ -150,10 +150,10 @@ class GenericBotReaction(object):
             self.telnet_commands = [telnet_commands]
         else:
             self.telnet_commands = telnet_commands
-        
+
     def notify(self, regex, M_obj):
         for cmd in self.telnet_commands:
-            self.commandHandler.process(cmd) 
-            
+            self.commandHandler.process(cmd)
+
 # add init with character and commandHandler
 # make a reaction type for kill thread

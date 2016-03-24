@@ -53,6 +53,7 @@ from db.MudMap import *
 from reactions.Prompt import Prompt
 from reactions.health_monitor import HealthMonitor
 from comm.analyser import Analyser
+# from reactions.ring_reaction import RingWearingReaction
 
 class LosHelper(object):
     def __init__(self):
@@ -138,6 +139,9 @@ class LosHelper(object):
 
     def main(self):
         stopping = False
+
+        # self.ring_reaction = RingWearingReaction(self.character.inventory, self.commandHandler)
+        # self.mud_reader_handler.register_reaction(self.ring_reaction)
 
         while not stopping:
             try:

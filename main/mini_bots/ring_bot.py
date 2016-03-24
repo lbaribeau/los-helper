@@ -2,8 +2,6 @@
 from mini_bots.mini_bot import MiniBot
 
 class RingBot(MiniBot):
-    # Should make use of goto thread
-
     def __init__(self, char, commandHandler, map):
         self.map = map
 
@@ -12,5 +10,6 @@ class RingBot(MiniBot):
 
     def go_to_area_by_title(self, title_fragment):
         pass
+
 
 

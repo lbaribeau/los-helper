@@ -150,6 +150,16 @@ class MudMap(object):
                 return n
         return -1
 
+    def lookup_armour_type(self, armour_name):
+        # Body, arms, etc
+        # item = Item(armour_name)
+        # item.map()
+        return Item.lookup_armour_type(armour_name)
+
+
+
+
+
 
 
 

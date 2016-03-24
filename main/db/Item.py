@@ -1,7 +1,10 @@
+
 from peewee import *
 from db.NamedModel import NamedModel
 from db.ItemType import *
 from misc_functions import *
+from comm.ConsoleHandler import newConsoleHandler
+from datetime import datetime
 
 class Item(NamedModel):
     description = CharField(null=True)
@@ -37,3 +40,25 @@ class Item(NamedModel):
             item = None
 
         return item
+
+    def magentaprint(text):
+        newConsoleHandler().magenta()
+        curtime = datetime.now().time().strftime("%H:%M:%S.%f")
+        output = str(curtime[:len(curtime)-5] + "   | " + str(text))
+        print(output)
+        newConsoleHandler().white()
+
+    def lookup_armour_type(armour_name):
+        # get_item_by_name can do this
+        Item.magentaprint("Item.lookup_armour_type armour_name: " + str(armour_name))
+        atype = Item.select().where((Item.name == armour_name)).get()
+        Item.magentaprint("Item.lookup_armour_type atype: " + str(atype))
+        # # "Type" is an amalgamation of "model" and "data", data being what we want, and model being small/medium/large
+        # itemtype = ItemType.select().where(ItemType.id == atype.itemtype.id).get()
+        # Item.magentaprint("Item.lookup_armour_type itemtype: " + str(itemtype))
+        # itemdata = ItemTypeData.select().where(ItemTypeData.id == itemtype.data).get()
+        # Item.magentaprint("Item.lookup_armour_type itemtypedata: " + str(itemdata))
+
+        Item.magentaprint("Item.lookup_armour_type atype.itemtype.data: " + str(atype.itemtype.data))
+        # return str(atype.itemtype.data).lower()
+        return atype.itemtype.data

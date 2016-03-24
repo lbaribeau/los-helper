@@ -27,6 +27,7 @@ class SmartCombat(CombatObject):
         self.cast = Cast(telnetHandler)
         self.use = Use(character, telnetHandler)
         self.wield = Wield(character, telnetHandler)
+        # self.wear = Wear(character, telnetHandler)
         self.abilities = character._class.abilities.values()
 
         # self.heal_abilities = [a for a in self.abilities if isinstance(a, HealAbility)]
@@ -504,4 +505,13 @@ class SmartCombat(CombatObject):
     def check_rings(self):
         # magentaprint("SmartCombat check_rings()")
         if self.broke_ring:
-            self.telnetHandler.write('wear all')
+            # self.telnetHandler.write('wear all')
+            ring_ref = self.character.inventory.first_usable_ring_ref()
+            if ring_ref:
+                self.telnetHandler.write('wear ' + self.character.inventory.first_usable_ring_ref())
+                # This may not be reliable since it assumes we already know if a ring is broken.
+                # No biggie really.  One alternative is to have two 'stopping' variables, since we want to wear rings
+                # after the mob dies but maybe not after the player calls stop.
+                # However, this solution might work most of the time.
+
+

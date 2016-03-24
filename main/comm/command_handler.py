@@ -92,7 +92,9 @@ class CommandHandler(object):
         self.actions = {
             'go_smithy' : self.go_smithy,
             'suit_up': self.suit_up,
-            'bdrop' : self.bulk_drop
+            'bdrop' : self.bulk_drop,
+            'lookup_armour' : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
+            'print_reactions' : lambda a : self.mudReaderHandler.print_reactions()
         }
 
     def init_map_and_bots(self):

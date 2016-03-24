@@ -57,7 +57,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         self.__stopping = False
         self.is_bulk_vendoring = False
         self.equipped_items = {}
-        self.is_dropping = False
+        self.already_removed_dropped_item = False
         # equipped_items = {'body': [], 'arms':[], 'legs':[],'neck':[],'hands':[],'head':[],'feet':[],'face':[],'finger':[],'Shield':[],'Wielded':[],'Second':[]}
 
         for index, item in enumerate(self.keep_list):
@@ -814,6 +814,18 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         mud_item = MudItem(item_string)
         mud_item.map()
         return self.list.count(mud_item)
+
+    def first_usable_ring_ref(self):
+        count = 0
+        for item in self.list:
+            if 'ring' in str(item).split():
+                count = count + 1
+            if len(str(item).split()) == 2 and str(item).split()[1] == 'ring':
+                if not item.is_unusable:
+                    if count > 1:
+                        return 'ring ' + str(count)
+                    else:
+                        return 'ring'
 
 # Ok I want to set up reactions to keep myself up to date.
 # I am thinking of steel bottles and restoratives, so I want

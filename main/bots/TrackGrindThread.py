@@ -52,11 +52,11 @@ class TrackGrindThread(GrindThread):
         ]
         self.MILITIA_SOLDIERS_PATH = [
             'out','s','e','s','s','s','w','gate','s','s','sw','sw','sw','sw','s','s','s','sw','se','s','s','s','s',
-            's','s','s','s','s','w','w','w','w','n','n','s','s','e','e','e','e','n','n','e','e','e','e','e','e','e',
-            'e','e','ne','e','ne','ne','ne','ne','ne','ne','n','n','w','s','sw','ne','n','e','n','n','n','n','n',
-            'n','n','n','n','n','nw','nw','nw','path','nw','n','n','n','nw','nw','n','n','gate','w','n','nw','nw',
-            'n','e','e','e','s','s','s','s','gate','s','s','se','se','s','s','s','se','s','w','w','w','nw','nw','n',
-            'gate','e','n','n','n','w','n','chapel'
+            's','s','s','s','s','w','doo','stor','ou','ou','w','w','w','n','n','s','s','e','e','e','e','n','n','e',
+            'e','e','e','e','e','e','e','e','ne','e','ne','ne','ne','ne','ne','ne','n','n','w','s','sw','ne','n','e',
+            'n','n','n','n','n','n','n','n','n','n','nw','nw','nw','path','nw','n','n','n','nw','nw','n','n','gate',
+            'w','n','nw','nw','n','e','e','e','s','s','s','s','gate','s','s','se','se','s','s','s','se','s','w','w',
+            'w','nw','nw','n','gate','e','n','n','n','w','n','chapel'
         ]
         self.KOBOLD_PATH = [
             'out','south','east','south','south','south','west','gate','south','southeast','southeast','east',
