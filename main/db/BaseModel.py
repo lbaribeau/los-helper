@@ -20,3 +20,15 @@ class BaseModel(Model):
 
     def __repr__(self):
         return self.to_string()
+
+    def save(self, *args, **kwargs):
+        # Disable saving in -fake environment
+        # We don't want the test world to edit the DB
+
+        if '-fake' in sys.argv:
+            print("BaseModel.save() disabled in -fake mode.")
+            return
+        else:
+            # print("BaseModel.save")
+            # print(str(args))
+            super().save(*args, **kwargs)

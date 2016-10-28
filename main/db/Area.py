@@ -32,7 +32,7 @@ class Area(NamedModel):
         is_new_mapping = self.search_for_area(mapped_exits)
 
         #if (cur_area_from is None):
-            
+
         #elif (cur_area_from.name != self.name): #if the names are the same then this is a new area since we have moved
         #    is_new_mapping = self.search_for_area(mapped_exits)
 
