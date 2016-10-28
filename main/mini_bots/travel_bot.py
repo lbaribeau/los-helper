@@ -29,7 +29,7 @@ class TravelBot(MiniBot):
             if self.command_handler.go.success:
                 pass
             else:
-                raise Exeption("TravelBot failed go!")
+                raise Exception("TravelBot failed go!")
 
     def clean_out_node(self):
         for mob in self.char.mobs.list:

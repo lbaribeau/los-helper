@@ -8,10 +8,11 @@ from comm import RegexStore as R
 from combat.mob_target_determinator import MobTargetDeterminator
 from mini_bots.travel_bot import TravelBot
 from mini_bots.equipment_bot import EquipmentBot
+from mini_bots.shopping_bot import ShoppingBot
 
 class ArmourBot(EquipmentBot):
-    def __init__(self, char, command_handler, mrh, db_handler):
-        super().__init__(char, command_handler, mrh, db_handler)
+    def __init__(self, char, command_handler, mrh, map):
+        super().__init__(char, command_handler, mrh, map)
         self.broken_armour = []
 
         # self.actions = {
@@ -74,8 +75,9 @@ class ArmourBot(EquipmentBot):
         list_copy = self.broken_armour[:]
 
         for a in self.broken_armour:
-            if function(a):
-                list_copy.remove(a)
+            if a:
+                if function(a):
+                    list_copy.remove(a)
 
         self.broken_armour = list_copy
 
@@ -92,6 +94,7 @@ class ArmourBot(EquipmentBot):
 
     def repair_and_wear(self, a):
         armour_ref = self.char.inventory.get_last_reference(a)
+        magentaprint("ArmourBot.repair_and_wear on " + str(a) + ", armour_ref: " + str(armour_ref))
         while self.char.inventory.name_from_reference(armour_ref) == a:
             self.command_handler.repair.execute_and_wait(armour_ref)
             if self.command_handler.repair.success:
@@ -106,6 +109,7 @@ class ArmourBot(EquipmentBot):
                 armour_ref = MobTargetDeterminator().decrement_ref(armour_ref)
 
     def go_buy_and_wear(self, a):
+        # I think we won't try to shop for the same armour that just broke, and just fall back immediately to the default set
         pass
 
     def get_needed_default_armour(self):
@@ -118,36 +122,98 @@ class ArmourBot(EquipmentBot):
 
         # Given size, armor level, slot, choose best piece from shop
         # Ie. steel, medium, neck - plate mail collar
-        store_locations = self.determine_store_locations(self.broken_armour)
+        desired_items = sorted(self.determine_shopping_list(self.broken_armour), key=lambda item : item.area)
+        travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.map)
+        shopping_bot = ShoppingBot(self.char, self.command_handler)
+        magentaprint("ArmourBot.get_needed_default_armour() desired_items: " + str(desired_items))
 
-    def determine_store_locations(self, broken_armour):
-        locations = []
+        for item in desired_items:
+            path = self.map.get_path(self.char.AREA_ID, item.area)
+            travel_bot.follow_path(path)
+            shopping_bot.buy_from_shop(item)
+            self.command_handler.wear.execute_and_wait(self.char.inventory.get_last_reference(str(item)))
+
+    def go_to_nearest_smithy(self, grinding=False):
+        magentaprint("TopDownGrind.go_to_nearest_smithy()")
+        smithy_path = self.get_smithy_path()
+        magentaprint("TopDownGrind.get_smithy_path(): " + str(smithy_path))
+        self.travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.map)
+        self.travel_bot.follow_path(smithy_path)
+
+    def determine_shopping_list(self, broken_armour):
+        items = []
         for a in broken_armour:
-            # wear_location = db_handler.lookup_wear_location(a)A
+            # wear_location = map.lookup_wear_location(a)A
             db_item = Item.get_item_by_name(a)
             if db_item and db_item.itemtype and db_item.itemtype.data:
                 wear_location = db_item.itemtype.data
-                locations.append(self.pick_areastoreitem(wear_location, self.char._class_str, self.char.level))
+                desired_item = self.pick_areastoreitem(wear_location, self.char.class_string, self.char.race, self.char.level)
+                if desired_item and desired_item.area:
+                    items.append(desired_item)
+                else:
+                    magentaprint("ArmourBot couldn't pick out a default armour piece for " + wear_location.lower() + " slot.")
+
+        return items
 
         # for slot in ['body','arms','legs','neck1','neck2','face','hands','head', 'shield']:
 
-    def pick_areastoreitem(self, slot, cls, lvl):
-        pass
+    def pick_areastoreitem(self, slot, cls, race, character_lvl):
+        # We will use the class to determine the armour level, we have the slot as a string so we'll select data with that,
+        # and we need to map that character level to the allowed armour tiers.
+        if cls == 'Mon':
+            return
+
+        armour_level = self.get_armour_level(character_lvl)
+        size = self.get_size(race)
+
+        # Select an armour comparing data to slot with the given armour level
+        items = AreaStoreItem.get_by_item_type_and_level_max(size, slot, armour_level)
+
+        if items:
+            items.sort(key=lambda item: item.level, reverse=True)
+            return items[0]
+
+    def get_armour_level(self, character_lvl):
+        if character_lvl > 9:
+            if self.steel():
+                return 3
+            elif self.chain():
+                return 2
+            else:
+                return 1
+        elif character_level > 4:
+            if self.clothie():
+                return 1
+            else:
+                return 2
+        else:
+            return 1
+
+    def get_size(self, race):
+        if race.lower() in ['hobbit','halfling','half-elf','gnome','dark-elf','dwarf']:
+            return 's-armor'
+        elif race.lower() in ['human', 'half-orc','elf']:
+            return 'm-armor'
+        elif race.lower() in ['half-giant']:
+            return 'l-armor'
+        else:
+            # raise Exception("ArmourBot doesn't know what size of armour to get.")
+            return None
 
     def no_armour(self):
-        return self.char._class_str == 'Mon'
+        return self.char.class_string == 'Mon'
 
     def clothie(self):
-        return self.char._class_str in ["Mag"]
+        return self.char.class_string in ["Mag", 'Dru', 'Alc', 'Thi']
 
-    def leather(self):
-        return self.char._class_str in ['Dru', 'Alc', 'Thi']
+    # def leather(self):
+    #     return self.char.class_string in ['Dru', 'Alc', 'Thi']
 
     def chain(self):
-        return self.char._class_str in ['Ran', 'Cle', 'Ass']
+        return self.char.class_string in ['Ran', 'Cle', 'Ass']
 
     def steel(self):
-        return self.char._class_str in ['Pal', 'Dk', 'Bar', 'Fig', 'Brd']
+        return self.char.class_string in ['Pal', 'Dk', 'Bar', 'Fig', 'Brd']
 
 
     # # Use db for this?  Makes sense to

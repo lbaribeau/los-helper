@@ -190,6 +190,8 @@ class FakeTelnetSocket(object):
             self.mobflee(M_obj.group(1), M_obj.group(2))
         elif command.startswith('mobdead '):
             self.mobdead(command[8:])
+        elif command == 'nuke':
+            self.current_monster_list = []
         elif command == 'me':
             self.socket_output.append('You feel at one with the universe.\n\r')
         elif re.match(r"(tou?|touc?|touch) [A-Za-z' ]+", command):
@@ -276,8 +278,10 @@ class FakeTelnetSocket(object):
             # self.socket_output.append("\"Darnitall!\" shouts the smithy, \"I broke another. Sorry lad.\"")
             magentaprint("FakeTelnet command: " + str(command))
             item = self.char.inv.get(command.partition(' ')[1])
-            item.usable = True
-            self.socket_output.append("The smithy hands a " + str(item) + " back to you, almost good as new.")
+            if item:  # item can be none if person used 'echo Your chain mail armour fell apart.'... then inventory is out of sync
+                item.usable = True
+            # self.socket_output.append("The smithy hands a " + str(item) + " back to you, almost good as new.")
+            self.socket_output.append('"Darnitall!" shouts the smithy, "I broke another. Sorry lad."')
 
     def gen_area(self, area):
         self.current_mud_area = MudArea(area)

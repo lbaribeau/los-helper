@@ -207,16 +207,15 @@ class MudReaderThread(threading.Thread):
                 # magentaprint(reaction)
                 for regex in reaction.regexes:
                     # magentaprint("Regex: " + str(regex))
-                    try: 
+                    try:
                         M_obj = re.search(regex, text_buffer)
                     except TypeError:
                         magentaprint("MudReaderThread reaction TypeError: " + str(reaction.__class__) + " regex: " + str(regex))
 
-
                     # if(M_obj != None):
                     if M_obj:
                         # magentaprint("MudReaderThread: calling notify on " + str(reaction))
-                        reaction.notify(regex, M_obj)  
+                        reaction.notify(regex, M_obj)
                         text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
             # reaction_counter = 0  # TODO: delete reaction_counter and all reaction printing

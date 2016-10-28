@@ -67,10 +67,22 @@ class AreaStoreItem(BaseModel):
 
         return items
 
+    def get_by_item_type_and_level_max(model_name, data_name, level_max=1):
+        items = []
+        itemtypemodel = ItemTypeModel.get_by_name(model_name).get().id
+        itemtypedata = ItemTypeData.get_by_name(data_name).get().id
+        items = AreaStoreItem.select().join(Item).where(Item.level<=level).join(ItemType).where(ItemType.model==itemtypemodel and ItemType.data==itemtypedata)
+        # obj = NamedModel.select().where(fn.Lower(NamedModel.name) == fn.Lower(name)).get()
+        print("AreaStoreItem get_by_item_type_and_level returning " + str(items))
+        return items
+
     def get_by_name(item_name):
         print("AreaStoreItem.get_by_name() item_name: " + str(item_name))
         items = AreaStoreItem.select().join(Item).where(Item.name == item_name)
         print("AreaStoreItem.get_by_name() returning: " + str(item_name))
         return items
+
+    def get_by_area(aid):
+        return AreaStoreItem.select().where(AreaStoreItem.area == aid)
 
 

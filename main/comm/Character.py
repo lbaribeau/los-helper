@@ -15,6 +15,7 @@ class Character(object):
         self.race = None
         self.title = None
         self._class = None
+        self.class_string = None
         self.level = None
 
         self.BLACK_MAGIC = True
@@ -341,9 +342,8 @@ class Character(object):
         if self.level > 12:
             self.MONSTER_KILL_LIST.extend(self.lvl8_monsters)
             # self.MONSTER_KILL_LIST.extend(self.lvl9_monsters)
-
 # Drops -
-#  Alaran, Aldo, Farmer Calmor for rings (platinum, gold, etc.)        
+#  Alaran, Aldo, Farmer Calmor for rings (platinum, gold, etc.)
 
     def configure_health_and_mana_variables(self):
     # Health to heal is now a percentage (see process_info)

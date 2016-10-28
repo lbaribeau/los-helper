@@ -31,14 +31,14 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         'morning star', 'superior dwarven hammer',
         # 'war hammer',
         'hard cap', 'hard gloves', 'hard boots', 'padded hat', 'mountain gloves', 'mountain boots',
-        'mountain boots with crampons', 'travellers cross', 'leather mask', 'leather collar', 'studded leather collar',
+        'mountain boots with crampons', 'leather mask', 'leather collar', 'studded leather collar',
         # 'studded leather sleeves', 'studded leather boots', 'studded leather pants', 'studded leather gloves','studded leather leggings' 
         'plate mail leggings', 'plate mail armor',
         'ring mail armour', 'ring mail sleeves', 'ring mail leggings', 'ring mail hood',
         # 'ring mail gauntlets',
         # 'chain mail armour',  # sawmill
-        'chain mail sleeves', 'chain mail leggings', 'chain mail hood', 'chain mail boots',
-        # 'chain mail gloves', # mill worker
+        'chain mail sleeves', 'chain mail leggings', 'chain mail hood',
+        'chain mail gloves', # mill worker
         'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring',
         'iron shield', 'platinum ring', 'gold ring', 'steel ring', 'silver ring',
         #'steel mask' # spiv, sawmill

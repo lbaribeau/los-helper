@@ -538,7 +538,7 @@ cant_carry = [
 ]
 isnt_here = [r"That isn't here\."]
 
-repair = [r"The smithy hands an? (?P<weapon>[A-Za-z' ]+?) back to you, almost good as new\."]
+repair = [r"The smithy hands (?:an?|some) (?P<weapon>[A-Za-z' ]+?) back to you, almost good as new\."]
 # TODO: The smithy takes \d+ gold pieces from you.
 darnitall = [r'"Darnitall!" shouts the smithy, "I broke another\. Sorry la(d|ss)\.']
 not_a_repair_shop = [r"This is not a repair shop\."]
@@ -565,4 +565,3 @@ doesnt_fit = [__item + r" doesn't fit you\."]
 no_gold = [r"You don't have enough gold\."]
 # get_ring =  [r"(?s)You get .+? an? .+? ring((,.+?\.)|(\.))"]  # problem here.
 get_ring =  [r"(?s)You get " + __items + r"?an? [a-z]+ ring(([a-zA-Z0-1-',\s]+\.)|(\.))"]
-
