@@ -1,9 +1,9 @@
 '''In order for this class to work you need to have installed Peewee
 See: http://peewee.readthedocs.org/en/latest/peewee/installation.html
 '''
-from peewee import *
+import peewee
 
-db = Proxy()
+db = peewee.Proxy()
 
 from db.BaseModel import *
 from db.Log import *
@@ -100,7 +100,7 @@ if "-nodb" in argv:
 else:
     database_file = "maplos.db"
 
-database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
+database = peewee.SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
 db.initialize(database)
 
 #drop_tables()

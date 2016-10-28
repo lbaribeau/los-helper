@@ -1,0 +1,59 @@
+Loot blocker database lock bug.
+
+You see Cheryn (E), a butcher.
+
+03:00:40.8   | Go notified.
+03:00:45.9   | BotReaction.wait_for_flag() timed out!<class 'reactions.Cartography.Cartography'>
+03:00:45.9   | Targeting: butcher
+03:00:45.9   | "k butcher"
+03:00:46.4   | Problem cataloging monsters
+03:00:46.4   | Cartography area match: 1380, The Butchers Storeroom.
+03:00:46.4   | Cartography notify done on: (?s)(?:(?:.+?Stone\....
+[91 H 39 M]: You attack the butcher.
+Your goodness increases your damage.
+You smash your maul hammer into the butcher, causing 15 damage.
+The butcher flees to the out.
+[91 H 39 M]: 03:00:46.4   | <combat.Kill.Kill object at 0x6fffef3ad10> notified.
+03:00:46.4   | mobs.list [butcher, cheryn]; notification from regex: You attack
+03:00:46.4   | mobs.attacking ['butcher']
+03:00:46.4   | mobs.list [cheryn]; notification from regex: ((?P<mob1>
+03:00:46.4   | mobs.attacking ['butcher']
+03:00:46.4   | <combat.Kill.Kill object at 0x6fffef3ad10> notified.
+03:00:46.4   | <combat.Cast.Cast object at 0x6fffef3ac10> notified.
+03:00:46.4   | Go notified.
+03:00:46.4   | Cartography case missing for regex: ((?P<mob1>The( [A-Z][a-z'-]+)+)|(?:The (?:(?P<nth>\d*1st|\d*2nd|\d*3rd|\d+th) )?(?P<mob2>[a-z '-]+))|(?P<mob3>[A-Z][A-Za-z '-]+)) flees to the (?P<exit>[a-z ]+)\.
+03:00:46.4   | Cartography notify done on: ((?P<mob1>The( [A-Z]...
+03:00:46.4   | <combat.SmartCombat.SmartCombat object at 0x6fffef3ab90> ending run.
+03:00:46.4   | BotThread.engage_monster() chasing mob, pushing onto direction list!
+03:00:46.4   | {1379: {'name': 'out'}, 1381: {'name': 'ice chamber'}}
+03:00:46.4   | engage_monster() chase_aid: 1379
+MudMap.get_path self.los_map:
+MudMap.get_path() returning: ['storeroom']
+03:00:46.4   | engage_monster() return_path: ['storeroom']
+03:00:46.4   | GrindThread.engage_monster adding directions ['out', 'storeroom']
+03:00:46.4   | engage monster "butcher," in attacking list: True
+03:00:46.4   | GrindThread doing cleanup on erroneous mobs.attacking list, removing butcher
+03:00:46.4   | "get all"
+Cheryn won't let you take anything.
+[91 H 39 M]: 03:00:46.6   | Cartography loot blocker blocking pickup: Cheryn
+03:00:46.6   | Cartography catalogged new loot blocker
+03:00:46.6   | Picking a new target since butcher was defeated
+03:00:46.6   | <class 'combat.Kill.Kill'> wait_until_ready waiting 2.3
+03:00:48.9   | Going out. 13950.3
+03:00:48.9   | Go.execute() 2
+03:00:48.9   | "out"
+
+08:14:25.5   | BotReaction.wait_for_flag() timed out!<class 'command.Go.Go'>
+08:14:25.5   | ""
+
+08:14:26.2   | ""
+08:14:26.2   | TelnetHandler write() error: <class 'socket.error'>
+08:14:26.2   | LosHelper caught telnet error and quitting:
+08:14:26.2   | Errno: None
+08:14:26.2   | Joining mud map thread.
+08:14:26.2   | Joining botThread.
+Exception in thread Thread-3:
+Traceback (most recent call last):
+  File "/usr/lib/python3.2/site-packages/peewee-2.4.7-py3.2.egg/peewee.py", line 2872, in execute_sql
+    cursor.execute(sql, params or ())
+sqlite3.OperationalError: database is locked
