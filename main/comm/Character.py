@@ -39,6 +39,8 @@ class Character(object):
         self.ARMOR_SLOTS = []
         self.ARMOR_SIZE = "m" # todo: set this in info or whois
 
+        # self.equipment  # getting away from putting this sort of data on character.
+
         # WEAPON_SLOTS = []  use character._class.weapon_slots
 
         self.LAST_BUFF = -150

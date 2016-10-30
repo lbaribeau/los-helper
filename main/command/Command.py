@@ -44,16 +44,16 @@ class SimpleCommand(BotReactionWithFlag):
         self.wait_for_flag()
 
 class Command(SimpleCommand):
-    # The main point of this is to write code for the Kill, Cast, Ability, and 
+    # The main point of this is to write code for the Kill, Cast, Ability, and
     # Go timers... ie execute_and_block_serious() (persistent_execute())
 
-    # So we're expecting one instance of these objects in the reaction list to 
-    # keep the timing class variables up to date. (notify)  Call super just to 
+    # So we're expecting one instance of these objects in the reaction list to
+    # keep the timing class variables up to date. (notify)  Call super just to
     # keep wait_for_flag() legitimate.
 
     # Maybe write code to use 'command' ??? might help with inheritance...
 
-    # Subclasses must set 
+    # Subclasses must set
     # - success_regexes
     # - failure_regexes
     # - cooldown_on_success

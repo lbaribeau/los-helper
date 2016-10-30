@@ -36,7 +36,8 @@ class TelnetHandler(object):
 
     def read_some(self):
         try:
-            return self.tn.read_some()  # read_eager() would miss characters
+            # return self.tn.read_some()  # read_eager() would miss characters
+            return self.tn.read_very_eager()  # This seems faster and also helps the tricky equipment parsing
         except socket.error as e:
             magentaprint("TelnetHandler read_some() error: " + str(e))
             return ''

@@ -479,10 +479,12 @@ on_hands= [r"On hands:  (.+?)\n\r"]
 on_head = [r"On head:   (.+?)\n\r"]
 on_feet = [r"On feet:   (.+?)\n\r"]
 on_finger = [r"On finger: (.+?)\n\r"]
+# on_finger = [r"On finger: (.+?)\n\r(On finger: (?P<other_finger>.+?)\n\r)"]
 shield  = [r"Shield:    (.+?)\n\r"]
 wielded = [r"Wielded:   (.+?)\n\r"]
 seconded= [r"Seconded:  (.+?)\n\r"]
-# holding = [r"Holding:   (.+?)\n\r"]
+holding = [r"Holding:   (.+?)\n\r"]
+
 # eq = [r"(On body:   (?P<body>.+?)\n\r)?" \
 #       r"(On arms:   (?P<arms>.+?)\n\r)?" \
 #       r"(On legs:   (?P<legs>.+?)\n\r)?" \
@@ -491,11 +493,49 @@ seconded= [r"Seconded:  (.+?)\n\r"]
 #       r"(On hands:   (?P<hands>.+?)\n\r)?" \
 #       r"(On head:   (?P<head>.+?)\n\r)?" \
 #       r"(On feet:   (?P<feet>.+?)\n\r)?" \
-#       r"(On finger: (?P<finger>.+?)){0,8}" \
-#       r"(Wielded:   (?P<weapon>.+?))?" \
-#       r"(Seconded:  (?P<seconded>.+?))?" \
-#       r"(Holding:   (?P<holding>.+?))"
-# ]  
+#       # r"(On finger: (?P<finger>.+?)){0,8}" \
+#       r"(On finger: (?P<finger>.+?)\n\r)?" \
+#       r"(On finger: (?P<finger2>.+?)\n\r)?" \
+#       r"(On finger: (?P<finger3>.+?)\n\r)?" \
+#       r"(On finger: (?P<finger4>.+?)\n\r)?" \
+#       r"(On finger: (?P<finger5>.+?)\n\r)?" \
+#       r"(On finger: (?P<finger6>.+?)\n\r)?" \
+#       r"(On finger: (?P<finger7>.+?)\n\r)?" \
+#       r"(On finger: (?P<finger8>.+?)\n\r)?" \
+#       r"(Wielded:   (?P<weapon>.+?)\n\r)?" \
+#       r"(Seconded:  (?P<seconded>.+?)\n\r)?" \
+#       r"(Holding:   (?P<holding>.+?)\n\r)?" \
+#       # r".+?\["  # Match the [ of the prompt at the end to ensure we get don't stop matching early
+# ]
+# eq = [r"(?P<slot>[^:]+?):(?P<piece>.+?)\n\r)" \
+#       r"((?P<slot>[^:]+?):(?P<piece>.+?)\n\r)){" \
+# eq = [r"((?P<slot>[^:]+?):(?P<piece>.+?)\n\r){1,20}"]  # Match the prompt bracket if this is not greedy enough
+# eq = [r"((?P<slot>(On [^:]+?)|(Shield)):(?P<piece>.+?)\n\r){1,20}"]
+    # This isn't greedy enough - we get notify before all equipment has been printed.
+    # Match the prompt bracket?  Try it.  Hmph, the buffer gets flushed and we miss matches.  read_very_eager() solved it.
+# eq = [r"(((?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?:.+?)\n\r){1,20}"]
+eq = [r"((?P<slot1>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece1>.+?)\n\r)"
+      r"((?P<slot2>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece2>.+?)\n\r)?"
+      r"((?P<slot3>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece3>.+?)\n\r)?"
+      r"((?P<slot4>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece4>.+?)\n\r)?"
+      r"((?P<slot5>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece5>.+?)\n\r)?"
+      r"((?P<slot6>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece6>.+?)\n\r)?"
+      r"((?P<slot7>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece7>.+?)\n\r)?"
+      r"((?P<slot8>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece8>.+?)\n\r)?"
+      r"((?P<slot9>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece9>.+?)\n\r)?"
+      r"((?P<slot10>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece10>.+?)\n\r)?"
+      r"((?P<slot11>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece11>.+?)\n\r)?"
+      r"((?P<slot12>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece12>.+?)\n\r)?"
+      r"((?P<slot13>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece13>.+?)\n\r)?"
+      r"((?P<slot14>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece14>.+?)\n\r)?"
+      r"((?P<slot15>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece15>.+?)\n\r)?"
+      r"((?P<slot16>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece16>.+?)\n\r)?"
+      r"((?P<slot17>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece17>.+?)\n\r)?"
+      r"((?P<slot18>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece18>.+?)\n\r)?"
+      r"((?P<slot19>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece19>.+?)\n\r)?"
+      r"((?P<slot20>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece20>.+?)\n\r)?"
+]
+
 # m.group('holding') returns None with no error if the holding group didn't occur.
 # Erhm maybe it's \r\n
 

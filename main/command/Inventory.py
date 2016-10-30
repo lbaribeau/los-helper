@@ -8,6 +8,151 @@ from db.MudItem import *
 from reactions.referencing_list import ReferencingList
 import comm.RegexStore as R
 
+def clip_in_your_off_hand(wield_string):
+    # Example wield_string: a spear in your off hand
+    wield_string = wield_string.replace('\n\r', ' ')
+    length = len(wield_string)
+
+    if wield_string[length-17:length] == " in your off hand":
+        return wield_string[:length-17]
+    else:
+
+        return wield_string
+
+def clip_from_a_container(get_string):
+    # Example get_string: some chicken soup from a sack
+    get_string = get_string.replace('\n\r', ' ')
+    M_obj = re.search("(.+?) from (.+?)", get_string)
+
+    if M_obj != None:
+        return M_obj.group(1)
+    else:
+        return get_string
+
+def construct_items(string_list):
+    items = []
+
+    for i in string_list:
+        item = MudItem(i)
+        item.map()
+        items.append(item)
+
+    return items
+
+def parse_item_names(inventory_string):
+    # returns a list of strings (MudItems can be constructed outside)
+
+    return_list = []
+    inventory_string = inventory_string.replace("\n\r", ' ')
+    inv_list = inventory_string.split(',')
+    inv_list = [item.strip(' \t\n\r') for item in inv_list]
+    singles = ['a ', 'an ', 'some ']
+    numbers = ['two ', 'three ', 'four ', 'five ', 'six ', 'seven ',
+               'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ',
+               'fifteen ' , 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen ', 'twenty ']
+    numbers.extend([str(i) + " " for i in range(21, 200)])
+
+    for item in inv_list:
+        if item.endswith(" gold coin") or item.endswith(" gold coins"):
+            continue
+        if item.endswith(" platinum coins"):
+            continue
+
+        if not any(item.startswith(s) for s in singles + numbers):
+            return_list.append(item)  # ie 'maul hammer'
+            continue
+
+        if any(item.startswith(s) for s in singles):
+            return_list.append(item.partition(' ')[2])  # ie 'a maul hammer'
+            continue
+
+        for n in range(0, len(numbers)):
+            number = numbers[n]
+            if item.startswith(number):
+                item = item[len(number):]
+
+                if item.startswith("sets of"):
+                    item = item.replace("sets of ", "")
+
+                if item.endswith('ses') or item.endswith('xes'):
+                    item = item[:len(item)-2]
+                elif item.endswith('s'):
+                    item = item[:len(item)-1]
+
+                return_list.extend([item]*(n+2))
+
+    return return_list
+
+def parse_item_list(inventory_string):
+    return construct_items(parse_item_names(inventory_string))
+
+def parse_item_list_dict(inventory_string):
+    ''' Returns a dict {item: quantity} ie. {"chicken soup": 5, steel bottle: 1} '''
+    return_dict = {}
+    inventory_string = inventory_string.replace("\n\r", ' ')
+    # inventory_string = inventory_string.replace("  ", ' ') #replace double space with a single one
+    inv_list = inventory_string.split(',')
+    inv_list = [item.strip(' \t\n\r') for item in inv_list]
+    singles = ['a ', 'an ', 'some ']
+    numbers = ['two ', 'three ', 'four ', 'five ', 'six ', 'seven ',
+               'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ',
+               'fifteen ' , 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen ', 'twenty ']  # isn't it '20'?
+    numbers.extend([str(i) + " " for i in range(21, 200)])
+
+    for item in inv_list:
+        number_found = False
+        gold_coin_match = re.match("(\d+) gold coins?", item)
+        if gold_coin_match:
+            # add_to_dict(return_dict, 'gold coin', int(gold_coin_match.group(1)))
+            continue
+        for s in singles:
+            if item[0:len(s)] == s:
+                number_found = True
+                add_to_dict(return_dict, item[len(s):], 1)
+                break
+        if number_found:
+            continue
+        for n in range(0, len(numbers)):
+        # for number in numbers:
+            number = numbers[n]
+            if item[0:len(number)] == number:
+                number_found = True
+                if "sets of" in item:
+                    item = item.replace("sets of ", "")
+                item = item[len(number):]
+                # if item[len(item)-1] == 's':
+                if item.endswith('ses') or item.endswith('xes'):
+                    item = item[:len(item)-2]
+                elif item.endswith('s'):
+                    item = item[:len(item)-1]
+
+                    # mud_item = MudItem(item)
+                    # mud_item.map()
+                    # # mud_items = []
+                    # # for _ in range(n - 1):
+                    # #     mud_items.append(mud_item)
+                    # # item_list = GenericMudList(mud_items)
+                    # item_list = GenericMudList([mud_item] * (n - 1))
+                    # return_dict[mud_item] = item_list
+                add_to_dict(return_dict, item, n+2)
+                break
+        if number_found is False:
+            magentaprint("Inventory parsed " + item)
+            #if the item wasn't received with a/an/some etc...
+            #we assume it's just one item
+            # mud_item = MudItem(item)
+            # mud_item.map()
+            # item_list = GenericMudList([mud_item])
+            # return_dict[mud_item] = item_list
+            add_to_dict(return_dict, item, 1)
+
+    return return_dict
+
+def add_to_dict(d, item_str, qty):
+    mud_item = MudItem(item_str)
+    mud_item.map()
+    d[mud_item] = GenericMudList([mud_item] * qty)
+
 class Inventory(BotReactionWithFlag, ReferencingList):
     # keep_list = ["large bag", "large sack", "black bag",
     #     "silver chalice", "steel bottle", 'glowing potion',
@@ -91,7 +236,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             self.remove_many(weapon)
             # self.get_equipment()
         elif regex in R.you_get:
-            item = self.clip_from_a_container(M_obj.group(1))
+            item = clip_from_a_container(M_obj.group(1))
             self.add(item)
         elif regex in R.you_drop + R.you_give + R.you_put_in_bag + R.disintegrates:
             # magentaprint(str(M_obj.group(1)), False)
@@ -317,22 +462,22 @@ class Inventory(BotReactionWithFlag, ReferencingList):
     #     self.add_by_string_list(self.parse_item_names)
 
     def add(self, item_string):
-        magentaprint("Inventory.add %s parsed as %s." % (item_string, str(self.parse_item_list(item_string))))
+        magentaprint("Inventory.add %s parsed as %s." % (item_string, str(parse_item_list(item_string))))
 
-        items = self.parse_item_list(item_string)  # This is overloaded for "hammer" and "a hammer"
+        items = parse_item_list(item_string)  # This is overloaded for "hammer" and "a hammer"
         for i in items:
             # magentaprint("Inventory adding %s" % str(i))
             super().add(i)
 
     def add_broken(self, item_string):
-        items = self.parse_item_list(item_string)
+        items = parse_item_list(item_string)
 
         for i in items:
             i.is_unusable = True
             super().add(i)
 
     def add_broken_to_dict(self, item_string):
-        # items = self.parse_item_list(item_string)
+        # items = parse_item_list(item_string)
 
         # for name, qty in items:
         #     for i in range(0,qty):
@@ -340,7 +485,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         #         item.is_unusable = True
         #         self.add(item)
         # for name in item_string: # separates out letters...
-        for itemkey, itemlist in self.parse_item_list_dict(item_string).items():
+        for itemkey, itemlist in parse_item_list_dict(item_string).items():
             for item in itemlist:
                 self.add(item.to_string())
                 magentaprint("Inv add broken on ref " + self.get_last_reference(item.to_string()))
@@ -354,17 +499,17 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 
     def set_inventory(self, item_string):
         # self.inventory = MudObjectDict()
-        # self.inventory.add(self.parse_item_list_dict(item_string))
-        # self.inventory = MudObjectDict().add(self.parse_item_list_dict(item_string))  # constructor doesn't return self
+        # self.inventory.add(parse_item_list_dict(item_string))
+        # self.inventory = MudObjectDict().add(parse_item_list_dict(item_string))  # constructor doesn't return self
 
         # d = MudObjectDict()
-        # d.add(self.parse_item_list_dict(item_string))
+        # d.add(parse_item_list_dict(item_string))
         # # This overwrites all state information (is_unusable), so only overwrite when the new dict is somehow different.
         # if not self.compare_mud_object_dicts(d, self.inventory):
         #     self.inventory = d
 
         l = []
-        l.extend(self.parse_item_list(item_string))
+        l.extend(parse_item_list(item_string))
         if not self.compare_lists(self.list, l):
             magentaprint("Inventory.set_inventory overwriting self.list, len %s." % len(l))
             magentaprint(str(self.to_dict()))
@@ -402,11 +547,11 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         return True
 
     # def add(self, item_string):
-    #     self.inventory.add(self.parse_item_list_dict(item_string))
+    #     self.inventory.add(parse_item_list_dict(item_string))
 
     # def add_broken(self, item_string):
     #     # Hmph - this would be the simple way to do it...
-    #     items = self.parse_item_list_dict(item_string)
+    #     items = parse_item_list_dict(item_string)
 
     #     for item in items:
     #         item.is_unusable = True
@@ -421,7 +566,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             self.inventory.inventory[item_ref.partition(' ')[0]].objs[0].is_unusable = True
 
     def remove_many(self, item_string):
-        item_list = self.parse_item_names(item_string)
+        item_list = parse_item_names(item_string)
 
         for s in item_list:
             magentaprint("Inventory.remove_many() calling remove_by_ref on " + str(self.get_reference(s)))
@@ -431,151 +576,6 @@ class Inventory(BotReactionWithFlag, ReferencingList):
     def equip_item(self, equip_string):
         self.telnetHandler.write(equip_string)
         self.wait_for_flag()
-
-    def clip_in_your_off_hand(self, wield_string):
-        # Example wield_string: a spear in your off hand
-        wield_string = wield_string.replace('\n\r', ' ')
-        length = len(wield_string)
-
-        if wield_string[length-17:length] == " in your off hand":
-            return wield_string[:length-17]
-        else:
-
-            return wield_string
-
-    def clip_from_a_container(self, get_string):
-        # Example get_string: some chicken soup from a sack
-        get_string = get_string.replace('\n\r', ' ')
-        M_obj = re.search("(.+?) from (.+?)", get_string)
-
-        if M_obj != None:
-            return M_obj.group(1)
-        else:
-            return get_string
-
-    def construct_items(self, string_list):
-        items = []
-
-        for i in string_list:
-            item = MudItem(i)
-            item.map()
-            items.append(item)
-
-        return items
-
-    def parse_item_list(self, inventory_string):
-        return self.construct_items(self.parse_item_names(inventory_string))
-
-    def parse_item_names(self, inventory_string):
-        # returns a list of strings (MudItems can be constructed outside)
-
-        return_list = []
-        inventory_string = inventory_string.replace("\n\r", ' ')
-        inv_list = inventory_string.split(',')
-        inv_list = [item.strip(' \t\n\r') for item in inv_list]
-        singles = ['a ', 'an ', 'some ']
-        numbers = ['two ', 'three ', 'four ', 'five ', 'six ', 'seven ',
-                   'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ',
-                   'fifteen ' , 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen ', 'twenty ']
-        numbers.extend([str(i) + " " for i in range(21, 200)])
-
-        for item in inv_list:
-            if item.endswith(" gold coin") or item.endswith(" gold coins"):
-                continue
-            if item.endswith(" platinum coins"):
-                continue
-
-            if not any(item.startswith(s) for s in singles + numbers):
-                return_list.append(item)  # ie 'maul hammer'
-                continue
-
-            if any(item.startswith(s) for s in singles):
-                return_list.append(item.partition(' ')[2])  # ie 'a maul hammer'
-                continue
-
-            for n in range(0, len(numbers)):
-                number = numbers[n]
-                if item.startswith(number):
-                    item = item[len(number):]
-
-                    if item.startswith("sets of"):
-                        item = item.replace("sets of ", "")
-
-                    if item.endswith('ses') or item.endswith('xes'):
-                        item = item[:len(item)-2]
-                    elif item.endswith('s'):
-                        item = item[:len(item)-1]
-
-                    return_list.extend([item]*(n+2))
-
-        return return_list
-
-    def parse_item_list_dict(self, inventory_string):
-        ''' Returns a dict {item: quantity} ie. {"chicken soup": 5, steel bottle: 1} '''
-        return_dict = {}
-        inventory_string = inventory_string.replace("\n\r", ' ')
-        # inventory_string = inventory_string.replace("  ", ' ') #replace double space with a single one
-        inv_list = inventory_string.split(',')
-        inv_list = [item.strip(' \t\n\r') for item in inv_list]
-        singles = ['a ', 'an ', 'some ']
-        numbers = ['two ', 'three ', 'four ', 'five ', 'six ', 'seven ',
-                   'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ',
-                   'fifteen ' , 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen ', 'twenty ']  # isn't it '20'?
-        numbers.extend([str(i) + " " for i in range(21, 200)])
-
-        for item in inv_list:
-            number_found = False
-            gold_coin_match = re.match("(\d+) gold coins?", item)
-            if gold_coin_match:
-                # self.add_to_dict(return_dict, 'gold coin', int(gold_coin_match.group(1)))
-                continue
-            for s in singles:
-                if item[0:len(s)] == s:
-                    number_found = True
-                    self.add_to_dict(return_dict, item[len(s):], 1)
-                    break
-            if number_found:
-                continue
-            for n in range(0, len(numbers)):
-            # for number in numbers:
-                number = numbers[n]
-                if item[0:len(number)] == number:
-                    number_found = True
-                    if "sets of" in item:
-                        item = item.replace("sets of ", "")
-                    item = item[len(number):]
-                    # if item[len(item)-1] == 's':
-                    if item.endswith('ses') or item.endswith('xes'):
-                        item = item[:len(item)-2]
-                    elif item.endswith('s'):
-                        item = item[:len(item)-1]
-
-                        # mud_item = MudItem(item)
-                        # mud_item.map()
-                        # # mud_items = []
-                        # # for _ in range(n - 1):
-                        # #     mud_items.append(mud_item)
-                        # # item_list = GenericMudList(mud_items)
-                        # item_list = GenericMudList([mud_item] * (n - 1))
-                        # return_dict[mud_item] = item_list
-                    self.add_to_dict(return_dict, item, n+2)
-                    break
-            if number_found is False:
-                magentaprint("Inventory parsed " + item)
-                #if the item wasn't received with a/an/some etc...
-                #we assume it's just one item
-                # mud_item = MudItem(item)
-                # mud_item.map()
-                # item_list = GenericMudList([mud_item])
-                # return_dict[mud_item] = item_list
-                self.add_to_dict(return_dict, item, 1)
-
-        return return_dict
-
-    def add_to_dict(self, d, item_str, qty):
-        mud_item = MudItem(item_str)
-        mud_item.map()
-        d[mud_item] = GenericMudList([mud_item] * qty)
 
     def sellable(self):
         self.get_inventory()

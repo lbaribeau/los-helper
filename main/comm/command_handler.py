@@ -32,6 +32,8 @@ from comm.thread_maker import ThreadMaker
 from command.repair import Repair
 from command.wear import Wear
 from mini_bots.armour_bot import ArmourBot
+# from mini_bots.equipment_bot import EquipmentBot
+from command.equipment import Equipment
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -71,6 +73,10 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.repair)
         self.wear = Wear(telnetHandler)
         mudReaderHandler.add_subscriber(self.wear)
+        magentaprint(str(Equipment))
+        self.equipment = Equipment(telnetHandler)
+        mudReaderHandler.add_subscriber(self.equipment)
+        # self.eq_bot = EquipmentBot(character, self, self.mudReaderHandler, self.mud_map)
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
@@ -90,11 +96,13 @@ class CommandHandler(object):
             self.init_map_and_bots()
 
         self.actions = {
-            'go_smithy' : self.go_smithy,
-            'suit_up': self.suit_up,
-            'bdrop' : self.bulk_drop,
-            'lookup_armour' : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
-            'print_reactions' : lambda a : self.mudReaderHandler.print_reactions()
+            re.compile('go_smithy') : self.go_smithy,
+            re.compile('suit_up'): self.suit_up,
+            re.compile('bdrop') : self.bulk_drop,
+            re.compile('lookup_armour') : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
+            re.compile('print_reactions') : lambda a : self.mudReaderHandler.print_reactions(),
+            # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
+            re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
 
     def init_map_and_bots(self):

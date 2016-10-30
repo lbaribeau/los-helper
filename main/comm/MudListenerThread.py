@@ -10,11 +10,11 @@ import sys
 from misc_functions import *
 
 class MudListenerThread(threading.Thread):
-    ''' This thread watches the the MUD output and appends it 
+    ''' This thread watches the the MUD output and appends it
     to the buffer for the MudReaderThread to read it.'''
-    
+
     def __init__(self, telnetHandler, MUDBuffer):
-        Thread.__init__(self)        
+        Thread.__init__(self)
         self.telnetHandler = telnetHandler
         self.MUDBuffer = MUDBuffer
         atexit.register(self.stop)
@@ -24,15 +24,15 @@ class MudListenerThread(threading.Thread):
     def stop(self):
         self.stopping = True
 
-    def run (self):        
+    def run (self):
         # First get the file descriptor (no) of the internal telnet socket object
-        # so we can watch for input.        
+        # so we can watch for input.
         socket_number = self.telnetHandler.get_socket()
         fragment=""
         # magentaprint("MudListenerThread sys.argv " + str(sys.argv))
         select_timeout = 2.0 if '-fake' not in sys.argv else 0.1
         # magentaprint("MudListenerThread select timeout is " + str(select_timeout))
-        
+
         # Loop forever, just do stuff when the socket says its ready.
         while not self.stopping:
             try:
@@ -60,12 +60,12 @@ class MudListenerThread(threading.Thread):
                     #time.sleep(0.05)
                 if self.MUDBuffer.access_flag == True:
                     magentaprint("MudListenerThread couldn't access buffer, will try again after next socket fragment.")
-                    continue 
+                    continue
                     # This may cause strings to be matched late (if the buffer was being accessed,)
                     # We'll see if that happens, even at all.  Worst case that I can imagine is that 
                     # the bot may pause at one node for several seconds until an ambient event happens,
                     # but I'm not sure if that's even possible.
-                    
+
                 self.MUDBuffer.access_flag = True
                 self.MUDBuffer.buffer = self.MUDBuffer.buffer + fragment
                 self.MUDBuffer.access_flag = False
@@ -79,4 +79,3 @@ class MudListenerThread(threading.Thread):
 
         # los-helper closes the socket
 
-                
