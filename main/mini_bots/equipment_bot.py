@@ -32,6 +32,7 @@ class EquipmentBot(MiniBot):
         self.equipment = dict.fromkeys(self.slot_names)
 
     def stop(self):
+        magentaprint("!!!!!!!!!!!!!!!!!!!! EquipmentBot.stop()!!!!!!!!!!!!!!!!!!!!!!!!!!")
         super().stop()
         self.travel_bot.stop()
 

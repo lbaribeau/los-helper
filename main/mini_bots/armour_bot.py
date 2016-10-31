@@ -113,25 +113,25 @@ class ArmourBot(EquipmentBot):
         pass
 
     def get_needed_default_armour(self):
-        # Steel armour: Paladins, dark knights, barbarians, fighters, bards(?) (cast iron shield)
-        # Plate same as Steel maybe (large iron shield)
-        # Chain: Rangers, assassins, clerics (iron shield)
-        # Leather: druids, Alchemists, thieves (bone shield)
-        # Ring mail: mages
-        # Clothies: ring mail and bone shield
-
         # Given size, armor level, slot, choose best piece from shop
         # Ie. steel, medium, neck - plate mail collar
-        desired_items = sorted(self.determine_shopping_list(self.broken_armour), key=lambda item : item.area)
-        travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.map)
-        shopping_bot = ShoppingBot(self.char, self.command_handler)
-        magentaprint("ArmourBot.get_needed_default_armour() desired_items: " + str(desired_items))
+        #desired_items = sorted(self.determine_shopping_list(self.broken_armour), key=lambda item : item.area)
+        # We don't need to use broken armour here, since we've been to the smithy.  We should check equipment (I feel uncertain about the order of actions).
 
-        for item in desired_items:
-            path = self.map.get_path(self.char.AREA_ID, item.area)
-            travel_bot.follow_path(path)
-            shopping_bot.buy_from_shop(item)
-            self.command_handler.wear.execute_and_wait(self.char.inventory.get_last_reference(str(item)))
+        self.travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.map)
+        shopping_bot = ShoppingBot(self.char, self.command_handler)
+        desired_asi_list = self.determine_shopping_list(self.broken_armour)
+        # magentaprint("ArmourBot.get_needed_default_armour() desired_asi_list: " + str(desired_asi_list))
+
+        for asi in desired_asi_list:
+            path = self.map.get_path(self.char.AREA_ID, asi.area.id)
+            self.travel_bot.follow_path(path)
+            if shopping_bot.buy_from_shop(asi):
+                self.command_handler.wear.execute_and_wait(self.char.inventory.get_last_reference(str(asi.item.name)))
+            else:
+                # TODO: a) check character max weight agains item weight and only travel and buy if the item can be carried
+                # or b) go on a vendor/recycling trip and come back
+                pass
 
     def go_to_nearest_smithy(self, grinding=False):
         magentaprint("TopDownGrind.go_to_nearest_smithy()")
@@ -141,19 +141,70 @@ class ArmourBot(EquipmentBot):
         self.travel_bot.follow_path(smithy_path)
 
     def determine_shopping_list(self, broken_armour):
-        items = []
-        for a in broken_armour:
-            # wear_location = map.lookup_wear_location(a)A
-            db_item = Item.get_item_by_name(a)
-            if db_item and db_item.itemtype and db_item.itemtype.data:
-                wear_location = db_item.itemtype.data
-                desired_item = self.pick_areastoreitem(wear_location, self.char.class_string, self.char.race, self.char.level)
-                if desired_item and desired_item.area:
-                    items.append(desired_item)
-                else:
-                    magentaprint("ArmourBot couldn't pick out a default armour piece for " + wear_location.lower() + " slot.")
+        # items = []
+        # for a in broken_armour:
+        #     # wear_location = map.lookup_wear_location(a)A
+        #     db_item = Item.get_item_by_name(a)
+        #     if db_item and db_item.itemtype and db_item.itemtype.data:
+        #         wear_location = db_item.itemtype.data
+        #         desired_item = self.pick_areastoreitem(wear_location, self.char.class_string, self.char.race, self.char.level)
+        #         if desired_item and desired_item.area:
+        #             items.append(desired_item)
+        #         else:
+        #             magentaprint("ArmourBot couldn't pick out a default armour piece for " + wear_location.lower() + " slot.")
 
-        return items
+        # return items
+        # Should we prefer the item that was just broken?  No need, that's overcomplicating it.  Go to the DB.
+
+        # Steel armour: Paladins, dark knights, barbarians, fighters, bards(?) (cast iron shield)
+        # Plate same as Steel maybe (large iron shield)
+        # Chain: Rangers, assassins, clerics (iron shield)
+        # Ring mail: Mages, druids, alchemists, thieves (bone shield)
+
+        self.command_handler.equipment.execute_and_wait()
+        desired_items = []
+
+        for slot in self.command_handler.equipment.slot_names:
+            if self.command_handler.equipment.dict[slot]:
+                continue
+            else:
+                # Search db for a piece given size, class, slot
+                # size = self.determine_size(self.char.race)
+                # level = self.determine_armour_level(self.char.class_string)
+                # size = ArmourSizeDeterminator().determine(self.char.race)
+                # level = ArmourLevelDeterminator().determine(self.char.class_string)
+                size = self.get_size(self.char.race)
+                level = self.get_armour_level(self.char.level)  # checks class and level (low level paladin can't wear steel yet)
+                magentaprint("determine_shopping_list() size " + size + ", slot: " + str(slot) + ", level: " + str(level))
+                if slot == 'wielded' or slot == 'seconded':
+                    continue
+                if slot == 'face' or slot == 'holding':
+                    continue  # no masks in shops, so this hack will probably stay.  We should add 'face' slot to the db.
+                if re.search(r'\d$', slot):
+                    slot = slot[:len(slot)-1]  # neck2, finger3, etc.
+                slot = slot.title()
+                items = AreaStoreItem.get_by_item_type_and_level_max(size, slot, level)
+                magentaprint("determine_shopping_list() items: " + str(items))
+                # if items:
+                #     if len(items) > 0:
+                #         magentaprint(str(len(items)))  # Object of type 'SelectQuery' has no len()
+                #         magentaprint("determine_shopping_list() items[0]: " + str(items[0]))
+                #         magentaprint("determine_shopping_list() items[0].level: " + str(items[0].level))
+                #         items.sort(key=lambda item: item.level, reverse=True)
+                #         desired_items.append(items[0])
+                # if items:
+                #     items.sort(key=lambda item: item.level, reverse=True)  # Use the highest level match
+                #     # 'SelectQuery' object has no attribute 'sort'  ... maybe it is an iterator though
+                #     magentaprint("determine_shopping_list chose " + items[0].item.name)
+                #     desired_items.append(items[0])
+                dir(items)
+                for item in items:
+                    magentaprint("Won't print if there's no valid item: " + str(item))
+                    # Don't bother sorting for now
+                    desired_items.append(item)
+                    break
+
+        return desired_items
 
         # for slot in ['body','arms','legs','neck1','neck2','face','hands','head', 'shield']:
 
@@ -181,7 +232,7 @@ class ArmourBot(EquipmentBot):
                 return 2
             else:
                 return 1
-        elif character_level > 4:
+        elif character_lvl > 4:
             if self.clothie():
                 return 1
             else:
@@ -213,6 +264,7 @@ class ArmourBot(EquipmentBot):
         return self.char.class_string in ['Ran', 'Cle', 'Ass']
 
     def steel(self):
+        magentaprint("ArmourBot.steel() class string is: " + str(self.char.class_string))
         return self.char.class_string in ['Pal', 'Dk', 'Bar', 'Fig', 'Brd']
 
 

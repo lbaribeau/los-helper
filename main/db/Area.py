@@ -142,7 +142,8 @@ class Area(NamedModel):
         areas = []
 
         try:
-            areas = Area.select().where((Area.name == area_name) & (Area.description == area_description))
+            areas = Area.select().where((Area.name == area_name) & (Area.description == area_description))  
+            # ',' might work over '&'
 
         except Area.DoesNotExist:
             areas = []

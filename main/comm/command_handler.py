@@ -96,13 +96,13 @@ class CommandHandler(object):
             self.init_map_and_bots()
 
         self.actions = {
-            re.compile('go_smithy') : self.go_smithy,
-            re.compile('suit_up'): self.suit_up,
-            re.compile('bdrop') : self.bulk_drop,
-            re.compile('lookup_armour') : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
-            re.compile('print_reactions') : lambda a : self.mudReaderHandler.print_reactions(),
+            'go_smithy' : self.go_smithy,
+            'suit_up': self.suit_up,
+            'bdrop' : self.bulk_drop,
+            'lookup_armour' : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
+            'print_reactions' : lambda a : self.mudReaderHandler.print_reactions(),
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
-            re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
+            # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
 
     def init_map_and_bots(self):
@@ -178,6 +178,7 @@ class CommandHandler(object):
 
         # for action in self.actions.keys():
         if the_split[0] in self.actions.keys():
+            magentaprint("Calling command handler action " + str(the_split[0]))
             self.actions[the_split[0]](args)
             return
 
@@ -631,6 +632,7 @@ class CommandHandler(object):
             self.botthread.start()
 
     def suit_up(self, args):
+        magentaprint("In suit_up")
         if self.bot_check():
             self.botthread = ThreadMaker(self.armour_bot, 'suit_up')
             self.botthread.start()
@@ -691,6 +693,9 @@ class CommandHandler(object):
                 magentaprint("Input not recognized - cannot start the mixer!", False)
 
     def stop_bot(self):
+        magentaprint("CommandHandler.stop_bot()")
+        if self.botThread:
+            magentaprint("CommandHandler.stop_bot() self.botThread.is_alive(): " + str(self.botThread.is_alive()))
         if self.botThread and self.botThread.is_alive():
             self.botThread.stop()
 

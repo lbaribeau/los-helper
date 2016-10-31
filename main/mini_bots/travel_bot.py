@@ -11,10 +11,16 @@ class TravelBot(MiniBot):
         self.command_handler = command_handler
         self.mrh = mud_reader_handler
         self.map = map
+        self.goto_thread = None
+
+    def stop(self):
+        magentaprint("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TravelBot.stop()")
+        if self.goto_thread:
+            self.goto_thread.stop()
 
     def go_to_area_by_id(self, area_to_id):
-        goto = GotoThread(self.char, self.command_handler, self.mrh, self.map, area_to_id)
-        goto.run()
+        self.goto_thread = GotoThread(self.char, self.command_handler, self.mrh, self.map, area_to_id)
+        self.goto_thread.run()
 
     def follow_path(self, path, grinding=False):
         for exit in path:

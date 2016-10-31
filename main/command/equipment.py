@@ -5,6 +5,7 @@ from misc_functions import magentaprint
 from command.Inventory import parse_item_names
 
 class Equipment(Command):
+    command = 'eq'
     def __init__(self, telnetHandler):
         # self.regex_cart = [R.you_arent_wearing_anything,
         #     R.on_body, R.on_arms, R.on_legs, R.on_neck, R.on_face, R.on_hands, R.on_head,
@@ -21,7 +22,7 @@ class Equipment(Command):
         self.reset()
 
     def reset(self):
-        self.equipment = dict.fromkeys(self.slot_names)
+        self.dict = dict.fromkeys(self.slot_names)
         self.neck_count = 0
         self.finger_count = 0
 
@@ -35,18 +36,18 @@ class Equipment(Command):
         if r in R.eq:
             for i in range(1,21):
                 if match.group('slot'+str(i)):
-                    self.equipment[self.determine_slot_name(match.group('slot'+str(i)))] = self.determine_gear_name(match.group('piece'+str(i)))
+                    self.dict[self.determine_slot_name(match.group('slot'+str(i)))] = self.determine_gear_name(match.group('piece'+str(i)))
                 else:
                     break
         else:
-            self.equipment = dict.fromkeys(self.slot_names)
+            self.dict = dict.fromkeys(self.slot_names)
 
-        magentaprint("Equipment dict set to " + str(self.equipment))
+        magentaprint("Equipment dict set to " + str(self.dict))
         super().notify(r, match)
 
     def execute(self, target=None):
         self.reset()
-        super().execute(self, target)
+        super().execute(target)
 
     # def notify(self, regex, M_obj):
     #     self.M_obj = M_obj

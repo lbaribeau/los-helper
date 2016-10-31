@@ -34,11 +34,12 @@ class MudItem(GenericMudObject):
         magentaprint("MudItem areastoreitems: " + str(areastoreitems))
         # magentaprint("MudItem found " + str(len(areastoreitems)) + " items.")
 
-        muditems = {}  
-        for item in areastoreitems:
-            magentaprint("MudItem loop item: " + str(item))
-            muditems[item.area.id] = MudItem(item.item.name)  # keyed by area id apparently
+        muditems = {}
+        for asi in areastoreitems:
+            magentaprint("MudItem loop item: " + str(asi))
+            muditems[asi.area.id] = MudItem(asi.item.name)  # keyed by area id apparently
 
+        # Why not make an array muditems = [asi.item for asi in areastoreitems]
         return muditems
 
     def get_purchase_location_id(self): #model to help track sizes
