@@ -7,8 +7,9 @@ class ThreadMaker(Thread):
     # So I don't have to make a new class for every threaded operation
     # (I do have to make a new ThreadMaker for each new thread.  This makes a thread out of any function.)
     # In order to support stop(), I will need a new object each time!  And not a ThreadMaker object!  (the called
-    # function has to check self.stop() and exit cleanly...)  Well how about sending a stop signal??
-
+    # function has to check self.stop() and exit cleanly...)  Well how about sending a stop signal??  That would be
+    # threading.Event.  I think that having a new object for each thread is very reasonable.  I will make more mini bots.
+    # and deprecate ThreadMaker.
 
     def __init__(self, t, t_function_name):
         super().__init__()

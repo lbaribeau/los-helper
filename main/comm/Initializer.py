@@ -4,7 +4,7 @@ class Initializer(object):
 
         magentaprint("LosHelper initializing...", False)
 
-        self.botThread = None
+        self.bot_thread = None
         self.mud_map = None
         self.threaded_map_setup = True
 

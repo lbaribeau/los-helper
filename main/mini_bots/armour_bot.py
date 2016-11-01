@@ -7,10 +7,10 @@ from Exceptions import *
 from comm import RegexStore as R
 from combat.mob_target_determinator import MobTargetDeterminator
 from mini_bots.travel_bot import TravelBot
-from mini_bots.equipment_bot import EquipmentBot
+from mini_bots.smithy_bot import SmithyBot
 from mini_bots.shopping_bot import ShoppingBot
 
-class ArmourBot(EquipmentBot):
+class ArmourBot(SmithyBot):
     def __init__(self, char, command_handler, mrh, map):
         super().__init__(char, command_handler, mrh, map)
         self.broken_armour = []

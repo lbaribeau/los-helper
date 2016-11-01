@@ -7,9 +7,9 @@ from Exceptions import *
 from comm import RegexStore as R
 from combat.mob_target_determinator import MobTargetDeterminator
 from mini_bots.travel_bot import TravelBot
-from mini_bots.equipment_bot import EquipmentBot
+from mini_bots.smithy_bot import SmithyBot
 
-class WeaponBot(EquipmentBot):
+class WeaponBot(SmithyBot):
     def __init__(self, char, command_handler, mrh, db_handler):
         super().__init__(char, command_handler, mrh, db_handler)
 

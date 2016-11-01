@@ -1,6 +1,8 @@
 
-from bots.GotoThread import GotoThread
+# from bots.GotoThread import GotoThread
 from mini_bots.mini_bot import MiniBot
+from misc_functions import magentaprint
+from threading import Thread
 
 class TravelBot(MiniBot):
     # This bot can kill enemies on the way
@@ -11,16 +13,25 @@ class TravelBot(MiniBot):
         self.command_handler = command_handler
         self.mrh = mud_reader_handler
         self.map = map
-        self.goto_thread = None
+        # self.goto_thread = None
 
-    def stop(self):
-        magentaprint("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TravelBot.stop()")
-        if self.goto_thread:
-            self.goto_thread.stop()
+    # def stop(self):
+    #     magentaprint("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TravelBot.stop()")
+    #     if self.goto_thread:
+    #         self.goto_thread.stop()  # for go_to_area_by_id()
+    #     self.stopping = True  # for follow_path()
 
-    def go_to_area_by_id(self, area_to_id):
-        self.goto_thread = GotoThread(self.char, self.command_handler, self.mrh, self.map, area_to_id)
-        self.goto_thread.run()
+    # def run(self, area_to_id):
+    #     self.follow_path(area_to_id)
+    # def start_thread(self, area_to_id):
+    #     self.goto_thread = GotoThread(self.char, self.command_handler, self.mrh, self.map, area_to_id)
+    #     self.goto_thread.run()
+    # def go_to_area_by_id(self, area_to_id):
+    #     self.start_thread(area_to_id)
+
+    def start_thread(self, area_to_id):
+        self.thread = Thread(target=self.go_to_area, args=area_to_id)
+        self.thread.start()
 
     def follow_path(self, path, grinding=False):
         for exit in path:
@@ -49,8 +60,13 @@ class TravelBot(MiniBot):
     def go_to_area_by_title(self, title_fragment):
         pass
 
-    def get_directions(self, map, orig_aid, dest_aid):
-        pass
+    def get_directions(self, orig_aid, dest_aid):
+        return self.map.get_path(orig_aid, dest_aid)
+
+    def go_to_area(self, aid):
+        path = self.map.get_path(self.char.AREA_ID, area_to_id)
+        self.stopping = False
+        self.follow_path(path)
 
 # class GotoThread(BotThread):
 #     def decide_where_to_go(self):

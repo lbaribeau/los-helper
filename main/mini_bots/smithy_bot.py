@@ -12,8 +12,8 @@ from combat.mob_target_determinator import MobTargetDeterminator
 from mini_bots.travel_bot import TravelBot
 from mini_bots.mini_bot import MiniBot
 
-# class EquipmentBot(Thread):
-class EquipmentBot(MiniBot):
+# class SmithyBot(Thread):
+class SmithyBot(MiniBot):
     def __init__(self, char, command_handler, mrh, map):
         super().__init__()
         self.char = char
@@ -30,16 +30,25 @@ class EquipmentBot(MiniBot):
             'body','arms','legs','neck','neck2','face','hands','feet','finger','finger2','finger3',
             'finger4','finger5','finger6','finger7','shield','wielded','seconded','holding']
         self.equipment = dict.fromkeys(self.slot_names)
+        self.travel_bot = None
 
     def stop(self):
-        magentaprint("!!!!!!!!!!!!!!!!!!!! EquipmentBot.stop()!!!!!!!!!!!!!!!!!!!!!!!!!!")
-        super().stop()
+        super().stop()  # Unnecessary since travel_bot is the only loop
         self.travel_bot.stop()
 
+    def run(self):
+        # Parent implements start_thread() which makes a thread for this.
+        self.go_to_nearest_smithy()
+
+    # def is_alive(self):
+    #     if self.travel_bot:
+    #         return self.
+    #     return True
+
     def go_to_nearest_smithy(self, grinding=False):
-        magentaprint("TopDownGrind.go_to_nearest_smithy()")
+        magentaprint("SmithyBot.go_to_nearest_smithy()")
         smithy_path = self.get_smithy_path()
-        magentaprint("TopDownGrind.get_smithy_path(): " + str(smithy_path))
+        magentaprint("SmithyBot.get_smithy_path(): " + str(smithy_path))
         self.travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.map)
         self.travel_bot.follow_path(smithy_path)
 
