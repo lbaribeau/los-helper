@@ -281,6 +281,8 @@ class CommandHandler(object):
             self.start_slave(user_input)
         elif re.match("bbuy (.+?)", user_input):
             self.bbuy(user_input)
+        elif re.match("equ?|equip?|equipme?|equipment?", user_input):
+            self.equipment.execute()
         elif re.match("stop$", user_input):
             self.stop_bot()
         elif re.match("remap", user_input):

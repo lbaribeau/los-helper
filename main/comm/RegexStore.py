@@ -470,10 +470,11 @@ goodbye = ["Goodbye! Come back soon\."]
 
 # Equipment
 # you_arent_wearing_anything = [r"You aren't wearing anything\."]
-on_body = [r"On body:   (.+?)\n\r"]
+on_body = [r"On (body):   (.+?)\n\r"]
 on_arms = [r"On arms:   (.+?)\n\r"]
 on_legs = [r"On legs:   (.+?)\n\r"]
-on_neck = [r"On neck:   (.+?)\n\r(On neck:   (?P<second_neck>.+?)\n\r)?"]
+# on_neck = [r"On neck:   (.+?)\n\r(On neck:   (?P<second_neck>.+?)\n\r)?"]
+on_neck = [r"On neck:   (.+?)\n\r"]
 on_face = [r"On face:   (.+?)\n\r"]
 on_hands= [r"On hands:  (.+?)\n\r"]
 on_head = [r"On head:   (.+?)\n\r"]
@@ -484,6 +485,8 @@ shield  = [r"Shield:    (.+?)\n\r"]
 wielded = [r"Wielded:   (.+?)\n\r"]
 seconded= [r"Seconded:  (.+?)\n\r"]
 holding = [r"Holding:   (.+?)\n\r"]
+
+one_equip = [r"((?P<slot>(?:On [^:]{4,6})|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece>.+?)\n\r)"]
 
 # eq = [r"(On body:   (?P<body>.+?)\n\r)?" \
 #       r"(On arms:   (?P<arms>.+?)\n\r)?" \
@@ -514,27 +517,28 @@ holding = [r"Holding:   (.+?)\n\r"]
     # This isn't greedy enough - we get notify before all equipment has been printed.
     # Match the prompt bracket?  Try it.  Hmph, the buffer gets flushed and we miss matches.  read_very_eager() solved it.
 # eq = [r"(((?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?:.+?)\n\r){1,20}"]
-eq = [r"((?P<slot1>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece1>.+?)\n\r)"
-      r"((?P<slot2>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece2>.+?)\n\r)?"
-      r"((?P<slot3>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece3>.+?)\n\r)?"
-      r"((?P<slot4>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece4>.+?)\n\r)?"
-      r"((?P<slot5>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece5>.+?)\n\r)?"
-      r"((?P<slot6>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece6>.+?)\n\r)?"
-      r"((?P<slot7>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece7>.+?)\n\r)?"
-      r"((?P<slot8>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece8>.+?)\n\r)?"
-      r"((?P<slot9>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece9>.+?)\n\r)?"
-      r"((?P<slot10>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece10>.+?)\n\r)?"
-      r"((?P<slot11>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece11>.+?)\n\r)?"
-      r"((?P<slot12>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece12>.+?)\n\r)?"
-      r"((?P<slot13>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece13>.+?)\n\r)?"
-      r"((?P<slot14>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece14>.+?)\n\r)?"
-      r"((?P<slot15>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece15>.+?)\n\r)?"
-      r"((?P<slot16>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece16>.+?)\n\r)?"
-      r"((?P<slot17>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece17>.+?)\n\r)?"
-      r"((?P<slot18>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece18>.+?)\n\r)?"
-      r"((?P<slot19>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece19>.+?)\n\r)?"
-      r"((?P<slot20>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece20>.+?)\n\r)?"
-]
+# eq = [r"((?P<slot1>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece1>.+?)\n\r)"
+#       r"((?P<slot2>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece2>.+?)\n\r)?"
+#       r"((?P<slot3>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece3>.+?)\n\r)?"
+#       r"((?P<slot4>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece4>.+?)\n\r)?"
+#       r"((?P<slot5>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece5>.+?)\n\r)?"
+#       r"((?P<slot6>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece6>.+?)\n\r)?"
+#       r"((?P<slot7>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece7>.+?)\n\r)?"
+#       r"((?P<slot8>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece8>.+?)\n\r)?"
+#       r"((?P<slot9>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece9>.+?)\n\r)?"
+#       r"((?P<slot10>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece10>.+?)\n\r)?"
+#       r"((?P<slot11>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece11>.+?)\n\r)?"
+#       r"((?P<slot12>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece12>.+?)\n\r)?"
+#       r"((?P<slot13>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece13>.+?)\n\r)?"
+#       r"((?P<slot14>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece14>.+?)\n\r)?"
+#       r"((?P<slot15>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece15>.+?)\n\r)?"
+#       r"((?P<slot16>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece16>.+?)\n\r)?"
+#       r"((?P<slot17>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece17>.+?)\n\r)?"
+#       r"((?P<slot18>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece18>.+?)\n\r)?"
+#       r"((?P<slot19>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece19>.+?)\n\r)?"
+#       r"((?P<slot20>(?:On [^:]+?)|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):(?P<piece20>.+?)\n\r)?"
+#       # r"\[(\d+) H (\d+) M\]: "
+# ]
 
 # m.group('holding') returns None with no error if the holding group didn't occur.
 # Erhm maybe it's \r\n

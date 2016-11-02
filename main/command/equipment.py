@@ -1,4 +1,6 @@
 
+from itertools import chain
+
 from command.Command import Command
 from comm import RegexStore as R
 from misc_functions import magentaprint
@@ -11,13 +13,19 @@ class Equipment(Command):
         #     R.on_body, R.on_arms, R.on_legs, R.on_neck, R.on_face, R.on_hands, R.on_head,
         #     R.on_feet, R.on_finger, R.shield, R.wielded, R.seconded, R.holding
         # ]
+        self.success_regexes = [R.you_arent_wearing_anything,
+            R.one_equip, R.prompt
+        ]
         # success/fail/error doesn't work so well in this case... do not inherit Command?
         # Add prompt [ bracket to end of regex to ensure full capture?
         # Can I assume that all the text comes in one clump?
-        self.success_regexes = [R.you_arent_wearing_anything, R.eq]
+        # self.success_regexes = [R.you_arent_wearing_anything, R.eq]
         super().__init__(telnetHandler)
+        # self.regexes.extend(R.prompt)  # We will wait for the prompt to set the flag to avoid an early return
+                                       # that doesn't catch all of the equipment
+        # self.regex_cart.append(R.prompt)
         self.slot_names = [
-            'body','arms','legs','neck','neck2','face','hands','feet','finger','finger2','finger3',
+            'body','arms','legs','neck','neck2','hands','head','feet','face','finger','finger2','finger3',
             'finger4','finger5','finger6','finger7','finger8','shield','wielded','seconded','holding']
         self.reset()
 
@@ -25,6 +33,8 @@ class Equipment(Command):
         self.dict = dict.fromkeys(self.slot_names)
         self.neck_count = 0
         self.finger_count = 0
+        self.prompt_flag = 0
+        self.eq_flag = 0
 
     def notify(self, r, match):
         # magentaprint("Equipment notify, match 0 is " + match.group(0))
@@ -33,17 +43,42 @@ class Equipment(Command):
         #     for slot_name in self.equipment.keys():
         #         magentaprint("Equipment command matched " + slot_name + " to " + match(slot_name))
         #         self.equipment[slot_name] = match(slot_name)
-        if r in R.eq:
-            for i in range(1,21):
-                if match.group('slot'+str(i)):
-                    self.dict[self.determine_slot_name(match.group('slot'+str(i)))] = self.determine_gear_name(match.group('piece'+str(i)))
-                else:
-                    break
+        # if r in R.eq:
+        #     for i in range(1,21):
+        #         if match.group('slot'+str(i)):
+        #             self.dict[self.determine_slot_name(match.group('slot'+str(i)))] = self.determine_gear_name(match.group('piece'+str(i)))
+        #         else:
+        #             break
+        #     self.eq_flag = True
+        # if r in chain.from_iterable(self.success_regexes)
+        if r in R.one_equip:
+            slot_name = self.determine_slot_name(match.group('slot'))
+            if slot_name in self.dict.keys():
+                self.dict[slot_name] = self.determine_gear_name(match.group('piece'))
+                self.eq_flag = True  # We need to concoct a flag that determines whether all equipment was matched...
+                # The prompt hack isn't doing it job in that regard
+            else:
+                magentaprint("match.group('slot').lower() is " + match.group('slot').lower() + " and is not in " + str(self.dict.keys()))
+        elif r in R.you_arent_wearing_anything:
+            self.reset()
+        elif r in R.prompt:
+            self.prompt_flag = True
         else:
-            self.dict = dict.fromkeys(self.slot_names)
+            magentaprint("What regex was that")
 
-        magentaprint("Equipment dict set to " + str(self.dict))
-        super().notify(r, match)
+        super().notify_success_fail_or_error(r, match)
+
+        if self.eq_flag and self.prompt_flag:
+        # if self.eq_flag:
+            magentaprint("Equipment dict is " + str(self.dict))
+            # magentaprint("Equipment completed.")
+            self.eq_flag = False
+            self.prompt_flag = False
+            super().set_completion_flag(r, match)  # We are returning when we get the prompt since returning on R.eq is buggy.
+            # This is also why we separated Command.notify() into two methods (we don't want to set the completion flag on R.eq
+            # like most other commands that don't have a similar bug.)
+            # It's finicky - there's another issue when the prompt is sent with the eq text and gets registered before it,
+            # so we need to wait for both flags.
 
     def execute(self, target=None):
         self.reset()
