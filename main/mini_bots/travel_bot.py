@@ -46,7 +46,19 @@ class TravelBot(MiniBot):
             if self.command_handler.go.success:
                 pass
             else:
-                raise Exception("TravelBot failed go!")
+                # raise Exception("TravelBot failed go!")
+                # Can we assume that it failed?  Should we redo the whole path?  Let's rule out please_wait
+                if self.command_handler.go.please_wait:
+                    self.command_handler.go.execute_and_wait(exit)  # Trying again should do the trick
+                elif self.command_handler.go.failure:
+                    # This is not supposed to happen, if the db sends good paths... maybe it's a blocking mob
+                    # TravelBot needs to be able to engage enemies or trust the caller to do so.
+                    return False  # We will try again (redoing the path), it probably won't work, then we'll raise the exception.
+                elif self.command_handler.go.error:
+                    # Wrong exit name... only thing to try is to rebuild the path
+                    return False
+
+        return True
 
     def clean_out_node(self):
         for mob in self.char.mobs.list:
@@ -64,9 +76,13 @@ class TravelBot(MiniBot):
         return self.map.get_path(orig_aid, dest_aid)
 
     def go_to_area(self, aid):
-        path = self.map.get_path(self.char.AREA_ID, area_to_id)
+        path = self.map.get_path(self.char.AREA_ID, aid)
         self.stopping = False
-        self.follow_path(path)
+        while not self.follow_path(path):
+            path = self.map.get_path(self.char.AREA_ID, aid)
+            self.command_handler.go.execute_and_wait(path.pop(0))
+            if not self.command_handler.go.success:
+                raise Exception("TravelBot aborting due to errors!")
 
 # class GotoThread(BotThread):
 #     def decide_where_to_go(self):

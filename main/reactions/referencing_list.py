@@ -178,6 +178,7 @@ class ReferencingList(object):
                     # i = i + len(self.inventory.dictionary[k].objs)
                     i = i + self.count(list_name)
 
+        magentaprint("Caution: referencing_list.get_first_reference() returned None!")
         return None
 
     def get_2nd_word_reference(self, item_name):

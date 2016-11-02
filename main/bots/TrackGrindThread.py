@@ -4,8 +4,8 @@ from misc_functions import magentaprint
 from Aura import Aura
 
 class TrackGrindThread(GrindThread):
-    def __init__(self, character, commandHandler, mudReaderHandler, mud_map, starting_path=None):
-        super().__init__(character, commandHandler, mudReaderHandler, mud_map)
+    def __init__(self, character, command_handler, mudReaderHandler, mud_map, starting_path=None):
+        super().__init__(character, command_handler, mudReaderHandler, mud_map)
 
         # Set TOTALPATHS.  Setting it lower than the actual number
         # of paths in decide_where_to_go is a way to truncate paths

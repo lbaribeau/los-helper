@@ -653,8 +653,10 @@ class CommandHandler(object):
     def suit_up(self, args):
         magentaprint("In suit_up")
         if self.bot_check():
-            self.bot_thread = ThreadMaker(self.armour_bot, 'suit_up')
-            self.bot_thread.start()
+            # self.bot_thread = ThreadMaker(self.armour_bot, 'suit_up')
+            # self.bot_thread.start()
+            self.bot_thread = self.armour_bot
+            self.bot_thread.start_thread()
 
     def start_crawl(self):
         if self.bot_check():

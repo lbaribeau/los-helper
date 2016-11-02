@@ -9,10 +9,15 @@ from combat.mob_target_determinator import MobTargetDeterminator
 from mini_bots.travel_bot import TravelBot
 from mini_bots.smithy_bot import SmithyBot
 from mini_bots.shopping_bot import ShoppingBot
+from mini_bots.mini_bot import MiniBot
 
-class ArmourBot(SmithyBot):
+class ArmourBot(MiniBot):
     def __init__(self, char, command_handler, mrh, map):
-        super().__init__(char, command_handler, mrh, map)
+        super().__init__()
+        self.char = char
+        self.command_handler = command_handler
+        self.mrh = mrh
+        self.map = map
         self.broken_armour = []
 
         # self.actions = {
@@ -22,6 +27,18 @@ class ArmourBot(SmithyBot):
         self.actions = {R.armour_breaks[0]: self.react_to_armour_break}
         self.regex_cart = [R.armour_breaks]
         # magentaprint("ArmourBot regex cart: " + str(self.regex_cart))
+        # self.thread = None  # smithy_bot or shopping_bot
+        # self.stopping = False  # backwards compatibility
+
+    # def stop(self):  # use parent stop() on self.thread, which will hit a smithy_bot or a shopping_bot
+    #     if self.smithy_bot:
+    #         self.smithy_bot.stop()
+    # def start_thread(self):
+    #     self.suit_up()
+
+    def run(self):
+        # MiniBot uses this to start a thread.
+        self.suit_up()
 
     def notify(self, regex, match):
         self.actions[regex](match)
@@ -118,14 +135,17 @@ class ArmourBot(SmithyBot):
         #desired_items = sorted(self.determine_shopping_list(self.broken_armour), key=lambda item : item.area)
         # We don't need to use broken armour here, since we've been to the smithy.  We should check equipment (I feel uncertain about the order of actions).
 
-        self.travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.map)
+        travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.map)  # Should use TravelBot's thread!
         shopping_bot = ShoppingBot(self.char, self.command_handler)
         desired_asi_list = self.determine_shopping_list(self.broken_armour)
         # magentaprint("ArmourBot.get_needed_default_armour() desired_asi_list: " + str(desired_asi_list))
 
         for asi in desired_asi_list:
-            path = self.map.get_path(self.char.AREA_ID, asi.area.id)
-            self.travel_bot.follow_path(path)
+            # path = self.map.get_path(self.char.AREA_ID, asi.area.id)
+            # travel_bot.follow_path(path)
+            travel_bot.go_to_area(asi.area.id)
+            if self.stopping:
+                return
             if shopping_bot.buy_from_shop(asi):
                 self.command_handler.wear.execute_and_wait(self.char.inventory.get_last_reference(str(asi.item.name)))
             else:
@@ -133,12 +153,12 @@ class ArmourBot(SmithyBot):
                 # or b) go on a vendor/recycling trip and come back
                 pass
 
-    def go_to_nearest_smithy(self, grinding=False):
-        magentaprint("TopDownGrind.go_to_nearest_smithy()")
-        smithy_path = self.get_smithy_path()
-        magentaprint("TopDownGrind.get_smithy_path(): " + str(smithy_path))
-        self.travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.map)
-        self.travel_bot.follow_path(smithy_path)
+    # def go_to_nearest_smithy(self, grinding=False):
+    #     magentaprint("TopDownGrind.go_to_nearest_smithy()")
+    #     smithy_path = self.get_smithy_path()
+    #     magentaprint("TopDownGrind.get_smithy_path(): " + str(smithy_path))
+    #     self.travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.map)
+    #     self.travel_bot.follow_path(smithy_path)
 
     def determine_shopping_list(self, broken_armour):
         # items = []
@@ -267,6 +287,12 @@ class ArmourBot(SmithyBot):
         magentaprint("ArmourBot.steel() class string is: " + str(self.char.class_string))
         return self.char.class_string in ['Pal', 'Dk', 'Bar', 'Fig', 'Brd']
 
+    def go_to_nearest_smithy(self):
+        # self.thread.stop()
+        # self.thread = SmithyBot(self.char, self.command_handler, self.mrh, self.map)
+        # self.thread.start_thread()
+        s = SmithyBot(self.char, self.command_handler, self.mrh, self.map)
+        s.go_to_nearest_smithy()
 
     # # Use db for this?  Makes sense to
     # def is_body(self, string):

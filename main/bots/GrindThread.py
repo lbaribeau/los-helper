@@ -12,8 +12,8 @@ from comm import Spells
 from db.MudItem import MudItem
 
 class GrindThread(BotThread):
-    def __init__(self, character, commandHandler, mudReaderHandler, mud_map):
-        super().__init__(character, commandHandler, mudReaderHandler, mud_map)
+    def __init__(self, character, command_handler, mudReaderHandler, mud_map):
+        super().__init__(character, command_handler, mudReaderHandler, mud_map)
         self.loot_threshold = 1  # the amount of loot to collect before selling
 
     def do_run_startup(self):
@@ -41,14 +41,14 @@ class GrindThread(BotThread):
         #    exit_str == "sw" or exit_str == "se" or
         #    exit_str == 'n' or exit_str == 'e' or
         #    exit_str == 's' or exit_str == 'w'):
-        #     # self.commandHandler.process(exit_str)
+        #     # self.command_handler.process(exit_str)
         #     # return self.check_for_successful_go()
         #     # return self.check_for_successful_go()
         #     # return self.go(exit_str)   # Erhm self.go calls us, not the other way around
-        #     self.commandHandler.go.persistent_execute(exit_str)
-        #     return self.commandHandler.go.success
+        #     self.command_handler.go.persistent_execute(exit_str)
+        #     return self.command_handler.go.success
         if exit_str == "prepare":
-            self.commandHandler.process(exit_str)
+            self.command_handler.process(exit_str)
             return True
         elif exit_str == "sell_items":
             self.sell_items()
@@ -71,30 +71,30 @@ class GrindThread(BotThread):
             return False
 
     def buy(self, item):
-        self.commandHandler.buy.execute(item.partition(' ')[0])  # TODO: ensure that the correct item is bought
-        self.commandHandler.buy.wait_for_flag()
+        self.command_handler.buy.execute(item.partition(' ')[0])  # TODO: ensure that the correct item is bought
+        self.command_handler.buy.wait_for_flag()
         # I'm hacking here.  I intend start a new Grind thread to do this properly.
-        if self.commandHandler.buy.cant_carry:
+        if self.command_handler.buy.cant_carry:
             # Maybe we're carrying a broken one
             # magentaprint("GrindThread.dobuy() reference: " + str(self.inventory.get_reference(item)))
-            self.commandHandler.drop.execute(self.inventory.get_reference(item))
-            self.commandHandler.drop.wait_for_flag()
-            if not self.commandHandler.drop.success:
+            self.command_handler.drop.execute(self.inventory.get_reference(item))
+            self.command_handler.drop.wait_for_flag()
+            if not self.command_handler.drop.success:
                 magentaprint("buy_and_wield() failed!")
-                self.commandHandler.process('rest')
-                self.commandHandler.quit()
+                self.command_handler.process('rest')
+                self.command_handler.quit()
                 return False
             else:
-                self.commandHandler.buy.execute(item.partition(' ')[0])
-                self.commandHandler.buy.wait_for_flag()
+                self.command_handler.buy.execute(item.partition(' ')[0])
+                self.command_handler.buy.wait_for_flag()
 
-        if self.commandHandler.buy.success:
+        if self.command_handler.buy.success:
             magentaprint("GrindThread.buy_and_wield adding %s." % str(item))
             self.inventory.add(item)
             return True
         else:
-            self.commandHandler.process('rest')
-            self.commandHandler.quit()
+            self.command_handler.process('rest')
+            self.command_handler.quit()
             crash  # failed to buy weapon
             return False
 
@@ -162,9 +162,9 @@ class GrindThread(BotThread):
     def set_up_automatic_ring_wearing(self):
         """ Makes some BotReactions so that when MudReaderHandler sees us
         pick up a ring, we'll wear it."""
-        # r = GenericBotReaction("(?s)You get .+? an? .+? ring((,.+?\.)|(\.))", self.commandHandler, "wear all")  # Regex problem
+        # r = GenericBotReaction("(?s)You get .+? an? .+? ring((,.+?\.)|(\.))", self.command_handler, "wear all")  # Regex problem
         # self.mudReaderHandler.register_reaction(r)
-        ring_reaction = RingWearingReaction(self.character.inventory, self.commandHandler)
+        ring_reaction = RingWearingReaction(self.character.inventory, self.command_handler)
         self.mudReaderHandler.register_reaction(ring_reaction)
         #Todo: fix for case where there's ring mail in the inventory or multiple rings are dropped
 
@@ -274,9 +274,9 @@ class GrindThread(BotThread):
             if self.do_heal_skills():
                 continue
             elif self.inventory.count_small_restoratives() > 7:
-                self.commandHandler.use.wait_until_ready()
-                self.commandHandler.use.small_healing_potion()
-                self.commandHandler.use.wait_for_flag()
+                self.command_handler.use.wait_until_ready()
+                self.command_handler.use.small_healing_potion()
+                self.command_handler.use.wait_for_flag()
             else:
                 # if self.engage_any_attacking_mobs():
                 #     if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
@@ -320,11 +320,11 @@ class GrindThread(BotThread):
         # TODO: keep resting if benefitting from resting until maxed.
 
         if (self.neither_is_maxed or self.one_is_too_low) and not self.stopping:
-            self.commandHandler.process("rest")
+            self.command_handler.process("rest")
 
         while (self.neither_is_maxed or self.one_is_too_low) and not self.stopping:
             if self.engage_any_attacking_mobs():
-                self.commandHandler.process("rest")
+                self.command_handler.process("rest")
             self.sleep(0.1)
 
     @property
@@ -343,7 +343,7 @@ class GrindThread(BotThread):
                 if self.stopping:
                     return
             self.engage_any_attacking_mobs()
-            self.commandHandler.process('')
+            self.command_handler.process('')
 
     def rest_for_health(self):
         magentaprint("BotThread.rest_for_health()")
@@ -353,16 +353,16 @@ class GrindThread(BotThread):
 
         self.do_heal_skills()
 
-        self.commandHandler.process("rest")
+        self.command_handler.process("rest")
 
         # magentaprint(self.has_ideal_health(), False)
 
         while not self.has_ideal_health() and not self.stopping:
             magentaprint("GrindThread.rest_for_health() stopping is: " + str(self.stopping))
             if self.engage_any_attacking_mobs():
-                self.commandHandler.process("rest")
+                self.command_handler.process("rest")
             elif self.do_heal_skills():
-                self.commandHandler.process("rest")
+                self.command_handler.process("rest")
 
             self.sleep(1.2)
 
@@ -459,9 +459,9 @@ class GrindThread(BotThread):
 
     def use_buff_items(self):
         if self.inventory.has("milky potion"):
-            self.commandHandler.process('drink milky')
+            self.command_handler.process('drink milky')
         elif self.inventory.has("steel bottle"):
-            self.commandHandler.process('drink steel')
+            self.command_handler.process('drink steel')
         else:
             self.character.HAS_BUFF_ITEMS = False
 
@@ -469,25 +469,25 @@ class GrindThread(BotThread):
         magentaprint("GrindThread.use_extra_bless_item()")
         if self.inventory.count('milky potion') + self.inventory.count('silver chalice') > 3:
             if self.inventory.has('milky potion'):
-                self.commandHandler.use.execute(self.inventory.get_first_reference('milky potion'))
+                self.command_handler.use.execute(self.inventory.get_first_reference('milky potion'))
             else:
-                self.commandHandler.use.execute(self.inventory.get_first_reference('silver chalice'))
-            self.commandHandler.use.wait_for_flag()
+                self.command_handler.use.execute(self.inventory.get_first_reference('silver chalice'))
+            self.command_handler.use.wait_for_flag()
 
     def use_extra_steel_bottle(self):
         magentaprint("GrindThread.use_extra_steel_bottle()")
         if self.inventory.count('steel bottle') > 3:
-            self.commandHandler.use.execute(self.inventory.get_first_reference('steel bottle'))
-            self.commandHandler.use.wait_for_flag()
+            self.command_handler.use.execute(self.inventory.get_first_reference('steel bottle'))
+            self.command_handler.use.wait_for_flag()
 
     def use_restorative_items(self):
         if self.inventory.has("small restorative"):
-            self.commandHandler.process('drink restorative')
+            self.command_handler.process('drink restorative')
             # large restorative
         elif self.inventory.has("scarlet potion"):
-            self.commandHandler.process('drink scarlet')
+            self.command_handler.process('drink scarlet')
         elif self.inventory.has("tree root"):
-            self.commandHandler.process('eat root')
+            self.command_handler.process('eat root')
             # white potion
         else:
             self.character.HAS_RESTORE_ITEMS = False
@@ -590,6 +590,11 @@ class GrindThread(BotThread):
     def check_armour(self):
         if self.stopping:
             return
+        self.command_handler.armour_bot.suit_up()
+
+    def stop(self):
+        super().stop()
+        self.command_handler.armour_bot.stop()
 
     def sell_items(self):
         if self.stopping:
@@ -786,29 +791,29 @@ class GrindThread(BotThread):
 
     def do_flee_hook(self):
         self.stop()
-        self.commandHandler.user_flee()
+        self.command_handler.user_flee()
 
     def get_items(self):
-        # self.commandHandler.process('ga')
-        self.commandHandler.get.execute('all')
-        self.commandHandler.get.wait_for_flag()
+        # self.command_handler.process('ga')
+        self.command_handler.get.execute('all')
+        self.command_handler.get.wait_for_flag()
 
-        while self.commandHandler.get.cant_carry and not self.stopping:
+        while self.command_handler.get.cant_carry and not self.stopping:
             magentaprint("Number of steel bottles: " + str(self.inventory.count('steel bottle')))
             if self.inventory.count('steel bottle') > 3:
                 # TODO: make an Ability for steel bottle (protection spell)
-                self.commandHandler.use.by_name('steel bottle')
-                self.commandHandler.use.wait_for_flag()
+                self.command_handler.use.by_name('steel bottle')
+                self.command_handler.use.wait_for_flag()
             elif self.inventory.count_restoratives() > 5:
-                self.commandHandler.use.healing_potion()
-                self.commandHandler.use.wait_for_flag()
-                if self.commandHandler.use.error:
+                self.command_handler.use.healing_potion()
+                self.command_handler.use.wait_for_flag()
+                if self.command_handler.use.error:
                     return
             else:
                 # just leave it there
                 return
-            self.commandHandler.get.execute('all')
-            self.commandHandler.get.wait_for_flag()
+            self.command_handler.get.execute('all')
+            self.command_handler.get.wait_for_flag()
 
     def engage_mobs_who_joined_in(self):
         # while self.character.MOBS_JOINED_IN != []:
@@ -853,9 +858,9 @@ class GrindThread(BotThread):
     def pause(self):
         # Wait for server timeout, engaging any attacking mobs
         magentaprint("GrindThread pausing forever.")
-        self.commandHandler.process('rest')
+        self.command_handler.process('rest')
         while not self.stopping:
             self.sleep(1)
             if self.engage_any_attacking_mobs():
-                self.commandHandler.process('rest')
+                self.command_handler.process('rest')
 
