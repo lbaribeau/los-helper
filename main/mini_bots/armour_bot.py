@@ -112,18 +112,21 @@ class ArmourBot(MiniBot):
     def repair_and_wear(self, a):
         armour_ref = self.char.inventory.get_last_reference(a)
         magentaprint("ArmourBot.repair_and_wear on " + str(a) + ", armour_ref: " + str(armour_ref))
-        while self.char.inventory.name_from_reference(armour_ref) == a:
-            self.command_handler.repair.execute_and_wait(armour_ref)
-            if self.command_handler.repair.success:
-                self.command_handler.wear.execute_and_wait(armour_ref)
-                if self.command_handler.wear.success:
-                    return True
+        if armour_ref:
+            while self.char.inventory.name_from_reference(armour_ref) == a:
+                self.command_handler.repair.execute_and_wait(armour_ref)
+                if self.command_handler.repair.success:
+                    self.command_handler.wear.execute_and_wait(armour_ref)
+                    if self.command_handler.wear.success:
+                        return True
+                    else:
+                        raise Exception("ArmourBot - not sure why that didn't work.")
+                        # Could be that something got put on in that slot (ie. after a 'wear all' for ring wearing)
                 else:
-                    raise Exception("ArmourBot - not sure why that didn't work.")
-                    # Could be that something got put on in that slot (ie. after a 'wear all' for ring wearing)
-            else:
-                self.char.inventory.remove_by_ref(armour_ref)
-                armour_ref = MobTargetDeterminator().decrement_ref(armour_ref)
+                    self.char.inventory.remove_by_ref(armour_ref)
+                    armour_ref = MobTargetDeterminator().decrement_ref(armour_ref)
+        else:
+            magentaprint("ArmourBot.repair_and_wear() error - no inventory ref for " + str(a) + ".")
 
     def go_buy_and_wear(self, a):
         # I think we won't try to shop for the same armour that just broke, and just fall back immediately to the default set
@@ -148,6 +151,10 @@ class ArmourBot(MiniBot):
                 return
             if shopping_bot.buy_from_shop(asi):
                 self.command_handler.wear.execute_and_wait(self.char.inventory.get_last_reference(str(asi.item.name)))
+                if asi.item.name in self.broken_armour:
+                    self.broken_armour.remove(asi.item.name)
+                else:
+                    self.broken_armour = []
             else:
                 # TODO: a) check character max weight agains item weight and only travel and buy if the item can be carried
                 # or b) go on a vendor/recycling trip and come back
