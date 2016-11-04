@@ -35,6 +35,7 @@ class MudReaderThread(threading.Thread):
 
         self.recording = False
         self.recorded_text = ''
+        self.buffer_completion_subscribers = []
         
         # Internal Variables
         # variables used for the MUD_output_check function
@@ -377,6 +378,7 @@ class MudReaderThread(threading.Thread):
             # if M_obj:
 
             ##### DONE MATCHING RE's  WOOOOOOOO ######
+            self.notify_subscribers_of_buffer_completion()
 
             #sys.stdout.write('"' + MUDBuffer[MUD_buffer_trunc] + '"') #debug.  Shows where last match took place. Gives MUD_buffer not defined error.
             #magentaprint("Clearing text buffer.  len: %d.  trunc: %d.  last matched char: %c." % (
@@ -385,11 +387,14 @@ class MudReaderThread(threading.Thread):
 
             #magentaprint("MudReader loop times: incl wait: %f; iteration time: %f" % 
             #             (time.time()-time_loop_start, time.time()-time_loop_after_waiting))
-        # end loop          
+        # end loop
     # end run  (congrats!)
 
-    def copy_MUDBuffer(self):
+    def notify_subscribers_of_buffer_completion(self):
+        for s in self.buffer_completion_subscribers:
+            s.notify_of_buffer_completion()
 
+    def copy_MUDBuffer(self):
         # Routine to copy the buffer shared with MudListenerThread.
         # Wait for access flag to go down for the read.
         while(self.MUDBuffer.access_flag == True):

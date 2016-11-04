@@ -76,6 +76,7 @@ class CommandHandler(object):
         magentaprint(str(Equipment))
         self.equipment = Equipment(telnetHandler)
         mudReaderHandler.add_subscriber(self.equipment)
+        mudReaderHandler.add_buffer_completion_subscriber(self.equipment)
         # self.eq_bot = EquipmentBot(character, self, self.mudReaderHandler, self.mud_map)
 
         if '-fake' in sys.argv:

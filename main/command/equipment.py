@@ -68,17 +68,19 @@ class Equipment(Command):
 
         super().notify_success_fail_or_error(r, match)
 
+    def notify_of_buffer_completion(self):
         if self.eq_flag and self.prompt_flag:
         # if self.eq_flag:
             magentaprint("Equipment dict is " + str(self.dict))
             # magentaprint("Equipment completed.")
             self.eq_flag = False
             self.prompt_flag = False
-            super().set_completion_flag(r, match)  # We are returning when we get the prompt since returning on R.eq is buggy.
+            super().set_completion_flag()  # We are returning when we get the prompt since returning on R.eq is buggy.
             # This is also why we separated Command.notify() into two methods (we don't want to set the completion flag on R.eq
             # like most other commands that don't have a similar bug.)
             # It's finicky - there's another issue when the prompt is sent with the eq text and gets registered before it,
             # so we need to wait for both flags.
+
 
     def execute(self, target=None):
         self.reset()

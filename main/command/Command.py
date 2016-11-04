@@ -109,7 +109,7 @@ class Command(SimpleCommand):
 
     def notify(self, regex, M_obj):
         self.notify_success_fail_or_error(regex, M_obj)
-        self.set_completion_flag(regex, M_obj)
+        self.set_completion_flag()
 
     def notify_success_fail_or_error(self, regex, M_obj):
         # 'success' and 'fail' could be renamed to 'long cooldown' and 'short cooldown'
@@ -145,8 +145,8 @@ class Command(SimpleCommand):
             self.please_wait_time = 60*int(M_obj.group(1)) + int(M_obj.group(2))
             self.notify_please_wait()
 
-    def set_completion_flag(self, regex, M_obj):
-        super().notify(regex, M_obj)   # maintains wait_for_flag()
+    def set_completion_flag(self):
+        super().notify(None, None)   # maintains wait_for_flag()
         self._executing = False
 
     @property

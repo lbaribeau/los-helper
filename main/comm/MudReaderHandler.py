@@ -470,6 +470,10 @@ class MudReaderHandler(object):
     def recording(self):
         return self.mudReaderThread.recording
 
+    def add_buffer_completion_subscriber(self, new_subscriber):
+        # the new_subscriber must implement notify_of_buffer_completion(self)
+        self.mudReaderThread.buffer_completion_subscribers.append(new_subscriber)
+
 # TODO
 #    def check_for_text(possibility1, possibility2
 
