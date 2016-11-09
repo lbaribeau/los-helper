@@ -34,6 +34,7 @@ from command.wear import Wear
 from mini_bots.armour_bot import ArmourBot
 from command.equipment import Equipment
 from mini_bots.smithy_bot import SmithyBot
+from mini_bots.weapon_bot import WeaponBot
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -102,6 +103,7 @@ class CommandHandler(object):
             'bdrop' : self.bulk_drop,
             'lookup_armour' : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
             'print_reactions' : lambda a : self.mudReaderHandler.print_reactions(),
+            'weapon' : lambda a : self.start_weapon_bot()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
@@ -111,6 +113,8 @@ class CommandHandler(object):
         self.mud_map = MudMap()
         self.armour_bot = ArmourBot(self.character, self, self.mudReaderHandler, self.mud_map)
         self.mudReaderHandler.add_subscriber(self.armour_bot)
+        self.weapon_bot = WeaponBot(self.character, self, self.mudReaderHandler, self.mud_map)
+        self.mudReaderHandler.add_subscriber(self.weapon_bot)
         magentaprint("CommandHandler: Mapfile completed.", False)
 
     def join_mud_map_thread(self):
@@ -661,6 +665,11 @@ class CommandHandler(object):
             self.bot_thread = self.armour_bot
             self.bot_thread.start_thread()
 
+    def start_weapon_bot(self):
+        if self.bot_check():
+            self.bot_thread = self.weapon_bot
+            self.bot_thread.start_thread()
+
     def start_crawl(self):
         if self.bot_check():
             self.bot_thread = CrawlThread(self.character, self, self.mudReaderHandler, self.mud_map)
@@ -724,6 +733,8 @@ class CommandHandler(object):
         # if self.bot_thread and self.bot_thread.is_alive():
         if self.bot_thread:
             self.bot_thread.stop()
+        # self.weapon_bot.stop()
+        # self.armour_bot.stop()
 
     def bbuy(self, user_input):
         try:

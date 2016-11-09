@@ -14,13 +14,13 @@ from mini_bots.mini_bot import MiniBot
 
 # class SmithyBot(Thread):
 class SmithyBot(MiniBot):
-    def __init__(self, char, command_handler, mrh, map):
+    def __init__(self, char, command_handler, mrh, mud_map):
         super().__init__()
         self.char = char
         self.command_handler = command_handler  # We should create a "BasicCommandHandler" to eliminate this circular dependence
         # (CommandHandler makes bots who need to use CommandHandler - instead they can use BasicCommandHandler which can't make bots)
         self.mrh = mrh
-        self.map = map
+        self.map = mud_map
         self.smartCombat = command_handler.smartCombat
         self.kill = command_handler.smartCombat.kill
         self.cast = command_handler.smartCombat.cast
@@ -30,7 +30,7 @@ class SmithyBot(MiniBot):
             'body','arms','legs','neck','neck2','face','hands','feet','finger','finger2','finger3',
             'finger4','finger5','finger6','finger7','shield','wielded','seconded','holding']
         self.equipment = dict.fromkeys(self.slot_names)
-        self.travel_bot = None
+        self.travel_bot = TravelBot(self.char, self.command_handler, mrh, mud_map)
 
     def stop(self):
         super().stop()  # Unnecessary since travel_bot is the only loop
@@ -49,7 +49,6 @@ class SmithyBot(MiniBot):
         magentaprint("SmithyBot.go_to_nearest_smithy()")
         smithy_path = self.get_smithy_path()
         magentaprint("SmithyBot.get_smithy_path(): " + str(smithy_path))
-        self.travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.map)
         self.travel_bot.follow_path(smithy_path)
 
     def get_smithy_path(self):

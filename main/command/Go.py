@@ -6,6 +6,8 @@ from itertools import chain
 from command.Command import Command
 from comm import RegexStore
 from misc_functions import magentaprint
+from combat.Kill import Kill
+from combat.Cast import Cast
 
 class Go(Command):
     command = 'go'
@@ -82,6 +84,12 @@ class Go(Command):
     def is_direction(cls, s):
         return s.strip() in ['n', 's', 'e', 'w', 'nw', 'ne', 'se', 'sw'] or re.match('up?$', s) or \
                re.match('(do?|down?)$', s) or re.match('out?$', s)
+
+    @classmethod
+    def wait_until_ready(cls):
+        super().wait_until_ready()
+        Cast.wait_until_ready()
+        Kill.wait_until_ready()
 
 class Open(Command):
     command = 'open'

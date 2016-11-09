@@ -558,12 +558,13 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 
     #     self.inventory.add(items)
 
-    def mark_broken(self, item_ref):
-        # Untested
-        if len(item_ref.partition(' ')) >= 2:
-            self.inventory.inventory[item_ref.partition(' ')[0]].objs[int(item_ref.partition(' '))].is_unusable = True
-        else:
-            self.inventory.inventory[item_ref.partition(' ')[0]].objs[0].is_unusable = True
+    # def mark_broken(self, item_ref):
+    #     # if len(item_ref.partition(' ')) >= 2:
+    #     #     self.inventory.inventory[item_ref.partition(' ')[0]].objs[int(item_ref.partition(' '))].is_unusable = True
+    #     # else:
+    #     #     self.inventory.inventory[item_ref.partition(' ')[0]].objs[0].is_unusable = True
+    #     # self.get(item_ref).objs
+    #     self.set_unusable(item_ref)
 
     def remove_many(self, item_string):
         item_list = parse_item_names(item_string)

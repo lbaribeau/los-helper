@@ -41,6 +41,7 @@ class TravelBot(MiniBot):
             if grinding:
                 self.clean_out_node()  # Needs to check mob level and player health
 
+            self.command_handler.go.wait_until_ready()
             self.command_handler.go.execute_and_wait(exit)
 
             if self.command_handler.go.success:
@@ -49,6 +50,7 @@ class TravelBot(MiniBot):
                 # raise Exception("TravelBot failed go!")
                 # Can we assume that it failed?  Should we redo the whole path?  Let's rule out please_wait
                 if self.command_handler.go.please_wait:
+                    self.command_handler.go.wait_until_ready()
                     self.command_handler.go.execute_and_wait(exit)  # Trying again should do the trick
                 elif self.command_handler.go.failure:
                     # This is not supposed to happen, if the db sends good paths... maybe it's a blocking mob
@@ -80,6 +82,7 @@ class TravelBot(MiniBot):
         self.stopping = False
         while not self.follow_path(path):
             path = self.map.get_path(self.char.AREA_ID, aid)
+            self.command_handler.go.wait_until_ready()
             self.command_handler.go.execute_and_wait(path.pop(0))
             if not self.command_handler.go.success:
                 raise Exception("TravelBot aborting due to errors!")

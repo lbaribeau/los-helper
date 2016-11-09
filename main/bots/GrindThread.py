@@ -494,40 +494,43 @@ class GrindThread(BotThread):
 
     def check_weapons(self):
         magentaprint('check_weapons()')
+        # w = WeaponBot(self.char, self.command_handler, self.mrh, self.map)
+        # w.repair_or_replace_weapon()
+        self.command_handler.weapon_bot.check_weapons()
 
-        if not self.smartCombat.broken_weapon:
-            return True
+        # if not self.smartCombat.broken_weapon:
+        #     return True
 
-        possible_weapons = self.decide_possible_weapons()
+        # possible_weapons = self.decide_possible_weapons()
 
-        if not possible_weapons:
-            magentaprint("check_weapons() couldn't find level 1 weapon.")
-            self.pause()
+        # if not possible_weapons:
+        #     magentaprint("check_weapons() couldn't find level 1 weapon.")
+        #     self.pause()
 
-        magentaprint('check_weapons() possible weapons: ' + str(possible_weapons))
+        # magentaprint('check_weapons() possible weapons: ' + str(possible_weapons))
 
-        if self.smartCombat.try_weapons([w.to_string() for w in possible_weapons]):
-            return True
+        # if self.smartCombat.try_weapons([w.to_string() for w in possible_weapons]):
+        #     return True
 
-        if self.smartCombat.to_repair:
-            pass
+        # if self.smartCombat.to_repair:
+        #     pass
 
-        # if not self.go_purchase_item_by_type('weapon', self.character.weapon_type, self.character.weapon_level):
-        possible_weapons[0].map()
+        # # if not self.go_purchase_item_by_type('weapon', self.character.weapon_type, self.character.weapon_level):
+        # possible_weapons[0].map()
 
-        if self.go_purchase_item(possible_weapons[0]):
-            magentaprint("check_weapons stacked shop path and dobuy onto purchase path, returning.")
-            return True
-            # if self.smartCombat.try_weapon(possible_weapons[0].name):  # I can't wield because I don't have the weapon yet.
-            #     return True
-            # else:
-            #     magentaprint("Check weapons had trouble wielding bought weapon.")
-            #     self.pause()
-        else:
-            magentaprint("No weapon error - couldn't find anything in inventory or repair or shop...")
-            self.pause()
+        # if self.go_purchase_item(possible_weapons[0]):
+        #     magentaprint("check_weapons stacked shop path and dobuy onto purchase path, returning.")
+        #     return True
+        #     # if self.smartCombat.try_weapon(possible_weapons[0].name):  # I can't wield because I don't have the weapon yet.
+        #     #     return True
+        #     # else:
+        #     #     magentaprint("Check weapons had trouble wielding bought weapon.")
+        #     #     self.pause()
+        # else:
+        #     magentaprint("No weapon error - couldn't find anything in inventory or repair or shop...")
+        #     self.pause()
 
-        return False
+        # return False
 
     def decide_possible_weapons(self):
         possible_weapons = []
@@ -595,6 +598,7 @@ class GrindThread(BotThread):
     def stop(self):
         super().stop()
         self.command_handler.armour_bot.stop()
+        self.command_handler.weapon_bot.stop()
 
     def sell_items(self):
         if self.stopping:

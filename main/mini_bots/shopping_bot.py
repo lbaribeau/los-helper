@@ -3,12 +3,21 @@ from mini_bots.mini_bot import MiniBot
 from reactions.referencing_list import ReferencingList
 from combat.mob_target_determinator import MobTargetDeterminator
 from db.AreaStoreItem import AreaStoreItem
+from mini_bots.travel_bot import TravelBot
 
 class ShoppingBot(MiniBot):
-    def __init__(self, char, command_handler):
+    def __init__(self, char, command_handler, mrh, mud_map):
         super().__init__()
         self.char = char
         self.command_handler = command_handler
+        self.travel_bot = TravelBot(self.char, self.command_handler, mrh, mud_map)
+
+    def stop(self):
+        self.travel_bot.stop()
+
+    def go_buy(self, asi):
+        self.travel_bot.go_to_area(asi.area.id)
+        return self.buy_from_shop(asi)
 
     def buy_from_shop(self, asi):
         # i = str(asi)

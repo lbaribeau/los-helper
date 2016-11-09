@@ -138,8 +138,8 @@ class ArmourBot(MiniBot):
         #desired_items = sorted(self.determine_shopping_list(self.broken_armour), key=lambda item : item.area)
         # We don't need to use broken armour here, since we've been to the smithy.  We should check equipment (I feel uncertain about the order of actions).
 
-        travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.map)  # Should use TravelBot's thread!
-        shopping_bot = ShoppingBot(self.char, self.command_handler)
+        travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.map)
+        shopping_bot = ShoppingBot(self.char, self.command_handler, self.mrh, self.map)
         desired_asi_list = self.determine_shopping_list(self.broken_armour)
         # magentaprint("ArmourBot.get_needed_default_armour() desired_asi_list: " + str(desired_asi_list))
 
