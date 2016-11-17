@@ -173,7 +173,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         # 'silver dagger', 'long sword',  #these pile up
         # 'bastard sword',  # bandits
         # 'small mace',
-        'morning star', 'superior dwarven hammer',
+        'morning star', 'superior dwarven hammer', "horseman's mace",
         # 'war hammer',
         'hard cap', 'hard gloves', 'hard boots', 'padded hat', 'mountain gloves', 'mountain boots',
         'mountain boots with crampons', 'leather mask', 'leather collar', 'studded leather collar',
@@ -314,6 +314,10 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         return sum(self.count(r) for r in self.restoratives if r not in ['large restorative', 'scarlet potion'])
 
     def has_any(self, item_name_list):
+        # if item_name_list.__class__ == 'str':
+        if item_name_list.__class__ != [].__class__:
+            raise Exception("Inventory.has_any() argument must be a list")
+
         return any([self.has(i) for i in item_name_list])
 
     def has_slot_equipped(self, slot_to_check, quantity=1):
@@ -329,9 +333,9 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 
         return has_slot_equipped
 
-    def get_item_of_type(self, item_model, item_data, level=1):
+    def get_usable_item_of_type(self, item_model, item_data, level=1):
     #     return self.inventory.get_object_of_type(itemModel, itemData, level)
-        return self.get_object_of_type(item_model, item_data, level)
+        return self.get_usable_object_of_type(item_model, item_data, level)
 
     # def use(self, item_or_list):
     #     item = ""
@@ -467,13 +471,13 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         items = parse_item_list(item_string)  # This is overloaded for "hammer" and "a hammer"
         for i in items:
             # magentaprint("Inventory adding %s" % str(i))
-            super().add(i)
+            super().add(i)  # Turn it into a MudItem?
 
     def add_broken(self, item_string):
         items = parse_item_list(item_string)
 
         for i in items:
-            i.is_unusable = True
+            i.usable = False
             super().add(i)
 
     def add_broken_to_dict(self, item_string):
@@ -495,7 +499,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
                 # MudObjectDict one at a time.  Its add function requires another dict as input.
 
     def set_broken(self, ref):
-        self.get_item_from_reference(ref).is_unusable = True
+        self.unset_usable(ref)
 
     def set_inventory(self, item_string):
         # self.inventory = MudObjectDict()
@@ -565,6 +569,8 @@ class Inventory(BotReactionWithFlag, ReferencingList):
     #     #     self.inventory.inventory[item_ref.partition(' ')[0]].objs[0].is_unusable = True
     #     # self.get(item_ref).objs
     #     self.set_unusable(item_ref)
+    # def set_broken(self, item_ref):
+    #     self.mark_broken(item_ref)
 
     def remove_many(self, item_string):
         item_list = parse_item_names(item_string)
@@ -597,7 +603,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             item_name_split = item.name.split(' ')
             if len(item_name_split) > 1:
                 # magentaprint("broken junk %s unusable: %s" % (item, str(item.is_unusable)))
-                if item_name_split[1] == 'ring' and item.is_unusable:
+                if item_name_split[1] == 'ring' and not item.usable:
                     # magentaprint("broken_junk appending " + str(self.get_reference(item)))
                     refs.append(self.get_reference(item))
                     # first_ref = self.get_reference(item)
@@ -627,8 +633,8 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             for index, gobj in enumerate(qty.objs):
                 item_name_split = qty.objs[index].obj.name.split(' ')
                 if len(item_name_split) > 1:
-                    magentaprint("broken junk %s unusable: %s" % (qty.objs[index].obj.name, str(qty.objs[index].is_unusable)))
-                    if item_name_split[1] == 'ring' and qty.objs[index].is_unusable:
+                    magentaprint("broken junk %s usable: %s" % (qty.objs[index].obj.name, str(qty.objs[index].usable)))
+                    if item_name_split[1] == 'ring' and not qty.objs[index].usable:
                         # Build a reference from an index... maybe this could be a separate method for future use
                         first_ref = self.get_reference(qty.objs[index].to_string())  # Hopefully the item order is legit...
                         # first_ref = self.get_reference(str(gobj))
@@ -805,7 +811,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         magentaprint('Inventory.unequip_weapon() ' + str(self.equipped_items.keys()))
         if 'Wielded' in self.equipped_items.keys() and self.equipped_items['Wielded'] and self.equipped_items['Wielded'][0].obj.name == weapon:
             # Could be wrong if the second weapon is the same and that broke
-            magentaprint('Inventory.unequip_weapon() deleting Wielded')
+            magentaprint('Inventory.unequip_weapon() deleting Wielded (' + str(self.equipped_items['Wielded']) + ')')
             del self.equipped_items['Wielded']
             magentaprint(str(self.equipped_items))
         elif 'Second' in self.equipped_items.keys() and self.equipped_items['Second'] and self.equipped_items['Second'][0].obj.name == weapon:
@@ -822,7 +828,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             if 'ring' in str(item).split():
                 count = count + 1
             if len(str(item).split()) == 2 and str(item).split()[1] == 'ring':
-                if not item.is_unusable:
+                if item.usable:
                     if count > 1:
                         return 'ring ' + str(count)
                     else:

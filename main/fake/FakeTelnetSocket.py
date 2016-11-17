@@ -51,14 +51,14 @@ class FakeTelnetSocket(object):
             ['silver chalice']*7 + ['small flask']*2 + ['small lamp']*2 + ['small restorative']*2 + \
             ['steel bottle']*6 + ['steel ring']*6 + ['stilleto']*2 + ['white potion']*2 + ['maul hammer']*3 + \
             ['buckler', 'burnt ochre potion', 'hammer', 'large bag', 'large mace', ] + ['long sword']*2 + ['sabre']*2  + ['silver torch', \
-             'spectacles', 'title deeds', 'morning star'] + 3*['heavy crossbow'])
-        self.inventory.set_unusable('morning')
-        self.inventory.set_unusable('maul 2')
-        self.inventory.set_unusable('maul 3')
-        self.inventory.set_unusable('ring 3')
-        self.inventory.set_unusable('ring 5')
-        self.inventory.set_unusable('crossbow 2')
-        self.inventory.set_unusable('crossbow 3')
+             'spectacles', 'title deeds', 'morning star'] + 3*['heavy crossbow'] + ['small mace'])
+        self.inventory.unset_usable('morning')
+        self.inventory.unset_usable('maul 2')
+        self.inventory.unset_usable('maul 3')
+        self.inventory.unset_usable('ring 3')
+        self.inventory.unset_usable('ring 5')
+        self.inventory.unset_usable('crossbow 2')
+        self.inventory.unset_usable('crossbow 3')
         self.char.inv = self.inventory
         # self.inventory = FakeInventory({'awl':1, 'small lamp':6, 'small knife':6, 'large sack':2, 'silver chalice':6, 'small flask':2, \
         #     'small lamp':2, 'small restorative':2, 'steel bottle':6, 'steel ring':6, 'stilleto':2, 'white potion':2, \
@@ -110,8 +110,8 @@ class FakeTelnetSocket(object):
             "\n\r"
             " /==== Attributes =====\  /======= Weapons =====\  /======= Magic ========\\\n\r"
             " |       Str : 20      |  |     Sharp   : 0  %  |  |     Earth : 0  %     |\n\r"
-            " |       Dex : 19      |  |     Thrust  : 50 %  |  |     Wind  : 0  %     |\n\r"
-            " |       Con : 17      |  |     Blunt   : 0  %  |  |     Fire  : 45 %     |\n\r"
+            " |       Dex : 19      |  |     Thrust  : 0  %  |  |     Wind  : 0  %     |\n\r"
+            " |       Con : 17      |  |     Blunt   : 80 %  |  |     Fire  : 45 %     |\n\r"
             " |       Int : 5       |  |     Pole    : 0  %  |  |     Water : 0  %     |\n\r"
             " |       Pty : 6       |  |     Missile : 0  %  |  |    Astral : 0  %     |\n\r"
             " \=====================/  \=====================/  \======================/\n\r"
@@ -123,6 +123,7 @@ class FakeTelnetSocket(object):
             " |    Max MP : 27      |  |     Exp : 560992    |  |   Weight : 113       |\n\r"
             " |        AC : 0       |  |    Gold : 70124     |  |  Objects : 33        |\n\r"
             " \=====================/  \=====================/  \======================/\n\r"
+            'You feel yourself moving faster.\n\r'  # Speeds up test suite
         )
 
         self.drop_string = (
@@ -181,9 +182,11 @@ class FakeTelnetSocket(object):
             self.socket_output.append(str(self.show_current_area()))
         elif command == 'lself':
             self.socket_output.append(self.char.equipment.lself())
+            self.socket_output.append('[%s H %s M]: ' % (str(self.char.hp), str(self.char.mp)))
         elif command == 'eq':
             magentaprint(self.char.equipment.output_string())
             self.socket_output.append(self.char.equipment.output_string())
+            self.socket_output.append('[%s H %s M]: ' % (str(self.char.hp), str(self.char.mp)))
         elif command.startswith('addmob '):
             self.addmob(command[7:])
         elif re.match('mobflee .+? .+', command):
@@ -203,6 +206,8 @@ class FakeTelnetSocket(object):
                 self.socket_output.append('Touch whom?')
         elif command.startswith('has'):
             self.socket_output.append('You feel yourself moving faster.\n\r')
+        elif command.startswith('pra'):
+            self.socket_output.append('You feel extremely pious.\n\r')
         elif command == 'rest':
             self.char.hp = self.char.maxhp
             self.char.mp = self.char.maxmp
@@ -226,12 +231,12 @@ class FakeTelnetSocket(object):
             else:
                 w = self.inventory.get(command.partition(' ')[2])
                 if w:
-                    if w.unusable:
-                        self.socket_output.append("You can't. Its broken.\n\r")
-                    else:
+                    if w.usable:
                         self.socket_output.append("You wield a " + w.name + ".\n\r")
                         self.inventory.remove(command.split(' ')[1])
                         self.char.equipment.wield(w.name)
+                    else:
+                        self.socket_output.append("You can't. Its broken.\n\r")
                 else:
                     self.socket_output.append("You don't have that.\n\r")
         elif command.startswith('seco') and len(command.split(' ')) > 1:
@@ -281,8 +286,9 @@ class FakeTelnetSocket(object):
             item = self.char.inv.get(command.partition(' ')[1])
             if item:  # item can be none if person used 'echo Your chain mail armour fell apart.'... then inventory is out of sync
                 item.usable = True
-            # self.socket_output.append("The smithy hands a " + str(item) + " back to you, almost good as new.")
-            self.socket_output.append('"Darnitall!" shouts the smithy, "I broke another. Sorry lad."')
+                self.socket_output.append("The smithy hands a " + str(item) + " back to you, almost good as new.")
+            else:
+                self.socket_output.append('"Darnitall!" shouts the smithy, "I broke another. Sorry lad."')
 
     def gen_area(self, area):
         self.current_mud_area = MudArea(area)

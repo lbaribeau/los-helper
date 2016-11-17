@@ -5,13 +5,12 @@ from misc_functions import magentaprint
 from threading import Thread
 
 class TravelBot(MiniBot):
-    # This bot can kill enemies on the way
+    # This bot should be able to kill enemies on the way
 
-    def __init__(self, char, command_handler, mud_reader_handler, map):
+    def __init__(self, char, command_handler, map):
         super().__init__()
         self.char = char
         self.command_handler = command_handler
-        self.mrh = mud_reader_handler
         self.map = map
         # self.goto_thread = None
 
@@ -30,10 +29,13 @@ class TravelBot(MiniBot):
     #     self.start_thread(area_to_id)
 
     def start_thread(self, area_to_id):
+        self.stopping = False
         self.thread = Thread(target=self.go_to_area, args=area_to_id)
         self.thread.start()
 
     def follow_path(self, path, grinding=False):
+        self.stopping = False
+
         for exit in path:
             if self.stopping:
                 return
@@ -80,7 +82,7 @@ class TravelBot(MiniBot):
     def go_to_area(self, aid):
         path = self.map.get_path(self.char.AREA_ID, aid)
         self.stopping = False
-        while not self.follow_path(path):
+        while not self.follow_path(path) and not self.stopping:
             path = self.map.get_path(self.char.AREA_ID, aid)
             self.command_handler.go.wait_until_ready()
             self.command_handler.go.execute_and_wait(path.pop(0))

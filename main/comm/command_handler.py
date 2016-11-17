@@ -35,6 +35,7 @@ from mini_bots.armour_bot import ArmourBot
 from command.equipment import Equipment
 from mini_bots.smithy_bot import SmithyBot
 from mini_bots.weapon_bot import WeaponBot
+from mini_bots.simple_weapon_bot import SimpleWeaponBot
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -51,7 +52,11 @@ class CommandHandler(object):
         # self.smartCombat = SmartCombat(self.telnetHandler, self.character, Kill(telnetHandler), Cast(telnetHandler), Prompt(character))
         self.combat_reactions = CombatReactions(self.character)
         mudReaderHandler.add_subscriber(self.combat_reactions)
-        self.smartCombat = SmartCombat(self.telnetHandler, self.character)
+        # self.simple_weapon_bot = SimpleWeaponBot(self.telnetHandler, self.character)
+        # mudReaderHandler.add_subscriber(self.simple_weapon_bot)
+        self.weapon_bot = WeaponBot(self.character, self)
+        self.mudReaderHandler.add_subscriber(self.weapon_bot)
+        self.smartCombat = SmartCombat(self.telnetHandler, self.character, self.weapon_bot)
         self.kill = self.smartCombat.kill
         self.cast = self.smartCombat.cast
         mudReaderHandler.add_subscriber(self.kill)
@@ -83,6 +88,7 @@ class CommandHandler(object):
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
             Command.good_mud_timeout = 2.0
+            Go.cooldown_after_success = 0.2
 
         self.bot_thread = None
         self.mud_map = None
@@ -113,8 +119,7 @@ class CommandHandler(object):
         self.mud_map = MudMap()
         self.armour_bot = ArmourBot(self.character, self, self.mudReaderHandler, self.mud_map)
         self.mudReaderHandler.add_subscriber(self.armour_bot)
-        self.weapon_bot = WeaponBot(self.character, self, self.mudReaderHandler, self.mud_map)
-        self.mudReaderHandler.add_subscriber(self.weapon_bot)
+        self.weapon_bot.add_in_map(self.mud_map)
         magentaprint("CommandHandler: Mapfile completed.", False)
 
     def join_mud_map_thread(self):
@@ -132,7 +137,7 @@ class CommandHandler(object):
     #         magentaprint("CommandHandler caught telnet error and quitting: " + str(e))
     #         self.stopping = True
     #         if hasattr(e, 'errno'):
-    #             magentaprint("Errno: " + str(e.errno)) 
+    #             magentaprint("Errno: " + str(e.errno))
     #         # else:
     #         #     raise e
 
@@ -644,7 +649,7 @@ class CommandHandler(object):
             # tdg = TopDownGrind(self.character, self, self.mudReaderHandler, self.mud_map)
             # self.bot_thread = ThreadMaker(tdg, 'go_to_nearest_smithy')
             magentaprint("CommandHandler.go_smithy()")
-            self.bot_thread = SmithyBot(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.bot_thread = SmithyBot(self.character, self, self.mud_map)
             # t = Thread(target=self.bot_thread.go_to_nearest_smithy)
             # t.start()  # The Bot should BE the thread for the sake of 'stopping'
 

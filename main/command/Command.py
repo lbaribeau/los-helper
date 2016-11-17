@@ -193,7 +193,7 @@ class Command(SimpleCommand):
             #         # we should implement the Time command as a corrective measure.
             # else:
             #     self.result = 'Please wait ' + str(self.please_wait_time)
-            #     self.__class__.timer = time.time() + self.please_wait_time  
+            #     self.__class__.timer = time.time() + self.please_wait_time
 
             magentaprint(str(self) + " Command.notify_please_wait(), please_wait_time is " + str(self.please_wait_time) + ", self.wait_time is " + str(round(self.wait_time(), 1)))
 
@@ -207,7 +207,7 @@ class Command(SimpleCommand):
                 # self.__class__.timer = time.time() + self.please_wait_time  # Ehrm sometimes this makes it so you can't move
                 # self.__class__.timer = time.time() + min(self.please_wait_time, self.cooldown_after_success, self.cooldown_after_failure) 
                 self.__class__.timer = time.time() + self.please_wait_time
-                # We get false positives on this because the waiter flag is not a good indication that Please Wait belongs to us.  
+                # We get false positives on this because the waiter flag is not a good indication that Please Wait belongs to us.
                 # If we were careful about when it gets unset (when super().notify() is called,) we could potentially use that trick
                 # Clipping with the cooldowns helps a bit.
                 magentaprint("Set wait time to " + str(self.wait_time()) + ', self: ' + str(self))
@@ -285,13 +285,15 @@ class Command(SimpleCommand):
         self._executing = True
         super().execute(target)  # just calls send
 
+    def execute_and_wait(self, target=None):
+        super().execute_and_wait(target)
+        return self.success
+
     def persistent_execute(self, target=None):
-        self.execute(target)
-        self.wait_for_flag()
-        while self.result == "Please wait 1":
-        # while self.please_wait1:
-            self.execute(target)
-            self.wait_for_flag()
+        self.execute_and_wait(target)
+        # while self.result == "Please wait 1":
+        while self.please_wait1:
+            self.execute_and_wait(target)
 
     @classmethod
     def wait_until_ready(cls):
@@ -300,10 +302,4 @@ class Command(SimpleCommand):
         # return if not cls.timer else time.sleep(max(0, cls.wait_time()))
         # time.sleep(max(0, cls.timer - time.time()))  # timer is a class variable
         time.sleep(cls.wait_time())
-
-
-
-
-
-
 

@@ -4,8 +4,6 @@ from misc_functions import *
 from db.GenericMudObject import *
 
 class MudMob(GenericMudObject):
-    is_unusable = False
-
     def __init__(self, name):
         self.obj = Mob(name=name)
         self.item = self.obj

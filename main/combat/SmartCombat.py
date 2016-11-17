@@ -16,7 +16,7 @@ from combat.mob_target_determinator import MobTargetDeterminator
 class SmartCombat(CombatObject):
     black_magic = True
 
-    def __init__(self, telnetHandler, character):
+    def __init__(self, telnetHandler, character, weapon_bot):
         super().__init__(telnetHandler)
         self.thread = None
         self.target = None
@@ -59,6 +59,9 @@ class SmartCombat(CombatObject):
             RegexStore.mob_arrived, RegexStore.mob_wandered, RegexStore.mob_left
         ])
         self.mob_target_determinator = MobTargetDeterminator()
+        # We can let SmartCombat do a few extra things, like make kill/cast/use commands, but let's not go overboard.
+        # Let the parent make WeaponBot.  I think the parent should make use of an Initializer.
+        self.weapon_bot = weapon_bot
 
     def notify(self, regex, M_obj):
         # Notifications are used for healing
@@ -70,7 +73,7 @@ class SmartCombat(CombatObject):
                 if self.should_use_heal_ability():
                     self.heal_abilities[0].execute()
                 elif self.needs_heal():
-                    if self.broken_weapon or not self.character.inventory.has_restorative():
+                    if self.weapon_bot.broken_weapon or not self.character.inventory.has_restorative():
                         self.fleeing = True  # TODO: Do pots interfere with the flee timer?  (Should I use a pot?)
                     if self.needs_big_heal():
                         self.use.spam_pots(prefer_big=True)
@@ -190,9 +193,11 @@ class SmartCombat(CombatObject):
         self.use_any_fast_combat_abilities()  # ie. Touch, Dance
 
         while not self.stopping:
-            if self.broken_weapon:
-                self.reequip_weapon()  # TODO: This can get spammed... answer on to unset is_usable on weapon objects in inventory
+            # if self.broken_weapon:
+            #     self.reequip_weapon()  # TODO: This can get spammed... answer on to unset is_usable on weapon objects in inventory
             # magentaprint("SmartCombat loop kill.timer " + str(round(self.kill.wait_time(), 1)) + " cast.timer " + str(round(self.cast.wait_time(), 1)) + ".")
+            if self.weapon_bot.broken_weapon:
+                self.weapon_bot.combat_rewield()
             if self.fleeing and not self.cast.wait_time() - self.kill.wait_time() > self.kill.cooldown_after_success:
                 self.escape()
             elif self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
@@ -515,3 +520,7 @@ class SmartCombat(CombatObject):
                 # However, this solution might work most of the time.
 
 
+#  SmartCombat will have to wait for the DB!!!
+# Alternatives: Split WeaponBot into itself and SimpleWeaponBot doesn't work because SmartCombat is supposed to rewield any
+# possible weapon, which requires a DB search.  Ugh, it doesn't feel right.  How about just the rewield function fails.  When
+# the map is ready, WeaponBot gets set.

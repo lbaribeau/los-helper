@@ -8,7 +8,7 @@ class MudItem(GenericMudObject):
     def __init__(self, name):
         self.obj = Item(name=name)
         self.reference = self.obj.name.split(' ')[0]  # ... this reference is likely incorrect without an integer
-        self.is_unusable = False
+        self.usable = True
 
     def map(self):
         self.obj.map()
@@ -51,6 +51,6 @@ class MudItem(GenericMudObject):
         return self.obj.name
 
 # class MudItemMeta():
-#     def __init__(self, id, is_unusable=False):
+#     def __init__(self, id, usable=False):
 #         self.id = id
-#         self.is_unusable = is_unusable
+#         self.usable = usable

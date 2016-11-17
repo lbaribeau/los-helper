@@ -46,6 +46,7 @@ class GrindThread(BotThread):
         #     # return self.check_for_successful_go()
         #     # return self.go(exit_str)   # Erhm self.go calls us, not the other way around
         #     self.command_handler.go.persistent_execute(exit_str)
+        self.stopping = False
         #     return self.command_handler.go.success
         if exit_str == "prepare":
             self.command_handler.process(exit_str)
@@ -496,7 +497,8 @@ class GrindThread(BotThread):
         magentaprint('check_weapons()')
         # w = WeaponBot(self.char, self.command_handler, self.mrh, self.map)
         # w.repair_or_replace_weapon()
-        self.command_handler.weapon_bot.check_weapons()
+        if not self.stopping:
+            self.command_handler.weapon_bot.check_weapons()
 
         # if not self.smartCombat.broken_weapon:
         #     return True
@@ -845,7 +847,7 @@ class GrindThread(BotThread):
     def ready_for_combat(self):
         return self.character.HEALTH >= self.character.HEALTH_TO_HEAL and \
                self.character.MANA >= self.character.MANA_TO_ENGAGE and \
-               not self.smartCombat.broken_weapon
+               hasattr(self.command_handler.weapon_bot, 'weapon')
         # return (self.has_ideal_health() and
         #         self.has_ideal_mana())
 

@@ -2,7 +2,7 @@
 class FakeItem(object):
     def __init__(self, name):
         self.name = name
-        self.unusable = False
+        self.usable = True
 
     def to_string(self):
         return self.__str__()

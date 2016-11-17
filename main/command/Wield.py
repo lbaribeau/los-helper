@@ -14,7 +14,7 @@ class Arm(Command):
 
     def notify(self, r, m):
         if r in RegexStore.weapon_broken:
-            # self.character.inventory  # set is_unusable perhaps
+            # self.character.inventory  # unset usable perhaps
             self.broken_error = True
         elif r in RegexStore.already_wielding or r in RegexStore.already_seconding:
             self.already_wielding_error = True

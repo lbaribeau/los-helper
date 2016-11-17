@@ -26,7 +26,7 @@ class BaseModel(Model):
         # We don't want the test world to edit the DB
 
         if '-fake' in sys.argv:
-            print("BaseModel.save() disabled in -fake mode.")
+            # print("BaseModel.save() disabled in -fake mode.")
             return
         else:
             # print("BaseModel.save")

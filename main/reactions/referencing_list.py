@@ -69,45 +69,26 @@ class ReferencingList(object):
         for x in list:
             self.remove(x)
 
-    def index(self, ref):
-        # magentaprint("RefList.index() ref: " + ref)
-        if len(ref.split(' ')) >= 2:
-            refw, n = ref.split(' ')[0], int(ref.split(' ')[1])
-        else:
-            refw, n = ref, 1
+    def set_usable(self, ref):
+        self.get(ref).usable = True
 
-        # magentaprint("Ref list n: " + str(n))
-
-        # for obj in sorted(list(set(self.list))):
-        # magentaprint("RefList list: " + str(self.list))
-        # magentaprint("RefList unique list: " + str(sorted(list(set(x.name for x in self.list)))))
-        for name in sorted(list(set(x.name for x in self.list))):
-            # magentaprint("RefList name: %s, list.count(obj): %s" % (name, str(self.list.count(name))))
-            if any(w.startswith(refw) for w in name.split(' ')):
-                if n <= self.list.count(name):
-                    # magentaprint("RefList.index returning " + str(self.list.index(name)+n-1))
-                    return self.list.index(name) + n - 1
-                else:
-                    n = n - self.list.count(name)
-
-        # for obj in self.list:
-        #     if any(w.startswith(refw) for w in obj.name.split(' ')):
-
-    def get(self, ref):
-        i = self.index(ref)
-
-        if i is not None:
-            return self.list[i]
+    def unset_usable(self, ref):
+        self.get(ref).usable = False
 
     def set_unusable(self, ref):
-        self.get(ref).unusable = True
+        self.unset_usable(ref)
 
     def has(self, string):
         for i in self.list:
+            # if i.name == string:
+            magentaprint("Inventory.has checking i.name (%s) against %s" % (i.name, string))
             if i.name == string:
                 return True
 
+        magentaprint("Inventory.has() returned False.")
         return False
+
+        return any(x.name == string for x in self.list)
 
     def remove_all(self, name):
         self.list = [x for x in self.list if x.name != name]
@@ -136,11 +117,50 @@ class ReferencingList(object):
     def sort(self):
         self.list.sort()
 
-    def get_object_of_type(self, model, data, level=-1):
+    def index(self, ref):
+        # magentaprint("RefList.index() ref: " + ref)
+        if not ref:
+            magentaprint("Warning: ReferencingList.index called with None.")
+            return None
+
+        if len(ref.split(' ')) >= 2:
+            refw, n = ref.split(' ')[0], int(ref.split(' ')[1])
+        else:
+            refw, n = ref, 1
+
+        # magentaprint("Ref list n: " + str(n))
+
+        # for obj in sorted(list(set(self.list))):
+        # magentaprint("RefList list: " + str(self.list))
+        # magentaprint("RefList unique list: " + str(sorted(list(set(x.name for x in self.list)))))
+        for name in sorted(list(set(x.name for x in self.list))):
+            # magentaprint("RefList name: %s, list.count(obj): %s" % (name, str(self.list.count(name))))
+            if any(w.startswith(refw) for w in name.split(' ')):
+                if n <= self.list.count(name):
+                    # magentaprint("RefList.index returning " + str(self.list.index(name)+n-1))
+                    return self.list.index(name) + n - 1
+                else:
+                    n = n - self.list.count(name)
+
+        # for obj in self.list:
+        #     if any(w.startswith(refw) for w in obj.name.split(' ')):
+
+    def get(self, ref):
+        i = self.index(ref)
+
+        if i != None:
+            magentaprint("ReferencingList.get() ref/index/str(item): " + str(ref) + '/' + str(i) + '/' + str(self.list[i]))
+            # magentaprint("Inventory list: " + str(self.list))
+            # magentaprint("Inventory.get() returning " + str(self.list[i]))
+            return self.list[i]
+        else:
+            magentaprint("ReferencingList.get() found nothing. ref/index: " + str(ref) + '/' + str(i))
+
+    def get_usable_object_of_type(self, model, data, level=-1):
         for obj in self.list:
             if obj.is_of_type(model, data, level):
                 for instance in self.dictionary[obj].objs:
-                    if not instance.is_unusable:
+                    if instance.usable:  # I think the caller may want to know about broken objects
                         return str(obj.obj)
 
     def get_reference(self, obj, first_or_second_word=1):
@@ -173,7 +193,9 @@ class ReferencingList(object):
         for list_name in sorted(list(set(str(x) for x in self.list))):
             if word in list_name.split(' '):
                 if name == list_name:
-                    return word if i == 1 else word + ' ' + str(i)
+                    ref = word if i ==1 else word + ' ' + str(i)
+                    magentaprint("ReferencingList.get_first_reference() returning " + ref)
+                    return ref
                 else:
                     # i = i + len(self.inventory.dictionary[k].objs)
                     i = i + self.count(list_name)
@@ -200,6 +222,49 @@ class ReferencingList(object):
             else:
                 return starting_point.split(' ')[0] + ' ' + str(c)
         # There would be less code if I didn't treat '1' specially (I prefer 'potion' not 'potion 1' for the 1st potion)
+
+    def get_all_references(self, item_name, first_or_second_word=1):
+        # You have many of an item and want a reference for each
+        first_ref = self.get_first_reference(item_name, first_or_second_word)
+        last_ref = self.get_last_reference(item_name, first_or_second_word)
+        if first_ref:
+            if len(first_ref.split()) > 1:
+                return [str(first_ref.split()[0]) + ' ' + str(x) for x in range(int(first_ref.split()[1]), int(last_ref.split()[1]) + 1)]
+            else:
+                r = [first_ref]
+                if len(last_ref.split()) > 1:
+                    r.extend([first_ref + ' ' + str(x) for x in range(2, int(last_ref.split()[1]) + 1)])
+                return r
+
+        return []
+
+    def get_all(self, ref_list):
+        result = []
+        for ref in ref_list:
+            result.append(self.get(ref))
+        return result
+
+    def get_all_by_name(self, name):
+        # result = []
+        # all_references_for_that_item = self.get_all_references(name)
+        # if sublist:  # Maybe extend will work now on its own
+        # result.extend(sublist)
+        # for r in all_references_for_that_item:
+        #     result.append(self.get(r))
+        # result.extend(self.get_all(all_references_for_that_item))
+        return self.get_all(self.get_all_references(name))
+
+    def get_all_by_name_list(self, name_list):
+        result = []
+        for name in name_list:
+            # all_references_for_that_item = self.get_all_references(name)
+            # # if sublist:  # Maybe extend will work now on its own
+            # # result.extend(sublist)
+            # # for r in all_references_for_that_item:
+            # #     result.append(self.get(r))
+            # # result.extend(self.get_all(all_references_for_that_item))
+            result.extend(self.get_all_by_name(name))
+        return result
 
     def get_unique_references(self, exception_list=[]):
         references = []

@@ -29,10 +29,20 @@ class ArmourBot(MiniBot):
         # magentaprint("ArmourBot regex cart: " + str(self.regex_cart))
         # self.thread = None  # smithy_bot or shopping_bot
         # self.stopping = False  # backwards compatibility
+        self.stopping = False
+        self.smithy_bot = SmithyBot(self.char, self.command_handler, self.map)
+        self.shopping_bot = ShoppingBot(self.char, self.command_handler, self.map)
+        self.travel_bot = TravelBot(self.char, self.command_handler, self.map)
 
-    # def stop(self):  # use parent stop() on self.thread, which will hit a smithy_bot or a shopping_bot
-    #     if self.smithy_bot:
-    #         self.smithy_bot.stop()
+    def stop(self):
+    # use parent stop() on self.thread hitting a smithy_bot or a shopping_bot doesn't work because that thread refers to
+    # a call on self.suit_up().  Processing may fall into SmithyBot, and for stop to work, stop() has to be written to be able
+    # to access that scope.
+        self.stopping = True
+        self.smithy_bot.stop()
+        self.shopping_bot.stop()
+        self.travel_bot.stop()
+
     # def start_thread(self):
     #     self.suit_up()
 
@@ -138,18 +148,18 @@ class ArmourBot(MiniBot):
         #desired_items = sorted(self.determine_shopping_list(self.broken_armour), key=lambda item : item.area)
         # We don't need to use broken armour here, since we've been to the smithy.  We should check equipment (I feel uncertain about the order of actions).
 
-        travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.map)
-        shopping_bot = ShoppingBot(self.char, self.command_handler, self.mrh, self.map)
+        # travel_bot = TravelBot(self.char, self.command_handler, self.map)
+        # shopping_bot = ShoppingBot(self.char, self.command_handler, self.map)
         desired_asi_list = self.determine_shopping_list(self.broken_armour)
         # magentaprint("ArmourBot.get_needed_default_armour() desired_asi_list: " + str(desired_asi_list))
 
         for asi in desired_asi_list:
             # path = self.map.get_path(self.char.AREA_ID, asi.area.id)
             # travel_bot.follow_path(path)
-            travel_bot.go_to_area(asi.area.id)
+            self.travel_bot.go_to_area(asi.area.id)
             if self.stopping:
                 return
-            if shopping_bot.buy_from_shop(asi):
+            if self.shopping_bot.buy_from_shop(asi):
                 self.command_handler.wear.execute_and_wait(self.char.inventory.get_last_reference(str(asi.item.name)))
                 if asi.item.name in self.broken_armour:
                     self.broken_armour.remove(asi.item.name)
@@ -298,8 +308,9 @@ class ArmourBot(MiniBot):
         # self.thread.stop()
         # self.thread = SmithyBot(self.char, self.command_handler, self.mrh, self.map)
         # self.thread.start_thread()
-        s = SmithyBot(self.char, self.command_handler, self.mrh, self.map)
-        s.go_to_nearest_smithy()
+        # s = SmithyBot(self.char, self.command_handler, self.mrh, self.map)
+        # s.go_to_nearest_smithy()
+        self.smithy_bot.go_to_nearest_smithy()
 
     # # Use db for this?  Makes sense to
     # def is_body(self, string):

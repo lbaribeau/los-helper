@@ -12,12 +12,12 @@ from combat.mob_target_determinator import MobTargetDeterminator
 from mini_bots.travel_bot import TravelBot
 
 class TopDownGrind(Thread):
-    def __init__(self, char, command_handler, mrh, db_handler):
+    def __init__(self, char, command_handler, mrh, mud_map):
         super().__init__()
         self.char = char
         self.command_handler = command_handler
         self.mrh = mrh
-        self.db_handler = db_handler
+        self.mud_map = mud_map
         self.smartCombat = command_handler.smartCombat
         self.kill = command_handler.smartCombat.kill
         self.cast = command_handler.smartCombat.cast
@@ -176,7 +176,7 @@ class TopDownGrind(Thread):
         magentaprint("TopDownGrind.go_to_nearest_smithy()")
         smithy_path = self.get_smithy_path()
         magentaprint("TopDownGrind.get_smithy_path(): " + str(smithy_path))
-        travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.db_handler)
+        travel_bot = TravelBot(self.char, self.command_handler, self.mud_map)
         travel_bot.follow_path(smithy_path)
 
     def get_smithy_path(self):

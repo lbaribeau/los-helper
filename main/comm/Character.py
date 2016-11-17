@@ -173,6 +173,7 @@ class Character(object):
         self.weapon_to_buy = self.pick_weapon()
 
     def pick_weapon(self):
+        # Now we go to the db...
         if self.weapon_type == 'Sharp':
             if self.weapon_level >= 2:
                 return 'leaf blade'

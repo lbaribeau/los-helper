@@ -81,7 +81,6 @@ class Equipment(Command):
             # It's finicky - there's another issue when the prompt is sent with the eq text and gets registered before it,
             # so we need to wait for both flags.
 
-
     def execute(self, target=None):
         self.reset()
         super().execute(target)
