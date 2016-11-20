@@ -289,7 +289,7 @@ class Command(SimpleCommand):
         super().execute_and_wait(target)
         return self.success
 
-    def persistent_execute(self, target=None):
+    def persistent_execute(self, target=None):  # wait until ready?
         self.execute_and_wait(target)
         # while self.result == "Please wait 1":
         while self.please_wait1:

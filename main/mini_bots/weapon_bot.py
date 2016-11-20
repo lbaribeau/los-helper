@@ -68,7 +68,6 @@ class WeaponBot(MiniBot):
         self.shield_or_offhand = True
 
     def run(self):
-        self.command_handler.eq.execute_and_wait()
         self.check_weapons()
 
     def check_weapons(self):
@@ -82,11 +81,12 @@ class WeaponBot(MiniBot):
             self.repair_or_replace_weapon()
 
     def repair_or_replace_weapon(self):
+        self.command_handler.equipment.execute_and_wait()
         self.stopping = False
         if hasattr(self, 'weapon') and self.shield_or_offhand:
             return
-        # else:
-        #     magentaprint('repair_or_replace_weapon() self.weapon/shield: ' + str(self.weapon) + '/' + str(self.shield_or_offhand))
+        else:
+            magentaprint('repair_or_replace_weapon() self.weapon/shield: ' + str(self.weapon) + '/' + str(self.shield_or_offhand))
 
         # if hasattr(self, 'broken_weapon'):
         magentaprint('repair_or_replace_weapon calling try_exact_replacement_from_inventory')
@@ -351,7 +351,8 @@ class WeaponBot(MiniBot):
             if hasattr(self, 'weapon'):
                 magentaprint("Warning: WeaponBot could not buy another weapon")
             else:
-                raise Exception("WeaponBot couldn't buy main weapon.")
+                # raise Exception("WeaponBot couldn't buy main weapon.")
+                magentaprint("WeaponBot couldn't buy main weapon.")  # We won't exit here - maybe the bot will sell/drop then return
             return False
 
     def wield_default_weapon(self):
