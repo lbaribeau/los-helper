@@ -27,7 +27,7 @@ class FakeEquipment(object):
             "On finger: an iron ring\n\r"
             "On finger: an iron ring\n\r"
             "On finger: an iron ring\n\r"
-            "Shield:    a cast iron shield\n\r"
+            # "Shield:    a cast iron shield\n\r"
         )
         if self.weapon:
             armour += "Wielded:   " + self.weapon + "\n\r"

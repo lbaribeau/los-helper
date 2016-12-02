@@ -63,6 +63,7 @@ class ArmourBot(MiniBot):
         magentaprint("ArmourBot suit_up()")
         self.go_repair_or_replace_broken_armour()
         self.get_needed_default_armour()
+        # Need to cancel if inventory doesn't have the broken armour piece (user manually repairs armour)
 
     # def go_repair_or_replace_broken_armour(self):
     #     broken_armour_copy = self.broken_armour[:]
@@ -136,7 +137,7 @@ class ArmourBot(MiniBot):
                     self.char.inventory.remove_by_ref(armour_ref)
                     armour_ref = MobTargetDeterminator().decrement_ref(armour_ref)
         else:
-            magentaprint("ArmourBot.repair_and_wear() error - no inventory ref for " + str(a) + ".")
+            magentaprint("ArmourBot.repair_and_wear() error - no inventory ref for " + str(a) + ".")  # TODO: What if the armour fell apart... then it's not in inventory.
 
     def go_buy_and_wear(self, a):
         # I think we won't try to shop for the same armour that just broke, and just fall back immediately to the default set
@@ -150,10 +151,13 @@ class ArmourBot(MiniBot):
 
         # travel_bot = TravelBot(self.char, self.command_handler, self.map)
         # shopping_bot = ShoppingBot(self.char, self.command_handler, self.map)
+        self.stopping = False
         desired_asi_list = self.determine_shopping_list(self.broken_armour)
         # magentaprint("ArmourBot.get_needed_default_armour() desired_asi_list: " + str(desired_asi_list))
 
         for asi in desired_asi_list:
+            if self.stopping:
+                return
             # path = self.map.get_path(self.char.AREA_ID, asi.area.id)
             # travel_bot.follow_path(path)
             self.travel_bot.go_to_area(asi.area.id)
@@ -220,7 +224,8 @@ class ArmourBot(MiniBot):
                 if re.search(r'\d$', slot):
                     slot = slot[:len(slot)-1]  # neck2, finger3, etc.
                 slot = slot.title()
-                items = AreaStoreItem.get_by_item_type_and_level_max(size, slot, level)
+                # items = AreaStoreItem.get_by_item_type_and_level_max(size, slot, level)
+                items = AreaStoreItem.get_buyable_armour(size, slot, level)
                 magentaprint("determine_shopping_list() items: " + str(items))
                 # if items:
                 #     if len(items) > 0:
@@ -242,6 +247,10 @@ class ArmourBot(MiniBot):
                     break
 
         return desired_items
+        # TODO: One issue: shields aren't sized - so queries that use any size need to return the shield, whose type may be
+        # the generic armour type.   SELECT "t1"."id", "t1"."area_id", "t1"."item_id" FROM "areastoreitem" AS t1 INNER JOIN "item"
+        # AS t2 ON ("t1"."item_id" = "t2"."id") INNER JOIN "itemtype"
+        # AS t3 ON ("t2"."itemtype_id" = "t3"."id") WHERE (("t2"."level" <= ?) AND (("t3"."model_id" = ?) AND ("t3"."data_id" = ?)))
 
         # for slot in ['body','arms','legs','neck1','neck2','face','hands','head', 'shield']:
 

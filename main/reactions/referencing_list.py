@@ -80,8 +80,7 @@ class ReferencingList(object):
 
     def has(self, string):
         for i in self.list:
-            # if i.name == string:
-            magentaprint("Inventory.has checking i.name (%s) against %s" % (i.name, string))
+            # magentaprint("Inventory.has checking i.name (%s) against %s" % (i.name, string))
             if i.name == string:
                 return True
 
@@ -194,7 +193,7 @@ class ReferencingList(object):
             if word in list_name.split(' '):
                 if name == list_name:
                     ref = word if i ==1 else word + ' ' + str(i)
-                    magentaprint("ReferencingList.get_first_reference() returning " + ref)
+                    # magentaprint("ReferencingList.get_first_reference() returning " + ref)
                     return ref
                 else:
                     # i = i + len(self.inventory.dictionary[k].objs)

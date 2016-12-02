@@ -241,6 +241,7 @@ class Character(object):
         'drinking ranch hand', 'busy ranch hand', 'sawmill operator', 'vulture', 'auctioneer'
         # 'actress', #'young knight' # For blue balance
         #'miner'
+        # enlightened  # "arrives" in the large Kings road dojo (not always there)
     ]
     # hungry spiders are hostile
     lvl4_red_monsters = [
@@ -265,7 +266,7 @@ class Character(object):
     ]
     lvl7_monsters = [ # ~200 exp
         'dwarven cook', 'swordsman', 'fort sergeant', 'oremaster', 'giant spider', 'rock spider', 'Aldo', 'dwarven trader',
-        'gnoll chaplain', 'Cheryn', 'orc scout', 'bouncer', 'rancher sentry', 'dwarven shepherd', 'clown',
+        'gnoll chaplain', 'Cheryn', 'orc scout', 'bouncer', 'rancher sentry', 'dwarven shepherd', 'clown', 'war horse,'
         'top ranch hand'  # dusty blue
         # 'robed priest',
     ]  # There are also lvl 5 rancher sentries... they're a bit blue
@@ -290,21 +291,22 @@ class Character(object):
     lvl11_monsters = [
         'dwarven adventurer',  # dusty blue
         'enchantress', 'Brotain', 'minstrel', 'brutalizer', 'Gregor', 'Bertram Dalrum', 'Annette Plover',
-        'brother'
+        'brother', 'priest'
     ]
     lvl12_monsters = [
         'barbarian shaman', 'barbarian warrior', 'The Amber Mage', 'The Saga Teacher', 'Hurn the Smith',
         'Horbuk', 'The Floor Manager', 'Tardan', 'ranch foreman', 'Trent the Merchant', 'Gorban', # dusty blue
-        'Boris Ironfounder'
+        'Boris Ironfounder', 'Lady Denlise'
     ]
     lvl13_monsters = [
-        'The Dojo Administrator', 'Elsuria'
+        'The Dojo Administrator', 'Elsuria', 'Lord Tamaran', 'warmonger'
     ]
     lvl14_monsters = [
         'cave troll guard', 'Rancher Plover', 'Team Leader Egan', 'Qimoth', "Th'kit the HorseMaster"
     ]
-    lvl15_monsters = []
-    lvl16_monsters = ['Holbyn']
+    lvl15_monsters = ['Thomas Ironheart']
+    lvl16_monsters = ['Holbyn', 'Ordaran the White']
+    lvl17_monsters = ['Faldomet']
     # A list of monsters redundant to the above lists that
     # I may want to kill even if they are too low of level.
     # Mostly hostiles and things that don't let you loot.
@@ -312,7 +314,6 @@ class Character(object):
         'oaf', 'wanderer', 'thug', 'spiv', 'kobold sentry', 'tired hooker', 'waitress',
         'blond hooker', 'angry hooker', 'sultry hooker', 'journeyman', 'housewife', # 'acolyte'
     ]
-
     def set_monster_kill_list(self):
         self.MONSTER_KILL_LIST = []
 

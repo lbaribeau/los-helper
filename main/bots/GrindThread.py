@@ -793,11 +793,22 @@ class GrindThread(BotThread):
             # and I got a bad mobs.attacking... order has been fixed.
 
         if not self.character.mobs.attacking:
-            self.get_items()
+            self.get_items_if_weapon()
 
     def do_flee_hook(self):
         self.stop()
         self.command_handler.user_flee()
+
+    def get_items_if_weapon(self):
+        if hasattr(self.smartCombat.weapon_bot, 'weapon'):
+            self.get_items()
+        else:
+            magentaprint("GrindThread leaving items behind since weapon is broken.")
+            # This is an easy fix for "You can't carry any more." stopping the bot completely
+            # (Weapon shatters - bot picks up a heavy stick - bot has trouble shopping)
+            # The better fix that will come in with TopDownGrind is to go and sell/drop when it fails to buy something.
+            # That's not an absolute fix though, so this one might be kept (leaving anything on the ground,) the other solution
+            # could eventually cause the bot to get bogged down if it picks up a keep_list item after a weapon shatter
 
     def get_items(self):
         # self.command_handler.process('ga')
@@ -829,7 +840,7 @@ class GrindThread(BotThread):
         while self.character.mobs.attacking:
             self.engage_monster(self.character.mobs.attacking[0])
             # self.character.mobs.attacking = self.character.mobs.attacking[1:]
-            self.get_items()
+            self.get_items_if_weapon()
 
     def engage_any_attacking_mobs(self):
         engaged = False
@@ -840,7 +851,7 @@ class GrindThread(BotThread):
             self.engage_monster(self.character.mobs.attacking[0])
 
         if engaged:
-            self.get_items()
+            self.get_items_if_weapon()
 
         return engaged
 

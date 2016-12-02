@@ -86,7 +86,7 @@ class TopDownGrind(Thread):
                 raise Exception("No gold!")
             else:
                 weapon_ref = MobTargetDeterminator().increment_ref(weapon_ref)
-
+                
     def try_weapons_from_inventory(self, w):
         if self.inventory.has(w):
             if hasattr(self, 'weapon'):

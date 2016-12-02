@@ -84,9 +84,11 @@ class WeaponBot(MiniBot):
         self.command_handler.equipment.execute_and_wait()
         self.stopping = False
         if hasattr(self, 'weapon') and self.shield_or_offhand:
+            magentaprint("WeaponBot.repair_or_replace_weapon() has weapon and shield/offhand so return.")
             return
-        else:
-            magentaprint('repair_or_replace_weapon() self.weapon/shield: ' + str(self.weapon) + '/' + str(self.shield_or_offhand))
+        elif not self.shield_or_offhand:
+            magentaprint("WeaponBot needs to figure out whether to buy an offhand - assume shield.")
+            return
 
         # if hasattr(self, 'broken_weapon'):
         magentaprint('repair_or_replace_weapon calling try_exact_replacement_from_inventory')

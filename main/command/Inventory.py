@@ -183,9 +183,10 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         # 'ring mail gauntlets',
         # 'chain mail armour',  # sawmill
         'chain mail sleeves', 'chain mail leggings', 'chain mail hood',
-        'chain mail gloves', # mill worker
+        # 'chain mail gloves', # mill worker
         'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring',
-        'iron shield', 'platinum ring', 'gold ring', 'steel ring', 'silver ring',
+        'iron shield'
+        # 'platinum ring', 'gold ring', 'steel ring', 'silver ring'
         #'steel mask' # spiv, sawmill
     ]
 
@@ -576,7 +577,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         item_list = parse_item_names(item_string)
 
         for s in item_list:
-            magentaprint("Inventory.remove_many() calling remove_by_ref on " + str(self.get_reference(s)))
+            # magentaprint("Inventory.remove_many() calling remove_by_ref on " + str(self.get_reference(s)))
             if self.get_reference(s) is not None:  # Happens if inv is not up to date (ie. Bought.)
                 self.remove_by_ref(self.get_reference(s))
 

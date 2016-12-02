@@ -61,6 +61,7 @@ class TravelBot(MiniBot):
                 elif self.command_handler.go.error:
                     # Wrong exit name... only thing to try is to rebuild the path
                     return False
+                # Problem: a mugger blocks your exit
 
         return True
 
