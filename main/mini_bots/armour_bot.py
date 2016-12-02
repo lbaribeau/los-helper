@@ -85,21 +85,22 @@ class ArmourBot(MiniBot):
 
     #     self.broken_armour = broken_armour_copy
     def go_repair_or_replace_broken_armour(self):
-        self.do_for_each_piece(self.try_armour_from_inventory)
+        self.do_for_each_broken_piece(self.try_armour_from_inventory)
 
         if self.broken_armour:
             self.go_to_nearest_smithy()
 
-        self.do_for_each_piece(self.repair_and_wear)
-        self.do_for_each_piece(self.go_buy_and_wear)  # I think we'll skip this bit and rely on the default armour
+        self.do_for_each_broken_piece(self.repair_and_wear)
+        self.do_for_each_broken_piece(self.go_buy_and_wear)  # I think we'll skip this bit and rely on the default armour
             # We should make all the paths beforehand to ensure an efficient shopping trip
+        self.broken_armour = []  # If it couldn't be bought, it's time to forget about it.
 
         # self.broken_armour = self.try_armour_from_inventory(self.broken_armour[:])
         # self.go_to_nearest_smithy()
         # self.broken_armour = self.repair_and_wear_armour_from_inventory(self.broken_armour[:])
         # self.broken_armour = self.go_buy_and_wear_armour(self.broken_armour[:])
 
-    def do_for_each_piece(self, function):
+    def do_for_each_broken_piece(self, function):
         list_copy = self.broken_armour[:]
 
         for a in self.broken_armour:
