@@ -41,26 +41,31 @@ class CrawlThread(BotThread):
         exit = None
         exits = []
 
-        #find a null exit
-        for area_exit in area_exit_list:
-            if (area_exit.area_to is None and area_exit.is_useable):
-                exit = [area_exit.exit_type.name]
-                break
-            exits.append(area_exit.exit_type.name)
+        try:
+            exit = self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
+        except Exception:
+            #If for some reason we don't know how to find the nearest unexplored path let's just pick a random exit and try again
+            exit = [random.choice(exits)]
 
-        if exit is None:
-            #if we didn't find a null exit we end up here and the magic starts
-            #self.mud_map = MudMap() #if we actively update the map in Cartography then we wouldn't have to re-create it here
+        # #find a null exit
+        # for area_exit in area_exit_list:
+        #     if (area_exit.area_to is None and area_exit.is_useable):
+        #         exit = [area_exit.exit_type.name]
+        #         break
+        #     exits.append(area_exit.exit_type.name)
 
-            while (not self.mud_map.ready):
-                time.sleep(1)
+        # if exit is None:
+        #     #if we didn't find a null exit we end up here and the magic starts
+        #     #self.mud_map = MudMap() #if we actively update the map in Cartography then we wouldn't have to re-create it here
 
-            try:
-                self.mud_map.re_map()
-                exit = self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
-            except Exception:
-                #If for some reason we don't know how to find the nearest unexplored path let's just pick a random exit and try again
-                exit = [random.choice(exits)]
+        #     while (not self.mud_map.ready):
+        #         time.sleep(1)
+
+        #     try:
+        #         exit = self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
+        #     except Exception:
+        #         #If for some reason we don't know how to find the nearest unexplored path let's just pick a random exit and try again
+        #         exit = [random.choice(exits)]
 
 
         return exit

@@ -17,6 +17,7 @@ class Character(object):
         self._class = None
         self.level = None
 
+        self.NEEDS_MAGIC = False
         self.BLACK_MAGIC = True
         self.KNOWS_VIGOR = True
         #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
@@ -61,6 +62,7 @@ class Character(object):
         self.CAST_WAIT = self.CAST_PERIOD
 
         self.DEATHS = 0
+        self.AURA_STATUS = "Unknown"
 
         self.HASTING = False
         self.DEAD = False

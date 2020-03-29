@@ -1,6 +1,7 @@
 
 import re
 import pdb
+import time
 from math import floor, ceil
 
 from bots.BotThread import BotThread
@@ -181,7 +182,7 @@ class GrindThread(BotThread):
 
         if self.character.MANA < mana_to_wait:
             self.rest_until_ready()
-        elif self.character.MANA < self.mana_to_go:
+        elif self.character.MANA < self.mana_to_go and self.character.NEEDS_MAGIC:
             self.wait_for_mana()
 
         if not aura_updated:
@@ -200,25 +201,28 @@ class GrindThread(BotThread):
         self.heal_up()
         self.rest_for_health()
 
-        # self.buff_up()
+        self.buff_up()
+        self.use_extra_bless_item()
 
     @property
     def mana_to_go(self):
-        if self.smartCombat.black_magic:
-            if self.character.maxMP % 3 == 0 and self.character.maxMP < 13:
-                return self.character.maxMP
-            elif self.character.maxMP < 25:
-                return self.character.maxMP - 1
+        if self.character.NEEDS_MAGIC:
+            if self.smartCombat.black_magic:
+                if self.character.maxMP % 3 == 0 and self.character.maxMP < 13:
+                    return self.character.maxMP
+                elif self.character.maxMP < 25:
+                    return self.character.maxMP - 1
+                else:
+                    return self.character.maxMP - 2
             else:
-                return self.character.maxMP - 2
-        else:
-            if self.character.maxMP % 2 == 0 and self.character.maxMP < 13:
-                return self.character.maxMP
-                # We wait for an even number because only cast vigor (2 mana)
-            elif self.character.maxMP < 25:
-                return self.character.maxMP - 1
-            else:
-                return self.character.maxMP - 2
+                if self.character.maxMP % 2 == 0 and self.character.maxMP < 13:
+                    return self.character.maxMP
+                    # We wait for an even number because only cast vigor (2 mana)
+                elif self.character.maxMP < 25:
+                    return self.character.maxMP - 1
+                else:
+                    return self.character.maxMP - 2
+        return 0
 
     @property
     def health_to_go(self):
@@ -435,7 +439,7 @@ class GrindThread(BotThread):
                 if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
                     self.cast.start_thread('v')
 
-            #self.use_restorative_items() #spam them!!!
+            self.use_restorative_items() #spam them!!!
 
             self.sleep(0.05)
 
@@ -454,10 +458,8 @@ class GrindThread(BotThread):
     def use_buff_items(self):
         if self.inventory.has("milky potion"):
             self.commandHandler.process('drink milky')
-        elif self.inventory.has("steel bottle"):
+        if self.inventory.has("steel bottle"):
             self.commandHandler.process('drink steel')
-        else:
-            self.character.HAS_BUFF_ITEMS = False
 
     def use_extra_bless_item(self):
         magentaprint("GrindThread.use_extra_bless_item()")

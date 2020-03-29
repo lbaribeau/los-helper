@@ -24,6 +24,7 @@ class TelnetHandler(object):
         self.thread = Thread(target=self.keep_connection_open)
         self.thread.daemon = True
         self.thread.start()
+        self.echoing = False
 
     def set_timer(self):
         self.timer = time.time() + self.server_timeout
@@ -42,7 +43,9 @@ class TelnetHandler(object):
             return ''
 
     def write(self, command):
-        magentaprint('"' + command + '"')
+        if (self.echoing):
+           magentaprint('"' + command + '"', False)
+        
         self.set_timer()
         command += '\r'
         # magentaprint("\"" + command[:len(command)-1] + "\" ", end="")

@@ -27,8 +27,6 @@ class SmartGrindThread(TrackGrindThread):
 
         self.low_aura = 0 #how evil the targets are
         self.high_aura = len(Aura.auras) #how good the targets are
-        # self.update_aura()
-        # self.aura_updated_hook()
 
     def do_pre_go_actions(self):
         super().do_pre_go_actions()
@@ -196,7 +194,7 @@ class SmartGrindThread(TrackGrindThread):
         return directions
 
     def get_targets(self):
-        magentaprint("SmartGrind getting targets - parameters - {0} {1} {2} {3}".format(self.low_level, self.high_level, self.low_aura, self.high_aura))
+        magentaprint("SmartGrind getting targets - parameters - {0} {1} {2} {3}".format(self.low_level, self.high_level, self.low_aura, self.high_aura), False)
         target_list = MudMob.get_mobs_by_level_and_aura_ranges(self.low_level, self.high_level, self.low_aura, self.high_aura)
 
         # if not target_list:
@@ -208,7 +206,6 @@ class SmartGrindThread(TrackGrindThread):
         # magentaprint(target_list, False)
 
         for target in target_list:
-            magentaprint(target, False)
             mob_locations = MudMap.get_mob_locations_by_id(target.id)
             self.character.MONSTER_KILL_LIST.append(target.name)
             self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
@@ -239,15 +236,21 @@ class SmartGrindThread(TrackGrindThread):
             # Too evil
             # self.low_level = 2
             self.low_aura = 0
-            self.high_aura = math.floor(len(Aura.auras) / 2)
+            self.high_aura = math.floor(len(Aura.auras) / 2) - 2
+            magentaprint("Bot is too evil.", False)
+            self.character.AURA_STATUS = "Too evil"
         elif self.cast.aura > self.character.preferred_aura:
             # Too good
             # self.low_level = 2
             self.low_aura = math.ceil(len(Aura.auras) / 2)
             self.high_aura = len(Aura.auras) - 1
+            self.character.AURA_STATUS = "Too good"
+            magentaprint("Bot is too good.", False)
         else:
             self.low_aura = math.floor(len(Aura.auras) / 2)
             self.high_aura = math.ceil(len(Aura.auras) / 2)
+            self.character.AURA_STATUS = "Just right"
+            magentaprint("Bot is just right.", False)
 
         self.get_targets()
 

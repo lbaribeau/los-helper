@@ -57,6 +57,9 @@ class MudMap(object):
     def get_path(self, start_area_id, end_area_id):
         # magentaprint("MudMap.get_path self.los_map: " + str(self.los_map))
 
+        if (end_area_id == 1):
+            self.re_map()
+
         self.magentaprint("MudMap.get_path self.los_map: " + str(self.los_map))
         try:
             node_path = nx.shortest_path(self.los_map, source=start_area_id, target=end_area_id)
