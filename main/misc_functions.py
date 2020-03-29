@@ -4,8 +4,8 @@ import sys
 
 from db.Database import *
 
-debugMode = True
-verboseMode = True
+debugMode = False
+verboseMode = False
 startTime = datetime.now()
 VERSION = "2"
 #databaseFile = "maplos.db"

@@ -189,19 +189,11 @@ class GrindThread(BotThread):
 
         if aura_updated:
             self.aura_updated_hook()
-<<<<<<< HEAD
-    
-        # if self.character.level > 3 and self.character.MAX_MANA > 10:
-        #     self.heal_up()
-        #     self.wait_for_mana()  
-        # else:
-=======
 
-        if self.character.level > 3 and self.character.maxMP > 10:
-            self.heal_up()
-            self.wait_for_mana()
-        else:
->>>>>>> master
+        # if self.character.level > 3 and self.character.maxMP > 10:
+        #     self.heal_up()
+        #     self.wait_for_mana()
+        # else:
             # magentaprint("Resting for health", False)
             # Probably not the greatest logic but low level characters will need
             # to gain health other than healing up.

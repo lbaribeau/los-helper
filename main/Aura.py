@@ -3,23 +3,12 @@
 
 class Aura(object):
 
-<<<<<<< HEAD
     auras = ['demonic red', 'ominous red', 'ghastly red', 'blood red', 'murky red',
               'red', 'rusty', 'dusty red', 'grey',
               'dusty blue', 'pale blue', 'blue',
               'deep blue', 'bright blue', 'shimmering blue', 'blazing blue',
               'blazing blue', 'heavenly blue']
              # 0-8 red, 9 grey, 10-18 blue
-=======
-    auras = [
-        'demonic red', 'ominous red', 'ghastly red', 'blood red', 'murky red',
-        'red', 'rusty', 'dusty red', 'grey',
-        'dusty blue', 'pale blue', 'blue',
-        'deep blue', 'bright blue', 'shimmering blue', 'blazing blue', 'heavenly blue'
-    ]
-    # 0-7 red, 8 grey, 9-16 blue  (17 total)
-    # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")
->>>>>>> master
 
     def __init__(self, s):
         if s in self.auras:
@@ -40,22 +29,46 @@ class Aura(object):
         return self.clamp(other - self.auras.index(self.s))
 
     def __lt__(self, other):
-        return self.auras.index(self.s) < self.auras.index(other.s)
+        aura_str = other
+        if (type(other) != str):
+            aura_str = other.s
+
+        return self.auras.index(self.s) < self.auras.index(aura_str)
 
     def __le__(self, other):
-        return self.auras.index(self.s) <= self.auras.index(other.s)
+        aura_str = other
+        if (type(other) != str):
+            aura_str = other.s
+
+        return self.auras.index(self.s) <= self.auras.index(aura_str)
 
     def __eq__(self, other):
-        return self.auras.index(self.s) == self.auras.index(other.s)
+        aura_str = other
+        if (type(other) != str):
+            aura_str = other.s
+
+        return self.auras.index(self.s) == self.auras.index(aura_str)
 
     def __ne__(self, other):
-        return self.auras.index(self.s) != self.auras.index(other.s)
+        aura_str = other
+        if (type(other) != str):
+            aura_str = other.s
+
+        return self.auras.index(self.s) != self.auras.index(aura_str)
 
     def __ge__(self, other):
-        return self.auras.index(self.s) >= self.auras.index(other.s)
+        aura_str = other
+        if (type(other) != str):
+            aura_str = other.s
+
+        return self.auras.index(self.s) >= self.auras.index(aura_str)
 
     def __gt__(self, other):
-        return self.auras.index(self.s) > self.auras.index(other.s)
+        aura_str = other
+        if (type(other) != str):
+            aura_str = other.s
+
+        return self.auras.index(self.s) > self.auras.index(aura_str)
 
     def clamp(self, i):
         return max(0, min(i,len(self.auras)))

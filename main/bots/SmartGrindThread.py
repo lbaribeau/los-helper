@@ -6,7 +6,7 @@ from misc_functions import *
 from command.Inventory import *
 from Exceptions import *
 from db.MudMob import *
-import Aura
+from Aura import Aura
 
 class SmartGrindThread(TrackGrindThread):
     smart_target_list = []
@@ -227,27 +227,12 @@ class SmartGrindThread(TrackGrindThread):
 
     def aura_updated_hook(self):
         # self.low_level = int(math.ceil(self.character.level / 2)) - 2
-        magentaprint("Current Aura Scale: " + str(self.character.AURA_SCALE), False)
-        magentaprint("Preferred Aura Scale: " + str(self.character.AURA_PREFERRED_SCALE), False)
+        magentaprint("Current Aura Scale: " + str(Aura.auras), False)
+        magentaprint("Preferred Aura Scale: " + str(self.character.preferred_aura), False)
 
         if self.character.level < 4:
             self.low_aura = 0
-<<<<<<< HEAD
-            self.high_aura = 18
-        elif self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:
-            # Too evil
-            # self.low_level = 2
-            self.low_aura = 0
-            self.high_aura = 8
-        elif self.character.AURA_SCALE > self.character.AURA_PREFERRED_SCALE:
-            # Too good
-            # self.low_level = 2
-            self.low_aura = 10
-            self.high_aura = 18
-        else:
-            self.low_aura = 1
-            self.high_aura = 17
-=======
+
             self.high_aura = len(Aura.auras)
         # elif self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:
         elif self.cast.aura < self.character.preferred_aura:
@@ -263,7 +248,6 @@ class SmartGrindThread(TrackGrindThread):
         else:
             self.low_aura = math.floor(len(Aura.auras) / 2)
             self.high_aura = math.ceil(len(Aura.auras) / 2)
->>>>>>> master
 
         self.get_targets()
 

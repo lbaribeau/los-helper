@@ -199,58 +199,58 @@ class Character(object):
                 return 'long bow'  # GREAT starting missile weapon, beware of roaming lion though (maybe bad for long-running lowish lvl bot )
             else:
                 return 'javelin'
-<<<<<<< HEAD
+# <<<<<<< HEAD
           
-    def configure_health_and_mana_variables(self):
-        # Health to heal is now a percentage (see process_info)
-        if self.level <= 2:
-            self.HEALTH_TO_HEAL = 19
-            self.HEALTH_TO_FLEE = 8
-            self.MAX_MANA = 3
-            self.MANA_TO_ENGAGE = 3
-        elif self.level <= 3:
-            self.HEALTH_TO_HEAL = 27
-            self.HEALTH_TO_FLEE = 9
-            self.MAX_MANA = 7
-            self.MANA_TO_ENGAGE = 3
-        elif self.level <= 4:
-            self.HEALTH_TO_HEAL = 31
-            self.HEALTH_TO_FLEE = 11
-            self.MAX_MANA = 9
-            self.MANA_TO_ENGAGE = 3
-        elif self.level <= 5:
-            self.HEALTH_TO_HEAL = 31
-            self.HEALTH_TO_FLEE = 8
-            self.MAX_MANA = 12
-            self.MANA_TO_ENGAGE = 6           
-        elif self.level <= 6:
-            self.HEALTH_TO_HEAL = 35 # was 43 for Ruorg
-            self.HEALTH_TO_FLEE = 15
-            self.MAX_MANA = 18
-            self.MANA_TO_ENGAGE = 9     
-        elif self.level <= 7: # has the same enemy list as 6
-            self.HEALTH_TO_HEAL= 40 # was 45
-            self.HEALTH_TO_FLEE =  15
-            self.MAX_MANA = 21
-            self.MANA_TO_ENGAGE = 9
-        elif self.level <= 8:
-            self.HEALTH_TO_HEAL= 45
-            self.HEALTH_TO_FLEE = 30
-            self.MAX_MANA = 24
-            self.MANA_TO_ENGAGE = 15        
-        else:
-            # self.HEALTH_TO_HEAL = 62
-            # self.HEALTH_TO_FLEE = 27
-            # self.MAX_MANA = 27 - 4 + 1
-            # self.MANA_TO_ENGAGE = 18
-            self.HEALTH_TO_HEAL = 65
-            self.HEALTH_TO_FLEE = 15
-            self.MAX_MANA = 4
-            self.MANA_TO_ENGAGE = 0
+#     def configure_health_and_mana_variables(self):
+#         # Health to heal is now a percentage (see process_info)
+#         if self.level <= 2:
+#             self.HEALTH_TO_HEAL = 19
+#             self.HEALTH_TO_FLEE = 8
+#             self.MAX_MANA = 3
+#             self.MANA_TO_ENGAGE = 3
+#         elif self.level <= 3:
+#             self.HEALTH_TO_HEAL = 27
+#             self.HEALTH_TO_FLEE = 9
+#             self.MAX_MANA = 7
+#             self.MANA_TO_ENGAGE = 3
+#         elif self.level <= 4:
+#             self.HEALTH_TO_HEAL = 31
+#             self.HEALTH_TO_FLEE = 11
+#             self.MAX_MANA = 9
+#             self.MANA_TO_ENGAGE = 3
+#         elif self.level <= 5:
+#             self.HEALTH_TO_HEAL = 31
+#             self.HEALTH_TO_FLEE = 8
+#             self.MAX_MANA = 12
+#             self.MANA_TO_ENGAGE = 6           
+#         elif self.level <= 6:
+#             self.HEALTH_TO_HEAL = 35 # was 43 for Ruorg
+#             self.HEALTH_TO_FLEE = 15
+#             self.MAX_MANA = 18
+#             self.MANA_TO_ENGAGE = 9     
+#         elif self.level <= 7: # has the same enemy list as 6
+#             self.HEALTH_TO_HEAL= 40 # was 45
+#             self.HEALTH_TO_FLEE =  15
+#             self.MAX_MANA = 21
+#             self.MANA_TO_ENGAGE = 9
+#         elif self.level <= 8:
+#             self.HEALTH_TO_HEAL= 45
+#             self.HEALTH_TO_FLEE = 30
+#             self.MAX_MANA = 24
+#             self.MANA_TO_ENGAGE = 15        
+#         else:
+#             # self.HEALTH_TO_HEAL = 62
+#             # self.HEALTH_TO_FLEE = 27
+#             # self.MAX_MANA = 27 - 4 + 1
+#             # self.MANA_TO_ENGAGE = 18
+#             self.HEALTH_TO_HEAL = 65
+#             self.HEALTH_TO_FLEE = 15
+#             self.MAX_MANA = 4
+#             self.MANA_TO_ENGAGE = 0
     
-    ### Monster stuff ###
-=======
->>>>>>> master
+#     ### Monster stuff ###
+# =======
+# >>>>>>> master
 
     lvl1_monsters = [ # 1-8 exp
         'dustman', 'small girl', 'young boy', 'old woman', 'old man', 'townsman', 'stall holder', 'duck', 'hedgehog', 'piglet',
