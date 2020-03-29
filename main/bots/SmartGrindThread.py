@@ -27,18 +27,18 @@ class SmartGrindThread(TrackGrindThread):
 
         self.low_aura = 0 #how evil the targets are
         self.high_aura = len(Aura.auras) #how good the targets are
-
-        self.update_aura()
-        self.aura_updated_hook()
+        # self.update_aura()
+        # self.aura_updated_hook()
 
     def do_pre_go_actions(self):
-        self.go_rest_if_not_ready()
+        super().do_pre_go_actions()
+        # self.go_rest_if_not_ready()
 
-        self.inventory.get_inventory()
-        # self.inventory.get_equipment(self.character.name)
+        # self.inventory.get_inventory()
+        # # self.inventory.get_equipment(self.character.name)
 
-        self.check_weapons()
-        self.check_armour()
+        # self.check_weapons()
+        # self.check_armour()
 
         if len(self.character.MONSTER_KILL_LIST) == 0:
             self.get_targets()
@@ -208,7 +208,7 @@ class SmartGrindThread(TrackGrindThread):
         # magentaprint(target_list, False)
 
         for target in target_list:
-            # magentaprint(target, False)
+            magentaprint(target, False)
             mob_locations = MudMap.get_mob_locations_by_id(target.id)
             self.character.MONSTER_KILL_LIST.append(target.name)
             self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
@@ -223,7 +223,7 @@ class SmartGrindThread(TrackGrindThread):
             next_target = random.choice(self.smart_target_list)
 
         self.cur_target = next_target
-        magentaprint("Picking new target: " + next_target.to_string())
+        magentaprint("Picking new target: " + next_target.to_string(), True)
 
     def aura_updated_hook(self):
         # self.low_level = int(math.ceil(self.character.level / 2)) - 2

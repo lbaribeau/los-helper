@@ -4,6 +4,7 @@ from threading import Thread
 import atexit 
 import time
 import re
+import traceback
 
 from misc_functions import *
 from Exceptions import *
@@ -15,6 +16,7 @@ class BotThread(threading.Thread):
         # Thread.__init__(self)
         super().__init__()
         self.stopping = False
+        self.exceptionCount = 0
 
         self.character = character
         self.commandHandler = commandHandler
@@ -62,46 +64,59 @@ class BotThread(threading.Thread):
     A  do after directions travelled
     '''
     def run(self):
-        self.stopping = False
-        self.character.ACTIVELY_BOTTING = False
-        self.do_run_startup()
+        try:
+            self.stopping = False
+            self.character.ACTIVELY_BOTTING = False
+            self.do_run_startup()
 
-        # Here is where the fun begins.
-        while not self.stopping:
-            if self.stopping:
-                break
+            # Here is where the fun begins.
+            while not self.stopping:
+                if self.stopping:
+                    break
 
-            self.do_pre_go_actions()
+                self.do_pre_go_actions()
 
-            if len(self.direction_list) is 0:
-                self.direction_list = self.decide_where_to_go()
-                magentaprint('decide_where_to_go returned ' + str(self.direction_list))
+                if len(self.direction_list) is 0:
+                    self.direction_list = self.decide_where_to_go()
+                    magentaprint('decide_where_to_go returned ' + str(self.direction_list))
 
-            while len(self.direction_list) is not 0 and not self.stopping:
-                self.do_regular_actions()
-                if self.go(self.direction_list[0]):
-                    self.do_on_succesful_go()
-                else:
-                    if self.character.GO_BLOCKING_MOB != "":
-                        # MUDReaderThread sets GO_BLOCKING_MOB when go returns false
-                        self.do_on_blocking_mob()
-                        continue
-                    elif self.character.GO_PLEASE_WAIT:
-                        # Just try again.
-                        self.do_on_go_please_wait()
-                        continue
-                    elif self.character.GO_TIMEOUT:
-                        self.do_on_go_timeout()
-                    elif self.character.GO_NO_EXIT:
-                        self.no_exit_count += 1
-                        self.do_on_go_no_exit()
-                        continue
+                while len(self.direction_list) is not 0 and not self.stopping:
+                    self.do_regular_actions()
+                    if self.go(self.direction_list[0]):
+                        self.do_on_succesful_go()
+                    else:
+                        if self.character.GO_BLOCKING_MOB != "":
+                            # MUDReaderThread sets GO_BLOCKING_MOB when go returns false
+                            self.do_on_blocking_mob()
+                            continue
+                        elif self.character.GO_PLEASE_WAIT:
+                            # Just try again.
+                            self.do_on_go_please_wait()
+                            continue
+                        elif self.character.GO_TIMEOUT:
+                            self.do_on_go_timeout()
+                        elif self.character.GO_NO_EXIT:
+                            self.no_exit_count += 1
+                            self.do_on_go_no_exit()
+                            continue
 
-                #now we add a hook for any actions in this new area
-                self.do_post_go_actions()
-            self.do_after_directions_travelled()
+                    #now we add a hook for any actions in this new area
+                    self.do_post_go_actions()
+                self.do_after_directions_travelled()
+        except Exception as e:
+            print (e)
+            self.stop()
 
-        magentaprint("BotThread: finished now.")
+            if (self.exceptionCount < 3):
+                magentaprint("Bot encountered an error trying to restart: " + str(self.exceptionCount), False)
+                self.exceptionCount += 1
+                traceback.print_exc()
+                self.run()
+
+        finally:
+            magentaprint("BotThread: finished now.")
+
+        
 
     def go(self, exit_str):
         if self.stopping:

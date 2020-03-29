@@ -24,10 +24,14 @@ class CrawlThread(BotThread):
         elif self.character.DEAD:
             time.sleep(12) #wait in Limbo
             self.character.DEAD = False
-        
-        time.sleep(0.5)
+
+        time.sleep(1)
         curArea = Area.get_area_by_id(self.character.AREA_ID)
         curAreaExits = AreaExit.get_area_exits_from_area(curArea)
+        
+        magentaprint(curArea, False)        
+        magentaprint(curAreaExits, False)
+
         chosen_exit = self.pick_exit(curAreaExits)
         directions = chosen_exit
 
@@ -36,8 +40,6 @@ class CrawlThread(BotThread):
     def pick_exit(self, area_exit_list):
         exit = None
         exits = []
-
-        self.mud_map = MudMap()
 
         #find a null exit
         for area_exit in area_exit_list:
@@ -54,6 +56,7 @@ class CrawlThread(BotThread):
                 time.sleep(1)
 
             try:
+                self.mud_map.re_map()
                 exit = self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
             except Exception:
                 #If for some reason we don't know how to find the nearest unexplored path let's just pick a random exit and try again

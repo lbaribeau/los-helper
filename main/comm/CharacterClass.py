@@ -88,7 +88,7 @@ class CharacterClass(object):
         elif class_string == "Thi":
             self.lvl1_maxHP = 18
             self.lvl1_maxMP = 3
-            abilities = [ Backstab, Steal ]
+            abilities = [ ] #Steal & Backstab not defined
             Cast.cooldown_after_success = 4
         elif class_string == "Mon":
             self.lvl1_maxHP = 17

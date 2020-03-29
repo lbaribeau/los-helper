@@ -443,6 +443,8 @@ class Character(object):
             #adam.MAX_MANA = 4
             #adam.MANA_TO_ENGAGE = 0
 
+        self.MANA_TO_ENGAGE = 0
+
     @property
     def hp(self):
         return self.prompt.hp
