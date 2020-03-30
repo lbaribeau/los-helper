@@ -226,6 +226,8 @@ class SmartGrindThread(TrackGrindThread):
         # self.low_level = int(math.ceil(self.character.level / 2)) - 2
         magentaprint("Current Aura Scale: " + str(Aura.auras), False)
         magentaprint("Preferred Aura Scale: " + str(self.character.preferred_aura), False)
+        magentaprint("meow " + str(Aura.s), False)
+        # aura_index = Aura.auras[self.character.preferred_aura]
 
         if self.character.level < 4:
             self.low_aura = 0
@@ -236,19 +238,19 @@ class SmartGrindThread(TrackGrindThread):
             # Too evil
             # self.low_level = 2
             self.low_aura = 0
-            self.high_aura = math.floor(len(Aura.auras) / 2) - 2
+            self.high_aura = aura_index
             magentaprint("Bot is too evil.", False)
             self.character.AURA_STATUS = "Too evil"
         elif self.cast.aura > self.character.preferred_aura:
             # Too good
             # self.low_level = 2
-            self.low_aura = math.ceil(len(Aura.auras) / 2)
-            self.high_aura = len(Aura.auras) - 1
+            self.low_aura = aura_index
+            self.high_aura = len(Aura.auras)
             self.character.AURA_STATUS = "Too good"
             magentaprint("Bot is too good.", False)
         else:
-            self.low_aura = math.floor(len(Aura.auras) / 2)
-            self.high_aura = math.ceil(len(Aura.auras) / 2)
+            self.low_aura = 0
+            self.high_aura = len(Aura.auras)
             self.character.AURA_STATUS = "Just right"
             magentaprint("Bot is just right.", False)
 
