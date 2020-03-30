@@ -23,10 +23,10 @@ class SmartGrindThread(TrackGrindThread):
         self.cur_area_id = self.character.AREA_ID
 
         self.low_level = min(int(math.ceil(self.character.level / 2)) - 2, 1)
-        self.high_level = int(math.ceil(self.character.level / 2)) #+ 1 #risky business
+        self.high_level = int(math.ceil(self.character.level / 2))# + 1 #risky business
 
-        self.low_aura = 0 #how evil the targets are
-        self.high_aura = len(Aura.auras) #how good the targets are
+        self.min_target_aura = Aura('demonic red')
+        self.max_target_aura = Aura('heavenly blue')
 
     def do_pre_go_actions(self):
         super().do_pre_go_actions()
@@ -63,7 +63,6 @@ class SmartGrindThread(TrackGrindThread):
 
             return super().decide_where_to_go()
         else:
-            
             directions = []
 
             #get pawnshop path then tip path if necessary.
@@ -92,7 +91,7 @@ class SmartGrindThread(TrackGrindThread):
             directions.append("areaid%s" % location)
             if len(directions) > 10:
                 break
-            
+
         magentaprint("SmartGrind directions: " + str(directions))
 
         return directions
@@ -145,7 +144,7 @@ class SmartGrindThread(TrackGrindThread):
             except Exception as e:
                 #not a good situation - we can't find a way to the chapel from wherever we are
                 #therefore we should just sit and wait here until we can go on the warpath again
-                magentaprint("Exception getting heal path.") 
+                magentaprint("Exception getting heal path.")
                 magentaprint(e, False)
                 raise e
 
@@ -194,11 +193,14 @@ class SmartGrindThread(TrackGrindThread):
         return directions
 
     def get_targets(self):
-        magentaprint("SmartGrind getting targets - parameters - {0} {1} {2} {3}".format(self.low_level, self.high_level, self.low_aura, self.high_aura), False)
-        target_list = MudMob.get_mobs_by_level_and_aura_ranges(self.low_level, self.high_level, self.low_aura, self.high_aura)
+        magentaprint("SmartGrind getting targets - parameters - {0} {1} {2} {3}".format(\
+            self.low_level, self.high_level, self.min_target_aura, self.max_target_aura)
+        )
+        target_list = MudMob.get_mobs_by_level_and_aura_ranges(
+            self.low_level, self.high_level, self.min_target_aura, self.max_target_aura
+        )
 
         # if not target_list:
-
 
         self.character.MONSTER_KILL_LIST = []
 
@@ -230,29 +232,22 @@ class SmartGrindThread(TrackGrindThread):
         # aura_index = Aura.auras[self.character.preferred_aura]
 
         if self.character.level < 4:
-            self.low_aura = 0
-
-            self.high_aura = len(Aura.auras)
+            self.min_target_aura = 0
+            self.max_target_aura = len(Aura.auras)
         # elif self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:
         elif self.cast.aura < self.character.preferred_aura:
             # Too evil
             # self.low_level = 2
-            self.low_aura = 0
-            self.high_aura = aura_index
-            magentaprint("Bot is too evil.", False)
-            self.character.AURA_STATUS = "Too evil"
+            self.min_target_aura = 0
+            self.max_target_aura = math.floor(len(Aura.auras) / 2)
         elif self.cast.aura > self.character.preferred_aura:
             # Too good
             # self.low_level = 2
-            self.low_aura = aura_index
-            self.high_aura = len(Aura.auras)
-            self.character.AURA_STATUS = "Too good"
-            magentaprint("Bot is too good.", False)
+            self.min_target_aura = math.ceil(len(Aura.auras) / 2)
+            self.max_target_aura = len(Aura.auras) - 1
         else:
-            self.low_aura = 0
-            self.high_aura = len(Aura.auras)
-            self.character.AURA_STATUS = "Just right"
-            magentaprint("Bot is just right.", False)
+            self.min_target_aura = math.floor(len(Aura.auras) / 2)
+            self.max_target_aura = math.ceil(len(Aura.auras) / 2)
 
         self.get_targets()
 

@@ -93,13 +93,13 @@ def try_drop(cls):
     except:
         pass
 
-from sys import argv 
+from sys import argv
 
 if "-nodb" in argv:
     database_file = "no.db"
 else:
     database_file = "maplos.db"
-    
+
 database = SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
 db.initialize(database)
 

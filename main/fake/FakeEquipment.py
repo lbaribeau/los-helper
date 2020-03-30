@@ -10,7 +10,7 @@ class FakeEquipment(object):
 
     def output_string(self):
         armour = (
-            "On body:   some chain mail armour\n"   
+            "On body:   some chain mail armour\n"
             "On arms:   some chain mail sleeves\n"
             "On legs:   some chain mail leggings\n"
             "On neck:   a grey cloak\n"

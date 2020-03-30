@@ -23,16 +23,16 @@ class Character(object):
         #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #MAGIC_SKILLS= [0, 0, 0, 0, 0]
         self.SKILLS = {}
-
-        self.LEVEL_LIST = ["You could kill (?:.+?) with a needle\.", #-4 or more levels
-                      "(?:.+?) should be easy to kill\.", #-2 level from this character
-                      "(?:.+?) shouldn't be too tough to kill\.", #-2 level from this character
-                      "(?:.+?) is not quite as good as you\.", #-1 level from this character
-                      "(?:.+?) is a perfect match for you!", #same level as character
-                      "(?:.+?) is a little better than you\.", #+1 level from this character
-                      "(?:.+?) might be tough to kill\.", #+2 level from this character
-                      "(?:.+?) should be really hard to kill\.", #+3 levels from this character
-                      "(?:.+?) could kill you with a needle\." #+4 or more levels from this character
+        self.LEVEL_LIST = [
+            "You could kill (?:.+?) with a needle\.",   #-4 or more levels
+            "(?:.+?) should be easy to kill\.",         #-3 level from this character
+            "(?:.+?) shouldn't be too tough to kill\.", #-2 level from this character
+            "(?:.+?) is not quite as good as you\.",    #-1 level from this character
+            "(?:.+?) is a perfect match for you!",      #same level as character
+            "(?:.+?) is a little better than you\.",    #+1 level from this character
+            "(?:.+?) might be tough to kill\.",         #+2 level from this character
+            "(?:.+?) should be really hard to kill\.",  #+3 levels from this character
+            "(?:.+?) could kill you with a needle\."    #+4 or more levels from this character
         ]
         self.WEAPON_TYPES = ["Sharp", "Thrust", "Blunt", "Pole", "Missile" ]
 
@@ -75,11 +75,6 @@ class Character(object):
         # CAST_CLK = -CAST_WAIT # Last successful cast
 
         self.LEVEL_UP_REQUIREMENTS = [512, 1024, 2048, 4096, 8192]
-
-        # MONSTER LISTS
-        # All lists are mutually exclusive except for "preferred."
-        # Monsters may be placed in a higher level group if they are 
-        # difficult to kill.
 
         self.MOBS_JOINED_IN = []
         self.MOBS_ATTACKING = []
@@ -254,6 +249,9 @@ class Character(object):
 # =======
 # >>>>>>> master
 
+    # All monster lists are mutually exclusive except for "preferred."
+    # Monsters may be placed in a higher level group if they are difficult to kill.
+
     lvl1_monsters = [ # 1-8 exp
         'dustman', 'small girl', 'young boy', 'old woman', 'old man', 'townsman', 'stall holder', 'duck', 'hedgehog', 'piglet',
         'streetsweeper', 'shopper', 'window shopper', 'window cleaner', 'waitress', 'housewife', 'squirrel', 'milk maid', 'rabbit',
@@ -267,7 +265,7 @@ class Character(object):
     lvl2_monsters = [
         'hawker', 'barmaid', 'smelly beggar', 'black crow', 'sheep', 'goose', 'singer', 'musician', 'spiv', 'bidder', 'dairy cow',
         'scholar', 'juggler', 'shepherd', 'gazelle', 'dancer', 'jongleur', 'clerk', 'stablehand', 'rich kid', 'bladesman',
-        "cook's assistant", "miner's assistant", 'mare', 'tabby cat',
+        "cook's assistant", "miner's assistant", 'mare', 'tabby cat'
         'acolyte' #, 'penitent'  # aur
     ]
     lvl2_red_monsters = [
@@ -282,7 +280,7 @@ class Character(object):
         'cashier', 'thatcher',  'tax inspector', 'journeyman', 'human miner', 'hobbitish miner', 'hawk', 'stacker', 'mill worker',
         'The General', 'bouncer', 'yard worker'
         # 'robed pilgrim'  # aura
-        #'miner's mule"
+        #'miner's mule"  # mill worker drops chain mail gloves
     ]
     lvl3_red_monsters = [
         'large kobold', 'insane kobold', 'kobold scout', 'drunk', 'drunken trouble-maker'
@@ -355,6 +353,8 @@ class Character(object):
     lvl14_monsters = [
         'cave troll guard', 'Rancher Plover', 'Team Leader Egan', 'Qimoth', "Th'kit the HorseMaster"
     ]
+    lvl15_monsters = []
+    lvl16_monsters = ['Holbyn']
     # A list of monsters redundant to the above lists that
     # I may want to kill even if they are too low of level.
     # Mostly hostiles and things that don't let you loot.
@@ -420,12 +420,12 @@ class Character(object):
             # self.HEALTH_TO_HEAL = 31
             self.HEALTH_TO_FLEE = 8
             self.MAX_MANA = 12
-            self.MANA_TO_ENGAGE = 6           
+            self.MANA_TO_ENGAGE = 6
         elif self.level <= 6:
             # self.HEALTH_TO_HEAL = 35 # was 43 for Ruorg
             self.HEALTH_TO_FLEE = 15
             self.MAX_MANA = 18
-            self.MANA_TO_ENGAGE = 9     
+            self.MANA_TO_ENGAGE = 9
         elif self.level <= 7: # has the same enemy list as 6
             # self.HEALTH_TO_HEAL= 40 # was 45
             self.HEALTH_TO_FLEE =  15
@@ -435,7 +435,7 @@ class Character(object):
             # self.HEALTH_TO_HEAL= 45
             self.HEALTH_TO_FLEE = 30
             self.MAX_MANA = 24
-            self.MANA_TO_ENGAGE = 15        
+            self.MANA_TO_ENGAGE = 15
         else:
             # self.HEALTH_TO_HEAL = 62
             self.HEALTH_TO_FLEE = 27
@@ -465,7 +465,7 @@ class Character(object):
         # if self.health_monitor.vig_amounts:
         #     return max(self.health_monitor.vig_amounts)
         # else:
-        #     return self.info.pty / 2.3  
+        #     return self.info.pty / 2.3
 
     def max_mend(self):
         if self.health_monitor.mend_amounts:

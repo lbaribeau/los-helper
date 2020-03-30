@@ -17,18 +17,24 @@ class Aura(object):
             magentaprint("Error: created an aura with an invalid name: " + s)
 
     # Add/subtract integers with auras for intuitive results
+    # Adding/subtracting only works with integers
+    # ex: red + 3 = grey
+
     def __add__(self, other):
-        return self.clamp(self.auras.index(self.s) + other)
+        # return self.clamp(self.auras.index(self.s) + other)
+        return self.clamp(self.index() + other)
 
     __radd__ = __add__
 
     def __sub__(self, other):
-        return self.clamp(self.auras.index(self.s) - other)
+        return self.clamp(self.index() - other)
 
     def __rsub__(self, other):
-        return self.clamp(other - self.auras.index(self.s))
+        return self.clamp(other - self.index())
 
+    # Comparators work with other Aura types and other strings
     def __lt__(self, other):
+<<<<<<< HEAD
         aura_str = other
         if (type(other) != str):
             aura_str = other.s
@@ -69,7 +75,44 @@ class Aura(object):
             aura_str = other.s
 
         return self.auras.index(self.s) > self.auras.index(aura_str)
+=======
+        # if isinstance(other, str):
+        #     return self.index() < self.auras.index(other)
+        # elif isinstance(other, int):
+        #     return self.index() < other
+        # else:
+        #     # if other.__class__ == ''.__class__:
+        #     return self.index() < other.index
+        return self.index() < self.get_index_from_unknown_type(other)
+
+    def __le__(self, other):
+        # return self.auras.index(self.s) <= self.auras.index(other.s)
+        return self.index() <= self.get_index_from_unknown_type(other)
+
+    def __eq__(self, other):
+        return self.index() == self.get_index_from_unknown_type(other)
+
+    def __ne__(self, other):
+        return self.index() != self.get_index_from_unknown_type(other)
+
+    def __ge__(self, other):
+        return self.index() >= self.get_index_from_unknown_type(other)
+
+    def __gt__(self, other):
+        return self.index() > self.get_index_from_unknown_type(other)
+>>>>>>> master
 
     def clamp(self, i):
         return max(0, min(i,len(self.auras)))
+
+    def index(self):
+        return self.auras.index(self.s)
+
+    def get_index_from_unknown_type(self, unk):
+        if isinstance(unk, str):
+            return self.auras.index(unk)
+        elif isinstance(unk, int):
+            return unk
+        else:
+            return unk.index()
 

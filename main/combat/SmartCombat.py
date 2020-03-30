@@ -27,6 +27,7 @@ class SmartCombat(CombatObject):
         self.cast = Cast(telnetHandler)
         self.use = Use(character, telnetHandler)
         self.wield = Wield(character, telnetHandler)
+        # self.wear = Wear(character, telnetHandler)
         self.abilities = character._class.abilities.values()
 
         # self.heal_abilities = [a for a in self.abilities if isinstance(a, HealAbility)]
@@ -54,7 +55,7 @@ class SmartCombat(CombatObject):
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
         self.character = character
         self.regex_cart.extend([
-            RegexStore.prompt, RegexStore.weapon_break, RegexStore.weapon_shatters, RegexStore.mob_attacked, RegexStore.armor_breaks,
+            RegexStore.prompt, RegexStore.weapon_break, RegexStore.weapon_shatters, RegexStore.mob_attacked, RegexStore.armour_breaks,
             RegexStore.mob_arrived, RegexStore.mob_wandered, RegexStore.mob_left
         ])
         self.mob_target_determinator = MobTargetDeterminator()
@@ -88,8 +89,8 @@ class SmartCombat(CombatObject):
         elif regex in RegexStore.weapon_break or regex in RegexStore.weapon_shatters:
             magentaprint("SmartCombat weapon break: " + str(M_obj.group('weapon')))
             self.broken_weapon = M_obj.group('weapon')
-        elif regex in RegexStore.armor_breaks:
-            magentaprint("SmartCombat armor break: " + str(M_obj.group(1)) + ', len ' + str(len(M_obj.group(1).split(' '))))
+        elif regex in RegexStore.armour_breaks:
+            magentaprint("SmartCombat armour break: " + str(M_obj.group(1)) + ', len ' + str(len(M_obj.group(1).split(' '))))
             if len(M_obj.group(1).split(' ')) >= 2:
                 if M_obj.group(1).split(' ')[1] == 'ring':
                     self.broke_ring = True
@@ -504,4 +505,13 @@ class SmartCombat(CombatObject):
     def check_rings(self):
         # magentaprint("SmartCombat check_rings()")
         if self.broke_ring:
-            self.telnetHandler.write('wear all')
+            # self.telnetHandler.write('wear all')
+            ring_ref = self.character.inventory.first_usable_ring_ref()
+            if ring_ref:
+                self.telnetHandler.write('wear ' + self.character.inventory.first_usable_ring_ref())
+                # This may not be reliable since it assumes we already know if a ring is broken.
+                # No biggie really.  One alternative is to have two 'stopping' variables, since we want to wear rings
+                # after the mob dies but maybe not after the player calls stop.
+                # However, this solution might work most of the time.
+
+

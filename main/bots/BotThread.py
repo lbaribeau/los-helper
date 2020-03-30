@@ -1,7 +1,7 @@
 
 import threading
 from threading import Thread
-import atexit 
+import atexit
 import time
 import re
 import traceback

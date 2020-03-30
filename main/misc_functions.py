@@ -27,14 +27,14 @@ def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=Fals
 def do_magentaprint(text):
     newConsoleHandler().magenta()
     # output = str(get_timestamp() + "| <" + str(text) + ">")
-    output = str(get_timestamp() + "   | " + str(text))  
+    output = str(get_timestamp() + "   | " + str(text))
 
     print(output)
     newConsoleHandler().white()
 
 def greenprint(text):
     newConsoleHandler().magenta()
-    output = str(get_timestamp() + "   | " + str(text))  
+    output = str(get_timestamp() + "   | " + str(text))
     print(output)
     newConsoleHandler().white()
 

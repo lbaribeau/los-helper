@@ -453,6 +453,10 @@ class MudReaderHandler(object):
 
         # magentaprint("MudReaderHandler mud_events: " + str(self.mudReaderThread.mud_events))
 
+    def print_reactions(self):
+        for r,e in self.mudReaderThread.mud_events.items():
+            magentaprint(r + "\n-- " + str(e.subscribers)) # magentaprint(str(self.mudReaderHandler.mudReaderThread.mud_events[r_list[0]].subscribers))
+
 # TODO
 #    def check_for_text(possibility1, possibility2
 

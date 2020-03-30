@@ -32,8 +32,8 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         # 'war hammer',
         'hard cap', 'hard gloves', 'hard boots', 'padded hat', 'mountain gloves', 'mountain boots',
         'mountain boots with crampons', 'travellers cross', 'leather mask', 'leather collar', 'studded leather collar',
-        'studded leather sleeves', 'studded leather boots', 'studded leather pants', 'studded leather gloves',
-        'studded leather leggings' 'plate mail leggings', 'plate mail armor',
+        # 'studded leather sleeves', 'studded leather boots', 'studded leather pants', 'studded leather gloves','studded leather leggings' 
+        'plate mail leggings', 'plate mail armor',
         'ring mail armour', 'ring mail sleeves', 'ring mail leggings', 'ring mail hood',
         # 'ring mail gauntlets',
         # 'chain mail armour',  # sawmill
@@ -48,7 +48,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         self.regex_cart = [
             R.you_have, R.wont_buy, R.wont_buy2, R.sold, R.you_drop, R.disintegrates, R.gold_from_tip, R.not_a_pawn_shop,
             R.you_now_have, R.not_empty, R.you_wear, R.nothing_to_wear, R.you_get, R.you_remove, R.nothing_to_remove, R.you_wield,
-            R.you_give, R.bought, R.you_put_in_bag, R.gave_you, R.you_hold, R.weapon_break, R.weapon_shatters, R.armor_breaks,
+            R.you_give, R.bought, R.you_put_in_bag, R.gave_you, R.you_hold, R.weapon_break, R.weapon_shatters, R.armour_breaks,
             R.current_equipment, R.no_inventory, R.wearing
         ]
         self.telnetHandler = telnetHandler
@@ -57,6 +57,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         self.__stopping = False
         self.is_bulk_vendoring = False
         self.equipped_items = {}
+        self.already_removed_dropped_item = False
         # equipped_items = {'body': [], 'arms':[], 'legs':[],'neck':[],'hands':[],'head':[],'feet':[],'face':[],'finger':[],'Shield':[],'Wielded':[],'Second':[]}
 
         for index, item in enumerate(self.keep_list):
@@ -98,11 +99,14 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             # Maybe we just want to reset everthing after dropping... or the bot needs to manage things,
             # or inventory needs full control of many commands (drop, sell...) ... hmph ... preferring to
             # ask the server
-            self.remove_many(M_obj.group(1))
+            if self.already_removed_dropped_item:
+                self.already_removed_dropped_item = False
+            else:
+                self.remove_many(M_obj.group(1))
         elif regex in R.you_wear + R.you_hold:
             self.remove_many(M_obj.group(1))
             self.get_equipment()
-            #we know this is armor of some kind so we need to find a way to assign it to the right spot
+            #we know this is armour of some kind so we need to find a way to assign it to the right spot
         elif regex in R.you_remove + R.gave_you:
             self.add(M_obj.group(1))
         elif regex in R.bought:
@@ -110,8 +114,8 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             # if not self.is_bulk_vendoring:
             #     self.get_inventory()  # There are some notes about this at the bottom
             #     # I don't like this very much! I can't use ! to buy a lot of a thing.
-        elif regex in R.weapon_break + R.armor_breaks:
-            magentaprint('Inventory weapon / armor break')
+        elif regex in R.weapon_break + R.armour_breaks:
+            magentaprint('Inventory weapon / armour break')
             item = M_obj.group(1)
             self.add_broken(M_obj.group(1))
             # self.get_equipment()
@@ -285,6 +289,14 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         item_ref = self.get_last_reference(item_string)
         self.telnetHandler.write("drop " + item_string  + " " + str(position))
         self.wait_for_flag()
+
+    def bulk_drop(self, unique_word, qty):
+        # item_ref = self.get_first_reference(unique_word)
+        for i in range(qty):
+            self.already_removed_dropped_item = True
+            self.telnetHandler.write("drop " + unique_word)
+            self.wait_for_flag()
+            self.remove_by_ref(unique_word)
 
     def stop(self):
         self.__stopping = True
@@ -802,6 +814,18 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         mud_item = MudItem(item_string)
         mud_item.map()
         return self.list.count(mud_item)
+
+    def first_usable_ring_ref(self):
+        count = 0
+        for item in self.list:
+            if 'ring' in str(item).split():
+                count = count + 1
+            if len(str(item).split()) == 2 and str(item).split()[1] == 'ring':
+                if not item.is_unusable:
+                    if count > 1:
+                        return 'ring ' + str(count)
+                    else:
+                        return 'ring'
 
 # Ok I want to set up reactions to keep myself up to date.
 # I am thinking of steel bottles and restoratives, so I want

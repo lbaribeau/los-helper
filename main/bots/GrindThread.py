@@ -7,6 +7,7 @@ from math import floor, ceil
 from bots.BotThread import BotThread
 from misc_functions import magentaprint
 from reactions.BotReactions import GenericBotReaction
+from reactions.ring_reaction import RingWearingReaction
 from Exceptions import *
 from comm import Spells
 from db.MudItem import MudItem
@@ -162,8 +163,10 @@ class GrindThread(BotThread):
     def set_up_automatic_ring_wearing(self):
         """ Makes some BotReactions so that when MudReaderHandler sees us
         pick up a ring, we'll wear it."""
-        ringReaction = GenericBotReaction("(?s)You get .+? an? .+? ring((,.+?\.)|(\.))", self.commandHandler, "wear all")
-        self.mudReaderHandler.register_reaction(ringReaction)
+        # r = GenericBotReaction("(?s)You get .+? an? .+? ring((,.+?\.)|(\.))", self.commandHandler, "wear all")  # Regex problem
+        # self.mudReaderHandler.register_reaction(r)
+        ring_reaction = RingWearingReaction(self.character.inventory, self.commandHandler)
+        self.mudReaderHandler.register_reaction(ring_reaction)
         #Todo: fix for case where there's ring mail in the inventory or multiple rings are dropped
 
     def rest_and_check_aura(self):
@@ -321,10 +324,10 @@ class GrindThread(BotThread):
 
         # TODO: keep resting if benefitting from resting until maxed.
 
-        if self.neither_is_maxed or self.one_is_too_low and not self.stopping:
+        if (self.neither_is_maxed or self.one_is_too_low) and not self.stopping:
             self.commandHandler.process("rest")
 
-        while self.neither_is_maxed or self.one_is_too_low and not self.stopping:
+        while (self.neither_is_maxed or self.one_is_too_low) and not self.stopping:
             if self.engage_any_attacking_mobs():
                 self.commandHandler.process("rest")
             self.sleep(0.1)
@@ -360,6 +363,7 @@ class GrindThread(BotThread):
         # magentaprint(self.has_ideal_health(), False)
 
         while not self.has_ideal_health() and not self.stopping:
+            magentaprint("GrindThread.rest_for_health() stopping is: " + str(self.stopping))
             if self.engage_any_attacking_mobs():
                 self.commandHandler.process("rest")
             elif self.do_heal_skills():
@@ -375,6 +379,7 @@ class GrindThread(BotThread):
         # if self.stopping or self.character.ACTIVELY_MAPPING or not Spells.showaura in self.character.spells:
         # if self.stopping or self.character.ACTIVELY_MAPPING or not any(s.startswith(Spells.showaura) for s in self.character.spells):
         if self.stopping or self.character.ACTIVELY_MAPPING or Spells.showaura not in self.character.spells:
+            magentaprint("GrindThread.update_aura() returning false")
             return False
 
         self.cast.update_aura(self.character)
@@ -446,6 +451,8 @@ class GrindThread(BotThread):
         self.cast.stop()
 
     def buff_up(self):
+        if self.stopping:
+            return
         self.do_buff_skills()
         if BotThread.can_use_timed_ability(self.character.LAST_BUFF, 180):
             self.use_buff_items()
@@ -658,6 +665,8 @@ class GrindThread(BotThread):
         return ''
 
     def do_buff_skills(self):
+        if self.stopping:
+            return
         # buff_skills hasn't been maintained - there are new ways to do this
         magentaprint("GrindThread.do_buff_skills() skill array length: " + str(len(self.character._class.buff_skills)))
         for skill in self.character._class.buff_skills:

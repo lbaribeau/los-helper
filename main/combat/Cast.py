@@ -12,7 +12,7 @@ class Cast(SimpleCombatObject):
     command = 'c v'  # This gets rewritten to append the spellname alot
     cooldown_after_success = 4  # Gets rewritten by characterClass...
     cooldown_after_failure = 0
-    regexes = []  
+    regexes = []
 
     success_regexes = [RegexStore.cast, RegexStore.aura, RegexStore.mob_aura]
     failure_regexes = [RegexStore.cast_failure, RegexStore.no_mana]
@@ -20,7 +20,7 @@ class Cast(SimpleCombatObject):
 
     aura = None
     aura_timer = 0
-    aura_refresh = 480
+    aura_refresh = 300
 
     vig_amount = 2
     mend_amount = 5
@@ -54,8 +54,8 @@ class Cast(SimpleCombatObject):
         elif regex in RegexStore.no_mana:
             self.stop()
         super().notify(regex, M_obj)
-        
-        # TODO: Having a red aura in the chapel will kill the bot.  
+
+        # TODO: Having a red aura in the chapel will kill the bot.
         #M_obj = re.search("The goodness here sickens and repels you!", text_buffer)
         #if(M_obj):
         #    text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
@@ -107,9 +107,12 @@ class Cast(SimpleCombatObject):
         self.persistent_execute(target)
 
     def update_aura(self, character):
+        magentaprint("Cast.update_aura()")
         if Spells.showaura not in character.spells:
+            magentaprint("Cast giving up on aura update.")
             return
 
+        # if time() > (self.aura_timer + self.aura_refresh):
         if time() > self.aura_timer + self.aura_refresh:
             self.spam_spell(character, Spells.showaura)
             # self.cast('show')
@@ -125,6 +128,7 @@ class Cast(SimpleCombatObject):
         # Spam until success
         # if spell not in character.spells:
         if not any(spell.startswith(s) for s in character.spells):
+            magentaprint("Cast.spam_spell aborted - %s not in %s." % (str(spell), str(character.spells)))
             return
 
         spell_cost = self.vig_amount if spell.startswith(Spells.vigor) else \
@@ -136,6 +140,7 @@ class Cast(SimpleCombatObject):
         self.result = RegexStore.cast_failure[0]
 
         while self.failure and character.MANA >= spell_cost and not self.stopping:
+            # magentaprint("Cast object spamming! Woo!")
             self.wait_until_ready()
             self.cast(spell, target)
             self.wait_for_flag()

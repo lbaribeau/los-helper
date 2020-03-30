@@ -103,6 +103,21 @@ class MudMap(object):
 
         return paths
 
+    def get_smithy_paths(self, start_area_id):
+        paths = []
+
+        areas = Area.get_smithy_areas()
+
+        for area in areas:
+            try:
+                paths.append(self.get_path(start_area_id, area.id))
+            except Exception as e:
+                continue
+                # print ("couldn't path to area")
+                # magentaprint("couldn't path to area")
+
+        return paths
+
     #static functions
     def find(text):
         areas = Area.get_areas_by_partial_name(text)
@@ -137,6 +152,16 @@ class MudMap(object):
             if node_dict[n]['name'] == exit_name:
                 return n
         return -1
+
+    def lookup_armour_type(self, armour_name):
+        # Body, arms, etc
+        # item = Item(armour_name)
+        # item.map()
+        return Item.lookup_armour_type(armour_name)
+
+
+
+
 
 
 
