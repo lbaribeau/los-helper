@@ -34,48 +34,6 @@ class Aura(object):
 
     # Comparators work with other Aura types and other strings
     def __lt__(self, other):
-<<<<<<< HEAD
-        aura_str = other
-        if (type(other) != str):
-            aura_str = other.s
-
-        return self.auras.index(self.s) < self.auras.index(aura_str)
-
-    def __le__(self, other):
-        aura_str = other
-        if (type(other) != str):
-            aura_str = other.s
-
-        return self.auras.index(self.s) <= self.auras.index(aura_str)
-
-    def __eq__(self, other):
-        aura_str = other
-        if (type(other) != str):
-            aura_str = other.s
-
-        return self.auras.index(self.s) == self.auras.index(aura_str)
-
-    def __ne__(self, other):
-        aura_str = other
-        if (type(other) != str):
-            aura_str = other.s
-
-        return self.auras.index(self.s) != self.auras.index(aura_str)
-
-    def __ge__(self, other):
-        aura_str = other
-        if (type(other) != str):
-            aura_str = other.s
-
-        return self.auras.index(self.s) >= self.auras.index(aura_str)
-
-    def __gt__(self, other):
-        aura_str = other
-        if (type(other) != str):
-            aura_str = other.s
-
-        return self.auras.index(self.s) > self.auras.index(aura_str)
-=======
         # if isinstance(other, str):
         #     return self.index() < self.auras.index(other)
         # elif isinstance(other, int):
@@ -100,7 +58,6 @@ class Aura(object):
 
     def __gt__(self, other):
         return self.index() > self.get_index_from_unknown_type(other)
->>>>>>> master
 
     def clamp(self, i):
         return max(0, min(i,len(self.auras)))
