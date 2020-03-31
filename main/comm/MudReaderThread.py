@@ -12,7 +12,7 @@ from misc_functions import *
 class MudReaderThread(threading.Thread):
     """This thread watches the the MUD output and appends it 
     to the buffer for the MudReaderThread to read it."""
-    
+
     def __init__(self, MUDBuffer, character, consoleHander):
         Thread.__init__(self)       
         # Constants
@@ -128,7 +128,8 @@ class MudReaderThread(threading.Thread):
                     # Print all the stuff in buffer from before the esc
                     # Must be printed here so that the color change occurse 
                     # at the right point.
-                    sys.stdout.write(text_out)
+                    if get_verbose_mode():
+                        sys.stdout.write(text_out)
                     text_buffer = text_buffer + text_out
                     text_out = ""
                     self.set_colour(escape_sequence);  # Call subroutine to do this.
@@ -138,8 +139,9 @@ class MudReaderThread(threading.Thread):
                 else:  #not currently escaping:             
                     text_out = text_out + c
             # Check for some colors.
-                    
-            sys.stdout.write(text_out)
+            
+            if get_verbose_mode():
+                sys.stdout.write(text_out)
 
             # Not using print because it inserts extra spaces.
             

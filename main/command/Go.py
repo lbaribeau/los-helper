@@ -57,7 +57,7 @@ class Go(Command):
         #     self.cartography.wait_for_flag()
 
         self.character.TRYING_TO_MOVE = True
-        magentaprint("Go.execute() 2")
+        magentaprint("Go.execute() " + target)
         super().execute(target)
 
     def persistent_execute(self, target):

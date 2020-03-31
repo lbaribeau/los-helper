@@ -5,10 +5,13 @@ import sys
 from db.Database import *
 
 debugMode = False
-verboseMode = False
+verboseMode = True
 startTime = datetime.now()
 VERSION = "2"
 #databaseFile = "maplos.db"
+
+def get_verbose_mode():
+    return verboseMode
 
 def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=False):
     global debugMode

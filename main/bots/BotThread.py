@@ -126,7 +126,7 @@ class BotThread(threading.Thread):
         self.commandHandler.go.wait_until_ready()
         self.kill.wait_until_ready()
         self.cast.wait_until_ready()
-        magentaprint("Going " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)), False)
+        # magentaprint("Going " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)), False)
 
         self.character.GO_BLOCKING_MOB = ""
         self.character.GO_PLEASE_WAIT = False
@@ -145,11 +145,11 @@ class BotThread(threading.Thread):
                 # self.commandHandler.process('door')
             # self.commandHandler.process("go " + exit_str)
             # self.commandHandler.go.execute(exit_str)
-            self.commandHandler.go.persistent_execute(exit_str)
+            self.commandHandler.user_move(exit_str)
             # self.commandHandler.go.wait_for_flag()
             # return self.commandHandler.go.result is 'success'
             return self.commandHandler.go.success
-            return self.check_for_successful_go()
+            # return self.check_for_successful_go()
             # if re.match("(.*?door)", exit_str):
             #     self.commandHandler.process("open " + exit_str)
             # return self.go.persistent_execute(exit_str)

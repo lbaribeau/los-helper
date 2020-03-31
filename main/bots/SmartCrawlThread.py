@@ -39,6 +39,9 @@ class SmartCrawlThread(CrawlThread):
         return directions
 
     def do_on_blocking_mob(self):
+        #mark destination as blocked
+        #try next area - if that doesn't work then eat bugs
+        #engage monster + die and go to ame
         self.engage_monster(self.character.GO_BLOCKING_MOB)
         self.character.GO_BLOCKING_MOB = ""
         self.engage_mobs_who_joined_in()

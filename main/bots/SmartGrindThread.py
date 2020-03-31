@@ -197,7 +197,7 @@ class SmartGrindThread(TrackGrindThread):
             self.low_level, self.high_level, self.min_target_aura, self.max_target_aura)
         )
         target_list = MudMob.get_mobs_by_level_and_aura_ranges(
-            self.low_level, self.high_level, self.min_target_aura.index(), self.max_target_aura.index()
+            self.low_level, self.high_level, self.min_target_aura.index() - 1, self.max_target_aura.index() - 1
         )
 
         # if not target_list:

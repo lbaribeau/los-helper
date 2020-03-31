@@ -29,8 +29,8 @@ class CrawlThread(BotThread):
         curArea = Area.get_area_by_id(self.character.AREA_ID)
         curAreaExits = AreaExit.get_area_exits_from_area(curArea)
         
-        magentaprint(curArea, False)        
-        magentaprint(curAreaExits, False)
+        # magentaprint(curArea, False)        
+        # magentaprint(curAreaExits, False)
 
         chosen_exit = self.pick_exit(curAreaExits)
         directions = chosen_exit
@@ -41,31 +41,31 @@ class CrawlThread(BotThread):
         exit = None
         exits = []
 
-        try:
-            exit = self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
-        except Exception:
-            #If for some reason we don't know how to find the nearest unexplored path let's just pick a random exit and try again
-            exit = [random.choice(exits)]
+        # try:
+        #     exit = self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
+        # except Exception:
+        #     #If for some reason we don't know how to find the nearest unexplored path let's just pick a random exit and try again
+        #     exit = [random.choice(exits)]
 
         # #find a null exit
-        # for area_exit in area_exit_list:
-        #     if (area_exit.area_to is None and area_exit.is_useable):
-        #         exit = [area_exit.exit_type.name]
-        #         break
-        #     exits.append(area_exit.exit_type.name)
+        for area_exit in area_exit_list:
+            if (area_exit.area_to is None and area_exit.is_useable):
+                exit = [area_exit.exit_type.name]
+                break
+            exits.append(area_exit.exit_type.name)
 
-        # if exit is None:
-        #     #if we didn't find a null exit we end up here and the magic starts
-        #     #self.mud_map = MudMap() #if we actively update the map in Cartography then we wouldn't have to re-create it here
+        if exit is None:
+            #if we didn't find a null exit we end up here and the magic starts
+            #self.mud_map = MudMap() #if we actively update the map in Cartography then we wouldn't have to re-create it here
 
-        #     while (not self.mud_map.ready):
-        #         time.sleep(1)
+            # while (not self.mud_map.ready):
+            #     time.sleep(1)
 
-        #     try:
-        #         exit = self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
-        #     except Exception:
-        #         #If for some reason we don't know how to find the nearest unexplored path let's just pick a random exit and try again
-        #         exit = [random.choice(exits)]
+            try:
+                exit = self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
+            except Exception:
+                #If for some reason we don't know how to find the nearest unexplored path let's just pick a random exit and try again
+                exit = [random.choice(exits)]
 
 
         return exit
