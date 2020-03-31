@@ -276,7 +276,8 @@ attack_hit = [
 
     "Your missile slams into (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
     "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
-    "You use your .+? to strike (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\."
+    "You use your .+? to strike (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\.",
+    "Your touch completely overwhelms the (.+?)!"
 ]
 attack_miss = [
     "You hack with your .+?, but your blow swings wide of the mark\.",

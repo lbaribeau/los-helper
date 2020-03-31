@@ -29,8 +29,8 @@ from command.Drop import Drop
 from command.Get import Get
 from comm.Spells import *
 from comm.thread_maker import ThreadMaker
-from command.repair import Repair
-from command.wear import Wear
+# from command.repair import Repair
+# from command.wear import Wear
 from mini_bots.armour_bot import ArmourBot
 
 class CommandHandler(object):
@@ -67,10 +67,10 @@ class CommandHandler(object):
         self.get = Get(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.get)
         self.use = self.smartCombat.use
-        self.repair = Repair(telnetHandler)
-        mudReaderHandler.add_subscriber(self.repair)
-        self.wear = Wear(telnetHandler)
-        mudReaderHandler.add_subscriber(self.wear)
+        # self.repair = Repair(telnetHandler)
+        # mudReaderHandler.add_subscriber(self.repair)
+        # self.wear = Wear(telnetHandler)
+        # mudReaderHandler.add_subscriber(self.wear)
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0

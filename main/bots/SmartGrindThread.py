@@ -197,7 +197,7 @@ class SmartGrindThread(TrackGrindThread):
             self.low_level, self.high_level, self.min_target_aura, self.max_target_aura)
         )
         target_list = MudMob.get_mobs_by_level_and_aura_ranges(
-            self.low_level, self.high_level, self.min_target_aura, self.max_target_aura
+            self.low_level, self.high_level, self.min_target_aura.index(), self.max_target_aura.index()
         )
 
         # if not target_list:
@@ -228,26 +228,24 @@ class SmartGrindThread(TrackGrindThread):
         # self.low_level = int(math.ceil(self.character.level / 2)) - 2
         magentaprint("Current Aura Scale: " + str(Aura.auras), False)
         magentaprint("Preferred Aura Scale: " + str(self.character.preferred_aura), False)
-        magentaprint("meow " + str(Aura.s), False)
-        # aura_index = Aura.auras[self.character.preferred_aura]
 
         if self.character.level < 4:
-            self.min_target_aura = 0
-            self.max_target_aura = len(Aura.auras)
+            self.min_target_aura = Aura('demonic red')
+            self.max_target_aura = Aura('heavenly blue')
         # elif self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:
         elif self.cast.aura < self.character.preferred_aura:
             # Too evil
             # self.low_level = 2
-            self.min_target_aura = 0
-            self.max_target_aura = math.floor(len(Aura.auras) / 2)
+            self.min_target_aura = Aura('demonic red')
+            self.max_target_aura = Aura(self.character.preferred_aura)
         elif self.cast.aura > self.character.preferred_aura:
             # Too good
             # self.low_level = 2
-            self.min_target_aura = math.ceil(len(Aura.auras) / 2)
-            self.max_target_aura = len(Aura.auras) - 1
+            self.min_target_aura = Aura(self.character.preferred_aura)
+            self.max_target_aura = Aura('heavenly blue')
         else:
-            self.min_target_aura = math.floor(len(Aura.auras) / 2)
-            self.max_target_aura = math.ceil(len(Aura.auras) / 2)
+            self.min_target_aura = Aura('demonic red')
+            self.max_target_aura = Aura('heavenly blue')
 
         self.get_targets()
 
