@@ -389,6 +389,8 @@ class GrindThread(BotThread):
         else:
             return True
 
+        self.character.AURA_STATUS = self.cast.aura
+
         # if self.character.level < 3 or not \
         #         BotThread.can_use_timed_ability(self.character.AURA_LAST_UPDATE, 480):
         # if not Spells.showaura in self.character.spells:

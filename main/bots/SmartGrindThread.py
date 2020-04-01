@@ -28,6 +28,9 @@ class SmartGrindThread(TrackGrindThread):
         self.min_target_aura = Aura('demonic red')
         self.max_target_aura = Aura('heavenly blue')
 
+    def aura_updated_hook(self):
+        self.get_targets()
+
     def do_pre_go_actions(self):
         super().do_pre_go_actions()
         # self.go_rest_if_not_ready()

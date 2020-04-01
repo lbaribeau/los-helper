@@ -46,7 +46,7 @@ class ExitType(NamedModel):
 
         try:
             #magentaprint("matching exit to: " + str(name))
-            exit_types = ExitType.select().join(ExitSynonym, JOIN_LEFT_OUTER).where((ExitType.name == name) | (ExitSynonym.name == name) ).get()
+            exit_types = ExitType.select().join(ExitSynonym, JOIN.LEFT_OUTER).where((ExitType.name == name) | (ExitSynonym.name == name) ).get()
             #magentaprint("matched exit to: " + exit_types.to_string())
         except ExitType.DoesNotExist:
             #magentaprint("Could not find exit Type with name: " + name, False)
