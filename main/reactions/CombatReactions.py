@@ -57,8 +57,14 @@ class CombatReactions(object):
         # magentaprint("Combat Reaction happened on: " + regex)
         if regex in RegexStore.attack_hit:
             self.hits_dealt += 1
-            self.highest_damage = max(self.highest_damage, int(M_obj.group('d')))
-            self.lowest_damage = min(self.lowest_damage, int(M_obj.group('d')))
+            dmg = 0
+            try:
+                dmg = int(M_obj.group('d'))
+            except Exception as e:
+                magentaprint("Couldn't convert attack regex to dmg / int")
+
+            self.highest_damage = max(self.highest_damage, dmg)
+            self.lowest_damage = min(self.lowest_damage, dmg)
         elif regex in RegexStore.mob_defeated:
                 # number = M_obj.group(1)
                 self.mobs_killed.append(self.character.mobs.read_match(M_obj))
@@ -101,14 +107,15 @@ class CombatReactions(object):
         spells_hit = self.spells_cast - self.spells_failed
 
         try:
-            average_phys_damage = round(self.total_damage_dealt / self.hits_dealt, 1)
-            phys_hit_rate = round(self.hits_dealt / self.total_phys_attacks * 100, 1)
-            # phys_crit_rate = round(self.crits_landed / total_phys_attacks * 100, 1)
+            average_phys_damage = (round(self.damage_dealt / self.hits_dealt, 1) if self.hits_dealt > 0 else 0)
+            phys_hit_rate = (round((self.hits_dealt / total_phys_attacks) * 100, 1) if total_phys_attacks > 0 else 0)
+            phys_crit_rate = 0#round(self.crits_landed / total_phys_attacks * 100, 1)
             
-            average_spell_damage = round(self.spell_damage_dealt / self.spells_hit)
-            spell_hit_rate = round(self.spells_hit / self.spells_cast * 100, 1)
+            average_spell_damage = (round(self.spell_damage_dealt / spells_hit) if spells_hit > 0 else 0)
+            spell_hit_rate = (round((self.spells_hit / self.spells_cast) * 100, 1) if self.spells_cast > 0 else 0)
             spell_crit_rate = 0
-        except Exception:
+        except Exception as e:
+            magentaprint(e, False)
             average_phys_damage = -1
             average_spell_damage = -1
             phys_hit_rate = -1
@@ -116,6 +123,7 @@ class CombatReactions(object):
             phys_crit_rate = -1
             spell_crit_rate = -1
 
+        magentaprint(str(self.hits_dealt) + ",  " + str(total_phys_attacks) + ",  " + str(spells_hit) + ",  " + str(self.spells_cast))
         magentaprint("Average Phys Damage: " + str(average_phys_damage) + " | Average Spell Damage: " + str(average_spell_damage), False)
         magentaprint("Phys Hit Rate: " + str(phys_hit_rate) + "% | Spell Hit Rate: " + str(spell_hit_rate) + "%", False)
         magentaprint("Phys Crit Rate: " + str(phys_crit_rate) + " | Spell Crit Rate: " + str(spell_crit_rate) + "%", False)
