@@ -268,7 +268,7 @@ class CommandHandler(object):
         elif re.match("domix .+?", user_input):
             #domix 'tree root' berry 50 - first param must be exact match
             self.start_mix(user_input)
-        elif re.match("slave", user_input):
+        elif re.match("slave (.+?)", user_input):
             self.start_slave(user_input)
         elif re.match("bbuy (.+?)", user_input):
             self.bbuy(user_input)
@@ -442,6 +442,10 @@ class CommandHandler(object):
         #     self.KillThread = KillThread(self.character, self.mudReaderHandler, self.telnetHandler, argv)
         #     self.KillThread.start()
     
+    def user_ca(self, emote):
+        self.telnetHandler.write('pray')
+        self.telnetHandler.write('rest')
+
     def user_sk(self):
         self.kill.stop()
         self.smartCombat.stop()
@@ -655,8 +659,11 @@ class CommandHandler(object):
             self.botThread.start()
 
     def start_slave(self, user_input):
+        M_obj = re.search("slave (.+)", user_input)
+        master = M_obj.group(1)
+
         if self.bot_check():
-            self.botThread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, "")
+            self.botThread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, master)
             self.botThread.start()
 
     def start_mix(self, user_input):

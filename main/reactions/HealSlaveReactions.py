@@ -3,10 +3,12 @@ from reactions.BotReactions import BotReaction
 from misc_functions import *
 
 class HealSlaveReactions(BotReaction):
-    def __init__(self, mudReaderHandler, commandHandler):
+    def __init__(self, mudReaderHandler, commandHandler, master):
         #[Group] Twerp took 4 combat damage
-        self.group_damage = "\[Group\] (.+?) took [\d]* combat damage"
+        self.group_damage = "\[Group\] {0} took ([\d]*) combat damage".format(master)
         self.regexes = [self.group_damage]
+        self.master = master
+        self.dmg = 0
 
         self.mudReaderHandler = mudReaderHandler
         self.commandHandler = commandHandler
@@ -17,6 +19,10 @@ class HealSlaveReactions(BotReaction):
 
     def notify(self, regex, M_obj):
         if regex == self.group_damage:
-            target_name = str(M_obj.group(1))
-            magentaprint("Notified <" + target_name + ">", False)
-            self.commandHandler.process('c vig ' + target_name)
+            self.dmg += int(M_obj.group(1))
+
+            magentaprint("{0} {1}".format(self.dmg, self.master), False)
+            if (self.dmg >= 6):
+                self.dmg = 0
+                magentaprint("Notified <" + self.master + ">", False)
+                self.commandHandler.process('c vig ' + self.master)

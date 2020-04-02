@@ -5,13 +5,15 @@ from bots.BotThread import *
 from db.Database import *
 from db.MudMap import *
 from reactions.HealSlaveReactions import HealSlaveReactions
+from reactions.KillSlaveReactions import KillSlaveReactions
 
 class SlaveThread(BotThread):
     def __init__(self, character=None, command_handler=None, mud_reader_handler=None,
-                mud_map=None, master_name=""):
+                mud_map=None, master_name="Alfredo"):
         super().__init__(character, command_handler, mud_reader_handler, mud_map)
 
-        self.heal_slave_reactions = HealSlaveReactions(mud_reader_handler, command_handler)
+        self.heal_slave_reactions = HealSlaveReactions(mud_reader_handler, command_handler, master_name)
+        # self.kill_slave_reactions = KillSlaveReactions(mud_reader_handler, command_handler, master_name)
 
     def stop(self):
         super().stop()
