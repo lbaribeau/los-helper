@@ -284,11 +284,16 @@ class CommandHandler(object):
             magentaprint(self.character.weapon2, False)
         elif re.match("MONSTER_CHECK_FLAG", user_input):
             magentaprint(str(self.character.MONSTER_CHECK_FLAG), False)
+        elif re.match("mkl", user_input): #Monster List
+            magentaprint(self.character.MONSTER_KILL_LIST, False)
         elif re.match("ml", user_input): #Monster List
-            magentaprint(str(self.character.MONSTER_LIST), False)
-            if self.KillThread != None:
-                magentaprint("Cur KT Target: " + str(self.KillThread.target), False)
-            magentaprint("Mobs Attacking " + str(self.character.MOBS_ATTACKING), False)
+            try:
+                magentaprint(str(self.character.MONSTER_LIST), False)
+                if self.KillThread != None:
+                    magentaprint("Cur KT Target: " + str(self.KillThread.target), False)
+                magentaprint("Mobs Attacking " + str(self.character.MOBS_ATTACKING), False)
+            except Exception as e:
+                magentaprint(e, False)
         elif re.match("aid", user_input): #Area ID
             magentaprint("CommandHandler character.AREA_ID: " + str(self.character.AREA_ID), False)
             magentaprint("CommandHandler character.MUD_AREA: " + str(self.character.MUD_AREA), False)
@@ -713,15 +718,20 @@ class CommandHandler(object):
     def find(self, user_input):
         M_obj = re.search("find (.+)", user_input)
         magentaprint("Finding: " + str(M_obj.group(1)))
-        [areas, mob_locations] = MudMap.find(str(M_obj.group(1)))
+        [areas, mob_locations, mobs] = MudMap.find(str(M_obj.group(1)))
 
         magentaprint("Areas found:", False)
         for area in areas:
             magentaprint("<" + str(area.id) + "> - " + area.name, False)
 
-        magentaprint("Mobs found:", False)
+        magentaprint("Mobs locations found:", False)
         for mob_location in mob_locations:
             magentaprint("<" + str(mob_location.area.id) + "> - " + mob_location.mob.name, False)
+
+        magentaprint("Mobs found:", False)
+        for mobs in mobs:
+            magentaprint("{0}, lvl {1}/{2}, {3}".format(mob.name, str(mob.level), str(mob.approximate_level), str(Aura.auras[mob.aura])), False)
+
 
     def quit(self):
         # Undesireable waiting for command response (hangs user input for a bit)

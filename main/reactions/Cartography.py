@@ -102,7 +102,7 @@ class Cartography(BotReactionWithFlag):
                     #clear the attacking list
                     self.character.MOBS_ATTACKING = []
 
-                    # self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
+                    self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
                 else:
                     self.character.CONFUSED = True
 

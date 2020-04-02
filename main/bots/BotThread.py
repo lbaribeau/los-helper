@@ -66,7 +66,7 @@ class BotThread(threading.Thread):
     def run(self):
         try:
             self.stopping = False
-            self.character.ACTIVELY_BOTTING = False
+            self.character.ACTIVELY_BOTTING = True
             self.do_run_startup()
 
             # Here is where the fun begins.

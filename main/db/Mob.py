@@ -49,6 +49,13 @@ class Mob(NamedModel):
 
         return mob
 
+    def get_mobs_by_partial_name(name):
+        try:
+            mobs = Mob.select().where(Mob.name % name).order_by(Mob.id.desc())
+        except Mob.DoesNotExist:
+            mobs = []
+
+        return mobs
 
     def get_mobs_by_level_and_aura_ranges(low_level, high_level, low_aura, high_aura):
 

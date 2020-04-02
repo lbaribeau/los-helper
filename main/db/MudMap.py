@@ -122,8 +122,9 @@ class MudMap(object):
     def find(text):
         areas = Area.get_areas_by_partial_name(text)
         mob_locations = MobLocation.get_locations_by_partial_mob_name(text)
+        mobs = get_mobs_by_partial_name(name)
 
-        return [areas, mob_locations]
+        return [areas, mob_locations, mobs]
 
     def get_mob_locations_by_name(name):
         locations = []
