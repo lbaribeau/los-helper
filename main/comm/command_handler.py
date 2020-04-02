@@ -729,7 +729,7 @@ class CommandHandler(object):
             magentaprint("<" + str(mob_location.area.id) + "> - " + mob_location.mob.name, False)
 
         magentaprint("Mobs found:", False)
-        for mobs in mobs:
+        for mob in mobs:
             magentaprint("{0}, lvl {1}/{2}, {3}".format(mob.name, str(mob.level), str(mob.approximate_level), str(Aura.auras[mob.aura])), False)
 
 
