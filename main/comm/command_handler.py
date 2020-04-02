@@ -29,6 +29,7 @@ from command.Drop import Drop
 from command.Get import Get
 from comm.Spells import *
 from comm.thread_maker import ThreadMaker
+from Aura import Aura
 # from command.repair import Repair
 # from command.wear import Wear
 from mini_bots.armour_bot import ArmourBot
@@ -740,9 +741,9 @@ class CommandHandler(object):
         for mob_location in mob_locations:
             magentaprint("<" + str(mob_location.area.id) + "> - " + mob_location.mob.name, False)
 
-        magentaprint("Mobs found:", False)
-        for mob in mobs:
-            magentaprint("{0}, lvl {1}/{2}, {3}".format(mob.name, str(mob.level), str(mob.approximate_level), str(Aura.auras[mob.aura])), False)
+        # magentaprint("Mobs found:", False)
+        # for mob in mobs:
+        #     magentaprint("{0}, lvl {1}/{2}, {3}".format(mob.name, str(mob.level), str(mob.approximate_level), str(Aura.auras[mob.aura])), False)
 
 
     def quit(self):
