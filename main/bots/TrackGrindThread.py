@@ -196,7 +196,7 @@ class TrackGrindThread(GrindThread):
         magentaprint("next path = " + str(self.__nextpath), False)
 
         if self.character.DEAD:
-            crash
+            # crash
             self.character.DEAD = False
             self.character.DEATHS += 1
             magentaprint("Died; Pulling up my bootstraps and starting again", False)
