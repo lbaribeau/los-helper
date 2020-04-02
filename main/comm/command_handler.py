@@ -286,6 +286,11 @@ class CommandHandler(object):
             magentaprint(str(self.character.MONSTER_CHECK_FLAG), False)
         elif re.match("mkl", user_input): #Monster List
             magentaprint(self.character.MONSTER_KILL_LIST, False)
+        elif re.match("h2h (.+)", user_input):
+            try:
+                self.character.MANA_TO_ENGAGE = int(M_obj.group(1))
+            except Exception as e:
+                magentaprint("Can't set manage to engage!", False)
         elif re.match("ml", user_input): #Monster List
             try:
                 magentaprint(str(self.character.MONSTER_LIST), False)

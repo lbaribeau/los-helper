@@ -22,7 +22,7 @@ class HealSlaveReactions(BotReaction):
             self.dmg += int(M_obj.group(1))
 
             magentaprint("{0} {1}".format(self.dmg, self.master), False)
-            if (self.dmg >= 6):
+            if (self.dmg >= 10):
                 self.dmg = 0
                 magentaprint("Notified <" + self.master + ">", False)
                 self.commandHandler.process('c vig ' + self.master)
