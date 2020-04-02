@@ -94,7 +94,7 @@ class CombatReactions(object):
         exp = self.character.TOTAL_EXPERIENCE
         gold = self.character.TOTAL_GOLD
         aura = str(self.character.AURA_STATUS)
-        magentaprint("Current Aura: " + aura, False)
+        magentaprint("Current Aura: " + str(aura), False)
         magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), False)
         exp = self.character.EXPERIENCE
         expm = str(calculate_vpm(exp))

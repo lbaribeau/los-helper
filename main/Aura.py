@@ -32,6 +32,9 @@ class Aura(object):
     def __rsub__(self, other):
         return self.clamp(other - self.index())
 
+    def __str__(self):
+        return self.auras[self.index()]
+
     # Comparators work with other Aura types and other strings
     def __lt__(self, other):
         # if isinstance(other, str):
