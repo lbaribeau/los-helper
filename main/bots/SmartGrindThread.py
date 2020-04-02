@@ -22,7 +22,10 @@ class SmartGrindThread(TrackGrindThread):
         self.cur_target = None
         self.cur_area_id = self.character.AREA_ID
 
-        self.low_level = min(int(math.ceil(self.character.level / 2)) - 2, 1)
+        self.low_level = int(math.ceil(self.character.level / 2)) - 2
+        if (self.low_level < 1):
+            self.low_level = 1
+
         self.high_level = int(math.ceil(self.character.level / 2))# + 1 #risky business
 
         self.min_target_aura = Aura('demonic red')

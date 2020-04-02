@@ -387,9 +387,8 @@ class GrindThread(BotThread):
         if not self.cast.success:  # Probably no mana since spell fail gets spammed
             return False
         else:
+            self.character.AURA_STATUS = self.cast.aura
             return True
-
-        self.character.AURA_STATUS = self.cast.aura
 
         # if self.character.level < 3 or not \
         #         BotThread.can_use_timed_ability(self.character.AURA_LAST_UPDATE, 480):

@@ -112,7 +112,7 @@ class CombatReactions(object):
             phys_crit_rate = 0#round(self.crits_landed / total_phys_attacks * 100, 1)
             
             average_spell_damage = (round(self.spell_damage_dealt / spells_hit) if spells_hit > 0 else 0)
-            spell_hit_rate = (round((self.spells_hit / self.spells_cast) * 100, 1) if self.spells_cast > 0 else 0)
+            spell_hit_rate = (round((spells_hit / self.spells_cast) * 100, 1) if self.spells_cast > 0 else 0)
             spell_crit_rate = 0
         except Exception as e:
             magentaprint(e, False)
