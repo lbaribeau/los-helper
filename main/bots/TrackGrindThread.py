@@ -84,9 +84,9 @@ class TrackGrindThread(GrindThread):
             's','s','door','stairs', #angry hooker should be avoided unless lvl 5.
             #'do 3', 'ou',
             'stairs','out','s',
-            #'w','e', #for zombies
+            'w','e', #for zombies
             # noticed drunken troublemakers arrive one east
-            # red axer lvl 2 dropped studded leather collar
+            # red axer lvl 2 dropped studded leather collarse
             'n','n','n','n','e','n','n','n','n','nw','nw','nw','w','w','w','nw','nw','n','gate','e','n','n','n','w',
             'n','chapel'
         ]
