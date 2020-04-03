@@ -20,4 +20,4 @@ class KillSlaveReactions(BotReaction):
         if regex == self.master_attacks:
             target_name = str(M_obj.group(2))
             magentaprint("Notified <" + target_name + ">", False)
-            self.commandHandler.user_kk(target_name)
+            self.commandHandler.user_kkc(target_name)

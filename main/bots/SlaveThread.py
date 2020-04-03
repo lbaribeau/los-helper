@@ -13,7 +13,7 @@ class SlaveThread(BotThread):
         super().__init__(character, command_handler, mud_reader_handler, mud_map)
 
         self.heal_slave_reactions = HealSlaveReactions(mud_reader_handler, command_handler, master_name)
-        # self.kill_slave_reactions = KillSlaveReactions(mud_reader_handler, command_handler, master_name)
+        self.kill_slave_reactions = KillSlaveReactions(mud_reader_handler, command_handler, master_name)
 
     def stop(self):
         super().stop()

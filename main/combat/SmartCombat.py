@@ -56,7 +56,7 @@ class SmartCombat(CombatObject):
         self.character = character
         self.regex_cart.extend([
             RegexStore.prompt, RegexStore.weapon_break, RegexStore.weapon_shatters, RegexStore.mob_attacked, RegexStore.armour_breaks,
-            RegexStore.mob_arrived, RegexStore.mob_wandered, RegexStore.mob_left
+            RegexStore.mob_arrived, RegexStore.mob_wandered, RegexStore.mob_left, RegexStore.not_here
         ])
         self.mob_target_determinator = MobTargetDeterminator()
 
@@ -107,6 +107,8 @@ class SmartCombat(CombatObject):
                 self.character.mobs.read_match(M_obj),
                 self.character.mobs.list
             )
+        elif regex in RegexStore.not_here:
+            self.telnetHandler.write("l")
             pass
 
     def stop(self):
