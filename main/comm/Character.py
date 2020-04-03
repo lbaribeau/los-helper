@@ -17,7 +17,7 @@ class Character(object):
         self._class = None
         self.level = None
 
-        self.NEEDS_MAGIC = False
+        self.NEEDS_MAGIC = True
         self.BLACK_MAGIC = True
         self.KNOWS_VIGOR = True
         #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile

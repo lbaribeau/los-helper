@@ -290,6 +290,11 @@ class CommandHandler(object):
         elif re.match("h2h (.+)", user_input):
             try:
                 self.character.MANA_TO_ENGAGE = int(M_obj.group(1))
+
+                if (self.character.MANA_TO_ENGAGE == 0):
+                    self.character.NEEDS_MAGIC = False
+                else:
+                    self.character.NEEDS_MAGIC = True
             except Exception as e:
                 magentaprint("Can't set manage to engage!", False)
         elif re.match("ml", user_input): #Monster List
