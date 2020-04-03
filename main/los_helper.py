@@ -195,6 +195,10 @@ class LosHelper(object):
             password = getpass.getpass("")
 
         self.telnetHandler.write(password)
+
+        if len(args) >= 3:
+            command = args[2]
+            self.telnetHandler.write(command)
         # TODO: Handle wrong user name
 
         # if len(args) >= 2:
