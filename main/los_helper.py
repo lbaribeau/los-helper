@@ -108,6 +108,10 @@ class LosHelper(object):
         self.commandHandler.go.wait_for_flag()
         self.check_inventory()
 
+        args = [s for s in sys.argv[1:] if not s.startswith('-') and s != '']
+        if len(args) >= 3 and args[2] == "grind":
+            self.commandHandler.start_grind("grind")
+
     def close(self):
         self.mudListenerThread.stop()
         self.mudReaderThread.stop()
@@ -179,7 +183,7 @@ class LosHelper(object):
                     raise
 
     def write_username_and_pass(self):
-        args = [s for s in sys.argv[1:] if not s.startswith('-') and s is not '']
+        args = [s for s in sys.argv[1:] if not s.startswith('-') and s != '']
         magentaprint("LosHelper stripped args: " + str(args))
 
         if len(args) >= 1:
@@ -195,10 +199,6 @@ class LosHelper(object):
             password = getpass.getpass("")
 
         self.telnetHandler.write(password)
-
-        if len(args) >= 3:
-            command = args[2]
-            self.telnetHandler.write(command)
         # TODO: Handle wrong user name
 
         # if len(args) >= 2:
