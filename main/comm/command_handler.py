@@ -269,7 +269,7 @@ class CommandHandler(object):
         elif re.match("domix .+?", user_input):
             #domix 'tree root' berry 50 - first param must be exact match
             self.start_mix(user_input)
-        elif re.match("slave (.+?)", user_input):
+        elif re.match("slave", user_input):
             self.start_slave(user_input)
         elif re.match("bbuy (.+?)", user_input):
             self.bbuy(user_input)
@@ -671,10 +671,16 @@ class CommandHandler(object):
 
     def start_slave(self, user_input):
         M_obj = re.search("slave (.+)", user_input)
-        master = M_obj.group(1)
+        master_input = M_obj.group(1)
+        master = master_input
+        kill = False
+
+        if ' ' in master_input:
+            master = user_input.split(' ')[0]
+            kill = True
 
         if self.bot_check():
-            self.botThread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, master)
+            self.botThread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, master, kill)
             self.botThread.start()
 
     def start_mix(self, user_input):

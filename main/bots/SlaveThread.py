@@ -9,11 +9,13 @@ from reactions.KillSlaveReactions import KillSlaveReactions
 
 class SlaveThread(BotThread):
     def __init__(self, character=None, command_handler=None, mud_reader_handler=None,
-                mud_map=None, master_name="Alfredo"):
+                mud_map=None, master_name="Alfredo", kill=False):
         super().__init__(character, command_handler, mud_reader_handler, mud_map)
 
         self.heal_slave_reactions = HealSlaveReactions(mud_reader_handler, command_handler, master_name)
-        self.kill_slave_reactions = KillSlaveReactions(mud_reader_handler, command_handler, master_name)
+    
+        if kill:
+            self.kill_slave_reactions = KillSlaveReactions(mud_reader_handler, command_handler, master_name)
 
     def stop(self):
         super().stop()
