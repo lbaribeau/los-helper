@@ -343,7 +343,7 @@ class CommandHandler(object):
             magentaprint("Version: " + str(misc_functions.VERSION), False)
             magentaprint(self.character.__dict__, False)
         elif re.match("(?i)report", user_input):
-            self.combat_reactions.report()
+            self.combat_reactions.report(str(self.cast.aura))
         elif re.match("(?i)mobs_joined_in", user_input):
             magentaprint(self.character.MOBS_JOINED_IN, False)
         elif re.match("(?i)aura", user_input):

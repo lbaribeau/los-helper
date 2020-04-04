@@ -90,10 +90,9 @@ class CombatReactions(object):
             self.spells_cast += 1
             self.spells_failed += 1
 
-    def report(self):
+    def report(self, aura):
         exp = self.character.TOTAL_EXPERIENCE
         gold = self.character.TOTAL_GOLD
-        aura = str(self.character.AURA_STATUS)
         magentaprint("Current Aura: " + str(aura), False)
         magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), False)
         exp = self.character.EXPERIENCE

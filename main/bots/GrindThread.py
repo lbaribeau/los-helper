@@ -376,10 +376,11 @@ class GrindThread(BotThread):
         return
 
     def update_aura(self):
+        # magentaprint("in update aura {} {} {}".format(self.stopping, self.character.ACTIVELY_MAPPING, self.character.spells), False)
         # if self.stopping or self.character.ACTIVELY_MAPPING or not Spells.showaura in self.character.spells:
         # if self.stopping or self.character.ACTIVELY_MAPPING or not any(s.startswith(Spells.showaura) for s in self.character.spells):
         if self.stopping or self.character.ACTIVELY_MAPPING or Spells.showaura not in self.character.spells:
-            magentaprint("GrindThread.update_aura() returning false")
+            magentaprint("GrindThread.update_aura() returning false", False)
             return False
 
         self.cast.update_aura(self.character)
@@ -388,6 +389,7 @@ class GrindThread(BotThread):
             return False
         else:
             self.character.AURA_STATUS = self.cast.aura
+            self.character.aura_check_count += 1
             return True
 
         # if self.character.level < 3 or not \
