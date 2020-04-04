@@ -287,6 +287,7 @@ class CommandHandler(object):
             magentaprint(str(self.character.MONSTER_CHECK_FLAG), False)
         elif re.match("mkl", user_input): #Monster List
             magentaprint(self.character.MONSTER_KILL_LIST, False)
+            # magentaprint(self.SmartGrindThread.get_targets(), False)
         elif re.match("h2h (.+)", user_input):
             try:
                 self.character.MANA_TO_ENGAGE = int(M_obj.group(1))

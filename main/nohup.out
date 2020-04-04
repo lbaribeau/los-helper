@@ -1,311 +1,0 @@
-[35m22:39:13.5   | LosHelper initializing...
-[37m
-/---------------------------------------------------------------------------\
-|    The Flint Engine version 1.9.9           Developed by Shihan, Kaedan   |
-|    Derived from Mordor V4.06 by Brooke Paul & Brett Vickers               |
-|                                                                           |
-|    Website   : www.landsofstone.org                                       |
-|    Game      : mud.landsofstone.org                                       |
-|    Scenarios : type 'help credits' in-game to view details                |
-|    Connection problems? email andyb@creative-realms.net with details.     |
-|                                                                           |
-|                          lands of stone v(0.86.8)                         |
-|                                                                           |
-|                                 Welcome!                                  |
-|                                                                           |
-\---------------------------------------------------------------------------/
-
-Please enter name: Please enter password: 
-### Twerp the Human Vicar just entered the Lands of Stone.
-
-[36mThe Chapel of Healing
-
-[37mThe chapel is favoured by all who pass through the town of Amethyst.
-The healers here practice their art on any who need it as often as
-necessary. As a result the place has acquired a neutral territory status
-and none will raise arms to another while in here. The arched door is
-magical and only a cleric may enter it which seems fair enough as it is
-their place, but the silver portal is a mystery to most. The clerics seem
-to know its purpose but refuse to discuss it.
-[32mObvious exits: arched door, out, silver portal, chamber.
-[37mYou see an acolyte, a vicar.
-
-                 ---~~~===Lands of Stone News ===~~~---
-
-  New players : Type in      help visitor
-              : Talk to the immigration officer about levelling
-
-  Forums      : http://losbb.creative-realms.net
-
-  
-
-  Release 1.9.9 is a maintenance update and does not modify any game
-                mechanics
-
-  Player storage rooms have been restore and our apologies for the delay.
-
-  -------------------------------------------------------------------------
-
-  Please use bugreport for any issues you come across.
-
-  Don't forget to do HELP POLICY every now and again. 
-  HELP CHANGES lists all recent changes 
-
-===> End of News                         (Last updated 15th November 2010)
-
-[37m[31 H 16 M]: New mail since: Thu May  8 15:40:20 2014
-
-[37m[31 H 16 M]: [33mPlayer                Cls Gen [Lv]Title                      Age   Race      
-[34m-----------------------------------------------------------------------------
-[37mTwerp                 Cle  M  [04]Vicar                      16    Human     
-[37m[37m[31 H 16 M]: [35m22:39:14.3   | Whois: Cle M 4 Vicar 16 Human
-[37m[33m
-/=== Combat Spells ======================================================\
-| Level Earth        Wind         Fire         Water        Astral       |
-|   1                Hurt                      Blister                   |
-|   2                                                                    |
-|   3                                                                    |
-|   4                                                                    |
-|   5                                                                    |
-[36m/================== Healing and Protection ==============================\
-|   Vigor            Mend-Wounds                                         |
-|                                     Protection                         |
-[37m/======================================= Miscellaneous ==================\
-|   Light            Bless                                               |
-|   Show-Aura                                                            |
-[32m/===================================================== Running Spells ===\
-|   Light                                                                |
-\========================================================================/
-[37m[31 H 16 M]: [32m
-
-
-/============================== Overview ==================================\
-|                Twerp the Human, a Vicar of the 4th level                 |
-|                     Your preferred alignment is blue                     |
-\==========================================================================/
-[33m
- /==== Attributes =====\  /======= Weapons =====\  /======= Magic ========\
- |       Str : 11      |  |     Sharp   : 0  %  |  |     Earth : 0  %     |
- |       Dex : 11      |  |     Thrust  : 0  %  |  |     Wind  : 0  %     |
- |       Con : 15      |  |     Blunt   : 25 %  |  |     Fire  : 0  %     |
- |       Int : 6       |  |     Pole    : 0  %  |  |     Water : 0  %     |
- |       Pty : 15      |  |     Missile : 0  %  |  |    Astral : 0  %     |
- \=====================/  \=====================/  \======================/
-[36m
- /===== Status 1 ======\  /====== Status 2 =====\  /=====  Status 3 ======\
- |   Curr HP : 31      |  |     Exp : 3055      |  | GameTime :   5:13:05 |
- |    Max HP : 31      |  |    Gold : 8180      |  | Game Age : 16        |
- |   Curr MP : 16      |  |  -Needed to Level-  |  |                      |
- |    Max MP : 16      |  |     Exp : 4096      |  |   Weight : 33        |
- |        AC : 10      |  |    Gold : 512       |  |  Objects : 21        |
- \=====================/  \=====================/  \======================/
-
-[37m[31 H 16 M]: 
-[36mThe Chapel of Healing
-
-[37mThe chapel is favoured by all who pass through the town of Amethyst.
-The healers here practice their art on any who need it as often as
-necessary. As a result the place has acquired a neutral territory status
-and none will raise arms to another while in here. The arched door is
-magical and only a cleric may enter it which seems fair enough as it is
-their place, but the silver portal is a mystery to most. The clerics seem
-to know its purpose but refuse to discuss it.
-[32mObvious exits: arched door, out, silver portal, chamber.
-[37mYou see an acolyte, a vicar.
-
-[37m[31 H 16 M]: [37mYou have: eleven sets of chicken soup, a footman's mace, two small knifes, a
-spiked club.
-[37m[31 H 16 M]: los_helper.py:182: SyntaxWarning: "is not" with a literal. Did you mean "!="?
-  args = [s for s in sys.argv[1:] if not s.startswith('-') and s is not '']
-[35m22:41:18.4   | LosHelper initializing...
-[37m
-/---------------------------------------------------------------------------\
-|    The Flint Engine version 1.9.9           Developed by Shihan, Kaedan   |
-|    Derived from Mordor V4.06 by Brooke Paul & Brett Vickers               |
-|                                                                           |
-|    Website   : www.landsofstone.org                                       |
-|    Game      : mud.landsofstone.org                                       |
-|    Scenarios : type 'help credits' in-game to view details                |
-|    Connection problems? email andyb@creative-realms.net with details.     |
-|                                                                           |
-|                          lands of stone v(0.86.8)                         |
-|                                                                           |
-|                                 Welcome!                                  |
-|                                                                           |
-\---------------------------------------------------------------------------/
-
-Please enter name: Please enter password: 
-### Twerp the Human Vicar just entered the Lands of Stone.
-
-[36mThe Chapel of Healing
-
-[37mThe chapel is favoured by all who pass through the town of Amethyst.
-The healers here practice their art on any who need it as often as
-necessary. As a result the place has acquired a neutral territory status
-and none will raise arms to another while in here. The arched door is
-magical and only a cleric may enter it which seems fair enough as it is
-their place, but the silver portal is a mystery to most. The clerics seem
-to know its purpose but refuse to discuss it.
-[32mObvious exits: arched door, out, silver portal, chamber.
-[37m[36mYou see Werp.
-[37mYou see an acolyte, a vicar.
-
-                 ---~~~===Lands of Stone News ===~~~---
-
-  New players : Type in      help visitor
-              : Talk to the immigration officer about levelling
-
-  Forums      : http://losbb.creative-realms.net
-
-  
-
-  Release 1.9.9 is a maintenance update and does not modify any game
-                mechanics
-
-  Player storage rooms have been restore and our apologies for the delay.
-
-  -------------------------------------------------------------------------
-
-  Please use bugreport for any issues you come across.
-
-  Don't forget to do HELP POLICY every now and again. 
-  HELP CHANGES lists all recent changes 
-
-===> End of News                         (Last updated 15th November 2010)
-
-[37m[31 H 16 M]: New mail since: Thu May  8 15:40:20 2014
-
-[37m[31 H 16 M]: You grind your teeth in frustration.
-[37m[31 H 16 M]: [33mPlayer                Cls Gen [Lv]Title                      Age   Race      
-[34m-----------------------------------------------------------------------------
-[37mTwerp                 Cle  M  [04]Vicar                      16    Human     
-[37m[37m[31 H 16 M]: [35m22:41:19.0   | Whois: Cle M 4 Vicar 16 Human
-[37m[33m
-/=== Combat Spells ======================================================\
-| Level Earth        Wind         Fire         Water        Astral       |
-|   1                Hurt                      Blister                   |
-|   2                                                                    |
-|   3                                                                    |
-|   4                                                                    |
-|   5                                                                    |
-[36m/================== Healing and Protection ==============================\
-|   Vigor            Mend-Wounds                                         |
-|                                     Protection                         |
-[37m/======================================= Miscellaneous ==================\
-|   Light            Bless                                               |
-|   Show-Aura                                                            |
-[32m/===================================================== Running Spells ===\
-|                                   none                                 |
-\========================================================================/
-[37m[31 H 16 M]: [32m
-
-
-/============================== Overview ==================================\
-|                Twerp the Human, a Vicar of the 4th level                 |
-|                     Your preferred alignment is blue                     |
-\==========================================================================/
-[33m
- /==== Attributes =====\  /======= Weapons =====\  /======= Magic ========\
- |       Str : 11      |  |     Sharp   : 0  %  |  |     Earth : 0  %     |
- |       Dex : 11      |  |     Thrust  : 0  %  |  |     Wind  : 0  %     |
- |       Con : 15      |  |     Blunt   : 25 %  |  |     Fire  : 0  %     |
- |       Int : 6       |  |     Pole    : 0  %  |  |     Water : 0  %     |
- |       Pty : 15      |  |     Missile : 0  %  |  |    Astral : 0  %     |
- \=====================/  \=====================/  \======================/
-[36m
- /===== Status 1 ======\  /====== Status 2 =====\  /=====  Status 3 ======\
- |   Curr HP : 31      |  |     Exp : 3055      |  | GameTime :   5:13:07 |
- |    Max HP : 31      |  |    Gold : 8180      |  | Game Age : 16        |
- |   Curr MP : 16      |  |  -Needed to Level-  |  |                      |
- |    Max MP : 16      |  |     Exp : 4096      |  |   Weight : 33        |
- |        AC : 10      |  |    Gold : 512       |  |  Objects : 21        |
- \=====================/  \=====================/  \======================/
-
-[37m[31 H 16 M]: 
-[36mThe Chapel of Healing
-
-[37mThe chapel is favoured by all who pass through the town of Amethyst.
-The healers here practice their art on any who need it as often as
-necessary. As a result the place has acquired a neutral territory status
-and none will raise arms to another while in here. The arched door is
-magical and only a cleric may enter it which seems fair enough as it is
-their place, but the silver portal is a mystery to most. The clerics seem
-to know its purpose but refuse to discuss it.
-[32mObvious exits: arched door, out, silver portal, chamber.
-[37m[36mYou see Werp.
-[37mYou see an acolyte, a vicar.
-
-[37m[31 H 16 M]: [37mYou have: eleven sets of chicken soup, a footman's mace, two small knifes, a
-spiked club.
-[37m[31 H 16 M]: los_helper.py:182: SyntaxWarning: "is not" with a literal. Did you mean "!="?
-  args = [s for s in sys.argv[1:] if not s.startswith('-') and s is not '']
-los_helper.py:182: SyntaxWarning: "is not" with a literal. Did you mean "!="?
-  args = [s for s in sys.argv[1:] if not s.startswith('-') and s is not '']
-[35m22:43:35.4   | LosHelper initializing...
-[37mTraceback (most recent call last):
-  File "los_helper.py", line 256, in <module>
-    L = LosHelper()
-  File "los_helper.py", line 95, in __init__
-    self.write_username_and_pass()
-  File "los_helper.py", line 201, in write_username_and_pass
-    self.commandHandler.start_grind("")
-AttributeError: 'LosHelper' object has no attribute 'commandHandler'
-
-/---------------------------------------------------------------------------\
-|    The Flint Engine version 1.9.9           Developed by Shihan, Kaedan   |
-|    Derived from Mordor V4.06 by Brooke Paul & Brett Vickers               |
-|                                                                           |
-|    Website   : www.landsofstone.org                                       |
-|    Game      : mud.landsofstone.org                                       |
-|    Scenarios : type 'help credits' in-game to view details                |
-|    Connection problems? email andyb@creative-realms.net with details.     |
-|                                                                           |
-|                          lands of stone v(0.86.8)                         |
-|                                                                           |
-|                                 Welcome!                                  |
-|                                                                           |
-\---------------------------------------------------------------------------/
-
-Please enter name: Please enter password: 
-### Twerp the Human Vicar just entered the Lands of Stone.
-
-[36mThe Chapel of Healing
-
-[37mThe chapel is favoured by all who pass through the town of Amethyst.
-The healers here practice their art on any who need it as often as
-necessary. As a result the place has acquired a neutral territory status
-and none will raise arms to another while in here. The arched door is
-magical and only a cleric may enter it which seems fair enough as it is
-their place, but the silver portal is a mystery to most. The clerics seem
-to know its purpose but refuse to discuss it.
-[32mObvious exits: arched door, out, silver portal, chamber.
-[37m[36mYou see Werp.
-[37m
-                 ---~~~===Lands of Stone News ===~~~---
-
-  New players : Type in      help visitor
-              : Talk to the immigration officer about levelling
-
-  Forums      : http://losbb.creative-realms.net
-
-  
-
-  Release 1.9.9 is a maintenance update and does not modify any game
-                mechanics
-
-  Player storage rooms have been restore and our apologies for the delay.
-
-  -------------------------------------------------------------------------
-
-  Please use bugreport for any issues you come across.
-
-  Don't forget to do HELP POLICY every now and again. 
-  HELP CHANGES lists all recent changes 
-
-===> End of News                         (Last updated 15th November 2010)
-
-[37m[31 H 16 M]: New mail since: Thu May  8 15:40:20 2014
-
-[37m[31 H 16 M]: A vicar just arrived.
-[37m[31 H 16 M]: Werp pokes you.
-[37m[31 H 16 M]: 

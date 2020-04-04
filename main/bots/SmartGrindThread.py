@@ -31,9 +31,6 @@ class SmartGrindThread(TrackGrindThread):
         self.min_target_aura = Aura('demonic red')
         self.max_target_aura = Aura('heavenly blue')
 
-    def aura_updated_hook(self):
-        self.get_targets()
-
     def do_pre_go_actions(self):
         super().do_pre_go_actions()
         # self.go_rest_if_not_ready()
@@ -243,11 +240,11 @@ class SmartGrindThread(TrackGrindThread):
             # Too evil
             # self.low_level = 2
             self.min_target_aura = Aura('demonic red')
-            self.max_target_aura = Aura(self.character.preferred_aura)
+            self.max_target_aura = Aura('grey')
         elif self.cast.aura > self.character.preferred_aura:
             # Too good
             # self.low_level = 2
-            self.min_target_aura = Aura(self.character.preferred_aura)
+            self.min_target_aura = Aura('grey')
             self.max_target_aura = Aura('heavenly blue')
         else:
             self.min_target_aura = Aura('demonic red')
@@ -290,7 +287,7 @@ class SmartGrindThread(TrackGrindThread):
             directions = self.get_heal_path()
             
             if len(directions) == 0:
-                self.rest_and_check_aura()        
+                self.rest_and_check_aura()
 
 class SmartGrindTarget(object):
     def __init__(self, name, locations):

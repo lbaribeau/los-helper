@@ -273,8 +273,8 @@ class Cartography(BotReactionWithFlag):
                 mob_location.map()
 
                 magentaprint("Cartography catalog_monsters: " + str(mob_location))
-        except Exception:
-            magentaprint("Problem cataloging monsters", False)
+        except Exception as e:
+            magentaprint(["Problem cataloging monsters", e], False)
 
     def catalog_monster_bio(self, name, description, level):
         try:
@@ -293,8 +293,8 @@ class Cartography(BotReactionWithFlag):
                             mob.approximate_level = self.character.level + level_index
 
                 mob.save()
-        except Exception:
-            magentaprint("Problem cataloging monster bio")
+        except Exception as e:
+            magentaprint(["Problem cataloging monster bio", e], False)
 
     def catalog_monster_aura(self, name, aura):
         if aura not in Aura.auras:
