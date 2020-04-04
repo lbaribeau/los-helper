@@ -25,7 +25,7 @@ var app = new Vue({
   },
   computed: {
     report: function() { 
-      return JSON.parse(this.json)
+      return this.json
     }, 
     experience: function() {
       return this.report.exp + this.report.total_exp;
