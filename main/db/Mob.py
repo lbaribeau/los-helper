@@ -61,9 +61,32 @@ class Mob(NamedModel):
     def get_mobs_by_level_and_aura_ranges(low_level, high_level, low_aura, high_aura):
 
         try:
-            mobs = Mob.select().where((Mob.level.between(low_level, high_level)) &
-                 (Mob.aura.between(low_aura, high_aura)) &
-                 ~(Mob.name.contains("guard"))).order_by(Mob.level.asc())
+
+            sql = """SELECT *
+                     FROM MOB
+                     Where 
+                        (level between {0} and {1} or (level <= {1} and difficulty_rating = 1))
+                        and  (aura between {2} and {3})
+                        and (difficulty_rating is null or difficulty_rating != 2)""".format(
+                            low_level, high_level, low_aura, high_aura)
+            print(sql)
+
+            mobs = Mob.raw(sql)
+            # mobs = Mob.select().where(
+            #         (
+            #             (
+            #                 Mob.level.between(low_level, high_level) |
+            #                 Mob.difficulty_rating == 1 & Mob.level <= high_level
+            #             )
+            #         ) &
+            #         (
+            #             Mob.aura.between(low_aura, high_aura)
+            #         )
+                    # &
+                    # (
+                    #     (Mob.difficulty_rating != 2 | Mob.difficulty_rating.is_null(True))
+                    # )
+                # )
         except Mob.DoesNotExist:
             mobs = []
 

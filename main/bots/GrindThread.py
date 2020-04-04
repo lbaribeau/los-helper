@@ -444,12 +444,11 @@ class GrindThread(BotThread):
                 self.character.MANA, heal_cost, self.character.KNOWS_VIGOR, self.character.HAS_RESTORE_ITEMS) and not self.stopping:
 
             self.do_heal_skills()
+            self.use_restorative_items() #spam them!!!
 
             if self.engage_any_attacking_mobs():
                 if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
                     self.cast.start_thread('v')
-
-            self.use_restorative_items() #spam them!!!
 
             self.sleep(0.05)
 
@@ -494,6 +493,10 @@ class GrindThread(BotThread):
             # large restorative
         elif self.inventory.has("scarlet potion"):
             self.commandHandler.process('drink scarlet')
+        elif self.inventory.has("small flask"):
+            self.commandHandler.process('drink small flask')
+        elif self.inventory.has("white potion"):
+            self.commandHandler.process('drink white potion')
         elif self.inventory.has("tree root"):
             self.commandHandler.process('eat root')
             # white potion

@@ -145,7 +145,7 @@ class CombatReactions(object):
                 ],
                 'aura':aura,
                 'preferred_aura': self.character.info.preferred_alignment,
-                'total_exp': self.character.EXPERIENCE,
+                'total_exp': self.character.TOTAL_EXPERIENCE,
                 'exp': exp,
                 'expm': expm,
                 'exp_to_level': self.character.info.exp_to_level,
