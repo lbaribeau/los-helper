@@ -118,6 +118,7 @@ class LosHelper(object):
 
         if '-headless' in sys.argv:
             self.character.is_headless = True
+            self.write_info_feed()
 
 
     def close(self):
@@ -260,6 +261,30 @@ class LosHelper(object):
         # magentaprint("LosHelper.check_info() calling character.process_info()")
         self.character.info = info
         self.character.process_info()
+
+    def write_info_feed(self):
+        feed = {
+        'name': self.character.info.name,
+        'class': self.character._class.id,
+        'race': self.character.info.race,
+        'title': self.character.info.title,
+        'level': self.character.info.level,
+        'preferred_aura': self.character.info.preferred_alignment,
+        'exp_to_level': self.character.info.exp_to_level,
+        'total_exp': self.character.info.exp,
+        'stats': [
+            {'name': 'Max HP', 'value': self.character.info.maxHP},
+            {'name': 'Max MP', 'value': self.character.info.maxMP},
+            {'name': 'Strength', 'value': self.character.info.str},
+            {'name': 'Dexterity', 'value': self.character.info.dex},
+            {'name': 'Constitution', 'value': self.character.info.con},
+            {'name': 'Intelligence', 'value': self.character.info.int},
+            {'name': 'Piety', 'value': self.character.info.pty},
+            {'name': 'Armor Class', 'value': self.character.info.AC},
+        ]}
+
+        output_api_feed('info', feed)
+
 
 L = LosHelper()
 L.main()

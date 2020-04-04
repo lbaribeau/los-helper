@@ -1,7 +1,9 @@
 var app = new Vue({
   el: '#app',
   data:  {
-    json: '{}',
+    mkl: {},
+    info: {},
+    report: {},
     pollInterval: null,
     status: ''
   },
@@ -13,22 +15,27 @@ var app = new Vue({
     }
   },
   methods: {
-    fetchData: function() {      
-      axios.get('/los-helper/main/report.json')
+    fetchData: function() {
+      axios.get('/mkl?t=' + new Date().getTime())
       .then((response) => {
-        this.json = response.data;
+        this.mkl = response.data;
+      });
+      axios.get('/info?t=' + new Date().getTime())
+      .then((response) => {
+        this.info = response.data;
+      });
+      axios.get('/report?t=' + new Date().getTime())
+      .then((response) => {
+        this.report = response.data;
       });
     }
   },
   computed: {
-    report: function() { 
-      return this.json
-    }, 
     experience: function() {
-      return this.report.exp + parseInt(this.report.total_exp);
+      return this.report.exp + parseInt(this.info.total_exp);
     },
     classname: function() {
-      switch (this.report.class) {
+      switch (this.info.class) {
         case 'Ass':
           return 'Assassin';
           break; 

@@ -64,7 +64,7 @@ class Character(object):
         self.CAST_WAIT = self.CAST_PERIOD
 
         self.DEATHS = 0
-        self.AURA_STATUS = "Unknown"
+        self.AURA = "Unknown"
         self.aura_check_count = 0
 
         self.HASTING = False

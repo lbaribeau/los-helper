@@ -1,6 +1,7 @@
 
 import time
 import sys
+import json
 
 from db.Database import *
 
@@ -115,6 +116,10 @@ def flush_input():
         import msvcrt
         while msvcrt.kbhit():
             msvcrt.getch()
+
+def output_api_feed(filename, data):
+    with open('../reporting_website/static/reports/{}.json'.format(filename), 'w') as outfile:
+        json.dump(data, outfile)
 
 ######
 

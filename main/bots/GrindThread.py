@@ -390,7 +390,7 @@ class GrindThread(BotThread):
         if not self.cast.success:  # Probably no mana since spell fail gets spammed
             return False
         else:
-            self.character.AURA_STATUS = self.cast.aura
+            self.character.AURA = self.cast.aura
             self.character.aura_check_count += 1
             return True
 

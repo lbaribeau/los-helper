@@ -214,6 +214,9 @@ class SmartGrindThread(TrackGrindThread):
             self.character.MONSTER_KILL_LIST.append(target.name)
             self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
 
+        if self.character.is_headless:
+            output_api_feed('mkl', self.character.MONSTER_KILL_LIST)
+
     def reset_kill_list(self):
         self.get_targets()
 
@@ -250,9 +253,6 @@ class SmartGrindThread(TrackGrindThread):
             self.max_target_aura = Aura('heavenly blue')
 
         self.get_targets()
-
-        if self.character.is_headless:
-            self.commandHandler.output_report()
 
     def do_rest_hooks(self):
         pass

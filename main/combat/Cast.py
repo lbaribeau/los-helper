@@ -116,6 +116,7 @@ class Cast(SimpleCombatObject):
         if time() > (self.aura_timer + self.aura_refresh):
             self.stopping = False
             self.spam_spell(character, Spells.showaura)
+            character.AURA = str(self.aura)
             # self.cast('show')
             # self.wait_for_flag()
             # while self.result is 'failure':

@@ -70,6 +70,8 @@ class CombatReactions(object):
                 self.mobs_killed.append(self.character.mobs.read_match(M_obj))
                 # self.character.area_id, monster - map both into a MobLocation
                 # add a rank to the MobLocation
+                if self.character.is_headless:
+                    output_api_feed('report', self.report())
         elif regex in RegexStore.attack_miss:
             self.hits_missed += 1
         # elif regex is self.physical_critical:
@@ -90,9 +92,10 @@ class CombatReactions(object):
             self.spells_cast += 1
             self.spells_failed += 1
 
-    def report(self, aura):
+    def report(self):
         exp = self.character.TOTAL_EXPERIENCE
         gold = self.character.TOTAL_GOLD
+        aura = self.character.AURA
         magentaprint("Current Aura: " + str(aura), False)
         magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), False)
         exp = self.character.EXPERIENCE
@@ -130,25 +133,9 @@ class CombatReactions(object):
         magentaprint("Minutes Run: " + str(runtime), False)
 
         output = {
-                'name': self.character.info.name,
-                'race': self.character.race,
-                'title': self.character.title,
-                'class': self.character._class.id,
-                'level': self.character.level,
-                'stats': [
-                    {'name': 'Strength', 'value': self.character.info.str},
-                    {'name': 'Dexterity', 'value': self.character.info.dex},
-                    {'name': 'Constitution', 'value': self.character.info.con},
-                    {'name': 'Intelligence', 'value': self.character.info.int},
-                    {'name': 'Piety', 'value': self.character.info.pty},
-                    {'name': 'Armor Class', 'value': self.character.info.AC}
-                ],
-                'aura':aura,
-                'preferred_aura': self.character.info.preferred_alignment,
-                'total_exp': self.character.TOTAL_EXPERIENCE,
+                'aura':str(aura),
                 'exp': exp,
                 'expm': expm,
-                'exp_to_level': self.character.info.exp_to_level,
                 'kills': kills,
                 'kpm': kpm,
                 'total_phys_attacks': total_phys_attacks,

@@ -7,6 +7,7 @@ los-helper is a python script meant to automate certain aspects of mudding.
 * Python3+
 * Peewee - pip install peewee
 * NetworkX - pip install networkx
+* Flask - pip install flask
 
 ## Running the helper
 
@@ -15,8 +16,9 @@ los-helper is a python script meant to automate certain aspects of mudding.
 
 ## Running on a server
 
-* Starting the report host:
-`sudo python -m SimpleHTTPServer 80 &`
+* Starting the report host from the reporting_website directory:
+`export FLASK_APP=server.py`
+`python -m flask run`
 * Starting the bot in headless (reporting mode):
 `nohup python3.5 los_helper.py user pass -grind -fast -headless &`
 * Copy the reporting website files to the root folder `~/`

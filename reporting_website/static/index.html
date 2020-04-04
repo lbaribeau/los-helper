@@ -11,8 +11,8 @@
 <!-- partial:index.partial.html -->
 <div class="wrapper columns" id="app">
   <div class="column">
-    <div class="box"><strong>{{report.name}} the {{report.race}} {{classname}}</strong>
-      <div class="stat">Level {{report.level}}</div>
+    <div class="box"><strong>{{info.name}} the {{info.race}} {{classname}}</strong>
+      <div class="stat">Level {{info.level}}</div>
     </div>
     <div class="box"><strong>Juicy reporting...</strong>
       <div class="stat">Current Aura: {{report.aura}}</div>
@@ -23,17 +23,17 @@
       <div class="stat">Total KILLS: {{report.kills}}</div>
     </div>
     <div class="box"><strong>Paper doll...</strong>
-      <div class="stat">Preferred Aura: {{report.preferred_aura}}</div>
+      <div class="stat">Preferred Aura: {{info.preferred_aura}}</div>
       <div class="stat">Exp: {{experience}}</div>
-      <div class="stat">Exp To Level: {{report.exp_to_level}}</div>
-      <div class="stats" v-for="stat in report.stats">
+      <div class="stat">Exp To Level: {{info.exp_to_level}}</div>
+      <div class="stats" v-for="stat in info.stats">
         <div class="stat">{{stat.name}} {{stat.value}}</div>
       </div>
     </div>
   </div>
   <div class="column">
     <div class="box"><strong>Mobs targetted...</strong>
-      <div v-for="mob in report.mkl">{{mob}}</div>
+      <div v-for="mob in mkl">{{mob}}</div>
     </div>
   </div>
 </div>
