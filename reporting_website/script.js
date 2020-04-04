@@ -25,7 +25,7 @@ var app = new Vue({
       return this.json
     }, 
     experience: function() {
-      return this.report.exp + this.report.total_exp;
+      return this.report.exp + parseInt(this.report.total_exp);
     },
     classname: function() {
       switch (this.report.class) {
