@@ -69,7 +69,7 @@ class Mob(NamedModel):
                         and  (aura between {2} and {3})
                         and (difficulty_rating is null or difficulty_rating != 2)""".format(
                             low_level, high_level, low_aura, high_aura)
-            print(sql)
+            # print(sql)
 
             mobs = Mob.raw(sql)
             # mobs = Mob.select().where(
