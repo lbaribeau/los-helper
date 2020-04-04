@@ -14,11 +14,8 @@ var app = new Vue({
   },
   methods: {
     fetchData: function() {      
-      axios.get('http://35.225.70.209/los-helper/main/report.json')
+      axios.get('r/http://35.225.70.209/los-helper/main/report.json')
       .then((response) => {
-        if (response.data.status == 'completed') {
-          clearInterval(this.pollInverval);
-        }
         this.json = response.data;
       });
     }
