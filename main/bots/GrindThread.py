@@ -171,7 +171,7 @@ class GrindThread(BotThread):
 
     def rest_and_check_aura(self):
         # This method is only efficient in a healing area
-        magentaprint("BotThread.rest_and_check_aura()", False)
+        magentaprint("BotThread.rest_and_check_aura()")
         mana_to_wait = 0
         if self.character.MANA_TO_ENGAGE > 0:
             mana_to_wait = self.character.maxMP - 2*(self.character._class.mana_tick + 2)
