@@ -232,7 +232,7 @@ class SmartGrindThread(TrackGrindThread):
         magentaprint("Current Aura Scale: " + str(Aura.auras), False)
         magentaprint("Preferred Aura Scale: " + str(self.character.preferred_aura), False)
 
-        if self.character.level < 4:
+        if self.character.level < 3:
             self.min_target_aura = Aura('demonic red')
             self.max_target_aura = Aura('heavenly blue')
         # elif self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:

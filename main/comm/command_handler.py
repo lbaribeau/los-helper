@@ -275,6 +275,9 @@ class CommandHandler(object):
             self.bbuy(user_input)
         elif re.match("stop$", user_input):
             self.stop_bot()
+        elif re.match("aura (\d)", user_input):
+            M_obj = re.search("aura (\d)", user_input)
+            magentaprint(Aura.auras[int(M_obj.group(1))], False)
         elif re.match("remap", user_input):
             self.mud_map.re_map()
         elif re.match("HASTING", user_input):
@@ -288,8 +291,9 @@ class CommandHandler(object):
         elif re.match("mkl", user_input): #Monster List
             magentaprint(self.character.MONSTER_KILL_LIST, False)
             # magentaprint(self.SmartGrindThread.get_targets(), False)
-        elif re.match("h2h (.+)", user_input):
+        elif re.match("m2e (.+)", user_input):
             try:
+                M_obj = re.search("m2e (.+)", user_input)
                 self.character.MANA_TO_ENGAGE = int(M_obj.group(1))
 
                 if (self.character.MANA_TO_ENGAGE == 0):
@@ -753,9 +757,19 @@ class CommandHandler(object):
         for mob_location in mob_locations:
             magentaprint("<" + str(mob_location.area.id) + "> - " + mob_location.mob.name, False)
 
-        # magentaprint("Mobs found:", False)
-        # for mob in mobs:
-        #     magentaprint("{0}, lvl {1}/{2}, {3}".format(mob.name, str(mob.level), str(mob.approximate_level), str(Aura.auras[mob.aura])), False)
+        if len(mobs) > 0:
+            magentaprint("Mobs found:", False)
+            for mob in mobs:
+                name = mob.name
+                level = mob.level
+                approx_level = mob.approximate_level
+                aura = mob.aura
+                aura_str = None
+
+                if aura is not None:
+                    aura_str = Aura.auras[aura]
+
+                magentaprint("{0}, lvl {1}/{2}, {3}/{4}".format(name, level, approx_level, aura, aura_str), False)
 
 
     def quit(self):

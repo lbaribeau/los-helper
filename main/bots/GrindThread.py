@@ -33,7 +33,7 @@ class GrindThread(BotThread):
         # TrackGrind overrides this...
         if self.in_chapel():
             self.rest_and_check_aura()
-            # self.check_weapons()  TODO: shopping doesn't work everywhere
+            self.check_weapons()  #TODO: shopping doesn't work everywhere
             self.check_armour()
 
     def do_go_hooks(self, exit_str):
@@ -107,7 +107,7 @@ class GrindThread(BotThread):
         self.character.GO_BLOCKING_MOB = ""
         self.engage_mobs_who_joined_in()
         self.engage_any_attacking_mobs()
-        # self.check_weapons()  # TODO: shopping doesn't work everywhere
+        self.check_weapons()  # TODO: shopping doesn't work everywhere
 
         if not self.character.BLACK_MAGIC:
             self.heal_up()
@@ -149,7 +149,7 @@ class GrindThread(BotThread):
             self.engage_monster(new_target)
             self.engage_mobs_who_joined_in()
             self.engage_any_attacking_mobs()
-            # self.check_weapons()  # TODO: shopping doesn't work everywhere
+            self.check_weapons()  # TODO: shopping doesn't work everywhere
 
             if not self.character.BLACK_MAGIC:
                 self.heal_up()

@@ -51,7 +51,8 @@ class Mob(NamedModel):
 
     def get_mobs_by_partial_name(name):
         try:
-            mobs = Mob.select().where(Mob.name % name).order_by(Mob.id.desc())
+            partial_name = "*" + name + "*"
+            mobs = Mob.select().where(Mob.name % partial_name).order_by(Mob.id.desc())
         except Mob.DoesNotExist:
             mobs = []
 
