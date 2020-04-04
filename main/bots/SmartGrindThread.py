@@ -251,6 +251,9 @@ class SmartGrindThread(TrackGrindThread):
 
         self.get_targets()
 
+        if self.character.is_headless:
+            self.commandHandler.output_report()
+
     def do_rest_hooks(self):
         pass
         # Erhm this is causing me problems.

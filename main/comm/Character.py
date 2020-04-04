@@ -21,6 +21,7 @@ class Character(object):
         self.BLACK_MAGIC = True
         self.KNOWS_VIGOR = True
         self.PREFER_BM = True
+        self.is_headless = False #True if the character is running remotely and we want to run some logs
         #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #MAGIC_SKILLS= [0, 0, 0, 0, 0]
         self.SKILLS = {}

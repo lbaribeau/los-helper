@@ -108,12 +108,16 @@ class LosHelper(object):
         self.commandHandler.go.wait_for_flag()
         self.check_inventory()
 
-        args = [s for s in sys.argv[1:] if not s.startswith('-') and s != '']
-        if len(args) >= 3 and args[2] == "grind":
+        if '-grind' in sys.argv:
             self.commandHandler.start_grind("grind")
+
+        if '-fast' in sys.argv:
             self.character.MANA_TO_ENGAGE = 0
             self.character.NEEDS_MAGIC = False
             self.character.PREFER_BM = True
+
+        if '-headless' in sys.argv:
+            self.character.is_headless = True
 
 
     def close(self):

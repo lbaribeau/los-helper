@@ -1,0 +1,223 @@
+[71 H 0 M]: Exception in thread Thread-2:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/threading.py", line 932, in _bootstrap_inner
+    self.run()
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/MudListenerThread.py", line 50, in run
+    fragment = fragment + self.telnetHandler.read_some().decode('ascii', errors='ignore')
+AttributeError: 'str' object has no attribute 'decode'
+
+06:35:13.3   | Bot encountered an error trying to restart: 0
+Traceback (most recent call last):
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/TelnetHandler.py", line 54, in write
+    self.tn.write(command.encode('ascii'))
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/telnetlib.py", line 292, in write
+    self.sock.sendall(buffer)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 85, in run
+    if self.go(self.direction_list[0]):
+  File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 148, in go
+    self.commandHandler.user_move(exit_str)
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/command_handler.py", line 429, in user_move
+    self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 64, in persistent_execute
+    super().persistent_execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 284, in persistent_execute
+    self.execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 61, in execute
+    super().execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 281, in execute
+    super().execute(target)  # just calls send
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 39, in execute
+    self.send(self.telnetHandler, target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 267, in send
+    telnetHandler.write(cls.compose_command(target))
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/TelnetHandler.py", line 57, in write
+    raise socket.error
+OSError
+06:35:13.3   | BotThread.rest_and_check_aura()
+
+06:35:13.3   | Bot encountered an error trying to restart: 1
+Traceback (most recent call last):
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/TelnetHandler.py", line 54, in write
+    self.tn.write(command.encode('ascii'))
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/telnetlib.py", line 292, in write
+    self.sock.sendall(buffer)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 85, in run
+    if self.go(self.direction_list[0]):
+  File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 148, in go
+    self.commandHandler.user_move(exit_str)
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/command_handler.py", line 429, in user_move
+    self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 64, in persistent_execute
+    super().persistent_execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 284, in persistent_execute
+    self.execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 61, in execute
+    super().execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 281, in execute
+    super().execute(target)  # just calls send
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 39, in execute
+    self.send(self.telnetHandler, target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 267, in send
+    telnetHandler.write(cls.compose_command(target))
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/TelnetHandler.py", line 57, in write
+    raise socket.error
+OSError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/TelnetHandler.py", line 54, in write
+    self.tn.write(command.encode('ascii'))
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/telnetlib.py", line 292, in write
+    self.sock.sendall(buffer)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 85, in run
+    if self.go(self.direction_list[0]):
+  File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 148, in go
+    self.commandHandler.user_move(exit_str)
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/command_handler.py", line 429, in user_move
+    self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 64, in persistent_execute
+    super().persistent_execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 284, in persistent_execute
+    self.execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 61, in execute
+    super().execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 281, in execute
+    super().execute(target)  # just calls send
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 39, in execute
+    self.send(self.telnetHandler, target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 267, in send
+    telnetHandler.write(cls.compose_command(target))
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/TelnetHandler.py", line 57, in write
+    raise socket.error
+OSError
+06:35:13.3   | BotThread.rest_and_check_aura()
+
+06:35:13.3   | Bot encountered an error trying to restart: 2
+Traceback (most recent call last):
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/TelnetHandler.py", line 54, in write
+    self.tn.write(command.encode('ascii'))
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/telnetlib.py", line 292, in write
+    self.sock.sendall(buffer)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 85, in run
+    if self.go(self.direction_list[0]):
+  File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 148, in go
+    self.commandHandler.user_move(exit_str)
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/command_handler.py", line 429, in user_move
+    self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 64, in persistent_execute
+    super().persistent_execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 284, in persistent_execute
+    self.execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 61, in execute
+    super().execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 281, in execute
+    super().execute(target)  # just calls send
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 39, in execute
+    self.send(self.telnetHandler, target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 267, in send
+    telnetHandler.write(cls.compose_command(target))
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/TelnetHandler.py", line 57, in write
+    raise socket.error
+OSError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/TelnetHandler.py", line 54, in write
+    self.tn.write(command.encode('ascii'))
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/telnetlib.py", line 292, in write
+    self.sock.sendall(buffer)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 85, in run
+    if self.go(self.direction_list[0]):
+  File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 148, in go
+    self.commandHandler.user_move(exit_str)
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/command_handler.py", line 429, in user_move
+    self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 64, in persistent_execute
+    super().persistent_execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 284, in persistent_execute
+    self.execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 61, in execute
+    super().execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 281, in execute
+    super().execute(target)  # just calls send
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 39, in execute
+    self.send(self.telnetHandler, target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 267, in send
+    telnetHandler.write(cls.compose_command(target))
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/TelnetHandler.py", line 57, in write
+    raise socket.error
+OSError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/TelnetHandler.py", line 54, in write
+    self.tn.write(command.encode('ascii'))
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/telnetlib.py", line 292, in write
+    self.sock.sendall(buffer)
+BrokenPipeError: [Errno 32] Broken pipe
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 85, in run
+    if self.go(self.direction_list[0]):
+  File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 148, in go
+    self.commandHandler.user_move(exit_str)
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/command_handler.py", line 429, in user_move
+    self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 64, in persistent_execute
+    super().persistent_execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 284, in persistent_execute
+    self.execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 61, in execute
+    super().execute(target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 281, in execute
+    super().execute(target)  # just calls send
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 39, in execute
+    self.send(self.telnetHandler, target)
+  File "/Users/adama/Sites/sandbox/los-helper/main/command/Command.py", line 267, in send
+    telnetHandler.write(cls.compose_command(target))
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/TelnetHandler.py", line 57, in write
+    raise socket.error
+OSError
+06:35:13.3   | BotThread.rest_and_check_aura()
+
+Exception in thread Thread-1:
+Traceback (most recent call last):
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/threading.py", line 932, in _bootstrap_inner
+    self.run()
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/threading.py", line 870, in run
+    self._target(*self._args, **self._kwargs)
+  File "/Users/adama/Sites/sandbox/los-helper/main/comm/TelnetHandler.py", line 65, in keep_connection_open
+    self.tn.write('rest\r'.encode('ascii'))
+  File "/Library/Frameworks/Python.framework/Versions/3.8/lib/python3.8/telnetlib.py", line 292, in write
+    self.sock.sendall(buffer)
+BrokenPipeError: [Errno 32] Broken pipe

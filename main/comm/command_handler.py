@@ -5,6 +5,7 @@ import atexit
 import time
 import re
 import sys
+import json
 
 import misc_functions
 from misc_functions import magentaprint
@@ -343,7 +344,8 @@ class CommandHandler(object):
             magentaprint("Version: " + str(misc_functions.VERSION), False)
             magentaprint(self.character.__dict__, False)
         elif re.match("(?i)report", user_input):
-            self.combat_reactions.report(str(self.cast.aura))
+            report = self.combat_reactions.report(str(self.cast.aura))
+            report['mkl'] = self.character.MONSTER_KILL_LIST
         elif re.match("(?i)mobs_joined_in", user_input):
             magentaprint(self.character.MOBS_JOINED_IN, False)
         elif re.match("(?i)aura", user_input):
@@ -598,6 +600,13 @@ class CommandHandler(object):
         except Exception:
             magentaprint("I couldn't find a way there (" + str(self.character.AREA_ID) + ") to (" + str(to_area_id) + ")",False)
         return directions
+
+    def output_report(self):
+        report = self.combat_reactions.report(str(self.cast.aura))
+        report['mkl'] = self.character.MONSTER_KILL_LIST
+
+        with open('report.json', 'w') as outfile:
+            json.dump(report, outfile)
 
     # Bots
     # def start_bot(self, )

@@ -63,7 +63,10 @@ class TrackGrindThread(GrindThread):
             'east','east','southeast','southeast','southeast','south','south','south','south','south','east',
             'east','southeast','east','south','south','south','south','glowing portal','passage','mines',
             'down','n','n','n','n','ne','n','w','n','n','e','door','w','gully','up','boulder','up',
-            'cave 3','ne','ne','n','s','up','e','se','cave','out',
+            'cave 3','ne','ne','n','s','up','e','se','cave','out']
+
+        if self.character.level >= 8:
+            self.KOBOLD_PATH += ['prepare', 'e', 'ne', 'door', 'door', 'prepare', 'sw','w']
             # Note: You can remove the following line of code to remove the kobold guards and priests fights.
             # Priests turn you very blue.  These fights may be difficult.
             # Also useful to test mobs who join in.
@@ -71,7 +74,7 @@ class TrackGrindThread(GrindThread):
             # and priests are dangerous unless the bot decides on his own to engage.  Todo: check aura here (if health is
             # high enough,) and go in if all's good.  Even fight the priests - because the more 'good' we can get the
             # more chalices we can farm.
-            #'prepare', 'e', 'ne', 'door', 'door', 'prepare', 'sw','w',
+        self.KOBOLD_PATH += [
             'ladder','cave','out','sw','w',
             # 'cave', 'out',  # Comment out insane kobold (TODO: check level here)
             'sw','se','nw','w','out','down','boulder','down','down','e','door','w','s','s','e','s','sw','s','s','s',

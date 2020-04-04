@@ -149,6 +149,9 @@ class CharacterClass(object):
         # self.abilities = {a.command: a for a in self.abilities if level >= a.level}
         magentaprint("CharacterClass final abilities: " + str(self.abilities))
 
+    def __str__(self):
+        return self.id
+
 
 # OLD IDEAS
 

@@ -128,3 +128,37 @@ class CombatReactions(object):
         magentaprint("Phys Crit Rate: " + str(phys_crit_rate) + " | Spell Crit Rate: " + str(spell_crit_rate) + "%", False)
         runtime = round(get_runtime_in_minutes(), 2)
         magentaprint("Minutes Run: " + str(runtime), False)
+
+        output = {
+                'name': self.character.info.name,
+                'race': self.character.race,
+                'title': self.character.title,
+                'class': self.character._class.id,
+                'level': self.character.level,
+                'stats': [
+                    {'name': 'Strength', 'value': self.character.info.str},
+                    {'name': 'Dexterity', 'value': self.character.info.dex},
+                    {'name': 'Constitution', 'value': self.character.info.con},
+                    {'name': 'Intelligence', 'value': self.character.info.int},
+                    {'name': 'Piety', 'value': self.character.info.pty},
+                    {'name': 'Armor Class', 'value': self.character.info.AC}
+                ],
+                'aura':aura,
+                'preferred_aura': self.character.info.preferred_alignment,
+                'total_exp': self.character.EXPERIENCE,
+                'exp': exp,
+                'expm': expm,
+                'exp_to_level': self.character.info.exp_to_level,
+                'kills': kills,
+                'kpm': kpm,
+                'total_phys_attacks': total_phys_attacks,
+                'spells_hit': spells_hit,
+                'average_phys_damage': average_phys_damage,
+                'phys_hit_rate': phys_hit_rate,
+                'phys_crit_rate': phys_crit_rate,
+                'average_spell_damage': average_spell_damage,
+                'spell_hit_rate': spell_hit_rate,
+                'spell_crit_rate': spell_crit_rate
+                }
+
+        return output
