@@ -14,7 +14,7 @@ var app = new Vue({
   },
   methods: {
     fetchData: function() {      
-      axios.get('r/http://35.225.70.209/los-helper/main/report.json')
+      axios.get('/los-helper/main/report.json')
       .then((response) => {
         this.json = response.data;
       });
