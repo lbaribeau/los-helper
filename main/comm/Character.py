@@ -20,6 +20,7 @@ class Character(object):
         self.NEEDS_MAGIC = True
         self.BLACK_MAGIC = True
         self.KNOWS_VIGOR = True
+        self.PREFER_BM = True
         #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #MAGIC_SKILLS= [0, 0, 0, 0, 0]
         self.SKILLS = {}

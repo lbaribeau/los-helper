@@ -111,6 +111,10 @@ class LosHelper(object):
         args = [s for s in sys.argv[1:] if not s.startswith('-') and s != '']
         if len(args) >= 3 and args[2] == "grind":
             self.commandHandler.start_grind("grind")
+            self.character.MANA_TO_ENGAGE == 0
+            self.character.NEEDS_MAGIC = False
+            self.character.PREFER_BM = True
+
 
     def close(self):
         self.mudListenerThread.stop()

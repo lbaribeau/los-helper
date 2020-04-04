@@ -19,8 +19,8 @@ class Cast(SimpleCombatObject):
     error_regexes = [RegexStore.bad_target_or_spell, RegexStore.not_here]
 
     aura = None
-    aura_timer = 0
-    aura_refresh = 300
+    aura_timer = 120
+    aura_refresh = 5
 
     vig_amount = 2
     mend_amount = 5
@@ -49,8 +49,8 @@ class Cast(SimpleCombatObject):
 
     def notify(self, regex, M_obj):
         if regex in RegexStore.aura:
-            self.__class__.aura = Aura(M_obj.group('aura'))
-            self.__class__.aura_timer = time()
+            self.aura = Aura(M_obj.group('aura'))
+            self.aura_timer = time()
         elif regex in RegexStore.no_mana:
             self.stop()
         super().notify(regex, M_obj)
@@ -112,7 +112,9 @@ class Cast(SimpleCombatObject):
             magentaprint("Cast giving up on aura update.")
             return
 
-        if time() > self.aura_timer + self.aura_refresh:
+        # magentaprint("{} {} {}".format(time(), self.aura_timer + self.aura_refresh, time() > (self.aura_timer + self.aura_refresh)),False)
+        if time() > (self.aura_timer + self.aura_refresh):
+            self.stopping = False
             self.spam_spell(character, Spells.showaura)
             # self.cast('show')
             # self.wait_for_flag()
@@ -127,7 +129,7 @@ class Cast(SimpleCombatObject):
         # Spam until success
         # if spell not in character.spells:
         if not any(spell.startswith(s) for s in character.spells):
-            magentaprint("Cast.spam_spell aborted - %s not in %s." % (str(spell), str(character.spells)))
+            magentaprint("Cast.spam_spell aborted - %s not in %s." % (str(spell), str(character.spells)), False)
             return
 
         spell_cost = self.vig_amount if spell.startswith(Spells.vigor) else \

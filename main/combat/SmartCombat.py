@@ -42,7 +42,7 @@ class SmartCombat(CombatObject):
         # spell_percent = max(character.earth, character.wind, character.fire, character.water)
         spell_percent = max(character.spell_proficiencies.values())
         # magentaprint("SmartCombat character.pty " + str(character.pty))
-        self.black_magic = character.info.pty < 7 or spell_percent >= 5
+        self.black_magic = character.info.pty < 7 or spell_percent >= 5 or character.PREFER_BM
         # self.favourite_spell = Spells.vigor if not self.black_magic else \
         if spell_percent == 0 and self.black_magic:
             self.favourite_spell = Spells.rumble if Spells.rumble in character.spells else \
