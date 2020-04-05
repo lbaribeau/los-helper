@@ -65,8 +65,8 @@ class TrackGrindThread(GrindThread):
             'down','n','n','n','n','ne','n','w','n','n','e','door','w','gully','up','boulder','up',
             'cave 3','ne','ne','n','s','up','e','se','cave','out']
 
-        if self.character.level >= 8:
-            self.KOBOLD_PATH += ['prepare', 'e', 'ne', 'door', 'door', 'prepare', 'sw','w']
+        # if self.character.level >= 8:
+        #     self.KOBOLD_PATH += ['prepare', 'e', 'ne', 'door', 'door', 'prepare', 'sw','w']
             # Note: You can remove the following line of code to remove the kobold guards and priests fights.
             # Priests turn you very blue.  These fights may be difficult.
             # Also useful to test mobs who join in.
