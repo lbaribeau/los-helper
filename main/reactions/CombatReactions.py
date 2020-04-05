@@ -104,7 +104,7 @@ class CombatReactions(object):
             average_phys_damage = round(self.total_damage_dealt / self.hits_dealt, 1)
             phys_hit_rate = round(self.hits_dealt / self.total_phys_attacks * 100, 1)
             # phys_crit_rate = round(self.crits_landed / total_phys_attacks * 100, 1)
-            
+
             average_spell_damage = round(self.spell_damage_dealt / self.spells_hit)
             spell_hit_rate = round(self.spells_hit / self.spells_cast * 100, 1)
             spell_crit_rate = 0

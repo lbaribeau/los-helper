@@ -162,20 +162,20 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 
     keep_list = [
         'large bag', 'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
-        'chicken soup', 'small flask', 'large restorative', 'scarlet potion', 'tree root', 'white potion', 'small restorative',
-        'Elixir of Morinva', 'granite potion', 'philtre of perception', 'burnt ochre potion', 'granite rod', 'heathen amulet',
+        'small flask', 'large restorative', 'scarlet potion', 'tree root', #'white potion', 'small restorative', 'chicken soup',
+        'Elixir of Morinva', 'granite potion', 'philtre of perception', 'granite rod', 'heathen amulet', # 'burnt ochre potion',
         # 'spear',
         # 'bolos',
         'javelin', 'heavy crossbow', 'throwing stars', 'throwing star',
         #'crossbow', 'horn bow', 'long bow' # < 70% missile
         # 'broad sword',
-        'adamantine axe', 'rapier', 'adamantine sword', 'claymore', 'spider leg', 'large orcish sword',
+        'adamantine axe', 'rapier', 'adamantine sword', 'claymore', 'spider leg', 'large orcish sword', 'drow sabre',
         # 'silver dagger', 'long sword',  #these pile up
         # 'bastard sword',  # bandits
         # 'small mace',
         'morning star', 'superior dwarven hammer', "horseman's mace",
         # 'war hammer',
-        'hard cap', 'hard gloves', 'hard boots', 'padded hat', 'mountain gloves', 'mountain boots',
+        # 'hard cap', 'hard gloves', 'hard boots', 'padded hat', 'mountain gloves', 'mountain boots',
         'mountain boots with crampons', 'leather mask', 'leather collar', 'studded leather collar',
         # 'studded leather sleeves', 'studded leather boots', 'studded leather pants', 'studded leather gloves','studded leather leggings' 
         'plate mail leggings', 'plate mail armor',
@@ -185,7 +185,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         'chain mail sleeves', 'chain mail leggings', 'chain mail hood',
         # 'chain mail gloves', # mill worker
         'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring',
-        'iron shield'
+        # 'iron shield'
         # 'platinum ring', 'gold ring', 'steel ring', 'silver ring'
         #'steel mask' # spiv, sawmill
     ]
@@ -318,8 +318,22 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         # if item_name_list.__class__ == 'str':
         if item_name_list.__class__ != [].__class__:
             raise Exception("Inventory.has_any() argument must be a list")
-
         return any([self.has(i) for i in item_name_list])
+
+    def has_broken(self, item_name):
+        if item_name.__class__ != ''.__class__:
+            raise Exception("Inventory.has_broken() argument must be a string")
+        items = self.get_all_by_name(item_name)
+        if any([not i.usable for i in items]):
+            return True
+
+    def has_any_broken(self, item_name_list):
+        if item_name_list.__class__ != [].__class__:
+            raise Exception("Inventory.has_any_broken() argument must be a list")
+
+        for n in item_name_list:
+            if self.has_broken(n):
+                return True
 
     def has_slot_equipped(self, slot_to_check, quantity=1):
         has_slot_equipped = False

@@ -477,7 +477,7 @@ class GrindThread(BotThread):
 
     def use_extra_steel_bottle(self):
         magentaprint("GrindThread.use_extra_steel_bottle()")
-        if self.inventory.count('steel bottle') > 3:
+        if self.inventory.count('steel bottle') > self.character.steel_bottle_keep_amount:
             self.command_handler.use.execute(self.inventory.get_first_reference('steel bottle'))
             self.command_handler.use.wait_for_flag()
 
@@ -817,7 +817,7 @@ class GrindThread(BotThread):
 
         while self.command_handler.get.cant_carry and not self.stopping:
             magentaprint("Number of steel bottles: " + str(self.inventory.count('steel bottle')))
-            if self.inventory.count('steel bottle') > 3:
+            if self.inventory.count('steel bottle') > 1:
                 # TODO: make an Ability for steel bottle (protection spell)
                 self.command_handler.use.by_name('steel bottle')
                 self.command_handler.use.wait_for_flag()

@@ -244,6 +244,12 @@ class WeaponBot(MiniBot):
     # def try_weapon_list_from_inventory(self, l):
     #     self.simple_weapon_bot.try_weapon_list_from_inventory(self, l)
 
+    @property
+    def should_go_to_smithy(self):
+        return (not hasattr(self, 'weapon') or self.temporary_weapon) and \
+            (self.char.inventory.has_any_broken(self.broken_weapon) or \
+                self.char.inventory.has_broken(self.get_possible_weapons[0].item.name))
+
     def try_exact_replacement_from_inventory_with_possible_smithy_trip(self):
         magentaprint("WeaponBot.try_exact_replacement_from_inventory()")
         if self.char.inventory.has_any(self.broken_weapon) and not self.stopping:
@@ -357,8 +363,15 @@ class WeaponBot(MiniBot):
                 magentaprint("WeaponBot couldn't buy main weapon.")  # We won't exit here - maybe the bot will sell/drop then return
             return False
 
+    def get_store_path(self):
+        return self.map.get_path(self.char.AREA_ID, self.get_possible_weapons()[0].area.id)
+
     def wield_default_weapon(self):
         self.rewield(self.char.inventory.get_last_reference(self.possible_weapons[0].item.name))
+
+    @property
+    def possible_weapons_in_inventory(self):
+        return self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])
 
     def correct_temp_weapon(self):
         magentaprint("WeaponBot.correct_temp_weapon")
@@ -369,7 +382,6 @@ class WeaponBot(MiniBot):
             magentaprint("self.char.inventory.has_any([w.item.name for w in self.get_possible_weapons()]: " + str(self.char.inventory.has_any([w.item.name for w in self.get_possible_weapons()])))
 
             # if self.get_possible_weapons()
-            possible_weapons_in_inventory = self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])
             # usable_possible_weapons_in_inv = any(x.usable for x in possible_weapons_in_inventory)
             # if self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()]) and \
             #    any([x.usable for x in self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])]):
@@ -378,7 +390,8 @@ class WeaponBot(MiniBot):
             # if possible_weapons_in_inventory and any(x.usable for x in possible_weapons_in_inventory):
             #     pass
             # elif self.char.inventory.has_any([w.item.name for w in self.get_possible_weapons()]):
-            if possible_weapons_in_inventory:
+            # possible_weapons_in_inventory = self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])
+            if self.possible_weapons_in_inventory:
                 if any(x.usable for x in possible_weapons_in_inventory):
                     pass
                 else:

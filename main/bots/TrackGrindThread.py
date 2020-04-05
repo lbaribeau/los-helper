@@ -21,6 +21,7 @@ class TrackGrindThread(GrindThread):
         elif self.character.level <= 10:
             self.__TOTALPATHS = 22
         else:
+            # self.__TOTALPATHS = 28  # # Area ids unfortunately must be updated.
             self.__TOTALPATHS = 22
         # elif self.character.level <= 10:
         #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
@@ -157,6 +158,7 @@ class TrackGrindThread(GrindThread):
             'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel'
         ]
         #aid418, 1975, 1979, 1951, 415, 45
+        # These area numbers are unfortunately for a different database... (except "2")
         self.SPIDER_FOREST = ['areaid418', 'areaid1975', 'areaid1979', 'areaid1951', 'areaid415', 'areaid2']
         #The following areas repeat a bit because the spawns are fast
         self.KNIGHTS = [

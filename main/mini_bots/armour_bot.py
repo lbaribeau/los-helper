@@ -12,11 +12,10 @@ from mini_bots.shopping_bot import ShoppingBot
 from mini_bots.mini_bot import MiniBot
 
 class ArmourBot(MiniBot):
-    def __init__(self, char, command_handler, mrh, map):
+    def __init__(self, char, command_handler, map):
         super().__init__()
         self.char = char
         self.command_handler = command_handler
-        self.mrh = mrh
         self.map = map
         self.broken_armour = []
 

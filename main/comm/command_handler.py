@@ -35,7 +35,8 @@ from mini_bots.armour_bot import ArmourBot
 from command.equipment import Equipment
 from mini_bots.smithy_bot import SmithyBot
 from mini_bots.weapon_bot import WeaponBot
-from mini_bots.simple_weapon_bot import SimpleWeaponBot
+# from mini_bots.simple_weapon_bot import SimpleWeaponBot
+from mini_bots.travel_bot import TravelBot
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -117,7 +118,7 @@ class CommandHandler(object):
     def init_map_and_bots(self):
         # magentaprint("CommandHandler generating the mapfile....", False)
         self.mud_map = MudMap()
-        self.armour_bot = ArmourBot(self.character, self, self.mudReaderHandler, self.mud_map)
+        self.armour_bot = ArmourBot(self.character, self, self.mud_map)
         self.mudReaderHandler.add_subscriber(self.armour_bot)
         self.weapon_bot.add_in_map(self.mud_map)
         magentaprint("CommandHandler: Mapfile completed.", False)
@@ -564,13 +565,13 @@ class CommandHandler(object):
             second_sleep = 0.1
 
         time.sleep(second_sleep)
-        
+
         now = time.time()
         # time_remaining = max(self.character.MOVE_WAIT - (now - self.character.MOVE_CLK),
         #                      self.kill.wait_time(), self.cast.wait_time())
         time_remaining = max(self.go.wait_time(), self.kill.wait_time(), self.cast.wait_time())
         self.character.MOVE_CLK = now
-            
+
         # Note: in very few rare cases it may be better to flee once.  
         self.telnetHandler.write("fl")
         self.telnetHandler.write("fl")
@@ -637,43 +638,6 @@ class CommandHandler(object):
         if self.bot_check():
             self.bot_thread = SmartGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
             self.bot_thread.start()
-
-    def start_top_down_grind(self, user_input):
-        if self.bot_check():
-            # self.bot_thread = Thread(target=, args=())
-            self.bot_thread = TopDownGrind(self.character, self, self.mudReaderHandler, self.mud_map)
-            self.bot_thread.start()
-
-    def go_smithy(self, args):
-        if self.bot_check():
-            # tdg = TopDownGrind(self.character, self, self.mudReaderHandler, self.mud_map)
-            # self.bot_thread = ThreadMaker(tdg, 'go_to_nearest_smithy')
-            magentaprint("CommandHandler.go_smithy()")
-            self.bot_thread = SmithyBot(self.character, self, self.mud_map)
-            # t = Thread(target=self.bot_thread.go_to_nearest_smithy)
-            # t.start()  # The Bot should BE the thread for the sake of 'stopping'
-
-            # We must check upon starting whether a thread is already going.  That's easiest the current way (bot_check).
-            # s = SmithyBot(self.character, self, self.mudReaderHandler, self.mud_map)
-            # self.bot_thread = Thread(target=self.bot_thread.go_to_nearest_smithy)
-            # self.bot_thread.start()
-            # If we keep the bot object, we can stop but we don't know when it completed.  If we keep the thread,
-            # we can't stop the process.  What if SmithyBot has the thread.  Then I don't have to reconstruct the object
-            # every time.  SmartCombat does this I think.
-            self.bot_thread.start_thread()
-
-    def suit_up(self, args):
-        magentaprint("In suit_up")
-        if self.bot_check():
-            # self.bot_thread = ThreadMaker(self.armour_bot, 'suit_up')
-            # self.bot_thread.start()
-            self.bot_thread = self.armour_bot
-            self.bot_thread.start_thread()
-
-    def start_weapon_bot(self):
-        if self.bot_check():
-            self.bot_thread = self.weapon_bot
-            self.bot_thread.start_thread()
 
     def start_crawl(self):
         if self.bot_check():
@@ -788,3 +752,39 @@ class CommandHandler(object):
             self.stop_bot()
         return quit.success
 
+    def go_smithy(self, args):
+        if self.bot_check():
+            # tdg = TopDownGrind(self.character, self, self.mudReaderHandler, self.mud_map)
+            # self.bot_thread = ThreadMaker(tdg, 'go_to_nearest_smithy')
+            magentaprint("CommandHandler.go_smithy()")
+            self.bot_thread = SmithyBot(self.character, self, self.mud_map)
+            # t = Thread(target=self.bot_thread.go_to_nearest_smithy)
+            # t.start()  # The Bot should BE the thread for the sake of 'stopping'
+
+            # We must check upon starting whether a thread is already going.  That's easiest the current way (bot_check).
+            # s = SmithyBot(self.character, self, self.mudReaderHandler, self.mud_map)
+            # self.bot_thread = Thread(target=self.bot_thread.go_to_nearest_smithy)
+            # self.bot_thread.start()
+            # If we keep the bot object, we can stop but we don't know when it completed.  If we keep the thread,
+            # we can't stop the process.  What if SmithyBot has the thread.  Then I don't have to reconstruct the object
+            # every time.  SmartCombat does this I think.
+            self.bot_thread.start_thread()
+
+    def suit_up(self, args):
+        magentaprint("In suit_up")
+        if self.bot_check():
+            # self.bot_thread = ThreadMaker(self.armour_bot, 'suit_up')
+            # self.bot_thread.start()
+            self.bot_thread = self.armour_bot
+            self.bot_thread.start_thread()
+
+    def start_weapon_bot(self):
+        if self.bot_check():
+            self.bot_thread = self.weapon_bot
+            self.bot_thread.start_thread()
+
+    def start_top_down_grind(self, user_input):
+        if self.bot_check():
+            # self.bot_thread = Thread(target=, args=())
+            self.bot_thread = TopDownGrind(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.bot_thread.start()
