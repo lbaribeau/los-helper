@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <title>LOS Bot Feed</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+  <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/bulma/0.8.1/css/bulma.min.css'><link rel="stylesheet" href="./style.css">
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div class="wrapper columns" id="app">
+  <div class="column">
+    <div class="box"><strong>{{info.name}} the {{info.race}} {{classname}}</strong>
+      <div class="stat">Level {{info.level}}</div>
+    </div>
+    <div class="box"><strong>Juicy reporting...</strong>
+      <div class="stat">Current Aura: {{report.aura}}</div>
+      <div class="stat">EXP/Min: {{report.expm}}</div>
+      <div class="stat">Exp Gained: {{report.exp}}</div>
+      <div class="stat">Average Dmg (Phys): {{report.average_phys_damage}}</div>
+      <div class="stat">Hit Rate (Phys): {{report.phys_hit_rate}}%</div>
+      <div class="stat">Total KILLS: {{report.kills}}</div>
+    </div>
+    <div class="box"><strong>Paper doll...</strong>
+      <div class="stat">Preferred Aura: {{info.preferred_aura}}</div>
+      <div class="stat">Exp: {{experience}}</div>
+      <div class="stat">Exp To Level: {{info.exp_to_level}}</div>
+      <div class="stats" v-for="stat in info.stats">
+        <div class="stat">{{stat.name}} {{stat.value}}</div>
+      </div>
+    </div>
+  </div>
+  <div class="column">
+    <div class="box"><strong>Mobs targetted...</strong>
+      <div v-for="mob in mkl">{{mob}}</div>
+    </div>
+  </div>
+</div>
+<!-- partial -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js'></script>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js'></script><script  src="./script.js"></script>
+
+</body>
+</html>

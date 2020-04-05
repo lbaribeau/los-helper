@@ -1,0 +1,10 @@
+.wrapper {
+  max-width: 600px;
+  margin: 15px;
+}
+.wrapper .container .section {
+  margin-bottom: 10px;
+}
+.wrapper .container .section:last-of-type {
+  margin-bottom: 0;
+}
