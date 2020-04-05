@@ -109,7 +109,7 @@ class MudArea():
         return matchFound
 
     def to_string(self):
-        return str(self.area) + str(self.area_exits)[1:-1]
+        return "<{}> {}".format(str(self.area.id), self.area.name)
 
     def __repr__(self):
         return self.to_string()

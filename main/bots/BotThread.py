@@ -81,6 +81,9 @@ class BotThread(threading.Thread):
                     magentaprint('decide_where_to_go returned ' + str(self.direction_list))
 
                 while len(self.direction_list) is not 0 and not self.stopping:
+                    #maybe not the ideal place for this information
+                    # if self.character.is_headless:
+                    # output_api_feed('botrun', self.report())
                     self.do_regular_actions()
                     if self.go(self.direction_list[0]):
                         self.do_on_succesful_go()
@@ -117,6 +120,24 @@ class BotThread(threading.Thread):
             magentaprint("BotThread: finished now.")
 
         
+    def report(self):
+        output = {
+                    'hp': self.character.hp,
+                    'mp': self.character.mp,
+                    'deaths': self.character.DEATHS,
+                    'runtime': str(round(get_runtime_in_minutes(), 2)),
+                    'timestamp': get_timestamp(),
+                    'area': str(self.character.MUD_AREA),
+                    'last_direction': self.character.LAST_DIRECTION,
+                    'successful_go': self.character.SUCCESSFUL_GO,
+                    'blocking_mob': self.character.GO_BLOCKING_MOB,
+                    'go_please_wait': self.character.GO_PLEASE_WAIT,
+                    'go_no_exit': self.character.GO_NO_EXIT,
+                    'go_timeout': self.character.GO_TIMEOUT,
+                    'confused': self.character.CONFUSED,
+                    'can_see': self.character.CAN_SEE
+                }
+        return output
 
     def go(self, exit_str):
         if self.stopping:

@@ -36,7 +36,7 @@ class CombatReactions(object):
         # self.__waiter_flag = False
         # self.__stopping = False
 
-        self.mobs_killed = []
+        self.mobs_killed = {}
         self.hits_dealt = 0
         self.hits_missed = 0
         self.damage_dealt = 0
@@ -50,12 +50,16 @@ class CombatReactions(object):
         self.hits_received = 0
         self.hits_evaded = 0
         self.damage_taken = 0
+        self.in_combat = False
 
         self.regex_cart = [RegexStore.attack_hit, RegexStore.attack_miss, RegexStore.mob_attacked, RegexStore.cast_failure, RegexStore.mob_defeated]
 
     def notify(self, regex, M_obj):
+        combat_state = self.in_combat
+
         # magentaprint("Combat Reaction happened on: " + regex)
         if regex in RegexStore.attack_hit:
+            self.in_combat = True
             self.hits_dealt += 1
             dmg = 0
             try:
@@ -67,16 +71,21 @@ class CombatReactions(object):
                 magentaprint("Couldn't convert attack regex to dmg / int")
         elif regex in RegexStore.mob_defeated:
                 # number = M_obj.group(1)
-                self.mobs_killed.append(self.character.mobs.read_match(M_obj))
+                mob = self.character.mobs.read_match(M_obj)
+
+                if mob not in self.mobs_killed:
+                    self.mobs_killed[mob] = 0
+
+                self.mobs_killed[mob] += 1
                 # self.character.area_id, monster - map both into a MobLocation
                 # add a rank to the MobLocation
-                if self.character.is_headless:
-                    output_api_feed('report', self.report())
+                self.in_combat = False
         elif regex in RegexStore.attack_miss:
             self.hits_missed += 1
         # elif regex is self.physical_critical:
         #     self.character.CRITS_LANDED += 1
         elif regex in RegexStore.mob_attacked:
+            self.in_combat = True
             # if M_obj.group('d'):
             if 'd' in M_obj.groupdict().keys():
                 self.hits_received += 1
@@ -84,13 +93,18 @@ class CombatReactions(object):
             else:
                 self.hits_evaded += 1
         elif regex in RegexStore.spell_damage:
+            self.in_combat = True
             self.spells_cast += 1
             self.spell_damage_dealt += int(M_obj.group('d'))
             self.highest_damage = max(self.highest_damage, int(M_obj.group('d')))
             self.lowest_damage = min(self.lowest_damage, int(M_obj.group('d')))
         elif regex in RegexStore.cast_failure:
+            self.in_combat = True
             self.spells_cast += 1
             self.spells_failed += 1
+
+        if self.character.is_headless and combat_state != self.in_combat:
+            output_api_feed('report', self.report())
 
     def report(self):
         exp = self.character.TOTAL_EXPERIENCE
@@ -133,11 +147,27 @@ class CombatReactions(object):
         magentaprint("Minutes Run: " + str(runtime), False)
 
         output = {
+                'hp': self.character.hp,
+                'mp': self.character.mp,
+                'deaths': self.character.DEATHS,
+                'area': str(self.character.MUD_AREA),
+                'mobs': str(self.character.mobs.attacking),
+                'last_direction': self.character.LAST_DIRECTION,
+                'successful_go': self.character.SUCCESSFUL_GO,
+                'blocking_mob': self.character.GO_BLOCKING_MOB,
+                'go_please_wait': self.character.GO_PLEASE_WAIT,
+                'go_no_exit': self.character.GO_NO_EXIT,
+                'go_timeout': self.character.GO_TIMEOUT,
+                'confused': self.character.CONFUSED,
+                'can_see': self.character.CAN_SEE,
                 'aura':str(aura),
                 'exp': exp,
                 'expm': expm,
                 'kills': kills,
                 'kpm': kpm,
+                'mobs_killed': self.mobs_killed,
+                'timestamp': get_timestamp(),
+                'runtime': str(runtime),
                 'total_phys_attacks': total_phys_attacks,
                 'spells_hit': spells_hit,
                 'average_phys_damage': average_phys_damage,

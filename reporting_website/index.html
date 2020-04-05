@@ -13,6 +13,15 @@
   <div class="column">
     <div class="box"><strong>{{info.name}} the {{info.race}} {{classname}}</strong>
       <div class="stat">Level {{info.level}}</div>
+      <div class="stat">HP {{report.hp}} / {{info.hp}}</div>
+      <div class="stat">MP {{report.mp}} / {{info.mp}}</div>
+    </div>
+    <div class="box">
+      <strong>Current State</strong>
+      <div class="stat">As of {{report.timestamp}}</div>
+      <div class="stat">Fighting {{report.mobs}}</div>
+      <div class="stat">Area {{report.area}}</div>      
+      <div class="stat">Total runtime {{report.runtime}}</div>      
     </div>
     <div class="box"><strong>Juicy reporting...</strong>
       <div class="stat">Current Aura: {{report.aura}}</div>
@@ -21,6 +30,7 @@
       <div class="stat">Average Dmg (Phys): {{report.average_phys_damage}}</div>
       <div class="stat">Hit Rate (Phys): {{report.phys_hit_rate}}%</div>
       <div class="stat">Total KILLS: {{report.kills}}</div>
+      <div class="stat">KPM: {{report.kpm}}</div>
     </div>
     <div class="box"><strong>Paper doll...</strong>
       <div class="stat">Preferred Aura: {{info.preferred_aura}}</div>
@@ -30,10 +40,25 @@
         <div class="stat">{{stat.name}} {{stat.value}}</div>
       </div>
     </div>
+    <div class="box"><strong>Debug stuff...</strong>
+      <div class="stat">Last Direction: {{report.last_direction}}</div>
+      <div class="stat">Sucessful Go: {{report.successful_go}}</div>
+      <div class="stat">Blocking Mob: [{{report.blocking_mob}}]</div>
+      <div class="stat">Please Wait: {{report.go_please_wait}}</div>
+      <div class="stat">No Exit: {{report.go_no_exit}}</div>
+      <div class="stat">Timeout: {{report.go_timeout}}</div>
+      <div class="stat">Confused: {{report.confused}}</div>
+      <div class="stat">Can See: {{report.can_see}}</div>
+    </div>
   </div>
   <div class="column">
     <div class="box"><strong>Mobs targetted...</strong>
       <div v-for="mob in mkl">{{mob}}</div>
+    </div>
+  </div>
+  <div class="column">
+    <div class="box"><strong>Mobs killed...</strong>
+      <div v-for="count, mob in report.mobs_killed">{{count}} {{mob}}</div>
     </div>
   </div>
 </div>

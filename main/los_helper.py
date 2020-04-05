@@ -272,9 +272,10 @@ class LosHelper(object):
         'preferred_aura': self.character.info.preferred_alignment,
         'exp_to_level': self.character.info.exp_to_level,
         'total_exp': self.character.info.exp,
+        'start_time': self.character.START_TIME,
+        'hp': self.character.info.maxHP,
+        'mp': self.character.info.maxMP,
         'stats': [
-            {'name': 'Max HP', 'value': self.character.info.maxHP},
-            {'name': 'Max MP', 'value': self.character.info.maxMP},
             {'name': 'Strength', 'value': self.character.info.str},
             {'name': 'Dexterity', 'value': self.character.info.dex},
             {'name': 'Constitution', 'value': self.character.info.con},
