@@ -5,7 +5,7 @@ from Aura import Aura
 from misc_functions import magentaprint
 
 class Info(BotReactionWithFlag):
-    header = "     (\S+) the (.+?), a (.+?) of the (1st|2nd|3rd|\d\d?th) level    "
+    header = "     (\S+) the (.+?), an? (.+?) of the (1st|2nd|3rd|\d\d?th) level    "
     your_preferred = "Your preferred alignment is (.+?)     "
 
     first = (
@@ -25,6 +25,8 @@ class Info(BotReactionWithFlag):
 
     regexes = [header, your_preferred, first, second]
 
+    got_header = False
+    got_your_preferred = False
     got_first = False
     got_second = False
 
@@ -49,8 +51,11 @@ class Info(BotReactionWithFlag):
             self.title = M_obj.group(3)
             # self.level = int(re.search("\d+",M_obj.group(4)).group(0))
             self.level = int(M_obj.group(4)[:len(M_obj.group(4))-2])
+            magentaprint("{} {} {} {}".format(self.name, self.race, self.title, self.level),False)
+            self.got_header = True
         elif regex is self.your_preferred:
             self.preferred_alignment = M_obj.group(1)
+            self.got_your_preferred = True
             # self.AURA_PREFERRED_SCALE = self.auras.index(preferred_alignment)
             # self.AURA_PREFERRED_SCALE = Aura(M_obj.group(1)).auras.index(M_obj.group(1))
             # self.AURA_PREFERRED = M_obj.group(1)
@@ -92,7 +97,7 @@ class Info(BotReactionWithFlag):
 
         @property
         def success(self):
-            return got_first and got_second
+            return got_header and got_your_preferred and got_first and got_second
 
 
 

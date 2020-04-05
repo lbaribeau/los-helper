@@ -8,17 +8,12 @@ class NoobGrindThread(TrackGrindThread):
                 mud_map=None):
         super().__init__(character, command_handler, mud_reader_handler, mud_map, 0)
         self.track = ['purchase_key', 'unlock_south', 'south', 'get_book', 'trade_book', 'north',
-        'unlock_east', 'east', 'west', 'rest',
-        'unlock_east', 'east', 'west', 'rest',
-        'unlock_east', 'east', 'west', 'rest',
-        'unlock_east', 'east', 'west', 'rest',
-        'unlock_east', 'east', 'west', 'rest',
-        'unlock_east', 'east', 'west', 'rest',
+        'unlock_east', 'east', 'engage_skelington', 'west',
+        'unlock_east', 'east', 'engage_skelington', 'west',
+        'unlock_east', 'east', 'engage_skelington', 'west',
+        'unlock_east', 'east', 'engage_skelington', 'west',
         'drop_keys'
         ]
-        self.character.MONSTER_KILL_LIST = ['skeleton']
-        self.character.MANA_TO_ENGAGE = 0
-        self.character.NEEDS_MAGIC = False
 
     def stop(self):
         super().stop()
@@ -27,10 +22,7 @@ class NoobGrindThread(TrackGrindThread):
       return self.track[:]
 
     def do_pre_go_actions(self):
-      if self.character.MANA < self.mana_to_go and self.character.NEEDS_MAGIC:
-            self.wait_for_mana()
-
-      self.rest_for_health()
+      pass
 
     def do_go_hooks(self, exit_str):
       if exit_str == "purchase_key":
@@ -53,11 +45,12 @@ class NoobGrindThread(TrackGrindThread):
       elif exit_str == "unlock_east":
         self.commandHandler.process("unlock east wood")
         return True
-      elif exit_str == "rest":
-        if self.character.MANA < self.mana_to_go and self.character.NEEDS_MAGIC:
-            self.wait_for_mana()
+      elif exit_str == "engage_skelington":
+        self.engage_monster('skeleton')
         return True
       elif exit_str == "drop_keys":
+        self.commandHandler.process("drop fragile yes")
+        self.commandHandler.process("drop fragile yes")
         self.commandHandler.process("drop fragile yes")
         self.commandHandler.process("drop fragile yes")
         self.commandHandler.process("drop fragile yes")

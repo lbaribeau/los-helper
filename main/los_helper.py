@@ -96,6 +96,10 @@ class LosHelper(object):
         self.initialize_reactions()
         self.check_class_and_level()
         self.check_spells()
+
+        if '-headless' in sys.argv:
+            self.character.is_headless = True
+
         self.check_info()
 
         self.commandHandler = CommandHandler(self.character, self.mud_reader_handler, self.telnetHandler)
@@ -115,10 +119,6 @@ class LosHelper(object):
             self.character.MANA_TO_ENGAGE = 0
             self.character.NEEDS_MAGIC = False
             self.character.PREFER_BM = True
-
-        if '-headless' in sys.argv:
-            self.character.is_headless = True
-            self.write_info_feed()
 
 
     def close(self):
@@ -261,31 +261,6 @@ class LosHelper(object):
         # magentaprint("LosHelper.check_info() calling character.process_info()")
         self.character.info = info
         self.character.process_info()
-
-    def write_info_feed(self):
-        feed = {
-        'name': self.character.info.name,
-        'class': self.character._class.id,
-        'race': self.character.info.race,
-        'title': self.character.info.title,
-        'level': self.character.info.level,
-        'preferred_aura': self.character.info.preferred_alignment,
-        'exp_to_level': self.character.info.exp_to_level,
-        'total_exp': self.character.info.exp,
-        'start_time': self.character.START_TIME,
-        'hp': self.character.info.maxHP,
-        'mp': self.character.info.maxMP,
-        'stats': [
-            {'name': 'Strength', 'value': self.character.info.str},
-            {'name': 'Dexterity', 'value': self.character.info.dex},
-            {'name': 'Constitution', 'value': self.character.info.con},
-            {'name': 'Intelligence', 'value': self.character.info.int},
-            {'name': 'Piety', 'value': self.character.info.pty},
-            {'name': 'Armor Class', 'value': self.character.info.AC},
-        ]}
-
-        output_api_feed('info', feed)
-
 
 L = LosHelper()
 L.main()

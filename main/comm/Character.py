@@ -3,8 +3,7 @@ import time
 from math import floor
 
 from reactions.Mobs import Mobs
-import misc_functions
-from misc_functions import magentaprint
+from misc_functions import *
 
 class Character(object):
     def __init__(self):
@@ -152,7 +151,7 @@ class Character(object):
             'Earth':self.info.earth, 'Wind':self.info.wind, 'Fire':self.info.fire,
             'Water':self.info.water, 'Astral':self.info.astral
         }
-        self.weapon_type = misc_functions.key_with_max_val(self.weapon_proficiencies)
+        self.weapon_type = key_with_max_val(self.weapon_proficiencies)
         self.weapon_proficiency = self.weapon_proficiencies[self.weapon_type]
 
         if self.weapon_proficiency >= 70:
@@ -162,7 +161,7 @@ class Character(object):
         else:
             self.weapon_level = 1
 
-        self.spell_type = misc_functions.key_with_max_val(self.spell_proficiencies)
+        self.spell_type = key_with_max_val(self.spell_proficiencies)
         self.spell_proficiency = self.spell_proficiencies[self.spell_type]
 
         if self.level >= 9:
@@ -173,6 +172,32 @@ class Character(object):
             self.armor_level = 1  # ring mail wearable immediately
 
         self.weapon_to_buy = self.pick_weapon()
+        if self.is_headless:
+            self.write_info_feed()
+
+    def write_info_feed(self):
+        feed = {
+        'name': self.info.name,
+        'class': self._class.id,
+        'race': self.info.race,
+        'title': self.info.title,
+        'level': self.info.level,
+        'preferred_aura': self.info.preferred_alignment,
+        'exp_to_level': self.info.exp_to_level,
+        'total_exp': self.info.exp,
+        'start_time': self.START_TIME,
+        'hp': self.info.maxHP,
+        'mp': self.info.maxMP,
+        'stats': [
+            {'name': 'Strength', 'value': self.info.str},
+            {'name': 'Dexterity', 'value': self.info.dex},
+            {'name': 'Constitution', 'value': self.info.con},
+            {'name': 'Intelligence', 'value': self.info.int},
+            {'name': 'Piety', 'value': self.info.pty},
+            {'name': 'Armor Class', 'value': self.info.AC},
+        ]}
+
+        output_api_feed('info', feed)
 
     def pick_weapon(self):
         if self.weapon_type == 'Sharp':
