@@ -8,15 +8,15 @@ var app = new Vue({
     status: ''
   },
   created() {
-    this.fetchData();    
-    this.pollInterval = setInterval(this.fetchData(), 5000);
+    this.fetchData();
+    this.pollInterval = setInterval(this.fetchData, 30000);
   },
   beforeDestroy() {
     clearInterval(this.pollInterval)
   },
   methods: {
     fetchData: function() {
-      console.log("here I got fetching data again...");
+      console.log("here I go fetching data again...");
       axios.get('/api/mkl.json?t=' + new Date().getTime())
       .then((response) => {
         this.mkl = response.data;
