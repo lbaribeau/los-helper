@@ -4,15 +4,15 @@ var app = new Vue({
     mkl: {},
     info: {},
     report: {},
-    pollInterval: null,
+    pollInterval: '',
     status: ''
   },
-  mounted() {
-    this.fetchData();
-    
-    if (this.status != 'completed') {
-      this.pollInterval = setInterval(this.fetchData(), 120000);
-    }
+  created() {
+    this.fetchData();    
+    this.pollInterval = setInterval(this.fetchData(), 30000);
+  },
+  beforeDestroy() {
+    clearInterval(this.pollInterval)
   },
   methods: {
     fetchData: function() {
