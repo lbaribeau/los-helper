@@ -2,6 +2,8 @@ networkx
 nx
 *.db-journal
 main/old
+*.json
+nohup.out
 
 #################
 ## Eclipse
@@ -16,7 +18,6 @@ tmp/
 *.bak
 *.swp
 *~.nib
-*.json
 local.properties
 .classpath
 .settings/
