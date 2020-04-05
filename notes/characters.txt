@@ -8,3 +8,4 @@ Flerp anti-paladin
 Aerp mage (w/ burn)
 Ferp mage (beetle cave)
 Merp thief (swamp troll)
+Serp Alchemist

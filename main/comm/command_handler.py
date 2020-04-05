@@ -16,6 +16,7 @@ from command.Go import Go
 from comm import RegexStore
 from bots.TrackGrindThread import TrackGrindThread
 from bots.SmartGrindThread import SmartGrindThread
+from bots.NoobGrindThread import NoobGrindThread
 from bots.CrawlThread import CrawlThread
 from bots.SmartCrawlThread import SmartCrawlThread
 from bots.GotoThread import GotoThread
@@ -220,6 +221,10 @@ class CommandHandler(object):
             self.inventory.sell_stuff()
         elif user_input.startswith('Dr'):
             self.inventory.drop_stuff()
+        elif user_input.startswith('ugo'):
+            self.process("unlock east wood")
+            self.process("east")
+            self.user_move("east")
         elif user_input == 'ga':
             # self.telnetHandler.write('get all')
             self.get.execute('all')
@@ -255,6 +260,8 @@ class CommandHandler(object):
             self.smartCombat.use.stop()
         elif re.match("bot ?$|bot [0-9]+$", user_input):
             self.start_track_grind(user_input)
+        elif re.match("noobgrind", user_input):
+            self.start_noob_grind()
         elif re.match("grind$", user_input):
             self.start_grind(user_input)
         elif re.match("bot2$", user_input):
@@ -618,6 +625,11 @@ class CommandHandler(object):
             return False
         else:
             return True
+
+    def start_noob_grind(self):
+        if self.bot_check():
+            self.botThread = NoobGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.botThread.start()
 
     def start_track_grind(self, user_input):
         magentaprint("CommandHandler start_track_grind()")
