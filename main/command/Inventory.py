@@ -18,7 +18,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
     keep_list = [
         'large bag', 'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
         'chicken soup', 'small flask', 'large restorative', 'scarlet potion', 'tree root', 'white potion', 'small restorative',
-        'Elixir of Morinva', 'granite potion', 'philtre of perception', 'burnt ochre potion', 'granite rod', 'heathen amulet',
+        'Elixir of Morinva', 'granite potion', 'philtre of perception', 'burnt ochre potion','granite rod', 'heathen amulet',
         # 'spear',
         # 'bolos',
         'javelin', 'heavy crossbow', 'throwing stars', 'throwing star',
@@ -30,17 +30,17 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         # 'small mace',
         'morning star', 'superior dwarven hammer',
         # 'war hammer',
-        'hard cap', 'hard gloves', 'hard boots', 'padded hat', 'mountain gloves', 'mountain boots',
-        'mountain boots with crampons', 'travellers cross', 'leather mask', 'leather collar', 'studded leather collar',
+        # 'hard cap', 'hard gloves', 'hard boots', 'padded hat', 'mountain gloves', 'mountain boots',
+        # 'mountain boots with crampons', 'travellers cross', 'leather mask', 'leather collar', 'studded leather collar',
         # 'studded leather sleeves', 'studded leather boots', 'studded leather pants', 'studded leather gloves','studded leather leggings' 
-        'plate mail leggings', 'plate mail armor',
-        'ring mail armour', 'ring mail sleeves', 'ring mail leggings', 'ring mail hood',
+        # 'plate mail leggings', 'plate mail armor',
+        # 'ring mail armour', 'ring mail sleeves', 'ring mail leggings', 'ring mail hood',
         # 'ring mail gauntlets',
         # 'chain mail armour',  # sawmill
-        'chain mail sleeves', 'chain mail leggings', 'chain mail hood', 'chain mail boots',
+        # 'chain mail sleeves', 'chain mail leggings', 'chain mail hood', 'chain mail boots',
         # 'chain mail gloves', # mill worker
-        'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring',
-        'iron shield', 'platinum ring', 'gold ring', 'steel ring', 'silver ring',
+        # 'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring',
+        # 'iron shield', 'platinum ring', 'gold ring', 'steel ring', 'silver ring',
         #'steel mask' # spiv, sawmill
     ]
 
