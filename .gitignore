@@ -2,7 +2,7 @@ networkx
 nx
 *.db-journal
 main/old
-*.json
+reporting_website/api/*.json
 nohup.out
 
 #################
