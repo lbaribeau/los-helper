@@ -65,8 +65,8 @@ class TrackGrindThread(GrindThread):
             'down','n','n','n','n','ne','n','w','n','n','e','door','w','gully','up','boulder','up',
             'cave 3','ne','ne','n','s','up','e','se','cave','out']
 
-        # if self.character.level >= 8:
-        #     self.KOBOLD_PATH += ['prepare', 'e', 'ne', 'door', 'door', 'prepare', 'sw','w']
+        if self.character.level >= 9:
+            self.KOBOLD_PATH += ['prepare', 'e', 'ne', 'door', 'door', 'prepare', 'sw','w']
             # Note: You can remove the following line of code to remove the kobold guards and priests fights.
             # Priests turn you very blue.  These fights may be difficult.
             # Also useful to test mobs who join in.
@@ -242,7 +242,7 @@ class TrackGrindThread(GrindThread):
             # quite remember where they are and don't want to go through Amber
             # Also I think it's safe enough in the dark... maybe just lvl 4
             # there are thugs
-            if self.character.level <= 7:
+            if self.character.level <= 6:
                 return self.CORAL_ALLEY_PATH[:]
             else:
                 self.__nextpath = self.__nextpath + 1  # So that we don't go selling

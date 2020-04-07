@@ -260,12 +260,12 @@ class Cartography(BotReactionWithFlag):
     def catalog_monsters(self, area, monster_list):
         try:
             for monster in monster_list:
-                mob = Mob(name=monster)
+                mob = Mob(name=str(monster))
                 mob.map()
 
                 if (self.character.ACTIVELY_BOTTING):
                     if (mob.approximate_level == None):
-                        self.commandHandler.process('l ' + monster)
+                        self.commandHandler.process('l ' + str(monster))
 
                 # magentaprint(str(mob))
 
@@ -274,7 +274,7 @@ class Cartography(BotReactionWithFlag):
 
                 magentaprint("Cartography catalog_monsters: " + str(mob_location))
         except Exception as e:
-            magentaprint(["Problem cataloging monsters", e], False)
+            magentaprint(["Problem cataloging monsters", e, mob], False)
 
     def catalog_monster_bio(self, name, description, level):
         try:
