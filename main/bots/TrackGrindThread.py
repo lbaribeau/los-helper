@@ -253,7 +253,6 @@ class TrackGrindThread(GrindThread):
             if self.character.level >= 8:
                 return self.NORTHERN_BANDITS_PATH[:]
             else:
-                magentaprint("Not going to do bandits - aura unknown.")
                 self.__nextpath = self.__nextpath + 1  # So that we don't go selling
                 return self.PATH_TO_SKIP_WITH[:]
         elif self.__nextpath == 15:
