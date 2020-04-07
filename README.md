@@ -7,7 +7,6 @@ los-helper is a python script meant to automate certain aspects of mudding.
 * Python3+
 * Peewee - pip install peewee
 * NetworkX - pip install networkx
-* Flask - pip install flask
 
 ## Running the helper
 

@@ -351,7 +351,7 @@ class CommandHandler(object):
             magentaprint("Version: " + str(misc_functions.VERSION), False)
             magentaprint(self.character.__dict__, False)
         elif re.match("(?i)report", user_input):
-            report = self.combat_reactions.report()
+            report = self.combat_reactions.report(False)
             report['mkl'] = self.character.MONSTER_KILL_LIST
         elif re.match("(?i)mobs_joined_in", user_input):
             magentaprint(self.character.MOBS_JOINED_IN, False)

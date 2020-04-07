@@ -12,6 +12,8 @@ class NoobGrindThread(TrackGrindThread):
         'unlock_east', 'east', 'engage_skelington', 'west',
         'unlock_east', 'east', 'engage_skelington', 'west',
         'unlock_east', 'east', 'engage_skelington', 'west',
+        'unlock_east', 'east', 'engage_skelington', 'west',
+        'unlock_east', 'east', 'engage_skelington', 'west',
         'drop_keys'
         ]
 
@@ -22,7 +24,7 @@ class NoobGrindThread(TrackGrindThread):
       return self.track[:]
 
     def do_pre_go_actions(self):
-      pass
+      self.buff_up()
 
     def do_go_hooks(self, exit_str):
       if exit_str == "purchase_key":
@@ -49,6 +51,7 @@ class NoobGrindThread(TrackGrindThread):
         self.engage_monster('skeleton')
         return True
       elif exit_str == "drop_keys":
+        self.commandHandler.process("drop fragile yes")
         self.commandHandler.process("drop fragile yes")
         self.commandHandler.process("drop fragile yes")
         self.commandHandler.process("drop fragile yes")

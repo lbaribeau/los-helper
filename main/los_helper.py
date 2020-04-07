@@ -115,6 +115,9 @@ class LosHelper(object):
         if '-grind' in sys.argv:
             self.commandHandler.start_grind("grind")
 
+        if '-noobgrind' in sys.argv:
+            self.commandHandler.start_noob_grind()
+
         if '-fast' in sys.argv:
             self.character.MANA_TO_ENGAGE = 0
             self.character.NEEDS_MAGIC = False

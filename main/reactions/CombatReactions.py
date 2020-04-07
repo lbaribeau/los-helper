@@ -106,18 +106,18 @@ class CombatReactions(object):
         if self.character.is_headless and combat_state != self.in_combat:
             output_api_feed('report', self.report())
 
-    def report(self):
+    def report(self, no_print=True):
         exp = self.character.TOTAL_EXPERIENCE
         gold = self.character.TOTAL_GOLD
         aura = self.character.AURA
-        magentaprint("Current Aura: " + str(aura), False)
-        magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), False)
+        magentaprint("Current Aura: " + str(aura), no_print)
+        magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), no_print)
         exp = self.character.EXPERIENCE
         expm = str(calculate_vpm(exp))
-        magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
+        magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, no_print)
         kills = len(self.mobs_killed)
         kpm = str(calculate_vpm(kills))
-        magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, False)
+        magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, no_print)
         total_phys_attacks = self.hits_dealt + self.hits_missed
         # crits_landed = self.character.CRITS_LANDED
         spells_hit = self.spells_cast - self.spells_failed
@@ -131,7 +131,7 @@ class CombatReactions(object):
             spell_hit_rate = (round((spells_hit / self.spells_cast) * 100, 1) if self.spells_cast > 0 else 0)
             spell_crit_rate = -1
         except Exception as e:
-            magentaprint(e, False)
+            magentaprint(e, no_print)
             average_phys_damage = -2
             average_spell_damage = -2
             phys_hit_rate = -2
@@ -140,11 +140,11 @@ class CombatReactions(object):
             spell_crit_rate = -2
 
         magentaprint(str(self.hits_dealt) + ",  " + str(total_phys_attacks) + ",  " + str(spells_hit) + ",  " + str(self.spells_cast))
-        magentaprint("Average Phys Damage: " + str(average_phys_damage) + " | Average Spell Damage: " + str(average_spell_damage), False)
-        magentaprint("Phys Hit Rate: " + str(phys_hit_rate) + "% | Spell Hit Rate: " + str(spell_hit_rate) + "%", False)
-        magentaprint("Phys Crit Rate: " + str(phys_crit_rate) + " | Spell Crit Rate: " + str(spell_crit_rate) + "%", False)
+        magentaprint("Average Phys Damage: " + str(average_phys_damage) + " | Average Spell Damage: " + str(average_spell_damage), no_print)
+        magentaprint("Phys Hit Rate: " + str(phys_hit_rate) + "% | Spell Hit Rate: " + str(spell_hit_rate) + "%", no_print)
+        magentaprint("Phys Crit Rate: " + str(phys_crit_rate) + " | Spell Crit Rate: " + str(spell_crit_rate) + "%", no_print)
         runtime = round(get_runtime_in_minutes(), 2)
-        magentaprint("Minutes Run: " + str(runtime), False)
+        magentaprint("Minutes Run: " + str(runtime), no_print)
 
         output = {
                 'hp': self.character.hp,

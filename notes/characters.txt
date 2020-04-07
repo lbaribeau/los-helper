@@ -9,3 +9,5 @@ Aerp mage (w/ burn)
 Ferp mage (beetle cave)
 Merp thief (swamp troll)
 Serp Alchemist
+Rerp cleric gnome 3 3 12 18 18
+Terp cleric dwarf 10 10 10 10 14
