@@ -31,3 +31,8 @@ los-helper is a python script meant to automate certain aspects of mudding.
 * -grind: starts SmartGrind immediately after the map loads
 * -fast: sets mana_to_wait and magic requirements to 0
 * -headless: pushes data to the report.json file in /main
+
+## Setting up a new vm
+sudo apt-get git
+sudo curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
+sudo python3.5 get-pip.py
