@@ -250,20 +250,11 @@ class TrackGrindThread(GrindThread):
         elif self.__nextpath == 11:
             return self.FORT_PATH[:]
         elif self.__nextpath == 13:
-            if not self.cast.aura:
-                if self.character.level >= 8:
-                    return self.NORTHERN_BANDITS_PATH[:]
-                else:
-                    magentaprint("Not going to do bandits - aura unknown.")
-                    self.__nextpath = self.__nextpath + 1  # So that we don't go selling
-                    return self.PATH_TO_SKIP_WITH[:]
-            elif (self.character.level >= 8 or self.cast.aura < Aura('pale blue')) or \
-                self.cast.aura <= self.character.preferred_aura:
+            if self.character.level >= 8:
                 return self.NORTHERN_BANDITS_PATH[:]
             else:
-                magentaprint("Not going to do bandits. Current aura, and preferred: %s,  %s" %
-                             (self.cast.aura, self.character.preferred))
-                self.__nextpath = self.__nextpath + 1   # So that we don't go selling
+                magentaprint("Not going to do bandits - aura unknown.")
+                self.__nextpath = self.__nextpath + 1  # So that we don't go selling
                 return self.PATH_TO_SKIP_WITH[:]
         elif self.__nextpath == 15:
             return self.MUGGER_PATH[:]
