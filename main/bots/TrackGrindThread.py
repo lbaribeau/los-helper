@@ -242,7 +242,7 @@ class TrackGrindThread(GrindThread):
             # quite remember where they are and don't want to go through Amber
             # Also I think it's safe enough in the dark... maybe just lvl 4
             # there are thugs
-            if self.character.level <= 6:
+            if self.character.level <= 7:
                 return self.CORAL_ALLEY_PATH[:]
             else:
                 self.__nextpath = self.__nextpath + 1  # So that we don't go selling

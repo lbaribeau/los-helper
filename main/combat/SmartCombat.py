@@ -49,7 +49,10 @@ class SmartCombat(CombatObject):
                                    Spells.hurt if Spells.hurt in character.spells else \
                                    Spells.burn if Spells.burn in character.spells else Spells.blister
         else:
-            self.favourite_spell = Spells.rumble if spell_percent == character.info.earth else \
+            if spell_percent == character.info.earth:
+                self.favourite_spell = Spells.crush if Spells.crush in character.spells else Spells.rumble
+            else:
+                self.favourite_spell = Spells.rumble if spell_percent == character.info.earth else \
                                    Spells.hurt if spell_percent == character.info.wind else \
                                    Spells.burn if spell_percent == character.info.fire else Spells.blister
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
@@ -188,6 +191,11 @@ class SmartCombat(CombatObject):
         self.fleeing = False
         self.broke_ring = False
         self.casting = self.black_magic or Spells.vigor in self.character.spells
+        is_combat_ready = True
+        is_cast_ready = True
+        self.kill.wait_until_ready()
+        if self.character._class.id == 'Mag':
+            self.cast.wait_until_ready()
 
         self.use_any_fast_combat_abilities()  # ie. Touch, Dance
 
@@ -198,14 +206,21 @@ class SmartCombat(CombatObject):
             if self.fleeing and not self.cast.wait_time() - self.kill.wait_time() > self.kill.cooldown_after_success:
                 self.escape()
             elif self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
-                self.kill.wait_until_ready()
+                if not is_combat_ready:
+                    is_combat_ready = False
+                else:
+                    self.kill.wait_until_ready()
                 if self.stopping:
                     break
                 self.use_slow_combat_ability_or_attack()
                 # magentaprint("SmartCombat finished attack, stopping: " + str(self.stopping))
                 # time.sleep(0.1)
             else:
-                self.cast.wait_until_ready()
+                if not is_cast_ready:
+                    is_cast_ready = False
+                else:
+                    self.cast.wait_until_ready()
+
                 damage = self.character.maxHP - self.character.HEALTH
                 if self.stopping:
                     continue
