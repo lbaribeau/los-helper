@@ -225,7 +225,6 @@ main/__pycache__/*
 main/*.db
 maplos.db
 /reporting_website/static/reports/*
-/reporting_website/api/*
 
 *.plist
 
