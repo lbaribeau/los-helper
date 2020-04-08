@@ -48,7 +48,7 @@ class GrindThread(BotThread):
         #     # return self.go(exit_str)   # Erhm self.go calls us, not the other way around
         #     self.commandHandler.go.persistent_execute(exit_str)
         #     return self.commandHandler.go.success
-        if exit_str == "prepare":
+        if exit_str == "sprepare":
             self.commandHandler.process(exit_str)
             return True
         elif exit_str == "sell_items":

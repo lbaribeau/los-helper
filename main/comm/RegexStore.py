@@ -280,6 +280,7 @@ attack_hit = [
     "Your touch completely overwhelms the (.+?)!"
 ]
 attack_miss = [
+    "Your blow did no damage.",
     "You hack with your .+?, but your blow swings wide of the mark\.",
     "You slice your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+but\s+miss\.",
     "You slash at (?:the )?(" + __numbers + " )?(.+?), but miss\.",

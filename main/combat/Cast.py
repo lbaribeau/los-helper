@@ -19,8 +19,8 @@ class Cast(SimpleCombatObject):
     error_regexes = [RegexStore.bad_target_or_spell, RegexStore.not_here]
 
     aura = None
-    aura_timer = 120
-    aura_refresh = 5
+    aura_timer = 300
+    aura_refresh = 300
 
     vig_amount = 2
     mend_amount = 5

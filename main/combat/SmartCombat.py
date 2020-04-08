@@ -53,8 +53,8 @@ class SmartCombat(CombatObject):
             #     self.favourite_spell = Spells.crush if Spells.crush in character.spells else Spells.rumble
             # else:
             self.favourite_spell = Spells.rumble if spell_percent == character.info.earth else \
-                                   Spells.hurt if spell_percent == character.info.wind else \
-                                   Spells.burn if spell_percent == character.info.fire else Spells.blister
+                               Spells.hurt if spell_percent == character.info.wind else \
+                               Spells.burn if spell_percent == character.info.fire else Spells.blister
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
         self.character = character
         self.regex_cart.extend([
@@ -205,42 +205,56 @@ class SmartCombat(CombatObject):
             # magentaprint("SmartCombat loop kill.timer " + str(round(self.kill.wait_time(), 1)) + " cast.timer " + str(round(self.cast.wait_time(), 1)) + ".")
             if self.fleeing and not self.cast.wait_time() - self.kill.wait_time() > self.kill.cooldown_after_success:
                 self.escape()
-            elif self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
-                if not is_combat_ready:
-                    is_combat_ready = False
-                else:
-                    self.kill.wait_until_ready()
-                if self.stopping:
-                    break
-                self.use_slow_combat_ability_or_attack()
-                # magentaprint("SmartCombat finished attack, stopping: " + str(self.stopping))
-                # time.sleep(0.1)
             else:
-                if not is_cast_ready:
-                    is_cast_ready = False
+                if self.character._class.id != 'Mag':
+                    if self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
+                        if self.do_phys_attack():
+                            break
+                    else:
+                        if self.do_magic_attack():
+                            continue
                 else:
-                    self.cast.wait_until_ready()
-
-                damage = self.character.maxHP - self.character.HEALTH
-                if self.stopping:
-                    continue
-                elif not self.black_magic and ((self.character.MANA >= 2 and damage > self.character.max_vigor()) or \
-                     (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7)):
-                     # (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7 and damage > self.character.hptick()):
-                    # TODO: cast vigor if a tick is about to come and we're full mana
-                    self.do_cast('v')
-                elif self.mob_charmed:
-                    time.sleep(min(0.2, self.kill.wait_time()))
-                    # time.sleep(min(0.2, self.kill.wait_time() + 0.05))
-                elif self.black_magic and ((self.spell in Spells._lvl1 and self.character.MANA >= 3) or
-                                           (self.spell in Spells._lvl2 and self.character.MANA >= 7)):  # Todo: add oom check
-                    self.do_cast(self.spell, self.target)
-                elif self.black_magic and self.spell in Spells._lvl2 and self.character.MANA < 7 and self.character.MANA >= 3:
-                    self.do_cast(Spells._lvl1[Spells._lvl2.index(self.spell)], self.target)
-                else:
-                    time.sleep(min(0.2, self.kill.wait_time()))
+                    if self.cast.up() or self.cast.wait_time() <= self.kill.wait_time() or self.casting:
+                        if self.do_magic_attack():
+                            break
+                    else:
+                        if self.do_phys_attack():
+                            continue
 
         magentaprint(str(self) + " ending run.")
+
+    def do_phys_attack(self):
+        self.kill.wait_until_ready()
+        if self.stopping:
+            return True
+        self.use_slow_combat_ability_or_attack()
+        # magentaprint("SmartCombat finished attack, stopping: " + str(self.stopping))
+        # time.sleep(0.1)
+        return False
+
+    def do_magic_attack(self):
+        self.cast.wait_until_ready()
+
+        damage = self.character.maxHP - self.character.HEALTH
+        if self.stopping:
+            return True
+        elif not self.black_magic and ((self.character.MANA >= 2 and damage > self.character.max_vigor()) or \
+             (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7)):
+             # (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7 and damage > self.character.hptick()):
+            # TODO: cast vigor if a tick is about to come and we're full mana
+            self.do_cast('v')
+        elif self.mob_charmed:
+            time.sleep(min(0.2, self.kill.wait_time()))
+            # time.sleep(min(0.2, self.kill.wait_time() + 0.05))
+        elif self.black_magic and ((self.spell in Spells._lvl1 and self.character.MANA >= 3) or
+                                   (self.spell in Spells._lvl2 and self.character.MANA >= 7)):  # Todo: add oom check
+            self.do_cast(self.spell, self.target)
+        elif self.black_magic and self.spell in Spells._lvl2 and self.character.MANA < 7 and self.character.MANA >= 3:
+            self.do_cast(Spells._lvl1[Spells._lvl2.index(self.spell)], self.target)
+        else:
+            time.sleep(min(0.2, self.kill.wait_time()))
+
+        return False
 
     def do_cast(self, spell, target=None):
         self.cast.persistent_cast(spell, target)

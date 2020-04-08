@@ -22,7 +22,7 @@ class SmartGrindThread(TrackGrindThread):
         self.cur_target = None
         self.cur_area_id = self.character.AREA_ID
 
-        self.low_level = int(math.floor(self.character.level / 2)) - 2
+        self.low_level = int(math.floor(self.character.level / 2)) - 1
         if (self.low_level < 1):
             self.low_level = 1
 
@@ -233,6 +233,7 @@ class SmartGrindThread(TrackGrindThread):
         # self.low_level = int(math.ceil(self.character.level / 2)) - 2
         magentaprint("Current Aura Scale: " + str(Aura.auras))
         magentaprint("Preferred Aura Scale: " + str(self.character.preferred_aura))
+        aura_context = "fine"
 
         if self.character.level < 3:
             self.min_target_aura = Aura('demonic red')
@@ -242,15 +243,19 @@ class SmartGrindThread(TrackGrindThread):
             # Too evil
             # self.low_level = 2
             self.min_target_aura = Aura('demonic red')
-            self.max_target_aura = Aura('grey')
+            self.max_target_aura = Aura('dusty red')
+            aura_context = "too evil"
         elif self.cast.aura > self.character.preferred_aura:
             # Too good
             # self.low_level = 2
-            self.min_target_aura = Aura('grey')
+            self.min_target_aura = Aura('dusty blue')
             self.max_target_aura = Aura('heavenly blue')
+            aura_context = "way too good"
         else:
             self.min_target_aura = Aura('demonic red')
             self.max_target_aura = Aura('heavenly blue')
+
+        magentaprint("My aura is {}".format(aura_context), False)
 
         self.get_targets()
 

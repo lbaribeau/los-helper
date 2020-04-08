@@ -66,7 +66,7 @@ class TrackGrindThread(GrindThread):
             'cave 3','ne','ne','n','s','up','e','se','cave','out']
 
         if self.character.level >= 9:
-            self.KOBOLD_PATH += ['prepare', 'e', 'ne', 'door', 'door', 'prepare', 'sw','w']
+            self.KOBOLD_PATH += ['sprepare', 'e', 'ne', 'door', 'door', 'sprepare', 'sw','w']
             # Note: You can remove the following line of code to remove the kobold guards and priests fights.
             # Priests turn you very blue.  These fights may be difficult.
             # Also useful to test mobs who join in.
@@ -170,6 +170,14 @@ class TrackGrindThread(GrindThread):
 
         self.PATH_TO_SKIP_WITH = ['out','chapel']
 
+    def do_go_hooks(self, exit_str):
+        if exit_str == "sprepare":
+            self.sleep(3)
+            self.commandHandler.process("prepare")
+            return True
+        else:
+            return super().do_go_hooks(exit_str)
+
     def do_pre_go_actions(self):
         self.rest_and_check_aura()
         self.check_weapons()
@@ -256,7 +264,11 @@ class TrackGrindThread(GrindThread):
                 self.__nextpath = self.__nextpath + 1  # So that we don't go selling
                 return self.PATH_TO_SKIP_WITH[:]
         elif self.__nextpath == 15:
-            return self.MUGGER_PATH[:]
+            if self.character.level >= 9:
+                return self.MUGGER_PATH[:]
+            else:
+                self.__nextpath = self.__nextpath + 1  # So that we don't go selling
+                return self.PATH_TO_SKIP_WITH[:]
         elif self.__nextpath == 17:
             return self.DWARVEN_FIELD_WORKERS_PATH[:]
         elif self.__nextpath == 19:
