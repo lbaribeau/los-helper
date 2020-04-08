@@ -49,12 +49,12 @@ class SmartCombat(CombatObject):
                                    Spells.hurt if Spells.hurt in character.spells else \
                                    Spells.burn if Spells.burn in character.spells else Spells.blister
         else:
-            # if spell_percent == character.info.earth:
-            #     self.favourite_spell = Spells.crush if Spells.crush in character.spells else Spells.rumble
-            # else:
-            self.favourite_spell = Spells.rumble if spell_percent == character.info.earth else \
-                               Spells.hurt if spell_percent == character.info.wind else \
-                               Spells.burn if spell_percent == character.info.fire else Spells.blister
+            if spell_percent == character.info.earth:
+                self.favourite_spell = Spells.crush if Spells.crush in character.spells else Spells.rumble
+            else:
+                self.favourite_spell = Spells.rumble if spell_percent == character.info.earth else \
+                                   Spells.hurt if spell_percent == character.info.wind else \
+                                   Spells.burn if spell_percent == character.info.fire else Spells.blister
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
         self.character = character
         self.regex_cart.extend([
