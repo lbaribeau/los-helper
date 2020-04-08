@@ -66,7 +66,7 @@ class TrackGrindThread(GrindThread):
             'cave 3','ne','ne','n','s','up','e','se','cave','out']
 
         if self.character.level >= 9:
-            self.KOBOLD_PATH += ['sprepare', 'e', 'ne', 'door', 'door', 'sprepare', 'sw','w']
+            self.KOBOLD_PATH += ['slow_prepare', 'e', 'ne', 'door', 'door', 'slow_prepare', 'sw','w']
             # Note: You can remove the following line of code to remove the kobold guards and priests fights.
             # Priests turn you very blue.  These fights may be difficult.
             # Also useful to test mobs who join in.
@@ -171,8 +171,8 @@ class TrackGrindThread(GrindThread):
         self.PATH_TO_SKIP_WITH = ['out','chapel']
 
     def do_go_hooks(self, exit_str):
-        if exit_str == "sprepare":
-            self.sleep(3)
+        if exit_str == "slow_prepare":
+            self.sleep(5)
             self.commandHandler.process("prepare")
             return True
         else:
