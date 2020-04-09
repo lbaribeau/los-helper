@@ -65,8 +65,8 @@ class TrackGrindThread(GrindThread):
             'down','n','n','n','n','ne','n','w','n','n','e','door','w','gully','up','boulder','up',
             'cave 3','ne','ne','n','s','up','e','se','cave','out']
 
-        if self.character.level >= 9:
-            self.KOBOLD_PATH += ['slow_prepare', 'e', 'ne', 'door', 'door', 'slow_prepare', 'sw','w']
+        # if self.character.level >= 9:
+            # self.KOBOLD_PATH += ['slow_prepare', 'e', 'ne', 'door', 'door', 'slow_prepare', 'sw','w']
             # Note: You can remove the following line of code to remove the kobold guards and priests fights.
             # Priests turn you very blue.  These fights may be difficult.
             # Also useful to test mobs who join in.
@@ -166,7 +166,7 @@ class TrackGrindThread(GrindThread):
             'areaid1904', 'areaid1912', 'areaid1909', 'areaid1913','areaid1904', 'areaid1912', 'areaid1909',
             'areaid1913', 'areaid1904', 'areaid1912', 'areaid1909', 'areaid2'  # end with chapel
         ]
-        self.GNOLL_CAMP = ['areaid1574', 'areaid800', 'areaid1574', 'areaid800', 'areaid1574', 'areaid2']
+        self.GNOLL_CAMP = ['areaid986', 'areaid1733', 'areaid1737', 'areaid1735', 'areaid2']
 
         self.PATH_TO_SKIP_WITH = ['out','chapel']
 
@@ -230,19 +230,10 @@ class TrackGrindThread(GrindThread):
         elif self.__nextpath == 5:
             return self.MILITIA_SOLDIERS_PATH[:]
         elif self.__nextpath == 7:
-            if not self.cast.aura:
-                if self.character.level >= 4:
-                    return self.KOBOLD_PATH[:]
-                else:
-                    magentaprint("Not going to do kobolds - aura unknown.")
-                    self.__nextpath = self.__nextpath + 1  # So that we don't go selling
-                    return self.PATH_TO_SKIP_WITH[:]
-            elif (self.character.level >= 4 or self.cast.aura < Aura('pale blue')) or \
-                self.cast.aura <= self.character.preferred_aura:
+            if self.character.level >= 4 and self.character.level <= 11:
                 return self.KOBOLD_PATH[:]
             else:
-                magentaprint("Not going to do kobolds. Current aura, and preferred, comparison: %s,  %s, %s" %
-                             (str(self.cast.aura), str(self.character.preferred_aura), str(self.cast.aura <= self.character.preferred_aura)))
+                magentaprint("Not going to do kobolds - aura unknown.")
                 self.__nextpath = self.__nextpath + 1  # So that we don't go selling
                 return self.PATH_TO_SKIP_WITH[:]
         elif self.__nextpath == 9:

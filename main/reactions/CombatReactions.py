@@ -71,7 +71,7 @@ class CombatReactions(object):
                 magentaprint("Couldn't convert attack regex to dmg / int")
         elif regex in RegexStore.mob_defeated:
                 # number = M_obj.group(1)
-                mob = self.character.mobs.read_match(M_obj)
+                mob = self.character.mobs.read_match(M_obj).lower()
 
                 if mob not in self.mobs_killed:
                     self.mobs_killed[mob] = 0

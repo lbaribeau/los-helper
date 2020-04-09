@@ -26,14 +26,14 @@ class SmartGrindThread(TrackGrindThread):
         if (self.low_level < 1):
             self.low_level = 1
 
-        self.high_level = int(math.ceil(self.character.level / 2))# + 1 #risky business
+        self.high_level = max([int(math.ceil(self.character.level / 2)), self.character.level - 5])# + 1 #risky business
 
         self.min_target_aura = Aura('demonic red')
         self.max_target_aura = Aura('heavenly blue')
 
     def do_pre_go_actions(self):
         super().do_pre_go_actions()
-        # self.go_rest_if_not_ready()
+        self.go_rest_if_not_ready()
 
         # self.inventory.get_inventory()
         # # self.inventory.get_equipment(self.character.name)
@@ -280,6 +280,7 @@ class SmartGrindThread(TrackGrindThread):
             magentaprint("Walking back to the chapel")
             self.direction_list = self.get_heal_path(self.character.AREA_ID)
             self.no_exit_count = 0
+            self.commandHandler.process("l")
         else:
             #magentaprint("Go no exit on: " + self.direction_list.pop(0), False)
             self.character.MOBS_JOINED_IN = []
@@ -295,6 +296,8 @@ class SmartGrindThread(TrackGrindThread):
             
             if len(directions) == 0:
                 self.rest_and_check_aura()
+            else:
+                self.direction_list = directions
 
 class SmartGrindTarget(object):
     def __init__(self, name, locations):

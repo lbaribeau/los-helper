@@ -12,6 +12,7 @@ class Mob(NamedModel):
     is_hostile = BooleanField(default=False)
     blocks_exit = BooleanField(default=False)
     blocks_pickup = BooleanField(default=False)
+    is_named = BooleanField(default=False)
 
     '''Private Mob Functions'''
     def map(self):
