@@ -177,6 +177,12 @@ not_here = [r"You don't see that here\."]
 # loot_blocked = [r"(?:The " + __numbers2 + ")?(.+?) won't let you take anything\."] #The spiv won't let you take anything.
 loot_blocked = [__Three_possible_mob_strings + r"won't let you take anything\."] #The spiv won't let you take anything.
 teleported = [r"### " + __player + r"'s body is teleported away to be healed\."]
+
+#You see a large pit ahead, but cannot stop in time!
+#You fall down into the pit!
+interstitial = [r"You fall down into the pit!"]
+
+
 # store_list = ["You may buy:\n\r((?:.+\n?)*)"]
 # store_list = ["You may buy:\s+(A |An |Some)("]
 #     ((?:.+\n?)*)"]

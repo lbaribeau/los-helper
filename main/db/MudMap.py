@@ -54,7 +54,7 @@ class MudMap(object):
     def __repr__(self):
         return self.to_string()
 
-    def get_path(self, start_area_id, end_area_id):
+    def get_path(self, start_area_id, end_area_id, include_ids=False):
         # magentaprint("MudMap.get_path self.los_map: " + str(self.los_map))
 
         if (end_area_id == 1):
@@ -68,17 +68,22 @@ class MudMap(object):
             raise e
 
         edge_path = []
+        area_ids = []
         i = 0
         while i < len(node_path) - 1:
             # self.magentaprint("MudMap looping... " + str(i))
             cur_edge = self.los_map.get_edge_data(node_path[i], node_path[i+1])
             edge_path.append(cur_edge['name'])
+            area_ids.append(node_path[i])
             i += 1
 
-        #magentaprint("MudMap: Node path: " + str(node_path), False)
-        self.magentaprint("MudMap.get_path() returning: " + str(edge_path))
+        # if include_ids:
+        #     return edge_path, area_ids
 
+        #magentaprint("MudMap: Node path: " + str(node_path), False)
+        # self.magentaprint("MudMap.get_path() returning: " + str(edge_path))
         return edge_path
+
 
     def magentaprint(self, text):
         newConsoleHandler().magenta()

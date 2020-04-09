@@ -15,10 +15,11 @@ class GotoThread(BotThread):
 
     def decide_where_to_go(self):
         directions = []
+        area_ids = []
         magentaprint(str(self.character.AREA_ID) + " to " + str(self.area_to_id), False)
 
         try:
-            directions = self.mud_map.get_path(self.character.AREA_ID, self.area_to_id)
+            directions = self.mud_map.get_path(self.character.AREA_ID, self.area_to_id, True)
             # Hmmm... get_path returning none...
         except Exception as e:
             # magentaprint("I/O error({0}): {1}".format(e.errno, e.strerror))
@@ -32,7 +33,13 @@ class GotoThread(BotThread):
             return []  # This will break the bot if the db gives a path through limbo
 
         if self.is_show_to:
+            showto_path = []
+            # i = 0
+            # while i < len(area_ids):
+            #     showto_path.append("{} <{}>".format(directions[i], area_ids[i]))
+            #     i += 1
             magentaprint(directions, False)
+            magentaprint(showto_path, False)
             directions = []
             self.stop()
 
