@@ -21,7 +21,7 @@ class TrackGrindThread(GrindThread):
         elif self.character.level <= 12:
             self.__TOTALPATHS = 22
         else:
-            self.__TOTALPATHS = 24
+            self.__TOTALPATHS = 26
         # elif self.character.level <= 10:
         #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
         # elif self.character.level > 12:
@@ -163,17 +163,34 @@ class TrackGrindThread(GrindThread):
         self.SPIDER_FOREST = ['areaid418', 'areaid1975', 'areaid1979', 'areaid1951', 'areaid415', 'areaid2']
         #The following areas repeat a bit because the spawns are fast
         self.KNIGHTS = [
-            'areaid1904', 'areaid1912', 'areaid1909', 'areaid1913','areaid1904', 'areaid1912', 'areaid1909',
-            'areaid1913', 'areaid1904', 'areaid1912', 'areaid1909', 'areaid2'  # end with chapel
+            'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south', 'southwest', 'southwest',
+            'southwest', 'southwest', 'south', 'south', 'south', 'southwest', 'southeast', 'south', 'south', 'south', 'south',
+            'south', 'east', 'east', 'east', 'southeast', 'south', 'east', 'east', 'east', 'east', 'east', 'northeast',
+            'northwest', 'northwest', 'northwest', 'northwest', 'north', 'east', 'east', 'east', 'south', 'southeast',
+            'east', 'east', 'northeast' 'west', 'west', 'west', 'east', 'east', 'east', 'north', 'west', 'west', 'west',
+            'east', 'east', 'east', 'north', 'north', 'northwest', 'southeast', 'south', 'red tent', 'stands', 'west', 
+            'southwest', 'south', 'west', 'west', 'west', 'south', 'southeast', 'southeast', 'southeast', 'southeast',
+            'southwest', 'west', 'west', 'west', 'west', 'west', 'north', 'northwest', 'west', 'west', 'west', 'north', 
+            'north', 'north', 'north', 'north', 'northwest', 'northeast', 'north', 'north', 'north', 'northeast', 'northeast', 
+            'northeast', 'northeast', 'north', 'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel'
         ]
-        self.GNOLL_CAMP = ['areaid986', 'areaid1733', 'areaid1736', '1737', 'areaid2']
+        self.GNOLL_CAMP = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'southeast',
+         'southeast', 'east', 'east', 'east', 'southeast', 'southeast', 'southeast', 'south', 'south', 'south', 'south',
+          'south', 'south', 'south', 'south', 'south', 'south', 'south', 'south', 'southwest', 'southwest', 'southwest',
+           'southwest', 'brush', 'west', 'west', 'south', 'southwest', 'southwest', 'tent', 'out', 'north', 'southeast',
+           'southeast', 'out', 'north', 'east', 'north', 'east', 'northwest', 'northeast', 'northeast', 'northeast',
+           'northeast', 'north', 'north', 'north', 'north', 'north', 'north', 'north', 'north', 'north', 'north',
+           'north', 'north', 'northwest', 'northwest', 'northwest', 'west', 'west', 'west', 'northwest', 'northwest',
+           'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
 
-        self.PATH_TO_SKIP_WITH = ['think','curse']
+        self.PATH_TO_SKIP_WITH = ['think']
 
     def do_go_hooks(self, exit_str):
         if exit_str == "slow_prepare":
             self.sleep(5)
             self.commandHandler.process("prepare")
+            return True
+        elif exit_str == "think":
             return True
         else:
             return super().do_go_hooks(exit_str)
@@ -248,9 +265,9 @@ class TrackGrindThread(GrindThread):
         elif self.__nextpath == 23:
             return self.track_builder(self.GNOLL_CAMP, 12, 20)
         elif self.__nextpath == 25:
-            return self.track_builder(self.SPIDER_FOREST, 12, 20)
-        elif self.__nextpath == 27:
             return self.track_builder(self.KNIGHTS, 12, 20)
+        elif self.__nextpath == 27:
+            return self.track_builder(self.SPIDER_FOREST, 12, 20)
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.__nextpath))
             return list(self.PATH_TO_SKIP_WITH[:])
