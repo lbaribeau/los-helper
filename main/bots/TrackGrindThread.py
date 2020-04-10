@@ -18,10 +18,10 @@ class TrackGrindThread(GrindThread):
         elif self.character.level <= 7:
             # lvl 7 strong enough for bandits
             self.__TOTALPATHS = 16
-        elif self.character.level <= 10:
+        elif self.character.level <= 12:
             self.__TOTALPATHS = 22
         else:
-            self.__TOTALPATHS = 22
+            self.__TOTALPATHS = 24
         # elif self.character.level <= 10:
         #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
         # elif self.character.level > 12:
@@ -166,9 +166,9 @@ class TrackGrindThread(GrindThread):
             'areaid1904', 'areaid1912', 'areaid1909', 'areaid1913','areaid1904', 'areaid1912', 'areaid1909',
             'areaid1913', 'areaid1904', 'areaid1912', 'areaid1909', 'areaid2'  # end with chapel
         ]
-        self.GNOLL_CAMP = ['areaid986', 'areaid1733', 'areaid1737', 'areaid1735', 'areaid2']
+        self.GNOLL_CAMP = ['areaid986', 'areaid1733', 'areaid1736', '1737', 'areaid2']
 
-        self.PATH_TO_SKIP_WITH = ['out','chapel']
+        self.PATH_TO_SKIP_WITH = ['think','curse']
 
     def do_go_hooks(self, exit_str):
         if exit_str == "slow_prepare":
@@ -224,58 +224,46 @@ class TrackGrindThread(GrindThread):
             else:
                 magentaprint("Trackgrind skipped pawning/dropping!!!")
         elif self.__nextpath == 1:
-            return self.THEATRE_PATH[:]
+            return self.track_builder(self.THEATRE_PATH, 1, 20)
         elif self.__nextpath == 3:
-            return self.MARKET_PATH[:]
+            return self.track_builder(self.MARKET_PATH, 1, 20)
         elif self.__nextpath == 5:
-            return self.MILITIA_SOLDIERS_PATH[:]
+            return self.track_builder(self.MILITIA_SOLDIERS_PATH, 1, 20)
         elif self.__nextpath == 7:
-            if self.character.level >= 4 and self.character.level <= 11:
-                return self.KOBOLD_PATH[:]
-            else:
-                magentaprint("Not going to do kobolds - aura unknown.")
-                self.__nextpath = self.__nextpath + 1  # So that we don't go selling
-                return self.PATH_TO_SKIP_WITH[:]
+            return self.track_builder(self.KOBOLD_PATH, 4, 11)
         elif self.__nextpath == 9:
-            # hookers ... I would avoid the drunken trouble makers, but I don't
-            # quite remember where they are and don't want to go through Amber
-            # Also I think it's safe enough in the dark... maybe just lvl 4
-            # there are thugs
-            if self.character.level <= 6:
-                return self.CORAL_ALLEY_PATH[:]
-            else:
-                self.__nextpath = self.__nextpath + 1  # So that we don't go selling
-                return self.PATH_TO_SKIP_WITH[:]
+            return self.track_builder(self.CORAL_ALLEY_PATH, 1, 6)
         elif self.__nextpath == 11:
-            return self.FORT_PATH[:]
+            return self.track_builder(self.FORT_PATH, 1, 20)
         elif self.__nextpath == 13:
-            if self.character.level >= 8:
-                return self.NORTHERN_BANDITS_PATH[:]
-            else:
-                self.__nextpath = self.__nextpath + 1  # So that we don't go selling
-                return self.PATH_TO_SKIP_WITH[:]
+            return self.track_builder(self.NORTHERN_BANDITS_PATH, 1, 20)
         elif self.__nextpath == 15:
-            if self.character.level >= 9:
-                return self.MUGGER_PATH[:]
-            else:
-                self.__nextpath = self.__nextpath + 1  # So that we don't go selling
-                return self.PATH_TO_SKIP_WITH[:]
+            return self.track_builder(self.MUGGER_PATH, 9, 20)
         elif self.__nextpath == 17:
-            return self.DWARVEN_FIELD_WORKERS_PATH[:]
+            return self.track_builder(self.DWARVEN_FIELD_WORKERS_PATH, 9, 20)
         elif self.__nextpath == 19:
-            return self.MILL_WORKERS[:]
+            return self.track_builder(self.MILL_WORKERS, 9, 20)
         elif self.__nextpath == 21:
-            return self.RANCHER_SENTRY[:]
+            return self.track_builder(self.RANCHER_SENTRY, 9, 20)
         elif self.__nextpath == 23:
-            return self.SPIDER_FOREST[:]
+            return self.track_builder(self.GNOLL_CAMP, 12, 20)
         elif self.__nextpath == 25:
-            return self.GNOLL_CAMP[:]
+            return self.track_builder(self.SPIDER_FOREST, 12, 20)
         elif self.__nextpath == 27:
-            return self.KNIGHTS[:]
+            return self.track_builder(self.KNIGHTS, 12, 20)
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.__nextpath))
             return list(self.PATH_TO_SKIP_WITH[:])
         return list(self.PATH_TO_SKIP_WITH[:])
+
+    def track_builder(self, track, min_level, max_level):
+        level_range = range(min_level, max_level)
+
+        if self.character.level in level_range:
+            return track[:]
+        else:
+            self.__nextpath = self.__nextpath + 1
+            return self.PATH_TO_SKIP_WITH[:]
 
 # Just thinking about changing top level...
 
