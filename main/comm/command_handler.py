@@ -33,13 +33,13 @@ from command.Get import Get
 from comm.Spells import *
 from comm.thread_maker import ThreadMaker
 from Aura import Aura
-# from command.repair import Repair
-# from command.wear import Wear
+from command.Repair import Repair
+from command.wear import Wear
 from mini_bots.armour_bot import ArmourBot
 from command.equipment import Equipment
 from mini_bots.smithy_bot import SmithyBot
 from mini_bots.weapon_bot import WeaponBot
-# from mini_bots.simple_weapon_bot import SimpleWeaponBot
+from mini_bots.simple_weapon_bot import SimpleWeaponBot
 from mini_bots.travel_bot import TravelBot
 
 class CommandHandler(object):
@@ -80,12 +80,6 @@ class CommandHandler(object):
         self.get = Get(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.get)
         self.use = self.smartCombat.use
-<<<<<<< HEAD
-        # self.repair = Repair(telnetHandler)
-        # mudReaderHandler.add_subscriber(self.repair)
-        # self.wear = Wear(telnetHandler)
-        # mudReaderHandler.add_subscriber(self.wear)
-=======
         self.repair = Repair(telnetHandler)
         mudReaderHandler.add_subscriber(self.repair)
         self.wear = Wear(telnetHandler)
@@ -95,7 +89,6 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.equipment)
         mudReaderHandler.add_buffer_completion_subscriber(self.equipment)
         # self.eq_bot = EquipmentBot(character, self, self.mudReaderHandler, self.mud_map)
->>>>>>> LDev
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
@@ -726,13 +719,8 @@ class CommandHandler(object):
             kill = True
 
         if self.bot_check():
-<<<<<<< HEAD
             self.botThread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, master, kill)
             self.botThread.start()
-=======
-            self.bot_thread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, "")
-            self.bot_thread.start()
->>>>>>> LDev
 
     def start_mix(self, user_input):
         if self.bot_check():

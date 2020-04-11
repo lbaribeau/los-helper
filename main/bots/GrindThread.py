@@ -33,8 +33,8 @@ class GrindThread(BotThread):
         # TrackGrind overrides this...
         if self.in_chapel():
             self.rest_and_check_aura()
-            self.check_weapons()  #TODO: shopping doesn't work everywhere
-            self.check_armour()
+            # self.check_weapons()  #TODO: shopping doesn't work everywhere
+            # self.check_armour()
 
     def do_go_hooks(self, exit_str):
         # Commenting: return False here to get BotThread (parent) to execute the 'go'

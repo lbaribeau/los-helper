@@ -143,14 +143,9 @@ class MudReaderThread(threading.Thread):
                 else:  #not currently escaping:
                     text_out = text_out + c
             # Check for some colors.
-<<<<<<< HEAD
-            
+
             if get_verbose_mode():
                 sys.stdout.write(text_out)
-=======
-
-            sys.stdout.write(text_out)
->>>>>>> LDev
 
             # Not using print because it inserts extra spaces.
 

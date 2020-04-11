@@ -174,7 +174,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         # 'silver dagger', 'long sword',  #these pile up
         # 'bastard sword',  # bandits
         # 'small mace',
-        'morning star', 'superior dwarven hammer', 'cudgel', "horseman's mace",
+        'morning star', 'superior dwarven hammer', 'stout cudgel', "horseman's mace",
         # 'war hammer',
         # 'hard cap', 'hard gloves', 'hard boots', 'padded hat', 'mountain gloves', 'mountain boots',
         # 'mountain boots with crampons', 'travellers cross', 'leather mask', 'leather collar', 'studded leather collar',
