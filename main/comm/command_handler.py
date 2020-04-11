@@ -17,6 +17,7 @@ from comm import RegexStore
 from bots.TrackGrindThread import TrackGrindThread
 from bots.SmartGrindThread import SmartGrindThread
 from bots.NoobGrindThread import NoobGrindThread
+from bots.CampGrindThread import CampGrindThread
 from bots.CrawlThread import CrawlThread
 from bots.SmartCrawlThread import SmartCrawlThread
 from bots.GotoThread import GotoThread
@@ -262,6 +263,8 @@ class CommandHandler(object):
             self.start_track_grind(user_input)
         elif re.match("noobgrind", user_input):
             self.start_noob_grind()
+        elif re.match("campgrind", user_input):
+            self.start_camp_grind()
         elif re.match("grind$", user_input):
             self.start_grind(user_input)
         elif re.match("bot2$", user_input):
@@ -629,6 +632,11 @@ class CommandHandler(object):
     def start_noob_grind(self):
         if self.bot_check():
             self.botThread = NoobGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.botThread.start()
+
+    def start_camp_grind(self):
+        if self.bot_check():
+            self.botThread = CampGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
             self.botThread.start()
 
     def start_track_grind(self, user_input):

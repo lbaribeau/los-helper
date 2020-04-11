@@ -26,7 +26,7 @@ class SmartGrindThread(TrackGrindThread):
         if (self.low_level < 1):
             self.low_level = 1
 
-        self.high_level = max([int(math.ceil(self.character.level / 2)), self.character.level - 5])# + 1 #risky business
+        self.high_level = max([int(math.ceil(self.character.level / 2)), self.character.level - 3])# + 1 #risky business
 
         self.min_target_aura = Aura('demonic red')
         self.max_target_aura = Aura('heavenly blue')
@@ -235,11 +235,7 @@ class SmartGrindThread(TrackGrindThread):
         magentaprint("Preferred Aura Scale: " + str(self.character.preferred_aura))
         aura_context = "fine"
 
-        if self.character.level < 3:
-            self.min_target_aura = Aura('demonic red')
-            self.max_target_aura = Aura('heavenly blue')
-        # elif self.character.AURA_SCALE < self.character.AURA_PREFERRED_SCALE:
-        elif self.cast.aura < self.character.preferred_aura:
+        if self.cast.aura < self.character.preferred_aura:
             # Too evil
             # self.low_level = 2
             self.min_target_aura = Aura('demonic red')

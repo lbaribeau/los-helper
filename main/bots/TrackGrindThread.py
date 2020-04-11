@@ -21,7 +21,7 @@ class TrackGrindThread(GrindThread):
         elif self.character.level <= 12:
             self.__TOTALPATHS = 22
         else:
-            self.__TOTALPATHS = 26
+            self.__TOTALPATHS = 22
         # elif self.character.level <= 10:
         #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
         # elif self.character.level > 12:
@@ -32,7 +32,7 @@ class TrackGrindThread(GrindThread):
         if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
             self.__nextpath = starting_path
         else:
-            self.__nextpath = 0
+            self.__nextpath = 21
 
         self.LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
@@ -168,11 +168,12 @@ class TrackGrindThread(GrindThread):
             'south', 'east', 'east', 'east', 'southeast', 'south', 'east', 'east', 'east', 'east', 'east', 'northeast',
             'northwest', 'northwest', 'northwest', 'northwest', 'north', 'east', 'east', 'east', 'south', 'southeast',
             'east', 'east', 'northeast' 'west', 'west', 'west', 'east', 'east', 'east', 'north', 'west', 'west', 'west',
-            'east', 'east', 'east', 'north', 'north', 'northwest', 'southeast', 'south', 'red tent', 'stands', 'west', 
-            'southwest', 'south', 'west', 'west', 'west', 'south', 'southeast', 'southeast', 'southeast', 'southeast',
-            'southwest', 'west', 'west', 'west', 'west', 'west', 'north', 'northwest', 'west', 'west', 'west', 'north', 
-            'north', 'north', 'north', 'north', 'northwest', 'northeast', 'north', 'north', 'north', 'northeast', 'northeast', 
-            'northeast', 'northeast', 'north', 'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel'
+            'east', 'east', 'east', 'north', 'north', 'northwest', 'southeast', 'south', 'red tent', 'out', 'south', 
+            'southwest', 'west', 'west', 'northwest', 'north', 'west', 'west', 'west', 'south', 'southeast', 'southeast', 
+            'southeast', 'southeast', 'southwest', 'west', 'west', 'west', 'west', 'west', 'north', 'northwest', 'west', 
+            'west', 'west', 'north', 'north', 'north', 'north', 'north', 'northwest', 'northeast', 'north', 'north', 
+            'north', 'northeast', 'northeast', 'northeast', 'northeast', 'north', 'north', 'gate', 'east', 'north', 
+            'north', 'north', 'west', 'north', 'chapel'
         ]
         self.GNOLL_CAMP = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'southeast',
          'southeast', 'east', 'east', 'east', 'southeast', 'southeast', 'southeast', 'south', 'south', 'south', 'south',
@@ -232,7 +233,7 @@ class TrackGrindThread(GrindThread):
 
         self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
 
-        if self.__nextpath % 2 == 0:
+        if self.__nextpath % 4 == 0:
             # self.inventory.get_inventory()
             magentaprint(str(int(len(self.inventory.sellable()))) + " items to sell - threshold is " + str(self.loot_threshold) + '.')
             if len(self.inventory.sellable()) > self.loot_threshold:

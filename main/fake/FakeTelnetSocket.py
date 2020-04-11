@@ -27,16 +27,17 @@ class FakeTelnetSocket(object):
         self.current_area = ""
         self.current_mud_area = None
         self.current_monster_list = [
-            'acrobat', # chasing
-            self.actor.name,
-            self.barbarian_warrior.name,
-            'juggler', # chasing
-            'kobold champion', # weapon shatter
-            # 'kobold sentry', # spear break
-            'large kobold',    # maul hammer break
-            # 'militia soldier', # potting
-            self.stablehand.name,
-            self.tabby_cat.name,
+            'gnoll spearsman'
+            # 'acrobat', # chasing
+            # self.actor.name,
+            # self.barbarian_warrior.name,
+            # 'juggler', # chasing
+            # 'kobold champion', # weapon shatter
+            # # 'kobold sentry', # spear break
+            # 'large kobold',    # maul hammer break
+            # # 'militia soldier', # potting
+            # self.stablehand.name,
+            # self.tabby_cat.name,
         ]
         self.fso = FakeSocketOutput()
         self.rng = 0
@@ -167,7 +168,7 @@ class FakeTelnetSocket(object):
         elif re.match('time', command):
             self.socket_output.append(self.time_string)
         elif re.match('c show', command):
-            self.socket_output.append('You glow with a grey aura.\n\r')
+            self.socket_output.append('You glow with a dusty red aura.\n\r')
         elif re.match('c (vi?|vigo?|vigor)', command):
             self.char.hp = min(self.char.maxhp, self.char.hp + 15)
             self.socket_output.append('Vigor spell cast.\n\r')
