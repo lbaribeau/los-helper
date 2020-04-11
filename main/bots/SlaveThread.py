@@ -22,7 +22,7 @@ class SlaveThread(BotThread):
 
     def decide_where_to_go(self):
         while True:
-            self.commandHandler.user_ca('smile')
+            self.command_handler.user_ca('smile')
             self.sleep(60)
         #must do an action every 30 seconds or so to avoid timing out
         #perhaps an emote or something custom like emote "grovels at $master" when the master is around

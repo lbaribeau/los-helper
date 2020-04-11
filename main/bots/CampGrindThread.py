@@ -19,5 +19,5 @@ class CampGrindThread(GrindThread):
     def do_go_hooks(self, exit_str):
       if exit_str == "rest":
         self.sleep(60)
-        self.commandHandler.process("rest")
+        self.command_handler.process("rest")
         return True
