@@ -32,7 +32,7 @@ class Area(NamedModel):
         is_new_mapping = self.search_for_area(mapped_exits)
 
         #if (cur_area_from is None):
-            
+
         #elif (cur_area_from.name != self.name): #if the names are the same then this is a new area since we have moved
         #    is_new_mapping = self.search_for_area(mapped_exits)
 
@@ -142,7 +142,8 @@ class Area(NamedModel):
         areas = []
 
         try:
-            areas = Area.select().where((Area.name == area_name) & (Area.description == area_description))
+            areas = Area.select().where((Area.name == area_name) & (Area.description == area_description))  
+            # ',' might work over '&'
 
         except Area.DoesNotExist:
             areas = []

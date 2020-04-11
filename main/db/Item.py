@@ -3,8 +3,6 @@ from peewee import *
 from db.NamedModel import NamedModel
 from db.ItemType import *
 from misc_functions import *
-from comm.ConsoleHandler import newConsoleHandler
-from datetime import datetime
 
 class Item(NamedModel):
     description = CharField(null=True)
@@ -40,13 +38,6 @@ class Item(NamedModel):
             item = None
 
         return item
-
-    def magentaprint(text):
-        newConsoleHandler().magenta()
-        curtime = datetime.now().time().strftime("%H:%M:%S.%f")
-        output = str(curtime[:len(curtime)-5] + "   | " + str(text))
-        print(output)
-        newConsoleHandler().white()
 
     def lookup_armour_type(armour_name):
         # get_item_by_name can do this

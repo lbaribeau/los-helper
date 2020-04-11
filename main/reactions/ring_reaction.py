@@ -15,3 +15,4 @@ class RingWearingReaction(object):
     def notify(self, regex, match):
         magentaprint("RingWearingReaction notify.")
         self.command_handler.process('wear ' + self.inventory.first_usable_ring_ref())
+        # This doesn't mark broken rings though... and for some reason it gets notified many times.

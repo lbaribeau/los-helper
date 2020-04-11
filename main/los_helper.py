@@ -129,8 +129,8 @@ class LosHelper(object):
         self.mudReaderThread.stop()
         magentaprint("Joining mud map thread.")
         self.join_thread(self.commandHandler.mud_map_thread)
-        magentaprint("Joining botThread.")
-        self.join_thread(self.commandHandler.botThread)
+        magentaprint("Joining bot_thread.")
+        self.join_thread(self.commandHandler.bot_thread)
         # if self.threaded_map_setup:
         #     self.commandHandler.mud_map_thread.join()
         magentaprint("Joining mudListenerThread")

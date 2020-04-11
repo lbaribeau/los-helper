@@ -73,7 +73,7 @@ class FakeInventory(object):
         if isinstance(item, str):
             item = FakeItem(item)
 
-        item.unusable = True
+        item.usable = False
         self.add(item)
 
     def index(self, ref):
@@ -98,8 +98,11 @@ class FakeInventory(object):
         if i is not None:
             return self.l[i]
 
-    def set_unusable(self, ref):
-        self.get(ref).unusable = True
+    def set_usable(self, ref, val=True):
+        self.get(ref).usable = val
+
+    def unset_usable(self, ref):
+        self.get(ref).usable = False
 
     def has(self, item_string):
         for i in self.l:

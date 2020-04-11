@@ -36,6 +36,11 @@ from Aura import Aura
 # from command.repair import Repair
 # from command.wear import Wear
 from mini_bots.armour_bot import ArmourBot
+from command.equipment import Equipment
+from mini_bots.smithy_bot import SmithyBot
+from mini_bots.weapon_bot import WeaponBot
+# from mini_bots.simple_weapon_bot import SimpleWeaponBot
+from mini_bots.travel_bot import TravelBot
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -52,7 +57,11 @@ class CommandHandler(object):
         # self.smartCombat = SmartCombat(self.telnetHandler, self.character, Kill(telnetHandler), Cast(telnetHandler), Prompt(character))
         self.combat_reactions = CombatReactions(self.character)
         mudReaderHandler.add_subscriber(self.combat_reactions)
-        self.smartCombat = SmartCombat(self.telnetHandler, self.character)
+        # self.simple_weapon_bot = SimpleWeaponBot(self.telnetHandler, self.character)
+        # mudReaderHandler.add_subscriber(self.simple_weapon_bot)
+        self.weapon_bot = WeaponBot(self.character, self)
+        self.mudReaderHandler.add_subscriber(self.weapon_bot)
+        self.smartCombat = SmartCombat(self.telnetHandler, self.character, self.weapon_bot)
         self.kill = self.smartCombat.kill
         self.cast = self.smartCombat.cast
         mudReaderHandler.add_subscriber(self.kill)
@@ -71,16 +80,29 @@ class CommandHandler(object):
         self.get = Get(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.get)
         self.use = self.smartCombat.use
+<<<<<<< HEAD
         # self.repair = Repair(telnetHandler)
         # mudReaderHandler.add_subscriber(self.repair)
         # self.wear = Wear(telnetHandler)
         # mudReaderHandler.add_subscriber(self.wear)
+=======
+        self.repair = Repair(telnetHandler)
+        mudReaderHandler.add_subscriber(self.repair)
+        self.wear = Wear(telnetHandler)
+        mudReaderHandler.add_subscriber(self.wear)
+        magentaprint(str(Equipment))
+        self.equipment = Equipment(telnetHandler)
+        mudReaderHandler.add_subscriber(self.equipment)
+        mudReaderHandler.add_buffer_completion_subscriber(self.equipment)
+        # self.eq_bot = EquipmentBot(character, self, self.mudReaderHandler, self.mud_map)
+>>>>>>> LDev
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
             Command.good_mud_timeout = 2.0
+            Go.cooldown_after_success = 0.2
 
-        self.botThread = None
+        self.bot_thread = None
         self.mud_map = None
         self.mud_map_thread = None
         if self.threaded_map_setup:
@@ -98,14 +120,18 @@ class CommandHandler(object):
             'suit_up': self.suit_up,
             'bdrop' : self.bulk_drop,
             'lookup_armour' : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
-            'print_reactions' : lambda a : self.mudReaderHandler.print_reactions()
+            'print_reactions' : lambda a : self.mudReaderHandler.print_reactions(),
+            'weapon' : lambda a : self.start_weapon_bot()
+            # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
+            # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
 
     def init_map_and_bots(self):
         # magentaprint("CommandHandler generating the mapfile....", False)
         self.mud_map = MudMap()
-        self.armour_bot = ArmourBot(self.character, self, self.mudReaderHandler, self.mud_map)
+        self.armour_bot = ArmourBot(self.character, self, self.mud_map)
         self.mudReaderHandler.add_subscriber(self.armour_bot)
+        self.weapon_bot.add_in_map(self.mud_map)
         magentaprint("CommandHandler: Mapfile completed.", False)
 
     def join_mud_map_thread(self):
@@ -123,7 +149,7 @@ class CommandHandler(object):
     #         magentaprint("CommandHandler caught telnet error and quitting: " + str(e))
     #         self.stopping = True
     #         if hasattr(e, 'errno'):
-    #             magentaprint("Errno: " + str(e.errno)) 
+    #             magentaprint("Errno: " + str(e.errno))
     #         # else:
     #         #     raise e
 
@@ -174,6 +200,7 @@ class CommandHandler(object):
 
         # for action in self.actions.keys():
         if the_split[0] in self.actions.keys():
+            magentaprint("Calling command handler action " + str(the_split[0]))
             self.actions[the_split[0]](args)
             return
 
@@ -284,6 +311,8 @@ class CommandHandler(object):
             self.start_slave(user_input)
         elif re.match("bbuy (.+?)", user_input):
             self.bbuy(user_input)
+        elif re.match("equ?|equip?|equipme?|equipment?", user_input):
+            self.equipment.execute()
         elif re.match("stop$", user_input):
             self.stop_bot()
         elif re.match("aura (\d)", user_input):
@@ -580,13 +609,13 @@ class CommandHandler(object):
             second_sleep = 0.1
 
         time.sleep(second_sleep)
-        
+
         now = time.time()
         # time_remaining = max(self.character.MOVE_WAIT - (now - self.character.MOVE_CLK),
         #                      self.kill.wait_time(), self.cast.wait_time())
         time_remaining = max(self.go.wait_time(), self.kill.wait_time(), self.cast.wait_time())
         self.character.MOVE_CLK = now
-            
+
         # Note: in very few rare cases it may be better to flee once.  
         self.telnetHandler.write("fl")
         self.telnetHandler.write("fl")
@@ -617,15 +646,22 @@ class CommandHandler(object):
         if not self.mud_map:
             magentaprint("Joining mud map thread.")
             return self.join_mud_map_thread()
-        elif self.botThread and self.botThread.is_alive():
-            if self.botThread.stopping:
-                magentaprint("BotThread continuing.")
-                # self.botThread.stopping = False
-            else:
+        # elif self.bot_thread and self.bot_thread.is_alive():
+        # elif self.bot_thread:
+        #     if self.bot_thread.stopping:
+        #         magentaprint("bot_thread continuing.")
+        #         # self.bot_thread.stopping = False
+        #     else:
+        #         magentaprint("Bot already going.")
+        #         # self.bot_thread.stop()
+        #         # self.bot_thread.join()
+        #     return False
+        elif self.bot_thread:
+            if self.bot_thread.is_alive():
                 magentaprint("Bot already going.")
-                # self.botThread.stop()
-                # self.botThread.join()
-            return False
+                return False
+            else:
+                return True
         else:
             return True
 
@@ -649,40 +685,23 @@ class CommandHandler(object):
             else:
                 starting_path = 0
 
-            self.botThread = TrackGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, starting_path)
-            self.botThread.start()
+            self.bot_thread = TrackGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, starting_path)
+            self.bot_thread.start()
 
     def start_grind(self, user_input):
         if self.bot_check():
-            self.botThread = SmartGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
-            self.botThread.start()
-
-    def start_top_down_grind(self, user_input):
-        if self.bot_check():
-            # self.botthread = Thread(target=, args=())
-            self.botthread = TopDownGrind(self.character, self, self.mudReaderHandler, self.mud_map)
-            self.botthread.start()
-
-    def go_smithy(self, args):
-        if self.bot_check():
-            tdg = TopDownGrind(self.character, self, self.mudReaderHandler, self.mud_map)
-            self.botthread = ThreadMaker(tdg, 'go_to_nearest_smithy')
-            self.botthread.start()
-
-    def suit_up(self, args):
-        if self.bot_check():
-            self.botthread = ThreadMaker(self.armour_bot, 'suit_up')
-            self.botthread.start()
+            self.bot_thread = SmartGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.bot_thread.start()
 
     def start_crawl(self):
         if self.bot_check():
-            self.botThread = CrawlThread(self.character, self, self.mudReaderHandler, self.mud_map)
-            self.botThread.start()
+            self.bot_thread = CrawlThread(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.bot_thread.start()
 
     def start_smart_crawl(self):
-        if self.bot_check:
-            self.botThread = SmartCrawlThread(self.character, self, self.mudReaderHandler, self.mud_map)
-            self.botThread.start()
+        if self.bot_check():
+            self.bot_thread = SmartCrawlThread(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.bot_thread.start()
 
     def start_goto(self, user_input, is_show_to=False):
         if self.bot_check():
@@ -693,8 +712,8 @@ class CommandHandler(object):
             else:
                 area_to = None
 
-            self.botThread = GotoThread(self.character, self, self.mudReaderHandler, self.mud_map, area_to, is_show_to)
-            self.botThread.start()
+            self.bot_thread = GotoThread(self.character, self, self.mudReaderHandler, self.mud_map, area_to, is_show_to)
+            self.bot_thread.start()
 
     def start_slave(self, user_input):
         M_obj = re.search("slave (.+)", user_input)
@@ -707,8 +726,13 @@ class CommandHandler(object):
             kill = True
 
         if self.bot_check():
+<<<<<<< HEAD
             self.botThread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, master, kill)
             self.botThread.start()
+=======
+            self.bot_thread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, "")
+            self.bot_thread.start()
+>>>>>>> LDev
 
     def start_mix(self, user_input):
         if self.bot_check():
@@ -732,15 +756,22 @@ class CommandHandler(object):
                 can_mix = False
 
             if can_mix:
-                self.botThread = MixThread(self.character, self, self.mudReaderHandler, self.mud_map, self.telnetHandler,
+                self.bot_thread = MixThread(self.character, self, self.mudReaderHandler, self.mud_map, self.telnetHandler,
                                            target, mix_target, quantity)
-                self.botThread.start()
+                self.bot_thread.start()
             else:
                 magentaprint("Input not recognized - cannot start the mixer!", False)
 
     def stop_bot(self):
-        if self.botThread and self.botThread.is_alive():
-            self.botThread.stop()
+        magentaprint("CommandHandler.stop_bot() self.bot_thread: " + str(self.bot_thread))
+        # if self.bot_thread:
+        #     magentaprint("CommandHandler.stop_bot() self.bot_thread.is_alive(): " + str(self.bot_thread.is_alive()))
+        # Error - smithy_bot doesn't have is_alive()
+        # if self.bot_thread and self.bot_thread.is_alive():
+        if self.bot_thread:
+            self.bot_thread.stop()
+        # self.weapon_bot.stop()
+        # self.armour_bot.stop()
 
     def bbuy(self, user_input):
         try:
@@ -803,4 +834,40 @@ class CommandHandler(object):
         if quit.success:
             self.stop_bot()
         return quit.success
-    
+
+    def go_smithy(self, args):
+        if self.bot_check():
+            # tdg = TopDownGrind(self.character, self, self.mudReaderHandler, self.mud_map)
+            # self.bot_thread = ThreadMaker(tdg, 'go_to_nearest_smithy')
+            magentaprint("CommandHandler.go_smithy()")
+            self.bot_thread = SmithyBot(self.character, self, self.mud_map)
+            # t = Thread(target=self.bot_thread.go_to_nearest_smithy)
+            # t.start()  # The Bot should BE the thread for the sake of 'stopping'
+
+            # We must check upon starting whether a thread is already going.  That's easiest the current way (bot_check).
+            # s = SmithyBot(self.character, self, self.mudReaderHandler, self.mud_map)
+            # self.bot_thread = Thread(target=self.bot_thread.go_to_nearest_smithy)
+            # self.bot_thread.start()
+            # If we keep the bot object, we can stop but we don't know when it completed.  If we keep the thread,
+            # we can't stop the process.  What if SmithyBot has the thread.  Then I don't have to reconstruct the object
+            # every time.  SmartCombat does this I think.
+            self.bot_thread.start_thread()
+
+    def suit_up(self, args):
+        magentaprint("In suit_up")
+        if self.bot_check():
+            # self.bot_thread = ThreadMaker(self.armour_bot, 'suit_up')
+            # self.bot_thread.start()
+            self.bot_thread = self.armour_bot
+            self.bot_thread.start_thread()
+
+    def start_weapon_bot(self):
+        if self.bot_check():
+            self.bot_thread = self.weapon_bot
+            self.bot_thread.start_thread()
+
+    def start_top_down_grind(self, user_input):
+        if self.bot_check():
+            # self.bot_thread = Thread(target=, args=())
+            self.bot_thread = TopDownGrind(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.bot_thread.start()

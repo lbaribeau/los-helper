@@ -16,7 +16,7 @@ from combat.mob_target_determinator import MobTargetDeterminator
 class SmartCombat(CombatObject):
     black_magic = True
 
-    def __init__(self, telnetHandler, character):
+    def __init__(self, telnetHandler, character, weapon_bot):
         super().__init__(telnetHandler)
         self.thread = None
         self.target = None
@@ -62,6 +62,10 @@ class SmartCombat(CombatObject):
             RegexStore.mob_arrived, RegexStore.mob_wandered, RegexStore.mob_left, RegexStore.not_here
         ])
         self.mob_target_determinator = MobTargetDeterminator()
+        # We can let SmartCombat do a few extra things, like make kill/cast/use commands, but let's not go overboard.
+        # Let the parent make WeaponBot.  I think the parent should make use of an Initializer.
+        self.weapon_bot = weapon_bot
+        self.set_pot_thread = False
 
     def notify(self, regex, M_obj):
         # Notifications are used for healing
@@ -73,14 +77,11 @@ class SmartCombat(CombatObject):
                 if self.should_use_heal_ability():
                     self.heal_abilities[0].execute()
                 elif self.needs_heal():
-                    if self.broken_weapon or not self.character.inventory.has_restorative():
+                    if self.weapon_bot.broken_weapon or not self.character.inventory.has_restorative():
                         self.fleeing = True  # TODO: Do pots interfere with the flee timer?  (Should I use a pot?)
-                    if self.needs_big_heal():
-                        self.use.spam_pots(prefer_big=True)
-                    else:
-                        self.use.spam_pots()
+                    self.spam_pots()
                 else:
-                    self.use.stop()
+                    self.stop_pots_if_started_by_smart_combat()
         # elif regex in itertools.chain(self.end_combat_regexes) and self.activated:
         elif self.end_combat and self.activated:  # requires super() to be called
             self.use.stop()
@@ -161,6 +162,7 @@ class SmartCombat(CombatObject):
         self.set_target(target)
         self.spell = spell if spell else self.favourite_spell
         magentaprint("SmartCombat spell set to " + str(self.spell))
+        self.set_pot_thread = False
 
         # if self.thread is None or not self.thread.is_alive():
         if self.thread and self.thread.is_alive():
@@ -199,9 +201,11 @@ class SmartCombat(CombatObject):
         self.use_any_fast_combat_abilities()  # ie. Touch, Dance
 
         while not self.stopping:
-            if self.broken_weapon:
-                self.reequip_weapon()  # TODO: This can get spammed... answer on to unset is_usable on weapon objects in inventory
+            # if self.broken_weapon:
+            #     self.reequip_weapon()  # TODO: This can get spammed... answer on to unset is_usable on weapon objects in inventory
             # magentaprint("SmartCombat loop kill.timer " + str(round(self.kill.wait_time(), 1)) + " cast.timer " + str(round(self.cast.wait_time(), 1)) + ".")
+            if self.weapon_bot.broken_weapon:
+                self.weapon_bot.combat_rewield()
             if self.fleeing and not self.cast.wait_time() - self.kill.wait_time() > self.kill.cooldown_after_success:
                 self.escape()
             else:
@@ -220,6 +224,7 @@ class SmartCombat(CombatObject):
                         if self.do_phys_attack():
                             continue
 
+        self.activated = False
         magentaprint(str(self) + " ending run.")
 
     def do_phys_attack(self):
@@ -526,6 +531,8 @@ class SmartCombat(CombatObject):
         self.telnetHandler.write("fl")
 
         time.sleep(0.1)
+        self.stop_pots_if_started_by_smart_combat()
+        self.use.stop()
 
         if self.character.weapon1 != "":
             self.wield.execute(self.character.inventory.get_last_reference(self.character.weapon1))
@@ -544,4 +551,19 @@ class SmartCombat(CombatObject):
                 # after the mob dies but maybe not after the player calls stop.
                 # However, this solution might work most of the time.
 
+    def spam_pots(self):
+        self.set_pot_thread = True
+        if self.needs_big_heal():
+            self.use.spam_pots(prefer_big=True)
+        else:
+            self.use.spam_pots()
 
+    def stop_pots_if_started_by_smart_combat(self):
+        if self.set_pot_thread:
+            self.use.stop()
+        self.set_pot_thread = False
+
+#  SmartCombat will have to wait for the DB!!!
+# Alternatives: Split WeaponBot into itself and SimpleWeaponBot doesn't work because SmartCombat is supposed to rewield any
+# possible weapon, which requires a DB search.  Ugh, it doesn't feel right.  How about just the rewield function fails.  When
+# the map is ready, WeaponBot gets set.

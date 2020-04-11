@@ -34,7 +34,7 @@ class Actor(FakeMob):
         if rng == 1:
             self.socket_output.append("Your iron ring fell apart.\n\r")
             ring = FakeItem('iron ring')
-            ring.unusable = True
+            ring.usable = False
             self.char.inv.add(ring)
 
 class TabbyCat(FakeMob):

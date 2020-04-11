@@ -12,19 +12,19 @@ from db.Database import *
 from db.MudMap import MudMap
 
 class BotThread(threading.Thread):
-    def __init__(self, character, commandHandler, mudReaderHandler, mud_map):
+    def __init__(self, character, command_handler, mudReaderHandler, mud_map):
         # Thread.__init__(self)
         super().__init__()
         self.stopping = False
         self.exceptionCount = 0
 
         self.character = character
-        self.commandHandler = commandHandler
+        self.command_handler = command_handler
         self.mudReaderHandler = mudReaderHandler
         self.inventory = character.inventory
-        self.smartCombat = commandHandler.smartCombat
-        self.kill = commandHandler.smartCombat.kill
-        self.cast = commandHandler.smartCombat.cast
+        self.smartCombat = command_handler.smartCombat
+        self.kill = command_handler.smartCombat.kill
+        self.cast = command_handler.smartCombat.cast
         self.direction_list = []
 
         self.character.ACTIVELY_BOTTING = False
@@ -144,7 +144,7 @@ class BotThread(threading.Thread):
             return True
 
         # wait_for_move_ready(self.character)
-        self.commandHandler.go.wait_until_ready()
+        self.command_handler.go.wait_until_ready()
         self.kill.wait_until_ready()
         self.cast.wait_until_ready()
         # magentaprint("Going " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)), False)
@@ -162,17 +162,17 @@ class BotThread(threading.Thread):
 
         if not hook_found:
             # if re.match("(.*?door)", exit_str):
-            #     self.commandHandler.process("open " + exit_str)
-                # self.commandHandler.process('door')
-            # self.commandHandler.process("go " + exit_str)
-            # self.commandHandler.go.execute(exit_str)
-            self.commandHandler.user_move(exit_str)
-            # self.commandHandler.go.wait_for_flag()
-            # return self.commandHandler.go.result is 'success'
-            return self.commandHandler.go.success
-            # return self.check_for_successful_go()
+            #     self.command_handler.process("open " + exit_str)
+                # self.command_handler.process('door')
+            # self.command_handler.process("go " + exit_str)
+            # self.command_handler.go.execute(exit_str)
+            self.command_handler.go.persistent_execute(exit_str)
+            # self.command_handler.go.wait_for_flag()
+            # return self.command_handler.go.result is 'success'
+            return self.command_handler.go.success
+            return self.check_for_successful_go()
             # if re.match("(.*?door)", exit_str):
-            #     self.commandHandler.process("open " + exit_str)
+            #     self.command_handler.process("open " + exit_str)
             # return self.go.persistent_execute(exit_str)
         else:
             return hook_found  # (True - well, it's not a successful go but it's assumed to be a successful hook)

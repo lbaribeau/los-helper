@@ -62,12 +62,17 @@ class MudObjectDict(object):
                 magentaprint("Couldn't remove '" + str((keyvalue, obj_dict[keyvalue])) + "' from inventory.")
                 # magentaprint("obj_string: <" + obj_string + ">")
 
-    def get_object_of_type(self, model, data, level=-1):
+    def get_object_of_given_type_if_usable(self, model, data, level=-1):
         for obj in self.dictionary:
             if obj.is_of_type(model, data, level):
                 for instance in self.dictionary[obj].objs:
-                    if not instance.is_unusable:
+                    if instance.usable:
                         return obj.obj.name
+
+    def get_object_of_type(self, model, data, level=-1):
+        for obj in self.dictionary:
+            if obj.is_of_type(model, data, level):
+                return obj.obj.name
 
     def get_unique_references(self, exception_list = []):
         references = collections.OrderedDict(sorted({}))

@@ -1,9 +1,9 @@
 '''In order for this class to work you need to have installed Peewee
 See: http://peewee.readthedocs.org/en/latest/peewee/installation.html
 '''
-from peewee import *
+import peewee
 
-db = Proxy()
+db = peewee.Proxy()
 
 from db.BaseModel import *
 from db.Log import *

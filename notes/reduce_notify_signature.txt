@@ -1,0 +1,1 @@
+The match object _has_ the re on it, so notify doesn't need the regex passed through.

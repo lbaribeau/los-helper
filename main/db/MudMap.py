@@ -61,6 +61,7 @@ class MudMap(object):
             self.re_map()
 
         self.magentaprint("MudMap.get_path self.los_map: " + str(self.los_map))
+        self.magentaprint("MudMap.get_path start/end: " + str(start_area_id) + "/" + str(end_area_id) + '.')
         try:
             node_path = nx.shortest_path(self.los_map, source=start_area_id, target=end_area_id)
         except Exception as e:

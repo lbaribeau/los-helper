@@ -6,6 +6,8 @@ from itertools import chain
 from command.Command import Command
 from comm import RegexStore
 from misc_functions import magentaprint
+from combat.Kill import Kill
+from combat.Cast import Cast
 
 class Go(Command):
     command = 'go'
@@ -14,7 +16,7 @@ class Go(Command):
     failure_regexes = [
         RegexStore.blocked_path, RegexStore.cant_go, RegexStore.open_first,
         RegexStore.class_prohibited, RegexStore.level_too_low, RegexStore.level_too_high, RegexStore.not_invited,
-        RegexStore.not_open_during_day, RegexStore.not_open_during_night, RegexStore.no_items_allowed, 
+        RegexStore.not_open_during_day, RegexStore.not_open_during_night, RegexStore.no_items_allowed,
         RegexStore.locked, RegexStore.no_right, RegexStore.in_tune,
         RegexStore.not_authorized, RegexStore.cannot_force, RegexStore.washroom, RegexStore.cliff
     ]
@@ -82,6 +84,12 @@ class Go(Command):
     def is_direction(cls, s):
         return s.strip() in ['n', 's', 'e', 'w', 'nw', 'ne', 'se', 'sw'] or re.match('up?$', s) or \
                re.match('(do?|down?)$', s) or re.match('out?$', s)
+
+    @classmethod
+    def wait_until_ready(cls):
+        super().wait_until_ready()
+        Cast.wait_until_ready()
+        Kill.wait_until_ready()
 
 class Open(Command):
     command = 'open'

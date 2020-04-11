@@ -1,22 +1,42 @@
 
-from bots.GotoThread import GotoThread
+# from bots.GotoThread import GotoThread
 from mini_bots.mini_bot import MiniBot
+from misc_functions import magentaprint
+from threading import Thread
 
 class TravelBot(MiniBot):
-    # This bot can kill enemies on the way
+    # This bot should be able to kill enemies on the way
+    # Maybe not - maybe it can raise an exception
 
-    def __init__(self, char, command_handler, mud_reader_handler, map):
+    def __init__(self, char, command_handler, map):
         super().__init__()
         self.char = char
         self.command_handler = command_handler
-        self.mrh = mud_reader_handler
         self.map = map
+        # self.goto_thread = None
 
-    def go_to_area_by_id(self, area_to_id):
-        goto = GotoThread(self.char, self.command_handler, self.mrh, self.map, area_to_id)
-        goto.run()
+    # def stop(self):
+    #     magentaprint("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!TravelBot.stop()")
+    #     if self.goto_thread:
+    #         self.goto_thread.stop()  # for go_to_area_by_id()
+    #     self.stopping = True  # for follow_path()
+
+    # def run(self, area_to_id):
+    #     self.follow_path(area_to_id)
+    # def start_thread(self, area_to_id):
+    #     self.goto_thread = GotoThread(self.char, self.command_handler, self.mrh, self.map, area_to_id)
+    #     self.goto_thread.run()
+    # def go_to_area_by_id(self, area_to_id):
+    #     self.start_thread(area_to_id)
+
+    def start_thread(self, area_to_id):
+        self.stopping = False
+        self.thread = Thread(target=self.go_to_area, args=area_to_id)
+        self.thread.start()
 
     def follow_path(self, path, grinding=False):
+        self.stopping = False
+
         for exit in path:
             if self.stopping:
                 return
@@ -24,12 +44,27 @@ class TravelBot(MiniBot):
             if grinding:
                 self.clean_out_node()  # Needs to check mob level and player health
 
+            self.command_handler.go.wait_until_ready()
             self.command_handler.go.execute_and_wait(exit)
 
             if self.command_handler.go.success:
                 pass
             else:
-                raise Exeption("TravelBot failed go!")
+                # raise Exception("TravelBot failed go!")
+                # Can we assume that it failed?  Should we redo the whole path?  Let's rule out please_wait
+                if self.command_handler.go.please_wait:
+                    self.command_handler.go.wait_until_ready()
+                    self.command_handler.go.execute_and_wait(exit)  # Trying again should do the trick
+                elif self.command_handler.go.failure:
+                    # This is not supposed to happen, if the db sends good paths... maybe it's a blocking mob
+                    # TravelBot needs to be able to engage enemies or trust the caller to do so.
+                    return False  # We will try again (redoing the path), it probably won't work, then we'll raise the exception.
+                elif self.command_handler.go.error:
+                    # Wrong exit name... only thing to try is to rebuild the path
+                    return False
+                # Problem: a mugger blocks your exit
+
+        return True
 
     def clean_out_node(self):
         for mob in self.char.mobs.list:
@@ -43,8 +78,19 @@ class TravelBot(MiniBot):
     def go_to_area_by_title(self, title_fragment):
         pass
 
-    def get_directions(self, map, orig_aid, dest_aid):
-        pass
+    def get_directions(self, orig_aid, dest_aid):
+        return self.map.get_path(orig_aid, dest_aid)
+
+    def go_to_area(self, aid):
+        path = self.map.get_path(self.char.AREA_ID, aid)
+        self.stopping = False
+        while not self.follow_path(path) and not self.stopping:
+            path = self.map.get_path(self.char.AREA_ID, aid)
+            self.command_handler.go.wait_until_ready()
+            self.command_handler.go.execute_and_wait(path.pop(0))
+            if not self.command_handler.go.success:
+                raise Exception("TravelBot aborting due to errors!")
+                # Could be that AREA_ID is wrong - try doing a look.
 
 # class GotoThread(BotThread):
 #     def decide_where_to_go(self):

@@ -14,6 +14,7 @@ class Character(object):
         self.race = None
         self.title = None
         self._class = None
+        self.class_string = None
         self.level = None
 
         self.NEEDS_MAGIC = True
@@ -39,6 +40,8 @@ class Character(object):
 
         self.ARMOR_SLOTS = []
         self.ARMOR_SIZE = "m" # todo: set this in info or whois
+
+        # self.equipment  # getting away from putting this sort of data on character.
 
         # WEAPON_SLOTS = []  use character._class.weapon_slots
 
@@ -103,6 +106,8 @@ class Character(object):
         self.LAST_DIRECTION = None
 
         self.START_TIME = time.time()
+
+        self.steel_bottle_keep_amount = 1
 
     def add_to_monster_list(self, monster_name):
         self.MONSTER_LIST.append(monster_name)
@@ -200,6 +205,7 @@ class Character(object):
         output_api_feed('info', feed)
 
     def pick_weapon(self):
+        # Now we go to the db...
         if self.weapon_type == 'Sharp':
             if self.weapon_level >= 2:
                 return 'leaf blade'
@@ -316,9 +322,11 @@ class Character(object):
     lvl4_monsters = [ # 45-60 exp
         'actor', 'grip', 'theatre goer', 'merchant', 'journeyman', 'logger', 'trader', 'butcher', 'acrobat', 'militia soldier',
         'carpenter', 'stagehand', 'hungry spider', 'cook', 'joiner', 'ranch hand', 'old rancher', 'tired ranch hand',
-        'drinking ranch hand', 'busy ranch hand', 'sawmill operator', 'vulture', 'auctioneer'
+        'drinking ranch hand', 'busy ranch hand', 'sawmill operator', 'vulture', 'auctioneer', 'barbecue cook', 'stable attendant',
+        'steer'
         # 'actress', #'young knight' # For blue balance
         #'miner'
+        # enlightened  # "arrives" in the large Kings road dojo (not always there)
     ]
     # hungry spiders are hostile
     lvl4_red_monsters = [
@@ -343,8 +351,8 @@ class Character(object):
     ]
     lvl7_monsters = [ # ~200 exp
         'dwarven cook', 'swordsman', 'fort sergeant', 'oremaster', 'giant spider', 'rock spider', 'Aldo', 'dwarven trader',
-        'gnoll chaplain', 'Cheryn', 'orc scout', 'bouncer', 'rancher sentry', 'dwarven shepherd', 'clown',
-        'top ranch hand'  # dusty blue
+        'gnoll chaplain', 'Cheryn', 'orc scout', 'bouncer', 'rancher sentry', 'dwarven shepherd', 'clown', 'war horse,'
+        'top ranch hand', 'raging bull'  # top ranch hand dusty blue
         # 'robed priest',
     ]  # There are also lvl 5 rancher sentries... they're a bit blue
     lvl8_monsters = [  # There are 2 amethyst guards and 3 amber guards of this level
@@ -355,7 +363,7 @@ class Character(object):
     ]  # elves are very blue
     lvl9_monsters = [ # ~300 exp
         'director', 'Elder Barthrodue', 'Farmer Calmor', 'orc warrior', 'giant beetle', 'white knight',  # 380
-        'weathered barbarian', #'old man'
+        'weathered barbarian', 'Trent the Merchant' #'old man'
     ]  # respect the knights! (+1 difficulty)
     lvl10_monsters = [ # 350+
         'wounded knight', # -2 difficulty
@@ -367,22 +375,23 @@ class Character(object):
     ]  # wounded knight -2 difficulty
     lvl11_monsters = [
         'dwarven adventurer',  # dusty blue
-        'enchantress', 'Brotain', 'minstrel', 'brutalizer', 'Gregor', 'Bertram Dalrum', 'Annette Plover',
-        'brother'
+        'enchantress', 'Brotain', 'minstrel', 'brutalizer', 'Gregor', 'Bertram Dalrum'
+        'brother', 'priest'
     ]
     lvl12_monsters = [
         'barbarian shaman', 'barbarian warrior', 'The Amber Mage', 'The Saga Teacher', 'Hurn the Smith',
-        'Horbuk', 'The Floor Manager', 'Tardan', 'ranch foreman', 'Trent the Merchant', 'Gorban', # dusty blue
-        'Boris Ironfounder'
+        'Horbuk', 'The Floor Manager', 'Tardan', 'ranch foreman', 'Gorban', 'shadowed huorn', # dusty blue
+        'Boris Ironfounder', 'Lady Denlise', 'Annette Plover', 'house guest'  # fireball/gold dagger/810 exp
     ]
     lvl13_monsters = [
-        'The Dojo Administrator', 'Elsuria'
+        'The Dojo Administrator', 'Elsuria', 'Lord Tamaran', 'warmonger', 'Tendrurn'
     ]
     lvl14_monsters = [
         'cave troll guard', 'Rancher Plover', 'Team Leader Egan', 'Qimoth', "Th'kit the HorseMaster"
     ]
-    lvl15_monsters = []
-    lvl16_monsters = ['Holbyn']
+    lvl15_monsters = ['Thomas Ironheart']
+    lvl16_monsters = ['Holbyn', 'Ordaran the White']
+    lvl17_monsters = ['Faldomet']
     # A list of monsters redundant to the above lists that
     # I may want to kill even if they are too low of level.
     # Mostly hostiles and things that don't let you loot.
@@ -390,7 +399,6 @@ class Character(object):
         'oaf', 'wanderer', 'thug', 'spiv', 'kobold sentry', 'tired hooker', 'waitress',
         'blond hooker', 'angry hooker', 'sultry hooker', 'journeyman', 'housewife', # 'acolyte'
     ]
-
     def set_monster_kill_list(self):
         self.MONSTER_KILL_LIST = []
 
@@ -422,10 +430,10 @@ class Character(object):
             self.MONSTER_KILL_LIST.extend(self.lvl7_monsters)
         if self.level > 12:
             self.MONSTER_KILL_LIST.extend(self.lvl8_monsters)
-            # self.MONSTER_KILL_LIST.extend(self.lvl9_monsters)
-
+        if self.level > 13:
+            self.MONSTER_KILL_LIST.extend(self.lvl9_monsters)
 # Drops -
-#  Alaran, Aldo, Farmer Calmor for rings (platinum, gold, etc.)        
+#  Alaran, Aldo, Farmer Calmor for rings (platinum, gold, etc.)
 
     def configure_health_and_mana_variables(self):
     # Health to heal is now a percentage (see process_info)
