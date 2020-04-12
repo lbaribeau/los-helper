@@ -247,8 +247,8 @@ class CommandHandler(object):
             self.process("east")
             self.user_move("east")
         elif user_input == 'ga':
-            # self.telnetHandler.write('get all')
-            self.get.execute('all')
+            self.telnetHandler.write('get all')
+            # self.get.execute('all')
         elif user_input.startswith('go ') or re.match(str(self.character.EXIT_REGEX), user_input):
             if not user_input.startswith('go '):
                 magentaprint("User input matched " + str(self.character.EXIT_REGEX) + ", going.")
