@@ -126,8 +126,8 @@ class TravelBot(MiniBot):
 # from db.MudMap import *
 
 # class GotoThread(BotThread):
-#     def __init__(self, character, commandHandler, mudReaderHandler, mud_map, area_to_id=None, is_show_to=False):
-#         super().__init__(character, commandHandler, mudReaderHandler, mud_map)
+#     def __init__(self, character, command_handler, mudReaderHandler, mud_map, area_to_id=None, is_show_to=False):
+#         super().__init__(character, command_handler, mudReaderHandler, mud_map)
 
 #         if isinstance(area_to_id, int):
 #             self.area_to_id = area_to_id

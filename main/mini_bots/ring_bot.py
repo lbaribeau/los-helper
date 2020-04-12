@@ -2,7 +2,7 @@
 from mini_bots.mini_bot import MiniBot
 
 class RingBot(MiniBot):
-    def __init__(self, char, commandHandler, map):
+    def __init__(self, char, command_handler, map):
         self.map = map
 
     def go_to_area_by_id(self, id):

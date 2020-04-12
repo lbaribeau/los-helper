@@ -109,10 +109,10 @@ class CommandHandler(object):
             self.init_map_and_bots()
 
         self.actions = {
-            'go_smithy' : self.go_smithy,
-            'suit_up': self.suit_up,
+            # 'go_smithy' : self.go_smithy,
+            # 'suit_up': self.suit_up,
             'bdrop' : self.bulk_drop,
-            'lookup_armour' : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
+            # 'lookup_armour' : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
             'print_reactions' : lambda a : self.mudReaderHandler.print_reactions(),
             'weapon' : lambda a : self.start_weapon_bot()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
@@ -283,6 +283,20 @@ class CommandHandler(object):
             self.start_track_grind(user_input)
         elif re.match("noobgrind", user_input):
             self.start_noob_grind()
+        elif re.match("dropkeys", user_input):
+            self.telnetHandler.write('drop key yes')
+            self.telnetHandler.write('drop key yes')
+            self.telnetHandler.write('drop key yes')
+            self.telnetHandler.write('drop key yes')
+            self.telnetHandler.write('drop key yes')
+            self.telnetHandler.write('drop key yes')
+            self.telnetHandler.write('drop key yes')
+            self.telnetHandler.write('drop key yes')
+            self.telnetHandler.write('drop key yes')
+            self.telnetHandler.write('drop key yes')
+            self.telnetHandler.write('drop key yes')
+            self.telnetHandler.write('drop key yes')
+            self.telnetHandler.write('drop key yes')
         elif re.match("campgrind", user_input):
             self.start_camp_grind()
         elif re.match("grind$", user_input):

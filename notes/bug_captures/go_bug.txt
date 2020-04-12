@@ -148,7 +148,7 @@ py", line 98, in run
     if(self.go(direction_list[0])):
   File "C:\Users\Laurier\Programming\Eclipse\workspace\svn\trunk\main\BotThread.
 py", line 586, in go
-    self.commandHandler.process(exit_str)
+    self.command_handler.process(exit_str)
   File "C:\Users\Laurier\Programming\Eclipse\workspace\svn\trunk\main\CommandHan
 dler.py", line 72, in process
     self.user_move(user_input)

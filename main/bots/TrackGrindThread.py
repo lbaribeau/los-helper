@@ -33,7 +33,7 @@ class TrackGrindThread(GrindThread):
         if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
             self.__nextpath = starting_path
         else:
-            self.__nextpath = 1
+            self.__nextpath = 0
 
         self.LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
@@ -191,7 +191,7 @@ class TrackGrindThread(GrindThread):
     def do_go_hooks(self, exit_str):
         if exit_str == "slow_prepare":
             self.sleep(5)
-            self.commandHandler.process("prepare")
+            self.command_handler.process("prepare")
             return True
         elif exit_str == "think":
             return True

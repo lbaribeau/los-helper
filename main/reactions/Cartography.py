@@ -17,7 +17,7 @@ from Aura import Aura
 from reactions.referencing_list import ReferencingList
 
 class Cartography(BotReactionWithFlag):
-    def __init__(self, mudReaderHandler, commandHandler, character):
+    def __init__(self, mudReaderHandler, command_handler, character):
         self.store_item_list = "(?:[\s]*)(?:A |An |Some )?(.+?)(?:[\s]*)(?:(\(.\))?(?:[\s]*))?Cost: ([\d]*)" #well do a re.findall on the list above to iterate through, don't add this to the array below
 
         self.regex_cart = [
@@ -30,7 +30,7 @@ class Cartography(BotReactionWithFlag):
             RegexStore.mob_fled, RegexStore.open_first, RegexStore.washroom
         ]
         self.mudReaderHandler = mudReaderHandler
-        self.commandHandler = commandHandler
+        self.command_handler = command_handler
         self.character = character
 
         self.__waiter_flag = False
@@ -97,12 +97,12 @@ class Cartography(BotReactionWithFlag):
             if self.character.ACTIVELY_BOTTING:
                 if self.character.CONFUSED:
                     if (not self.character.CAN_SEE):
-                        self.commandHandler.process('c light') #look around to stop the "you don't see that here bug"
+                        self.command_handler.process('c light') #look around to stop the "you don't see that here bug"
 
                     #clear the attacking list
                     self.character.MOBS_ATTACKING = []
 
-                    self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
+                    self.command_handler.process('l') #look around to stop the "you don't see that here bug"
                 else:
                     self.character.CONFUSED = True
 
@@ -265,7 +265,7 @@ class Cartography(BotReactionWithFlag):
 
                 if (self.character.ACTIVELY_BOTTING):
                     if (mob.approximate_level == None):
-                        self.commandHandler.process('l ' + str(monster))
+                        self.command_handler.process('l ' + str(monster))
 
                 # magentaprint(str(mob))
 

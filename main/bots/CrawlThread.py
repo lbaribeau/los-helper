@@ -18,9 +18,9 @@ class CrawlThread(BotThread):
     def decide_where_to_go(self):
         if not self.character.CAN_SEE:
             magentaprint("I'm bliiiiiinnddddd!!!", False)
-            self.commandHandler.process("c light")
+            self.command_handler.process("c light")
             time.sleep(2)
-            self.commandHandler.process("l")
+            self.command_handler.process("l")
         elif self.character.DEAD:
             time.sleep(12) #wait in Limbo
             self.character.DEAD = False

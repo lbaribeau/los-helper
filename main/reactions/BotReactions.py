@@ -138,13 +138,13 @@ class GenericBotReaction(object):
     and uses it to define notify.  This type of BotReaction can't make
     use of M_obj."""
 
-    def __init__(self, regexes, commandHandler, telnet_commands):
+    def __init__(self, regexes, command_handler, telnet_commands):
 
         if isinstance(regexes, str):
             regexes = [regexes]
 
         self.regexes = regexes
-        self.commandHandler = commandHandler
+        self.command_handler = command_handler
 
         if isinstance(telnet_commands, str):
             self.telnet_commands = [telnet_commands]
@@ -153,7 +153,7 @@ class GenericBotReaction(object):
 
     def notify(self, regex, M_obj):
         for cmd in self.telnet_commands:
-            self.commandHandler.process(cmd)
+            self.command_handler.process(cmd)
 
-# add init with character and commandHandler
+# add init with character and command_handler
 # make a reaction type for kill thread

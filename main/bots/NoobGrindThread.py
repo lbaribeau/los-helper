@@ -23,6 +23,7 @@ class NoobGrindThread(TrackGrindThread):
       return self.track[:]
 
     def do_pre_go_actions(self):
+      self.check_weapons()
       self.buff_up()
 
     def do_go_hooks(self, exit_str):
@@ -37,6 +38,10 @@ class NoobGrindThread(TrackGrindThread):
         return True
       elif exit_str == "trade_book":
         self.command_handler.process("trade lar lib")
+        return True
+      elif exit_str == "asis_light":
+        self.command_handler.process("ask guide light")
+        self.sleep(5)
         return True
       elif exit_str == "unlock_east":
         self.command_handler.process("unlock east wood")

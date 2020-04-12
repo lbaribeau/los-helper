@@ -144,6 +144,7 @@ class ArmourBot(MiniBot):
         pass
 
     def get_needed_default_armour(self):
+        pass
         # Given size, armor level, slot, choose best piece from shop
         # Ie. steel, medium, neck - plate mail collar
         #desired_items = sorted(self.determine_shopping_list(self.broken_armour), key=lambda item : item.area)
@@ -182,6 +183,7 @@ class ArmourBot(MiniBot):
     #     self.travel_bot.follow_path(smithy_path)
 
     def determine_shopping_list(self, broken_armour):
+        return []
         # items = []
         # for a in broken_armour:
         #     # wear_location = map.lookup_wear_location(a)A
@@ -255,6 +257,7 @@ class ArmourBot(MiniBot):
         # for slot in ['body','arms','legs','neck1','neck2','face','hands','head', 'shield']:
 
     def pick_areastoreitem(self, slot, cls, race, character_lvl):
+        return
         # We will use the class to determine the armour level, we have the slot as a string so we'll select data with that,
         # and we need to map that character level to the allowed armour tiers.
         if cls == 'Mon':

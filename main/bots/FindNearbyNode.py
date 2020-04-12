@@ -23,8 +23,8 @@ from bots.GrindThread import GrindThread
 #  we'll have a very good map, so that will satisfy.
 
 class FindNearbyNode(GrindThread):
-    def __init__(self, character, commandHandler, mudReaderHandler, mud_map, chase_from_aid):
-        super().__init__(character, commandHandler, mudReaderHandler, mud_map)
+    def __init__(self, character, command_handler, mudReaderHandler, mud_map, chase_from_aid):
+        super().__init__(character, command_handler, mudReaderHandler, mud_map)
         magentaprint('GrindThread.find_nearby_node()')
         primary_aid = self.character.AREA_ID
         self.one_node_away = True

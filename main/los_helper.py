@@ -102,21 +102,21 @@ class LosHelper(object):
 
         self.check_info()
 
-        self.commandHandler = CommandHandler(self.character, self.mud_reader_handler, self.telnetHandler)
-        self.cartography = Cartography(self.mud_reader_handler, self.commandHandler, self.character)
-        self.commandHandler.go.cartography = self.cartography
-            # Cartography shouldn't need commandHandler to fix dependencies
+        self.command_handler = CommandHandler(self.character, self.mud_reader_handler, self.telnetHandler)
+        self.cartography = Cartography(self.mud_reader_handler, self.command_handler, self.character)
+        self.command_handler.go.cartography = self.cartography
+            # Cartography shouldn't need command_handler to fix dependencies
 
         self.character.TRYING_TO_MOVE = True  # required for mapping (Hack - look into this - better init for Goto)
         self.telnetHandler.write('l')  # Sets area id for mapping
-        self.commandHandler.go.wait_for_flag()
+        self.command_handler.go.wait_for_flag()
         self.check_inventory()
 
         if '-grind' in sys.argv:
-            self.commandHandler.start_grind("grind")
+            self.command_handler.start_grind("grind")
 
         if '-noobgrind' in sys.argv:
-            self.commandHandler.start_noob_grind()
+            self.command_handler.start_noob_grind()
 
         if '-fast' in sys.argv:
             self.character.MANA_TO_ENGAGE = 0
@@ -128,11 +128,11 @@ class LosHelper(object):
         self.mudListenerThread.stop()
         self.mudReaderThread.stop()
         magentaprint("Joining mud map thread.")
-        self.join_thread(self.commandHandler.mud_map_thread)
+        self.join_thread(self.command_handler.mud_map_thread)
         magentaprint("Joining bot_thread.")
-        self.join_thread(self.commandHandler.bot_thread)
+        self.join_thread(self.command_handler.bot_thread)
         # if self.threaded_map_setup:
-        #     self.commandHandler.mud_map_thread.join()
+        #     self.command_handler.mud_map_thread.join()
         magentaprint("Joining mudListenerThread")
         self.mudListenerThread.join(10)
         magentaprint("Joining mudReaderThread")
@@ -156,7 +156,7 @@ class LosHelper(object):
     def main(self):
         stopping = False
 
-        # self.ring_reaction = RingWearingReaction(self.character.inventory, self.commandHandler)
+        # self.ring_reaction = RingWearingReaction(self.character.inventory, self.command_handler)
         # self.mud_reader_handler.register_reaction(self.ring_reaction)
 
         while not stopping:
@@ -175,13 +175,13 @@ class LosHelper(object):
                 self.telnetHandler.write("quit")
                 # self.telnetHandler.write(user_input)
                 stopping = True
-                self.commandHandler.stop_bot()
+                self.command_handler.stop_bot()
             elif user_input == 'quit':
-                magentaprint("LosHelper calling commandHandler.quit.")
-                stopping = self.commandHandler.quit()
+                magentaprint("LosHelper calling command_handler.quit.")
+                stopping = self.command_handler.quit()
             else:
                 try:
-                    self.commandHandler.process(user_input)
+                    self.command_handler.process(user_input)
                 except socket.error as e:
                     # if hasattr(e, 'errno') and e.errno is 32: # Broken pipe
                     magentaprint("LosHelper caught telnet error and quitting: " + str(e))

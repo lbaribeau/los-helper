@@ -20,7 +20,7 @@ Traceback (most recent call last):
   File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 85, in run
     if self.go(self.direction_list[0]):
   File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 148, in go
-    self.commandHandler.user_move(exit_str)
+    self.command_handler.user_move(exit_str)
   File "/Users/adama/Sites/sandbox/los-helper/main/comm/command_handler.py", line 429, in user_move
     self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
   File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 64, in persistent_execute
@@ -54,7 +54,7 @@ Traceback (most recent call last):
   File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 85, in run
     if self.go(self.direction_list[0]):
   File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 148, in go
-    self.commandHandler.user_move(exit_str)
+    self.command_handler.user_move(exit_str)
   File "/Users/adama/Sites/sandbox/los-helper/main/comm/command_handler.py", line 429, in user_move
     self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
   File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 64, in persistent_execute
@@ -88,7 +88,7 @@ Traceback (most recent call last):
   File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 85, in run
     if self.go(self.direction_list[0]):
   File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 148, in go
-    self.commandHandler.user_move(exit_str)
+    self.command_handler.user_move(exit_str)
   File "/Users/adama/Sites/sandbox/los-helper/main/comm/command_handler.py", line 429, in user_move
     self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
   File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 64, in persistent_execute
@@ -122,7 +122,7 @@ Traceback (most recent call last):
   File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 85, in run
     if self.go(self.direction_list[0]):
   File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 148, in go
-    self.commandHandler.user_move(exit_str)
+    self.command_handler.user_move(exit_str)
   File "/Users/adama/Sites/sandbox/los-helper/main/comm/command_handler.py", line 429, in user_move
     self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
   File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 64, in persistent_execute
@@ -156,7 +156,7 @@ Traceback (most recent call last):
   File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 85, in run
     if self.go(self.direction_list[0]):
   File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 148, in go
-    self.commandHandler.user_move(exit_str)
+    self.command_handler.user_move(exit_str)
   File "/Users/adama/Sites/sandbox/los-helper/main/comm/command_handler.py", line 429, in user_move
     self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
   File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 64, in persistent_execute
@@ -190,7 +190,7 @@ Traceback (most recent call last):
   File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 85, in run
     if self.go(self.direction_list[0]):
   File "/Users/adama/Sites/sandbox/los-helper/main/bots/BotThread.py", line 148, in go
-    self.commandHandler.user_move(exit_str)
+    self.command_handler.user_move(exit_str)
   File "/Users/adama/Sites/sandbox/los-helper/main/comm/command_handler.py", line 429, in user_move
     self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
   File "/Users/adama/Sites/sandbox/los-helper/main/command/Go.py", line 64, in persistent_execute

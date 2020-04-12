@@ -2,7 +2,7 @@
 from mini_bots.mini_bot import MiniBot
 
 class InventoryBot(MiniBot):
-    def __init__(self, inv, commandHandler):
+    def __init__(self, inv, command_handler):
         self.inv = inv
 
     def sell_stuff(self):

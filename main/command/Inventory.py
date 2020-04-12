@@ -857,7 +857,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 # Ok what about selling, dropping, giving, wielding, wearing.
 # I think I can see why I never wrote this thing.
 # Well how about we just make it stupid a ignore those things.
-# (Alternative is to ask commandHandler to do all of these things
+# (Alternative is to ask command_handler to do all of these things
 # through the inventory object... inventory.sell() inventory.wear()
 # which isn't terrible.  Hmmmm)
 
@@ -877,7 +877,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 # Hmmm, how to keep inventory up to date when buying stuff?
 # How about printing the inventory on this regex?
 # Oooh, maybe we could convince MudReaderThread to repress the output.
-# Well, we could have commandHandler call 'buy' and then confirm ...
+# Well, we could have command_handler call 'buy' and then confirm ...
 # oooff that doesn't even work because we don't have the full name of what we bought
 # Maybe printing the inventory won't be too annoying...
 

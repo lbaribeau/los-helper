@@ -473,18 +473,18 @@ class SmartCombat(CombatObject):
         # magentaprint("Engage: " + monster)
         # ifled = False
 
-        # self.commandHandler.user_kk(monster)
+        # self.command_handler.user_kk(monster)
         # self.sleep(0.5)  # Keeps attacking and magic out of sync
 
-        # while(self.commandHandler.KillThread != None and self.commandHandler.KillThread
-        #       and self.commandHandler.KillThread.stopping == False):
+        # while(self.command_handler.KillThread != None and self.command_handler.KillThread
+        #       and self.command_handler.KillThread.stopping == False):
 
         #     if(BotThread.can_cast_spell(self.character.MANA, black_magic_spell_cost, self.character.BLACK_MAGIC)):
-        #         if(self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
+        #         if(self.command_handler.CastThread == None or not self.command_handler.CastThread.is_alive()):
         #             magentaprint("Starting black magic cast thread: " + monster)
-        #             self.commandHandler.user_cc(self.character.FAVOURITE_SPELL + " " + monster)
+        #             self.command_handler.user_cc(self.character.FAVOURITE_SPELL + " " + monster)
         #         else:
-        #             self.commandHandler.stop_CastThread()
+        #             self.command_handler.stop_CastThread()
 
         #     # TODO: restoratives (use when vig not keeping up or low mana)
         #     if (not self.has_ideal_health()):
@@ -492,11 +492,11 @@ class SmartCombat(CombatObject):
         #         self.do_heal_skills()
 
         #         if (BotThread.can_cast_spell(self.character.MANA, vigor_cost, self.character.KNOWS_VIGOR)):
-        #             if( self.commandHandler.CastThread == None or not self.commandHandler.CastThread.is_alive()):
+        #             if( self.command_handler.CastThread == None or not self.command_handler.CastThread.is_alive()):
         #                 magentaprint("Starting vigor cast thread")
-        #                 self.commandHandler.user_cc("vig")
+        #                 self.command_handler.user_cc("vig")
         #         else:
-        #             self.commandHandler.stop_CastThread()
+        #             self.command_handler.stop_CastThread()
         #         #else:
         #             #self.use_restorative_items()
 
@@ -510,7 +510,7 @@ class SmartCombat(CombatObject):
         #         ifled = True
 
         #         # OK the mob died or ran
-        #         self.commandHandler.stop_CastThread()
+        #         self.command_handler.stop_CastThread()
 
         #     self.sleep(0.05)
 

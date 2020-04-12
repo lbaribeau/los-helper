@@ -130,7 +130,7 @@ I think that CommandHandler will 'have' all of the command objects
  - resting, casting show aura, checking gear, whois, info - all take the entire program to do.
  The Command tools are good - they provide the blocking/handshaking BotThread needs.
  Making CommandHandler functions that both the human and bot use is just extra useless code.
- In general - let CommandHandler own every command.  Let BotThread do self.commandHandler.kill.send(target)
+ In general - let CommandHandler own every command.  Let BotThread do self.command_handler.kill.send(target)
  etc.  That way, BotThread can still have its head in the clouds and CommandHandler doesn't become a messy hub.
  Also, BotThread doesn't have to collect every command (in addition to them being collected elsewhere for human use.)
 

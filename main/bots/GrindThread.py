@@ -46,10 +46,10 @@ class GrindThread(BotThread):
         #     # return self.check_for_successful_go()
         #     # return self.check_for_successful_go()
         #     # return self.go(exit_str)   # Erhm self.go calls us, not the other way around
-        #     self.commandHandler.go.persistent_execute(exit_str)
-        #     return self.commandHandler.go.success
+        #     self.command_handler.go.persistent_execute(exit_str)
+        #     return self.command_handler.go.success
         if exit_str == "sprepare":
-            self.commandHandler.process(exit_str)
+            self.command_handler.process(exit_str)
             return True
         elif exit_str == "sell_items":
             self.sell_items()
@@ -468,9 +468,9 @@ class GrindThread(BotThread):
 
     def use_buff_items(self):
         if self.inventory.has("milky potion"):
-            self.commandHandler.process('drink milky')
+            self.command_handler.process('drink milky')
         if self.inventory.has("steel bottle"):
-            self.commandHandler.process('drink steel')
+            self.command_handler.process('drink steel')
 
     def use_extra_bless_item(self):
         magentaprint("GrindThread.use_extra_bless_item()")
@@ -492,11 +492,11 @@ class GrindThread(BotThread):
             self.command_handler.process('drink restorative')
             # large restorative
         elif self.inventory.has("scarlet potion"):
-            self.commandHandler.process('drink scarlet')
+            self.command_handler.process('drink scarlet')
         elif self.inventory.has("small flask"):
-            self.commandHandler.process('drink small flask')
+            self.command_handler.process('drink small flask')
         elif self.inventory.has("white potion"):
-            self.commandHandler.process('drink white potion')
+            self.command_handler.process('drink white potion')
         elif self.inventory.has("tree root"):
             self.command_handler.process('eat root')
             # white potion
@@ -507,8 +507,14 @@ class GrindThread(BotThread):
         magentaprint('check_weapons()')
         # w = WeaponBot(self.char, self.command_handler, self.mrh, self.map)
         # w.repair_or_replace_weapon()
-        if not self.stopping:
+        if not self.stopping and not self.is_character_class('Mon'):
+            magentaprint("Checking weapons for " + self.character._class.id,False)
             self.command_handler.weapon_bot.check_weapons()
+
+    def check_armour(self):
+        if self.stopping or self.is_character_class('Mon'):
+            return
+        self.command_handler.armour_bot.suit_up()
 
         # if not self.smartCombat.broken_weapon:
         #     return True
@@ -601,11 +607,6 @@ class GrindThread(BotThread):
         self.direction_list = direction_list
 
         return True
-
-    def check_armour(self):
-        if self.stopping:
-            return
-        self.command_handler.armour_bot.suit_up()
 
     def stop(self):
         super().stop()
@@ -868,7 +869,7 @@ class GrindThread(BotThread):
     def ready_for_combat(self):
         return self.character.HEALTH >= self.character.HEALTH_TO_HEAL and \
                self.character.MANA >= self.character.MANA_TO_ENGAGE and \
-               hasattr(self.command_handler.weapon_bot, 'weapon')
+               (hasattr(self.command_handler.weapon_bot, 'weapon') or self.is_character_class('Mon'))
         # return (self.has_ideal_health() and
         #         self.has_ideal_mana())
 

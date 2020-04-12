@@ -78,7 +78,7 @@ class FakeTelnetSocket(object):
             # "Derp                  Mon  M  [12]Brother                    16    Human\n")
             # self.char.name + spaces + "Mon  M  [12]Brother                    16    Human\n"
             # self.char.name + spaces + "Ran  M  [08]Keeper                    16    Human\n"
-            self.char.name + spaces + "Pal  M  [13]Keeper                    16    Human\n"
+            self.char.name + spaces + "Mon  M  [13]Keeper                    16    Human\n"
         )
         self.spells_string = (
             "\n\r"

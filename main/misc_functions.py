@@ -2,6 +2,7 @@
 import time
 import sys
 import json
+from inspect import getframeinfo, stack
 
 from db.Database import *
 
@@ -15,23 +16,29 @@ def get_verbose_mode():
     return verboseMode
 
 def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=False):
-    global debugMode
+    global debugMode    
+    # caller = getframeinfo(stack()[2][0])
+    caller = []
+    
+    for st in stack():
+        frame = getframeinfo(st[0])
+        caller.append("{} ln {}\n".format(frame.filename, frame.lineno))
 
     if show_hidden:
         text = repr(text)  # escape all characters in string
 
     if debugMode or not is_debug_command:
-        do_magentaprint(text)
+        do_magentaprint(text, caller)
 
     if log_output:
         log = Log()
         log.data = text
         log.save()
 
-def do_magentaprint(text):
+def do_magentaprint(text, caller):
     newConsoleHandler().magenta()
     # output = str(get_timestamp() + "| <" + str(text) + ">")
-    output = str(get_timestamp() + "   | " + str(text))
+    output = "{} | {} | {}".format(str(get_timestamp()), str(text), caller)
 
     print(output)
     newConsoleHandler().white()

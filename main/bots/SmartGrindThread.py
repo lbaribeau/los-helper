@@ -14,8 +14,8 @@ class SmartGrindThread(TrackGrindThread):
     # pawnshop_aid = 130
     # tip_aid = 266
 
-    def __init__(self, character, commandHandler, mudReaderHandler, mud_map): 
-        super().__init__(character, commandHandler, mudReaderHandler, mud_map)
+    def __init__(self, character, command_handler, mudReaderHandler, mud_map): 
+        super().__init__(character, command_handler, mudReaderHandler, mud_map)
 
         self.is_actually_dumb = True
 
@@ -135,9 +135,11 @@ class SmartGrindThread(TrackGrindThread):
         return directions
 
     def get_heal_path(self, from_path=-1):
-        magentaprint("SmartGrindThread.get_heal_path() from_path is " + str(from_path) + ", character.AREA_ID is " + str(self.character.AREA_ID) + ".")
-        if self.is_actually_dumb:
+        # magentaprint("SmartGrindThread.get_heal_path() from_path is " + str(from_path) + ", character.AREA_ID is " + str(self.character.AREA_ID) + ".", False)
+        if self.is_actually_dumb and self.character.AREA_ID != 2:
             return ["areaid2"]
+        elif self.character.AREA_ID == 2:
+            return []
         else:
             try:
                 if from_path == -1:
@@ -251,7 +253,7 @@ class SmartGrindThread(TrackGrindThread):
             self.min_target_aura = Aura('demonic red')
             self.max_target_aura = Aura('heavenly blue')
 
-        magentaprint("My aura is {}".format(aura_context), False)
+        # magentaprint("My aura is {}".format(aura_context))
 
         self.get_targets()
 
@@ -267,7 +269,7 @@ class SmartGrindThread(TrackGrindThread):
 
     def do_flee_hook(self):
         unsafe_area = self.character.AREA_ID
-        self.commandHandler.user_flee()
+        self.command_handler.user_flee()
         #we should have a new area id now
         self.direction_list = self.get_heal_path(self.character.AREA_ID)
 
@@ -276,7 +278,7 @@ class SmartGrindThread(TrackGrindThread):
             magentaprint("Walking back to the chapel")
             self.direction_list = self.get_heal_path(self.character.AREA_ID)
             self.no_exit_count = 0
-            self.commandHandler.process("l")
+            self.command_handler.process("l")
         else:
             #magentaprint("Go no exit on: " + self.direction_list.pop(0), False)
             self.character.MOBS_JOINED_IN = []

@@ -55,13 +55,13 @@ class Initializer(object):
         self.check_spells()
         self.check_info()
 
-        self.commandHandler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
-        self.cartography = Cartography(self.mudReaderHandler, self.commandHandler, self.character)
-        self.commandHandler.go.cartography = self.cartography  
-            # Cartography shouldn't need commandHandler to fix dependencies
+        self.command_handler = CommandHandler(self.character, self.mudReaderHandler, self.telnetHandler)
+        self.cartography = Cartography(self.mudReaderHandler, self.command_handler, self.character)
+        self.command_handler.go.cartography = self.cartography  
+            # Cartography shouldn't need command_handler to fix dependencies
         self.character.TRYING_TO_MOVE = True  # required for mapping (Hack - look into this - better init for Goto)
         self.telnetHandler.write('l')  # Sets area id for mapping
-        self.commandHandler.go.wait_for_flag()
+        self.command_handler.go.wait_for_flag()
         self.check_inventory()
 
     def setup_mud_map(self):
