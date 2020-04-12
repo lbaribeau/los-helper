@@ -19,10 +19,11 @@ def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=Fals
     global debugMode    
     # caller = getframeinfo(stack()[2][0])
     caller = []
-    
-    for st in stack():
-        frame = getframeinfo(st[0])
-        caller.append("{} ln {}\n".format(frame.filename, frame.lineno))
+
+    if debugMode:
+        for st in stack():
+            frame = getframeinfo(st[0])
+            caller.append("{} ln {}\n".format(frame.filename, frame.lineno))
 
     if show_hidden:
         text = repr(text)  # escape all characters in string

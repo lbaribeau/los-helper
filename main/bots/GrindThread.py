@@ -507,7 +507,7 @@ class GrindThread(BotThread):
         magentaprint('check_weapons()')
         # w = WeaponBot(self.char, self.command_handler, self.mrh, self.map)
         # w.repair_or_replace_weapon()
-        if not self.stopping and not self.is_character_class('Mon'):
+        if not self.stopping and not self.is_character_class('Mon') and not self.is_character_class('Mag'):
             magentaprint("Checking weapons for " + self.character._class.id,False)
             self.command_handler.weapon_bot.check_weapons()
 
