@@ -22,7 +22,7 @@ class TrackGrindThread(GrindThread):
             self.__TOTALPATHS = 22
         else:
             # self.__TOTALPATHS = 28  # # Area ids unfortunately must be updated.
-            self.__TOTALPATHS = 22
+            self.__TOTALPATHS = 24
         # elif self.character.level <= 10:
         #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
         # elif self.character.level > 12:
@@ -33,7 +33,7 @@ class TrackGrindThread(GrindThread):
         if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
             self.__nextpath = starting_path
         else:
-            self.__nextpath = 0
+            self.__nextpath = 22
 
         self.LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
@@ -162,7 +162,22 @@ class TrackGrindThread(GrindThread):
         ]
         #aid418, 1975, 1979, 1951, 415, 45
         # These area numbers are unfortunately for a different database... (except "2")
-        self.SPIDER_FOREST = ['areaid418', 'areaid1975', 'areaid1979', 'areaid1951', 'areaid415', 'areaid2']
+
+        # need to fix this!
+        # self.SPIDER_FOREST = ['out', 'north', 'north', 'west', 'north gate', 'north', 'north', 'north', 'north',
+        #  'north', 'gate', 'north', 'north', 'gate', 'north', 'northwest', 'northwest', 'southwest', 'southwest', 
+        #  'southwest', 'southwest', 'south', 'southwest', 'southwest', 'west', 'west', 'southwest', 'southwest', 
+        #  'southwest', 'southwest', 'southeast', 'southeast', 'southeast', 'southeast', 'southeast', 'south', 
+        #  'south', 'forest', 'south', 'southwest', 'southeast', 'northeast', 'north', 'southwest', 'southeast',
+        #  'east', 'northeast', 'northwest', 'west', 'southwest', 'southwest', 'northeast', 'east', 'northeast', 
+        #  'northwest', 'west', 'northwest', 'north', 'fields', 'north', 'north', 'northwest', 'northwest', 
+        #  'northwest', 'northwest', 'northwest', 'northeast', 'northeast', 'northeast', 'northeast', 'east', 
+        #  'east', 'northeast', 'northeast', 'north', 'northeast', 'northeast', 'northeast', 'northeast', 
+        #  'southeast', 'southeast', 'south', 'gate', 'south', 'south', 'gate', 'south', 'south', 'south', 
+        #  'south', 'south', 'gate', 'east', 'south', 'south', 'chapel']
+
+        self.SPIDER_FOREST = ['areaid1886','areaid2355','areaid1886','areaid2355', 'areaid2']
+
         #The following areas repeat a bit because the spawns are fast
         self.KNIGHTS = [
             'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south', 'southwest', 'southwest',
@@ -266,11 +281,12 @@ class TrackGrindThread(GrindThread):
         elif self.__nextpath == 21:
             return self.track_builder(self.RANCHER_SENTRY, 9, 20)
         elif self.__nextpath == 23:
-            return self.track_builder(self.GNOLL_CAMP, 12, 20)
-        elif self.__nextpath == 25:
-            return self.track_builder(self.KNIGHTS, 12, 20)
-        elif self.__nextpath == 27:
+            magentaprint("Doing spiders", False)
             return self.track_builder(self.SPIDER_FOREST, 12, 20)
+        elif self.__nextpath == 25:
+            return self.track_builder(self.GNOLL_CAMP, 12, 20)
+        elif self.__nextpath == 27:
+            return self.track_builder(self.KNIGHTS, 12, 20)
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.__nextpath))
             return list(self.PATH_TO_SKIP_WITH[:])
