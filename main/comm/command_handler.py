@@ -109,10 +109,10 @@ class CommandHandler(object):
             self.init_map_and_bots()
 
         self.actions = {
-            # 'go_smithy' : self.go_smithy,
-            # 'suit_up': self.suit_up,
+            'go_smithy' : self.go_smithy,
+            'suit_up': self.suit_up,
             'bdrop' : self.bulk_drop,
-            # 'lookup_armour' : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
+            'lookup_armour' : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
             'print_reactions' : lambda a : self.mudReaderHandler.print_reactions(),
             'weapon' : lambda a : self.start_weapon_bot()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
@@ -248,7 +248,7 @@ class CommandHandler(object):
             self.user_move("east")
         elif user_input == 'ga':
             self.telnetHandler.write('get all')
-            # self.get.execute('all')
+            self.get.execute('all')
         elif user_input.startswith('go ') or re.match(str(self.character.EXIT_REGEX), user_input):
             if not user_input.startswith('go '):
                 magentaprint("User input matched " + str(self.character.EXIT_REGEX) + ", going.")

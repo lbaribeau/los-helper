@@ -811,6 +811,9 @@ class GrindThread(BotThread):
         self.command_handler.user_flee()
 
     def get_items_if_weapon(self):
+        self.command_handler.get.execute('all')
+        self.command_handler.get.wait_for_flag()
+        
         if hasattr(self.smartCombat.weapon_bot, 'weapon'):
             self.get_items()
         else:
@@ -823,8 +826,6 @@ class GrindThread(BotThread):
 
     def get_items(self):
         # self.command_handler.process('ga')
-        self.command_handler.get.execute('all')
-        self.command_handler.get.wait_for_flag()
 
         while self.command_handler.get.cant_carry and not self.stopping:
             magentaprint("Number of steel bottles: " + str(self.inventory.count('steel bottle')))
