@@ -36,3 +36,7 @@ los-helper is a python script meant to automate certain aspects of mudding.
 sudo apt-get git
 sudo curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
 sudo python3.5 get-pip.py
+
+## Modifying the Database
+DB Browser for SQLite workers well
+You can open multiple windows on Mac OSX with this command `/Applications/DB\ Browser\ for\ SQLite.app/Contents/MacOS/DB\ Browser\ for\ SQLite &`
