@@ -6,7 +6,7 @@ class NoobGrindThread(TrackGrindThread):
     def __init__(self, character=None, command_handler=None, mud_reader_handler=None,
                 mud_map=None):
         super().__init__(character, command_handler, mud_reader_handler, mud_map, 0)
-        self.track = ['purchase_key', 'unlock_south', 'south', 'get_book', 'trade_book', 'north', 'asis_light',
+        self.track = ['purchase_key', 'unlock_south', 'south', 'get_book', 'trade_book', 'north',
         'unlock_east', 'east', 'engage_skelington', 'west',
         'unlock_east', 'east', 'engage_skelington', 'west',
         'unlock_east', 'east', 'engage_skelington', 'west',
