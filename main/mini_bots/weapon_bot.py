@@ -68,14 +68,14 @@ class WeaponBot(MiniBot):
         self.shield_or_offhand = True
 
     def run(self):
-        if self.char.level == 1:
+        if self.char.level <= 2:
             self.stopping = True
             self.stop()
         else:
             self.check_weapons()
 
     def check_weapons(self):
-        if self.char.level == 1:
+        if self.char.level <= 2:
             return
 
         if self.temporary_weapon:
