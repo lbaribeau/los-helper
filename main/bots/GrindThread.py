@@ -280,10 +280,10 @@ class GrindThread(BotThread):
 
             if self.do_heal_skills():
                 continue
-            elif self.inventory.count_small_restoratives() > 7:
-                self.command_handler.use.wait_until_ready()
-                self.command_handler.use.small_healing_potion()
-                self.command_handler.use.wait_for_flag()
+            # elif self.inventory.count_small_restoratives() > 7:
+            #     self.command_handler.use.wait_until_ready()
+            #     self.command_handler.use.small_healing_potion()
+            #     self.command_handler.use.wait_for_flag()
             else:
                 # if self.engage_any_attacking_mobs():
                 #     if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
