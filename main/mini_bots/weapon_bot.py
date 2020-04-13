@@ -75,6 +75,9 @@ class WeaponBot(MiniBot):
             self.check_weapons()
 
     def check_weapons(self):
+        if self.char.level == 1:
+            return
+
         if self.temporary_weapon:
             self.correct_temp_weapon()
         elif self.broken_weapon:
@@ -195,6 +198,9 @@ class WeaponBot(MiniBot):
             raise Exception("WeaponBot.rewield() wield error!")
 
     def try_weapons_from_inventory(self, weapon_name):
+        if weapon_name is None:
+            return False
+
         magentaprint('try_weapons_from_inventory')
         if hasattr(self, 'weapon'):  # We know that the offhand broke
             magentaprint("WeaponBot.try_weapons_from_inventory() but weapon is already set to " + self.weapon + '!')
