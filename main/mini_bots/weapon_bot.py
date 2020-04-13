@@ -68,7 +68,11 @@ class WeaponBot(MiniBot):
         self.shield_or_offhand = True
 
     def run(self):
-        self.check_weapons()
+        if self.char.level == 1:
+            self.stopping = True
+            self.stop()
+        else:
+            self.check_weapons()
 
     def check_weapons(self):
         if self.temporary_weapon:
@@ -129,9 +133,18 @@ class WeaponBot(MiniBot):
             self.broken_weapon.remove(wielded_weapon)
             return wielded_weapon
 
+    def first_possible_weapon(self):
+        weapons = self.get_possible_weapons()
+
+        if len(weapons) > 0:
+            return weapons[0].item.name
+
+        return None
+
+
     def try_default_replacement_from_inventory(self):
         magentaprint('try_default_replacement_from_inventory')
-        return self.try_weapons_from_inventory(self.get_possible_weapons()[0].item.name)
+        return self.try_weapons_from_inventory(self.first_possible_weapon())
 
     def try_weapon_list_from_inventory(self, l):
         magentaprint('try_weapon_list_from_inventory')
@@ -262,12 +275,12 @@ class WeaponBot(MiniBot):
 
     def try_default_replacement_from_inventory_with_possible_smithy_trip(self):
         magentaprint("WeaponBot.try_default_replacement_from_inventory_with_possible_smithy_trip()")
-        if self.char.inventory.has(self.get_possible_weapons()[0].item.name) and not self.stopping:
+        if self.char.inventory.has(self.first_possible_weapon()) and not self.stopping:
             self.smithy_bot.go_to_nearest_smithy()
             # return self.try_weapons_from_inventory(self.possible_weapons[0].item.name)
             return self.try_weapon_list_from_inventory_in_smithy([self.possible_weapons[0].item.name])
         else:
-            magentaprint("has(%s) returned False" % str(self.get_possible_weapons()[0].item.name))
+            magentaprint("has(%s) returned False" % str(self.first_possible_weapon()))
 
     def try_weapon_list_from_inventory_in_smithy(self, l):
         for w in l:
@@ -303,7 +316,7 @@ class WeaponBot(MiniBot):
     def default(self):
         if hasattr(self, 'weapon'):
             magentaprint("WeaponBot.default weapon: " + str(self.weapon))
-            return self.weapon == self.get_possible_weapons()[0].item.name
+            return self.weapon == self.first_possible_weapon()
         else:
             magentaprint("WeaponBot.weapon was deleted.")
             return False
@@ -412,15 +425,15 @@ class WeaponBot(MiniBot):
             self.temporary_weapon = False
             self.broken_weapon = []
         else:
-            while self.char.inventory.has(self.get_possible_weapons()[0].item.name) and not self.stopping:
+            while self.char.inventory.has(self.first_possible_weapon()) and not self.stopping:
                 # magentaprint('Not wielding default (?): ' + str(self.weapon) + '/' + str(self.possible_weapons()[0]))
                 # Preferred case (backup weapon was different)
-                magentaprint("self.char.inventory.has(?): " + str(self.get_possible_weapons()[0].item.name))
+                magentaprint("self.char.inventory.has(?): " + str(self.first_possible_weapon()))
                 magentaprint(str(self.char.inventory))
-                # while self.char.inventory.has(self.get_possible_weapons()[0].item.name):  # Done in repair
+                # while self.char.inventory.has(self.first_possible_weapon()):  # Done in repair
                 self.go_to_nearest_smithy()
-                # if self.repair(self.char.inventory.get_last_reference(self.get_possible_weapons()[0].item.name)):
-                if self.repair_one(self.get_possible_weapons()[0].item.name):
+                # if self.repair(self.char.inventory.get_last_reference(self.first_possible_weapon())):
+                if self.repair_one(self.first_possible_weapon()):
                     self.swap_to_default_weapon()
                     return
 
