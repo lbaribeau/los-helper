@@ -1,7 +1,7 @@
 Derp monk (highest level)
 Twerp clearic (next highest level)
 Werp monk (balanced stats)
-Drerp druid
+Drerp barbarian
 Dwarp thief (swamp troll)
 Gerp mage (w/ blis + show)
 Flerp anti-paladin
@@ -11,3 +11,4 @@ Merp thief (swamp troll)
 Serp Alchemist
 Rerp cleric gnome 3 3 12 18 18
 Terp cleric dwarf 10 10 10 10 14
+Uerp druid 10 8 12 12 12

@@ -148,12 +148,12 @@ class ReferencingList(object):
         i = self.index(ref)
 
         if i != None:
-            magentaprint("ReferencingList.get() ref/index/str(item): " + str(ref) + '/' + str(i) + '/' + str(self.list[i]))
+            # magentaprint("ReferencingList.get() ref/index/str(item): " + str(ref) + '/' + str(i) + '/' + str(self.list[i]))
             # magentaprint("Inventory list: " + str(self.list))
             # magentaprint("Inventory.get() returning " + str(self.list[i]))
             return self.list[i]
-        else:
-            magentaprint("ReferencingList.get() found nothing. ref/index: " + str(ref) + '/' + str(i))
+        # else:
+            # magentaprint("ReferencingList.get() found nothing. ref/index: " + str(ref) + '/' + str(i))
 
     def get_usable_object_of_type(self, model, data, level=-1):
         for obj in self.list:
