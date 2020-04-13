@@ -721,13 +721,13 @@ class GrindThread(BotThread):
         new_target = self.character.mobs.list.get_first_reference(monster)
 
         if new_target:
-            self.smartCombat.target = new_target
+            self.smartCombat.engage_target(new_target, monster)
         else:
             # ie. dark room
             if len(monster.split(' ')) > 1:
-                self.smartCombat.target = str(monster).split(' ')[0]
+                self.smartCombat.engage_target(str(monster).split(' ')[0], monster)
             else:
-                self.smartCombat.target = str(monster)
+                self.smartCombat.engage_target(str(monster), monster)
 
         self.smartCombat.spell = self.smartCombat.favourite_spell
         self.smartCombat.run()

@@ -2,6 +2,7 @@
 from bots.GrindThread import GrindThread
 from misc_functions import magentaprint
 from Aura import Aura
+import random
 
 class TrackGrindThread(GrindThread):
     def __init__(self, character, command_handler, mudReaderHandler, mud_map, starting_path=None):
@@ -21,8 +22,8 @@ class TrackGrindThread(GrindThread):
         elif self.character.level <= 12:
             self.__TOTALPATHS = 22
         else:
-            # self.__TOTALPATHS = 28  # # Area ids unfortunately must be updated.
-            self.__TOTALPATHS = 24
+            self.__TOTALPATHS = 28  # # Area ids unfortunately must be updated.
+            # self.__TOTALPATHS = 24
         # elif self.character.level <= 10:
         #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
         # elif self.character.level > 12:
@@ -33,7 +34,7 @@ class TrackGrindThread(GrindThread):
         if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
             self.__nextpath = starting_path
         else:
-            self.__nextpath = 22
+            self.__nextpath = random.randrange(0, self.__TOTALPATHS)
 
         self.LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
@@ -43,12 +44,13 @@ class TrackGrindThread(GrindThread):
             "drop_items","out", 'north', 'north', 'west', 'west', 'west', 'north', "chapel"
         ]
         self.THEATRE_PATH = [
-            "out", "s", "w", "w", "w", "s", "theat", "stairs","cubby", "out", "down", "swing", "seat", "out",
-            "down", "seat", "out", "door", "stage","side 2", "backstage", "door", "out", "curtain",
-            "stage", "side", "door","up", "out", "out", "n", "e","e", "e", "n", "chapel"
+            "out", "s", "w", "w", "w", "s", "theat", "stairs","cubby", "out", "box", "out", "box 2",
+            "out", "down", "swing", "seat", "out", "down", "seat", "out", "door", "office", "out",
+            "stage","side 2","backstage", "door", "out", "door 2", "out", "curtain", "stage",
+            "side", "door","up", "out", "out", "n", "e","e", "e", "n", "chapel"
         ]
         self.MARKET_PATH = [
-            "out", 's', 'e', 'e', 'e', 'n', 'w', 'w', 'n', 'n','s', 'w', 'e', 's', 'w', 's', 'n', 'w', 'e', 'n',
+            "out", 's', 'e', 'e', 'e', 'n', 'w', 'w', 'office', 'out', 'n', 'n','s', 'w', 'e', 's', 'w', 's', 'n', 'w', 'e', 'n',
             's', 'e', 'e', "out", 's', 'w', 'w', 'w', 'n',"chapel"
         ]
         self.MILITIA_SOLDIERS_PATH = [
@@ -95,8 +97,8 @@ class TrackGrindThread(GrindThread):
             'n','chapel'
         ]
         self.FORT_PATH = [
-            'out','n','n', 'w','gate','n','n','n','n','n','gate','n','n','w','s','s','e','e','n','n','w','s','s','gate',
-            's','s','s','s','s','gate','w','sw','s','s','s','e','e','e','e','n','w','n','chap'
+            'out','n','n', 'w','gate','n','n','n','n','n','gate','n','n','w','s','s','e','e','n',"door", "door",
+            'n','w','s','s','gate', 's','s','s','s','s','gate','w','sw','s','s','s','e','e','e','e','n','w','n','chap'
         ]
         self.MUGGER_PATH = [
             'ou','s','w','w','w','s','alley','w','alley','e','e','e','e','e','n','w','n','chap'
@@ -139,7 +141,7 @@ class TrackGrindThread(GrindThread):
             'southeast', 'southwest', 'south', 'south', 'southeast', 'south',
             'south', 'southwest', 'bridge', 'south', 'southwest', 'west', 'canal',
             'south', 'south', 'south', 'east', 'east', 'west', 'south', 'east',
-            'west', 'north', 'north', 'east', 'south', 'south', 'southwest', 'out',
+            'west', 'north', 'north', 'east', 'south', 'south', 'southwest', 'office', 'out', 'out',
             'west', 'north', 'north', 'north', 'north', 'north', 'northwest',
             'northeast', 'north', 'north', 'north', 'northeast', 'northeast',
             'northeast', 'northeast', 'north', 'north', 'gate', 'east', 'north',
@@ -181,25 +183,28 @@ class TrackGrindThread(GrindThread):
         #The following areas repeat a bit because the spawns are fast
         self.KNIGHTS = [
             'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south', 'southwest', 'southwest',
-            'southwest', 'southwest', 'south', 'south', 'south', 'southwest', 'southeast', 'south', 'south', 'south', 'south',
-            'south', 'east', 'east', 'east', 'southeast', 'south', 'east', 'east', 'east', 'east', 'east', 'northeast',
-            'northwest', 'northwest', 'northwest', 'northwest', 'north', 'east', 'east', 'east', 'south', 'southeast',
-            'east', 'east', 'northeast' 'west', 'west', 'west', 'east', 'east', 'east', 'north', 'west', 'west', 'west',
-            'east', 'east', 'east', 'north', 'north', 'northwest', 'southeast', 'south', 'red tent', 'out', 'south', 
-            'southwest', 'west', 'west', 'northwest', 'north', 'west', 'west', 'west', 'south', 'southeast', 'southeast', 
-            'southeast', 'southeast', 'southwest', 'west', 'west', 'west', 'west', 'west', 'north', 'northwest', 'west', 
-            'west', 'west', 'north', 'north', 'north', 'north', 'north', 'northwest', 'northeast', 'north', 'north', 
-            'north', 'northeast', 'northeast', 'northeast', 'northeast', 'north', 'north', 'gate', 'east', 'north', 
-            'north', 'north', 'west', 'north', 'chapel'
+            'southwest', 'southwest', 'south', 'south', 'south', 'southwest', 'southeast', 'south', 'south', 'south',
+            'south', 'south', 'east', 'east', 'east', 'southeast', 'south', 'east', 'east', 'east', 'east', 'east',
+            'northeast', 'northwest', 'northwest', 'northwest', 'northwest', 'north', 'east', 'east', 'east', 'south',
+            'southeast', 'east', 'east', 'northeast', 'north', 'red tent', 'out', 's', 'w', 'w', 'w', 'e', 'e', 'e',
+            'sw', 'w', 'w', 'nw', 'n', 'n', 'ne', 'stands', 'stand', 'out', 'stand 2', 'out', #'stand 3', 'out' #Tario
+            'e', 'se', 'w', 'w', 'w', 'e', 'e', 'e', 's', 'red tent', 'out', 'south', 'southwest', 'west', 'west',
+            'northwest', 'north', 'west', 'west', 'west', 'south', 'southeast', 'southeast', 'southeast', 'southeast',
+            'southwest', 'west', 'west', 'west', 'west', 'west', 'north', 'northwest', 'west', 'west', 'west', 'north',
+            'north', 'north', 'north', 'north', 'northwest', 'northeast', 'north', 'north', 'north', 'northeast',
+            'northeast', 'northeast', 'northeast', 'north', 'north', 'gate', 'east', 'north', 'north', 'north',
+            'west', 'north', 'chapel'
         ]
-        self.GNOLL_CAMP = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'southeast',
-         'southeast', 'east', 'east', 'east', 'southeast', 'southeast', 'southeast', 'south', 'south', 'south', 'south',
-          'south', 'south', 'south', 'south', 'south', 'south', 'south', 'south', 'southwest', 'southwest', 'southwest',
-           'southwest', 'brush', 'west', 'west', 'south', 'southwest', 'southwest', 'tent', 'out', 'north', 'southeast',
-           'southeast', 'out', 'north', 'east', 'north', 'east', 'northwest', 'northeast', 'northeast', 'northeast',
-           'northeast', 'north', 'north', 'north', 'north', 'north', 'north', 'north', 'north', 'north', 'north',
-           'north', 'north', 'northwest', 'northwest', 'northwest', 'west', 'west', 'west', 'northwest', 'northwest',
-           'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
+        self.GNOLL_CAMP = ['think']
+
+        # self.GNOLL_CAMP = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'southeast',
+        #  'southeast', 'east', 'east', 'east', 'southeast', 'southeast', 'southeast', 'south', 'south', 'south', 'south',
+        #   'south', 'south', 'south', 'south', 'south', 'south', 'south', 'south', 'southwest', 'southwest', 'southwest',
+        #    'southwest', 'brush', 'west', 'west', 'south', 'southwest', 'southwest', 'tent', 'out', 'north', 'southeast',
+        #    'southeast', 'out', 'north', 'east', 'north', 'east', 'northwest', 'northeast', 'northeast', 'northeast',
+        #    'northeast', 'north', 'north', 'north', 'north', 'north', 'north', 'north', 'north', 'north', 'north',
+        #    'north', 'north', 'northwest', 'northwest', 'northwest', 'west', 'west', 'west', 'northwest', 'northwest',
+        #    'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
 
         self.PATH_TO_SKIP_WITH = ['think']
 

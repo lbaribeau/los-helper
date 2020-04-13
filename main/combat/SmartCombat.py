@@ -12,6 +12,7 @@ from combat.Cast import Cast
 from command.Use import Use
 from command.Wield import Wield
 from combat.mob_target_determinator import MobTargetDeterminator
+from db.Mob import Mob
 
 class SmartCombat(CombatObject):
     black_magic = True
@@ -20,6 +21,8 @@ class SmartCombat(CombatObject):
         super().__init__(telnetHandler)
         self.thread = None
         self.target = None
+        self.mob_target = None
+        self.target_fullref = None
         self.stopping = None
         self.broken_weapon = ''
         self.activated = False
@@ -39,24 +42,15 @@ class SmartCombat(CombatObject):
         self.slow_combat_abilities = character._class.slow_combat_skills
         self.fast_combat_abilities = character._class.fast_combat_skills
 
+        self.character = character
         # spell_percent = max(character.earth, character.wind, character.fire, character.water)
         spell_percent = max(character.spell_proficiencies.values())
         # magentaprint("SmartCombat character.pty " + str(character.pty))
         self.black_magic = character.info.pty < 7 or spell_percent >= 5 or character.PREFER_BM
-        # self.favourite_spell = Spells.vigor if not self.black_magic else \
-        if spell_percent == 0 and self.black_magic:
-            self.favourite_spell = Spells.rumble if Spells.rumble in character.spells else \
-                                   Spells.hurt if Spells.hurt in character.spells else \
-                                   Spells.burn if Spells.burn in character.spells else Spells.blister
-        else:
-            if spell_percent == character.info.earth:
-                self.favourite_spell = Spells.crush if Spells.crush in character.spells else Spells.rumble
-            else:
-                self.favourite_spell = Spells.rumble if spell_percent == character.info.earth else \
-                                   Spells.hurt if spell_percent == character.info.wind else \
-                                   Spells.burn if spell_percent == character.info.fire else Spells.blister
+        # self.favourite_spell = Spells.vigor if not self.black_magic else \    
+        self.favourite_spell = self.get_low_rank_spell()
+
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
-        self.character = character
         self.regex_cart.extend([
             RegexStore.prompt, RegexStore.weapon_break, RegexStore.weapon_shatters, RegexStore.mob_attacked, RegexStore.armour_breaks,
             RegexStore.mob_arrived, RegexStore.mob_wandered, RegexStore.mob_left, RegexStore.not_here
@@ -99,17 +93,23 @@ class SmartCombat(CombatObject):
                 if M_obj.group(1).split(' ')[1] == 'ring':
                     self.broke_ring = True
         elif regex in RegexStore.mob_arrived:
+            # magentaprint("mob arrived", False)
+            # magentaprint('{} {} {}'.format(self.target, self.character.mobs.read_mobs(M_obj.group('mobs')), self.character.mobs.list), False)
             self.target = self.mob_target_determinator.on_mob_arrival(
                 self.target,
                 self.character.mobs.read_mobs(M_obj.group('mobs')),
                 self.character.mobs.list
             )
-        elif regex in RegexStore.mob_wandered + RegexStore.mob_left:
+            # magentaprint('{} {} {}'.format(self.target, self.character.mobs.read_mobs(M_obj.group('mobs')), self.character.mobs.list), False)
+        elif regex in RegexStore.mob_wandered + RegexStore.mob_left:            
+            # magentaprint("mob left", False)
+            # magentaprint('{} {} {}'.format(self.target, self.character.mobs.read_match(M_obj), self.character.mobs.list), False)
             self.target = self.mob_target_determinator.on_mob_departure(
                 self.target,
                 self.character.mobs.read_match(M_obj),
                 self.character.mobs.list
             )
+            # magentaprint('{} {} {}'.format(self.target, self.character.mobs.read_match(M_obj), self.character.mobs.list), False)
         elif regex in RegexStore.not_here:
             self.telnetHandler.write("l")
             pass
@@ -172,6 +172,10 @@ class SmartCombat(CombatObject):
             self.thread = Thread(target = self.run)
             self.thread.start()
 
+    def engage_target(self, target_shorthand, monster):
+        self.target = target_shorthand
+        self.target_fullref = monster
+
     def set_target(self, target=None):
         if target:
             if len(target.split(' ')) > 1:
@@ -194,11 +198,19 @@ class SmartCombat(CombatObject):
         self.casting = self.black_magic or Spells.vigor in self.character.spells
         is_combat_ready = True
         is_cast_ready = True
+        use_combat_ability = True
+        mob_target = None
         self.kill.wait_until_ready()
         if self.character._class.id == 'Mag':
             self.cast.wait_until_ready()
 
-        self.use_any_fast_combat_abilities()  # ie. Touch, Dance
+        if self.target_fullref is not None and self.character.ACTIVELY_BOTTING:
+            self.mob_target = Mob.get_mob_by_name(self.target_fullref)
+            use_combat_ability = self.determine_whether_to_use_combat_ability()
+            # self.determine_favorite_spell(mob)
+
+        if use_combat_ability:
+            self.use_any_fast_combat_abilities()  # ie. Touch, Dance
 
         while not self.stopping:
             # if self.broken_weapon:
@@ -211,7 +223,7 @@ class SmartCombat(CombatObject):
             else:
                 if self.character._class.id != 'Mag':
                     if self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
-                        if self.do_phys_attack():
+                        if self.do_phys_attack(use_combat_ability):
                             break
                     else:
                         if self.do_magic_attack():
@@ -221,17 +233,51 @@ class SmartCombat(CombatObject):
                         if self.do_magic_attack():
                             break
                     else:
-                        if self.do_phys_attack():
+                        if self.do_phys_attack(use_combat_ability):
                             continue
 
         self.activated = False
         magentaprint(str(self) + " ending run.")
 
-    def do_phys_attack(self):
+    def determine_whether_to_use_combat_ability(self):
+        if self.mob_target is not None:
+            if self.mob_target.level is not None:
+                # magentaprint("ml {} < cl {} - 4 = {}".format(self.mob_target.level, self.character.level, self.mob_target.level < (self.character.level - 4)),False)
+                if self.mob_target.level < (self.character.level - 4) and not self.mob_target.is_named:
+                    return False
+        return True
+
+    # def determine_favorite_spell(self, mob=None):
+    #     if self.character._class.id == 'Mag':
+    #     return self.get_high_rank_spell()
+
+    def get_low_rank_spell(self):
+        character = self.character
+        spell_percent = max(character.spell_proficiencies.values())
+        
+        if spell_percent == 0 and self.black_magic:
+            return Spells.rumble if Spells.rumble in character.spells else \
+                   Spells.hurt if Spells.hurt in character.spells else \
+                   Spells.burn if Spells.burn in character.spells else Spells.blister
+        
+        return Spells.rumble if spell_percent == character.info.earth else \
+                           Spells.hurt if spell_percent == character.info.wind else \
+                           Spells.burn if spell_percent == character.info.fire else Spells.blister
+
+    def get_high_rank_spell(self):
+        character = self.character
+        spell_percent = max(character.spell_proficiencies.values())
+        return Spells.crush if spell_percent == character.info.earth else \
+                               Spells.dustgust if spell_percent == character.info.wind else \
+                               Spells.fireball if spell_percent == character.info.fire else \
+                               Spells.waterbolt if spells_percent == character.info.water else self.get_low_rank_spell()
+
+    def do_phys_attack(self, use_combat_ability):
         self.kill.wait_until_ready()
         if self.stopping:
             return True
-        self.use_slow_combat_ability_or_attack()
+
+        self.use_slow_combat_ability_or_attack(use_combat_ability)
         # magentaprint("SmartCombat finished attack, stopping: " + str(self.stopping))
         # time.sleep(0.1)
         return False
@@ -288,25 +334,26 @@ class SmartCombat(CombatObject):
                 #     return
                 break
 
-    def use_slow_combat_ability_or_attack(self):
-        for a in self.slow_combat_abilities:
-            if a.up():
-                if isinstance(a, Bash):
-                    continue  # For now, don't bash
+    def use_slow_combat_ability_or_attack(self, use_combat_ability):
+        if use_combat_ability:
+            for a in self.slow_combat_abilities:
+                if a.up():
+                    if isinstance(a, Bash):
+                        continue  # For now, don't bash
 
-                if isinstance(a, Circle):
-                    if self.circled:
-                        self.circled = False
-                        continue
-                    else:
-                        self.circled = True
+                    if isinstance(a, Circle):
+                        if self.circled:
+                            self.circled = False
+                            continue
+                        else:
+                            self.circled = True
 
-                magentaprint("SmartCombat executing " + str(a))
-                a.execute(self.target)
-                a.wait_for_flag()
-                if a.error:
-                    self.stop()
-                return
+                    magentaprint("SmartCombat executing " + str(a))
+                    a.execute(self.target)
+                    a.wait_for_flag()
+                    if a.error:
+                        self.stop()
+                    return
 
         # self.attack_wait()
         self.kill.execute(self.target)

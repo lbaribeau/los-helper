@@ -31,22 +31,27 @@ class Mobs(BotReactionWithFlag):
         self.chase = ''
         self.chase_exit = ''
 
+    def __str__(self):
+        return str(self.list)
+
     def read_match(self, m):
         if m.group('mob1'):
-            return m.group('mob1').strip()
+            return self.lowercase_numbers(m.group('mob1').strip())
         elif m.group('mob2'):
             # magentaprint("Mobs mob2")
             if m.group('mob2').startswith('The '):
-                return m.group('mob2').partition(' ')[2].strip()
+                return self.lowercase_numbers(m.group('mob2')).partition(' ')[2].strip()
             else:
-                return m.group('mob2').strip()
+                return self.lowercase_numbers(m.group('mob2')).strip()
         elif m.group('mob3'):
             # magentaprint("Mobs mob3")
-            return m.group('mob3').strip()
+            return self.lowercase_numbers(m.group('mob3')).strip()
 
     def read_mobs(self, arrived_mobs):
+        arrived_mobs = self.lowercase_numbers(arrived_mobs)
         mob_parse = arrived_mobs.partition(' ')
-        first_word = mob_parse[0].lower()
+
+        first_word = mob_parse[0]
 
         if first_word in self.singles:
             return [mob_parse[2]]
@@ -55,7 +60,7 @@ class Mobs(BotReactionWithFlag):
             return [remove_plural(mob_parse[2])] * (int(self.numbers.index(first_word)) + 2)
         else:
             # Named mob
-            magentaprint("Mobs arrived no article: first_word " + first_word + " mobs: " + arrived_mobs)
+            magentaprint("Mobs arrived no article: first_word " + first_word + " mobs: " + arrived_mobs, False)
             # self.list.append(mob_parse[0])
             return [mob_parse[0]]
 
@@ -113,12 +118,14 @@ class Mobs(BotReactionWithFlag):
         # (Two lay followers) just arrived.
         s = s.replace("\n\r", ' ')
         # comma_items = [comma_item.strip().lower() for comma_item in s.split(',')]
-
+        # magentaprint("Adjusting numbers to be lowercase", False)
+        s = self.lowercase_numbers(s)
+        # magentaprint(s, False)
         # return [Mobs.remove_plural(m.strip()) for m in mob_match.group(1).split(',')]
         m_list = []
         # for c in comma_items:
         for comma_item in s.split(','):
-            m = comma_item.strip().lower()
+            m = comma_item.strip()
 
             if m[len(m)-4:len(m)-2] == ' (' and m[len(m)-1] == ')':
                 # m = remove_good_evil(m)
@@ -142,6 +149,24 @@ class Mobs(BotReactionWithFlag):
 
         # return list(m_dict.keys())
         return m_list
+
+    def lowercase_numbers(self, s):
+        # magentaprint(s, False)
+        word_list = s.split(" ")
+        # magentaprint(word_list, False)
+        output = ""
+
+        for word in word_list:
+            bad_word = False
+            if word.lower() in self.singles or word.lower() in self.numbers:
+                bad_word = True
+                output += word.lower()
+            else:
+                output += (word)
+            output += " "
+            # magentaprint("{} {}".format(word, bad_word), False)
+
+        return output.strip()
 
     def mean(self, a):
         return sum(a)/max(len(a),1)
@@ -189,5 +214,5 @@ def remove_plural(m):
         #         m_list.extend([m.partition(' ')[2]] * (n + 2))
 
 def remove_good_evil(m):
-    if m.lower().endswith(' (g)') or m.lower().endswith(' (e)'):
+    if m.endswith(' (g)') or m.lower().endswith(' (e)'):
         return m[0:len(m)-5]

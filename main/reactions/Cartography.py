@@ -399,7 +399,7 @@ class Cartography(BotReactionWithFlag):
             # return self.character.MONSTER_LIST
             return []
         else:
-            return self.character.mobs.parse_mob_string(mob_match.group(1).lower())
+            return self.character.mobs.parse_mob_string(mob_match.group(1)) #why lower???
 
         # M_LIST = [m.strip() for m in mob_match.group(1).split(',')]
         # singles = ['a ', 'an ', 'The ']

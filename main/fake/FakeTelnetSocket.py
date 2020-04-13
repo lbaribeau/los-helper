@@ -27,14 +27,14 @@ class FakeTelnetSocket(object):
         self.current_area = ""
         self.current_mud_area = None
         self.current_monster_list = [
-            'gnoll spearsman'
-            # 'acrobat', # chasing
+            'Alaran the Market Manager',
+            'An acrobat', # chasing
             # self.actor.name,
             # self.barbarian_warrior.name,
             # 'juggler', # chasing
-            # 'kobold champion', # weapon shatter
+            'three kobold champions', # weapon shatter
             # # 'kobold sentry', # spear break
-            # 'large kobold',    # maul hammer break
+            'The large kobold',    # maul hammer break
             # # 'militia soldier', # potting
             # self.stablehand.name,
             # self.tabby_cat.name,
@@ -193,6 +193,9 @@ class FakeTelnetSocket(object):
         elif re.match('mobflee .+? .+', command):
             M_obj = re.search('mobflee (.+?) (.+)', command)
             self.mobflee(M_obj.group(1), M_obj.group(2))
+        elif re.match('mobleave .+', command):
+            M_obj = re.search('mobleave (.+)', command)
+            self.mobleave(M_obj.group(1))
         elif command.startswith('mobdead '):
             self.mobdead(command[8:])
         elif command == 'nuke':
@@ -333,11 +336,18 @@ class FakeTelnetSocket(object):
                 # i += 1
             # area_string += str(self.current_monster_list[i]) + "."
             for m in self.current_monster_list[0:n_monsters-1]:
-                area_string += 'a ' + m + ', '
+                area_string += self.get_mobs_in_you_see(m) + ', '
 
-            area_string += 'a ' + self.current_monster_list[n_monsters-1] + '.' 
+            area_string += self.get_mobs_in_you_see(self.current_monster_list[n_monsters-1]) + '.' 
 
         return area_string + "\n\r"
+
+    def get_mobs_in_you_see(self, mob_name):
+        if (re.match('[A-Z]', mob_name)):
+            return mob_name
+        else:
+            # return 'An ' + mob_name
+            return mob_name
 
     def addmob(self, mob):
         self.current_monster_list.append(mob)
@@ -346,6 +356,10 @@ class FakeTelnetSocket(object):
 
     def mobflee(self, mob, direction):
         flee_string = 'The ' + mob + ' flees to the ' + direction + '.\n\r'
+        self.mob_lost_battle(mob, flee_string)
+
+    def mobleave(self, mob):
+        flee_string = 'The ' + mob + ' just wandered away.\n\r'
         self.mob_lost_battle(mob, flee_string)
 
     def mobdead(self, mob):
@@ -457,7 +471,7 @@ class FakeTelnetSocket(object):
                         self.current_monster_list.remove(self.barbarian_warrior.name)
             # self.mobflee(mob, str(self.current_mud_area.area_exits[0].exit_type.name))
             else:
-                self.rng = (self.rng + 1) % 3
+                self.rng = (self.rng + 1) % 90
                 if self.rng == 0:
                     self.mobdead(mob)
         else:
