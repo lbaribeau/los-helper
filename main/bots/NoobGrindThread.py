@@ -6,7 +6,7 @@ class NoobGrindThread(TrackGrindThread):
     def __init__(self, character=None, command_handler=None, mud_reader_handler=None,
                 mud_map=None):
         super().__init__(character, command_handler, mud_reader_handler, mud_map, 0)
-        self.track = ['purchase_key', 'unlock_south', 'south', 'get_book', 'trade_book', 'north',
+        self.track = ['purchase_key', 'unlock_south', 'south', 'get_book', 'trade_book', 'north', 'buff',
         'unlock_east', 'east', 'engage_skelington', 'west',
         'unlock_east', 'east', 'engage_skelington', 'west',
         'unlock_east', 'east', 'engage_skelington', 'west',
@@ -42,6 +42,8 @@ class NoobGrindThread(TrackGrindThread):
       elif exit_str == "asis_light":
         self.command_handler.process("ask guide light")
         self.sleep(5)
+      elif exit_str == "buff":
+        self.buff_up()
         return True
       elif exit_str == "unlock_east":
         self.command_handler.process("unlock east wood")
