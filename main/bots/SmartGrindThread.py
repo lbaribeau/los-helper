@@ -22,14 +22,22 @@ class SmartGrindThread(TrackGrindThread):
         self.cur_target = None
         self.cur_area_id = self.character.AREA_ID
 
-        self.low_level = int(math.floor(self.character.level / 2)) - 1
-        if (self.low_level < 1):
-            self.low_level = 1
+        low_level_modifier = -1
+        high_level_modifier = 0# + 1 #risky business
+        if self.is_character_class('Cle'):
+            low_level_modifier = -2
+            high_level_modifier = -1
 
-        self.high_level = max([int(math.ceil(self.character.level / 2)), self.character.level - 3])# + 1 #risky business
+        self.low_level = int(math.floor(self.character.level / 2)) + low_level_modifier
+        self.high_level = max([int(math.ceil(self.character.level / 2)), self.character.level - 3]) + high_level_modifier
 
         self.min_target_aura = Aura('demonic red')
         self.max_target_aura = Aura('heavenly blue')
+
+        if self.is_character_class('Cle'):
+            self.KOBOLD_PATH = [
+                'areaid1679','areaid2'
+                ]
 
     def do_pre_go_actions(self):
         super().do_pre_go_actions()

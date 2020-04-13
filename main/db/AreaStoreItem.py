@@ -56,7 +56,7 @@ class AreaStoreItem(BaseModel):
 
         # items = AreaStoreItem.select().join(Item).where(Item.level == level).join(ItemType).where(ItemType.model == itemtypemodel and ItemType.data == itemtypedata)
         items = AreaStoreItem.select().join(Item).where(Item.level == level).join(ItemType).where((ItemType.model==itemtypemodel) & (ItemType.data==itemtypedata))
-        print("AreaStoreItem get_by_item_type_and_level returning " + str(items))
+        # print("AreaStoreItem get_by_item_type_and_level returning " + str(items))
 
         return items
 
@@ -80,16 +80,16 @@ class AreaStoreItem(BaseModel):
         items = []
         itemtypemodel = ItemTypeModel.get_by_name(model_name).get().id
         itemtypedata = ItemTypeData.get_by_name(data_name).get().id
-        print("AreaStoreItem get model_name/data_name: " + model_name + '/' + data_name + ", ids: " + str(itemtypemodel) + "/" + str(itemtypedata) )
+        # print("AreaStoreItem get model_name/data_name: " + model_name + '/' + data_name + ", ids: " + str(itemtypemodel) + "/" + str(itemtypedata) )
         items = AreaStoreItem.select().join(Item).where(Item.level<=level_max).join(ItemType).where((ItemType.model==itemtypemodel) & (ItemType.data==itemtypedata))
         # obj = NamedModel.select().where(fn.Lower(NamedModel.name) == fn.Lower(name)).get()
-        print("AreaStoreItem get_by_item_type_and_level_max returning " + str(items))
+        # print("AreaStoreItem get_by_item_type_and_level_max returning " + str(items))
         return items
 
     def get_by_name(item_name):
-        print("AreaStoreItem.get_by_name() item_name: " + str(item_name))
+        # print("AreaStoreItem.get_by_name() item_name: " + str(item_name))
         items = AreaStoreItem.select().join(Item).where(Item.name == item_name)
-        print("AreaStoreItem.get_by_name() returning: " + str(item_name))
+        # print("AreaStoreItem.get_by_name() returning: " + str(item_name))
         return items
 
     def get_by_area(aid):

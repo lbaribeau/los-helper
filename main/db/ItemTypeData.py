@@ -16,5 +16,5 @@ class ItemTypeData(NamedModel):
         except ItemTypeData.DoesNotExist:
             obj = None
 
-        print('ItemTypeData get_by_name(name) returning: ' + str(obj))
+        # print('ItemTypeData get_by_name(name) returning: ' + str(obj))
         return obj

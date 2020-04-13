@@ -338,15 +338,14 @@ class SmartCombat(CombatObject):
         if use_combat_ability:
             for a in self.slow_combat_abilities:
                 if a.up():
-                    if isinstance(a, Bash):
-                        continue  # For now, don't bash
+                    # if isinstance(a, Bash):
+                    #     continue  # For now, don't bash
 
                     if isinstance(a, Circle):
-                        if self.circled:
-                            self.circled = False
-                            continue
-                        else:
+                        if not self.circled:
                             self.circled = True
+                        else:
+                            continue
 
                     magentaprint("SmartCombat executing " + str(a))
                     a.execute(self.target)

@@ -75,20 +75,21 @@ class WeaponBot(MiniBot):
             self.correct_temp_weapon()
         elif self.broken_weapon:
             self.repair_or_replace_weapon()
-        elif hasattr(self, 'weapon') and self.shield_or_offhand:  # ArmourBot or eq should be called first...
+        elif hasattr(self, 'weapon'): #and self.shield_or_offhand:  # ArmourBot or eq should be called first...
             return
         else:
+            magentaprint("Repair / replace weapon", False)
             self.repair_or_replace_weapon()
 
     def repair_or_replace_weapon(self):
         self.command_handler.equipment.execute_and_wait()
         self.stopping = False
-        if hasattr(self, 'weapon') and self.shield_or_offhand:
+        if hasattr(self, 'weapon'): #and self.shield_or_offhand:
             magentaprint("WeaponBot.repair_or_replace_weapon() has weapon and shield/offhand so return.")
             return
-        elif not self.shield_or_offhand:
-            magentaprint("WeaponBot needs to figure out whether to buy an offhand - assume shield.")
-            return
+        # elif not self.shield_or_offhand:
+        #     magentaprint("WeaponBot needs to figure out whether to buy an offhand - assume shield.")
+        #     return
 
         # if hasattr(self, 'broken_weapon'):
         magentaprint('repair_or_replace_weapon calling try_exact_replacement_from_inventory')
