@@ -53,7 +53,7 @@ class FakeTelnetSocket(object):
             ['silver chalice']*7 + ['small flask']*2 + ['small lamp']*2 + ['small restorative']*2 + \
             ['steel bottle']*6 + ['steel ring']*6 + ['stilleto']*2 + ['white potion']*2 + ['maul hammer']*3 + \
             ['buckler', 'burnt ochre potion', 'hammer', 'large bag', 'large mace', ] + ['long sword']*2 + ['sabre']*2  + ['silver torch', \
-             'spectacles', 'title deeds', 'morning star'] + 3*['heavy crossbow'] + ['small mace'])
+             'spectacles', 'title deeds', 'morning star'] + 3*['heavy crossbow'] + ['small mace'] + 60*['blue scroll'])
         self.inventory.unset_usable('morning')
         self.inventory.unset_usable('maul 2')
         self.inventory.unset_usable('maul 3')

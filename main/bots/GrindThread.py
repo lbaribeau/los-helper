@@ -261,38 +261,39 @@ class GrindThread(BotThread):
         if self.character.HEALTH >= self.health_to_go or Spells.vigor not in self.character.spells:
             return
 
-        self.cast.wait_until_ready()
-        vig = 2
-        chapel = 2  # additional hp tick amount
-        maxHP = self.character.maxHP
-        maxMP = self.character.maxMP
-        mana_tick = self.character._class.mana_tick
-        # while   (self.health_ticks_needed() > self.mana_ticks_needed() or
-        #         self.character.MANA - (maxMP % mana_tick+chapel) % (mana_tick+chapel) >= 2) and (
-        while   (self.health_ticks_needed() > self.mana_ticks_needed() and
-                self.character.MANA >= vig and
-                not self.ready_for_combat() and
-                not self.stopping):
-                # self.character.mana_tick+2 % self.character.maxMP - self.character.MANA > 2:
-                # self.character.maxMP - self.character.MANA % self.character.mana_tick+chapel - vig >= 0: #self.character.mana_tick + vig - chapel:
-                # Laurier does math!  (Mathing out whether we should vig or in the chapel)
-            magentaprint("Health ticks needed: " + str(round(self.health_ticks_needed(), 1)) + ", Mana ticks needed: " + str(round(self.mana_ticks_needed(), 1)))
+        if not self.is_character_class('Mon'):
+            self.cast.wait_until_ready()
+            vig = 2
+            chapel = 2  # additional hp tick amount
+            maxHP = self.character.maxHP
+            maxMP = self.character.maxMP
+            mana_tick = self.character._class.mana_tick
+            # while   (self.health_ticks_needed() > self.mana_ticks_needed() or
+            #         self.character.MANA - (maxMP % mana_tick+chapel) % (mana_tick+chapel) >= 2) and (
+            while   (self.health_ticks_needed() > self.mana_ticks_needed() and
+                    self.character.MANA >= vig and
+                    not self.ready_for_combat() and
+                    not self.stopping):
+                    # self.character.mana_tick+2 % self.character.maxMP - self.character.MANA > 2:
+                    # self.character.maxMP - self.character.MANA % self.character.mana_tick+chapel - vig >= 0: #self.character.mana_tick + vig - chapel:
+                    # Laurier does math!  (Mathing out whether we should vig or in the chapel)
+                magentaprint("Health ticks needed: " + str(round(self.health_ticks_needed(), 1)) + ", Mana ticks needed: " + str(round(self.mana_ticks_needed(), 1)))
 
-            if self.do_heal_skills():
-                continue
-            # elif self.inventory.count_small_restoratives() > 7:
-            #     self.command_handler.use.wait_until_ready()
-            #     self.command_handler.use.small_healing_potion()
-            #     self.command_handler.use.wait_for_flag()
-            else:
-                # if self.engage_any_attacking_mobs():
-                #     if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
-                #         self.cast.start_thread('v')
-                self.cast.cast('v')
-                self.cast.wait_for_flag()
-                self.cast.wait_until_ready()
+                if self.do_heal_skills():
+                    continue
+                # elif self.inventory.count_small_restoratives() > 7:
+                #     self.command_handler.use.wait_until_ready()
+                #     self.command_handler.use.small_healing_potion()
+                #     self.command_handler.use.wait_for_flag()
+                else:
+                    # if self.engage_any_attacking_mobs():
+                    #     if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
+                    #         self.cast.start_thread('v')
+                    self.cast.cast('v')
+                    self.cast.wait_for_flag()
+                    self.cast.wait_until_ready()
 
-            self.engage_any_attacking_mobs()
+                self.engage_any_attacking_mobs()
 
         # while BotThread.should_heal_up(self.character.HEALTH, self.character.HEALTH_TO_HEAL,
         #         self.character.MANA, heal_cost, self.character.KNOWS_VIGOR, self.character.HAS_RESTORE_ITEMS) and not self.stopping:
@@ -656,12 +657,17 @@ class GrindThread(BotThread):
     def decide_which_mob_to_kill(self, monster_list):
         m_list = [str(m) for m in monster_list]
 
+        # guard_count = 0
         for mob in m_list:
             if re.search('town guard', mob) or \
-               re.search('town crier', mob) or \
+                re.search('town crier', mob) or \
                re.search('clown', mob) or \
                re.search('bouncer', mob):
                 return ''
+
+        # if guard_count > 1:
+        #     return ''
+                
 
         if self.character.mobs.chase and self.character.mobs.chase in self.character.mobs.list:
             # Issue: Directions get pushed, but the bot tries to hit the juggler again after it's gone.

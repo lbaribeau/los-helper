@@ -213,6 +213,10 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             'chicken soup', 'small restorative', 'white potion', 'small flask', 'large restorative', 'scarlet potion'
         ] # , 'tree root']
 
+        self.combat_items = [
+            'blue scroll', 'adamantine rod'
+        ]
+
         BotReactionWithFlag.__init__(self)
         ReferencingList.__init__(self)
 
@@ -424,6 +428,15 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         time.sleep(3) #breathe!
 
         self.is_bulk_vendoring = False
+
+    def bulk_give(self, item_string, target, quantity):
+        i = 0
+
+        while i < (quantity):
+            self.telnetHandler.write("give {} {}".format(item_string, target))
+            i += 1
+
+        time.sleep(3) #breathe!
 
     # def sell_fast(self):
 

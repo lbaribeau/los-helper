@@ -49,6 +49,12 @@ class SmartCombat(CombatObject):
         self.black_magic = character.info.pty < 7 or spell_percent >= 5 or character.PREFER_BM
         # self.favourite_spell = Spells.vigor if not self.black_magic else \    
         self.favourite_spell = self.get_low_rank_spell()
+        self.earth_item = "dusty scroll"
+        self.water_item = "blue scroll"
+        self.fire_item = None
+        self.wind_item = "white scroll"
+
+        self.favourite_combat_item = self.get_favourite_combat_item()
 
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
         self.regex_cart.extend([
@@ -196,10 +202,12 @@ class SmartCombat(CombatObject):
         self.fleeing = False
         self.broke_ring = False
         self.casting = self.black_magic or Spells.vigor in self.character.spells
+        self.favourite_combat_item = self.get_favourite_combat_item()
         is_combat_ready = True
         is_cast_ready = True
         use_combat_ability = True
         mob_target = None
+
         self.kill.wait_until_ready()
         if self.character._class.id == 'Mag':
             self.cast.wait_until_ready()
@@ -251,6 +259,20 @@ class SmartCombat(CombatObject):
     #     if self.character._class.id == 'Mag':
     #     return self.get_high_rank_spell()
 
+    def get_favourite_combat_item(self):
+        character = self.character
+        spell_percent = max(character.spell_proficiencies.values())
+
+        combat_item = self.earth_item if spell_percent == character.info.earth else \
+                       self.wind_item if spell_percent == character.info.wind else \
+                       self.fire_item if spell_percent == character.info.fire else \
+                       self.water_item if spell_percent == character.info.water else None
+
+        if self.character.inventory.has(combat_item):
+            return combat_item
+        return None
+
+
     def get_low_rank_spell(self):
         character = self.character
         spell_percent = max(character.spell_proficiencies.values())
@@ -285,6 +307,7 @@ class SmartCombat(CombatObject):
     def do_magic_attack(self):
         self.cast.wait_until_ready()
 
+        magentaprint("{} item {} has them".format(self.favourite_combat_item, self.character.inventory.has(self.favourite_combat_item)), False)
         damage = self.character.maxHP - self.character.HEALTH
         if self.stopping:
             return True
@@ -296,18 +319,21 @@ class SmartCombat(CombatObject):
         elif self.mob_charmed:
             time.sleep(min(0.2, self.kill.wait_time()))
             # time.sleep(min(0.2, self.kill.wait_time() + 0.05))
+        elif self.favourite_combat_item is not None and self.character.inventory.has(self.favourite_combat_item):
+            combat_item_reference = self.character.inventory.get_reference(self.favourite_combat_item)
+            self.do_cast(combat_item_reference, self.target, True)
         elif self.black_magic and ((self.spell in Spells._lvl1 and self.character.MANA >= 3) or
                                    (self.spell in Spells._lvl2 and self.character.MANA >= 7)):  # Todo: add oom check
             self.do_cast(self.spell, self.target)
         elif self.black_magic and self.spell in Spells._lvl2 and self.character.MANA < 7 and self.character.MANA >= 3:
-            self.do_cast(Spells._lvl1[Spells._lvl2.index(self.spell)], self.target)
+            self.do_cast(Spells._lvl1[Spells._lvl2.index(self.spell)], self.target, False)
         else:
             time.sleep(min(0.2, self.kill.wait_time()))
 
         return False
 
-    def do_cast(self, spell, target=None):
-        self.cast.persistent_cast(spell, target)
+    def do_cast(self, spell, target=None, is_item=False):
+        self.cast.persistent_cast(spell, target, is_item)
         if self.cast.error:
             self.stop()
 

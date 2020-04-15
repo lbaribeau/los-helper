@@ -318,6 +318,8 @@ class CommandHandler(object):
             self.start_slave(user_input)
         elif re.match("bbuy (.+?)", user_input):
             self.bbuy(user_input)
+        elif re.match("giver (.+?)", user_input):
+            self.giver(user_input)
         elif re.match("equ?|equip?|equipme?|equipment?", user_input):
             self.equipment.execute()
         elif re.match("stop$", user_input):
@@ -783,6 +785,19 @@ class CommandHandler(object):
             quantity = int(M_obj.group(2))
 
             self.inventory.bulk_buy(item, quantity)
+        except Exception as e:
+            magentaprint("Error in the bulk buy function" + str(M_obj.groups(0)), False)
+            raise e
+
+    def giver(self, user_input):
+        try:
+            #bbuy item quant
+            M_obj = re.search("giver (.+?) (.+?) ([\d]*)", user_input)
+            item = M_obj.group(1)
+            target = M_obj.group(2)
+            quantity = int(M_obj.group(3))
+
+            self.inventory.bulk_give(item, target, quantity)
         except Exception as e:
             magentaprint("Error in the bulk buy function" + str(M_obj.groups(0)), False)
             raise e
