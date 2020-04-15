@@ -271,7 +271,7 @@ class CommandHandler(object):
         elif re.match("fle?$|flee$", user_input):
             self.stop_bot()
             self.user_flee()
-        elif user_input == 'pot':
+        elif user_input == 'p':
             self.smartCombat.use.healing_potion()
         elif re.match("usec$", user_input):  # 'use c' following my pet syntax: end a command with 'c' to start a thread
             self.smartCombat.use.spam_pots()

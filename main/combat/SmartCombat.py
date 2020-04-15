@@ -307,7 +307,7 @@ class SmartCombat(CombatObject):
     def do_magic_attack(self):
         self.cast.wait_until_ready()
 
-        magentaprint("{} item {} has them".format(self.favourite_combat_item, self.character.inventory.has(self.favourite_combat_item)), False)
+        # magentaprint("{} item {} has them".format(self.favourite_combat_item, self.character.inventory.has(self.favourite_combat_item)), False)
         damage = self.character.maxHP - self.character.HEALTH
         if self.stopping:
             return True
