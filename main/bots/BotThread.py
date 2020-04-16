@@ -76,11 +76,11 @@ class BotThread(threading.Thread):
 
                 self.do_pre_go_actions()
 
-                if len(self.direction_list) is 0:
+                if len(self.direction_list) == 0:
                     self.direction_list = self.decide_where_to_go()
                     magentaprint('decide_where_to_go returned ' + str(self.direction_list))
 
-                while len(self.direction_list) is not 0 and not self.stopping:
+                while len(self.direction_list) != 0 and not self.stopping:
                     #maybe not the ideal place for this information
                     # if self.character.is_headless:
                     # output_api_feed('botrun', self.report())
@@ -241,6 +241,9 @@ class BotThread(threading.Thread):
             return True
         return False
 
+    def do_reboot_hooks(self):
+        pass
+
     ''' Defined Hooks in Run() '''
     def do_run_startup(self):
         #self.set_up_automatic_ring_wearing()
@@ -253,7 +256,11 @@ class BotThread(threading.Thread):
         # This is not before every go, just before (after) every direction list
         # (I think this in_chapel check will be unnecessary when another fix happens...
             # there's currently a bug where the direction list gets remade too often)
+        if self.character.server.is_rebooting:
+            self.do_reboot_hooks()
+
         self.do_regular_actions()
+
         # if self.in_chapel():
         #     self.rest_and_check_aura()
         #     self.check_weapons()
@@ -310,6 +317,9 @@ class BotThread(threading.Thread):
         # self.character.MOBS_ATTACKING = []
 
     def do_post_go_actions(self):
+        if self.character.server.is_rebooting:
+            self.do_reboot_hooks()
+
         return
 
     def do_after_directions_travelled(self):

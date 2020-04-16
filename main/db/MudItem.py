@@ -7,7 +7,11 @@ from misc_functions import magentaprint
 class MudItem(GenericMudObject):
     def __init__(self, name):
         self.obj = Item(name=name)
-        self.reference = self.obj.name.split(' ')[0]  # ... this reference is likely incorrect without an integer
+        self.reference = self.obj.name
+        try:
+            self.reference = self.obj.name.split(' ')[0]  # ... this reference is likely incorrect without an integer
+        except Exception as e:
+            pass
         self.usable = True
 
     def map(self):

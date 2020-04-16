@@ -51,8 +51,10 @@ from fake.FakeTelnetHandler import FakeTelnetHandler
 from db.Database import *
 from db.MudMap import *
 from reactions.Prompt import Prompt
+from reactions.server_reaction import ServerReaction
 from reactions.health_monitor import HealthMonitor
 from comm.analyser import Analyser
+from Exceptions import *
 # from reactions.ring_reaction import RingWearingReaction
 
 class LosHelper(object):
@@ -62,6 +64,8 @@ class LosHelper(object):
         # self.initializer = Initializer()
         self.character = Character()
         self.character.prompt = Prompt()
+        self.character.server = ServerReaction()
+
         sys.argv = [s.strip() for s in sys.argv]  # removes \r since git can add them to run.sh
 
         if '-fake' in sys.argv:
@@ -69,6 +73,13 @@ class LosHelper(object):
             # sys.argv.remove("-fake")
         else:
             self.telnetHandler = TelnetHandler()
+
+        self.do_login()
+
+    def do_login(self):
+        self.character.is_sleepy = False
+        self.character.is_sleeping = False
+        self.character.server.is_rebooting = False
 
         # if self.threaded_map_setup:
         #     self.mud_map_thread.start()  # Don't forget to uncomment .join()
@@ -81,6 +92,7 @@ class LosHelper(object):
         self.character.inventory = self.inventory
         self.analyser = Analyser(self.mud_reader_handler, self.character)
         self.mud_reader_handler.add_subscriber(self.character.prompt)
+        self.mud_reader_handler.add_subscriber(self.character.server)
         self.mud_reader_handler.add_subscriber(self.inventory)
         self.mud_reader_handler.add_subscriber(self.character.mobs)
 
@@ -97,6 +109,9 @@ class LosHelper(object):
         self.check_class_and_level()
         self.check_spells()
 
+        self.do_login_actions()
+
+    def do_login_actions(self):
         if '-headless' in sys.argv:
             self.character.is_headless = True
 
@@ -122,7 +137,6 @@ class LosHelper(object):
             self.character.MANA_TO_ENGAGE = 0
             self.character.NEEDS_MAGIC = False
             self.character.PREFER_BM = True
-
 
     def close(self):
         self.mudListenerThread.stop()
@@ -168,6 +182,18 @@ class LosHelper(object):
 
             user_input = user_input.strip()
             # magentaprint("LosHelper user_input: " + str(user_input))
+
+            if self.character.is_sleeping: #server reboot ready
+                try:
+                    stopping = self.command_handler.quit()
+                    self.close()
+                except Exception as e:
+                    magentaprint(e.format("Error duringreboot {}"))
+
+                magentaprint("LosHelper shutdown", False)
+                time.sleep(5)
+                magentaprint("LosHelper restarting", False)
+                self.do_login()
 
             if not self.mudReaderThread.is_alive():
                 magentaprint("\nRead thread is dead, we're cooked.\n")
@@ -265,6 +291,16 @@ class LosHelper(object):
         self.character.info = info
         self.character.process_info()
 
-L = LosHelper()
-L.main()
-L.close()
+# Timer limit?
+# https://stackoverflow.com/questions/2933399/how-to-set-time-limit-on-raw-input/2933423#2933423
+
+def do_startup():
+    try:
+        L = LosHelper()
+        L.main()
+        L.close()
+    except Reboot:
+        do_startup()
+    return L
+
+L = do_startup()

@@ -38,7 +38,7 @@ class FakeTelnetSocket(object):
             # # 'militia soldier', # potting
             # self.stablehand.name,
             # self.tabby_cat.name,
-            'gnoll spearsman'
+            # 'gnoll spearsman'
         ]
         self.fso = FakeSocketOutput()
         self.rng = 0
@@ -189,6 +189,8 @@ class FakeTelnetSocket(object):
             magentaprint(self.char.equipment.output_string())
             self.socket_output.append(self.char.equipment.output_string())
             self.socket_output.append('[%s H %s M]: ' % (str(self.char.hp), str(self.char.mp)))
+        elif command.startswith('reboot'):
+            self.server_reboot()
         elif command.startswith('addmob '):
             self.addmob(command[7:])
         elif re.match('mobflee .+? .+', command):
@@ -349,6 +351,9 @@ class FakeTelnetSocket(object):
         else:
             # return 'An ' + mob_name
             return mob_name
+
+    def server_reboot(self):
+        self.socket_output.append('### Game backup shutdown in 6 minutes.\n\r')
 
     def addmob(self, mob):
         self.current_monster_list.append(mob)

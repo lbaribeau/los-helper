@@ -8,6 +8,11 @@ from misc_functions import *
 class Character(object):
     def __init__(self):
         self.mobs = Mobs()
+        self.prompt = None
+        self.server = None
+
+        self.sleepy = False
+        self.sleeping = False
 
         # This is a class that holds a bunch of data,
         # mostly obtained by the MUD read thread.
@@ -482,6 +487,10 @@ class Character(object):
             #adam.MANA_TO_ENGAGE = 0
 
         # self.MANA_TO_ENGAGE = 0
+
+    @property
+    def foo(self):
+        return self._foo
 
     @property
     def hp(self):

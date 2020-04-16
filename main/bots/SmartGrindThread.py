@@ -1,5 +1,5 @@
 
-import random, math
+import random, math, sys
 
 from bots.TrackGrindThread import TrackGrindThread
 from misc_functions import *
@@ -51,6 +51,25 @@ class SmartGrindThread(TrackGrindThread):
 
         if len(self.character.MONSTER_KILL_LIST) == 0:
             self.get_targets()
+
+    def do_reboot_hooks(self):
+        if self.character.is_sleepy == False:
+            magentaprint("Here I go rebooting again!", False)
+            self.direction_list = ['areaid2', 'shutdown']
+            self.character.is_sleepy = True
+
+    def do_go_hooks(self, exit_str):
+        if exit_str == "shutdown" and self.character.is_sleeping == False:
+            self.stop()
+            self.character.is_sleeping = True
+            self.character.is_sleepy = False
+            raise Reboot
+            # self.command_handler.process('') #move cursor forward
+            # sys.stdout.write('')
+            return True
+        else:
+            return super().do_go_hooks(exit_str)
+
 
     def do_on_successful_go(self):
         super().do_on_successful_go()

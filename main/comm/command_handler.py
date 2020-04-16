@@ -281,6 +281,8 @@ class CommandHandler(object):
             self.smartCombat.use.stop()
         elif re.match("bot ?$|bot [0-9]+$", user_input):
             self.start_track_grind(user_input)
+        elif re.match("reboot", user_input):
+            self.character.server.reboot()
         elif re.match("noobgrind", user_input):
             self.start_noob_grind()
         elif re.match("dropkeys", user_input):
