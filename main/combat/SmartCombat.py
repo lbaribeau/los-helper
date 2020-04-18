@@ -304,7 +304,7 @@ class SmartCombat(CombatObject):
         return Spells.crush if spell_percent == character.info.earth else \
                                Spells.dustgust if spell_percent == character.info.wind else \
                                Spells.fireball if spell_percent == character.info.fire else \
-                               Spells.waterbolt if spells_percent == character.info.water else self.get_low_rank_spell()
+                               Spells.waterbolt if spell_percent == character.info.water else self.get_low_rank_spell()
 
     def do_phys_attack(self, use_combat_ability):
         self.kill.wait_until_ready()
