@@ -34,7 +34,7 @@ class TrackGrindThread(GrindThread):
         if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
             self.__nextpath = starting_path
         else:
-            self.__nextpath = 6#random.randrange(0, self.__TOTALPATHS)
+            self.__nextpath = random.randrange(0, self.__TOTALPATHS)
 
         self.LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
