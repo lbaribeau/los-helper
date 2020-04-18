@@ -259,8 +259,6 @@ class SmartCombat(CombatObject):
         return True
 
     def determine_favorite_spell_for_target(self):
-        magentaprint('choosing spell for {}'.format(self.mob_target), False)
-
         if self.mob_target is not None:
             if self.character._class.id == 'Mag' or self.character._class.id == 'Alc':
                 if self.mob_target.level <= 3:
