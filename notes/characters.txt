@@ -8,7 +8,7 @@ Flerp anti-paladin
 Aerp mage (swamp troll)
 Ferp mage (beetle cave)
 Merp thief (swamp troll)
-Serp Alchemist
+Serp Alchemist lvl 2
 Rerp cleric gnome 3 3 12 18 18
 Terp cleric dwarf 10 10 10 10 14
 Uerp druid 10 8 12 12 12

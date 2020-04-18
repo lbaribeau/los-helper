@@ -270,7 +270,8 @@ class Cartography(BotReactionWithFlag):
                 # magentaprint(str(mob))
 
                 mob_location = MobLocation(area=area, mob=mob)
-                mob_location.map()
+                if not mob_location.map():
+                    mob_location.increment_sightings()
 
                 magentaprint("Cartography catalog_monsters: " + str(mob_location))
         except Exception as e:

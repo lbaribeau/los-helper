@@ -13,6 +13,8 @@ class Mob(NamedModel):
     blocks_exit = BooleanField(default=False)
     blocks_pickup = BooleanField(default=False)
     is_named = BooleanField(default=False)
+    # health = IntegerField(default=0)
+    # approximate_health = IntegerField(default=0)
 
     '''Private Mob Functions'''
     def map(self):
@@ -28,6 +30,8 @@ class Mob(NamedModel):
             self.level = mob.level
             self.approximate_level = mob.approximate_level
             self.aura = mob.aura
+            # self.health = mob.health
+            # self.approximate_health = mob.approximate_health
             #update other fields if you want
 
         return is_new_mapping

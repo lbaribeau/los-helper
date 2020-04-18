@@ -7,6 +7,7 @@ from misc_functions import *
 class MobLocation(BaseModel):
     area = ForeignKeyField(Area)
     mob = ForeignKeyField(Mob)
+    sightings = IntegerField(default=1)
     # rank = FloatField(default=0)
 
     '''Private Mob Functions'''
@@ -15,15 +16,22 @@ class MobLocation(BaseModel):
         mob_locations = MobLocation.is_mob_in_area(self.mob.id, self.area.id)
 
         if mob_locations is None:
+            is_new_mapping = True
             super(MobLocation, self).save()
         else:
             self.id = mob_locations.id
             self.area = mob_locations.area
             self.mob = mob_locations.mob
+            self.sightings = mob_locations.sightings
             # self.rank = mob_locations.rank
             #update other fields if you want
 
         return is_new_mapping
+
+    def increment_sightings(self):
+        # print("increment_sightings {}".format(self.sightings))
+        self.sightings += 1
+        super(MobLocation, self).save()
 
     def to_string(self):
         return str(self.id) + ", " + str(self.area.name) + ", " + str(self.mob.name)

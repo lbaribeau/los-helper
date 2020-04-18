@@ -48,7 +48,10 @@ class SmartCombat(CombatObject):
         # magentaprint("SmartCombat character.pty " + str(character.pty))
         self.black_magic = character.info.pty < 7 or spell_percent >= 5 or character.PREFER_BM
         # self.favourite_spell = Spells.vigor if not self.black_magic else \    
+
         self.favourite_spell = self.get_low_rank_spell()
+        self.favourite_nuke = self.get_high_rank_spell()
+
         self.earth_item = "dusty scroll"
         self.water_item = "blue scroll"
         self.fire_item = None
@@ -167,7 +170,7 @@ class SmartCombat(CombatObject):
     def start_thread(self, target, spell=None):
         self.set_target(target)
         self.spell = spell if spell else self.favourite_spell
-        magentaprint("SmartCombat spell set to " + str(self.spell))
+        magentaprint("SmartCombat spell set to " + str(self.spell), False)
         self.set_pot_thread = False
 
         # if self.thread is None or not self.thread.is_alive():
@@ -208,14 +211,14 @@ class SmartCombat(CombatObject):
         use_combat_ability = True
         mob_target = None
 
-        self.kill.wait_until_ready()
-        if self.character._class.id == 'Mag':
-            self.cast.wait_until_ready()
-
         if self.target_fullref is not None and self.character.ACTIVELY_BOTTING:
             self.mob_target = Mob.get_mob_by_name(self.target_fullref)
             use_combat_ability = self.determine_whether_to_use_combat_ability()
-            # self.determine_favorite_spell(mob)
+            self.spell = self.determine_favorite_spell_for_target()
+
+        self.kill.wait_until_ready()
+        if self.character._class.id == 'Mag':
+            self.cast.wait_until_ready()
 
         if use_combat_ability:
             self.use_any_fast_combat_abilities()  # ie. Touch, Dance
@@ -255,9 +258,20 @@ class SmartCombat(CombatObject):
                     return False
         return True
 
-    # def determine_favorite_spell(self, mob=None):
-    #     if self.character._class.id == 'Mag':
-    #     return self.get_high_rank_spell()
+    def determine_favorite_spell_for_target(self):
+        magentaprint('choosing spell for {}'.format(self.mob_target), False)
+
+        if self.mob_target is not None:
+            if self.character._class.id == 'Mag' or self.character._class.id == 'Alc':
+                if self.mob_target.level <= 3:
+                    return self.favourite_spell
+                else:
+                    return self.favourite_nuke
+            else:
+                return self.favourite_spell
+        if self.character._class.id == 'Mag' or self.character._class.id == 'Alc':
+            return self.favourite_nuke
+        return self.favourite_spell
 
     def get_favourite_combat_item(self):
         character = self.character

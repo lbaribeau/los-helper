@@ -876,7 +876,7 @@ class GrindThread(BotThread):
     def ready_for_combat(self):
         return self.character.HEALTH >= self.character.HEALTH_TO_HEAL and \
                self.character.MANA >= self.character.MANA_TO_ENGAGE and \
-               (hasattr(self.command_handler.weapon_bot, 'weapon') or self.is_character_class('Mon'))
+               (hasattr(self.command_handler.weapon_bot, 'weapon') or not self.character._class.needs_weapon)
         # return (self.has_ideal_health() and
         #         self.has_ideal_mana())
 

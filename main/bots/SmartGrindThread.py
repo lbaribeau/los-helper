@@ -21,8 +21,12 @@ class SmartGrindThread(TrackGrindThread):
 
         self.cur_target = None
         self.cur_area_id = self.character.AREA_ID
+        self.on_heal_path = False
 
-        low_level_modifier = -1
+        # if self.character.AREA_ID != 2:
+        #     self.direction_list = self.get_heal_path()
+
+        low_level_modifier = -2
         high_level_modifier = 0# + 1 #risky business
         if self.is_character_class('Cle'):
             low_level_modifier = -2
@@ -40,8 +44,18 @@ class SmartGrindThread(TrackGrindThread):
                 ]
 
     def do_pre_go_actions(self):
-        super().do_pre_go_actions()
-        self.go_rest_if_not_ready()
+        # super().do_pre_go_actions()
+        if self.in_chapel(): #in healing area
+            self.rest_and_check_aura()
+
+        self.check_weapons()
+        self.check_armour()
+
+        if self.has_buff_ability():
+            if self.use_buff_ability():
+                self.use_extra_buff_items()
+        else:
+            pass
 
         # self.inventory.get_inventory()
         # # self.inventory.get_equipment(self.character.name)
@@ -59,6 +73,11 @@ class SmartGrindThread(TrackGrindThread):
             self.character.is_sleepy = True
 
     def do_go_hooks(self, exit_str):
+        if self.go_rest_if_not_ready() and not self.on_heal_path:
+            magentaprint("going to rest and not on heal path", False)
+            magentaprint(self.direction_list, False)
+            return True
+
         if exit_str == "shutdown" and self.character.is_sleeping == False:
             self.stop()
             self.character.is_sleeping = True
@@ -69,7 +88,6 @@ class SmartGrindThread(TrackGrindThread):
             return True
         else:
             return super().do_go_hooks(exit_str)
-
 
     def do_on_successful_go(self):
         super().do_on_successful_go()
@@ -315,14 +333,15 @@ class SmartGrindThread(TrackGrindThread):
         self.go_rest_if_not_ready()
 
     def go_rest_if_not_ready(self):
-        magentaprint("SmartGrindThread.go_rest_if_not_ready()")
         if not self.ready_for_combat():
-            directions = self.get_heal_path()
-            
-            if len(directions) == 0:
-                self.rest_and_check_aura()
-            else:
-                self.direction_list = directions
+            self.direction_list = self.get_heal_path()
+            self.on_heal_path = True
+
+            if len(self.direction_list) == 0:
+                self.on_heal_path = False
+
+            return True
+        return False
 
 class SmartGrindTarget(object):
     def __init__(self, name, locations):

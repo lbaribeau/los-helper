@@ -29,6 +29,7 @@ class CharacterClass(object):
         ]
 
         self.weapon_slots = ["Wielded"]
+        self.needs_weapon = True
 
         self.mana_tick = 2
         abilities = []
@@ -63,6 +64,7 @@ class CharacterClass(object):
         elif class_string == "Mag":
             self.lvl1_maxHP = 14
             self.lvl1_maxMP = 5
+            self.needs_weapon = False
             self.mana_tick = 3  # unsure
             self.levelPath = [ ["out", "s", "w", "w", "w", "s", "e", "shop", "backroom", "portal"],
                           ["door", "out", "out", "w", "n", "e", "e", "e", "n", "cha"]]
@@ -95,6 +97,7 @@ class CharacterClass(object):
             self.lvl1_maxMP = 3
             self.HP_gained_per_level = 6
             self.MP_gained_per_level = 3
+            self.needs_weapon = False
             abilities = [ Meditate, Touch ]
             Cast.cooldown_after_success = 5
             # self.heal_skills.extend([ClassSkillReaction(mudReaderHandler, "Meditate",
@@ -115,6 +118,7 @@ class CharacterClass(object):
             Cast.cooldown_after_success = 3
         elif class_string == "Alc":
             self.lvl1_maxHP = 15
+            self.needs_weapon = False
             lvl1_maxMP = 4
             abilities = []
         elif class_string == "Dar":

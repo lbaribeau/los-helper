@@ -50,6 +50,7 @@ class SmithyBot(MiniBot):
         smithy_path = self.get_smithy_path()
         magentaprint("SmithyBot.get_smithy_path(): " + str(smithy_path))
         self.travel_bot.follow_path(smithy_path)
+        return True
 
     def get_smithy_path(self):
         try:
@@ -91,7 +92,7 @@ class SmithyBot(MiniBot):
     def repair_until_success_or_none_left_by_ref(self, first_reference_of_item):
         item_name = self.char.inventory.get_item_name_from_reference(first_reference_of_item)
         magentaprint("SmithyBot.repair_until_success_or_none_left_by_ref() ref/item name: " + str(first_reference_of_item) + '/' + str(item_name))
-        self.command_handler.repair.wait_until_ready(first_reference_of_item)
+        self.command_handler.repair.wait_until_ready()
         self.command_handler.repair.execute_and_wait(first_reference_of_item)
 
         if self.command_handler.repair.success:
