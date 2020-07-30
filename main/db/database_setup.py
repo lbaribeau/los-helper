@@ -11,5 +11,5 @@ else:
 database = SqliteDatabase(database_file, check_same_thread=False)
 db.initialize(database)
 
-#drop_tables()
-create_tables()
+# #drop_tables()
+# create_tables()

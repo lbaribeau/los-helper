@@ -2,6 +2,7 @@
 import telnetlib
 import socket
 import time
+import os
 from threading import Thread
 
 from misc_functions import magentaprint
@@ -10,6 +11,13 @@ class TelnetHandler(object):
     server_timeout = 299 
 
     def __init__(self):
+        # proxy = '155.138.157.26:8080'
+
+        # os.environ['http_proxy'] = proxy 
+        # os.environ['HTTP_PROXY'] = proxy
+        # os.environ['https_proxy'] = proxy
+        # os.environ['HTTPS_PROXY'] = proxy
+
         connected = False
         while not connected:
             try:

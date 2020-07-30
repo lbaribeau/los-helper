@@ -68,8 +68,8 @@ class TrackGrindThread(GrindThread):
             'down','n','n','n','n','ne','n','w','n','n','e','door','w','gully','up','boulder','up',
             'cave 3','ne','ne','n','s','up','e','se','cave','out']
 
-        # if self.character.level >= 9:
-            # self.KOBOLD_PATH += ['slow_prepare', 'e', 'ne', 'door', 'door', 'slow_prepare', 'sw','w']
+        if self.character.level >= 9:
+            self.KOBOLD_PATH += ['slow_prepare', 'e', 'ne', 'door', 'door', 'slow_prepare', 'sw','w']
             # Note: You can remove the following line of code to remove the kobold guards and priests fights.
             # Priests turn you very blue.  These fights may be difficult.
             # Also useful to test mobs who join in.
@@ -206,6 +206,15 @@ class TrackGrindThread(GrindThread):
         #    'north', 'north', 'northwest', 'northwest', 'northwest', 'west', 'west', 'west', 'northwest', 'northwest',
         #    'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
 
+        self.GNOLL_CAVE = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'southeast', 'southeast',
+        'east', 'east', 'east', 'southeast', 'southeast', 'southeast', 'south', 'south', 'south', 'south', 'south', 'south', 'south',
+        'south', 'south', 'south', 'south', 'south', 'southwest', 'southwest', 'southwest', 'southwest', 'brush', 'south',
+        'southeast', 'east', 'trail', 'up', 'north', 'east', 'fissure', 'cleft', 'west', 'down', 'west',  'west', 'west', 'northeast',
+        'east', 'east', 'south', 'up', 'up', 'out', 'north', 'west', 'southwest', 'down', 'down', 'west', 'northwest', 'north',
+        'northwest', 'northeast', 'northeast', 'northeast', 'northeast', 'north', 'north', 'north', 'north', 'north', 'north',
+        'north', 'north', 'north', 'north', 'north', 'north', 'northwest', 'northwest', 'northwest', 'west', 'west', 'west',
+        'northwest', 'northwest', 'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
+
         self.PATH_TO_SKIP_WITH = ['think']
 
     def do_go_hooks(self, exit_str):
@@ -286,10 +295,9 @@ class TrackGrindThread(GrindThread):
         elif self.__nextpath == 21:
             return self.track_builder(self.RANCHER_SENTRY, 9, 20)
         elif self.__nextpath == 23:
-            magentaprint("Doing spiders", False)
             return self.track_builder(self.SPIDER_FOREST, 12, 20)
         elif self.__nextpath == 25:
-            return self.track_builder(self.GNOLL_CAMP, 12, 20)
+            return self.track_builder(self.GNOLL_CAVE, 12, 20)
         elif self.__nextpath == 27:
             return self.track_builder(self.KNIGHTS, 12, 20)
         else:

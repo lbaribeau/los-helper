@@ -161,21 +161,24 @@ class Inventory(BotReactionWithFlag, ReferencingList):
     #     "burnt ochre potion", "milky potion"]
 
     keep_list = [
-        'large bag', 'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
-        'chicken soup', 'small flask', 'large restorative', 'scarlet potion', 'tree root', 'white potion', 'small restorative',
-        'Elixir of Morinva', 'granite potion', 'philtre of perception', 'burnt ochre potion','granite rod', 'heathen amulet',
-        'wrapped scroll', 'wyvern\'s sting', 'blue scroll', 'granite rod', 'zinc wand',
+        'large bag', 'large sack', 'black bag', 'silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
+        'chicken soup', 'small flask', 'large restorative', 'scarlet potion', 'golden potion', 'tree root', 'white potion', #'small restorative',
+        'Elixir of Morinva', 'granite potion', 'philtre of perception', 'burnt ochre potion',
+        # 'granite rod', 'heathen amulet',
+        'wrapped scroll', 'wyvern\'s sting',
+        # 'blue scroll',
+        # 'granite rod', 'zinc wand',
         # 'adamantine rod',
         # 'spear',
         # 'bolos',
-        'javelin', 'heavy crossbow', 'throwing stars', 'throwing star',
+        # 'javelin', 'heavy crossbow', 'throwing stars', 'throwing star',
         #'crossbow', 'horn bow', 'long bow' # < 70% missile
         # 'broad sword',
-        'adamantine axe', 'rapier', 'adamantine sword', 'claymore', 'spider leg', 'large orcish sword', 'drow sabre',
+        # 'adamantine axe', 'rapier', 'adamantine sword', 'claymore', 'spider leg', 'large orcish sword', 'drow sabre',
         # 'silver dagger', 'long sword',  #these pile up
         # 'bastard sword',  # bandits
         # 'small mace',
-        'morning star', 'superior dwarven hammer', 'stout cudgel', "horseman's mace",
+        # 'morning star', 'superior dwarven hammer', 'stout cudgel', "horseman's mace",
         # 'war hammer',
         # 'hard cap', 'hard gloves', 'hard boots', 'padded hat', 'mountain gloves', 'mountain boots',
         # 'mountain boots with crampons', 'travellers cross', 'leather mask', 'leather collar', 'studded leather collar',

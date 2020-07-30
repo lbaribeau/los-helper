@@ -135,6 +135,7 @@ class SmartCombat(CombatObject):
         return self.potion_threshold() - self.character.HEALTH > 6
 
     def needs_heal(self):
+        #todo add full force mode to use pots anything hp is below max hp
         return self.potion_threshold() - self.character.HEALTH > 0
         # return self.character.HEALTH < 50  # Test!
         # if self.character.mobs.damage:
@@ -361,6 +362,7 @@ class SmartCombat(CombatObject):
 
                 # magentaprint("Using " + str(a))
                 a.execute(self.target)
+                #todo optionally ignore this for moves like touch
                 a.wait_for_flag()
                 # magentaprint("SmartCombat finished using ability.")
                 # So if we hit with Dance of the Cobra, we should save mana...
@@ -601,6 +603,8 @@ class SmartCombat(CombatObject):
         self.kill.stop()
         self.cast.wait_until_ready()
         self.kill.wait_until_ready()
+
+        #todo if full force mode and has granite pot then use it
 
         if self.character.weapon1 != '':
             self.telnetHandler.write("rm " + self.character.weapon1)

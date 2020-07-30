@@ -492,8 +492,8 @@ class GrindThread(BotThread):
         if self.inventory.has("small restorative"):
             self.command_handler.process('drink restorative')
             # large restorative
-        elif self.inventory.has("scarlet potion"):
-            self.command_handler.process('drink scarlet')
+        # elif self.inventory.has("scarlet potion"):
+        #     self.command_handler.process('drink scarlet')
         elif self.inventory.has("small flask"):
             self.command_handler.process('drink small flask')
         elif self.inventory.has("white potion"):

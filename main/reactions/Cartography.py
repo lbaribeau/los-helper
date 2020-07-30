@@ -27,7 +27,7 @@ class Cartography(BotReactionWithFlag):
             RegexStore.no_items_allowed, RegexStore.locked, RegexStore.no_right, RegexStore.not_authorized,
             RegexStore.cannot_force, RegexStore.not_here, RegexStore.loot_blocked, RegexStore.teleported,
             RegexStore.in_tune, RegexStore.you_see_mob, RegexStore.mob_aura, RegexStore.store_list,
-            RegexStore.mob_fled, RegexStore.open_first, RegexStore.washroom
+            RegexStore.mob_fled, RegexStore.open_first, RegexStore.washroom #, RegexStore.mob_says
         ]
         self.mudReaderHandler = mudReaderHandler
         self.command_handler = command_handler
@@ -119,6 +119,8 @@ class Cartography(BotReactionWithFlag):
                 self.character.MUD_AREA = None
         elif regex in RegexStore.store_list:
             self.store_list(regex, M_obj)
+        # elif regex in RegexStore.mob_says:
+        #     self.catalog_mob_message(regex, M_obj)
         else:
             # This is fine for a shut door - we just want the super().notify in that case.
             magentaprint("Cartography case missing for regex: " + str(regex))
@@ -224,6 +226,18 @@ class Cartography(BotReactionWithFlag):
             #     item_size = item[1]
             #     item_value = item[2]
 
+    def catalog_mob_message(self, regex, M_obj):
+        if self.character.cataloging_messages:
+            keyword = self.character.last_keyword
+            mob_name = self.character.mobs.read_match(M_obj)
+            mob = Mob(name=str(mob_name))
+            message = M_obj.group(3)
+
+            mobMessage = MobMessage(mob=mob, keyword=keyword, message=message)
+            MobMessage.map()
+
+        return
+
     #Used if it's dark and / or the current area doesn't appear to be findable
     def guess_location(self, area_from_id, direction_from):
         guessed_area = None
@@ -328,8 +342,10 @@ class Cartography(BotReactionWithFlag):
 
     def catalog_item(self, item_name, item_size, item_value):
         item = Item(name=item_name, value=item_value, description=item_size)
-        item.map()
-
+        try:
+            item.map()
+        except Exception as e:
+            magentaprint(["Problem cataloging monster bio", e], False)
         return item
 
     def catalog_area_store_item(self, item, area):

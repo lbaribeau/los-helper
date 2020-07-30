@@ -1,0 +1,9 @@
+cyan - invisibility
+smoky - blindness
+green - protection
+lady's tears - detect invis
+granite - teleport to safety
+burnt ochre - fire protection
+glowing potion - light
+gold potion - healing
+amber vial - poison subsides (doesn't stop it though)

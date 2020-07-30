@@ -96,7 +96,8 @@ mob_left = [__Three_possible_mob_strings + " just wandered away\."]
 # mob_arrived = [__The_mob2 + "(?P<mobs>[a-z]+ [a-z '-]+?) just arrived\."]
 mob_arrived = [r"(?P<mobs>[A-Z][a-z]* [a-z '-]+?) just arrived\."]  # no 1st/2nd numbers in arrived, but Two/Three is possible
 # mob_arrived = [__3_possible_mob_strings + r" just arrived\."]
-# mob_joins1 = ["the" + s_numbered + " (.+?) joins in the fight!"]
+# mob_joins1 = ["the" + s_numbered + " (.+?) joins in the fight!"q
+
 # Lower case 't' grammar error
 # mob_joined1 = [__the_mob + "joins in the fight!"]  # A mob standing there joins
 mob_joined1 = [__three_possible_mob_strings + " joins in the fight!"]  # A mob standing there joins
@@ -121,7 +122,10 @@ mob_attacked = [  # TODO: do any mobs wield weapons? (different text)
     __Three_possible_mob_strings + r" kicks at you, but fails to connect\.",
     __Three_possible_mob_strings + r" charges at you and butts for (?P<d>\d+) damage\.",  # TODO - missing no dmg version of this one
     __Three_possible_mob_strings + r" casts a [A-Za-z\-]+ spell on you for (?P<d>\d+) damage\."
-] 
+]
+
+# mob_says = __Three_possible_mob_strings + r" says to you, \"(.+?)\"\.?$"
+
 # mob_died = ["Your attack overwhelms (?:the " + __numbers_opt + ")?(?P<mob>.+?) and (s?he|it) collapses!"]
 # # it_fled = ["The (" + numbers + " )?(?P<mob_name>.+?) flees to the (.+?)\."]
 # # mob_fled = ["(?:The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 

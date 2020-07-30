@@ -59,6 +59,7 @@ from Exceptions import *
 
 class LosHelper(object):
     def __init__(self):
+
         magentaprint("LosHelper initializing...", False)
 
         # self.initializer = Initializer()

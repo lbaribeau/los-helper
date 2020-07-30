@@ -84,7 +84,7 @@ class ReferencingList(object):
             if i.name == string:
                 return True
 
-        magentaprint("Inventory.has() returned False.")
+        # magentaprint("Inventory.has() returned False.")
         return False
 
         return any(x.name == string for x in self.list)

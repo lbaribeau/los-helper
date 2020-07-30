@@ -22,6 +22,9 @@ class Character(object):
         self.class_string = None
         self.level = None
 
+        self.last_keyword = ""
+        self.cataloging_messages = True
+
         self.NEEDS_MAGIC = True
         self.BLACK_MAGIC = True
         self.KNOWS_VIGOR = True
