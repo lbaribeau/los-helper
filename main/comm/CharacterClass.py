@@ -37,7 +37,7 @@ class CharacterClass(object):
         if class_string == "Ass":
             self.lvl1_maxHP = 19
             self.lvl1_maxMP = 2
-            abilities = [ Backstab ]
+            abilities = [ Hide, Backstab ]
             Cast.cooldown_after_success = 4
         elif class_string == "Bar":
             self.lvl1_maxHP = 24
@@ -90,8 +90,8 @@ class CharacterClass(object):
         elif class_string == "Thi":
             self.lvl1_maxHP = 18
             self.lvl1_maxMP = 3
-            abilities = [ ] #Steal & Backstab not defined
-            Cast.cooldown_after_success = 4
+            abilities = [ Hide, Backstab ]
+            Cast.cooldown_after_success = 5
         elif class_string == "Mon":
             self.lvl1_maxHP = 17
             self.lvl1_maxMP = 3
@@ -131,10 +131,11 @@ class CharacterClass(object):
 
         self.abilities = {}
 
-        for a in abilities + [Search, Prepare, Hide]:
+        for a in abilities + [Search, Prepare]:
             if level >= a.level:
                 self.abilities[a.command] = a(telnetHandler)  # Construct all abilities
 
+        self.pre_combat_skills = [a for a in self.abilities.values() if isinstance(a, PreCombatAbility)]
         self.heal_skills = [a for a in self.abilities.values() if isinstance(a, HealAbility)]
         self.buff_skills = [a for a in self.abilities.values() if isinstance(a, BuffAbility)]
         self.slow_combat_skills = [a for a in self.abilities.values() if isinstance(a, SlowCombatAbility)]

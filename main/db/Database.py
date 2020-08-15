@@ -12,7 +12,7 @@ from db.AreaExit import *
 from db.ExitType import *
 from db.Mob import *
 from db.MobLocation import *
-# from db.MobMessage import *
+from db.MobMessage import *
 from db.Item import *
 from db.ItemType import *
 from db.ItemTypeModel import *
@@ -22,7 +22,7 @@ from db.MudMap import *
 
 def create_tables():
     try:
-        # tsry_create(MobMessage)
+        try_create(MobMessage)
         try_create(Log)
         try_create(Area)
         try_create(AreaExit)

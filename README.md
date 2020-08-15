@@ -40,3 +40,6 @@ sudo python3.5 get-pip.py
 ## Modifying the Database
 DB Browser for SQLite workers well
 You can open multiple windows on Mac OSX with this command `/Applications/DB\ Browser\ for\ SQLite.app/Contents/MacOS/DB\ Browser\ for\ SQLite &`
+
+## SQL to add new hidden path
+insert into areaexit (area_from_id, area_to_id, exit_type_id, is_useable, is_hidden, note) values (2375, 2376, 115, 1, 1, 'empty cache room from locked armoury, key found on gnoll subchief')

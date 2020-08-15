@@ -40,7 +40,7 @@ __exit = r"(?P<exit>[A-Za-z ]+)"
 found_exit = [r"You found an exit: " + __exit + r"\."]
 search_fail = [r"You didn't find anything\."]
 hide = [r"You slip into the shadows unnoticed\."]
-hide_fail = [r"You attempt to hide in the shadows\."]  # This occurs on success as well
+hide_fail = [r"you see a dragon"]  # This occurs on success as well
 prepare = [r"You prepare yourself for traps\."]
 already_prepared = [r"You've already prepared\."]
 
@@ -249,6 +249,10 @@ bash_whom = [r"Bash whom\?"]
 circle = [r"You circle the (.+?)\."]
 circle_fail = [r"You failed to circle it\."]
 circle_whom = [r"Circle whom\?"]
+
+backstab = [r"You backstab the (.+?)."]
+backstab_fail = [r"You failed\."]
+backstab_error = [r"Backstab requires sharp or thrusting weapons.", r"You don't see that here.", r"You need to be hidden or undetected to backstab!"]
 
 # Kill / Cast
 bad_k_target = [

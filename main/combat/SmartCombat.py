@@ -215,7 +215,10 @@ class SmartCombat(CombatObject):
         if self.target_fullref is not None and self.character.ACTIVELY_BOTTING:
             self.mob_target = Mob.get_mob_by_name(self.target_fullref)
             use_combat_ability = self.determine_whether_to_use_combat_ability()
-            self.spell = self.determine_favorite_spell_for_target()
+            if self.determine_whether_to_use_spells():
+                self.spell = self.determine_favorite_spell_for_target()
+            else:
+                self.spell = None
 
         self.kill.wait_until_ready()
         if self.character._class.id == 'Mag':
@@ -259,9 +262,16 @@ class SmartCombat(CombatObject):
                     return False
         return True
 
+    def determine_whether_to_use_spells(self):
+        if self.character.level > 10 and self.mob_target is not None:
+            if self.mob_target.level is not None:
+                if self.mob_target.level <= ((self.character.level / 2) - 2) or self.character.level <= 2:
+                    return False
+        return True
+
     def determine_favorite_spell_for_target(self):
         if self.mob_target is not None:
-            if self.character._class.id == 'Mag' or self.character._class.id == 'Alc':
+            if self.character._class.id == 'Mag' or self.character._class.id == 'Alc' or self.mob_target.is_named:
                 if self.mob_target.level <= 3:
                     return self.favourite_spell
                 else:
@@ -276,8 +286,8 @@ class SmartCombat(CombatObject):
         character = self.character
         spell_percent = max(character.spell_proficiencies.values())
 
-        combat_item = self.earth_item if spell_percent == character.info.earth else \
-                       self.wind_item if spell_percent == character.info.wind else \
+        combat_item = self.wind_item if spell_percent == character.info.wind else \
+                      self.earth_item if spell_percent == character.info.earth else \
                        self.fire_item if spell_percent == character.info.fire else \
                        self.water_item if spell_percent == character.info.water else None
 
@@ -384,11 +394,25 @@ class SmartCombat(CombatObject):
                     if isinstance(a, Circle):
                         continue
 
-                    magentaprint("SmartCombat executing " + str(a))
+                    if isinstance(a, Backstab):
+                        if not self.character.HIDDEN:
+                            continue
+                        else:
+                            self.character.HIDDEN = False
+
+                    # magentaprint("SmartCombat executing " + str(a), False)
                     a.execute(self.target)
-                    a.wait_for_flag()
+                    # let's also do our magic attack ASAP
+                    if self.cast.up() or self.cast.wait_time() <= self.kill.wait_time() or self.casting:
+                        self.do_magic_attack()
+                    
+                    if not isinstance(a, Backstab):
+                        a.wait_for_flag()
+                    
                     if a.error:
+                        # magentaprint("Didn't receive flag", False)
                         self.stop()
+
                     return
 
         # self.attack_wait()

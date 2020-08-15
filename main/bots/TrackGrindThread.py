@@ -4,6 +4,11 @@ from misc_functions import magentaprint
 from Aura import Aura
 import random
 
+class Path():
+    def __init__(self, aura, directions):
+        self.aura = aura
+        self.directions = directions
+
 class TrackGrindThread(GrindThread):
     def __init__(self, character, command_handler, mudReaderHandler, mud_map, starting_path=None):
         super().__init__(character, command_handler, mudReaderHandler, mud_map)
@@ -22,7 +27,7 @@ class TrackGrindThread(GrindThread):
         elif self.character.level <= 11:
             self.__TOTALPATHS = 24
         else:
-            self.__TOTALPATHS = 28  # # Area ids unfortunately must be updated.
+            self.__TOTALPATHS = 30  # # Area ids unfortunately must be updated.
             # self.__TOTALPATHS = 24
         # elif self.character.level <= 10:
         #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
@@ -34,7 +39,7 @@ class TrackGrindThread(GrindThread):
         if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
             self.__nextpath = starting_path
         else:
-            self.__nextpath = 24#random.randrange(0, self.__TOTALPATHS)
+            self.__nextpath = random.randrange(0, self.__TOTALPATHS)
 
         self.LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
@@ -49,6 +54,7 @@ class TrackGrindThread(GrindThread):
             "stage","side 2","backstage", "door", "out", "door 2", "out", "curtain", "stage",
             "side", "door","up", "out", "out", "n", "e","e", "e", "n", "chapel"
         ]
+        # self.THEATRE_PATH = Path(Aura, self.THEATRE_PATH)
         self.MARKET_PATH = [
             "out", 's', 'e', 'e', 'e', 'n', 'w', 'w', 'office', 'out', 'n', 'n','s', 'w', 'e', 's', 'w', 's', 'n', 'w', 'e', 'n',
             's', 'e', 'e', "out", 's', 'w', 'w', 'w', 'n',"chapel"
@@ -69,7 +75,11 @@ class TrackGrindThread(GrindThread):
             'cave 3','ne','ne','n','s','up','e','se','cave','out']
 
         if self.character.level >= 9:
-            self.KOBOLD_PATH += ['slow_prepare', 'e', 'ne', 'door', 'door', 'slow_prepare', 'sw','w']
+            self.KOBOLD_PATH += ['slow_prepare', 'e', 'ne', 'door',
+            # 'statue', 'down', 'down', 'down', 'down', 'hole', 'corridor', 'east', 'east', 'southeast', 'south', 'south'
+            # 'south', 'south', 'east', 'cave', 'out', 'west', 'west', 'west', 'west', 'west', 'north', 'north', 'north',
+            # 'north', 'north', 'east', 'passage', 'out', 'hole', 'up', 'up', 'up', 'up', 'out',
+            'door', 'slow_prepare', 'sw','w']
             # Note: You can remove the following line of code to remove the kobold guards and priests fights.
             # Priests turn you very blue.  These fights may be difficult.
             # Also useful to test mobs who join in.
@@ -209,11 +219,29 @@ class TrackGrindThread(GrindThread):
         self.GNOLL_CAVE = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'southeast', 'southeast',
         'east', 'east', 'east', 'southeast', 'southeast', 'southeast', 'south', 'south', 'south', 'south', 'south', 'south', 'south',
         'south', 'south', 'south', 'south', 'south', 'southwest', 'southwest', 'southwest', 'southwest', 'brush', 'south',
-        'southeast', 'east', 'trail', 'up', 'north', 'east', 'fissure', 'cleft', 'west', 'down', 'west',  'west', 'west', 'northeast',
-        'east', 'east', 'south', 'up', 'up', 'out', 'north', 'west', 'southwest', 'down', 'down', 'west', 'northwest', 'north',
+        'southeast', 'east', 'trail', 'up', 'north', 'east', 'fissure', 'cleft', 'west', 'down', 'west',  'west',
+        #gnoll jailer + barracks
+        'shaft', 'door 2', 'south', 'out', 'south', 'east', 'door', 'out', 'door 2', 'out', 'east', 'west', 'west', 'north', 'north', 'out',
+        #gnoll sub chiefs + Gnardu
+        'west', 'opening', 'southwest', 'southwest', 'bridge', 'north', 'passage', 'northeast', 'east',
+        'west', 'passage', 'southwest', 'bridge', 'south', 'northeast', 'opening', 'northeast',
+        'northeast', 'east', 'east', 'south', 'up', 'up', 'out', 'north', 'west', 'southwest', 'down', 'down', 'west', 'northwest', 'north',
         'northwest', 'northeast', 'northeast', 'northeast', 'northeast', 'north', 'north', 'north', 'north', 'north', 'north',
         'north', 'north', 'north', 'north', 'north', 'north', 'northwest', 'northwest', 'northwest', 'west', 'west', 'west',
         'northwest', 'northwest', 'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
+
+        self.CATHEDRAL = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south',
+         'southwest', 'southwest', 'southwest', 'southwest', 'south', 'south', 'south', 'southwest', 'southeast',
+         'south', 'south', 'south', 'south', 'south', 'south', 'south', 'south', 'south', 'south', 'cathedral',
+         'doors', 'east', 'east', 'south', 'north', 'east', 'door', 'door', 'west', 'west', 'west', 'out',
+         'street', 'north', 'north', 'north', 'north', 'north', 'north', 'north', 'north', 'north', 'north',
+         'northwest', 'northeast', 'north', 'north', 'north', 'northeast', 'northeast', 'northeast', 'northeast',
+         'north', 'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel'
+         ]
+
+        # self.BANDIT_CAMP = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south',
+        # 'southwest', 'southwest', 'southwest', 'trail', 'northwest', 'northwest', 'west', 'west',
+        # ]
 
         self.PATH_TO_SKIP_WITH = ['think']
 
@@ -273,42 +301,53 @@ class TrackGrindThread(GrindThread):
             else:
                 magentaprint("Trackgrind skipped pawning/dropping!!!")
         elif self.__nextpath == 1:
-            return self.track_builder(self.THEATRE_PATH, 1, 20)
+            return self.track_builder(self.THEATRE_PATH, 1, 20, 0)
         elif self.__nextpath == 3:
-            return self.track_builder(self.MARKET_PATH, 1, 20)
+            return self.track_builder(self.MARKET_PATH, 1, 20, 0)
         elif self.__nextpath == 5:
-            return self.track_builder(self.MILITIA_SOLDIERS_PATH, 1, 20)
+            return self.track_builder(self.MILITIA_SOLDIERS_PATH, 1, 20, 0)
         elif self.__nextpath == 7:
-            return self.track_builder(self.KOBOLD_PATH, 4, 11)
+            return self.track_builder(self.KOBOLD_PATH, 4, 20, -1)
         elif self.__nextpath == 9:
-            return self.track_builder(self.CORAL_ALLEY_PATH, 1, 6)
+            return self.track_builder(self.CORAL_ALLEY_PATH, 1, 6, -1)
         elif self.__nextpath == 11:
-            return self.track_builder(self.FORT_PATH, 1, 20)
+            return self.track_builder(self.FORT_PATH, 1, 20, 1)
         elif self.__nextpath == 13:
-            return self.track_builder(self.NORTHERN_BANDITS_PATH, 1, 20)
+            return self.track_builder(self.NORTHERN_BANDITS_PATH, 1, 20, -1)
         elif self.__nextpath == 15:
-            return self.track_builder(self.MUGGER_PATH, 9, 20)
+            return self.track_builder(self.MUGGER_PATH, 9, 20, -1)
         elif self.__nextpath == 17:
-            return self.track_builder(self.DWARVEN_FIELD_WORKERS_PATH, 9, 20)
+            return self.track_builder(self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 0)
         elif self.__nextpath == 19:
-            return self.track_builder(self.MILL_WORKERS, 9, 20)
+            return self.track_builder(self.MILL_WORKERS, 9, 20, 0)
         elif self.__nextpath == 21:
-            return self.track_builder(self.RANCHER_SENTRY, 9, 20)
+            return self.track_builder(self.RANCHER_SENTRY, 9, 20, 1)
         elif self.__nextpath == 23:
-            return self.track_builder(self.SPIDER_FOREST, 12, 20)
+            return self.track_builder(self.SPIDER_FOREST, 12, 20, -1)
         elif self.__nextpath == 25:
-            return self.track_builder(self.GNOLL_CAVE, 12, 20)
+            return self.track_builder(self.GNOLL_CAVE, 12, 20, -1)
         elif self.__nextpath == 27:
-            return self.track_builder(self.KNIGHTS, 12, 20)
+            return self.track_builder(self.KNIGHTS, 12, 20, 1)
+        elif self.__nextpath == 29:
+            return self.track_builder(self.CATHEDRAL, 15, 20, 1)
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.__nextpath))
             return list(self.PATH_TO_SKIP_WITH[:])
         return list(self.PATH_TO_SKIP_WITH[:])
 
-    def track_builder(self, track, min_level, max_level):
-        level_range = range(min_level, max_level)
+    def track_builder(self, track, min_level, max_level, track_aura):
+        level_range = range(min_level, max_level)        
 
-        if self.character.level in level_range:
+        character_aura = Aura(self.character.AURA)
+        aura_acceptable = True
+
+        #too evil shouldn't fight good (+1)
+        #too good shouldn't fight evil (-1)
+        if (character_aura < self.character.preferred_aura and track_aura == 1) or \
+           (character_aura > self.character.preferred_aura and track_aura == -1):
+            aura_acceptable = False
+
+        if self.character.level in level_range and aura_acceptable:
             return track[:]
         else:
             self.__nextpath = self.__nextpath + 1

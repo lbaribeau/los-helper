@@ -526,7 +526,7 @@ class WeaponBot(MiniBot):
         else:
             self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max('weapon', self.char.weapon_type, self.char.weapon_level)
             self.possible_weapons = sorted(self.possible_weapons, key = lambda i: i.item.level, reverse=True)
-            magentaprint("WeaponBot possible weapons: " + str(self.possible_weapons))
+            magentaprint("WeaponBot possible weapons: " + str(self.possible_weapons), False)
             return self.possible_weapons
 
             # level = self.character.weapon_level

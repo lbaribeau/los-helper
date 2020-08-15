@@ -1,3 +1,13 @@
+Aug 5 2020
+- Added kobold back in
+- Added Cathedral
+
+Aug 1 2020
+- Add path object to track grind thread allowing for smarter pathing based on aura
+- Track hunt, rest, battle times.. optimize towards rest and battle
+- Done extend gnoll path to include gnardu, jailer and sub chiefs
+- add path to bandit camp? might need logic to find hidden sentries
+- need more good sources - maybe add vicars permanently or gnomes
 
 Sept 2015
 Death mitigation
@@ -7,7 +17,7 @@ Getting lost mitigation
 - TrackGrind can use the map to recover
 BotThread.engage_monster should finish the job on chasing
 
-TODO LIST (WISH LIST):
+TODO LIST (WISH LIST):s
 
 A hud showing cooldowns for attack, cast, and all coolabilities
 

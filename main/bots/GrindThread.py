@@ -146,6 +146,23 @@ class GrindThread(BotThread):
 
             magentaprint("Targeting: " + new_target)
 
+            # if using a thief or assassin then hide, check if hidden
+            # then have smart combat backstab
+
+            # if self.is_character_class('Thi') or self.is_character_class('Ass'):
+            #     first = True
+            #     while not self.character.HIDDEN:
+            #         if self.character.mobs.chase == '' or \
+            #          self.character.mobs.attacking == []:
+            #          break
+
+            #         if not first and not self.character.HIDDEN:
+            #             self.sleep(6)
+            #         self.pre_combat_actions()
+            #         first = False
+            #         if self.character.HIDDEN:
+            #             time.sleep(3)
+
             self.engage_monster(new_target)
             self.engage_mobs_who_joined_in()
             self.engage_any_attacking_mobs()
@@ -159,6 +176,19 @@ class GrindThread(BotThread):
                 new_target = self.decide_which_mob_to_kill(self.character.mobs.list)
             else:
                 new_target = ""
+
+    def pre_combat_actions(self):
+        success = False
+     
+        for skill in self.character._class.pre_combat_skills:
+            if skill.up() and skill.command == 'hid':
+                skill.execute()
+                skill.wait_for_flag()
+                success = skill.success
+
+        self.character.HIDDEN = success
+        return success
+
 
     def set_up_automatic_ring_wearing(self):
         """ Makes some BotReactions so that when MudReaderHandler sees us
@@ -445,7 +475,7 @@ class GrindThread(BotThread):
                 self.character.MANA, heal_cost, self.character.KNOWS_VIGOR, self.character.HAS_RESTORE_ITEMS) and not self.stopping:
 
             self.do_heal_skills()
-            self.use_restorative_items() #spam them!!!
+            # self.use_restorative_items() #spam them!!!
 
             if self.engage_any_attacking_mobs():
                 if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
@@ -492,14 +522,16 @@ class GrindThread(BotThread):
         if self.inventory.has("small restorative"):
             self.command_handler.process('drink restorative')
             # large restorative
-        # elif self.inventory.has("scarlet potion"):
-        #     self.command_handler.process('drink scarlet')
         elif self.inventory.has("small flask"):
-            self.command_handler.process('drink small flask')
+            self.command_handler.process('drink small')
         elif self.inventory.has("white potion"):
-            self.command_handler.process('drink white potion')
-        elif self.inventory.has("tree root"):
-            self.command_handler.process('eat root')
+            self.command_handler.process('drink white')
+        elif self.inventory.has("scarlet potion"):
+            self.command_handler.process('drink scarlet')
+        elif self.inventory.has("large restorative"):
+            self.command_handler.process('drink restorative')
+        elif self.inventory.has("gold chased whiskey flask"):
+            self.command_handler.process('drink chased')
             # white potion
         else:
             self.character.HAS_RESTORE_ITEMS = False

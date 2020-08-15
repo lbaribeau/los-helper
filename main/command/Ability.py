@@ -66,6 +66,9 @@ class BuffAbility(Ability):
     def stop_executing(self):
         pass
 
+class PreCombatAbility(Ability):
+    pass
+
 class CombatAbility(Ability):
     pass
     # error_regexes = [RegexStore.not_here]
@@ -158,7 +161,7 @@ class Berserk(BuffAbility):
 
 class HealAbility(Ability):
     def set_level(self, level):
-        self.__class__.max_amount = 16 + int(round(1.4*level, 0))
+        self.__class__.max_amount = 20 # + int(round(1.4*level, 0))
     # @property 
     # def max_amount(self):
     #     raise NotImplementedError()
@@ -179,7 +182,7 @@ class Prepare(Ability):
     failure_regexes = []
     level = 1
 
-class Hide(Ability):
+class Hide(PreCombatAbility):
     command = 'hid'
     cooldown_after_success = 11
     cooldown_after_failure = 11
@@ -188,8 +191,8 @@ class Hide(Ability):
     level = 1
 
 class Meditate(HealAbility):
-    command = "me"
-    cooldown_after_success = 120
+    command = "medi"
+    cooldown_after_success = 95
     cooldown_after_failure = 5
     max_amount = 15 #guess  ()
     success_regexes = [RegexStore.meditate]
@@ -241,7 +244,7 @@ class Turn(FastCombatAbility):
         'shadowed huorn']
 
 class Touch(SlowCombatAbility):
-    command = "to"
+    command = "touch"
     cooldown_after_success = 270
     cooldown_after_failure = 270
     success_regexes = [RegexStore.touch]
@@ -263,6 +266,15 @@ class Wither(SlowCombatAbility):
     failure_regexes = [RegexStore.wither_fail]
     error_regexes = [RegexStore.wither_whom, RegexStore.not_here]
     # classes = ["Dar"]
+    level = 1
+
+class Backstab(SlowCombatAbility):
+    command = "back"
+    cooldown_after_success = 7
+    cooldown_after_failure = 7
+    success_regexes = [RegexStore.backstab]
+    failure_regexes = [RegexStore.backstab_fail]
+    error_regexes = [RegexStore.backstab_error]
     level = 1
 
 class Bash(SlowCombatAbility):
@@ -291,7 +303,6 @@ class Circle(SlowCombatAbility):
             Kill.timer = Kill.timer + 1
 
 # class Hide(object):
-# class Backstab(object):
 # class Steal(object):
 
 

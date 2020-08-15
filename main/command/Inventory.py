@@ -32,10 +32,14 @@ def clip_from_a_container(get_string):
 def construct_items(string_list):
     items = []
 
-    for i in string_list:
-        item = MudItem(i)
-        item.map()
-        items.append(item)
+    try:
+        for i in string_list:
+            item = MudItem(i)
+            item.map()
+            items.append(item)
+    except:
+        magentaprint("database error", False)
+        pass
 
     return items
 
@@ -161,11 +165,17 @@ class Inventory(BotReactionWithFlag, ReferencingList):
     #     "burnt ochre potion", "milky potion"]
 
     keep_list = [
-        'large bag', 'large sack', 'black bag', 'silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
-        'chicken soup', 'small flask', 'large restorative', 'scarlet potion', 'golden potion', 'tree root', 'white potion', #'small restorative',
-        'Elixir of Morinva', 'granite potion', 'philtre of perception', 'burnt ochre potion',
+        # 'large bag',
+        'large sack', 'black bag', 'silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
+        'small restorative', 'small flask', # 'chicken soup',  'tree root',
+        'large restorative', 'scarlet potion', 'golden potion', 'white potion',
+        'first aid kit', 'Elixir of Morinva', 'granite potion',
+        'philtre of perception', 'burnt ochre potion', 'master\'s habit', 'Aaashaaal\'s gift',
+        'gold chased whiskey flask',
         # 'granite rod', 'heathen amulet',
-        'wrapped scroll', 'wyvern\'s sting',
+        'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand', #'makeup kit', 
+        'diamantium cross',
+        'copper thieves pass', 'steel thieves pass', 'silver thieves pass', 'stilleto'
         # 'blue scroll',
         # 'granite rod', 'zinc wand',
         # 'adamantine rod',

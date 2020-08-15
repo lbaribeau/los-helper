@@ -17,15 +17,15 @@ var app = new Vue({
   methods: {
     fetchData: function() {
       console.log("here I go fetching data again...");
-      axios.get('/api/mkl.json?t=' + new Date().getTime())
+      axios.get('api/mkl.json?t=' + new Date().getTime())
       .then((response) => {
         this.mkl = response.data;
       });
-      axios.get('/api/info.json?t=' + new Date().getTime())
+      axios.get('api/info.json?t=' + new Date().getTime())
       .then((response) => {
         this.info = response.data;
       });
-      axios.get('/api/report.json?t=' + new Date().getTime())
+      axios.get('api/report.json?t=' + new Date().getTime())
       .then((response) => {
         this.report = response.data;
       });

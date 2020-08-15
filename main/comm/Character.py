@@ -78,6 +78,7 @@ class Character(object):
         self.aura_check_count = 0
 
         self.HASTING = False
+        self.HIDDEN = False
         self.DEAD = False
 
         self.weapon1 = ''
