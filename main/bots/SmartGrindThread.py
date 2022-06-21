@@ -196,10 +196,16 @@ class SmartGrindThread(TrackGrindThread):
 
     def get_targets(self):
         magentaprint("SmartGrind getting targets - parameters - {0} {1} {2} {3}".format(\
-            self.low_level, self.high_level, self.min_target_aura, self.max_target_aura)
-        )
+            self.low_level, 
+            self.high_level, 
+            self.min_target_aura, 
+            self.max_target_aura
+        ))
         target_list = MudMob.get_mobs_by_level_and_aura_ranges(
-            self.low_level, self.high_level, self.min_target_aura, self.max_target_aura
+            self.low_level, 
+            self.high_level, 
+            self.min_target_aura, 
+            self.max_target_aura
         )
 
         # if not target_list:
@@ -212,7 +218,7 @@ class SmartGrindThread(TrackGrindThread):
         for target in target_list:
             # magentaprint(target, False)
             mob_locations = MudMap.get_mob_locations_by_id(target.id)
-            self.character.MONSTER_KILL_LIST.append(target.name)
+            self.character.MONSTER_KILL_LIST.append(target.name) # This might append too many?
             self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
 
     def reset_kill_list(self):

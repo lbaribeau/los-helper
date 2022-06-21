@@ -4,6 +4,7 @@ from misc_functions import *
 from db.GenericMudObject import *
 
 class MudMob(GenericMudObject):
+    """ MudMob is an interface for working with Mob and MobLocation."""
     def __init__(self, name):
         self.obj = Mob(name=name)
         self.item = self.obj
@@ -21,14 +22,13 @@ class MudMob(GenericMudObject):
 
     def get_areas_to_mob(area_id, mob_name):
         area_ids = []
-
         try:
-            mob_locations = MobLocation.select().join(Mob).where((Mob.name == mob_name) &
-             (MobLocation.area.id == area_id)).order_by(Mob.id.desc())
-
+            mob_locations = MobLocation.select().join(Mob).where(
+                (Mob.name == mob_name) &
+                (MobLocation.area.id == area_id)
+            ).order_by(Mob.id.desc())
             for location in mob_locations:
                 area_ids += location.area.id
-
         except MobLocation.DoesNotExist:
             mob_locations = []
 

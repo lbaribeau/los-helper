@@ -37,6 +37,7 @@ from mini_bots.smithy_bot import SmithyBot
 from mini_bots.weapon_bot import WeaponBot
 # from mini_bots.simple_weapon_bot import SimpleWeaponBot
 from mini_bots.travel_bot import TravelBot
+from reactions.referencing_list import ReferencingList
 
 class CommandHandler(object):
     def __init__(self, character, mudReaderHandler, telnetHandler):
@@ -230,13 +231,19 @@ class CommandHandler(object):
             self.user_kk2(user_input.partition(' ')[2].strip())
         elif re.match('dro? ', user_input):
             self.user_dr(user_input)
-        elif user_input.startswith('sellable'):
-            magentaprint(str(self.inventory.sellable()))
+        elif user_input.startswith('sella'):
+            #magentaprint(str(self.inventory.sellable()))
+            # magentaprint(
+            #     ReferencingList(
+            #         [self.inventory.get(i) for i in self.inventory.sellable()]
+            #     )
+            # )
+            self.inventory.sellable()
         elif user_input.startswith('droppable'):
             magentaprint(str(self.inventory.droppable()))
-        elif user_input.startswith('Sel'):
+        elif user_input.startswith('Sel') and not user_input.startswith('Sella'):
             self.inventory.sell_stuff()
-        elif user_input.startswith('Dr'):
+        elif user_input.startswith('Dr') and not user_input.startswith('Dropp'):
             self.inventory.drop_stuff()
         elif user_input == 'ga':
             # self.telnetHandler.write('get all')
@@ -307,10 +314,12 @@ class CommandHandler(object):
         elif re.match("MONSTER_CHECK_FLAG", user_input):
             magentaprint(str(self.character.MONSTER_CHECK_FLAG), False)
         elif re.match("ml", user_input): #Monster List
-            magentaprint(str(self.character.MONSTER_LIST), False)
-            if self.KillThread != None:
-                magentaprint("Cur KT Target: " + str(self.KillThread.target), False)
-            magentaprint("Mobs Attacking " + str(self.character.MOBS_ATTACKING), False)
+            # magentaprint('Character.MONSTER_LIST '+str(self.character.MONSTER_LIST), False)
+            # if self.KillThread != None:
+                # magentaprint("Cur KT Target: " + str(self.KillThread.target), False)
+            # magentaprint("Mobs Attacking " + str(self.character.MOBS_ATTACKING), False)
+            magentaprint('character.mobs.list: '+str(self.character.mobs.list), False)
+            magentaprint('character.mobs.attacking: '+str(self.character.mobs.attacking), False)
         elif re.match("aid", user_input): #Area ID
             magentaprint("CommandHandler character.AREA_ID: " + str(self.character.AREA_ID), False)
             magentaprint("CommandHandler character.MUD_AREA: " + str(self.character.MUD_AREA), False)
@@ -394,6 +403,7 @@ class CommandHandler(object):
             )
         elif user_input == 'i':
             self.inventory.get_inventory()
+            #self.inventory.sellable()
         else: # Doesn't match any command we are looking for
             self.telnetHandler.write(user_input) # Just shovel to telnet.
 
@@ -623,6 +633,7 @@ class CommandHandler(object):
 
     def start_track_grind(self, user_input):
         magentaprint("CommandHandler start_track_grind()")
+        self.character.DEAD=False # Use case: run bot after death from manual play
         if self.bot_check():
             M_obj = re.search("[0-9]+", user_input)
 
@@ -730,9 +741,9 @@ class CommandHandler(object):
             magentaprint("Bulk drop missing arguments")
 
     def find(self, user_input):
-        M_obj = re.search("find (.+)", user_input)
-        magentaprint("Finding: " + str(M_obj.group(1)))
-        [areas, mob_locations] = MudMap.find(str(M_obj.group(1)))
+        M = re.search("find (.+)", user_input)
+        magentaprint("Finding: " + str(M.group(1)))
+        [areas, mob_locations] = MudMap.find(str(M.group(1)))
 
         magentaprint("Areas found:", False)
         for area in areas:

@@ -2,19 +2,19 @@
 from misc_functions import magentaprint 
 import time
 
-""" A BotReaction is an object that defines 'regexes' and 'notify' and 
-gets registered with the MudReader, which will call notify with a regex 
+""" A BotReaction is an object that defines 'regexes' and 'notify' and
+gets registered with the MudReader, which will call notify with a regex
 in the list is matched."""
 
 class BotReaction(object):
     pass
     # def __init__(self):
     #     self.unregistered = False
-    # Hmmm, do I want everyone to inherit "self.unregistered = False" or 
-    # do I just want to task MudReaderHandler.register_reaction() with 
-    # tacking that on?  Currently, it works because both are sort of 
-    # happening, but it'd be kind of nice to get that inheritance in, 
-    # but it's also quite unnecessary.  MudReaderHandler doing it 
+    # Hmmm, do I want everyone to inherit "self.unregistered = False" or
+    # do I just want to task MudReaderHandler.register_reaction() with
+    # tacking that on?  Currently, it works because both are sort of
+    # happening, but it'd be kind of nice to get that inheritance in,
+    # but it's also quite unnecessary.  MudReaderHandler doing it
     # is super flexible too, you could just throw anything in there.
 
 # class BotReaction(object):
@@ -24,10 +24,10 @@ class BotReaction(object):
 #     #         regexes = [regexes]
 #     #     self.regexes = regexes
 #     def notify(self, regex, M_obj):
-#         """ This function is called by MudReaderThread when regex was 
-#         matched.  MudReaderThread gives the regex back so that the Reaction 
-#         can know which was matched, and M_obj is given so that the matching 
-#         text can be used.  
+#         """ This function is called by MudReaderThread when regex was
+#         matched.  MudReaderThread gives the regex back so that the Reaction
+#         can know which was matched, and M_obj is given so that the matching
+#         text can be used.
 #         """
 #         raise NotImplementedError()
     def wait_loop(self, flag_name):
@@ -40,7 +40,7 @@ class BotReaction(object):
 
         if not getattr(self, flag_name):
             magentaprint(str(self) + ".wait_loop() timed out!")
-            return False 
+            return False
         else:
             setattr(self, flag_name, False)
             return True
@@ -70,12 +70,12 @@ def wait_for_a_flag(class_with_flag):
         class_with_flag._waiter_flag = False
         return True
 
-        
+
 class BotReactionWithFlag(BotReaction):
-    """ wait_for_flag() is useful when you send a telnet command and 
+    """ wait_for_flag() is useful when you send a telnet command and
     want to wait for the server's response to that command. """
 
-    _waiter_flag = True  
+    _waiter_flag = True
     good_MUD_timeout = 5.0  # *Needs to be long enough to handle lag
 
     # def __init__(self):
@@ -86,7 +86,7 @@ class BotReactionWithFlag(BotReaction):
         """ Subclasses should implement notify and also ensure that _waiter_flag
         gets set."""
         # magentaprint("BotReactionWithFlag setting _waiter_flag on " + str(self) + " from " + str(self._waiter_flag))
-        self.__class__._waiter_flag = True  
+        self.__class__._waiter_flag = True
 
     def wait_for_flag(self):
         # magentaprint("Waiting for flag " + str(self), end="")

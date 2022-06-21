@@ -5,5 +5,6 @@
 #python -m unittest discover main test.test_mob_target_determinator.TestMobTargetDeterminator.test_silly
 #python -m unittest discover main test.test_mob_target_determinator.TestMobTargetDeterminator.on_mob_arrival_should_increment
 cd main
-python3 -m unittest discover
+#python3 -m unittest discover
+python -m unittest discover
 

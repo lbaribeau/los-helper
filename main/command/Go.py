@@ -4,21 +4,23 @@ import time
 from itertools import chain
 
 from command.Command import Command
-from comm import RegexStore
+from comm import RegexStore as R
 from misc_functions import magentaprint
 from combat.Kill import Kill
 from combat.Cast import Cast
 
 class Go(Command):
     command = 'go'
-    success_regexes = [RegexStore.area, RegexStore.too_dark]
-    error_regexes = [RegexStore.no_exit, RegexStore.go_where]
+    success_regexes = [R.area, R.too_dark]
+    error_regexes = [R.no_exit, R.go_where]
     failure_regexes = [
-        RegexStore.blocked_path, RegexStore.cant_go, RegexStore.open_first,
-        RegexStore.class_prohibited, RegexStore.level_too_low, RegexStore.level_too_high, RegexStore.not_invited,
-        RegexStore.not_open_during_day, RegexStore.not_open_during_night, RegexStore.no_items_allowed,
-        RegexStore.locked, RegexStore.no_right, RegexStore.in_tune,
-        RegexStore.not_authorized, RegexStore.cannot_force, RegexStore.washroom, RegexStore.cliff
+        R.blocked_path,          R.cant_go,       R.open_first,
+        R.class_prohibited,      R.level_too_low, R.level_too_high, R.not_invited,
+        R.not_open_during_day,   R.locked,        R.no_items_allowed,
+        R.not_open_during_night, R.no_right,      R.in_tune,
+        R.not_authorized,        R.cannot_force,  R.washroom, 
+        R.cliff, # Why does this timeout?
+        R.occupied_area # Does cartography need to know this one? Unlikely
     ]
     cooldown_after_success = 0.34
     good_mud_timeout = 20.0
@@ -27,7 +29,7 @@ class Go(Command):
     def __init__(self, telnetHandler, character):
         super().__init__(telnetHandler)
         self.open = Open(telnetHandler)
-        self.regex_cart.append(RegexStore.mob_fled)
+        self.regex_cart.append(R.mob_fled)
         self.character = character
 
     def wait_for_flag(self):
@@ -40,7 +42,7 @@ class Go(Command):
 
     def notify(self, regex, M_obj):
         magentaprint("Go notified.")
-        if regex in RegexStore.open_first:
+        if regex in R.open_first:
             self.door = True
         # elif regex in chain.from_iterable(self.success_regexes) and not self.__class__._waiter_flag:
         #     self.character.mobs.list.reset()
@@ -91,11 +93,20 @@ class Go(Command):
         Cast.wait_until_ready()
         Kill.wait_until_ready()
 
+    @property
+    def blocked(self):
+        # This is for mobs blocking you
+        return self.result in R.blocked_path
+
+    def wait_execute_and_wait(self, exit):
+        self.wait_until_ready()
+        self.execute_and_wait(exit)  #super().execute_and_wait(target=None)
+
 class Open(Command):
     command = 'open'
-    success_regexes = [RegexStore.already_open, RegexStore.open_success]
-    error_regexes = [RegexStore.no_exit, RegexStore.open_what]
-    failure_regexes = [RegexStore.locked]
+    success_regexes = [R.already_open, R.open_success]
+    error_regexes   = [R.no_exit,      R.open_what]
+    failure_regexes = [R.locked]
 
     def notify(self, r, m):
         magentaprint("Open notified.")

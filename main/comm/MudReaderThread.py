@@ -1,7 +1,7 @@
 
 import threading
 from threading import Thread
-import atexit 
+import atexit
 import time
 import re
 import sys
@@ -12,31 +12,31 @@ from misc_functions import *
 class MudReaderThread(threading.Thread):
     """This thread watches the the MUD output and appends it
     to the buffer for the MudReaderThread to read it."""
-    
+
     def __init__(self, MUDBuffer, character, consoleHander):
-        Thread.__init__(self)       
+        Thread.__init__(self)
         # Constants
         self.ASCII_EOT = 4
         self.ASCII_ESC = 27
         self.ASCII_m = 109
-        
+
         self.MUDBuffer = MUDBuffer
         self.character = character
         self.consoleHander = consoleHander
-        
+
         #TODO: change these all to mud waiter flags
         self.CHECK_GO_FLAG = False
         self.CHECK_SELL_FLAG = False
         self.CHECK_INVENTORY_FLAG = False
         #self.CHECK_KILL_MONSTER_GONE = False # This one isn't used yet, I think it's to react to when a monster flees
-        
+
         self.BotReactionList = []
         self.mud_events = {}
 
         self.recording = False
         self.recorded_text = ''
         self.buffer_completion_subscribers = []
-        
+
         # Internal Variables
         # variables used for the MUD_output_check function
         # These are used if I decide to implement MUD_output_check
@@ -45,8 +45,8 @@ class MudReaderThread(threading.Thread):
         #self.__check_regex_true = ""
         #self.__check_regex_false = ""
         #self.__check_M_obj = None
-        #self.__check_flag = False 
-        
+        #self.__check_flag = False
+
         # Two parallel arrays.
         # I believe this to be appropriate for what they are used for.
         # These were used when I wanted to act when a flag was raised.
@@ -54,26 +54,26 @@ class MudReaderThread(threading.Thread):
         #self.flag_names = ["aura", "go", "inventory", "monster", "sell"]
         #self.request_flags = [False, False, False, False, False]
                             #{"aura":False,
-                            #"go":False, 
+                            #"go":False,
                             #"inventory":False,
                             #"monster":False,
                             #"sell":False}
-            # These flags are set by the MudHandler and notify the 
-            # MudReader to look for certain text patterns.  For 
-            # example the inventory flag notifies the MudReader to 
-            # look for the inventory coming along into the buffer. 
-            # Typically a flag is set when something calls one of the 
+            # These flags are set by the MudHandler and notify the
+            # MudReader to look for certain text patterns.  For
+            # example the inventory flag notifies the MudReader to
+            # look for the inventory coming along into the buffer.
+            # Typically a flag is set when something calls one of the
             # MudHandler functions.
             # order: alphabetical
-            # ... the better pattern is for the MudReader (observer) to 
+            # ... the better pattern is for the MudReader (observer) to
             # always match the pattern and let things subscribe to notifications.
-        
+
         self.stopping = False
         atexit.register(self.stop)
-                
+
     def stop(self):
         self.stopping = True
-    
+
     def run(self):
         self.__left_off_index = 0  # This is a save point index of the buffer
                             # so that we know where in the buffer to begin
@@ -281,39 +281,39 @@ class MudReaderThread(threading.Thread):
             #### Shopping stuff ####
             # On gold pickup:
             M_obj = re.search("You now have (.+?) gold coins", text_buffer)
-            if(M_obj):
+            if M_obj:
                 self.character.GOLD = int(M_obj.group(1))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             # On tip drop:                    
             M_obj = re.search("You have (.+?) gold\.", text_buffer)
-            if(M_obj):
+            if M_obj:
                 self.character.GOLD = int(M_obj.group(1))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
 
             # On vendor ... also manage the sell check flag (signal to bot)
             M_obj = re.search("The shopkeep gives you (.+?) gold for (an?|some) (.+?)\.", text_buffer)
-            if(M_obj):
+            if M_obj:
                 self.character.GOLD = self.character.GOLD + int(M_obj.group(1))
                 self.character.MUD_RETURN_ITEM_SOLD = True
                 self.CHECK_SELL_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("The shopkeep won't buy that from you\.", text_buffer)
-            if(M_obj):
+            if M_obj:
                 self.character.MUD_RETURN_ITEM_SOLD = False
                 self.CHECK_SELL_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("It isn't empty!", text_buffer)
-            if(M_obj):
+            if M_obj:
                 self.character.MUD_RETURN_ITEM_SOLD = False
                 self.CHECK_SELL_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("The shopkeep says, \"I won't buy that rubbish from you\.\"", text_buffer)
-            if(M_obj):
+            if M_obj:
                 self.character.MUD_RETURN_ITEM_SOLD = False
                 self.CHECK_SELL_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("Sell what\?", text_buffer)
-            if(M_obj):
+            if M_obj:
                 self.character.MUD_RETURN_ITEM_SOLD = False
                 self.CHECK_SELL_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])

@@ -353,9 +353,7 @@ class GrindThread(BotThread):
             return
 
         self.do_heal_skills()
-
         self.command_handler.process("rest")
-
         # magentaprint(self.has_ideal_health(), False)
 
         while not self.has_ideal_health() and not self.stopping:
@@ -368,8 +366,6 @@ class GrindThread(BotThread):
             self.sleep(1.2)
 
         # magentaprint("Stopping rest for health",False)
-
-        return
 
     def update_aura(self):
         # if self.stopping or self.character.ACTIVELY_MAPPING or not Spells.showaura in self.character.spells:
@@ -407,11 +403,11 @@ class GrindThread(BotThread):
 
     def heal_up(self):
         magentaprint("In heal_up.")
+        C = self.character
         heal_cost = 2
 
         if self.stopping:
             return
-
         if self.has_ideal_health():
             return
 
@@ -420,7 +416,7 @@ class GrindThread(BotThread):
         if self.has_ideal_health():
             return
 
-        if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
+        if BotThread.can_cast_spell(C.MANA, heal_cost, C.KNOWS_VIGOR):
             self.cast.cast('v')
             self.cast.wait_for_flag()
 
@@ -429,15 +425,16 @@ class GrindThread(BotThread):
 
             self.cast.start_thread('v')
 
-        self.character.HAS_RESTORE_ITEMS = False
+        C.HAS_RESTORE_ITEMS = False # Restore items disabled?
 
-        while BotThread.should_heal_up(self.character.HEALTH, self.character.HEALTH_TO_HEAL,
-                self.character.MANA, heal_cost, self.character.KNOWS_VIGOR, self.character.HAS_RESTORE_ITEMS) and not self.stopping:
+        while BotThread.should_heal_up(
+            C.HEALTH, C.HEALTH_TO_HEAL, C.MANA, heal_cost, C.KNOWS_VIGOR, C.HAS_RESTORE_ITEMS\
+            ) and not self.stopping:
 
             self.do_heal_skills()
 
             if self.engage_any_attacking_mobs():
-                if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
+                if BotThread.can_cast_spell(C.MANA, heal_cost, C.KNOWS_VIGOR):
                     self.cast.start_thread('v')
 
             #self.use_restorative_items() #spam them!!!

@@ -155,11 +155,7 @@ class SmartCombat(CombatObject):
         self.set_target(target)
 
     def start_thread(self, target, spell=None):
-        self.set_target(target)
-        self.spell = spell if spell else self.favourite_spell
-        magentaprint("SmartCombat spell set to " + str(self.spell))
-        self.set_pot_thread = False
-
+        self._initialize(target, spell)
         # if self.thread is None or not self.thread.is_alive():
         if self.thread and self.thread.is_alive():
             self.keep_going(target)
@@ -167,6 +163,12 @@ class SmartCombat(CombatObject):
             # not is_alive() means it won't look at stopping anymore so we're good.
             self.thread = Thread(target = self.run)
             self.thread.start()
+
+    def _initialize(self, target, spell=None):
+        self.set_target(target)
+        self.spell = spell if spell else self.favourite_spell
+        magentaprint("SmartCombat spell set to " + str(self.spell))
+        self.set_pot_thread = False
 
     def set_target(self, target=None):
         if target:
@@ -181,12 +183,12 @@ class SmartCombat(CombatObject):
             self.target = None
 
     def run(self):
-        self.stopping = False
+        self.stopping    = False
         self.mob_charmed = False
-        self.circled = False
-        self.activated = True
-        self.fleeing = False
-        self.broke_ring = False
+        self.circled     = False
+        self.activated   = True
+        self.fleeing     = False
+        self.broke_ring  = False
         self.casting = self.black_magic or Spells.vigor in self.character.spells
 
         self.use_any_fast_combat_abilities()  # ie. Touch, Dance

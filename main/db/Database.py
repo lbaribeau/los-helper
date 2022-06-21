@@ -1,41 +1,44 @@
-'''In order for this class to work you need to have installed Peewee
-See: http://peewee.readthedocs.org/en/latest/peewee/installation.html
+
 '''
+Install Peewee to use this
+http://peewee.readthedocs.org/en/latest/peewee/installation.html
+'''
+
 import peewee
 
 db = peewee.Proxy()
 
-from db.BaseModel import *
-from db.Log import *
-from db.Area import *
-from db.AreaExit import *
-from db.ExitType import *
-from db.Mob import *
-from db.MobLocation import *
-from db.Item import *
-from db.ItemType import *
-from db.ItemTypeModel import *
-from db.ItemTypeData import *
-from db.AreaStoreItem import *
-from db.MudMap import *
+#import db as db_package
+from db.BaseModel import BaseModel
+from db.Log import Log
+from db.Area import Area
+from db.AreaExit import AreaExit
+from db.ExitType import ExitType
+from db.Mob import Mob
+from db.MobLocation import MobLocation
+from db.Item import Item
+from db.ItemType import ItemType
+from db.ItemTypeModel import ItemTypeModel
+from db.ItemTypeData import ItemTypeData
+from db.AreaStoreItem import AreaStoreItem
+from db.MudMap import MudMap
+#from misc_functions import magentaprint # Circular import?
 
 def create_tables():
     try:
-        try_create(Log)
-        try_create(Area)
-        try_create(AreaExit)
-        try_create(ExitType)
-        try_create(ExitOpposite)
-        try_create(ExitSynonym)
-        try_create(Mob)
-        try_create(MobLocation)
-        try_create(Item)
-        try_create(ItemType)
-        try_create(ItemTypeModel)
-        try_create(ItemTypeData)
-        try_create(AreaStoreItem)
-
-        #Create Views
+        try_create(db.Log.Log)
+        try_create(db.Area.Area)
+        try_create(db.AreaExit.AreaExit)
+        try_create(db.ExitType.ExitType)
+        try_create(db.ExitOpposite.ExitOpposite)
+        try_create(db.ExitSynonym.ExitSynonym)
+        try_create(db.Mob.Mob)
+        try_create(db.MobLocation.MobLocation)
+        try_create(db.Item.Item)
+        try_create(db.ItemType.ItemType)
+        try_create(db.ItemTypeModel.ItemTypeModel)
+        try_create(db.ItemTypeData.ItemTypeData)
+        try_create(db.AreaStoreItem.AreaStoreItem)
         db.execute_sql("""CREATE VIEW [v_named_mobs] AS 
 select *
 from mob
@@ -60,7 +63,8 @@ where a.id in (
         Unknown = Area(name="Unknown", description="")
         Unknown.save()
 
-    except:
+    except Exception as e:
+        print("Database.py ignoring exception in create_tables(): "+str(e))
         pass
 
 def drop_tables():
@@ -78,19 +82,22 @@ def drop_tables():
         try_drop(ItemTypeModel)
         try_drop(ItemTypeData)
         try_drop(AreaStoreItem)
-    except:
+    except Exception as e:
+        print("Database.py ignoring exception in drop_tables(): "+str(e))
         pass
 
 def try_create(cls):
     try:
         cls.create_table()
-    except:
+    except Exception as e:
+        print("Database.py ignoring exception in try_create(): "+str(e))
         pass
 
 def try_drop(cls):
     try:
         cls.drop_table()
-    except:
+    except Exception as e:
+        print("Database.py ignoring exception in try_drop(): "+str(e))
         pass
 
 from sys import argv
@@ -100,8 +107,12 @@ if "-nodb" in argv:
 else:
     database_file = "maplos.db"
 
-database = peewee.SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
-db.initialize(database)
+#database = peewee.SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
+#database2 = peewee.SqliteDatabase(database_file, check_same_thread=False)
+#db.initialize(database2)
+db.initialize(peewee.SqliteDatabase(database_file, check_same_thread=False))
+#db.initialize(peewee.SqliteDatabase(database_file, check_same_thread=False))
+#db = database
 
 #drop_tables()
 create_tables()

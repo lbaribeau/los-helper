@@ -21,13 +21,13 @@ class Cartography(BotReactionWithFlag):
         self.store_item_list = "(?:[\s]*)(?:A |An |Some )?(.+?)(?:[\s]*)(?:(\(.\))?(?:[\s]*))?Cost: ([\d]*)" #well do a re.findall on the list above to iterate through, don't add this to the array below
 
         self.regex_cart = [
-            RegexStore.area, RegexStore.too_dark, RegexStore.blocked_path, RegexStore.please_wait,
-            RegexStore.cant_go, RegexStore.no_exit, RegexStore.class_prohibited, RegexStore.level_too_low,
-            RegexStore.not_invited, RegexStore.not_open_during_day, RegexStore.not_open_during_night,
-            RegexStore.no_items_allowed, RegexStore.locked, RegexStore.no_right, RegexStore.not_authorized,
-            RegexStore.cannot_force, RegexStore.not_here, RegexStore.loot_blocked, RegexStore.teleported,
-            RegexStore.in_tune, RegexStore.you_see_mob, RegexStore.mob_aura, RegexStore.store_list,
-            RegexStore.mob_fled, RegexStore.open_first, RegexStore.washroom
+            RegexStore.area,             RegexStore.too_dark,            RegexStore.blocked_path,     RegexStore.please_wait,
+            RegexStore.cant_go,          RegexStore.no_exit,             RegexStore.class_prohibited, RegexStore.level_too_low,
+            RegexStore.not_invited,      RegexStore.not_open_during_day, RegexStore.not_open_during_night,
+            RegexStore.no_items_allowed, RegexStore.locked,              RegexStore.no_right,         RegexStore.not_authorized,
+            RegexStore.cannot_force,     RegexStore.not_here,            RegexStore.loot_blocked,     RegexStore.teleported,
+            RegexStore.in_tune,          RegexStore.you_see_mob,         RegexStore.mob_aura,         RegexStore.store_list,
+            RegexStore.mob_fled,         RegexStore.open_first,          RegexStore.washroom
         ]
         self.mudReaderHandler = mudReaderHandler
         self.commandHandler = commandHandler
@@ -46,7 +46,7 @@ class Cartography(BotReactionWithFlag):
         if regex in RegexStore.too_dark:
             self.too_dark(regex, M_obj)
         elif regex in RegexStore.area:
-            self.area(regex, M_obj)
+            self.area(M_obj)
         elif regex in RegexStore.blocked_path:
             self.blocked_path(regex, M_obj)
         elif regex in RegexStore.loot_blocked:
@@ -67,22 +67,21 @@ class Cartography(BotReactionWithFlag):
             if self.character.TRYING_TO_MOVE:
                 magentaprint("Cartography: unsuccessful go (can't go that way): " + str(self.character.LAST_DIRECTION))
                 self.character.TRYING_TO_MOVE = False
-        elif (regex in RegexStore.class_prohibited or regex in RegexStore.level_too_low or
-                regex in RegexStore.not_invited or regex in RegexStore.not_open_during_day or
-                regex in RegexStore.not_open_during_night or regex in RegexStore.no_items_allowed or
-                regex in RegexStore.locked or regex in RegexStore.no_right or
-                regex in RegexStore.not_authorized or regex in RegexStore.cannot_force or
-                regex in RegexStore.in_tune or regex in RegexStore.washroom):
+        elif regex in RegexStore.class_prohibited      + RegexStore.level_too_low    + RegexStore.in_tune  + \
+                      RegexStore.not_open_during_day   + RegexStore.no_items_allowed + RegexStore.locked   + \
+                      RegexStore.not_open_during_night + RegexStore.not_authorized   + RegexStore.no_right + \
+                      RegexStore.cannot_force          + RegexStore.not_invited      + RegexStore.washroom:
             self.set_area_exit_as_unusable(M_obj.group(0))
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
             self.character.TRYING_TO_MOVE = False
         elif regex in RegexStore.you_see_mob:
-            name = M_obj.group(2)
-            description = M_obj.group(3)
-            health = M_obj.group(4)
-            level = M_obj.group(5)
-            self.catalog_monster_bio(name, description, level)
+            #health = M_obj.group(4)
+            self.catalog_monster_bio(
+                M_obj.group(2), # name
+                M_obj.group(3), # description
+                M_obj.group(5)  # level
+            )
         elif regex in RegexStore.mob_aura:
             # name = M_obj.group(2)
             # aura = M_obj.group(3)
@@ -121,7 +120,7 @@ class Cartography(BotReactionWithFlag):
             self.store_list(regex, M_obj)
         else:
             # This is fine for a shut door - we just want the super().notify in that case.
-            magentaprint("Cartography case missing for regex: " + str(regex))
+            magentaprint("Cartography case missing for regex: " + str(regex)) # (mob_fled)
         magentaprint("Cartography notify done on: " + str(regex[:min(len(regex), 20)]) + '...')
         super().notify(regex, M_obj)
 
@@ -152,41 +151,54 @@ class Cartography(BotReactionWithFlag):
         if self.character.TRYING_TO_MOVE:
             self.character.TRYING_TO_MOVE = False
 
-    def area(self, regex, M_obj):
-        matched_groups = M_obj.groups()
-
+    def area(self, match):
         # magentaprint(M_obj.group(0),False,False,True)
+        C = self.character
+        C.AREA_TITLE = match.group(1).strip()
+        C.EXIT_LIST  = self.parse_exit_list(match.group(3))
+        C.EXIT_REGEX = self.create_exit_regex_for_character(C.EXIT_LIST)
+        C.mobs.list  = ReferencingList(self.parse_monster_list(match.group(4)))
+        # This calls mobs.parse_monster_list
+        magentaprint("Cartography.area set character.mobs.list: " + str(C.mobs.list))
+        # magentaprint("Cartography set character.mobs.list.list: " + str(C.mobs.list.list))
+        C.mobs.attacking = [] # TODO: match regex for entering an area where a mob is already attacking you
 
-        area_title = str(matched_groups[0]).strip()
-        area_description = str(matched_groups[1]).strip() #eat the description - doesn't give the full text
-        exit_list = self.parse_exit_list(matched_groups[2])
-        self.character.EXIT_REGEX = self.create_exit_regex_for_character(exit_list)
-
-        self.character.AREA_TITLE = area_title #title
-        self.character.EXIT_LIST = exit_list #exits
-        self.character.mobs.list = ReferencingList(self.parse_monster_list(matched_groups[3]))
-        self.character.mobs.attacking = []
-
-        self.character.SUCCESSFUL_GO = True #successful go should be true everytime the area parses
+        C.CAN_SEE       = True
+        C.CONFUSED      = False
+        C.SUCCESSFUL_GO = True #successful go should be true everytime the area parses
         self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
-        self.character.CAN_SEE = True
-        self.character.CONFUSED = False
 
-        if self.character.TRYING_TO_MOVE:
-            if exit_list is not []:
-                area_from = self.character.AREA_ID
-                direction_from = self.character.LAST_DIRECTION
-                cur_mud_area = self.character.MUD_AREA
-                mud_area = MudArea.map(area_title, area_description, exit_list, area_from, direction_from, cur_mud_area)
-                # area = self.draw_map(area_title, area_description, exit_list)
-                self.character.MUD_AREA = mud_area
-                area = mud_area.area
-                self.catalog_monsters(area, self.character.mobs.list)
-                self.character.AREA_ID = area.id
-                magentaprint("Cartography area match: " + str(area))
+        if C.TRYING_TO_MOVE:
+            # I think TRYING_TO_MOVE prevents multiple saves of the area
+            #if C.EXIT_LIST is not []: 
+            # Ehhh this was always true! ('is' tests for same object)
+            # I don't think the regex will match without an exit list.
+            if C.EXIT_LIST != []:
+                # area = self.draw_map(area_title, area_description, C.EXIT_LIST)
+                C.MUD_AREA = MudArea.map(
+                    C.AREA_TITLE, 
+                    match.group(2).strip(), # area description (eat the description - doesn't give the full text)
+                    C.EXIT_LIST, 
+                    C.AREA_ID, 
+                    C.LAST_DIRECTION, 
+                    C.MUD_AREA
+                )
+                magentaprint("Cartography area match: " + str(C.MUD_AREA.area))
+                #magentaprint("Try [m for m in C.mobs.list.list] " + str([m for m in C.mobs.list.list]))
+                #magentaprint("Try [str(m).lower() for m in C.mobs.list.list]" + str([str(m).lower() for m in C.mobs.list.list]))
+                #magentaprint("Cartography monster list: " + str(C.mobs.list))
+                self.catalog_monsters(
+                    C.MUD_AREA.area, 
+                    [str(m).lower() for m in C.mobs.list.list]
+                )
+                # I think we catalog in lower case?
+                # Still don't know how m is a GameObject and we need str(m).lower() 
+                # - (check ReferencingList.add - items/things are GameObjects)
+                C.AREA_ID = C.MUD_AREA.area.id
             else:
-                self.character.AREA_ID = None
-            self.character.TRYING_TO_MOVE = False
+                magentaprint("Cartography warning: exit list was empty???")
+                C.AREA_ID = None
+            C.TRYING_TO_MOVE = False
 
     def blocked_path(self, regex, M_obj):
         # mob_name = M_obj.group('mob_name')
@@ -263,8 +275,8 @@ class Cartography(BotReactionWithFlag):
                 mob = Mob(name=monster)
                 mob.map()
 
-                if (self.character.ACTIVELY_BOTTING):
-                    if (mob.approximate_level == None):
+                if self.character.ACTIVELY_BOTTING:
+                    if mob.approximate_level == None:
                         self.commandHandler.process('l ' + monster)
 
                 # magentaprint(str(mob))
@@ -272,7 +284,7 @@ class Cartography(BotReactionWithFlag):
                 mob_location = MobLocation(area=area, mob=mob)
                 mob_location.map()
 
-                magentaprint("Cartography catalog_monsters: " + str(mob_location))
+                magentaprint("Cartography catalog_monsters() mob_location id {0}, {1}".format(mob_location, mob.name))
         except Exception:
             magentaprint("Problem cataloging monsters", False)
 
@@ -284,9 +296,9 @@ class Cartography(BotReactionWithFlag):
 
             if mob.level is None: #don't overwrite levels
                 for regex in self.character.LEVEL_LIST:
-                    if (re.match(regex, level)):
+                    if re.match(regex, level):
                         level_index = self.character.LEVEL_LIST.index(regex) - 4
-                        if (level_index == -4 or level_index == 4):
+                        if level_index == -4 or level_index == 4:
                             mob.approximate_level = self.character.level + level_index
                         else:
                             mob.level = self.character.level + level_index
@@ -360,22 +372,22 @@ class Cartography(BotReactionWithFlag):
         exit_count = Counter(E_LIST) #collections function for finding duplicates
         exit_list = E_LIST
 
-        for key, value in exit_count.items():
+        for key,value in exit_count.items():
             #magentaprint(str(key) + " : " + str(value), False)
-            if (value > 1):
+            if value > 1:
                 count = 1
                 for i,s in enumerate(exit_list):
-                    if (exit_list[i] == key):
-                        if count is not 1:
+                    if exit_list[i] == key:
+                        if count != 1:
                             exit_list[i] += " " + str(count)
-                            #magentaprint(exit_list[i], False)
+                            magentaprint('Cartography.number_exists found multiple {0}'.format(exit_list[i]), False)
                         count += 1 #I miss my i++
 
         return exit_list
 
     def create_exit_regex_for_character(self, E_LIST):
         exit_regex = "(NEVERMATCHTHISEVEREVER)"
-        if (E_LIST is not None):
+        if E_LIST is not None:
             exit_regex = "(?:go )?(!?"
 
             for i,s in enumerate(E_LIST):
@@ -393,13 +405,14 @@ class Cartography(BotReactionWithFlag):
             return []
 
         MUD_mob_str = MUD_mob_str.replace("\n\r", ' ')
-        mob_match = re.match(r"(?s)You see (.+?)\.", MUD_mob_str)
+        mob_match = re.match(r"(?s)You see (.+?)\.", MUD_mob_str) # Eh won't this match items also
 
         if mob_match is None:
             # return self.character.MONSTER_LIST
             return []
         else:
-            return self.character.mobs.parse_mob_string(mob_match.group(1).lower())
+            #return self.character.mobs.parse_mob_string(mob_match.group(1).lower())
+            return self.character.mobs.parse_mob_string(mob_match.group(1))
 
         # M_LIST = [m.strip() for m in mob_match.group(1).split(',')]
         # singles = ['a ', 'an ', 'The ']

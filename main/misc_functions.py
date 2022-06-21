@@ -3,6 +3,8 @@ import time
 import sys
 
 from db.Database import *
+from datetime import datetime
+import comm.ConsoleHandler
 
 debugMode = True
 verboseMode = True
@@ -10,33 +12,34 @@ startTime = datetime.now()
 VERSION = "2"
 #databaseFile = "maplos.db"
 
-def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=False):
+def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=False, **kwargs):
     global debugMode
 
     if show_hidden:
         text = repr(text)  # escape all characters in string
 
     if debugMode or not is_debug_command:
-        do_magentaprint(text)
+        do_magentaprint(text, **kwargs)
 
     if log_output:
         log = Log()
         log.data = text
         log.save()
 
-def do_magentaprint(text):
-    newConsoleHandler().magenta()
+def do_magentaprint(text, **kwargs):
+    comm.ConsoleHandler.newConsoleHandler().magenta()
     # output = str(get_timestamp() + "| <" + str(text) + ">")
-    output = str(get_timestamp() + "   | " + str(text))
-
-    print(output)
-    newConsoleHandler().white()
+    #output = str(get_timestamp() + "   | " + str(text))
+    #print(output)
+    print(get_timestamp() + "   | " + str(text), **kwargs)
+    comm.ConsoleHandler.newConsoleHandler().white()
 
 def greenprint(text):
-    newConsoleHandler().magenta()
-    output = str(get_timestamp() + "   | " + str(text))
-    print(output)
-    newConsoleHandler().white()
+    comm.ConsoleHandler.newConsoleHandler().green()
+    #output = str(get_timestamp() + "   | " + str(text))
+    #print(output)
+    print(get_timestamp() + "   | " + str(text))
+    comm.ConsoleHandler.newConsoleHandler().white()
 
 def get_timestamp():
     curtime = datetime.now().time().strftime("%H:%M:%S.%f")
@@ -48,8 +51,7 @@ def get_runtime():
     return runtime
 
 def get_runtime_in_minutes():
-    runtime = get_runtime()
-    seconds = int(runtime.total_seconds()) #no millisecond nonsense please
+    seconds = int(get_runtime().total_seconds()) #no millisecond nonsense please
     magentaprint("Seconds run: " + str(seconds))
     if seconds <= 1:
         seconds = 60
@@ -57,9 +59,9 @@ def get_runtime_in_minutes():
     return minutes
 
 def calculate_vpm(value):
+    # (Value per minute)
     minutes = get_runtime_in_minutes()
-    vpm = int(value / minutes) #no decimals
-    return vpm
+    return int(value / minutes) #no decimals
 
 # def my_list_search(thelist, item):
 #     """ Searches the list for the item and returns the index of the item.
@@ -112,6 +114,18 @@ def flush_input():
         import msvcrt
         while msvcrt.kbhit():
             msvcrt.getch()
+
+def list_to_count_dict(l):
+    d={}
+    for i in l:
+        if i in d:
+            d[i]+=1
+        else:
+            d[i]=1
+    return d
+
+def count_dict_to_string(d):
+    return '{\n'+''.join(['\t{0} {1}\n'.format(d[key],key) for key in d.keys()])+'}'
 
 ######
 

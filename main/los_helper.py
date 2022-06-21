@@ -17,6 +17,8 @@
 #       keep that aren't in KEEP_LIST into some bag that IS in KEEP_LIST)
 #   ANSI color
 
+print("Lands of Stone Helper loading code...")
+
 import sys, time, getpass, threading, atexit, re, os, socket
 
 # from system.import_tools import *
@@ -57,7 +59,7 @@ from comm.analyser import Analyser
 
 class LosHelper(object):
     def __init__(self):
-        magentaprint("LosHelper initializing...", False)
+        magentaprint("LosHelper instantiation...", False)
 
         # self.initializer = Initializer()
         self.character = Character()
@@ -131,13 +133,15 @@ class LosHelper(object):
             if hasattr(e, 'errno') and e.errno != 2:
                 # errno 2 means the file's not there.
                 magentaprint("LosHelper os.remove(\"no.db\") error: " + str(e))
-        magentaprint("Threads remaining: " + str(threading.active_count()))
+        a=threading.active_count()
+        magentaprint(str(a) + ' thread' + ('s' if a > 1 else '') + ' remaining: ' + str(threading.enumerate()))
 
     def join_thread(self, thread):
         if thread and thread.is_alive():
             thread.join(10)
 
     def main(self):
+        magentaprint("LosHelper main()", False)
         stopping = False
 
         # self.ring_reaction = RingWearingReaction(self.character.inventory, self.commandHandler)
@@ -179,7 +183,7 @@ class LosHelper(object):
                     raise
 
     def write_username_and_pass(self):
-        args = [s for s in sys.argv[1:] if not s.startswith('-') and s is not '']
+        args = [s for s in sys.argv[1:] if not s.startswith('-') and s != '']
         magentaprint("LosHelper stripped args: " + str(args))
 
         if len(args) >= 1:

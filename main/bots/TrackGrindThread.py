@@ -2,6 +2,7 @@
 from bots.GrindThread import GrindThread
 from misc_functions import magentaprint
 from Aura import Aura
+import db.Area
 
 class TrackGrindThread(GrindThread):
     def __init__(self, character, command_handler, mudReaderHandler, mud_map, starting_path=None):
@@ -22,7 +23,8 @@ class TrackGrindThread(GrindThread):
             self.__TOTALPATHS = 22
         else:
             # self.__TOTALPATHS = 28  # # Area ids unfortunately must be updated.
-            self.__TOTALPATHS = 22
+            #self.__TOTALPATHS = 30
+            self.__TOTALPATHS = 52 # Added some graph pathing
         # elif self.character.level <= 10:
         #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
         # elif self.character.level > 12:
@@ -47,9 +49,12 @@ class TrackGrindThread(GrindThread):
             "down", "seat", "out", "door", "stage","side 2", "backstage", "door", "out", "curtain",
             "stage", "side", "door","up", "out", "out", "n", "e","e", "e", "n", "chapel"
         ]
-        self.MARKET_PATH = [
-            "out", 's', 'e', 'e', 'e', 'n', 'w', 'w', 'n', 'n','s', 'w', 'e', 's', 'w', 's', 'n', 'w', 'e', 'n',
-            's', 'e', 'e', "out", 's', 'w', 'w', 'w', 'n',"chapel"
+        self.MARKET_PATH = ['out',
+            's','e','e','e','n','w','w',
+            'office','out',
+            'n','n','s','w','e','s',
+            'w','s','n','w','e','n','s','e',
+            'e','out','s', 'w', 'w', 'w', 'n','chapel'
         ]
         self.MILITIA_SOLDIERS_PATH = [
             'out','s','e','s','s','s','w','gate','s','s','sw','sw','sw','sw','s','s','s','sw','se','s','s','s','s',
@@ -72,6 +77,7 @@ class TrackGrindThread(GrindThread):
             # and priests are dangerous unless the bot decides on his own to engage.  Todo: check aura here (if health is
             # high enough,) and go in if all's good.  Even fight the priests - because the more 'good' we can get the
             # more chalices we can farm.
+            # ()
             #'prepare', 'e', 'ne', 'door', 'door', 'prepare', 'sw','w',
             'ladder','cave','out','sw','w',
             # 'cave', 'out',  # Comment out insane kobold (TODO: check level here)
@@ -129,7 +135,7 @@ class TrackGrindThread(GrindThread):
             'northeast', 'stile', 'gate', 'north', 'northwest', 'northwest',
             'west', 'west', 'gate', 'south', 'west', 'west', 'west', 'north', 'chapel'
         ]
-        #Contains lvl 2&3 mobs (stacker, furniture maker, sawmill operator, mill worker) and lvl 6 mobs (sawmill / mill supervisors)
+        #Contains lvl 2&3 mobs (stacker, furniture maker, sawmill operator, mill worker) and lvl 6 mobs (saw)?mill supervisor
         self.MILL_WORKERS = [
             'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate',
             'south', 'south', 'south', 'south', 'south', 'southwest', 'south',
@@ -158,6 +164,7 @@ class TrackGrindThread(GrindThread):
             'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel'
         ]
         #aid418, 1975, 1979, 1951, 415, 45
+
         # These area numbers are unfortunately for a different database... (except "2")
         self.SPIDER_FOREST = ['areaid418', 'areaid1975', 'areaid1979', 'areaid1951', 'areaid415', 'areaid2']
         #The following areas repeat a bit because the spawns are fast
@@ -166,7 +173,6 @@ class TrackGrindThread(GrindThread):
             'areaid1913', 'areaid1904', 'areaid1912', 'areaid1909', 'areaid2'  # end with chapel
         ]
         self.GNOLL_CAMP = ['areaid1574', 'areaid800', 'areaid1574', 'areaid800', 'areaid1574', 'areaid2']
-
         self.PATH_TO_SKIP_WITH = ['out','chapel']
 
     def do_pre_go_actions(self):
@@ -198,10 +204,11 @@ class TrackGrindThread(GrindThread):
         magentaprint("next path = " + str(self.__nextpath), False)
 
         if self.character.DEAD:
-            crash
             self.character.DEAD = False
             self.character.DEATHS += 1
-            magentaprint("Died; Pulling up my bootstraps and starting again", False)
+            # magentaprint("Died: Pulling up my bootstraps and starting again", False)
+            magentaprint("Died: stopping bot thread.", False)
+            self.stop()
             return self.LIMBO_TO_CHAPEL[:]
 
         self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
@@ -273,15 +280,78 @@ class TrackGrindThread(GrindThread):
         elif self.__nextpath == 21:
             return self.RANCHER_SENTRY[:]
         elif self.__nextpath == 23:
-            return self.SPIDER_FOREST[:]
+            return self.get_path_to_and_from_mob("sonneteer")
         elif self.__nextpath == 25:
-            return self.GNOLL_CAMP[:]
+            return self.get_path_to_and_from_mob("Jerrek")
         elif self.__nextpath == 27:
+            return self.get_path_to_and_from_mob("Tag")
+        elif self.__nextpath == 29:
+            return self.get_path_to_and_from_mob("Brotain")
+        elif self.__nextpath == 31:
+            return self.get_path_to_and_from_mob("Aldo")
+        elif self.__nextpath == 33:
+            return self.get_path_to_and_from_mob("Cheryn")
+        elif self.__nextpath == 35:
+            return self.get_path_to_and_from_mob("Alaran the Market Manager")
+        elif self.__nextpath == 37:
+            return self.get_path_with_all_mobs("mine manager")
+            # tough path
+        elif self.__nextpath == 39:
+            return self.get_path_with_all_mobs('artificer')
+        elif self.__nextpath == 41:
+            return self.get_path_with_all_mobs('Dini Stonehammer')
+        elif self.__nextpath == 43:
+            return self.get_path_with_all_mobs('Olmer')
+        elif self.__nextpath == 45:
+            return self.get_path_with_all_mobs('Thereze')
+        elif self.__nextpath == 47:
+            return self.get_path_with_all_mobs('Rancher Renstone')
+        elif self.__nextpath == 49:
+            return self.get_path_with_all_mobs('refinery supervisor')
+            # tough path
+            # oremaster steel collar (m) and (l), granite rods in keep list right now
+            # stevedore
+            # forge worker
+            # steel collar
+        elif self.__nextpath == 51:
+            return self.get_path_with_all_mobs('Elder Barthrodue')
+            # fishermans spouse
+            # small amethyst
+            # hobo
+            # village elder lvl 1
+            # scared trawlerman 33 exp 53 gold
+        elif self.__nextpath == 53:
+            return self.SPIDER_FOREST[:]
+        elif self.__nextpath == 55:
+            return self.GNOLL_CAMP[:]
+        elif self.__nextpath == 57:
             return self.KNIGHTS[:]
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.__nextpath))
             return list(self.PATH_TO_SKIP_WITH[:])
         return list(self.PATH_TO_SKIP_WITH[:])
+
+    def get_path_to_and_from_mob(self, name):
+        #return ['areaid{0}'.format(MobLocation.get_locations_by_exact_mob_name(name)),
+        # package.file.class.function
+        chapel_aid = db.Area.Area.get_by_name("The Chapel of Healing").id
+        mob_aid    = db.MobLocation.MobLocation.get_locations_by_exact_mob_name(name)[0].area.id
+        get_path   = self.mud_map.get_path
+        magentaprint("TrackGrindThread get_path_to_and_from_mob chapel_aid {0} mob_aid {1}".format(chapel_aid,mob_aid))
+        return get_path(chapel_aid, mob_aid) + get_path(mob_aid, chapel_aid)
+    def get_path_with_all_mobs(self, name):
+        chapel_aid = db.Area.Area.get_by_name("The Chapel of Healing").id
+        P = self.path_through_areas(
+            [chapel_aid]+
+            [ML.area.id for ML in db.MobLocation.MobLocation.get_locations_by_exact_mob_name(name)]+
+            [chapel_aid])
+        return P
+
+    def path_through_areas(self, area_ids):
+        path = []
+        for i in range(1,len(area_ids)):
+            path += self.mud_map.get_path(area_ids[i-1], area_ids[i])
+        return path
 
 # Just thinking about changing top level...
 
