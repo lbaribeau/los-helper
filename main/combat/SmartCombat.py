@@ -236,7 +236,7 @@ class SmartCombat(CombatObject):
             if self.fleeing and not self.cast.wait_time() - self.kill.wait_time() > self.kill.cooldown_after_success:
                 self.escape()
             else:
-                if self.character._class.id != 'Mag':
+                if self.character._class.id != 'Mag' or self.character.level < 6:
                     if self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
                         if self.do_phys_attack(use_combat_ability):
                             break
@@ -272,7 +272,7 @@ class SmartCombat(CombatObject):
     def determine_favorite_spell_for_target(self):
         if self.mob_target is not None:
             if self.character._class.id == 'Mag' or self.character._class.id == 'Alc' or self.mob_target.is_named:
-                if self.mob_target.level <= 3:
+                if self.mob_target.level is not None and self.mob_target.level <= 3:
                     return self.favourite_spell
                 else:
                     return self.favourite_nuke
@@ -301,8 +301,8 @@ class SmartCombat(CombatObject):
         spell_percent = max(character.spell_proficiencies.values())
         
         if spell_percent == 0 and self.black_magic:
-            return Spells.rumble if Spells.rumble in character.spells else \
-                   Spells.hurt if Spells.hurt in character.spells else \
+            return Spells.hurt if Spells.hurt in character.spells else \
+                   Spells.rumble if Spells.rumble in character.spells else \
                    Spells.burn if Spells.burn in character.spells else Spells.blister
         
         return Spells.rumble if spell_percent == character.info.earth else \

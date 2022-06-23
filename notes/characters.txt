@@ -1,11 +1,11 @@
-Derp monk (highest level)
-Twerp clearic (next highest level)
 Werp monk (balanced stats)
+Derp monk (highest level)
+Twerp cleric (next highest level)
 Drerp barbarian (lvl 10)
 Qerp mage (lvl 8)
-Serp Alchemist lvl 2
-Rerp cleric gnome 3 3 12 18 18
-Ierp thief dwarf 14 15 10 7 8
+Serp Alchemist lvl 10
+Rerp cleric gnome lvl 7
+Ierp thief dwarf lvl 6
 
 Dwarp thief (swamp troll)
 Gerp mage (w/ blis + show)
