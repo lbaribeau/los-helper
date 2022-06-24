@@ -19,7 +19,10 @@ class GotoThread(BotThread):
         magentaprint(str(self.character.AREA_ID) + " to " + str(self.area_to_id), False)
 
         try:
-            directions = self.mud_map.get_path(self.character.AREA_ID, self.area_to_id, True)
+            if self.area_to_id == -1:
+                directions = self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
+            else:
+                directions = self.mud_map.get_path(self.character.AREA_ID, self.area_to_id, True)
             # Hmmm... get_path returning none...
         except Exception as e:
             # magentaprint("I/O error({0}): {1}".format(e.errno, e.strerror))

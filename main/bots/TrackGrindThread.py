@@ -239,6 +239,29 @@ class TrackGrindThread(GrindThread):
          'north', 'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel'
          ]
 
+        self.ZOMBIES = ['out', 's', 'e','e','e','n', 'try_gate',
+        'e', 'e', 
+        #Malbon farm
+        'se', 'se', 's', 'gate', 'stile', 'nw', 'se', 'sw', 'ne', 'stile', 's', 's',
+        'n', 'n', 'gate', 'n', 'nw', 'nw',
+
+        #McDermotts farm
+        'ne', 'ne', 'n', 'n', 'n', 'gate', 'n', 'e', 'e', 'se', 'e', 'se', 'se', 'se', 'trail', 'woods', 'deeper',
+        'out', 'trail', 'field', 'path', 'nw', 'nw', 'w', 'nw', 'w', 'w', 's', 'gate', 's', 's', 's',
+        'e', 'e', 'e',
+        #Calmor farm
+        #'se', 's', 'se', 'se', 'gate', 'sw', 'sty', 'yard',
+        'ne', 'ne',
+        #into zombie farm
+        'ne', 'n', 'ne', 'n', 'gate', 'compound', 'w', 'nw', 'run', 'out', 'ne', 'e', 's', 's',
+        #out of zombie farm and into highmarket
+        'path', 'gate', 's', 'sw', 's', 'sw', 'e', 'e', 'gate',
+        #from highmarket back to chapel
+        'south', 'southeast', 'southeast', 'south', 'east', 'gate', 'south', 'south', 'southeast', 'southeast', 'south', 'south',
+        'south', 'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest', 'north', 'gate', 'east', 'north', 'north',
+        'north', 'west', 'north', 'chapel']
+        #Farmer's gate / Dragon Road
+
         # self.BANDIT_CAMP = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south',
         # 'southwest', 'southwest', 'southwest', 'trail', 'northwest', 'northwest', 'west', 'west',
         # ]
@@ -249,6 +272,14 @@ class TrackGrindThread(GrindThread):
         if exit_str == "slow_prepare":
             self.sleep(5)
             self.command_handler.process("prepare")
+            return True
+        elif exit_str == "try_gate":
+            curArea = int(self.character.AREA_ID)
+            self.command_handler.process("go gate")
+            self.sleep(3)
+            if (curArea == int(self.character.AREA_ID)):
+                magentaprint("failed to go through the gate probably", False)
+                self.direction_list = ['oops','s','w','w','w','n','chapel']
             return True
         elif exit_str == "think":
             return True
@@ -315,7 +346,7 @@ class TrackGrindThread(GrindThread):
         elif self.__nextpath == 13:
             return self.track_builder(self.NORTHERN_BANDITS_PATH, 1, 20, -1)
         elif self.__nextpath == 15:
-            return self.track_builder(self.MUGGER_PATH, 9, 20, -1)
+            return self.track_builder(self.ZOMBIES, 9, 20, -1)
         elif self.__nextpath == 17:
             return self.track_builder(self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 0)
         elif self.__nextpath == 19:

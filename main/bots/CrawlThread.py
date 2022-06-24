@@ -63,6 +63,7 @@ class CrawlThread(BotThread):
 
             try:
                 exit = self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
+                magentaprint("found new null exit " + str(exit),False)
             except Exception:
                 #If for some reason we don't know how to find the nearest unexplored path let's just pick a random exit and try again
                 exit = [random.choice(exits)]
