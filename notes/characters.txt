@@ -1,11 +1,14 @@
-Werp monk (balanced stats)
-Derp monk (highest level)
-Twerp cleric (next highest level)
+Werp monk (lvl 17, no habit)
+Derp monk (lvl 15, masters habit)
 Drerp barbarian (lvl 10)
-Qerp mage (lvl 8)
+Qerp mage (lvl 10)
 Serp Alchemist lvl 10
+Twerp cleric lvl 7
 Rerp cleric gnome lvl 7
 Ierp thief dwarf lvl 6
+Trerp druid elf 3 12 3 18 18 lvl 7
+Oerp dark knight dwar 14 15 10 7 8 (15 15 10 7 7)
+Cerp cleric elf 3 12 3 18 18 (lvl 1)
 
 Dwarp thief (swamp troll)
 Gerp mage (w/ blis + show)
@@ -14,4 +17,3 @@ Aerp mage (swamp troll)
 Ferp mage (beetle cave)
 Merp thief (swamp troll)
 Uerp druid 10 8 12 12 12
-Oerp dark knight dwar 14 15 10 7 8 (15 15 10 7 7)

@@ -60,11 +60,11 @@ class TrackGrindThread(GrindThread):
             's', 'e', 'e', "out", 's', 'w', 'w', 'w', 'n',"chapel"
         ]
         self.MILITIA_SOLDIERS_PATH = [
-            'out','s','e','s','s','s','w','gate','s','s','sw','sw','sw','sw','s','s','s','sw','se','s','s','s','s',
+            'out','s','e','s','s','s','w','gate','s','s','sw','sw','sw','sw','s','s','s','sw','southeast','s','s','s','s',
             's','s','s','s','s','w','doo','stor','ou','ou','w','w','w','n','n','s','s','e','e','e','e','n','n','e',
             'e','e','e','e','e','e','e','e','ne','e','ne','ne','ne','ne','ne','ne','n','n','w','s','sw','ne','n','e',
             'n','n','n','n','n','n','n','n','n','n','nw','nw','nw','path','nw','n','n','n','nw','nw','n','n','gate',
-            'w','n','nw','nw','n','e','e','e','s','s','s','s','gate','s','s','se','se','s','s','s','se','s','w','w',
+            'w','n','nw','nw','n','e','e','e','s','s','s','s','gate','s','s','southeast','southeast','s','s','s','southeast','s','w','w',
             'w','nw','nw','n','gate','e','n','n','n','w','n','chapel'
         ]
         self.KOBOLD_PATH = [
@@ -74,7 +74,7 @@ class TrackGrindThread(GrindThread):
             'down','n','n','n','n','ne','n','w','n','n','e','door','w','gully','up','boulder','up',
             'cave 3','ne','ne','n','s','up','e','se','cave','out']
 
-        if self.character.level >= 9:
+        if self.character.level >= 9 and not self.is_character_class('Mag'):
             self.KOBOLD_PATH += ['slow_prepare', 'e', 'ne', 'door',
             # 'statue', 'down', 'down', 'down', 'down', 'hole', 'corridor', 'east', 'east', 'southeast', 'south', 'south'
             # 'south', 'south', 'east', 'cave', 'out', 'west', 'west', 'west', 'west', 'west', 'north', 'north', 'north',
@@ -239,23 +239,22 @@ class TrackGrindThread(GrindThread):
          'north', 'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel'
          ]
 
-        self.ZOMBIES = ['out', 's', 'e','e','e','n', 'try_gate',
-        'e', 'e', 
-        #Malbon farm
-        'se', 'se', 's', 'gate', 'stile', 'nw', 'se', 'sw', 'ne', 'stile', 's', 's',
-        'n', 'n', 'gate', 'n', 'nw', 'nw',
-
+        self.ZOMBIES = ['out', 'south', 'east','east','east','north', 'try_gate',
+        'east', 'east', 
         #McDermotts farm
-        'ne', 'ne', 'n', 'n', 'n', 'gate', 'n', 'e', 'e', 'se', 'e', 'se', 'se', 'se', 'trail', 'woods', 'deeper',
-        'out', 'trail', 'field', 'path', 'nw', 'nw', 'w', 'nw', 'w', 'w', 's', 'gate', 's', 's', 's',
-        'e', 'e', 'e',
-        #Calmor farm
-        #'se', 's', 'se', 'se', 'gate', 'sw', 'sty', 'yard',
-        'ne', 'ne',
+        'northeast', 'northeast', 'north', 'north', 'north', 'gate', 'north', 'east', 'east', 'southeast', 'east', 'southeast', 'southeast', 'southeast', 'trail', 'woods', 'deeper',
+        'out', 'trail', 'field', 'path', 'northwest', 'northwest', 'west', 'northwest', 'west', 'west', 'south', 'gate', 'south', 'south', 'south', 'sw', 'sw',
+        #Malbon farm
+        'southeast', 'southeast', 'south', 'gate', 'stile', 'northwest', 'southeast', 'southwest', 'northeast', 'stile', 'south', 'south',
+        'north', 'north', 'gate', 'north', 'northwest', 'northwest',
+        'ne', 'ne', 'east', 'east', 'east',
+        #Calmor farmstop
+        #'southeast', 'south', 'southeast', 'southeast', 'gate', 'southwest', 'sty', 'yard',
+        'northeast', 'northeast',
         #into zombie farm
-        'ne', 'n', 'ne', 'n', 'gate', 'compound', 'w', 'nw', 'run', 'out', 'ne', 'e', 's', 's',
+        'northeast', 'north', 'northeast', 'north', 'gate', 'compound', 'west', 'northwest', 'run', 'out', 'northeast', 'east', 'south', 'south',
         #out of zombie farm and into highmarket
-        'path', 'gate', 's', 'sw', 's', 'sw', 'e', 'e', 'gate',
+        'path', 'gate', 'south', 'southwest', 'south', 'southwest', 'east', 'east', 'gate',
         #from highmarket back to chapel
         'south', 'southeast', 'southeast', 'south', 'east', 'gate', 'south', 'south', 'southeast', 'southeast', 'south', 'south',
         'south', 'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest', 'north', 'gate', 'east', 'north', 'north',
@@ -269,6 +268,7 @@ class TrackGrindThread(GrindThread):
         self.PATH_TO_SKIP_WITH = ['think']
 
     def do_go_hooks(self, exit_str):
+        # magentaprint(str(self.character.AREA_ID) + ", " + exit_str, False)
         if exit_str == "slow_prepare":
             self.sleep(5)
             self.command_handler.process("prepare")
@@ -323,6 +323,8 @@ class TrackGrindThread(GrindThread):
 
         self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
 
+        # return self.track_builder(self.ZOMBIES, 9, 20, -1)
+
         if self.__nextpath % 4 == 0:
             # self.inventory.get_inventory()
             magentaprint(str(int(len(self.inventory.sellable()))) + " items to sell - threshold is " + str(self.loot_threshold) + '.')
@@ -346,21 +348,23 @@ class TrackGrindThread(GrindThread):
         elif self.__nextpath == 13:
             return self.track_builder(self.NORTHERN_BANDITS_PATH, 1, 20, -1)
         elif self.__nextpath == 15:
-            return self.track_builder(self.ZOMBIES, 9, 20, -1)
+            return self.track_builder(self.ZOMBIES, 6, 20, 0)
         elif self.__nextpath == 17:
             return self.track_builder(self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 0)
         elif self.__nextpath == 19:
             return self.track_builder(self.MILL_WORKERS, 9, 20, 0)
         elif self.__nextpath == 21:
-            return self.track_builder(self.RANCHER_SENTRY, 9, 20, 1)
+            return self.track_builder(self.MUGGER_PATH, 9, 20, -1)
         elif self.__nextpath == 23:
-            return self.track_builder(self.SPIDER_FOREST, 12, 20, -1)
+            return self.track_builder(self.RANCHER_SENTRY, 10, 20, 1)
         elif self.__nextpath == 25:
             return self.track_builder(self.GNOLL_CAVE, 12, 20, -1)
         elif self.__nextpath == 27:
             return self.track_builder(self.KNIGHTS, 12, 20, 1)
         elif self.__nextpath == 29:
             return self.track_builder(self.CATHEDRAL, 15, 20, 1)
+        elif self.__nextpath == 31:
+            return self.track_builder(self.SPIDER_FOREST, 12, 20, -1)
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.__nextpath))
             return list(self.PATH_TO_SKIP_WITH[:])

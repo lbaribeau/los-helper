@@ -47,7 +47,12 @@ class MudListenerThread(threading.Thread):
             if (sel_out_triple != ([], [], []) or socket_number == 1):
                 try:
                     # magentaprint("MudListenerThread calling read_some().")  # Can print a LOT
-                    fragment = fragment + self.telnetHandler.read_some().decode('ascii', errors='ignore')
+                    value_read = self.telnetHandler.read_some()
+                    if (isinstance(value_read, str)):
+                        magentaprint("value read was unexpectedly a string: " + value_read, False)
+                        fragment = fragment + value_read
+                    else:
+                        fragment = fragment + value_read.decode('ascii', errors='ignore')
                 except (EOFError, OSError) as e:
                     # I think that the server doesn't send these.
                     magentaprint("MudListenerThread: Exiting (saw EOF) or Socket is dead")
