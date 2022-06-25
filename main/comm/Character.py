@@ -241,7 +241,6 @@ class Character(object):
                 return 'long bow'  # GREAT starting missile weapon, beware of roaming lion though (maybe bad for long-running lowish lvl bot )
             else:
                 return 'javelin'
-# <<<<<<< HEAD
           
 #     def configure_health_and_mana_variables(self):
 #         # Health to heal is now a percentage (see process_info)
