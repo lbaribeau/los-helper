@@ -44,8 +44,7 @@ class TravelBot(MiniBot):
             if grinding:
                 self.clean_out_node()  # Needs to check mob level and player health
 
-            self.command_handler.go.wait_until_ready()
-            self.command_handler.go.execute_and_wait(exit)
+            self.command_handler.go.wait_execute_and_wait(exit)
 
             if self.command_handler.go.success:
                 pass
@@ -53,18 +52,36 @@ class TravelBot(MiniBot):
                 # raise Exception("TravelBot failed go!")
                 # Can we assume that it failed?  Should we redo the whole path?  Let's rule out please_wait
                 if self.command_handler.go.please_wait:
-                    self.command_handler.go.wait_until_ready()
-                    self.command_handler.go.execute_and_wait(exit)  # Trying again should do the trick
+                    self.command_handler.go.wait_execute_and_wait(exit)  # Trying again should do the trick
                 elif self.command_handler.go.failure:
-                    # This is not supposed to happen, if the db sends good paths... maybe it's a blocking mob
-                    # TravelBot needs to be able to engage enemies or trust the caller to do so.
+                    # We are assuming the path is not the problem. In fact, there is another case for that (go.error)
+                    while self.command_handler.go.blocked:
+                        # ie. - A mugger the bot didn't want to engage due to HP.
+                        #     - Gnoll bandit (rare)
+                        # TravelBot needs to be able to engage enemies or trust the caller to do so.
+                        # Adding gnoll bandit to kill list won't resolve this, since TravelBot doesn't refer to that.
+                        # Looks like we HAVE smartCombat on us.
+                        # So the question is, if we are blocked, what do we do - kill the blocker? It should be in the monster kill list...
+                        #if self.command_handler.go.M_obj(0) in self.char.MONSTER_KILL_LIST:
+                        #self.command_handler.smartCombat.start_thread(self.command_handler.go.M_obj(0).split(0))
+                        magentaprint("TravelBot engaging blocking mob!")
+                        #self.command_handler.smartCombat._initialize(self.char.mobs.get_reference(self.command_handler.go.M_obj(0)))
+                        #self.command_handler.smartCombat._initialize(self.char.mobs.list.get_reference(self.char.mobs.read_match(self.command_handler.go.M_obj))
+                        self.command_handler.smartCombat._initialize(self.char.mobs.get_reference(self.char.mobs.read_match(self.command_handler.go.M_obj)))
+                        #self.command_handler.smartCombat._initialize(self.char.mobs.get_reference_from_mob_match_object(self.command_handler.go.M_obj))
+                        self.command_handler.smartCombat.run()  # Calling run explicitly since we don't want to spawn a thread
+                        magentaprint("TravelBot's smartCombat completed")
+                        self.command_handler.go.wait_execute_and_wait(exit)
                     return False  # We will try again (redoing the path), it probably won't work, then we'll raise the exception.
                 elif self.command_handler.go.error:
                     # Wrong exit name... only thing to try is to rebuild the path
                     return False
-                # Problem: a mugger blocks your exit
 
         return True
+
+    def stop(self):
+        super().stop()
+        self.command_handler.smartCombat.stop()
 
     def clean_out_node(self):
         for mob in self.char.mobs.list:

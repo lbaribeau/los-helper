@@ -2,6 +2,7 @@
 from bots.GrindThread import GrindThread
 from misc_functions import magentaprint
 from Aura import Aura
+import db.Area
 import random
 
 class Path():
@@ -27,8 +28,9 @@ class TrackGrindThread(GrindThread):
         elif self.character.level <= 11:
             self.__TOTALPATHS = 24
         else:
-            self.__TOTALPATHS = 30  # # Area ids unfortunately must be updated.
-            # self.__TOTALPATHS = 24
+            # self.__TOTALPATHS = 28  # # Area ids unfortunately must be updated.
+            #self.__TOTALPATHS = 30
+            self.__TOTALPATHS = 52 # Added some graph pathing
         # elif self.character.level <= 10:
         #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
         # elif self.character.level > 12:
@@ -54,10 +56,13 @@ class TrackGrindThread(GrindThread):
             "stage","side 2","backstage", "door", "out", "door 2", "out", "curtain", "stage",
             "side", "door","up", "out", "out", "n", "e","e", "e", "n", "chapel"
         ]
-        # self.THEATRE_PATH = Path(Aura, self.THEATRE_PATH)
-        self.MARKET_PATH = [
-            "out", 's', 'e', 'e', 'e', 'n', 'w', 'w', 'office', 'out', 'n', 'n','s', 'w', 'e', 's', 'w', 's', 'n', 'w', 'e', 'n',
-            's', 'e', 'e', "out", 's', 'w', 'w', 'w', 'n',"chapel"
+
+        self.MARKET_PATH = ['out',
+            's','e','e','e','n','w','w',
+            'office','out',
+            'n','n','s','w','e','s',
+            'w','s','n','w','e','n','s','e',
+            'e','out','s', 'w', 'w', 'w', 'n','chapel'
         ]
         self.MILITIA_SOLDIERS_PATH = [
             'out','s','e','s','s','s','w','gate','s','s','sw','sw','sw','sw','s','s','s','sw','southeast','s','s','s','s',
@@ -144,7 +149,7 @@ class TrackGrindThread(GrindThread):
             'northeast', 'stile', 'gate', 'north', 'northwest', 'northwest',
             'west', 'west', 'gate', 'south', 'west', 'west', 'west', 'north', 'chapel'
         ]
-        #Contains lvl 2&3 mobs (stacker, furniture maker, sawmill operator, mill worker) and lvl 6 mobs (sawmill / mill supervisors)
+        #Contains lvl 2&3 mobs (stacker, furniture maker, sawmill operator, mill worker) and lvl 6 mobs (saw)?mill supervisor
         self.MILL_WORKERS = [
             'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate',
             'south', 'south', 'south', 'south', 'south', 'southwest', 'south',
@@ -173,6 +178,7 @@ class TrackGrindThread(GrindThread):
             'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel'
         ]
         #aid418, 1975, 1979, 1951, 415, 45
+
         # These area numbers are unfortunately for a different database... (except "2")
 
         # need to fix this!
@@ -205,6 +211,7 @@ class TrackGrindThread(GrindThread):
             'northeast', 'northeast', 'northeast', 'north', 'north', 'gate', 'east', 'north', 'north', 'north',
             'west', 'north', 'chapel'
         ]
+<<<<<<< HEAD
         self.GNOLL_CAMP = ['think']
 
         # self.GNOLL_CAMP = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'southeast',
@@ -315,10 +322,11 @@ class TrackGrindThread(GrindThread):
         magentaprint("next path = " + str(self.__nextpath), False)
 
         if self.character.DEAD:
-            # crash
             self.character.DEAD = False
             self.character.DEATHS += 1
-            magentaprint("Died; Pulling up my bootstraps and starting again", False)
+            # magentaprint("Died: Pulling up my bootstraps and starting again", False)
+            magentaprint("Died: stopping bot thread.", False)
+            self.stop()
             return self.LIMBO_TO_CHAPEL[:]
 
         self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS

@@ -1,6 +1,9 @@
-'''In order for this class to work you need to have installed Peewee
-See: http://peewee.readthedocs.org/en/latest/peewee/installation.html
+
 '''
+Install Peewee to use this
+http://peewee.readthedocs.org/en/latest/peewee/installation.html
+'''
+
 import peewee
 
 db = peewee.Proxy()
@@ -62,7 +65,8 @@ where a.id in (
         Unknown = Area(name="Unknown", description="")
         Unknown.save()
 
-    except:
+    except Exception as e:
+        print("Database.py ignoring exception in create_tables(): "+str(e))
         pass
 
 def drop_tables():
@@ -81,19 +85,22 @@ def drop_tables():
         try_drop(ItemTypeModel)
         try_drop(ItemTypeData)
         try_drop(AreaStoreItem)
-    except:
+    except Exception as e:
+        print("Database.py ignoring exception in drop_tables(): "+str(e))
         pass
 
 def try_create(cls):
     try:
         cls.create_table()
-    except:
+    except Exception as e:
+        print("Database.py ignoring exception in try_create(): "+str(e))
         pass
 
 def try_drop(cls):
     try:
         cls.drop_table()
-    except:
+    except Exception as e:
+        print("Database.py ignoring exception in try_drop(): "+str(e))
         pass
 
 from sys import argv
@@ -103,8 +110,17 @@ if "-nodb" in argv:
 else:
     database_file = "maplos.db"
 
+<<<<<<< HEAD
 database = SqliteDatabase(database_file, check_same_thread=False)
 db.initialize(database)
+=======
+#database = peewee.SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
+#database2 = peewee.SqliteDatabase(database_file, check_same_thread=False)
+#db.initialize(database2)
+db.initialize(peewee.SqliteDatabase(database_file, check_same_thread=False))
+#db.initialize(peewee.SqliteDatabase(database_file, check_same_thread=False))
+#db = database
+>>>>>>> origin/LDev
 
 #drop_tables()
 create_tables()

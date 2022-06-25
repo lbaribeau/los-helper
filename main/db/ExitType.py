@@ -44,14 +44,16 @@ class ExitType(NamedModel):
     def get_exit_type_by_name_or_shorthand(name):
         exit_types = None
 
+        #print("Finding exit from given argument: " + str(name))
         try:
             #magentaprint("matching exit to: " + str(name))
             exit_types = ExitType.select().join(ExitSynonym, JOIN.LEFT_OUTER).where((ExitType.name == name) | (ExitSynonym.name == name) ).get()
             #magentaprint("matched exit to: " + exit_types.to_string())
         except ExitType.DoesNotExist:
-            #magentaprint("Could not find exit Type with name: " + name, False)
+            #print("Could not find exit Type with name: " + name, False)
             exit_types = None
 
+        print("Matched exit given: " + str(name) + ", to: " + str(exit_types))
         return exit_types
 
     def get_exit_type_by_name_and_opposite(name, exit_id): #this should always be unique

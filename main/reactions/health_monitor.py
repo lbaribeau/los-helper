@@ -11,14 +11,14 @@ class HealthMonitor(object):
         self.char = character
         self.regex_cart = [RegexStore.prompt]
 
-        # first_tick = None
-        self.tick_times = []
+        # first_tick      = None
+        self.tick_times   = []
         self.tick_periods = []
-        self.hpticks = []
-        self.mpticks = []  # How to determine chapel ticks
+        self.hpticks      = []
+        self.mpticks      = [] # How to determine chapel ticks... maybe with character's area id
         self.rest_hpticks = []
         self.rest_mpticks = []
-        self.vig_amounts = []
+        self.vig_amounts  = []
         self.mend_amounts = []
 
     def notify(self, regex, M_obj):
@@ -31,12 +31,12 @@ class HealthMonitor(object):
             # Better not to rely on cast command... use mp amount and hp/mp deltas
             # if Cast.command.split(' ')[1].startswith('v'):
             # elif Cast.command.split(' ')[1].startswith('m'):
-            if self.mp_delta() == Cast.vig_amount * -1:
+            if self.mp_delta() == -Cast.vig_amount:
                 self.do_vig()
-            elif self.mp_delta() == Cast.mend_amount * -1:
+            elif self.mp_delta() == -Cast.mend_amount:
                 self.do_mend()
             else:
-                magentaprint("HealthMonitor: weirdo situation in mana decrease and health increase.")
+                magentaprint("HealthMonitor: weird mana decrease and health increase.")
         elif self.hp_delta() < 0:
             self.do_mob_hit()
 

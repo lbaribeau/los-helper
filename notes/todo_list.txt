@@ -9,7 +9,32 @@ Aug 1 2020
 - add path to bandit camp? might need logic to find hidden sentries
 - need more good sources - maybe add vicars permanently or gnomes
 
-Sept 2015
+Dual wield, main hand breaks, rewield from inventory
+- (The weapon variable was "throwing stars in your offhand")
+- so the "second" command shouldn't edit that variable
+- (check for that caveat "in your offhand" when writing a weapon variable)
+- Use fake telnet
+
+Improve shopping for basic standard weapons and armour
+
+"Your blow does no damage."
+"Qerp fled to the exit."  --- This shouldn't stop combat threads(!)
+-- When something flees and SmartCombat is notified, check that it's the target that fled before stopping.
+
+Recover from server maintenance
+- Use a tool object for setup/teardown (dependency injection)
+- Let botthread use that tool
+- Migrate code from los-helper to the tool and have los-helper use the tool
+- Add a "manager" layer to botthread, so the AI is still separate from the tool.
+-- Though mechanically, the same thread that executes AI will go up a level to do server management
+
+Sometimes decide not to cast on a level 1 montster.
+
+Use rods and scrolls. (Bypass resting if we have a rod or scroll.)
+
+------------------------------------------------------------------------------------------------------
+
+*** Sept 2015
 Death mitigation
 - SmartCombat use items and flee
 Getting lost mitigation

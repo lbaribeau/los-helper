@@ -9,15 +9,15 @@ from comm import RegexStore
 # This does success/fail, cooldowns, and wait_for_flag support.
 
     # The main thing that I want out of this class is to provide 'blocking' calls.
-    # That is, the ability to issue the command to the server and wait for the response. 
-    # That may seem unnecessary, but without a class that does it well, lag can be a 
-    # little frustrating.  BotReactions provides this pretty much on its own, 
+    # That is, the ability to issue the command to the server and wait for the response.
+    # That may seem unnecessary, but without a class that does it well, lag can be a
+    # little frustrating.  BotReactions provides this pretty much on its own,
     # but there is a little bit more common code to encapsulate here.
     # Actually, there isn't... this is purely for cooldown stuff.
 
     # Ummmm... is this even necessary??? There's no common code to Info and Whois...
-    # This code has to be for commands that keep an object in the list, which is 
-    # all the combat abilities and perhaps a Go ability... I think one-time 
+    # This code has to be for commands that keep an object in the list, which is
+    # all the combat abilities and perhaps a Go ability... I think one-time
     # commands can just copy Info and Whois.
 
 class SimpleCommand(BotReactionWithFlag):
