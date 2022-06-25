@@ -211,7 +211,7 @@ class TrackGrindThread(GrindThread):
             'northeast', 'northeast', 'northeast', 'north', 'north', 'gate', 'east', 'north', 'north', 'north',
             'west', 'north', 'chapel'
         ]
-<<<<<<< HEAD
+
         self.GNOLL_CAMP = ['think']
 
         # self.GNOLL_CAMP = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'southeast',

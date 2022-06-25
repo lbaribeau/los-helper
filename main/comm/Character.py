@@ -154,7 +154,7 @@ class Character(object):
         self.MONSTER_LIST.sort()
 
     def process_info(self):
-        #misc_functions.magentaprint("Character.process_info() processing info from 'info' command.")
+        #magentaprint("Character.process_info() processing info from 'info' command.")
 
         self.preferred_aura = self.info.preferred_alignment
 
@@ -185,7 +185,7 @@ class Character(object):
             'Astral' : self.info.astral
         }
 
-        self.weapon_type = misc_functions.key_with_max_val(self.weapon_proficiencies)
+        self.weapon_type = key_with_max_val(self.weapon_proficiencies)
         self.weapon_proficiency = self.weapon_proficiencies[self.weapon_type]
 
         if self.weapon_proficiency >= 70:
@@ -259,7 +259,6 @@ class Character(object):
                 return 'long bow'  # GREAT starting missile weapon, beware of roaming lion though (maybe bad for long-running lowish lvl bot )
             else:
                 return 'javelin'
-# <<<<<<< HEAD
           
 #     def configure_health_and_mana_variables(self):
 #         # Health to heal is now a percentage (see process_info)

@@ -110,17 +110,9 @@ if "-nodb" in argv:
 else:
     database_file = "maplos.db"
 
-<<<<<<< HEAD
 database = SqliteDatabase(database_file, check_same_thread=False)
 db.initialize(database)
-=======
-#database = peewee.SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
-#database2 = peewee.SqliteDatabase(database_file, check_same_thread=False)
-#db.initialize(database2)
-db.initialize(peewee.SqliteDatabase(database_file, check_same_thread=False))
-#db.initialize(peewee.SqliteDatabase(database_file, check_same_thread=False))
-#db = database
->>>>>>> origin/LDev
+
 
 #drop_tables()
 create_tables()
