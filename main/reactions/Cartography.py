@@ -185,7 +185,7 @@ class Cartography(BotReactionWithFlag):
                 area = mud_area.area
                 self.catalog_monsters(area, self.character.mobs.list)
                 self.character.AREA_ID = area.id
-                magentaprint("Cartography area match: " + str(area))
+                # magentaprint("Cartography area match: " + str(area), False)
             else:
                 self.character.AREA_ID = None
             self.character.TRYING_TO_MOVE = False
