@@ -26,10 +26,10 @@ class SmartGrindThread(TrackGrindThread):
         # if self.character.AREA_ID != 2:
         #     self.direction_list = self.get_heal_path()
 
-        low_level_modifier = -3
+        low_level_modifier = -2
         high_level_modifier = 0# + 1 #risky business
         if self.is_character_class('Cle'):
-            low_level_modifier = -3
+            low_level_modifier = -2
             high_level_modifier = -1
 
         self.low_level = int(math.floor(self.character.level / 2)) + low_level_modifier
