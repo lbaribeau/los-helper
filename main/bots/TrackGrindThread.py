@@ -265,6 +265,11 @@ class TrackGrindThread(GrindThread):
         # 'southwest', 'southwest', 'southwest', 'trail', 'northwest', 'northwest', 'west', 'west',
         # ]
 
+        self.FOUNDRY = ['areaid1231', 'out', 'down', 'east', 'east', 'east', 'south', 'areaid2']
+        self.ALCHEMISTS = ['areaid999', 'areaid2967', 'areaid2']
+        self.EGAN_TRENT = ['areaid1999', 'areaid2']
+        # self.LYRON = ['areaid2097', ] -- too much dmg
+
         self.PATH_TO_SKIP_WITH = ['think']
 
     def do_go_hooks(self, exit_str):
@@ -321,54 +326,37 @@ class TrackGrindThread(GrindThread):
             magentaprint("Died; Pulling up my bootstraps and starting again", False)
             return self.LIMBO_TO_CHAPEL[:]
 
+        all_tracks = [
+            self.track_builder(self.THEATRE_PATH, 1, 20, 0),
+            self.track_builder(self.MARKET_PATH, 1, 20, 0),
+            self.track_builder(self.MILITIA_SOLDIERS_PATH, 1, 14, 0),
+            self.track_builder(self.KOBOLD_PATH, 4, 10, -1), #sentries are suuuper tough
+            self.SHOP_AND_TIP_PATH[:],
+            self.track_builder(self.CORAL_ALLEY_PATH, 1, 6, -1),
+            self.track_builder(self.FORT_PATH, 1, 20, 1),
+            self.track_builder(self.NORTHERN_BANDITS_PATH, 1, 14, -1),
+            self.track_builder(self.ZOMBIES, 6, 20, 0),
+            self.SHOP_AND_TIP_PATH[:],
+            self.track_builder(self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 0),
+            self.track_builder(self.MILL_WORKERS, 9, 20, 0),
+            self.track_builder(self.MUGGER_PATH, 9, 15, -1),
+            self.track_builder(self.FOUNDRY, 9, 20, 0),
+            self.track_builder(self.RANCHER_SENTRY, 10, 15, 1),
+            self.SHOP_AND_TIP_PATH[:],
+            self.track_builder(self.GNOLL_CAVE, 12, 20, -1),
+            self.track_builder(self.KNIGHTS, 12, 20, 1),
+            self.track_builder(self.CATHEDRAL, 12, 16, 1),
+            self.track_builder(self.SPIDER_FOREST, 12, 20, -1),
+            self.SHOP_AND_TIP_PATH[:],
+            self.track_builder(self.EGAN_TRENT, 15, 20, -1),
+            self.track_builder(self.ALCHEMISTS, 15, 20, 0),
+        ]
+
+        self.__TOTALPATHS = len(all_tracks)
         self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
+        nextpath = all_tracks[self.__nextpath][:]
 
-        # return self.track_builder(self.ZOMBIES, 9, 20, -1)
-
-        if self.__nextpath % 4 == 0:
-            # self.inventory.get_inventory()
-            magentaprint(str(int(len(self.inventory.sellable()))) + " items to sell - threshold is " + str(self.loot_threshold) + '.')
-            if len(self.inventory.sellable()) > self.loot_threshold:
-                magentaprint("Trackgrind pawning/dropping!!!")
-                return self.SHOP_AND_TIP_PATH[:]
-            else:
-                magentaprint("Trackgrind skipped pawning/dropping!!!")
-        elif self.__nextpath == 1:
-            return self.track_builder(self.THEATRE_PATH, 1, 20, 0)
-        elif self.__nextpath == 3:
-            return self.track_builder(self.MARKET_PATH, 1, 20, 0)
-        elif self.__nextpath == 5:
-            return self.track_builder(self.MILITIA_SOLDIERS_PATH, 1, 20, 0)
-        elif self.__nextpath == 7:
-            return self.track_builder(self.KOBOLD_PATH, 4, 20, -1)
-        elif self.__nextpath == 9:
-            return self.track_builder(self.CORAL_ALLEY_PATH, 1, 6, -1)
-        elif self.__nextpath == 11:
-            return self.track_builder(self.FORT_PATH, 1, 20, 1)
-        elif self.__nextpath == 13:
-            return self.track_builder(self.NORTHERN_BANDITS_PATH, 1, 20, -1)
-        elif self.__nextpath == 15:
-            return self.track_builder(self.ZOMBIES, 6, 20, 0)
-        elif self.__nextpath == 17:
-            return self.track_builder(self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 0)
-        elif self.__nextpath == 19:
-            return self.track_builder(self.MILL_WORKERS, 9, 20, 0)
-        elif self.__nextpath == 21:
-            return self.track_builder(self.MUGGER_PATH, 9, 20, -1)
-        elif self.__nextpath == 23:
-            return self.track_builder(self.RANCHER_SENTRY, 10, 20, 1)
-        elif self.__nextpath == 25:
-            return self.track_builder(self.GNOLL_CAVE, 12, 20, -1)
-        elif self.__nextpath == 27:
-            return self.track_builder(self.KNIGHTS, 12, 20, 1)
-        elif self.__nextpath == 29:
-            return self.track_builder(self.CATHEDRAL, 15, 20, 1)
-        elif self.__nextpath == 31:
-            return self.track_builder(self.SPIDER_FOREST, 12, 20, -1)
-        else:
-            magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.__nextpath))
-            return list(self.PATH_TO_SKIP_WITH[:])
-        return list(self.PATH_TO_SKIP_WITH[:])
+        return nextpath
 
     def track_builder(self, track, min_level, max_level, track_aura):
         level_range = range(min_level, max_level)        

@@ -26,10 +26,10 @@ class SmartGrindThread(TrackGrindThread):
         # if self.character.AREA_ID != 2:
         #     self.direction_list = self.get_heal_path()
 
-        low_level_modifier = -2
+        low_level_modifier = -3
         high_level_modifier = 0# + 1 #risky business
         if self.is_character_class('Cle'):
-            low_level_modifier = -2
+            low_level_modifier = -3
             high_level_modifier = -1
 
         self.low_level = int(math.floor(self.character.level / 2)) + low_level_modifier
@@ -245,8 +245,12 @@ class SmartGrindThread(TrackGrindThread):
     def get_targets(self):
         magentaprint("SmartGrind getting targets - parameters - {} {} {}/{} {}/{}".format(\
             self.low_level, self.high_level, self.min_target_aura.index(), self.min_target_aura, self.max_target_aura, self.max_target_aura.index()))
+
         target_list = MudMob.get_mobs_by_level_and_aura_ranges(
-            self.low_level, self.high_level, self.min_target_aura.index(), self.max_target_aura.index()
+            self.low_level, 
+            self.high_level, 
+            self.min_target_aura.index(), 
+            self.max_target_aura.index()
         )
 
         # if not target_list:
@@ -258,7 +262,7 @@ class SmartGrindThread(TrackGrindThread):
 
         for target in target_list:
             mob_locations = MudMap.get_mob_locations_by_id(target.id)
-            self.character.MONSTER_KILL_LIST.append(target.name)
+            self.character.MONSTER_KILL_LIST.append(target.name) # This might append too many?
             self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
 
         if self.character.is_headless:

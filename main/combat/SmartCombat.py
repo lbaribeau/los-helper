@@ -263,7 +263,9 @@ class SmartCombat(CombatObject):
         return True
 
     def determine_whether_to_use_spells(self):
-        if self.character.level > 10 and self.mob_target is not None:
+        # Mage/Alc/Druid should always cast
+        if (self.character._class.id != 'Dru' and self.character._class.id != 'Mag' and self.character._class.id != 'Alc') and \
+            self.character.level > 10 and self.mob_target is not None:
             if self.mob_target.level is not None:
                 if self.mob_target.level <= ((self.character.level / 2) - 2) or self.character.level <= 2:
                     return False
