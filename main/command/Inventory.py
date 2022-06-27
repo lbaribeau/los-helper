@@ -2,11 +2,11 @@
 import time, re, collections
 
 from Exceptions import *
-from reactions.BotReactions import *
 from misc_functions import *
-from db.MudItem import *
-from reactions.referencing_list import ReferencingList
 import comm.RegexStore as R
+from reactions.BotReactions     import BotReactionWithFlag
+from db.MudItem                 import MudItem
+from reactions.referencing_list import ReferencingList
 
 def clip_in_your_off_hand(wield_string):
     # Example wield_string: a spear in your off hand
@@ -16,22 +16,19 @@ def clip_in_your_off_hand(wield_string):
     if wield_string[length-17:length] == " in your off hand":
         return wield_string[:length-17]
     else:
-
         return wield_string
 
 def clip_from_a_container(get_string):
     # Example get_string: some chicken soup from a sack
     get_string = get_string.replace('\n\r', ' ')
-    M_obj = re.search("(.+?) from (.+?)", get_string)
-
-    if M_obj != None:
-        return M_obj.group(1)
+    M = re.search("(.+?) from (.+?)", get_string)
+    if M:
+        return M.group(1)
     else:
         return get_string
 
 def construct_items(string_list):
     items = []
-
     for i in string_list:
         item = MudItem(i)
         item.map()
@@ -86,6 +83,7 @@ def parse_item_names(inventory_string):
 
                 return_list.extend([item]*(n+2))
 
+    magentaprint("parse_item_names from {0}  got  {1}".format(inventory_string, return_list))
     return return_list
     # Two sets of plate mail leggings
     # some plate mail leggings
@@ -197,25 +195,49 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         # 'studded leather sleeves', 'studded leather boots', 'studded leather pants', 'studded leather gloves','studded leather leggings',
         # 'plate mail leggings', # Jerrek drops
         'plate mail armor',
-        'ring mail armour', 'ring mail sleeves', 'ring mail leggings', 'ring mail hood',
+        'ring mail armour', 'ring mail sleeves', 'ring mail leggings', #'ring mail hood',
         # 'ring mail gauntlets',
         # 'chain mail armour',  # sawmill
         'chain mail sleeves', 'chain mail leggings',
         #'chain mail hood', # These pile up
         # 'chain mail gloves', # mill worker
-        'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring', 'greenwood jerkin',
-        "paladins's plate armour", "master's habit"
+        'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring', 
+        'greenwood jerkin',"paladins's plate armour", "master's habit", 
+        'maul hammer' # This we need to keep ONE
         # 'iron shield'
         # 'platinum ring', 'gold ring', 'steel ring', 'silver ring'
         #'steel mask' # spiv, sawmill
     ]
 
     def __init__(self, telnetHandler, character):
+        # I am now thinking that inventory is only concerned about the backpack, not what is equipped.
         self.regex_cart = [
-            R.you_have,          R.sold,         R.you_drop,       R.disintegrates,   R.gold_from_tip,   
-            R.you_now_have,      R.not_empty,    R.you_wear,       R.nothing_to_wear, R.you_get,  R.you_remove,    R.nothing_to_remove, R.you_wield,
-            R.you_give,          R.bought,       R.you_put_in_bag, R.gave_you,        R.you_hold, R.weapon_break,  R.weapon_shatters,   R.armour_breaks,
-            R.current_equipment, R.no_inventory, R.wearing,  R.wont_buy, R.wont_buy2, R.not_a_pawn_shop
+            R.you_have          ,
+            R.no_inventory      ,
+            R.you_get           ,
+            R.you_drop          ,
+            R.you_give          ,
+            R.you_put_in_bag    ,
+            R.not_empty         ,
+            R.gave_you          ,
+            R.bought            ,
+            R.you_hold          ,
+            R.disintegrates     ,
+            R.sold              ,
+            R.not_a_pawn_shop   ,
+            R.wont_buy          ,
+            R.wont_buy2         ,
+            R.you_wield         ,
+            R.you_wear          ,
+            R.nothing_to_wear   ,
+            R.you_remove        ,
+            R.nothing_to_remove ,
+            R.weapon_break      ,
+            R.weapon_shatters   ,
+            R.armour_breaks     ,
+            R.current_equipment ,
+            R.gold_from_tip     ,
+            R.you_now_have      
         ]
         self.telnetHandler = telnetHandler
         self.character = character
@@ -230,7 +252,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             self.keep_list[index] = MudItem(item)
 
         self.restoratives = [
-            'chicken soup', 'small restorative', 'white potion', 'small flask', 'large restorative', 'scarlet potion'
+            'chicken soup', 'small restorative', 'white potion', 'small flask', 'large restorative', 'scarlet potion', 'philtre of health' # , 'golden potion'
         ] # , 'tree root']
 
         BotReactionWithFlag.__init__(self)
@@ -244,27 +266,29 @@ class Inventory(BotReactionWithFlag, ReferencingList):
     #     #self.__return_buffer.append({'regex':regex,'M_obj':M_obj})
     #     self.__return_buffer.append(M_obj)
 
-    def notify(self, regex, M_obj):
+    def notify(self, regex, match):
+        magentaprint("\nInventory notify pattern: " + match.re.pattern)
+        magentaprint("Inventory notify got:\n" + match.group(0))
         if regex in R.you_have:
-            # magentaprint('Inventory you_have item list: ' + M_obj.group(1))
-            self.set_inventory(M_obj.group(1))
+            # magentaprint('Inventory you_have item list: ' + match.group(1))
+            self.set_inventory(match.group(1))
             # magentaprint(str(self.list))
             #magentaprint(str(self.to_dict()))
             #magentaprint(self)
         elif regex in R.sold:
-            self.gold = self.gold + int(M_obj.group(1))
+            self.gold = self.gold + int(match.group(1))
             # Do nothing on "wont_buy" except set the wait flag (super)
             if self.__sell_function:
                 # We will remove the item from the scope where we know the command that was sent (self.sell)
-                self.__return_buffer.append(M_obj)
+                self.__return_buffer.append(match)
             else:
-                self.remove_many(M_obj.group(2))
+                self.remove_many(match.group(2))
         elif regex in R.you_now_have + R.gold_from_tip:
-            self.gold = int(M_obj.group(1))
-        elif regex in R.you_wield and not M_obj.group('weapon').endswith('in your off hand'):
-            weapon = M_obj.group('weapon')
+            self.gold = int(match.group(1))
+        elif regex in R.you_wield and not match.group('weapon').endswith('in your off hand'):
+            weapon = match.group('weapon')
             self.equipped_items['Wielded'] = [MudItem(weapon)]
-            magentaprint('Just made object ' + str(self.equipped_items['Wielded'][0].obj.name))
+            magentaprint('Inventory just made object ' + str(self.equipped_items['Wielded'][0].obj.name))
             self.remove_many(weapon)
             # self.get_equipment()
         elif regex in R.off_hand:
@@ -272,10 +296,9 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             self.remove_many(weapon)
             # self.get_equipment()
         elif regex in R.you_get:
-            item = clip_from_a_container(M_obj.group(1))
-            self.add(item)
+            self.add(clip_from_a_container(match.group(1)))
         elif regex in R.you_drop:
-            # magentaprint(str(M_obj.group(1)), False)
+            # magentaprint(str(match.group(1)), False)
             # Problem: we don't know which item was dropped, so it's hard to keep track of is_usable
             # Maybe we just want to reset everthing after dropping... or the bot needs to manage things,
             # or inventory needs full control of many commands (drop, sell...) ... hmph ... preferring to
@@ -291,37 +314,37 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             #if self.already_removed_dropped_item:
                 #self.already_removed_dropped_item = False
             #else:
-                #self.remove_many(M_obj.group(1))
+                #self.remove_many(match.group(1))
             if self.__drop_function:
                 pass
             else:
-                self.remove_many(M_obj.group(1))
+                self.remove_many(match.group(1))
         elif regex in R.you_give + R.you_put_in_bag + R.disintegrates:
-                self.remove_many(M_obj.group(1))
+                self.remove_many(match.group(1))
         elif regex in R.you_wear + R.you_hold:
-            self.remove_many(M_obj.group(1))
-            self.get_equipment()
+            self.remove_many(match.group(1))
+            #self.get_equipment()
             #we know this is armour of some kind so we need to find a way to assign it to the right spot
         elif regex in R.you_remove + R.gave_you:
-            self.add(M_obj.group(1))
+            self.add(match.group(1))
         elif regex in R.bought:
             pass
             # if not self.is_bulk_vendoring:
             #     self.get_inventory()  # There are some notes about this at the bottom
-            #     # I don't like this very much! I can't use ! to buy a lot of a thing.
+            #     # I don't like this very much! I can't use ! to buy a lot of a things.
         elif regex in R.weapon_break + R.armour_breaks:
             magentaprint('Inventory weapon / armour break')
-            item = M_obj.group(1)
-            self.add_broken(M_obj.group(1))
+            item = match.group(1)
+            self.add_broken(match.group(1))
             # self.get_equipment()
             self.unequip_weapon(item)
         elif regex in R.weapon_shatters:
             magentaprint('Inventory weapon_shatters')
-            item = M_obj.group(1)
+            item = match.group(1)
             self.unequip_weapon(item)
         elif regex in R.current_equipment:
-            character_name = M_obj.group(1)  # TODO: This works for 'l self' but not for 'eq'
-            equipment_list = re.findall(R.wearing[0], M_obj.group(2))
+            character_name = match.group(1)  # TODO: This works for 'l self' but not for 'eq'
+            equipment_list = re.findall(R.wearing[0], match.group(2))
 
             if character_name == self.character.name:
                 for slot in equipment_list:
@@ -331,17 +354,20 @@ class Inventory(BotReactionWithFlag, ReferencingList):
                     self.equipped_items[slot[0]].append(MudItem(slot[1]))
             # magentaprint(self.equipped_items,False)
         # magentaprint(self.list, False)
-        super().notify(regex, M_obj)
+        super().notify(regex, match)
+        magentaprint("Inventory notify completely done.")
 
     def get_inventory(self):
         # magentaprint('\n' + str(self.list))
         self.telnetHandler.write('i')
         self.wait_for_flag()
         # magentaprint('\n' + str(self.list))
-        return self.list
+        magentaprint("get_inventory() got {0}".format(self.list))
+        return self.list # Is this reliable? How did we get 'the' in the inventory
+        # I have actually get_inventory() got [] right off the bat
 
-    def get_equipment(self):
-        return
+    # def get_equipment(self):
+    #     return
         # self.telnetHandler.write("l ' + self.character.name)
         # self.wait_for_flag()
 
@@ -372,8 +398,13 @@ class Inventory(BotReactionWithFlag, ReferencingList):
     def has_broken(self, item_name):
         if item_name.__class__ != ''.__class__:
             raise Exception("Inventory.has_broken() argument must be a string")
-        items = self.get_all_by_name(item_name)
-        if any([not i.usable for i in items]):
+        return any([not i.usable for i in self.get_all_by_name(item_name)])
+
+    def has_unbroken(self, item_name):
+        # Note that this isn't trustworthy until Sell is fixed to remove the correct item
+        if item_name.__class__ != ''.__class__:
+            raise Exception("Inventory.has_broken() argument must be a string")
+        if any([i.usable for i in self.get_all_by_name(item_name)]):
             return True
 
     def has_any_broken(self, item_name_list):
@@ -475,6 +506,10 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         #programmatic purchasing via a shopping list or something
         return
 
+    # Add print to whenever an item is added, because we got 'the' added somehow
+    # Then we are ok to start it with a print
+    # And we can do the Event thing (modify _waiter flag assignments to .set())
+
     def buy(self, item_string):
         self.telnetHandler.write("buy " + item_string)
         self.wait_for_flag()
@@ -556,7 +591,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
     #     self.add_by_string_list(self.parse_item_names)
 
     def add(self, item_string):
-        magentaprint("Inventory.add %s parsed as %s." % (item_string, str(parse_item_list(item_string))))
+        magentaprint("Inventory.add %s parses as %s." % (item_string, str(parse_item_list(item_string))))
 
         items = parse_item_list(item_string)  # This is overloaded for "hammer" and "a hammer"
         for i in items:
@@ -605,11 +640,15 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         l = []
         l.extend(parse_item_list(item_string))
         if not self.compare_lists(self.list, l):
-            magentaprint("Inventory.set_inventory overwriting self.list, len %s." % len(l))
+            #magentaprint("Inventory.set_inventory OVERWRITING self.list with %s." % str(l))
             self.list = l
+            # Referencing list implements nice counted dict output for self.to_string
+            magentaprint("Inventory.set_inventory that is {0}".format(self))
+            self.sellable_assuming_correctness()
             #magentaprint(self) # Could try cyan print
         else:
             magentaprint("Inventory.set_inventory didn't overwrite self.list, lengths: %s, %s." % (len(l), len(self.list)))
+            self.sellable_assuming_correctness()
 
     def compare_lists(self, l1, l2):
         if len(l1) != len(l2):
@@ -675,19 +714,31 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         self.wait_for_flag()
 
     def sellable(self):
+        # TrackGrind is calling this every even track
         self.get_inventory() # This line isn't necessary if we assume everything is always works perfectly
+        return self.sellable_assuming_correctness()
+    def sellable_assuming_correctness(self):
         slist = self.get_unique_references(self.keep_list)
         slist.reverse()
-        magentaprint("Sellable items: " + str(slist))
-        magentaprint("Sellable items: " + str(ReferencingList([self.get(i) for i in slist])))
+        magentaprint("Sellable items: " + str(slist)) # This is a good print that shows ie. ['the', 'sabre']
+        magentaprint("Sellable items: " + str(ReferencingList([self.get(i) for i in slist if self.get(i) is not None]))) 
+        # Ok program that defensively (if not None)
         magentaprint("Keeping items: " + str(ReferencingList(
-            [i for i in self.list if i in self.keep_list])))
+            [i for i in self.list if i in self.keep_list and i != None])))
         self.telnetHandler.write('')
+        # Can't make a referencing list with None, right...
         # return self.inventory.get_unique_references(self.keep_list)
         return slist
         #https://www.geeksforgeeks.org/python-intersection-two-lists/
 
     def droppable(self):
+        # Maybe don't refesh the inventoy at this point
+        # Because we don't know what can sell at the pawn shop
+        # And we don't know what we picked up?
+        # Hmmm... we need to make a drop list at the pawn shop
+        # Ok this uses item.usable...
+        # I think that the bot drops everything "sellable" when it's at the tip
+        # Quotes on "sellable" meaning, we already tried to sell it to the pawn shop guy and he didn't buy it.
         return self.broken_junk()
 
     def broken_junk(self):
@@ -954,6 +1005,14 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 # Stores the command(s) that went out
 # Not sure if each command needs its own class
 
+# The plan now is to have a sell object, and have it remember the command that was sent.
+# That way it can correct the inventory in notify()
+# Which means calls to Sell don't have to be blocking
+# So I think that Sell will "have" inventory.
+# Inventory "having" sell... well, sell would also need to "have" inventory.
+# So why not just put inventory at the bottom.
+# Then it doesn't need to watch the sell regexes.
+# (Inventory is a command that still has to deal with executing and waiting for "you_have")
 
 # BUYING STUFF
 

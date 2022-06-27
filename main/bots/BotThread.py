@@ -10,10 +10,14 @@ from Exceptions import *
 from db.Database import *
 from db.MudMap import MudMap
 
+# Refer to https://docs.python.org/3/library/threading.html
+# excepthook is available as a method from threading
+# Only override .__init__ and .run()
+
 class BotThread(threading.Thread):
-    def __init__(self, character, command_handler, mudReaderHandler, mud_map):
+    def __init__(self, character, command_handler, mudReaderHandler, mud_map, name='BotThread'):
         # Thread.__init__(self)
-        super().__init__()
+        super().__init__(name=name) # Do this first
         self.stopping = False
 
         self.character = character

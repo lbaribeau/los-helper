@@ -13,8 +13,10 @@ class Equipment(Command):
         #     R.on_body, R.on_arms, R.on_legs, R.on_neck, R.on_face, R.on_hands, R.on_head,
         #     R.on_feet, R.on_finger, R.shield, R.wielded, R.seconded, R.holding
         # ]
-        self.success_regexes = [R.you_arent_wearing_anything,
-            R.one_equip, R.prompt
+        self.success_regexes = [
+            R.you_arent_wearing_anything,
+            R.one_equip, 
+            R.prompt
         ]
         # success/fail/error doesn't work so well in this case... do not inherit Command?
         # Add prompt [ bracket to end of regex to ensure full capture?
@@ -64,14 +66,17 @@ class Equipment(Command):
         elif r in R.prompt:
             self.prompt_flag = True
         else:
-            magentaprint("What regex was that")
+            magentaprint("Equipment: What regex was that: " + str(r))
 
         super().notify_success_fail_or_error(r, match)
 
     def notify_of_buffer_completion(self):
         if self.eq_flag and self.prompt_flag:
         # if self.eq_flag:
-            magentaprint("Equipment dict is " + str(self.dict))
+            #magentaprint("Equipment dict is " + str(self.dict))
+            #magentaprint("Equipment dict is {\n" + '\n\t'.join([('{0}'.ljust(10)+': {1}').format(k, v) for k, v in self.dict.items()]))
+            magentaprint("Equipment dict is {\n" + ''.join(['{0: <10}: {1}\n'.format(k, v) if v is not None else '' for k, v in self.dict.items()])+'}')
+                #+ str(self.dict))
             # magentaprint("Equipment completed.")
             self.eq_flag = False
             self.prompt_flag = False
@@ -80,6 +85,7 @@ class Equipment(Command):
             # like most other commands that don't have a similar bug.)
             # It's finicky - there's another issue when the prompt is sent with the eq text and gets registered before it,
             # so we need to wait for both flags.
+            self.telnetHandler.write('')
 
     def execute(self, target=None):
         self.reset()
@@ -185,4 +191,15 @@ class Equipment(Command):
         #     self.body = None
         #     self.body = None
         #     self.body = None
+
+
+# So when I first wrote this I had inventory calling get_equipment on you_hold
+# Now we have this equipment object
+# So let's subscribe to you hold
+# No, we need a HOLD COMMAND
+# Well, maybe
+# Or maybe we get enough info from the string that came in
+# We should have a hold command though... in general
+# So let's have it be able to tell equipment that something happened
+
 

@@ -1,25 +1,23 @@
 
 import threading
-from threading import Thread
 import atexit 
 import time
-import re
 import select
 import sys
 
-from misc_functions import *
+from misc_functions import magentaprint
 
 class MudListenerThread(threading.Thread):
     ''' This thread watches the the MUD output and appends it
     to the buffer for the MudReaderThread to read it.'''
 
     def __init__(self, telnetHandler, MUDBuffer):
-        Thread.__init__(self)
+        super().__init__(name='MudListenerThread')
         self.telnetHandler = telnetHandler
-        self.MUDBuffer = MUDBuffer
+        self.MUDBuffer     = MUDBuffer
+        self.stopping      = False
+        self.airbag        = False
         atexit.register(self.stop)
-        self.stopping = False
-        self.airbag = False
 
     def stop(self):
         self.stopping = True
@@ -36,22 +34,24 @@ class MudListenerThread(threading.Thread):
         # Loop forever, just do stuff when the socket says its ready.
         while not self.stopping:
             try:
-                sel_out_triple = select.select([socket_number], [], [], select_timeout)  # A 1 second timeout makes quitting fast
+                select_triple = select.select([socket_number], [], [], select_timeout)  # A 1 second timeout makes quitting fast
             except ValueError:
                 # TODO:  Hmmm, this can get SPAMMED BIGTIME on exit...  (Do not print here)
                 if not self.airbag:
                     self.airbag = True
-                    magentaprint("MudListenerThread:" + str(ValueError))
+                    magentaprint("MudListenerThread select ValueError:" + str(ValueError))
                 continue
 
-            if (sel_out_triple != ([], [], []) or socket_number == 1):
+            if select_triple != ([], [], []) or socket_number == 1:
                 try:
                     # magentaprint("MudListenerThread calling read_some().")  # Can print a LOT
-                    fragment = fragment + self.telnetHandler.read_some().decode('ascii', errors='ignore')
+                    new_bit = self.telnetHandler.read_some()
+                    fragment = fragment + new_bit.decode('ascii', errors='ignore')
+                    # Should we be ignoring errors
                 except (EOFError, OSError) as e:
                     # I think that the server doesn't send these.
-                    magentaprint("MudListenerThread: Exiting (saw EOF) or Socket is dead")
-                    self.stop()
+                    magentaprint("MudListenerThread: Exiting (saw EOF) or Socket is dead:")
+                    magentaprint(str(e))
                     break
 
                 #magentaprint("MudListener: got a fragment size %d time %.1f last chars %s." % (len(fragment), round(time.time()-self.Character_inst.START_TIME, 1), fragment[len(fragment)-8:]))

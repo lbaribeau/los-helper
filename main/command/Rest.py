@@ -1,16 +1,21 @@
 
 import time
 
-from comm import RegexStore
+from comm import RegexStore as R
 
-class Rest(object):
-    def __init__(self):
+class Rest(Command):
+    # Not finished
+    def __init__(self, telnet_handler):
+        super().__init__(telnet_handler)
         self.hp_amount = None
         self.mp_amount = None
-        self.regex_cart = [RegexStore.rest, RegexStore.rest_benefits]
+        self.regex_cart = [
+            R.rest,  # TODO: add resting regexes
+            R.you_feel_the_benefits
+        ]
 
     def notify(self, regex, M_obj):
-        if regex in RegexStore.rest_benefits:
+        if regex in RegexStore.you_feel_the_benefits:
 
 
 # import statistics
@@ -66,15 +71,9 @@ class Prompt(object):
         if num_ticks > 1:
             self.__class__.tick_periods.append(self.__class__.tick_times[num_ticks-1] - self.__class__.tick_times[num_ticks-2])
 
-
-
-
-
         # if self.__class__.tick_times:
            #  self.__class__.tick_times.append(time.time() - self.__class__)
         # else:
-
-
 
     @classmethod
     def tick_period(cls):

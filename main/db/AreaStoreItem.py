@@ -56,8 +56,8 @@ class AreaStoreItem(BaseModel):
 
         # items = AreaStoreItem.select().join(Item).where(Item.level == level).join(ItemType).where(ItemType.model == itemtypemodel and ItemType.data == itemtypedata)
         items = AreaStoreItem.select().join(Item).where(Item.level == level).join(ItemType).where((ItemType.model==itemtypemodel) & (ItemType.data==itemtypedata))
-        print("AreaStoreItem get_by_item_type_and_level returning " + str(items))
-
+        #print("AreaStoreItem get_by_item_type_and_level returning " + str(items))
+        BaseModel.magentaprint("AreaStoreItem get_by_item_type_and_level returning " + str([i for i in items]))
         return items
 
     def get_buyable_armour(size, location, max_level=1):
@@ -71,7 +71,7 @@ class AreaStoreItem(BaseModel):
             # BaseModel.magentaprint("AreaStoreItem.get_armour_by_size_location_and_level() armours:")
             # for x in sized_armours + unsized_armours:
             #     BaseModel.magentaprint(str(x))
-            BaseModel.magentaprint("AreaStoreItem returning: " + str(sorted(sized_armours + unsized_armours, key=lambda a: -a.item.level)))
+            #BaseModel.magentaprint("AreaStoreItem.get_armour_by_size_location_and_level returning: " + str(sorted(sized_armours + unsized_armours, key=lambda a: -a.item.level)))
             return sorted(sized_armours + unsized_armours, key=lambda a: -a.item.level)
         else:
             raise Exception("MudItem.get_buyable_armour() called with invalid size.")
@@ -80,10 +80,12 @@ class AreaStoreItem(BaseModel):
         items = []
         itemtypemodel = ItemTypeModel.get_by_name(model_name).get().id
         itemtypedata = ItemTypeData.get_by_name(data_name).get().id
-        print("AreaStoreItem get model_name/data_name: " + model_name + '/' + data_name + ", ids: " + str(itemtypemodel) + "/" + str(itemtypedata) )
+        #BaseModel.magentaprint("AreaStoreItem get model_name/data_name: " + model_name + '/' + data_name + ", ids: " + str(itemtypemodel) + "/" + str(itemtypedata) )
+        # (Searches general armour and sized armour)
         items = AreaStoreItem.select().join(Item).where(Item.level<=level_max).join(ItemType).where((ItemType.model==itemtypemodel) & (ItemType.data==itemtypedata))
         # obj = NamedModel.select().where(fn.Lower(NamedModel.name) == fn.Lower(name)).get()
-        print("AreaStoreItem get_by_item_type_and_level_max returning " + str(items))
+        #print("AreaStoreItem get_by_item_type_and_level_max returning " + str(items))
+        # BaseModel.magentaprint("AreaStoreItem get_by_item_type_and_level_max returning " + str([i for i in items]))
         return items
 
     def get_by_name(item_name):

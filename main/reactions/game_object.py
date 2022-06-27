@@ -1,6 +1,5 @@
 
 
-
 class GameObject(object):
     # def __getitem__(self, key):
     def __init__(self, name):

@@ -180,6 +180,7 @@ class Character(object):
         self.spell_proficiency = self.spell_proficiencies[self.spell_type]
 
         if self.level >= 9:
+            # Isn't class important to this
             self.armor_level = 3  # steel
         elif self.level >= 4:
             self.armor_level = 2  # chain
@@ -202,7 +203,7 @@ class Character(object):
                 return 'broad sword'  # silver dagger (k. shaman) is good, stilleto (sentry) is better
         elif self.weapon_type == 'Blunt':
             if self.weapon_level >= 2:
-                return 'morning star'  # expensive, doesn't require 40%, also, war hammer (lvl2), footman's flail, large mace
+                return 'morning star'  # expensive, doesn't require 40%, also, war hammer (lvl2), footman's flail, large mace, maul hammer
             else:
                 return 'small mace'  # large mace (amethyst guards, vicars, Malbon)
         elif self.weapon_type == 'Pole':
@@ -223,7 +224,8 @@ class Character(object):
         'streetsweeper', 'shopper', 'window shopper', 'window cleaner', 'waitress', 'housewife', 'squirrel', 'milk maid', 'rabbit',
         'one man band', 'heather seller', 'irate teenager', 'peasant', 'one-armed beggar', 'village elder', 'small dog', 'tribesman',
         'searcher', 'delivery boy', 'traveller', 'wanderer', 'villager', 'vagrant', 'dropout', 'tramp', 'serf', 'dishwasher',
-        'punter','chicken'
+        'punter','chicken','coopers apprentice', 'diner', "cook's assistant", "miner's assistant", 'surveyor', 'pit pony', 'cleaner',
+        'hungy busker', 'beggar', 'dropout', 'one-armed beggar', 'sitting beggar'
     ]
     lvl1_red_monsters = [ # 8-15 exp
         'old kobold', 'kobold child', 'kobold dam'
@@ -231,8 +233,8 @@ class Character(object):
     lvl2_monsters = [
         'hawker', 'barmaid', 'smelly beggar', 'black crow', 'sheep', 'goose', 'singer', 'musician', 'spiv', 'bidder', 'dairy cow',
         'scholar', 'juggler', 'shepherd', 'gazelle', 'dancer', 'jongleur', 'clerk', 'stablehand', 'rich kid', 'bladesman',
-        "cook's assistant", "miner's assistant", 'mare', 'tabby cat', 'plumber'
-        'acolyte' #, 'penitent'  # aur
+        "cook's assistant", "miner's assistant", 'mare', 'tabby cat', 'plumber', 'old fisherman', 'hungry diner',
+        'acolyte','fletcher', 'baker' #, 'penitent'  # aur
     ]
     lvl2_red_monsters = [
         'kobold sentry', 'blond hooker', 'sultry hooker', 'kobold', 'spiv', 'drunken miner', 'kobold miner', 'kobold archer',
@@ -244,9 +246,9 @@ class Character(object):
     lvl3_monsters = [ # 25-35 exp
         'market official', 'street trader', 'field worker', 'harvester', 'horse', 'cow', 'doorman', 'stilt walker',  'messenger',
         'cashier', 'thatcher',  'tax inspector', 'journeyman', 'human miner', 'hobbitish miner', 'hawk', 'stacker', 'mill worker',
-        'The General', 'bouncer', 'yard worker', 'town clerk', 'stevedore'
+        'The General', 'bouncer', 'yard worker', 'town clerk', 'stevedore', 'scared trawlerman', 'cooper','digger'
         # 'robed pilgrim'  # aura
-        #'miner's mule"  # mill worker drops chain mail gloves
+        #"miner's mule"  # mill worker drops chain mail gloves
         # stevedore leather gloves
     ]
     lvl3_red_monsters = [
@@ -255,7 +257,9 @@ class Character(object):
     lvl4_monsters = [ # 45-60 exp
         'actor', 'grip', 'theatre goer', 'merchant', 'journeyman', 'logger', 'trader', 'butcher', 'acrobat', 'militia soldier',
         'carpenter', 'stagehand', 'hungry spider', 'cook', 'joiner', 'ranch hand', 'old rancher', 'tired ranch hand',
-        'drinking ranch hand', 'busy ranch hand', 'sawmill operator', 'vulture', 'auctioneer', 'barbecue cook', 'stable attendant',
+        'drinking ranch hand', 'busy ranch hand', 'sawmill operator', # steel mask!
+        'vulture', 'auctioneer', 'barbecue cook', 'stable attendant', 'dwarven miner', # first aid
+        'gnomish miner',
         'steer', 'sage' # Stoneheart Road
         # 'actress', #'young knight' # For blue balance
         #'miner'
@@ -267,7 +271,8 @@ class Character(object):
     ]
     lvl5_monsters = [
         'dwarven farm hand', 'dwarven barmaid', 'fort sentry', 'fur trader', 'aristocrat',
-        'nobleman', 'lyrist', 'logger', 'veteran', 'bruiser', 'axeman', 'seeker', 'hunter', 'bull', 'aspirant'
+        'nobleman', 'lyrist', 'logger', 'veteran', 'bruiser', 'axeman', 'seeker', 'hunter', 'bull', 'aspirant',
+        'shaft manager', 'mine foreman'
         # 'vicar', 'lay priest', 'protector', 'battered knight', 'orange picker' # makes trackgrind too red?
     ]
     lvl5_red_monsters = [
@@ -276,25 +281,30 @@ class Character(object):
     lvl6_monsters = [  # 100+ exp
         'dwarven field worker', 'dwarven bartender', 'school teacher', 'lyrist', 'nobleman', 'seeker', 'bull', 'hunter', 'usher',
         'sword swallower', 'archer', 'yard supervisor', 'sawmill supervisor', 'large spider', 'blacksmith', 'farm foreman',
-        'Old Man James', 'dwarven traveller', 'Goourd', 'tourney organiser', 'Greenbough the Dryad'
+        'Old Man James', 'dwarven traveller', 'Goourd', # large sack
+        'tourney organiser', 'Greenbough the Dryad'
         #'sentry' stand in pairs unfortunately...
     ]
     lvl6_red_monsters = [ #1574 for gnoll camp
-        'gnoll sentry', 'bandit swordsman', 'gnoll spearsman', 'gnoll raider', 'gnoll bandit'
+        'gnoll sentry', 'bandit swordsman', # silver ring
+        'gnoll spearsman', 'gnoll raider', 'gnoll bandit'
     ]
     lvl7_monsters = [ # ~200 exp
-        'dwarven cook', 'swordsman', 'fort sergeant', 'oremaster', 'giant spider', 'rock spider', 'Aldo', 'dwarven trader',
+        'dwarven cook', 'swordsman', 'fort sergeant', 'oremaster', # steel collar, granite rod
+        'giant spider', 'rock spider', 'Aldo', 'dwarven trader',
         'gnoll chaplain', 'Cheryn', 'orc scout', 'bouncer', 'rancher sentry', 'dwarven shepherd', 'clown', 'war horse,'
-        'top ranch hand', 'raging bull'  # top ranch hand dusty blue
+        'top ranch hand', 'raging bull', 'master miner'  # top ranch hand dusty blue
         # oremaster steel collar (m) for paladin
         # 'Cheryn (E)'
         # 'robed priest',
     ]  # There are also lvl 5 rancher sentries... they're a bit blue
     lvl8_monsters = [  # There are 2 amethyst guards and 3 amber guards of this level
-        'Alaran the Market Manager', 'hauler', 'Farmer Malbon', 'sonneteer', 'Tag', 'mine manager', 'artificer',
+        'Alaran the Market Manager', # small chain hood
+        'hauler', 'Farmer Malbon', 'sonneteer', 'Tag', 'mine manager', 'artificer',
         'Dini Stonehammer', # horseman's flail 500g
+        'Douvan' # 472 gold
         'Olmer', 'Thereze', 'Farmer Viladin', 'Rancher Renstone', 'berzerker', 'dwarven hunter',
-        'initiate', 'berserk orc', 'hedge knight', 'refinery supervisor', 'owlbear', #'sentry'
+        'initiate', 'berserk orc', 'hedge knight', 'refinery supervisor', 'owlbear','warrior' #'sentry'
         # 'elven trader', 'old knight', 'dusty warrior'
         # dark warrior  sacrificing priestess
         # forger        weathered barbarian
@@ -304,7 +314,7 @@ class Character(object):
     ]  # elves are very blue
     lvl9_monsters = [ # ~300 exp
         'director', 'Elder Barthrodue', 'Farmer Calmor', 'orc warrior', 'giant beetle', 'white knight',  # 380
-        'weathered barbarian', 
+        'weathered barbarian',
         'Trent the Merchant' # silver rod guarded by Egan
         #'old man'
         # gnoll sub-chief
@@ -313,12 +323,12 @@ class Character(object):
     lvl10_monsters = [ # 350+
         'wounded knight', # -2 difficulty
         'The Master of Ceremonies', # 280
-        'Dame Brethil', 'Kelluran', 'Jerrek', 'Rimark', 'Commander Rilmenson', 'Farmer McDermott', 'dwarven blacksmith'   # 400
+        'Dame Brethil',  #makeup kit, trade to dalla, get dalla's blessing
+        'Kelluran', 'Jerrek', 'Rimark', 'Commander Rilmenson', 'Farmer McDermott', 'dwarven blacksmith'   # 400
         'abbot', # 445
         'silver knight',  # 380, +1 difficulty
         'barbarian cook', "shaman's assistant",
         'The Ringmaster', 'Marie', 'market guard', #(<=10 (need to check these))
-        'surveyor','master miner','shaft manager','pit pony','cleaner' # check the levels on these
         # gnomish miner
         # Maybe try master miners then mine managers
         # Mine track looks tougher than others
@@ -336,7 +346,8 @@ class Character(object):
         'barbarian shaman', 'barbarian warrior', 
         'Hurn the Smith', # 600xp, 733g
         'Horbuk', # steel collar like oremaster
-        'The Floor Manager', 'Tardan', 'ranch foreman', 'Gorban', 'shadowed huorn', # dusty blue
+        'The Floor Manager', 'Tardan', 'ranch foreman', 'Gorban', 'shadowed huorn', # heartwood nugget
+        # dusty blue
         'Boris Ironfounder', 'Lady Denlise', 'Annette Plover', 'house guest', 'Martin' # fireball/gold dagger/810 exp
         #'The Saga Teacher', 'The Amber Mage', # cannot be killed ("This is not possible!")
         # Tardan 560 exp
@@ -351,20 +362,63 @@ class Character(object):
     ]
     lvl14_monsters = [
         'cave troll guard', 'Rancher Plover', # assassin's dagger
-        'Team Leader Egan', 'Qimoth', "Th'kit the HorseMaster", 'warmonger',
-        'Lord Tamaran', # aaashaaal's gift
+        'Team Leader Egan', # night blade (E)
+        'Qimoth', "Th'kit the HorseMaster", 'warmonger',
+        'Lord Tamaran', # aaashaaal's gift (protect air), diamantium cross (trade to Douvan for ram staff)
         'Olarma', 'castle priest',
         'The Manic Soothsayer' # dragon claws (thief boots)
     ]
-    lvl15_monsters = ['Thomas Ironheart', 'Earl Mardley', 'The Immigration Officer', 
-    'Mayor Demlin',  # crumpled parchment
-    'Madame Zara', # Can only fit one in the tent
-    'Rogue Oak'] # confirm Madame Zara
+    # Farmer Woldis
+    # Shady Copse without a period is an ambush of bugbears
+    # paths cross
+    # Path, hut, 
+    # Cal the Hermit
+    # Priestly ghost
+    # go floor Back Cellar
+    # Farmer Grangers Ghost
+    # fens is the swamp
+    # fen lich
+    # daemons in lich area
+    # wracked daemon
+    # Fens road is a swamp
+    # trail? wagon? North of the fort "pathway"
+    # large dell
+    # diamantium cross is good for a ram staff
+    # kill a wraith
+    # lich on blood rock
+    # weapons master
+    # Esrhae
+
+    lvl15_monsters = [
+        'Thomas Ironheart', # 1000 gold
+        'Earl Mardley',  # chased whisky flask healing item
+        'The Immigration Officer', 
+        'Mayor Demlin',  # crumpled parchment
+        'Madame Zara', # Can only fit one in the tent
+        'Rogue Oak',
+        'huorn shepherd',
+        'Queen Dalla'
+    ] # confirm Madame Zara
+    # Dalla will take golden pots
+    # trade diamantium cross for rusty key at Douvan (door)
+    # best pole weapon is there silver ram staff
+    # arielle gets mad when you kill her holy sisters
+    # Shaldena the Red
+    # Lyron
+    # bush exit
+    # Choorga can't find
+    # ongrak
+    # Druid 1000 gold
+    # stepping stones east
+    # Get choorga's head and give the tiger eye gem to lyron
+    # invis potions, buff, go in the room, and all attack at once
     lvl16_monsters = ['Holbyn', # Holby closes at night
     'Ordaran the White', 'Pansy', 'Vickie', 'Matriarch Sara']  # Hawk camp
     lvl17_monsters = ['Faldomet', 'Patriarch Jedd Morhennon', 'Farside', 'Lord Arduis', 'Lady Arielle']
-    lvl18_monsters = ['Lady Jenlira', 'Deep Root'] # vigil knight guards the entrance
-    lvl20_monsters = ['The Archbishop'] # needles me at 16
+    lvl18_monsters = ['Lady Jenlira', # vigil knight guards the entrance
+    'Deep Root',
+    'weapons master'] 
+    lvl20_monsters = ['The Archbishop', 'Haram','hero'] # needles me at 16
     # A list of monsters redundant to the above lists that
     # I may want to kill even if they are too low of level.
     # Mostly hostiles and things that don't let you loot.
@@ -372,7 +426,6 @@ class Character(object):
     # Lich on blood rock (shadow lich). Giant bog troll. Wyvern
     # "Grand Master Yang-Shi" "The Sensei"
     # "The Master Artificer" (That is not possible!)
-    # scared trawlerman
     # Combat Master
     # Green Branch
     # Haelyn
@@ -383,7 +436,6 @@ class Character(object):
     # Farmer Viladin
     # ogrish guard
     # caretaker
-
     preferred_lvl_1_2_monsters = [
         'oaf', 'wanderer', 'thug', 'spiv', 'kobold sentry', 'tired hooker', 'waitress',
         'blond hooker', 'angry hooker', 'sultry hooker', 'journeyman', 'housewife', # 'acolyte'
@@ -516,17 +568,21 @@ class Character(object):
             #adam.MANA_TO_ENGAGE = 0
 
     def max_vigor(self):
-        return self.info.pty / 2.3
+        #return self.info.pty / 2.3
+        return self.info.pty * 0.7
         # if self.health_monitor.vig_amounts:
         #     return max(self.health_monitor.vig_amounts)
         # else:
         #     return self.info.pty / 2.3
 
     def max_mend(self):
-        if self.health_monitor.mend_amounts:
+        if hasattr(self,'health_monitor') and self.health_monitor.mend_amounts:
+            # Eh health_monitor doesn't exist (yet?)
             return max(self.mend_amounts)
         else:
-            return 9
+            #return 9
+            return self.info.pty*26/21
+            # Maybe using a data point at less pty would have less projection error
 
         # if self.__class__.tick_times:
            #  self.__class__.tick_times.append(time.time() - self.__class__)

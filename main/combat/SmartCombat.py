@@ -18,24 +18,24 @@ class SmartCombat(CombatObject):
 
     def __init__(self, telnetHandler, character, weapon_bot):
         super().__init__(telnetHandler)
-        self.thread = None
-        self.target = None
+        self.thread   = None
+        self.target   = None
         self.stopping = None
         self.broken_weapon = ''
         self.activated = False
-        self.kill = Kill(telnetHandler)
-        self.cast = Cast(telnetHandler)
-        self.use = Use(character, telnetHandler)
+        self.kill  = Kill(telnetHandler)
+        self.cast  = Cast(telnetHandler)
+        self.use   = Use(character, telnetHandler)
         self.wield = Wield(character, telnetHandler)
-        # self.wear = Wear(character, telnetHandler)
+        #self.wear = Wear(character, telnetHandler)
         self.abilities = character._class.abilities.values()
 
         # self.heal_abilities = [a for a in self.abilities if isinstance(a, HealAbility)]
         # # self.heal_abilities_that_fail = [a for a in self.abilities if isinstance(a, HealAbility) and isinstance(a, AbilityWithFailure)]
         # self.fast_combat_abilities = [a for a in self.abilities if isinstance(a, FastCombatAbility)]
         # self.combat_abilities = [a for a in self.abilities if isinstance(a, CombatAbility)]
-        self.heal_abilities = character._class.heal_skills
-        self.buff_abilities = character._class.buff_skills
+        self.heal_abilities        = character._class.heal_skills
+        self.buff_abilities        = character._class.buff_skills
         self.slow_combat_abilities = character._class.slow_combat_skills
         self.fast_combat_abilities = character._class.fast_combat_skills
 
@@ -47,28 +47,45 @@ class SmartCombat(CombatObject):
         if spell_percent == 0 and self.black_magic:
             self.favourite_spell = Spells.rumble if Spells.rumble in character.spells else \
                                    Spells.hurt if Spells.hurt in character.spells else \
-                                   Spells.burn if Spells.burn in character.spells else Spells.blister
+                                   Spells.burn if Spells.burn in character.spells else \
+                                   Spells.blister
         else:
             self.favourite_spell = Spells.rumble if spell_percent == character.info.earth else \
                                    Spells.hurt if spell_percent == character.info.wind else \
-                                   Spells.burn if spell_percent == character.info.fire else Spells.blister
+                                   Spells.burn if spell_percent == character.info.fire else \
+                                   Spells.blister
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
         self.character = character
         self.regex_cart.extend([
-            RegexStore.prompt, RegexStore.weapon_break, RegexStore.weapon_shatters, RegexStore.mob_attacked, RegexStore.armour_breaks,
-            RegexStore.mob_arrived, RegexStore.mob_wandered, RegexStore.mob_left
+            RegexStore.prompt, 
+            RegexStore.weapon_break, 
+            RegexStore.weapon_shatters, 
+            RegexStore.mob_attacked, 
+            RegexStore.armour_breaks,
+            RegexStore.mob_arrived, 
+            RegexStore.mob_wandered, 
+            RegexStore.mob_left
         ])
         self.mob_target_determinator = MobTargetDeterminator()
         # We can let SmartCombat do a few extra things, like make kill/cast/use commands, but let's not go overboard.
         # Let the parent make WeaponBot.  I think the parent should make use of an Initializer.
         self.weapon_bot = weapon_bot
         self.set_pot_thread = False
+        self.healing_spell='v' 
+        # command handler can change this
+        # Right now human can hit 'cc m' to switch the spell to mend
+        # I think command handler needs to be able to hit self.black_magic, in theory
+        # Maybe not... just support 'cc m' and 'cc v'
+        # With the entire words...
+        # So nevermind a target right... well we have kk2... then they could hit kkc to switch it
+        # That'll do...
 
-    def notify(self, regex, M_obj):
+    def notify(self, regex, match):
         # Notifications are used for healing
         # So SmartCombat needs to be registered/unregistered... or have a boolean for whether we're in combat.
         # I prefer the latter.
-        super().notify(regex, M_obj)
+        # magentaprint("SmartCombat notify " + match.re.pattern) # gets prompt (too many prints)
+        super().notify(regex, match)
         if regex in RegexStore.prompt:
             if self.activated:
                 if self.should_use_heal_ability():
@@ -88,34 +105,37 @@ class SmartCombat(CombatObject):
             magentaprint("SmartCombat.fleeing = True")
             self.fleeing = True
         elif regex in RegexStore.weapon_break or regex in RegexStore.weapon_shatters:
-            magentaprint("SmartCombat weapon break: " + str(M_obj.group('weapon')))
-            self.broken_weapon = M_obj.group('weapon')
+            magentaprint("SmartCombat weapon break: " + str(match.group('weapon')))
+            self.broken_weapon = match.group('weapon')
         elif regex in RegexStore.armour_breaks:
-            magentaprint("SmartCombat armour break: " + str(M_obj.group(1)) + ', len ' + str(len(M_obj.group(1).split(' '))))
-            if len(M_obj.group(1).split(' ')) >= 2:
-                if M_obj.group(1).split(' ')[1] == 'ring':
+            magentaprint("SmartCombat armour break: " + str(match.group(1)) + ', len ' + str(len(match.group(1).split(' '))))
+            if len(match.group(1).split(' ')) >= 2:
+                if match.group(1).split(' ')[1] == 'ring':
                     self.broke_ring = True
         elif regex in RegexStore.mob_arrived:
             self.target = self.mob_target_determinator.on_mob_arrival(
                 self.target,
-                self.character.mobs.read_mobs(M_obj.group('mobs')),
+                self.character.mobs.read_mobs(match.group('mobs')),
                 self.character.mobs.list
             )
             # magentaprint("SmartCombat mob arrived, new target: " + str(self.target))
         elif regex in RegexStore.mob_wandered + RegexStore.mob_left:
             self.target = self.mob_target_determinator.on_mob_departure(
                 self.target,
-                self.character.mobs.read_match(M_obj),
+                self.character.mobs.read_match(match),
                 self.character.mobs.list
             )
             pass
+        # magentaprint("SmartCombat notify done " + match.re.pattern)
 
     def stop(self):
         super().stop()
         self.activated = False
 
     def should_use_heal_ability(self):
-        return len(self.heal_abilities) > 0 and self.heal_ability_is_up and \
+        return \
+            len(self.heal_abilities) > 0 and \
+            self.heal_ability_is_up and \
             self.character.HEALTH <= self.character.maxHP - 0.9*self.heal_abilities[0].max_amount
 
     def needs_big_heal(self):
@@ -147,15 +167,24 @@ class SmartCombat(CombatObject):
 
     def stop(self):
         self.use.stop()
-        self.stopping = True
+        #self.stopping = True
+        super().stop() #.stopping
 
     def keep_going(self, target=None):
-        self.stopping = False
-        self.casting = True
+        # self.stopping = False
+        # self.casting = True
+        # Leave casting how it is, just let the thread continue
         self.set_target(target)
+        super().keep_going()
 
     def start_thread(self, target, spell=None):
-        self._initialize(target, spell)
+        # Doesn't ThreadingMixin do this?
+        self.set_target(target)
+        self.spell = spell if spell else self.favourite_spell
+        magentaprint("SmartCombat spell set to " + str(self.spell))
+        self.set_pot_thread = False
+        self.kill.stop()
+        self.cast.stop()
         # if self.thread is None or not self.thread.is_alive():
         if self.thread and self.thread.is_alive():
             self.keep_going(target)
@@ -163,12 +192,6 @@ class SmartCombat(CombatObject):
             # not is_alive() means it won't look at stopping anymore so we're good.
             self.thread = Thread(target = self.run)
             self.thread.start()
-
-    def _initialize(self, target, spell=None):
-        self.set_target(target)
-        self.spell = spell if spell else self.favourite_spell
-        magentaprint("SmartCombat spell set to " + str(self.spell))
-        self.set_pot_thread = False
 
     def set_target(self, target=None):
         if target:
@@ -213,11 +236,20 @@ class SmartCombat(CombatObject):
                 damage = self.character.maxHP - self.character.HEALTH
                 if self.stopping:
                     continue
-                elif not self.black_magic and ((self.character.MANA >= 2 and damage > self.character.max_vigor()) or \
-                     (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7)):
-                     # (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7 and damage > self.character.hptick()):
+                elif not self.black_magic and \
+                    self.character.MANA >= 2 and \
+                    damage >= self.character.max_vigor() or \
+                    (self.character.MANA >= self.character.maxMP and damage > self.character.max_vigor()*0.75):
+                    # Let the first one come out early
+                    if damage >= self.character.max_mend() + self.character.hp_tick and self.character.MANA >= 5:
+                        self.do_cast('m')
+                    else:
+                        self.do_cast('v')
+                     # (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7 and damage > self.character.hp_tick):
                     # TODO: cast vigor if a tick is about to come and we're full mana
-                    self.do_cast('v')
+                    # How will we do mend wounds... maybe hp below 50%? start with supporting manual
+                    # self.do_cast(self.healing_spell)
+                    # (This doesn't consider healing teammates: cc will turn off smart combat for manual teammate healing)
                 elif self.mob_charmed:
                     time.sleep(min(0.2, self.kill.wait_time()))
                     # time.sleep(min(0.2, self.kill.wait_time() + 0.05))
@@ -281,8 +313,11 @@ class SmartCombat(CombatObject):
                 return
 
         # self.attack_wait()
-        self.kill.execute(self.target)
-        self.kill.wait_for_flag()
+        # self.kill.execute(self.target)
+        # self.kill.wait_for_flag()
+        self.kill.execute_and_wait(self.target) # Wait here please??? Thank you 
+
+        magentaprint("Debugging smart combat should catch kill.error: {0}".format(self.kill.error))
         if self.kill.error:
             self.stop()
         # self.character.ATTACK_CLK = time.time()  # TODO: Kill should be smart enough to keep the clock set

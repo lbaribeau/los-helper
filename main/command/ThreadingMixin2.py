@@ -5,10 +5,19 @@ from itertools import chain
 from command.Command import Command
 from misc_functions import magentaprint
 
-class ThreadingMixin2(Command):  
-    # I don't like that the first one uses class methods.
+class ThreadingMixin2(Command):
+    # "prayc" or "hastec" or "berserkc"
+    # Since abilities can fail, it's nice to have an object that knows the cooldown
+    # You can use this to queue up the command to go when it's ready
+    # And this is done with a thread.
+    # ThreadingMixin2 actually doesn't bother inheriting Thread though,
+    # the Thread is made inline with the constructor.
+
+    # This one doesn't use class variables like the first ThreadingMixin.
+    # For this one, I don't like that.
     # I also don't like copying code but - I can only do thing at a time.
     # Children need to set self.end_thread_regex_cart
+
     def __init__(self, telnetHandler):
         super().__init__(telnetHandler)
         self.thread = None

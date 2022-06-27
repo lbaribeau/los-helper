@@ -21,13 +21,16 @@ from comm import RegexStore
     # commands can just copy Info and Whois.
 
 class SimpleCommand(BotReactionWithFlag):
-    # Commands like Whois, Info, Spells with no cooldown and no success/fail, only execute.
-    # command
+    # Command with no cooldown, no success/fail, only execute.
+    # ie. whois, info, spells
+    # eq maybe
     def __init__(self, telnetHandler):
+        super().__init__() #threading.Event
         self.telnetHandler = telnetHandler
 
     @classmethod
     def send(cls, telnetHandler, target=None):
+        #self.
         if target:
             telnetHandler.write(cls.command + ' ' + target)
         else:
@@ -36,6 +39,7 @@ class SimpleCommand(BotReactionWithFlag):
     def execute(self, target=None):
         # Same as send() but gets called from instance
         # (send() doesn't need an instance but needs telnetHandler put in)
+        self.clear()
         self.send(self.telnetHandler, target)
         # self.wait_for_flag()  # Just expect caller to call wait.
 
@@ -136,7 +140,9 @@ class Command(SimpleCommand):
         elif self.error and self._executing:
             # if (regex in RegexStore.not_here and not self._waiter_flag) or regex not in RegexStore.not_here:  
             # if (regex in RegexStore.not_here and not self._waiter_flag) or regex not in RegexStore.not_here:  
-            magentaprint(str(self) + " clearing timer... wf is " + str(self._waiter_flag) + ', class wf is ' + str(self.__class__._waiter_flag) + 'regex is ' + regex[0:10] + '...')
+            #magentaprint(str(self) + " clearing timer... wf is " + str(self._waiter_flag) + ', class wf is ' + str(self.__class__._waiter_flag) + 'regex is ' + regex[0:10] + '...')
+            #magentaprint(str(self) + " clearing timer... wf is " + str(self.is_set()) + ', class wf is ' + str(self.__class__._waiter_flag) + 'regex is ' + regex[0:10] + '...')
+            magentaprint(str(self) + " clearing timer... wf is " + str(self.is_set()) + 'regex is ' + regex[0:10] + '...')
             self.clear_timer()
         elif self.please_wait1:
             self.please_wait_time = int(M_obj.group(1))
@@ -252,9 +258,10 @@ class Command(SimpleCommand):
 
         # magentaprint("Command.send: cls.timer - time.time(): %.1f" % round(cls.timer - time.time(), 1))
 
-        cls._waiter_flag = False
+        cls._waiter_flag = False 
             # We set the waiter flag here because the 'Please wait' notify uses it to 
             # know that the 'Please wait' corresponds to the current command
+        # Eh we need 'self' for threading.Event - need objects for state (an object)
 
         if cls.wait_time() < 3.0:
             # time.sleep(max(0, cls.timer - time.time()))
@@ -283,7 +290,7 @@ class Command(SimpleCommand):
         # (send() doesn't need an instance but needs telnetHandler put in)
         self.result = ''
         self._executing = True
-        super().execute(target)  # just calls send
+        super().execute(target)  # sets the waiter flag and calls send
 
     def execute_and_wait(self, target=None):
         super().execute_and_wait(target)

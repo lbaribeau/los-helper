@@ -23,8 +23,11 @@ class ArmourBot(MiniBot):
         #     R.armour_breaks[0]: self.react_to_armour_break,
         # }
         # self.regex_cart = self.actions.keys()
-        self.actions = {R.armour_breaks[0]: self.react_to_armour_break}
-        self.regex_cart = [R.armour_breaks]
+        self.regex_cart = [R.armour_breaks, R.repair]
+        self.actions = {
+            R.armour_breaks[0]: self.react_to_armour_break,
+            R.repair[0]: self.react_to_repair
+        }
         # magentaprint("ArmourBot regex cart: " + str(self.regex_cart))
         # self.thread = None  # smithy_bot or shopping_bot
         # self.stopping = False  # backwards compatibility
@@ -57,6 +60,11 @@ class ArmourBot(MiniBot):
             return
         else:
             self.broken_armour.append(match.group('item'))
+
+    def react_to_repair(self, match):
+        if match.group(1) in self.broken_armour:
+            magentaprint("Armour bot removed " + match.group(1) + "from self.broken_armour.")
+            self.broken_armour.remove(match.group(1))
 
     def suit_up(self):
         magentaprint("ArmourBot suit_up()")
@@ -216,7 +224,7 @@ class ArmourBot(MiniBot):
                 # level = ArmourLevelDeterminator().determine(self.char.class_string)
                 size = self.get_size(self.char.race)
                 level = self.get_armour_level(self.char.level)  # checks class and level (low level paladin can't wear steel yet)
-                magentaprint("determine_shopping_list() size " + size + ", slot: " + str(slot) + ", level: " + str(level))
+                #magentaprint("determine_shopping_list() size " + size + ", slot: " + str(slot) + ", level: " + str(level))
                 if slot == 'wielded' or slot == 'seconded':
                     continue
                 if slot == 'face' or slot == 'holding':
@@ -226,7 +234,7 @@ class ArmourBot(MiniBot):
                 slot = slot.title()
                 # items = AreaStoreItem.get_by_item_type_and_level_max(size, slot, level)
                 items = AreaStoreItem.get_buyable_armour(size, slot, level)
-                magentaprint("determine_shopping_list() items: " + str(items))
+                #magentaprint("determine_shopping_list() items: " + str(items))
                 # if items:
                 #     if len(items) > 0:
                 #         magentaprint(str(len(items)))  # Object of type 'SelectQuery' has no len()
@@ -239,13 +247,16 @@ class ArmourBot(MiniBot):
                 #     # 'SelectQuery' object has no attribute 'sort'  ... maybe it is an iterator though
                 #     magentaprint("determine_shopping_list chose " + items[0].item.name)
                 #     desired_items.append(items[0])
-                dir(items)
+                #dir(items)
+                # magentaprint("ArmourBot determine_shopping_list() size {0}, slot {1}, level {2}, found {3}".format(size, slot, level, str(items)))
                 for item in items:
                     magentaprint("Won't print if there's no valid item: " + str(item))
                     # Don't bother sorting for now
                     desired_items.append(item)
                     break
 
+        #magentaprint("Armour bot shopping list " + str(desired_items))
+        magentaprint("Armour bot shopping list " + str([asi.item.name for asi in desired_items]))
         return desired_items
         # TODO: One issue: shields aren't sized - so queries that use any size need to return the shield, whose type may be
         # the generic armour type.   SELECT "t1"."id", "t1"."area_id", "t1"."item_id" FROM "areastoreitem" AS t1 INNER JOIN "item"
@@ -310,7 +321,7 @@ class ArmourBot(MiniBot):
         return self.char.class_string in ['Ran', 'Cle', 'Ass']
 
     def steel(self):
-        magentaprint("ArmourBot.steel() class string is: " + str(self.char.class_string))
+        #magentaprint("ArmourBot.steel() class string is: " + str(self.char.class_string))
         return self.char.class_string in ['Pal', 'Dk', 'Bar', 'Fig', 'Brd']
 
     def go_to_nearest_smithy(self):

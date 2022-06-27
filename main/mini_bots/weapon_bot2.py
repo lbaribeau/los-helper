@@ -11,11 +11,52 @@ from mini_bots.smithy_bot   import SmithyBot
 from mini_bots.mini_bot     import MiniBot
 from mini_bots.shopping_bot import ShoppingBot
 
-class WeaponBot(MiniBot):
-    # def __init__(self, char, command_handler, simple_weapon_bot):
-    def __init__(self, char, command_handler):
+# Ok we want....
+# If no weapons, buy TWO WEAPONS
+# If one weapon, buy one weapon
+# What offhand do we want... do we want to use up something available...
+# Don't even bother - keep it simple - sell that one and only manage one weapon
+# (Sell the throwing stars)
+# Say user wielded something - then use that one... could use that one as offhand too, right?
+# Yes...
+# We could try fully populating the DB
+# We don't want to go too expensive though
+# Can we untie the shield part and make that armour? No we do want dual wield, right?
+# Let ruorg use a crossbow...
+# So he'll carry two crossbows and 4 throwing stars
+# No two crossbows and just the plussed throwing stars
+# How do we decide whether to use a shield? 
+# Just always use a shield and a one-hand (keep it simple)
+# Have a list of acceptable weapons... do we use the DB to decide?
+# Just hardcode it?
+# Write some logic like, if we can buy level 2, don't use level 1
+# If we are wielding something, assume it's fine.
+# Save it to repair it.
+# Choose a weapon when the smithy breaks it.
+# We are just avoiding unarmed combat here.
+# Could we repair something in terrible condition?
+# How do we make sure one weapon is good
+# So first we need to be able to check the inventory for the weapon.
+# Ok so on init... 
+# Make sure we have our one-hand and our shield on
+# And we have an offhand in the bag
+# Not init but check_weapons
+
+# So, we just need, wielding something, and something available in the bag
+# Ideally in good condition
+# Shattering can always happen
+# But having something available in the bag will be way less scary than just having one wepon
+# So, who uses who here...
+# It would be nice to have the wield command tell us what's going on
+# But maybe we don't need it
+# Nevermind logic for temp weapon
+
+# I want to simplify this... I want to guarantee we have a replacement weapon in the bag
+
+class MainhandWeaponBot(MiniBot):
+    def __init__(self, chararacter, command_handler):
         super().__init__()
-        self.char = char
+        self.character = character
         self.command_handler = command_handler
         # self.simple_weapon_bot = simple_weapon_bot
 
@@ -24,13 +65,19 @@ class WeaponBot(MiniBot):
             # R.off_hand: (lambda self, match : self.second = match.group('weapon')),
             # R.weapon_break: lambda match : if
             R.you_wield[0]:       self.react_to_wield,
-            R.off_hand[0]:        self.react_to_off_hand,
-            R.weapon_break[0]:    self.react_to_weapon_break,
-            R.weapon_shatters[0]: self.react_to_weapon_break,
+            R.weapon_break[0]:    self.react_to_weapon_break, # Can be repaired
+            R.weapon_shatters[0]: self.react_to_weapon_break, # Is destroyed
             R.shield[0]:          self.set_shield_or_offhand
+            R.off_hand[0]:        self.react_to_off_hand,
         }
         # self.regex_cart = self.actions.keys()
-        self.regex_cart = [R.you_wield, R.off_hand, R.weapon_break, R.weapon_shatters, R.shield]
+        self.regex_cart = [
+            R.you_wield, 
+            R.weapon_break, 
+            R.weapon_shatters, 
+            R.off_hand, 
+            R.shield
+        ]
         self.broken_weapon = []
         self.possible_weapons = []
         self.shield_or_offhand = False
@@ -38,8 +85,8 @@ class WeaponBot(MiniBot):
 
     def add_in_map(self, mud_map):
         # Methods which require navigation or knowing possible weapons to wield require this to be called
-        self.smithy_bot   = SmithyBot(self.char, self.command_handler, mud_map)
-        self.shopping_bot = ShoppingBot(self.char, self.command_handler, mud_map)
+        self.smithy_bot   = SmithyBot(self.character, self.command_handler, mud_map)
+        self.shopping_bot = ShoppingBot(self.character, self.command_handler, mud_map)
 
     def notify(self, regex, match):
         self.actions[regex](match)
@@ -57,9 +104,11 @@ class WeaponBot(MiniBot):
         self.broken_weapon.append(match.group('weapon'))
 
         if hasattr(self, 'weapon') and self.weapon == match.group('weapon'):
-            magentaprint("WeaponBot deleted self.weapon.")
-            del self.weapon  # self.weapon can be incorrectly deleted if the offhand is the same
+            # We have a problem here of not knowing whether it was main hand or offhand
+            magentaprint("WeaponBot deleted self.weapon, so it knows we are unarmed in main hand.")
+            del self.weapon  
         elif hasattr(self, 'second') and self.second == match.group('weapon'):
+            magentaprint("WeaponBot realized offhand broke.")
             self.shield_or_offhand = False
             del self.second
 
@@ -70,7 +119,35 @@ class WeaponBot(MiniBot):
     def run(self):
         self.check_weapons()
 
+    def has_weapon_wielded(self):
+        return hasattr(self, 'weapon')
+    # def needs_weapon(self):
+    #     #return not self.has_weapon()
+    #     return not (self.has_weapon() and self.has_weapon_in_inventory())
+    def needs_to_shop(self):
+        if self.has_weapon_wielded():
+            return self.count_weapons_in_inventory()==0
+        else:
+            return self.count_weapons_in_inventory()<2
+    # def has_weapon_in_inventory(self):
+    #     # return self.command_handler.inventory.
+    #     # Maybe keep it in a sack if not the keep_list
+    #     # We have to rewield in combat
+    #     # if any([p in self.command_handler.inventory.list for p in self.get_possible_weapons()]):
+    #     return self.count_weapons_in_inventory() > 0
+    def count_weapons_in_inventory(self):
+        return sum([self.command_handler.inventory.list.count(p) for p in self.get_possible_weapons()])
+    def has_broken_weapon_in_inventory(self):
+        return any([self.command_handler.inventory.has_broken(p) for p in self.get_possible_weapons()])
+    def has_usable_weapon_in_inventory(self):
+        return any([self.command_handler.inventory.has_unbroken(p) for p in self.get_possible_weapons()])
+    def needs_smithy(self):
+        return self.has_broken_weapon_in_inventory() and not self.has_unbroken_weapon_in_inventory()
+
     def check_weapons(self):
+        if self.needs_weapon():
+            if self.has_weapon_in_inventory():
+
         if self.temporary_weapon:
             self.correct_temp_weapon()
         elif self.broken_weapon:
@@ -139,16 +216,16 @@ class WeaponBot(MiniBot):
                 return w
 
     def try_rewielding_each_in_inventory(self, command_object, weapon_name):
-        ref = self.char.inventory.get_reference(weapon_name, 2)
+        ref = self.character.inventory.get_reference(weapon_name, 2)
 
-        while self.char.inventory.get(ref) and self.char.inventory.get(ref).obj.name == weapon_name:
-            if self.char.inventory.get(ref).usable:
+        while self.character.inventory.get(ref) and self.character.inventory.get(ref).obj.name == weapon_name:
+            if self.character.inventory.get(ref).usable:
                 command_object.execute_and_wait(ref)
 
                 if command_object.success:
                     return True
                 else:
-                    self.char.inventory.set_broken(ref)
+                    self.character.inventory.set_broken(ref)
 
             ref = MobTargetDeterminator().increment_ref(ref)
 
@@ -165,7 +242,7 @@ class WeaponBot(MiniBot):
     #     self.go_buy_and_wield(bw)
 
     def rewield(self, weapon_ref):
-        weapon_name = self.char.inventory.name_from_reference(weapon_ref)
+        weapon_name = self.character.inventory.name_from_reference(weapon_ref)
         self.command_handler.smartCombat.wield.persistent_execute(weapon_ref)
         self.command_handler.smartCombat.wield.wait_for_flag()
         if self.command_handler.smartCombat.wield.success:
@@ -178,7 +255,6 @@ class WeaponBot(MiniBot):
             else:
                 self.second = weapon_name  # ??? This should get set by the notify
         else:
-            #magentaprint("self.command_handler.")
             raise Exception("WeaponBot.rewield() wield error!")
 
     def try_weapons_from_inventory(self, weapon_name):
@@ -189,12 +265,12 @@ class WeaponBot(MiniBot):
                 # self.second = w  # let the reaction do it
                 return True
         else:
-            ref = self.char.inventory.get_first_reference(weapon_name)
+            ref = self.character.inventory.get_first_reference(weapon_name)
             magentaprint("WeaponBot.try_weapons_from_inventory() weapon name/ref: " + str(weapon_name) + "/" + str(ref))
 
-            # while ref and self.char.inventory.get(ref).obj.name == weapon_name:  # ??? Should work, but had get return None after broken weapon.
-            while ref and self.char.inventory.get(ref) and self.char.inventory.get(ref).obj.name == weapon_name:
-                if self.char.inventory.get(ref).usable:
+            # while ref and self.character.inventory.get(ref).obj.name == weapon_name:  # ??? Should work, but had get return None after broken weapon.
+            while ref and self.character.inventory.get(ref) and self.character.inventory.get(ref).obj.name == weapon_name:
+                if self.character.inventory.get(ref).usable:
                     self.command_handler.smartCombat.wield.execute_and_wait(ref)
 
                     if self.command_handler.smartCombat.wield.result in R.already_wielding:
@@ -207,7 +283,7 @@ class WeaponBot(MiniBot):
                         else:
                             raise Exception("WeaponBot.try_weapons_from_inventory confusion.")
                     elif self.command_handler.smartCombat.wield.result in R.weapon_broken:
-                        self.char.inventory.unset_usable(ref)
+                        self.character.inventory.unset_usable(ref)
                     elif self.command_handler.smartCombat.wield.success:
                         return True
                     else:
@@ -248,12 +324,12 @@ class WeaponBot(MiniBot):
     @property
     def should_go_to_smithy(self):
         return (not hasattr(self, 'weapon') or self.temporary_weapon) and \
-            (self.char.inventory.has_any_broken(self.broken_weapon) or \
-                self.char.inventory.has_broken(self.get_possible_weapons[0].item.name))
+            (self.character.inventory.has_any_broken(self.broken_weapon) or \
+                self.character.inventory.has_broken(self.get_possible_weapons[0].item.name))
 
     def try_exact_replacement_from_inventory_with_possible_smithy_trip(self):
         magentaprint("WeaponBot.try_exact_replacement_from_inventory()")
-        if self.char.inventory.has_any(self.broken_weapon) and not self.stopping:
+        if self.character.inventory.has_any(self.broken_weapon) and not self.stopping:
             self.smithy_bot.go_to_nearest_smithy()
             wielded_weapon = self.try_weapon_list_from_inventory_in_smithy(self.broken_weapon)
             if wielded_weapon:
@@ -262,7 +338,7 @@ class WeaponBot(MiniBot):
 
     def try_default_replacement_from_inventory_with_possible_smithy_trip(self):
         magentaprint("WeaponBot.try_default_replacement_from_inventory_with_possible_smithy_trip()")
-        if self.char.inventory.has(self.get_possible_weapons()[0].item.name) and not self.stopping:
+        if self.character.inventory.has(self.get_possible_weapons()[0].item.name) and not self.stopping:
             self.smithy_bot.go_to_nearest_smithy()
             # return self.try_weapons_from_inventory(self.possible_weapons[0].item.name)
             return self.try_weapon_list_from_inventory_in_smithy([self.possible_weapons[0].item.name])
@@ -271,21 +347,21 @@ class WeaponBot(MiniBot):
 
     def try_weapon_list_from_inventory_in_smithy(self, l):
         for w in l:
-            while self.char.inventory.has(w) and not self.stopping:
+            while self.character.inventory.has(w) and not self.stopping:
                 magentaprint("WeaponBot in smithy " + str(w))
 
                 if self.repair_one(w):
-                    self.rewield(self.char.inventory.get_last_reference(w))
+                    self.rewield(self.character.inventory.get_last_reference(w))
                     return w
 
     def repair_one(self, name):
-        ref = self.char.inventory.get_last_reference(name)
+        ref = self.character.inventory.get_last_reference(name)
         self.command_handler.repair.execute_and_wait(ref)
         if self.command_handler.repair.success:
-            self.char.inventory.set_usable(ref)
+            self.character.inventory.set_usable(ref)
             return True
         else:
-            self.char.inventory.remove_by_ref(ref)
+            self.character.inventory.remove_by_ref(ref)
             return False
 
     def try_other_possible_weapons_in_inventory(self):
@@ -316,14 +392,14 @@ class WeaponBot(MiniBot):
         # We might try a weapon twice before repairing, since that's easier to write at the moment.  The fix for that
         # would be to set and check unusable.  We could implement that in try_weapon_list_from_inventory_in_smithy and save code.
         for w in self.get_possible_weapons():
-            while self.char.inventory.has(w.item.name) and not self.stopping:
+            while self.character.inventory.has(w.item.name) and not self.stopping:
                 if self.try_weapons_from_inventory(w.item.name):
                     return True
 
                 self.smithy_bot.go_to_nearest_smithy()
 
                 if self.repair_one(w.item.name):
-                    self.rewield(self.char.inventory.get_last_reference(w.item.name))
+                    self.rewield(self.character.inventory.get_last_reference(w.item.name))
                     return True
 
     def go_buy_replacement(self):
@@ -365,14 +441,14 @@ class WeaponBot(MiniBot):
             return False
 
     def get_store_path(self):
-        return self.map.get_path(self.char.AREA_ID, self.get_possible_weapons()[0].area.id)
+        return self.map.get_path(self.character.AREA_ID, self.get_possible_weapons()[0].area.id)
 
     def wield_default_weapon(self):
-        self.rewield(self.char.inventory.get_last_reference(self.possible_weapons[0].item.name))
+        self.rewield(self.character.inventory.get_last_reference(self.possible_weapons[0].item.name))
 
     @property
     def possible_weapons_in_inventory(self):
-        return self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])
+        return self.character.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])
 
     def correct_temp_weapon(self):
         magentaprint("WeaponBot.correct_temp_weapon")
@@ -380,25 +456,25 @@ class WeaponBot(MiniBot):
         # We wielded a weapon in combat, so we should now wield a default weapon and ensure we have a backup
         if self.default:
             magentaprint('default')
-            magentaprint("self.char.inventory.has_any([w.item.name for w in self.get_possible_weapons()]: " + str(self.char.inventory.has_any([w.item.name for w in self.get_possible_weapons()])))
+            magentaprint("self.character.inventory.has_any([w.item.name for w in self.get_possible_weapons()]: " + str(self.character.inventory.has_any([w.item.name for w in self.get_possible_weapons()])))
 
             # if self.get_possible_weapons()
             # usable_possible_weapons_in_inv = any(x.usable for x in possible_weapons_in_inventory)
-            # if self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()]) and \
-            #    any([x.usable for x in self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])]):
+            # if self.character.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()]) and \
+            #    any([x.usable for x in self.character.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])]):
 # [asi.item.name for asi in self.get_possible_weapons()])):
 
             # if possible_weapons_in_inventory and any(x.usable for x in possible_weapons_in_inventory):
             #     pass
-            # elif self.char.inventory.has_any([w.item.name for w in self.get_possible_weapons()]):
-            # possible_weapons_in_inventory = self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])
+            # elif self.character.inventory.has_any([w.item.name for w in self.get_possible_weapons()]):
+            # possible_weapons_in_inventory = self.character.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])
             if self.possible_weapons_in_inventory:
                 if any(x.usable for x in possible_weapons_in_inventory):
                     pass
                 else:
                     magentaprint('Ensure that one is usable to serve as the backup')
                     for w in self.get_possible_weapons():
-                        while self.char.inventory.has(w.item.name) and not self.stopping:
+                        while self.character.inventory.has(w.item.name) and not self.stopping:
                             self.go_to_nearest_smithy()
                             if self.repair_one(w.item.name):
                                 # break  # This break won't work since there are two loops
@@ -412,14 +488,14 @@ class WeaponBot(MiniBot):
             self.temporary_weapon = False
             self.broken_weapon = []
         else:
-            while self.char.inventory.has(self.get_possible_weapons()[0].item.name) and not self.stopping:
+            while self.character.inventory.has(self.get_possible_weapons()[0].item.name) and not self.stopping:
                 # magentaprint('Not wielding default (?): ' + str(self.weapon) + '/' + str(self.possible_weapons()[0]))
                 # Preferred case (backup weapon was different)
-                magentaprint("self.char.inventory.has(?): " + str(self.get_possible_weapons()[0].item.name))
-                magentaprint(str(self.char.inventory))
-                # while self.char.inventory.has(self.get_possible_weapons()[0].item.name):  # Done in repair
+                magentaprint("self.character.inventory.has(?): " + str(self.get_possible_weapons()[0].item.name))
+                magentaprint(str(self.character.inventory))
+                # while self.character.inventory.has(self.get_possible_weapons()[0].item.name):  # Done in repair
                 self.go_to_nearest_smithy()
-                # if self.repair(self.char.inventory.get_last_reference(self.get_possible_weapons()[0].item.name)):
+                # if self.repair(self.character.inventory.get_last_reference(self.get_possible_weapons()[0].item.name)):
                 if self.repair_one(self.get_possible_weapons()[0].item.name):
                     self.swap_to_default_weapon()
                     return
@@ -450,7 +526,7 @@ class WeaponBot(MiniBot):
     #             del self.broken_weapon
     #             return
 
-    #         if self.char.inventory.has(self.broken_weapon):
+    #         if self.character.inventory.has(self.broken_weapon):
     #             self.go_to_nearest_smithy()
 
     #             if self.repair_and_wield_broken_weapons(self.broken_weapon):
@@ -468,8 +544,8 @@ class WeaponBot(MiniBot):
     #         if self.try_weapon_from_inventory(w):
     #             self.broken_weapon.pop()
     # def try_weapons_from_inventory(self, full_weapon_name):
-    #     weapon_ref = self.char.inventory.get_first_reference(full_weapon_name)
-    #     while self.char.inventory.get(weapon_ref).obj.name == full_weapon_name:
+    #     weapon_ref = self.character.inventory.get_first_reference(full_weapon_name)
+    #     while self.character.inventory.get(weapon_ref).obj.name == full_weapon_name:
     #         if self.try_weapon_from_inventory(weapon_ref):
     #             return True
     #         else:
@@ -489,9 +565,9 @@ class WeaponBot(MiniBot):
         # magentaprint("TopDownGrind.go_to_nearest_smithy()")
         # smithy_path = self.get_smithy_path()
         # magentaprint("TopDownGrind.get_smithy_path(): " + str(smithy_path))
-        # self.travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.db_handler)
+        # self.travel_bot = TravelBot(self.character, self.command_handler, self.mrh, self.db_handler)
         # self.travel_bot.follow_path(smithy_path)
-        # self.smithy_bot = SmithyBot(self.char, self.command_handler, self.mrh)
+        # self.smithy_bot = SmithyBot(self.character, self.command_handler, self.mrh)
         if hasattr(self, 'smithy_bot'):
             self.smithy_bot.go_to_nearest_smithy()
         else:
@@ -505,7 +581,7 @@ class WeaponBot(MiniBot):
             magentaprint("WeaponBot: Warning: get_possible_weapons() was called before init_with_map.")
             return None
         else:
-            self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max('weapon', self.char.weapon_type, self.char.weapon_level)
+            self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max('weapon', self.character.weapon_type, self.character.weapon_level)
             self.possible_weapons = sorted(self.possible_weapons, key = lambda i: i.item.level, reverse=True)
             magentaprint("WeaponBot possible weapons: " + str(self.possible_weapons))
             return self.possible_weapons
@@ -529,7 +605,7 @@ class WeaponBot(MiniBot):
 
     # def get_smithy_path(self):
     #     try:
-    #         paths = self.db_handler.get_smithy_paths(self.char.AREA_ID)
+    #         paths = self.db_handler.get_smithy_paths(self.character.AREA_ID)
     #     except Exception as e:
     #         #not a good situation - we can't find a way to the chapel from wherever we are
     #         #therefore we should just sit and wait here until we can go on the warpath again
@@ -566,7 +642,7 @@ class WeaponBot(MiniBot):
     #             del self.broken_weapon
     #             return
 
-    #         if self.char.inventory.has(self.broken_weapon):
+    #         if self.character.inventory.has(self.broken_weapon):
     #             self.go_to_nearest_smithy()
 
     #             if self.repair_and_wield_broken_weapons(self.broken_weapon):
@@ -581,7 +657,7 @@ class WeaponBot(MiniBot):
     #             del self.shattered_weapon
     #             return
 
-    #         if self.char.inventory.has(self.shattered_weapon):
+    #         if self.character.inventory.has(self.shattered_weapon):
     #             self.go_to_nearest_smithy()
 
     #             if self.repair_and_wield_broken_weapons(self.shattered_weapon):

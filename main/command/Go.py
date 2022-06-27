@@ -32,13 +32,14 @@ class Go(Command):
         self.regex_cart.append(R.mob_fled)
         self.character = character
 
-    def wait_for_flag(self):
+    def wait_for_flag(self, **kwargs):
         # magentaprint("Go.wait_for_flag()")
         self.cartography.__class__._waiter_flag = False
         # self.__class__._waiter_flag = False
-        super().wait_for_flag()
-        if not self.cartography.__class__._waiter_flag:
-            self.cartography.wait_for_flag()
+        super().wait_for_flag(**kwargs)
+        # if not self.cartography.__class__._waiter_flag:
+        #     self.cartography.wait_for_flag()
+        self.cartography.wait_for_flag(**kwargs)
 
     def notify(self, regex, M_obj):
         magentaprint("Go notified.")
@@ -61,8 +62,11 @@ class Go(Command):
         #     self.cartography.wait_for_flag()
 
         self.character.TRYING_TO_MOVE = True
+        self.wait_for_flag(timeout=3) # also waits for cartography
+        # self.cartography.wait_for_flag(timeout=3)
+        self.cartography.clear()
         magentaprint("Go.execute() 2")
-        super().execute(target)
+        super().execute(target) # self.clear()
 
     def persistent_execute(self, target):
         super().persistent_execute(target)

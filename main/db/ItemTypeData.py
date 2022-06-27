@@ -1,7 +1,7 @@
-from peewee import *
-from db.BaseModel import *
+
+#import peewee
 from db.NamedModel import NamedModel
-from misc_functions import *
+#from misc_functions import *
 
 class ItemTypeData(NamedModel):
 
@@ -16,5 +16,6 @@ class ItemTypeData(NamedModel):
         except ItemTypeData.DoesNotExist:
             obj = None
 
-        print('ItemTypeData get_by_name(name) returning: ' + str(obj))
+        #print('ItemTypeData get_by_name(name) returning: ' + str(obj))
+        #NamedModel.magentaprint('ItemTypeData get_by_name(name) returning: ' + str([o.name for o in obj]))
         return obj

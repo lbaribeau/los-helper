@@ -42,8 +42,7 @@ def greenprint(text):
     comm.ConsoleHandler.newConsoleHandler().white()
 
 def get_timestamp():
-    curtime = datetime.now().time().strftime("%H:%M:%S.%f")
-    return curtime[:len(curtime)-5]
+    return datetime.now().time().strftime("%H:%M:%S.%f")[:-4]
 
 def get_runtime():
     global startTime

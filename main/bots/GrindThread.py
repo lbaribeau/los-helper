@@ -127,8 +127,7 @@ class GrindThread(BotThread):
             # self.do_rest_hooks()
 
         while new_target != "" and not self.stopping:
-            # MudReader maintains MONSTER_LIST pretty well by
-            # adding and removing.
+            # MudReader maintains MONSTER_LIST pretty well by adding and removing.
             # It will not remove from MOBS_JOINED_IN nor
             # MOBS_ATTACKING because the three lists can contain
             # common mobs.  So before engaging a mob in one of the
@@ -144,8 +143,7 @@ class GrindThread(BotThread):
             # The higher priority mobs were in the other lists 
             # and will also have been removed from MONSTER_LIST
 
-            magentaprint("Targeting: " + new_target)
-
+            magentaprint("GrindThread new_target loop targeting: " + new_target + " then mobs joined in then any attacking.")
             self.engage_monster(new_target)
             self.engage_mobs_who_joined_in()
             self.engage_any_attacking_mobs()
@@ -155,7 +153,7 @@ class GrindThread(BotThread):
                 self.heal_up()
 
             if self.ready_for_combat():
-                magentaprint("Picking a new target since " + new_target + " was defeated")
+                magentaprint("GrindThread picking a new target since " + new_target + " was defeated")
                 new_target = self.decide_which_mob_to_kill(self.character.mobs.list)
             else:
                 new_target = ""
@@ -165,8 +163,7 @@ class GrindThread(BotThread):
         pick up a ring, we'll wear it."""
         # r = GenericBotReaction("(?s)You get .+? an? .+? ring((,.+?\.)|(\.))", self.command_handler, "wear all")  # Regex problem
         # self.mudReaderHandler.register_reaction(r)
-        ring_reaction = RingWearingReaction(self.character.inventory, self.command_handler)
-        self.mudReaderHandler.register_reaction(ring_reaction)
+        self.mudReaderHandler.register_reaction(RingWearingReaction(self.character.inventory, self.command_handler))
         #Todo: fix for case where there's ring mail in the inventory or multiple rings are dropped
 
     def rest_and_check_aura(self):
@@ -704,6 +701,7 @@ class GrindThread(BotThread):
             return
 
         # self.smartCombat.target = monster
+        magentaprint("GrindThread engage_monster get_first_reference({0})".format(monster))
         new_target = self.character.mobs.list.get_first_reference(monster)
 
         if new_target:
@@ -719,7 +717,7 @@ class GrindThread(BotThread):
         self.smartCombat.run()
 
         if self.character.mobs.chase != '' and self.character.mobs.chase_exit != '':
-            magentaprint("BotThread.engage_monster() chasing mob, pushing onto direction list!")
+            magentaprint("GrindThread.engage_monster() chasing mob, pushing onto direction list!")
             if self.character.AREA_ID is not None:
                 # We can't assume it'll work here - we have to check to see if it'll work.
                 magentaprint(str(self.mud_map.los_map[self.character.AREA_ID]))

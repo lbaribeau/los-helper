@@ -8,35 +8,35 @@ import sys
 
 import misc_functions
 from misc_functions import magentaprint
-from combat.SmartCombat import SmartCombat
 from db.Database import *
 from db.MudMap import *
-from command.Go import Go
-from comm import RegexStore
-from bots.TrackGrindThread import TrackGrindThread
-from bots.SmartGrindThread import SmartGrindThread
-from bots.CrawlThread import CrawlThread
-from bots.SmartCrawlThread import SmartCrawlThread
-from bots.GotoThread import GotoThread
-from bots.MixThread import MixThread
-from bots.SlaveThread import SlaveThread
-from bots.TopDownGrind import TopDownGrind
-from command.Quit import Quit
-from command.Command import Command
-from reactions.CombatReactions import CombatReactions
-from command.Buy import Buy
-from command.Drop import Drop
-from command.Get import Get
-from comm.Spells import *
-from comm.thread_maker import ThreadMaker
-from command.repair import Repair
-from command.wear import Wear
-from mini_bots.armour_bot import ArmourBot
-from command.equipment import Equipment
-from mini_bots.smithy_bot import SmithyBot
-from mini_bots.weapon_bot import WeaponBot
+from combat.SmartCombat         import SmartCombat
+from command.Go                 import Go
+from comm                       import RegexStore
+from bots.TrackGrindThread      import TrackGrindThread
+from bots.SmartGrindThread      import SmartGrindThread
+from bots.CrawlThread           import CrawlThread
+from bots.SmartCrawlThread      import SmartCrawlThread
+from bots.GotoThread            import GotoThread
+from bots.MixThread             import MixThread
+from bots.SlaveThread           import SlaveThread
+from bots.TopDownGrind          import TopDownGrind
+from command.Quit               import Quit
+from command.Command            import Command
+from reactions.CombatReactions  import CombatReactions
+from command.Buy                import Buy
+from command.Drop               import Drop
+from command.Get                import Get
+from comm.Spells                import *
+from comm.thread_maker          import ThreadMaker
+from command.repair             import Repair
+from command.wear               import Wear
+from mini_bots.armour_bot       import ArmourBot
+from command.equipment          import Equipment
+from mini_bots.smithy_bot       import SmithyBot
+from mini_bots.weapon_bot       import WeaponBot
 # from mini_bots.simple_weapon_bot import SimpleWeaponBot
-from mini_bots.travel_bot import TravelBot
+from mini_bots.travel_bot       import TravelBot
 from reactions.referencing_list import ReferencingList
 
 class CommandHandler(object):
@@ -212,6 +212,7 @@ class CommandHandler(object):
         elif re.match('^ki? |^kill?', user_input):
             self.kill.execute(arg1)
         elif user_input.startswith('kk '):
+            self.smartCombat.stop()
             self.kill.start_thread(user_input.partition(' ')[2].strip())
         elif user_input == 'sk' or user_input == 'skc':
             self.kill.stop()
@@ -220,6 +221,9 @@ class CommandHandler(object):
         elif re.match('ca? |cast?', user_input):
             self.cast.cast(arg1, arg2)
         elif user_input.startswith('cc '):
+            if self.smartCombat.thread and self.smartCombat.thread.is_alive():
+                # See comments in user_cc
+                self.smartCombat.stop_casting() # could keep attacking
             self.cast.start_thread(arg1, arg2)
         elif user_input == 'sc':
             self.cast.stop()
@@ -455,8 +459,8 @@ class CommandHandler(object):
         user_input = "drop " + item
         self.telnetHandler.write(user_input)
     
-    # Commented: user_kk is deprecated and this code also doesn't work
     def user_kk(self, monster):
+        # Commented: user_kk is deprecated and this code also doesn't work
         magentaprint("CommandHandler.telnetHandler: " + str(self.telnetHandler))
         # self.kill.engage(self.telnetHandler, argv[3:].lstrip())
         # self.kill.engage(self.telnetHandler, monster)
@@ -475,7 +479,7 @@ class CommandHandler(object):
         # self.telnetHandler.write("")
 
     def user_cc(self, argv):
-        # TODO: Bug for user input "cc "
+        # This doesn't get called!
         if argv == "":
             magentaprint("Usage:  cc <spell> [<target> [<number>]]")
             self.telnetHandler.write("") # TODO: Keep a prompt up to date so we can print
@@ -486,8 +490,45 @@ class CommandHandler(object):
         else:
             spell = argv
             target = ""
-        
-        if self.CastThread != None and self.CastThread.is_alive():
+
+        if self.smartCombat and self.smartCombat.thread and self.smartCombat.thread.is_alive() and not smartCombat.stopping and spell:
+            #if re.match('vi?g?o?r?', spell) or re.match('me?n?d?-?w?o?u?n?:
+            # What about healing a party member???
+            # Don't use smart combat then?
+            # We like the vig reaction on it, right?
+            # Very interesting
+            # Friend won't become smartCombat.target certainly
+            # Could just append the target to healing_spell
+            # Eh smartCombat won't heal the friend if self hp is high, since it checks self hp
+            # So, don't use smart combat if healing friend? Fair enough...
+            # What about abilities... like turn... maybe you can queue it with turnc and sk
+            # Is smart combat really bot combat
+            # Well we like that it uses abilities
+            # Let's have smart combat let the person change the spell, right
+            # Maybe better would be to have it try to do it on its own
+            # It can ask for vig amount, right...
+            # Calculate a default based on piety.... yikes....
+            # So better not use smartcombat in group?
+            # Maybe cc kills smart combat and starts kk and cc
+            # So we can open with combat ability then switch
+            # That sounds good
+            self.smartCombat.stop()
+            self.kill.start_thread(user_input.partition(' ')[2].strip())
+            # self.CastThread.set_spell(spell)
+            # self.CastThread.set_target(target)
+            # self.CastThread.keep_going()
+
+            # if spell.startswith('v'):
+            #     self.smartCombat.healing_spell = 'v ' + target if target else 'v' 
+            # elif spell.startswith('m'):
+            #     self.smartCombat.healing_spell = 'm ' + target if target else 'm'
+            # else:
+            #     # Update smart combat with this cc command input
+            #     # (Don't start a cast thread if smart combat is running)
+            #     self.smartCombat.healing = spell # Now we have to worry about typos, right?
+            #     # .spell is for black magic...
+
+        if self.CastThread and self.CastThread.is_alive():
             magentaprint("Updating existing cast thread.")
             self.CastThread.set_spell(spell)
             self.CastThread.set_target(target)
@@ -518,6 +559,7 @@ class CommandHandler(object):
             spell = theSplit[0]
             target = theSplit[1] + " " + " ".join(theSplit[2:])
 
+        magentaprint("Command handler kkc with target " + target)
         self.smartCombat.start_thread(target, spell)
 
     def user_kk2(self, argv):
@@ -529,6 +571,19 @@ class CommandHandler(object):
             teh_split.insert(0, fireball)
         elif self.smartCombat.favourite_spell is hurt:
             teh_split.insert(0, dustgust)
+        elif self.smartCombat.favourite_spell is blister:
+            teh_split.insert(0, waterbolt)
+        elif self.smartCombat.favourite_spell is rumble:
+            teh_split.insert(0, crush)
+        self.user_kkc(" ".join(teh_split))
+
+    def user_kk3(self, argv):
+        teh_split = argv.split(" ")
+        self.user_kkc(" ".join(teh_split))
+        if self.smartCombat.favourite_spell is burn:
+            teh_split.insert(0, burstflame)
+        elif self.smartCombat.favourite_spell is hurt:
+            teh_split.insert(0, shockbolt)
         elif self.smartCombat.favourite_spell is blister:
             teh_split.insert(0, waterbolt)
         elif self.smartCombat.favourite_spell is rumble:

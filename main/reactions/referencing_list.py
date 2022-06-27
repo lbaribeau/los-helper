@@ -15,13 +15,27 @@ class ReferencingList(object):
         if not initializer:
             self.list = []
         elif isinstance(initializer, 'str'.__class__):
+            # Children need to support parse
             self.list = self.parse(initializer)
         elif isinstance(initializer[0], 'str'.__class__):
-            self.list = sorted(GameObject(s) for s in initializer)
+            #self.list = sorted(GameObject(s) for s in initializer)
+            if None in initializer:
+                magentaprint("ReferencingList can't have None since it's sorted: {0}".format(initializer))
+                self.list = [GameObject(s) for s in initializer if s != None]
+            else:
+                self.list = [GameObject(s) for s in initializer]
+        elif isinstance(initializer, list):
+            if None in initializer:
+                magentaprint("ReferencingList can't have None since it's sorted: {0}".format(initializer))
+            self.list = initializer[:]
+            while None in self.list:
+                self.list.remove(None)
+            #self.list = sorted([i for i in list if i != None])
         else:
-            self.list = sorted(initializer)
-
-        # Children need to support parse methods
+            self.list = initializer
+            
+        # See if that works...
+        self.list.sort() 
 
         # magentaprint("Referencing list: " + str(self.list))
         self.numbers = [

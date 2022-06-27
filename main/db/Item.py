@@ -6,9 +6,9 @@ from misc_functions import *
 
 class Item(NamedModel):
     description = CharField(null=True)
-    level = IntegerField(null=True)
-    itemtype = ForeignKeyField(ItemType, null=True)
-    value = IntegerField(null=True)
+    level       = IntegerField(null=True)
+    itemtype    = ForeignKeyField(ItemType, null=True)
+    value       = IntegerField(null=True)
 
     '''Private Item Functions'''
     def map(self):

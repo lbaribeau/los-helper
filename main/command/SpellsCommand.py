@@ -8,7 +8,7 @@ class SpellsCommand(SimpleCommand):
     command = 'spells'
 
     def __init__(self, telnetHandler, character):
-        self.telnetHandler = telnetHandler
+        super().__init__(telnetHandler) # threading.Event
         self.character = character
         # self.regex_list = [RegexStore.spells1[0], RegexStore.spells2[0], RegexStore.spells3[0], RegexStore.spells4[0]]
         # magentaprint(str(self.regex_cart))

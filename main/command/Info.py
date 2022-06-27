@@ -29,6 +29,7 @@ class Info(BotReactionWithFlag):
     got_second = False
 
     def __init__(self, mudReaderHandler, telnetHandler):
+        super().__init__() # threading.Event
         self.mudReaderHandler = mudReaderHandler
         self.telnetHandler = telnetHandler
         # magentaprint(str(self.regexes))
@@ -57,35 +58,35 @@ class Info(BotReactionWithFlag):
             # magentaprint("Info aura matched: %s index is %s." % (M_obj.group(1), Aura.auras.index(M_obj.group(1))))
         elif regex is self.first:
             self.got_stats_skills = True
-            self.str = int(M_obj.group(1))
-            self.dex = int(M_obj.group(4))
-            self.con = int(M_obj.group(7))
-            self.int = int(M_obj.group(10))
-            self.pty = int(M_obj.group(13))
-            self.sharp = int(M_obj.group(2))
-            self.thrust = int(M_obj.group(5))
-            self.blunt = int(M_obj.group(8))
-            self.pole = int(M_obj.group(11))
+            self.str     = int(M_obj.group(1))
+            self.dex     = int(M_obj.group(4))
+            self.con     = int(M_obj.group(7))
+            self.int     = int(M_obj.group(10))
+            self.pty     = int(M_obj.group(13))
+            self.sharp   = int(M_obj.group(2))
+            self.thrust  = int(M_obj.group(5))
+            self.blunt   = int(M_obj.group(8))
+            self.pole    = int(M_obj.group(11))
             self.missile = int(M_obj.group(14))
-            self.earth = int(M_obj.group(3))
-            self.wind = int(M_obj.group(6))
-            self.fire = int(M_obj.group(9))
-            self.water = int(M_obj.group(12))
-            self.astral = int(M_obj.group(15))
+            self.earth   = int(M_obj.group(3))
+            self.wind    = int(M_obj.group(6))
+            self.fire    = int(M_obj.group(9))
+            self.water   = int(M_obj.group(12))
+            self.astral  = int(M_obj.group(15))
             self.got_first = True
             # magentaprint(self.character.astral)
         elif regex is self.second:
-            self.exp = int(M_obj.group(1))
-            self.gametime = M_obj.group(2)
-            self.maxHP = int(M_obj.group(3))
-            self.gold = int(M_obj.group(4))
-            self.age = int(M_obj.group(5))
-            self.maxMP = int(M_obj.group(6))
-            self.exp_to_level = int(M_obj.group(7))
-            self.weight = int(M_obj.group(8))
-            self.AC = int(M_obj.group(9))
+            self.exp           = int(M_obj.group(1))
+            self.gametime      = M_obj.group(2)
+            self.maxHP         = int(M_obj.group(3))
+            self.gold          = int(M_obj.group(4))
+            self.age           = int(M_obj.group(5))
+            self.maxMP         = int(M_obj.group(6))
+            self.exp_to_level  = int(M_obj.group(7))
+            self.weight        = int(M_obj.group(8))
+            self.AC            = int(M_obj.group(9))
             self.gold_to_level = int(M_obj.group(10))
-            self.objects = int(M_obj.group(11))
+            self.objects       = int(M_obj.group(11))
             self.got_second = True
             super().notify(regex, M_obj)
             # magentaprint("Objects: " + str(self.objects))

@@ -257,7 +257,7 @@ class Touch(SlowCombatAbility):
 
 class Wither(SlowCombatAbility):
     command = "withe"
-    cooldown_after_success = 300  # Guessed out of the blue
+    cooldown_after_success = 240  # Guessed out of the blue
     cooldown_after_failure = 10  # can't attack/flee/move immediately
     success_regexes = [RegexStore.wither]  # regex needs work
     failure_regexes = [RegexStore.wither_fail]
