@@ -29,7 +29,7 @@ class SmartGrindThread(TrackGrindThread):
         # if self.character.AREA_ID != 2:
         #     self.direction_list = self.get_heal_path()
 
-        low_level_modifier = -2
+        low_level_modifier = -1
         high_level_modifier = 0# + 1 #risky business
         if self.is_character_class('Cle'):
             low_level_modifier = -3
@@ -58,7 +58,6 @@ class SmartGrindThread(TrackGrindThread):
         rest_start = get_timeint()
         if self.aura_changed():
             self.aura_updated_hook()
-            self.reset_kill_list()
         
         if self.in_chapel() and not self.ready_for_combat(): #in healing area
             self.rest_and_check_aura()

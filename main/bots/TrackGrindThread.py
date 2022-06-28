@@ -107,9 +107,15 @@ class TrackGrindThread(GrindThread):
             'n','chapel'
         ]
         self.FORT_PATH = [
-            'out','n','n', 'w','gate','n','n','n','n','n','gate','n','n','w','s','s','e','e','n',"door", "door",
+            'out','n','n', 'w','gate','n','n','n','n','n','gate','n','n','w','s','store','out','s','e','e','n',"door", "door",
             'n','w','s','s','gate', 's','s','s','s','s','gate','w','sw','s','s','s','e','e','e','e','n','w','n','chap'
         ]
+        self.OLD_MAN_JAMES = [
+            'areaid611', 'out', 'west', 'north', 'smithy', 'areaid2'
+        ]
+        # self.GOOURD = [
+        #     'areaid1899'
+        # ]
         self.MUGGER_PATH = [
             'ou','s','w','w','w','s','alley','w','alley','e','e','e','e','e','n','w','n','chap'
         ]
@@ -327,25 +333,29 @@ class TrackGrindThread(GrindThread):
             return self.LIMBO_TO_CHAPEL[:]
 
         if self.character.NEEDS_TO_SELL:
+            magentaprint("Character needs to sell - going to sell path", False)
             self.character.NEEDS_TO_SELL = False
             self.character.MONSTER_KILL_LIST = []
-            return self.SHOP_AND_TIP_PATH
+            return self.SHOP_AND_TIP_PATH[:]
+        else:
+            magentaprint("Character doesn't need to sell", False)
 
         all_tracks = [
-            self.track_builder(self.THEATRE_PATH, 1, 20, 0),
-            self.track_builder(self.MARKET_PATH, 1, 20, 0),
-            self.track_builder(self.MILITIA_SOLDIERS_PATH, 1, 14, 0),
-            self.track_builder(self.KOBOLD_PATH, 4, 11, -1), #sentries are suuuper tough
-            self.track_builder(self.CORAL_ALLEY_PATH, 1, 6, -1),
-            self.track_builder(self.FORT_PATH, 1, 20, 1),
-            self.track_builder(self.NORTHERN_BANDITS_PATH, 1, 14, -1),
+            self.track_builder(self.THEATRE_PATH, 0, 20, 0),
+            self.track_builder(self.MARKET_PATH, 0, 20, 0),
+            self.track_builder(self.MILITIA_SOLDIERS_PATH, 0, 14, 1),
+            self.track_builder(self.KOBOLD_PATH, 0, 11, -1), #sentries are suuuper tough
+            self.track_builder(self.CORAL_ALLEY_PATH, 0, 6, -1),
+            self.track_builder(self.FORT_PATH, 0, 20, 0),
+            self.track_builder(self.NORTHERN_BANDITS_PATH, 0, 14, -1),
             self.track_builder(self.ZOMBIES, 7, 20, 0),
             self.track_builder(self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 0),
             self.track_builder(self.MILL_WORKERS, 9, 20, 0),
             # self.track_builder(self.MUGGER_PATH, 9, 15, -1),
-            self.track_builder(self.FOUNDRY, 9, 20, 0),
+            self.track_builder(self.OLD_MAN_JAMES, 9, 20, 0),
+            self.track_builder(self.GNOLL_CAVE, 9, 20, -1),
+            self.track_builder(self.FOUNDRY, 10, 20, 0),
             self.track_builder(self.RANCHER_SENTRY, 10, 15, 1),
-            self.track_builder(self.GNOLL_CAVE, 12, 20, -1),
             self.track_builder(self.KNIGHTS, 12, 20, 1),
             self.track_builder(self.CATHEDRAL, 12, 16, 1),
             self.track_builder(self.SPIDER_FOREST, 12, 20, -1),
