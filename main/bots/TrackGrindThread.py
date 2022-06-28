@@ -1,6 +1,6 @@
 
 from bots.GrindThread import GrindThread
-from misc_functions import magentaprint
+from misc_functions import magentaprint, get_timeint
 from Aura import Aura
 import random
 
@@ -326,28 +326,29 @@ class TrackGrindThread(GrindThread):
             magentaprint("Died; Pulling up my bootstraps and starting again", False)
             return self.LIMBO_TO_CHAPEL[:]
 
+        if self.character.NEEDS_TO_SELL:
+            self.character.NEEDS_TO_SELL = False
+            self.character.MONSTER_KILL_LIST = []
+            return self.SHOP_AND_TIP_PATH
+
         all_tracks = [
             self.track_builder(self.THEATRE_PATH, 1, 20, 0),
             self.track_builder(self.MARKET_PATH, 1, 20, 0),
             self.track_builder(self.MILITIA_SOLDIERS_PATH, 1, 14, 0),
-            self.track_builder(self.KOBOLD_PATH, 4, 10, -1), #sentries are suuuper tough
-            self.SHOP_AND_TIP_PATH[:],
+            self.track_builder(self.KOBOLD_PATH, 4, 11, -1), #sentries are suuuper tough
             self.track_builder(self.CORAL_ALLEY_PATH, 1, 6, -1),
             self.track_builder(self.FORT_PATH, 1, 20, 1),
             self.track_builder(self.NORTHERN_BANDITS_PATH, 1, 14, -1),
             self.track_builder(self.ZOMBIES, 7, 20, 0),
-            self.SHOP_AND_TIP_PATH[:],
             self.track_builder(self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 0),
             self.track_builder(self.MILL_WORKERS, 9, 20, 0),
             # self.track_builder(self.MUGGER_PATH, 9, 15, -1),
             self.track_builder(self.FOUNDRY, 9, 20, 0),
             self.track_builder(self.RANCHER_SENTRY, 10, 15, 1),
-            self.SHOP_AND_TIP_PATH[:],
             self.track_builder(self.GNOLL_CAVE, 12, 20, -1),
             self.track_builder(self.KNIGHTS, 12, 20, 1),
             self.track_builder(self.CATHEDRAL, 12, 16, 1),
             self.track_builder(self.SPIDER_FOREST, 12, 20, -1),
-            self.SHOP_AND_TIP_PATH[:],
             self.track_builder(self.EGAN_TRENT, 15, 20, -1),
             self.track_builder(self.ALCHEMISTS, 15, 20, 0),
         ]

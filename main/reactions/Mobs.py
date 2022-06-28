@@ -1,6 +1,6 @@
 
 # import statistics as stats  # python 3.4
-import math
+import math, traceback, sys
 
 from reactions.BotReactions import BotReactionWithFlag
 import comm.RegexStore as R
@@ -64,13 +64,16 @@ class Mobs(BotReactionWithFlag):
             # self.list.append(mob_parse[0])
             return [mob_parse[0]]
 
+    def remove_mob(self, mob):
+        self.list.remove(mob)
+
     def notify(self, r, m_obj):
         # We'll let Cartography handle the initialization of monster_list with the area regex since it already does a great job.
         if r in R.mob_arrived:
             self.list.add_from_list(self.read_mobs(m_obj.group('mobs')))
         elif r in R.mob_died:
             if self.read_match(m_obj) in self.list:
-                self.list.remove(self.read_match(m_obj))
+                self.remove_mob(self.read_match(m_obj))
             magentaprint("Mobs notify matched " + str(self.read_match(m_obj)) + " in self.attacking: " + str(self.read_match(m_obj) in self.attacking) + ", self.attacking: " + str(self.attacking))
             if self.read_match(m_obj) in self.attacking:
                 self.attacking.remove(self.read_match(m_obj))  # TODO: if a mob is one-shot, it's not removed because the You attacked notify is after
@@ -80,11 +83,11 @@ class Mobs(BotReactionWithFlag):
             # magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(stats.mean(self.damage)) + ', stdev=' + str(stats.stdev(self.damage)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/len(self.damage), 2)))
         elif r in R.mob_fled:  # Leave mobs.attacking populated. (?)  might help to chase mobs that don't block you (chase currently relies on that.)
             if self.read_match(m_obj) in self.list:
-                self.list.remove(self.read_match(m_obj))
+                self.remove_mob(self.read_match(m_obj))
             self.chase = self.read_match(m_obj)
             self.chase_exit = m_obj.group('exit')
         elif (r in R.mob_wandered or r in R.mob_left) and self.read_match(m_obj) in self.list:
-            self.list.remove(self.read_match(m_obj))
+            self.remove_mob(self.read_match(m_obj))
         elif r in R.mob_joined1 or r in R.mob_joined2:
             self.attacking.append(self.read_match(m_obj))
         elif r in R.mob_attacked:

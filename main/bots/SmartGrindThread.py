@@ -23,14 +23,20 @@ class SmartGrindThread(TrackGrindThread):
         self.cur_area_id = self.character.AREA_ID
         self.on_heal_path = False
 
+        self.track_start_time = 0
+        self.track_end_time = 0
+
         # if self.character.AREA_ID != 2:
         #     self.direction_list = self.get_heal_path()
 
         low_level_modifier = -2
         high_level_modifier = 0# + 1 #risky business
         if self.is_character_class('Cle'):
-            low_level_modifier = -2
+            low_level_modifier = -3
             high_level_modifier = -1
+
+        if self.is_character_class('Mag') or self.is_character_class('Dru') or self.is_character_class('Alc'):
+            self.character.MANA_TO_ENGAGE = self.character.info.maxMP / 2
 
         self.low_level = int(math.floor(self.character.level / 2)) + low_level_modifier
         self.high_level = max([int(math.ceil(self.character.level / 2)), self.character.level - 3]) + high_level_modifier
@@ -45,8 +51,20 @@ class SmartGrindThread(TrackGrindThread):
 
     def do_pre_go_actions(self):
         # super().do_pre_go_actions()
-        if self.in_chapel(): #in healing area
+        if self.track_start_time != 0:
+            self.track_end_time = get_timeint()
+            self.character.TRACK_TIME += (self.track_end_time - self.track_start_time).total_seconds()
+
+        rest_start = get_timeint()
+        if self.aura_changed():
+            self.aura_updated_hook()
+            self.reset_kill_list()
+        
+        if self.in_chapel() and not self.ready_for_combat(): #in healing area
             self.rest_and_check_aura()
+        rest_end = get_timeint()
+        self.character.REST_TIME += (rest_end - rest_start).total_seconds()
+        self.track_start_time = get_timeint()
 
         self.check_weapons()
         self.check_armour()
@@ -244,7 +262,7 @@ class SmartGrindThread(TrackGrindThread):
 
     def get_targets(self):
         magentaprint("SmartGrind getting targets - parameters - {} {} {}/{} {}/{}".format(\
-            self.low_level, self.high_level, self.min_target_aura.index(), self.min_target_aura, self.max_target_aura, self.max_target_aura.index()))
+            self.low_level, self.high_level, self.min_target_aura.index(), self.min_target_aura, self.max_target_aura, self.max_target_aura.index()), False)
 
         target_list = MudMob.get_mobs_by_level_and_aura_ranges(
             self.low_level, 
@@ -286,23 +304,23 @@ class SmartGrindThread(TrackGrindThread):
         magentaprint("Preferred Aura Scale: " + str(self.character.preferred_aura))
         aura_context = "fine"
 
-        if self.cast.aura < self.character.preferred_aura:
+        if self.character.AURA < self.character.preferred_aura:
             # Too evil
             # self.low_level = 2
             self.min_target_aura = Aura('demonic red')
-            self.max_target_aura = Aura('dusty red')
+            self.max_target_aura = Aura('grey')
             aura_context = "too evil"
-        elif self.cast.aura > self.character.preferred_aura:
+        elif self.character.AURA > self.character.preferred_aura:
             # Too good
             # self.low_level = 2
-            self.min_target_aura = Aura('dusty blue')
+            self.min_target_aura = Aura('grey')
             self.max_target_aura = Aura('heavenly blue')
             aura_context = "way too good"
         else:
             self.min_target_aura = Aura('demonic red')
             self.max_target_aura = Aura('heavenly blue')
 
-        # magentaprint("My aura is {}".format(aura_context))
+        magentaprint("My aura is {}".format(aura_context), False)
 
         self.get_targets()
 

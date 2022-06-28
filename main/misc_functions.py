@@ -50,6 +50,15 @@ def greenprint(text):
     print(output)
     newConsoleHandler().white()
 
+def safe_divide(x,y):
+    try:
+        return x/y
+    except ZeroDivisionError:
+        return 0
+
+def get_timeint():
+    return datetime.now()
+
 def get_timestamp():
     curtime = datetime.now().time().strftime("%H:%M:%S.%f")
     return curtime[:len(curtime)-5]

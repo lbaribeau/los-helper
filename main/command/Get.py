@@ -4,6 +4,7 @@ import comm.RegexStore as R
 
 class Get(Command):
     command = 'get'
+    failed_to_get_items = False
     success_regexes = [R.you_get]
     failure_regexes = [R.cant_carry, R.loot_blocked]
     error_regexes = [R.isnt_here, R.nothing_here]
@@ -22,7 +23,9 @@ class Get(Command):
         self.inv = inv
 
     def notify(self, regex, match):
-        if regex in R.you_get:
+        if regex in R.cant_carry:
+            self.failed_to_get_items = True
+        elif regex in R.you_get:
             # Erhm, currently Inventory adds stuff to itself on its own, which is fine
             # The we want an organized place to put automatic ring wearing... is it here??
             # For the human, sure, we may as well automate rings... it should be optional...

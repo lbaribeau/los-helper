@@ -8,7 +8,7 @@ class Aura(object):
               'dusty blue', 'pale blue', 'blue',
               'deep blue', 'bright blue', 'shimmering blue', 'blazing blue',
               'blazing blue', 'heavenly blue']
-             # 0-8 red, 9 grey, 10-18 blue
+             # 0-7 red, 9 grey, 10-18 blue
 
     def __init__(self, s):
         if s in self.auras:

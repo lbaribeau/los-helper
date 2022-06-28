@@ -144,6 +144,13 @@ class CombatReactions(object):
         magentaprint("Phys Hit Rate: " + str(phys_hit_rate) + "% | Spell Hit Rate: " + str(spell_hit_rate) + "%", no_print)
         magentaprint("Phys Crit Rate: " + str(phys_crit_rate) + " | Spell Crit Rate: " + str(spell_crit_rate) + "%", no_print)
         runtime = round(get_runtime_in_minutes(), 2)
+        total_time = self.character.TRACK_TIME + self.character.REST_TIME + self.character.COMBAT_TIME
+        percent_track = round(safe_divide(self.character.TRACK_TIME, total_time) * 100, 2)
+        percent_rest = round(safe_divide(self.character.REST_TIME, total_time) * 100, 2)
+        percent_combat = round(safe_divide(self.character.COMBAT_TIME, total_time) * 100, 2)
+        magentaprint("Track Time: " + str(round(self.character.TRACK_TIME/60, 2)) + ", " + str(percent_track) + "%", no_print)
+        magentaprint("Rest time: " + str(round(self.character.REST_TIME/60, 2)) + ", " + str(percent_rest) + "%", no_print)
+        magentaprint("Combat Time: " + str(round(self.character.COMBAT_TIME/60, 2)) + ", " + str(percent_combat) + "%", no_print)
         magentaprint("Minutes Run: " + str(runtime), no_print)
 
         output = {

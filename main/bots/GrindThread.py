@@ -5,7 +5,7 @@ import time
 from math import floor, ceil
 
 from bots.BotThread import BotThread
-from misc_functions import magentaprint
+from misc_functions import magentaprint, get_timeint
 from reactions.BotReactions import GenericBotReaction
 from reactions.ring_reaction import RingWearingReaction
 from Exceptions import *
@@ -425,6 +425,12 @@ class GrindThread(BotThread):
             self.character.aura_check_count += 1
             return True
 
+    def aura_changed(self):
+        cur_aura = self.character.AURA
+        self.update_aura()
+        updated_aura = self.character.AURA
+        return str(cur_aura) != str(updated_aura)
+
         # if self.character.level < 3 or not \
         #         BotThread.can_use_timed_ability(self.character.AURA_LAST_UPDATE, 480):
         # if not Spells.showaura in self.character.spells:
@@ -545,7 +551,7 @@ class GrindThread(BotThread):
             self.command_handler.weapon_bot.check_weapons()
 
     def check_armour(self):
-        if self.stopping or self.is_character_class('Mon'):
+        if self.stopping or self.is_character_class('Mon') or self.is_character_class('Mag'):
             return
         self.command_handler.armour_bot.suit_up()
 
@@ -749,6 +755,7 @@ class GrindThread(BotThread):
         return False
 
     def engage_monster(self, monster):
+        start_combat = get_timeint()
         self.kill.wait_until_ready()
         self.cast.wait_until_ready()
 
@@ -843,6 +850,9 @@ class GrindThread(BotThread):
 
         if not self.character.mobs.attacking:
             self.get_items_if_weapon()
+        
+        end_combat = get_timeint()
+        self.character.COMBAT_TIME += (end_combat - start_combat).total_seconds()
 
     def do_flee_hook(self):
         self.stop()
@@ -851,6 +861,9 @@ class GrindThread(BotThread):
     def get_items_if_weapon(self):
         self.command_handler.get.execute('all')
         self.command_handler.get.wait_for_flag()
+        if self.command_handler.get.failed_to_get_items:
+            self.character.NEEDS_TO_SELL = True
+            self.command_handler.get.failed_to_get_items = False
         
         if hasattr(self.smartCombat.weapon_bot, 'weapon'):
             self.get_items()

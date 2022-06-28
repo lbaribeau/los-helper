@@ -25,6 +25,10 @@ class Character(object):
         self.last_keyword = ""
         self.cataloging_messages = True
 
+        self.REST_TIME = 0
+        self.TRACK_TIME = 0
+        self.COMBAT_TIME = 0
+        self.NEEDS_TO_SELL = False
         self.NEEDS_MAGIC = True
         self.BLACK_MAGIC = True
         self.KNOWS_VIGOR = True
@@ -74,7 +78,7 @@ class Character(object):
         self.CAST_WAIT = self.CAST_PERIOD
 
         self.DEATHS = 0
-        self.AURA = "Unknown"
+        self.AURA = "grey"
         self.aura_check_count = 0
 
         self.HASTING = False
