@@ -135,7 +135,7 @@ def flush_input():
             msvcrt.getch()
 
 def output_api_feed(filename, data):
-    with open('../reporting_website/api/{}.json'.format(filename), 'w') as outfile:
+    with open('reporting_website/api/{}.json'.format(filename), 'w') as outfile:
         json.dump(data, outfile)
 
 ######
