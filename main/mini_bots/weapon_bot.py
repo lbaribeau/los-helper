@@ -10,6 +10,7 @@ from combat.mob_target_determinator import MobTargetDeterminator
 from mini_bots.smithy_bot   import SmithyBot
 from mini_bots.mini_bot     import MiniBot
 from mini_bots.shopping_bot import ShoppingBot
+from db.Database            import AreaStoreItem
 
 class WeaponBot(MiniBot):
     # def __init__(self, char, command_handler, simple_weapon_bot):

@@ -2,7 +2,7 @@
 import time
 import sys
 
-from db.Database import *
+# from db.Database import Log
 from datetime import datetime
 import comm.ConsoleHandler
 
@@ -12,7 +12,11 @@ startTime = datetime.now()
 VERSION = "2"
 #databaseFile = "maplos.db"
 
-def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=False, **kwargs):
+
+# def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=False, **kwargs):
+def magentaprint(text, is_debug_command=True, show_hidden=False, **kwargs):
+    # This function doesn't log because of circular import
+    # See Log.magentaprint
     global debugMode
 
     if show_hidden:
@@ -21,12 +25,8 @@ def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=Fals
     if debugMode or not is_debug_command:
         do_magentaprint(text, **kwargs)
 
-    if log_output:
-        log = Log()
-        log.data = text
-        log.save()
-
 def do_magentaprint(text, **kwargs):
+    # Use this from the db to avoid circular import (Other magentaprint needs Log())
     comm.ConsoleHandler.newConsoleHandler().magenta()
     # output = str(get_timestamp() + "| <" + str(text) + ">")
     #output = str(get_timestamp() + "   | " + str(text))
@@ -54,7 +54,7 @@ def get_runtime_in_minutes():
     magentaprint("Seconds run: " + str(seconds))
     if seconds <= 1:
         seconds = 60
-    minutes = (seconds / 60) #at least display 1 minute
+    minutes = seconds / 60 #at least display 1 minute
     return minutes
 
 def calculate_vpm(value):

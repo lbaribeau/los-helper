@@ -36,14 +36,14 @@ class BaseModel(peewee.Model):
             # self.magentaprint("BaseModel.save(str(args), str(kwargs))")
             super().save(*args, **kwargs)
 
-    def magentaprint(text):
-        comm.ConsoleHandler.newConsoleHandler().magenta()
-        #curtime = datetime.now().time().strftime("%H:%M:%S.%f")
-        #output = str(curtime[:len(curtime)-5] + "   | " + str(text))
-        #print(output)
-        #print(datetime.now().time().strftime("%H:%M:%S.%f")[:-4] + "   | " + str(text)) # two decimal poits
-        #print("{0}   | {1}".format(\
-        print("{0}: {1}".format(\
-            datetime.now().time().strftime("%H:%M:%S.%f")[:-4], # two decimal poits
-            text)) 
-        comm.ConsoleHandler.newConsoleHandler().white()
+    # def magentaprint(text):
+    #     comm.ConsoleHandler.newConsoleHandler().magenta()
+    #     #curtime = datetime.now().time().strftime("%H:%M:%S.%f")
+    #     #output = str(curtime[:len(curtime)-5] + "   | " + str(text))
+    #     #print(output)
+    #     #print(datetime.now().time().strftime("%H:%M:%S.%f")[:-4] + "   | " + str(text)) # two decimal poits
+    #     #print("{0}   | {1}".format(\
+    #     print("{0}: {1}".format(\
+    #         datetime.now().time().strftime("%H:%M:%S.%f")[:-4], # two decimal poits
+    #         text)) 
+    #     comm.ConsoleHandler.newConsoleHandler().white()
