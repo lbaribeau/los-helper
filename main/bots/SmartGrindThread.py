@@ -37,6 +37,8 @@ class SmartGrindThread(TrackGrindThread):
 
         if self.is_character_class('Mag') or self.is_character_class('Dru') or self.is_character_class('Alc'):
             self.character.MANA_TO_ENGAGE = self.character.info.maxMP / 2
+            if self.character.MANA_TO_ENGAGE < 21 and self.character.info.maxMP > 21:
+                self.character.MANA_TO_ENGAGE = 21
 
         self.low_level = int(math.floor(self.character.level / 2)) + low_level_modifier
         self.high_level = max([int(math.ceil(self.character.level / 2)), self.character.level - 3]) + high_level_modifier

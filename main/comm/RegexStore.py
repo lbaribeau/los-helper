@@ -265,7 +265,8 @@ crit = [
     __Three_possible_mob_strings + " is caught off guard by your attack!!"
 ]
 magic_crit = [
-    "Your wind magic buffets " + __three_possible_mob_strings + "\."
+    "Your wind magic buffets " + __three_possible_mob_strings + "\.",
+    "Your earth magic slams hard into the " + __three_possible_mob_strings + "."
 ]
 attack_hit = [
     "(?s)You swing with your .+?, hacking (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\.",

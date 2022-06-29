@@ -42,7 +42,7 @@ class CombatReactions(object):
         self.damage_dealt = 0
         self.highest_damage = 0
         self.lowest_damage = 0
-        # self.CRITS_LANDED = 0
+        self.physical_crit = 0
         self.spells_cast = 0
         self.spells_failed = 0
         self.spell_damage_dealt = 0
@@ -52,7 +52,7 @@ class CombatReactions(object):
         self.damage_taken = 0
         self.in_combat = False
 
-        self.regex_cart = [RegexStore.attack_hit, RegexStore.attack_miss, RegexStore.mob_attacked, RegexStore.cast_failure, RegexStore.mob_defeated]
+        self.regex_cart = [RegexStore.attack_hit, RegexStore.attack_miss, RegexStore.mob_attacked, RegexStore.cast_failure, RegexStore.mob_defeated, RegexStore.spell_damage]
 
     def notify(self, regex, M_obj):
         combat_state = self.in_combat
@@ -82,8 +82,8 @@ class CombatReactions(object):
                 self.in_combat = False
         elif regex in RegexStore.attack_miss:
             self.hits_missed += 1
-        # elif regex is self.physical_critical:
-        #     self.character.CRITS_LANDED += 1
+        elif regex is RegexStore.magic_crit:
+            self.character.CRITS_LANDED += 1
         elif regex in RegexStore.mob_attacked:
             self.in_combat = True
             # if M_obj.group('d'):
@@ -119,7 +119,6 @@ class CombatReactions(object):
         kpm = str(calculate_vpm(kills))
         magentaprint("Kills this Session: " + str(kills) + " | Kills / MIN: " + kpm, no_print)
         total_phys_attacks = self.hits_dealt + self.hits_missed
-        # crits_landed = self.character.CRITS_LANDED
         spells_hit = self.spells_cast - self.spells_failed
 
         try:
