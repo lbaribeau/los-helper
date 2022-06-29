@@ -166,11 +166,6 @@ def add_to_dict(d, item_str, qty):
 # Note that the match object actually holds regex info
 
 class Inventory(BotReactionWithFlag, ReferencingList):
-    # keep_list = ["large bag", "large sack", "black bag",
-    #     "silver chalice", "steel bottle", 'glowing potion',
-    #     "chicken soup", 'scarlet potion', 'white potion', "tree root",
-    #     "Elixir of Morinva", "granite potion", "philtre of perception",
-    #     "burnt ochre potion", "milky potion"]
 
     keep_list = [
         'large bag', 'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
@@ -208,7 +203,6 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         # 'platinum ring', 'gold ring', 'steel ring', 'silver ring'
         #'steel mask' # spiv, sawmill
     ]
-
     def __init__(self, telnetHandler, character):
         # I am now thinking that inventory is only concerned about the backpack, not what is equipped.
         self.regex_cart = [

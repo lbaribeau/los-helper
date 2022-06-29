@@ -35,7 +35,7 @@ class Use(ThreadingMixin2):
     def healing_potion(self):
         # big_pots = ['large restorative', 'scarlet potion']
         # small_pots = ['chicken soup', 'small restorative', 'small flask', 'white potion']
-        pots = ['chicken soup', 'small restorative', 'white potion', 'small flask', 'large restorative', 'scarlet potion']#,'philtre of health'] # 'golden potion' (leave that manual)
+        pots = ['chicken soup', 'small restorative', 'white potion', 'small flask', 'large restorative', 'scarlet potion','philtre of health'] # 'golden potion' (leave that manual)
         # philtre of health
 
         if self.prefer_big:
@@ -62,7 +62,13 @@ class Use(ThreadingMixin2):
                 # else:
                 #     continue
                 # self.execute(pot)  # execute should definitely take a reference
-                self.execute(self.character.inventory.get_reference(pot))
+                # self.execute(self.character.inventory.get_reference(pot))
+                if pot == 'philtre of health':
+                    self.command = 'drin'
+                    self.execute(self.character.inventory.get_reference('philtre of health'))
+                    self.command = 'use'
+                else:
+                    self.execute(self.character.inventory.get_reference(pot))
                 # Inventory notices on its own 'a small restorative disintegrates'
                 # self.wait_for_flag()  # Waiting to get the inventory upkeep right
                 # if self.success or self.failure:

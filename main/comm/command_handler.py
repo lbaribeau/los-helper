@@ -38,8 +38,18 @@ from mini_bots.weapon_bot       import WeaponBot
 # from mini_bots.simple_weapon_bot import SimpleWeaponBot
 from mini_bots.travel_bot       import TravelBot
 from reactions.referencing_list import ReferencingList
+from mini_bots.sell_bot         import SellBot
 
 class CommandHandler(object):
+    def init_map_and_bots(self):
+        # magentaprint("CommandHandler generating the mapfile....", False)
+        self.mud_map = MudMap()
+        self.armour_bot = ArmourBot(self.character, self, self.mud_map)
+        self.mudReaderHandler.add_subscriber(self.armour_bot)
+        self.weapon_bot.add_in_map(self.mud_map)
+        self.sell_bot = SellBot(self.character, self, self.mud_map)
+        magentaprint("CommandHandler: Mapfile completed.", False)
+
     def __init__(self, character, mudReaderHandler, telnetHandler):
         self.threaded_map_setup = True
 
@@ -56,6 +66,7 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.combat_reactions)
         # self.simple_weapon_bot = SimpleWeaponBot(self.telnetHandler, self.character)
         # mudReaderHandler.add_subscriber(self.simple_weapon_bot)
+        self.travel_bot = TravelBot(self.character, self, map)
         self.weapon_bot = WeaponBot(self.character, self)
         self.mudReaderHandler.add_subscriber(self.weapon_bot)
         self.smartCombat = SmartCombat(self.telnetHandler, self.character, self.weapon_bot)
@@ -81,7 +92,7 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.repair)
         self.wear = Wear(telnetHandler)
         mudReaderHandler.add_subscriber(self.wear)
-        magentaprint(str(Equipment))
+        # magentaprint(str(Equipment))
         self.equipment = Equipment(telnetHandler)
         mudReaderHandler.add_subscriber(self.equipment)
         mudReaderHandler.add_buffer_completion_subscriber(self.equipment)
@@ -116,13 +127,7 @@ class CommandHandler(object):
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
 
-    def init_map_and_bots(self):
-        # magentaprint("CommandHandler generating the mapfile....", False)
-        self.mud_map = MudMap()
-        self.armour_bot = ArmourBot(self.character, self, self.mud_map)
-        self.mudReaderHandler.add_subscriber(self.armour_bot)
-        self.weapon_bot.add_in_map(self.mud_map)
-        magentaprint("CommandHandler: Mapfile completed.", False)
+
 
     def join_mud_map_thread(self):
         if self.threaded_map_setup:

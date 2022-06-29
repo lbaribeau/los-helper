@@ -31,5 +31,8 @@ class FakeTelnetHandler(object):
         return self.tn.get_socket()
 
     def read_some(self):
-        return self.tn.read_some()
+        s=self.tn.read_some()
+        # magentaprint("FakeTelnetHandler read_some() got {0}".format(s))
+        # return self.tn.read_some()
+        return s
 

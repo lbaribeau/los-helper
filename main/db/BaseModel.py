@@ -31,9 +31,8 @@ class BaseModel(peewee.Model):
             return False
 
     def save(self, *args, **kwargs):
-        if '-fake' in sys.argv:
-            print("BaseModel.save() disabled in -fake mode.")
-        else:
+        # print("BaseModel.save() disabled in -fake mode.")
+        if not '-fake' in sys.argv:
             # self.magentaprint("BaseModel.save(str(args), str(kwargs))")
             super().save(*args, **kwargs)
 

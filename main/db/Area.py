@@ -1,3 +1,4 @@
+
 import sys
 import peewee
 from misc_functions import *
@@ -9,7 +10,12 @@ class Area(NamedModel):
     is_dark_at_night = peewee.BooleanField(default=False)
     is_restorative   = peewee.BooleanField(default=False)
     is_smithy        = peewee.BooleanField(default=False)
+    is_pawn_shop     = peewee.BooleanField(default=False)
+    is_tip           = peewee.BooleanField(default=False)
     #does_damage_on_entry = BooleanField(default=False)
+    # harmful_to_good
+    # harmful_to_evil
+    # See test2 for SQL that modifies DB tables
     #teleports_character = Area(null=True)
 
     class metadata:
@@ -65,7 +71,6 @@ class Area(NamedModel):
 
     def search_for_area(self, mapped_exits):
         is_new_mapping = True
-
         matching_areas = Area.get_areas_by_name_and_exits(self.name, mapped_exits, self.description)
 
         #print ("matching areas: " + str(matching_areas) + " is new mapping: " + str(is_new_mapping))
@@ -75,18 +80,20 @@ class Area(NamedModel):
             is_new_mapping = False
 
             for area in matching_areas:
-                self.id = area.id
-                self.is_always_dark = area.is_always_dark
+                self.id               = area.id
+                self.is_always_dark   = area.is_always_dark
                 self.is_dark_at_night = area.is_dark_at_night
-                self.is_restorative = area.is_restorative
-                self.is_smithy = area.is_smithy
+                self.is_restorative   = area.is_restorative
+                self.is_smithy        = area.is_smithy
+                self.is_pawn_shop     = area.is_pawn_shop
+                self.is_tip           = area.is_tip
                 break
 
         #print ("matching areas: " + str(matching_areas) + " is new mapping: " + str(is_new_mapping))
 
         if not self.metadata.is_dirty:
             #update the database with the longest description possible
-            if (len(self.description) > len(str(area.description))):
+            if len(self.description) > len(str(area.description)):
                 super(Area, self).save()
             else:
                 self.description = area.description
@@ -179,6 +186,22 @@ class Area(NamedModel):
         areas = []
         try:
             areas = Area.select().where((Area.is_smithy == 1))
+        except Area.DoesNotExist:
+            areas = []
+        return areas
+
+    def get_pawn_shops():
+        areas = []
+        try:
+            areas = Area.select().where((Area.is_pawn_shop == 1))
+        except Area.DoesNotExist:
+            areas = []
+        return areas
+
+    def get_tips():
+        areas = []
+        try:
+            areas = Area.select().where((Area.is_tip == 1))
         except Area.DoesNotExist:
             areas = []
         return areas

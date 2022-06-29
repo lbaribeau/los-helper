@@ -75,14 +75,14 @@ class LosHelper(object):
 
         # if self.threaded_map_setup:
         #     self.mud_map_thread.start()  # Don't forget to uncomment .join()
-        self.consoleHandler = newConsoleHandler()
-        self.MUDBuffer = MyBuffer()
-        self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
-        self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
-        self.mud_reader_handler = MudReaderHandler(self.mudReaderThread, self.character)
-        self.inventory = Inventory(self.telnetHandler, self.character)
+        self.consoleHandler      = newConsoleHandler()
+        self.MUDBuffer           = MyBuffer()
+        self.mudListenerThread   = MudListenerThread(self.telnetHandler, self.MUDBuffer)
+        self.mudReaderThread     = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
+        self.mud_reader_handler  = MudReaderHandler(self.mudReaderThread, self.character)
+        self.inventory           = Inventory(self.telnetHandler, self.character)
         self.character.inventory = self.inventory
-        self.analyser = Analyser(self.mud_reader_handler, self.character)
+        self.analyser            = Analyser(self.mud_reader_handler, self.character)
         self.mud_reader_handler.add_subscriber(self.character.prompt)
         self.mud_reader_handler.add_subscriber(self.inventory)
         self.mud_reader_handler.add_subscriber(self.character.mobs)

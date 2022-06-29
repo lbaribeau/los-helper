@@ -626,3 +626,5 @@ occupied_area         = [r"Someone is blocking the way\."]
 rest = [r"You lean back to take some rest\."] # blue text
 you_feel_the_benefits = [r"You feel the benefits of resting\."]
 may_not_use           = [r'You may not use that\.'] # Haven't needed this one (double print with class_prevents)
+
+#"You drink the philtre of health's broth."

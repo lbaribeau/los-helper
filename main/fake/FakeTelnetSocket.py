@@ -1,19 +1,22 @@
 
+import socket
 import re
 
 from db.MudArea import *
 from fake.FakeSocketOutput import FakeSocketOutput
-from fake.FakeInventory import FakeInventory
-from fake.FakeEquipment import FakeEquipment
-from command.Go import Go
-from fake.FakeBuy import FakeBuy
-from fake.fake_use import FakeUse
+from fake.FakeInventory    import FakeInventory
+from fake.FakeEquipment    import FakeEquipment
+from command.Go            import Go
+from fake.FakeBuy          import FakeBuy
+from fake.fake_use         import FakeUse
 from fake.fake_mobs.fake_mobs import *
-from fake.fake_character import FakeCharacter
+from fake.fake_character   import FakeCharacter
 
 class FakeTelnetSocket(object):
     def __init__(self, mud_map):
         self.char = FakeCharacter()
+        self.socket = socket.socket()
+        # (I made an actual socket since the OS finally realized that we just made up the file number.)
         self.socket_output = ["[%s H %s M]: " % (self.char.hp, self.char.mp)]
         self.mud_map = mud_map
         self.whois_string = None
@@ -137,9 +140,9 @@ class FakeTelnetSocket(object):
         print ("Connected to FakeTelnetSocket!")
 
     def read_some(self):
-        if len(self.socket_output) is not 0:
-            fso = FakeSocketOutput(self.socket_output.pop(0))
-            return fso
+        # magentaprint("FakeTelnetSocket.read_some when socket_output is {0}".format(self.socket_output))
+        if self.socket_output:
+            return FakeSocketOutput(self.socket_output.pop(0))
         else:
             return FakeSocketOutput()
 
@@ -147,12 +150,15 @@ class FakeTelnetSocket(object):
         derp = False
 
     def get_socket(self):
-        return 1
+        # return 1
+        magentaprint("FakeTelnetSocket returning socket number: {0}".format(self.socket.fileno()))
+        return self.socket.fileno()
         # Assumes is
 
     def write(self, command):
         #re.match("bot ?$|bot [0-9]+$", user_input)
         #M_obj = re.search("[0-9]+", user_input)
+        magentaprint("FakeTelnetSocket got {0}".format(command))
         if not self.whois_string:
             # The first written string is the character's name for login
             self.initialize_socket_output(command)
@@ -175,9 +181,11 @@ class FakeTelnetSocket(object):
             self.socket_output.append('Vigor spell cast.\n\r')
             self.socket_output.append('[%s H %s M]: ' % (str(self.char.hp), str(self.char.mp)))
         elif re.match('genaid [\d]+', command): #OUTPUT AN AREA
-            M_obj = re.search('genaid ([\d]*)', command)
-            area = Area.get_area_by_id(int(M_obj.group(1)))
-            self.gen_area(area)
+            self.gen_area(
+                Area.get_area_by_id(
+                    int(re.search('genaid ([\d]+)', command).group(1))
+                )
+            )
         elif command == 'l':
             self.socket_output.append(str(self.show_current_area()))
         elif command == 'lself':
@@ -251,7 +259,7 @@ class FakeTelnetSocket(object):
             self.char.inv.add(command.partition(' ')[2])
         elif re.match('drop (.+)', command):
             i = self.inventory.index(command.partition(' ')[2])
-            if i is not None:
+            if i:
                 self.socket_output.append(self.drop_string % self.inventory.l[i].name)
                 self.buy.cant_carry = False
                 self.inventory.remove(command.partition(' ')[2])
@@ -259,7 +267,7 @@ class FakeTelnetSocket(object):
                 self.socket_output.append("You don't have that.\n\r")
         elif re.match('sell (.+)', command):
             i = self.inventory.index(command.partition(' ')[2])
-            if i is not None:
+            if i:
                 self.socket_output.append('The shopkeep gives you 30 gold for a ' + self.inventory.l[i].name + '.\n\r')
                 self.buy.cant_carry = False
                 self.inventory.remove(command.partition(' ')[2])
@@ -268,7 +276,7 @@ class FakeTelnetSocket(object):
         elif command.startswith('use '):
             self.use.do(command.partition(' ')[2])
         elif command.startswith('buy '):
-            self.buy.do(command.partition(' ')[2])
+            self.buy.do(command.partition(' ')[2]) # ie. buy iron 2
         elif command == 'get all':
             self.socket_output.append("There's nothing here.\n\r")
         elif command.startswith('get '):
@@ -291,6 +299,7 @@ class FakeTelnetSocket(object):
                 self.socket_output.append('"Darnitall!" shouts the smithy, "I broke another. Sorry lad."')
 
     def gen_area(self, area):
+        magentaprint("FakeTelnetSocket generate area {0}".format(area))
         self.current_mud_area = MudArea(area)
         #(.+?\n\r)((?:\n\r.+)*)?(\n\rObvious exits: .+?[\n\r]?.+?\.)\n\r(You see .+?[\n\r]?.+?\.)?[\n\r]?(You see .+?[\n\r]?.+?\.)?
         area_string = (area.name + "\n\r\n\r" +
@@ -305,16 +314,17 @@ class FakeTelnetSocket(object):
 
         self.current_area = area_string
         self.socket_output.append(str(self.show_current_area()))  # one more newline?
+        magentaprint("FakeTelnetSocket put onto output {0}".format(self.show_current_area()))
 
     def gen_next_area(self, direction):
         exit = ExitType(name=self.get_whole_exit_name(direction))
         mud_area = self.current_mud_area.get_area_to_from_exit(exit)
         # magentaprint('gen_next_area() ' + direction + ', ' + str(exit) + '. mud_area:' + str(mud_area))
 
-        if mud_area is None:
-            self.socket_output.append("You can't go that way.\n\r")
-        else:
+        if mud_area:
             self.gen_area(mud_area.area)
+        else:
+            self.socket_output.append("You can't go that way.\n\r")
 
     def get_whole_exit_name(self, first_letters):
         return self.get_full_name_of_target(first_letters, sorted([e.exit_type.name for e in self.current_mud_area.area_exits]))

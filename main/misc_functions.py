@@ -94,9 +94,13 @@ def get_shortest_array(list_of_arrays):
     for array in list_of_arrays:
         shortest_array.append(len(array))
 
-    index = shortest_array.index(min(shortest_array, key=int))
+    #lengths=[len(a) for a in list_of_arrays]
+    #return list_of_arrays[lengths.index(min(lengths, key=int))]
+    #return min(list_of_arrays, key=len)
 
-    return list_of_arrays[index]
+    return list_of_arrays[
+        shortest_array.index(min(shortest_array, key=int))
+    ]
 
 def key_with_max_val(d):
      """ a) create a list of the dict's keys and values; 

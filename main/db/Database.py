@@ -5,24 +5,43 @@ http://peewee.readthedocs.org/en/latest/peewee/installation.html
 '''
 
 import peewee
+import sys
 
 db = peewee.Proxy()
 
 #import db as db_package
-from db.BaseModel import BaseModel
-from db.Log import Log
-from db.Area import Area
-from db.AreaExit import AreaExit
-from db.ExitType import ExitType
-from db.Mob import Mob
-from db.MobLocation import MobLocation
-from db.Item import Item
-from db.ItemType import ItemType
+from db.BaseModel     import BaseModel
+from db.Log           import Log
+from db.Area          import Area
+from db.AreaExit      import AreaExit
+from db.ExitType      import ExitType
+from db.Mob           import Mob
+from db.MobLocation   import MobLocation
+from db.Item          import Item
+from db.ItemType      import ItemType
 from db.ItemTypeModel import ItemTypeModel
-from db.ItemTypeData import ItemTypeData
+from db.ItemTypeData  import ItemTypeData
 from db.AreaStoreItem import AreaStoreItem
-from db.MudMap import MudMap
+from db.MudMap        import MudMap
 #from misc_functions import magentaprint # Circular import?
+
+create_view_named_mobs = """
+CREATE VIEW [v_named_mobs] AS 
+select *
+from mob
+where name != lower(name);"""
+create_view_areas_inc_dirt = """CREATE VIEW [v_areas_inc_dirt] AS 
+select a.*, 1 as Derp
+from area as a;"""
+create_view_exits_for_graph = """CREATE VIEW [v_areaexits_for_graph] AS 
+select ae.id, ae.area_from_id, coalesce(ae.area_to_id, 1) as area_to_id, ae.exit_type_id, ae.is_useable, ae.note, ae.is_hidden
+from areaexit as ae
+where ae.is_useable = 1;"""
+create_view_areas_for_graph = """CREATE VIEW [v_areas_for_graph] AS 
+select a.* from area as a
+where a.id in (
+      select distinct(area_from_id)
+      from v_areaexits_for_graph);"""
 
 def create_tables():
     try:
@@ -39,25 +58,10 @@ def create_tables():
         try_create(db.ItemTypeModel.ItemTypeModel)
         try_create(db.ItemTypeData.ItemTypeData)
         try_create(db.AreaStoreItem.AreaStoreItem)
-        db.execute_sql("""CREATE VIEW [v_named_mobs] AS 
-select *
-from mob
-where name != lower(name);""")
-
-        db.execute_sql("""CREATE VIEW [v_areas_inc_dirt] AS 
-select a.*, 1 as Derp
-from area as a;""")
-
-        db.execute_sql("""CREATE VIEW [v_areaexits_for_graph] AS 
-select ae.id, ae.area_from_id, coalesce(ae.area_to_id, 1) as area_to_id, ae.exit_type_id, ae.is_useable, ae.note, ae.is_hidden
-from areaexit as ae
-where ae.is_useable = 1;""")
-
-        db.execute_sql("""CREATE VIEW [v_areas_for_graph] AS 
-select a.* from area as a
-where a.id in (
-      select distinct(area_from_id)
-      from v_areaexits_for_graph);""")
+        db.execute_sql(create_named_mobs_view)
+        db.execute_sql(create_view_areas_inc_dirt)
+        db.execute_sql(create_view_exits_for_graph)
+        db.execute_sql(create_view_areas_for_graph)
 
         #Load Preliminary Data
         Unknown = Area(name="Unknown", description="")
@@ -100,17 +104,14 @@ def try_drop(cls):
         print("Database.py ignoring exception in try_drop(): "+str(e))
         pass
 
-from sys import argv
-
-if "-nodb" in argv:
-    database_file = "no.db"
+if "-nodb" in sys.argv:
+    db.initialize(peewee.SqliteDatabase("no.db", check_same_thread=False))
 else:
-    database_file = "maplos.db"
+    db.initialize(peewee.SqliteDatabase("maplos.db", check_same_thread=False))
 
 #database = peewee.SqliteDatabase(database_file, threadlocals=True, check_same_thread=False)
 #database2 = peewee.SqliteDatabase(database_file, check_same_thread=False)
 #db.initialize(database2)
-db.initialize(peewee.SqliteDatabase(database_file, check_same_thread=False))
 #db.initialize(peewee.SqliteDatabase(database_file, check_same_thread=False))
 #db = database
 

@@ -220,8 +220,8 @@ pip-log.txt
 .mr.developer.cfg
 
 main/__pycache__/*
-main/*.db
-maplos.db
+#maplos.db
+#main/*.db
 
 *.plist
 

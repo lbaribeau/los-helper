@@ -22,14 +22,20 @@ class MudListenerThread(threading.Thread):
     def stop(self):
         self.stopping = True
 
+    def fake_version(self):
+        return '-fake' in sys.argv
+
     def run (self):
         # First get the file descriptor (no) of the internal telnet socket object
         # so we can watch for input.
         socket_number = self.telnetHandler.get_socket()
         fragment=""
         # magentaprint("MudListenerThread sys.argv " + str(sys.argv))
-        select_timeout = 2.0 if '-fake' not in sys.argv else 0.1
+        select_timeout = 2.0 if not self.fake_version() else 0.1
         # magentaprint("MudListenerThread select timeout is " + str(select_timeout))
+        # So fake just works by timing out the select call
+        # Better would be to actually use the socket, but this is working
+        
 
         # Loop forever, just do stuff when the socket says its ready.
         while not self.stopping:
@@ -42,7 +48,8 @@ class MudListenerThread(threading.Thread):
                     magentaprint("MudListenerThread select ValueError:" + str(ValueError))
                 continue
 
-            if select_triple != ([], [], []) or socket_number == 1:
+            # if select_triple != ([], [], []) or socket_number == 1:
+            if select_triple != ([], [], []) or self.fake_version:
                 try:
                     # magentaprint("MudListenerThread calling read_some().")  # Can print a LOT
                     new_bit = self.telnetHandler.read_some()
