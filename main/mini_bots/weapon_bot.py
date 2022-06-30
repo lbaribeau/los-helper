@@ -384,17 +384,17 @@ class WeaponBot(MiniBot):
             magentaprint("self.char.inventory.has_any([w.item.name for w in self.get_possible_weapons()]: " + str(self.char.inventory.has_any([w.item.name for w in self.get_possible_weapons()])))
 
             # if self.get_possible_weapons()
-            # usable_possible_weapons_in_inv = any(x.usable for x in possible_weapons_in_inventory)
+            # usable_possible_weapons_in_inv = any(x.usable for x in self.possible_weapons_in_inventory)
             # if self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()]) and \
             #    any([x.usable for x in self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])]):
 # [asi.item.name for asi in self.get_possible_weapons()])):
 
-            # if possible_weapons_in_inventory and any(x.usable for x in possible_weapons_in_inventory):
+            # if self.possible_weapons_in_inventory and any(x.usable for x in self.possible_weapons_in_inventory):
             #     pass
             # elif self.char.inventory.has_any([w.item.name for w in self.get_possible_weapons()]):
-            # possible_weapons_in_inventory = self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])
+            # self.possible_weapons_in_inventory = self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])
             if self.possible_weapons_in_inventory:
-                if any(x.usable for x in possible_weapons_in_inventory):
+                if any(x.usable for x in self.possible_weapons_in_inventory):
                     pass
                 else:
                     magentaprint('Ensure that one is usable to serve as the backup')

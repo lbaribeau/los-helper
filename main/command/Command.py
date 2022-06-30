@@ -110,10 +110,12 @@ class Command(SimpleCommand):
         # magentaprint(str(self.__class__) + " init regex_cart: " + str(self.regex_cart))
         # self.result = 'success/failure/error'
         self._executing = False
+        self._sent_target = None
 
     def notify(self, regex, M_obj):
         self.notify_success_fail_or_error(regex, M_obj)
-        self.set_completion_flag()
+        self._executing = False
+        super().notify(None, None)  # maintains wait_for_flag()
 
     def notify_success_fail_or_error(self, regex, M_obj):
         # 'success' and 'fail' could be renamed to 'long cooldown' and 'short cooldown'
@@ -150,10 +152,6 @@ class Command(SimpleCommand):
         elif self.please_wait2:
             self.please_wait_time = 60*int(M_obj.group(1)) + int(M_obj.group(2))
             self.notify_please_wait()
-
-    def set_completion_flag(self):
-        super().notify(None, None)   # maintains wait_for_flag()
-        self._executing = False
 
     @property
     def success(self):
@@ -288,8 +286,10 @@ class Command(SimpleCommand):
     def execute(self, target=None):
         # Same as send() but gets called from instance
         # (send() doesn't need an instance but needs telnetHandler put in)
+        magentaprint("Command set _sent_target to {0}".format(target))
         self.result = ''
         self._executing = True
+        self._sent_target = target # Some cases want to know what the target was when the regex comes back (remove from inventory)
         super().execute(target)  # sets the waiter flag and calls send
 
     def execute_and_wait(self, target=None):
@@ -309,4 +309,5 @@ class Command(SimpleCommand):
         # return if not cls.timer else time.sleep(max(0, cls.wait_time()))
         # time.sleep(max(0, cls.timer - time.time()))  # timer is a class variable
         time.sleep(cls.wait_time())
+
 

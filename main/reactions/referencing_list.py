@@ -74,6 +74,7 @@ class ReferencingList(object):
     def remove_by_ref(self, ref):
         # if item in self.list:
         #     self.list.remove(item)
+        magentaprint("Referencing list removing {0} at index {1}: ".format(ref, self.index(ref)))
         self.remove_by_index(self.index(ref))
 
     def remove_by_index(self, ind):

@@ -25,7 +25,7 @@ from command.Quit               import Quit
 from command.Command            import Command
 from reactions.CombatReactions  import CombatReactions
 from command.Buy                import Buy
-from command.Drop               import Drop
+# from command.Drop               import Drop
 from command.Get                import Get
 from comm.Spells                import *
 from comm.thread_maker          import ThreadMaker
@@ -39,24 +39,27 @@ from mini_bots.weapon_bot       import WeaponBot
 from mini_bots.travel_bot       import TravelBot
 from reactions.referencing_list import ReferencingList
 from mini_bots.sell_bot         import SellBot
+from command.CommandThatRemovesFromInventory import Sell, Drop
 
 class CommandHandler(object):
     def init_map_and_bots(self):
         # magentaprint("CommandHandler generating the mapfile....", False)
-        self.mud_map = MudMap()
+        self.mud_map = MudMap() # Takes a few seconds
+        # Initialize things that NEED the map
+        # (The map takes a few seconds)
         self.armour_bot = ArmourBot(self.character, self, self.mud_map)
         self.mudReaderHandler.add_subscriber(self.armour_bot)
         self.weapon_bot.add_in_map(self.mud_map)
-        self.sell_bot = SellBot(self.character, self, self.mud_map)
+        self.travel_bot = TravelBot(self.character, self, self.mud_map)
         magentaprint("CommandHandler: Mapfile completed.", False)
 
     def __init__(self, character, mudReaderHandler, telnetHandler):
         self.threaded_map_setup = True
 
-        self.character = character
+        self.character        = character
         self.mudReaderHandler = mudReaderHandler
-        self.telnetHandler = telnetHandler
-        self.inventory = character.inventory
+        self.telnetHandler    = telnetHandler
+        self.inventory        = character.inventory
 
         # mudReaderHandler.register_reaction(self.smartCombat.kill)
         # mudReaderHandler.register_reaction(self.smartCombat.cast)
@@ -66,8 +69,7 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.combat_reactions)
         # self.simple_weapon_bot = SimpleWeaponBot(self.telnetHandler, self.character)
         # mudReaderHandler.add_subscriber(self.simple_weapon_bot)
-        self.travel_bot = TravelBot(self.character, self, map)
-        self.weapon_bot = WeaponBot(self.character, self)
+        self.weapon_bot = WeaponBot(self.character, self) # This guy takes the map after it's available... seems like his functions should be made thread safe
         self.mudReaderHandler.add_subscriber(self.weapon_bot)
         self.smartCombat = SmartCombat(self.telnetHandler, self.character, self.weapon_bot)
         self.kill = self.smartCombat.kill
@@ -83,8 +85,8 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.smartCombat.use)
         self.buy = Buy(telnetHandler)
         mudReaderHandler.add_subscriber(self.buy)
-        self.drop = Drop(telnetHandler)
-        mudReaderHandler.add_subscriber(self.drop)
+        # self.drop = Drop(telnetHandler)
+        # mudReaderHandler.add_subscriber(self.drop)
         self.get = Get(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.get)
         self.use = self.smartCombat.use
@@ -94,9 +96,14 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.wear)
         # magentaprint(str(Equipment))
         self.equipment = Equipment(telnetHandler)
+        # self.eq_bot = EquipmentBot(character, self, self.mudReaderHandler, self.mud_map)
         mudReaderHandler.add_subscriber(self.equipment)
         mudReaderHandler.add_buffer_completion_subscriber(self.equipment)
-        # self.eq_bot = EquipmentBot(character, self, self.mudReaderHandler, self.mud_map)
+        self.sell = Sell(telnetHandler, self.inventory)
+        mudReaderHandler.add_subscriber(self.sell)
+        self.drop = Drop(telnetHandler, self.inventory)
+        mudReaderHandler.add_subscriber(self.drop)
+        self.sell_bot = SellBot(self.character.inventory, self.sell, self.drop)
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
@@ -126,8 +133,6 @@ class CommandHandler(object):
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
-
-
 
     def join_mud_map_thread(self):
         if self.threaded_map_setup:
@@ -238,8 +243,12 @@ class CommandHandler(object):
             self.user_kkc(user_input.partition(' ')[2].strip())
         elif user_input.startswith('kk2 '):
             self.user_kk2(user_input.partition(' ')[2].strip())
-        elif re.match('dro? ', user_input):
-            self.user_dr(user_input)
+        elif re.match('^(dro?|drop) ', user_input):
+            # self.user_dr(user_input)
+            self.drop.execute(user_input.split(" ", maxsplit=1)[1]) # This approach keeps the inventory correct
+        elif re.match('^sell? ', user_input):
+            # self.user_sell(user_input)
+            self.sell.execute(user_input.split(" ", maxsplit=1)[1])
         elif user_input.startswith('sella'):
             #magentaprint(str(self.inventory.sellable()))
             # magentaprint(
@@ -251,9 +260,13 @@ class CommandHandler(object):
         elif user_input.startswith('droppable'):
             magentaprint(str(self.inventory.droppable()))
         elif user_input.startswith('Sel') and not user_input.startswith('Sella'):
-            self.inventory.sell_stuff()
+            # self.inventory.sell_stuff()
+            self.sell_bot.sell_stuff() # Stoppable? Maybe not needed
         elif user_input.startswith('Dr') and not user_input.startswith('Dropp'):
-            self.inventory.drop_stuff()
+            # self.inventory.drop_stuff()
+            self.sell_bot.drop_stuff()
+        elif user_input == 'gopawn':
+            self.travel_bot.go_to_nearest_pawn_shop() # Try ctrl C to kill the thread
         elif user_input == 'ga':
             # self.telnetHandler.write('get all')
             self.get.execute('all')
@@ -459,10 +472,16 @@ class CommandHandler(object):
         #     self.telnetHandler.write(user_input)
         # else:
         
-    def user_dr(self, user_input):
-        [command, item] = user_input.split(" ", 1)
-        user_input = "drop " + item
-        self.telnetHandler.write(user_input)
+    # def user_dr(self, user_input):
+    #     # [command, item] = user_input.split(" ", maxsplit=1)
+    #     # user_input = "drop " + item
+    #     # self.telnetHandler.write(user_input)
+    #     self.drop.execute(user_input.split(" ", maxsplit=1)[1]) # This approach keeps the inventory correct
+
+    # def user_sell(self, user_input):
+    #     # [command, item] = user_input.split(" ", maxsplit=1)
+    #     # self.sell.execute(item)
+    #     self.sell.execute(user_input.split(" ", maxsplit=1)[1])
     
     def user_kk(self, monster):
         # Commented: user_kk is deprecated and this code also doesn't work
@@ -789,14 +808,19 @@ class CommandHandler(object):
             raise e
 
     def bulk_drop(self, arg_string):
+        # self.sell_bot.bulk_drop(argv=arg_string.split(' ', maxsplit=1)[1])
         if arg_string:
             unique_word = arg_string.split(' ')[0]
             if ' ' in arg_string:
-                qty = int(arg_string.split(' ')[1])
+                if arg_string.split(' ')[1] == 'all':
+                    quantity = 'all'
+                else:
+                    quantity = int(arg_string.split(' ')[1])
             else:
-                qty = 1
+                quantity = 'all'
 
-            self.inventory.bulk_drop(unique_word, qty)
+            # self.inventory.bulk_drop(unique_word, quantity)
+            self.sell_bot.bulk_drop(unique_word, quantity)
         else:
             magentaprint("Bulk drop missing arguments")
 

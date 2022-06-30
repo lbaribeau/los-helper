@@ -71,6 +71,7 @@ class Equipment(Command):
         super().notify_success_fail_or_error(r, match)
 
     def notify_of_buffer_completion(self):
+        # MudReaderHandler says it's done with the buffer
         if self.eq_flag and self.prompt_flag:
         # if self.eq_flag:
             #magentaprint("Equipment dict is " + str(self.dict))
@@ -80,7 +81,8 @@ class Equipment(Command):
             # magentaprint("Equipment completed.")
             self.eq_flag = False
             self.prompt_flag = False
-            super().set_completion_flag()  # We are returning when we get the prompt since returning on R.eq is buggy.
+            # super().set_completion_flag()  # We are returning when we get the prompt since returning on R.eq is buggy.
+            super().notify(None,None) # Sets completion flag
             # This is also why we separated Command.notify() into two methods (we don't want to set the completion flag on R.eq
             # like most other commands that don't have a similar bug.)
             # It's finicky - there's another issue when the prompt is sent with the eq text and gets registered before it,
@@ -161,7 +163,6 @@ class Equipment(Command):
         #     self.seconded = match.group(1)
         # elif r in R.holding:
         #     self.holding = match.group(1)
-
 
         # self.body = ''
         # self.arms = ''

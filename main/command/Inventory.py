@@ -4,7 +4,7 @@ import time, re, collections
 from Exceptions import *
 from misc_functions import *
 import comm.RegexStore as R
-from reactions.BotReactions     import BotReactionWithFlag
+from command.Command            import SimpleCommand
 from db.MudItem                 import MudItem
 from reactions.referencing_list import ReferencingList
 
@@ -165,8 +165,8 @@ def add_to_dict(d, item_str, qty):
 #         self.M_obj=M_obj
 # Note that the match object actually holds regex info
 
-class Inventory(BotReactionWithFlag, ReferencingList):
-
+class Inventory(SimpleCommand, ReferencingList):
+    command='i'
     keep_list = [
         'large bag', 'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
         'small flask', 'large restorative', 'scarlet potion', 'tree root', #'white potion', 'small restorative', 'chicken soup',
@@ -233,7 +233,8 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             R.gold_from_tip     ,
             R.you_now_have      
         ]
-        self.telnetHandler = telnetHandler
+        SimpleCommand.__init__(self, telnetHandler)
+        ReferencingList.__init__(self)
         self.character = character
         self.gold = 0
         self.__stopping = False
@@ -249,8 +250,6 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             'chicken soup', 'small restorative', 'white potion', 'small flask', 'large restorative', 'scarlet potion', 'philtre of health' # , 'golden potion'
         ] # , 'tree root']
 
-        BotReactionWithFlag.__init__(self)
-        ReferencingList.__init__(self)
         self.__sell_function = False
         self.__drop_function = False
         #self.__previous_regex = None
@@ -275,8 +274,10 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             if self.__sell_function:
                 # We will remove the item from the scope where we know the command that was sent (self.sell)
                 self.__return_buffer.append(match)
-            else:
-                self.remove_many(match.group(2))
+            # else:
+            #     self.remove_many(match.group(2))
+            #     (Ok do not remove if it's not self.sell... we used to do this... now we have Sell object calling remove on us)
+            # Put Sell object in charge of this removal
         elif regex in R.you_now_have + R.gold_from_tip:
             self.gold = int(match.group(1))
         elif regex in R.you_wield and not match.group('weapon').endswith('in your off hand'):
@@ -312,7 +313,8 @@ class Inventory(BotReactionWithFlag, ReferencingList):
             if self.__drop_function:
                 pass
             else:
-                self.remove_many(match.group(1))
+                # self.remove_many(match.group(1))
+                pass # Use drop command object
         elif regex in R.you_give + R.you_put_in_bag + R.disintegrates:
                 self.remove_many(match.group(1))
         elif regex in R.you_wear + R.you_hold:
@@ -353,9 +355,10 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 
     def get_inventory(self):
         # magentaprint('\n' + str(self.list))
-        self.telnetHandler.write('i')
-        self.wait_for_flag()
-        # magentaprint('\n' + str(self.list))
+        # self.clear()
+        # self.telnetHandler.write('i')
+        # self.wait_for_flag()
+        self.execute_and_wait() # Will get notify on You have and super.notify() for the threading event
         magentaprint("get_inventory() got {0}".format(self.list))
         return self.list # Is this reliable? How did we get 'the' in the inventory
         # I have actually get_inventory() got [] right off the bat
@@ -461,6 +464,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
                 return
 
     def sell(self, item_ref):
+        magentaprint("Inventory.sell deprecated!")
         self.__sell_function = True
         self.telnetHandler.write("sell " + item_ref)
         self.wait_for_flag() 
@@ -482,6 +486,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         # Bot should probably use a Sell object...
         # Right here, do a blocking call, then remove the correct item using item_ref instead of with the reaction
         # (Getting the right one can help if one is broken)
+        # Eh did this ever work? Now we have a sell object that will tell us what happened.
 
     def bulk_sell(self, item_string, quantity):
         magentaprint("Bulk selling: " + item_string + " #" + quantity)
@@ -524,7 +529,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
     # def sell_fast(self):
 
     def drop_stuff(self):
-        magentaprint("Inventory.drop_stuff()")
+        magentaprint("Inventory.drop_stuff() (Don't use this! Can mixes up which items of same name are broken.)")
         self.__stopping = False
         # self.get_inventory()  # Maybe unnecessary, except I see "You don't have that" if removed
 
@@ -758,7 +763,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
                 # elif item_name == 'small inhaler' and not qty.objs[index].is_usable::
                 # drop_item_at_index(item, index)  # This would require a get_reference_from_index method
 
-        refs.reverse()
+        refs.reverse() # Caller assumes it can use all the references in order (this reverse is needed)
         magentaprint("broken junk returning " + str(refs))
         return refs  # Bot can drop these references without reversing
         # TODO: use small inhalers

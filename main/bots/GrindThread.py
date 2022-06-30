@@ -600,7 +600,7 @@ class GrindThread(BotThread):
         if self.stopping:
             return
 
-        self.inventory.sell_stuff()
+        # self.inventory.sell_stuff()
         # This is too much authority for Inventory, but this is also not a job for grind thread.
         # Time to make a mini bot (?) to support human Sel
 
@@ -611,9 +611,14 @@ class GrindThread(BotThread):
         #         self.sell(item_ref)
         #     else:
         #         return
+        # Ok we got it
+        self.command_handler.sell_bot.sell_stuff()
+        # Should this really be Grindthread though
+        # There should be a puppet master that chooses between grinding and selling, I think
 
     def item_was_sold(self):
         # TODO: class Sell(Command)  - Get rid of these all caps flag variables and copypasta polling code
+        magentaprint("GrindThread item_was_sold deprecated! use command_handler.sell.wait()")
         self.character.MUD_RETURN_ITEM_SOLD = False
         self.character.SELL_CHECK_FLAG = 1
         now = time.time()
@@ -627,11 +632,12 @@ class GrindThread(BotThread):
     def drop_items(self):
         if self.stopping:
             return
-        self.inventory.drop_stuff()
-
+        # self.inventory.drop_stuff()
         # This should maybe be a mini bot...
         # self.drop_refs(self.inventory.sellable())
         # self.drop_refs(self.inventory.droppable())
+        self.command_handler.sell_bot.drop_stuff()
+        # We also have broken rings...
 
     def drop_refs(self):
         pass
