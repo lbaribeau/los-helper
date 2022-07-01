@@ -176,6 +176,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand', #'makeup kit', 
         'diamantium cross',
         'copper thieves pass', 'steel thieves pass', 'silver thieves pass',# 'stilleto'
+        'druid\'s silver sickle',
         # 'blue scroll',
         # 'granite rod', 'zinc wand',
         # 'adamantine rod',

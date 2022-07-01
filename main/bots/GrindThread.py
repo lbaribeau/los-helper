@@ -843,7 +843,7 @@ class GrindThread(BotThread):
         #     self.character.MOBS_ATTACKING.remove(monster)
         magentaprint("engage monster \"" + monster + ",\" in attacking list: " + str(monster in self.character.mobs.attacking))
         if monster in self.character.mobs.attacking:
-            magentaprint("GrindThread doing cleanup on erroneous mobs.attacking list, removing " + monster)
+            magentaprint("GrindThread doing cleanup on erroneous mobs.attacking list, removing " + monster, False)
             self.character.mobs.attacking.remove(monster)
             # Reason: if Mobs gets notified in the wrong order, smelly beggar gets added after it gets removed,
             # and I got a bad mobs.attacking... order has been fixed.
