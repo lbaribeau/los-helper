@@ -18,6 +18,9 @@ class ThreadingMixin2(Command):
     # I also don't like copying code but - I can only do thing at a time.
     # Children need to set self.end_thread_regex_cart
 
+    # kk, use, haste... could maybe all use the same code with different cooldowns
+    # Use needs CommandThatRemovesFromInventory but also has a cooldown
+
     def __init__(self, telnetHandler):
         super().__init__(telnetHandler)
         self.thread = None

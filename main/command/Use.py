@@ -12,20 +12,27 @@ class Use(ThreadingMixin2):
     cooldown_after_success = 0.86  # .83 too fast
     cooldown_after_failure = 0.86
     # It's tempting to try to make Inventory smart enough to use healing items...
-    # Yes lately I belive Inventory should "have" commands that affect it
+    # Yes lately I belive Inventory should "have" commands that affect it (No!)
     # But it's nice to have a division of labour (regex subscriptions)
     success_regexes = [R.potion_drank]  # Todo: add rods/buffs  (Might be made simpler with a different class, ie. UseRod)
     failure_regexes = []  # TODO: I believe flasks can fail
     # Try a potion in limbo, it evaporates, but that should still count as success I think
     error_regexes = [R.use_what, R.cant_use]
 
-    def __init__(self, character, telnetHandler):
+    def __init__(self, character, telnetHandler, inventory):
         self.character = character
         self.end_thread_regexes = self.error_regexes
         super().__init__(telnetHandler)
         self.prompt_flag = False
         self.regex_cart.append(R.prompt)
         self.prefer_big = False
+        self.inventory=inventory # We need to tell inventory when we've deleted an item (TODO)
+        # Inherit CommandThatRemovesFromInventory
+        # Move off of ThreadingMixin2
+        # In notify, notice if an item has 'disintegrated'
+        # Since inventory doesn't know which one we used
+        # (When does that matter? small inhalers and white amulets don't disintegrate)
+        # We haven't done rods yet
 
     def notify(self, r, m):
         super().notify(r, m)

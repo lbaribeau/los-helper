@@ -24,10 +24,14 @@ from bots.TopDownGrind          import TopDownGrind
 from command.Quit               import Quit
 from command.Command            import Command
 from reactions.CombatReactions  import CombatReactions
+from combat.Kill                import Kill
+from combat.Cast                import Cast
+from command.Use                import Use
+from command.Wield              import Wield
+from command.Wield              import Second
 from command.Buy                import Buy
-# from command.Drop               import Drop
 from command.Get                import Get
-from comm.Spells                import *
+import comm.Spells
 from comm.thread_maker          import ThreadMaker
 from command.repair             import Repair
 from command.wear               import Wear
@@ -54,6 +58,9 @@ class CommandHandler(object):
         magentaprint("CommandHandler: Mapfile completed.", False)
 
     def __init__(self, character, mudReaderHandler, telnetHandler):
+        # It's ok to have a "dependency injection container" that instantirates everything in one spot
+        # Also, lately I'm ok with something like SmartCombat needing a long list of arguments
+        # They are good arguments... it's a list of the commands it needs... it makes sense
         self.threaded_map_setup = True
 
         self.character        = character
@@ -71,25 +78,29 @@ class CommandHandler(object):
         # mudReaderHandler.add_subscriber(self.simple_weapon_bot)
         self.weapon_bot = WeaponBot(self.character, self) # This guy takes the map after it's available... seems like his functions should be made thread safe
         self.mudReaderHandler.add_subscriber(self.weapon_bot)
-        self.smartCombat = SmartCombat(self.telnetHandler, self.character, self.weapon_bot)
-        self.kill = self.smartCombat.kill
-        self.cast = self.smartCombat.cast
+
+        self.kill = Kill(telnetHandler)
         mudReaderHandler.add_subscriber(self.kill)
+        self.cast = Cast(telnetHandler)
         mudReaderHandler.add_subscriber(self.cast)
+        self.use = Use(character, telnetHandler, self.inventory)
+        mudReaderHandler.add_subscriber(self.use)
+        self.wield = Wield(character, telnetHandler, self.inventory)
+        mudReaderHandler.add_subscriber(self.wield)
+        self.second = Second(character, telnetHandler, self.inventory)
+        mudReaderHandler.add_subscriber(self.second)
+        self.smartCombat = SmartCombat(self.kill,self.cast,self.use,self.wield,self.telnetHandler,self.character,self.weapon_bot)
+        mudReaderHandler.add_subscriber(self.smartCombat)
+
         self.go = Go(telnetHandler, character)
         mudReaderHandler.add_subscriber(self.go)
         mudReaderHandler.add_subscriber(self.go.open)
-        mudReaderHandler.add_subscriber(self.smartCombat.wield)
-        mudReaderHandler.add_subscriber(self.smartCombat.wield.second)
-        mudReaderHandler.add_subscriber(self.smartCombat)
-        mudReaderHandler.add_subscriber(self.smartCombat.use)
         self.buy = Buy(telnetHandler)
         mudReaderHandler.add_subscriber(self.buy)
         # self.drop = Drop(telnetHandler)
         # mudReaderHandler.add_subscriber(self.drop)
         self.get = Get(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.get)
-        self.use = self.smartCombat.use
         self.repair = Repair(telnetHandler)
         mudReaderHandler.add_subscriber(self.repair)
         self.wear = Wear(telnetHandler)
@@ -104,6 +115,8 @@ class CommandHandler(object):
         self.drop = Drop(telnetHandler, self.inventory)
         mudReaderHandler.add_subscriber(self.drop)
         self.sell_bot = SellBot(self.character.inventory, self.sell, self.drop)
+        # Use will have to keep inventory up to date, right
+        # That is if items support usable (small inhaler, white amulet, rods)
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
@@ -256,7 +269,8 @@ class CommandHandler(object):
             #         [self.inventory.get(i) for i in self.inventory.sellable()]
             #     )
             # )
-            self.inventory.sellable()
+            # self.inventory.sellable()
+            self.sell_bot.sellable()
         elif user_input.startswith('droppable'):
             magentaprint(str(self.inventory.droppable()))
         elif user_input.startswith('Sel') and not user_input.startswith('Sella'):
@@ -287,8 +301,12 @@ class CommandHandler(object):
             self.go.persistent_execute('door')
         elif re.match("find (.+)", user_input):
             self.find(user_input)
+        elif re.match("(wiel?|wield) ", user_input):
+            self.wield.execute(user_input.split(' ',maxsplit=1)[1])
         elif re.match("wie?2 +[a-zA-Z]+( +\d+)?", user_input):
-            self.user_wie2(user_input[4:].lstrip())
+            self.wield.execute_and_wait(user_input.split(' ',maxsplit=1)[1])
+            self.second.execute(user_input.split(' ',maxsplit=1)[1])
+            # self.user_wie2(user_input[4:].lstrip())
         elif re.match("fle?$|flee$", user_input):
             self.stop_bot()
             self.user_flee()
@@ -591,27 +609,27 @@ class CommandHandler(object):
         # Uses smart combat with level 2 spell
         teh_split = argv.split(" ")
         self.user_kkc(" ".join(teh_split))
-        if self.smartCombat.favourite_spell is burn:
-            teh_split.insert(0, fireball)
-        elif self.smartCombat.favourite_spell is hurt:
-            teh_split.insert(0, dustgust)
-        elif self.smartCombat.favourite_spell is blister:
-            teh_split.insert(0, waterbolt)
-        elif self.smartCombat.favourite_spell is rumble:
-            teh_split.insert(0, crush)
+        if self.smartCombat.favourite_spell is comm.Spells.burn:
+            teh_split.insert(0, comm.Spells.fireball)
+        elif self.smartCombat.favourite_spell is comm.Spells.hurt:
+            teh_split.insert(0, comm.Spells.dustgust)
+        elif self.smartCombat.favourite_spell is comm.Spells.blister:
+            teh_split.insert(0, comm.Spells.waterbolt)
+        elif self.smartCombat.favourite_spell is comm.Spells.rumble:
+            teh_split.insert(0, comm.Spells.crush)
         self.user_kkc(" ".join(teh_split))
 
     def user_kk3(self, argv):
         teh_split = argv.split(" ")
         self.user_kkc(" ".join(teh_split))
-        if self.smartCombat.favourite_spell is burn:
-            teh_split.insert(0, burstflame)
-        elif self.smartCombat.favourite_spell is hurt:
-            teh_split.insert(0, shockbolt)
-        elif self.smartCombat.favourite_spell is blister:
-            teh_split.insert(0, waterbolt)
-        elif self.smartCombat.favourite_spell is rumble:
-            teh_split.insert(0, crush)
+        if self.smartCombat.favourite_spell is comm.Spells.burn:
+            teh_split.insert(0, comm.Spells.burstflame)
+        elif self.smartCombat.favourite_spell is comm.Spells.hurt:
+            teh_split.insert(0, comm.Spells.shockbolt)
+        elif self.smartCombat.favourite_spell is comm.Spells.blister:
+            teh_split.insert(0, comm.Spells.waterbolt)
+        elif self.smartCombat.favourite_spell is comm.Spells.rumble:
+            teh_split.insert(0, comm.Spells.crush)
         self.user_kkc(" ".join(teh_split))
 
     def user_sc(self):
@@ -619,9 +637,9 @@ class CommandHandler(object):
         self.smartCombat.stop_casting()
         self.telnetHandler.write("")
 
-    def user_wie2(self, argv):
-        self.telnetHandler.write("wield %s\n" % (argv))
-        self.telnetHandler.write("second %s\n" % (argv))
+    # def user_wie2(self, argv):
+    #     self.telnetHandler.write("wield %s\n" % (argv))
+    #     self.telnetHandler.write("second %s\n" % (argv))
 
     def user_flee(self):
         self.smartCombat.stop()

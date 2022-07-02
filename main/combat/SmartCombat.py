@@ -7,26 +7,22 @@ from command.Ability import *
 from misc_functions import magentaprint
 import comm.Spells as Spells
 from comm import RegexStore
-from combat.Kill import Kill
-from combat.Cast import Cast
-from command.Use import Use
-from command.Wield import Wield
 from combat.mob_target_determinator import MobTargetDeterminator
 
 class SmartCombat(CombatObject):
     black_magic = True
 
-    def __init__(self, telnetHandler, character, weapon_bot):
+    def __init__(self, kill, cast, use, wield, telnetHandler, character, weapon_bot):
         super().__init__(telnetHandler)
         self.thread   = None
         self.target   = None
         self.stopping = None
         self.broken_weapon = ''
         self.activated = False
-        self.kill  = Kill(telnetHandler)
-        self.cast  = Cast(telnetHandler)
-        self.use   = Use(character, telnetHandler)
-        self.wield = Wield(character, telnetHandler)
+        self.kill  = kill   # Kill(telnetHandler)
+        self.cast  = cast   # Cast(telnetHandler)
+        self.use   = use    # Use(character, telnetHandler)
+        self.wield = wield  # Wield(character, telnetHandler)
         #self.wear = Wear(character, telnetHandler)
         self.abilities = character._class.abilities.values()
 

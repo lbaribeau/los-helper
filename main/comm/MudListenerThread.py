@@ -25,7 +25,7 @@ class MudListenerThread(threading.Thread):
     def fake_version(self):
         return '-fake' in sys.argv
 
-    def run (self):
+    def run(self):
         # First get the file descriptor (no) of the internal telnet socket object
         # so we can watch for input.
         socket_number = self.telnetHandler.get_socket()
@@ -35,7 +35,7 @@ class MudListenerThread(threading.Thread):
         # magentaprint("MudListenerThread select timeout is " + str(select_timeout))
         # So fake just works by timing out the select call
         # Better would be to actually use the socket, but this is working
-        
+
 
         # Loop forever, just do stuff when the socket says its ready.
         while not self.stopping:
@@ -55,6 +55,10 @@ class MudListenerThread(threading.Thread):
                     new_bit = self.telnetHandler.read_some()
                     fragment = fragment + new_bit.decode('ascii', errors='ignore')
                     # Should we be ignoring errors
+                    # String object has no attribute decode
+                    # This occurs when the computer went to sleep
+                    # Also telnet handler read_some() error - existing connection forcibly closed by remote
+                    # (Understandable it likely timed out)
                 except (EOFError, OSError) as e:
                     # I think that the server doesn't send these.
                     magentaprint("MudListenerThread: Exiting (saw EOF) or Socket is dead:")

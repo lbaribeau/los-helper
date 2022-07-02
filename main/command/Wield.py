@@ -1,22 +1,22 @@
 
-from command.Command import Command
-from comm import RegexStore
+from command.CommandThatRemovesFromInventory import CommandThatRemovesFromInventory
+from comm import RegexStore as R
 from misc_functions import magentaprint
 
-class Arm(Command):
+class Arm(CommandThatRemovesFromInventory):
     cooldown_after_success = 0
     cooldown_after_failure = 0
 
-    def __init__(self, character, telnetHandler):
+    def __init__(self, character, telnetHandler, inventory):
         self.character = character
         self.already_wielding_error = False
-        super().__init__(telnetHandler)
+        super().__init__(telnetHandler, inventory)
 
     def notify(self, r, m):
-        if r in RegexStore.weapon_broken:
+        if r in R.weapon_broken:
             # self.character.inventory  # unset usable perhaps
             self.broken_error = True
-        elif r in RegexStore.already_wielding or r in RegexStore.already_seconding:
+        elif r in R.already_wielding + R.already_seconding:
             self.already_wielding_error = True
         super().notify(r, m)
 
@@ -27,16 +27,26 @@ class Arm(Command):
 
 class Wield(Arm):
     command = 'wie'
-    success_regexes = [RegexStore.you_wield]
-    failure_regexes = [RegexStore.weapon_broken, RegexStore.cannot_second, RegexStore.not_skilled]
-    error_regexes = [RegexStore.dont_have, RegexStore.not_weapon, RegexStore.already_wielding]
-
-    def __init__(self, character, telnetHandler):
-        super().__init__(character, telnetHandler)
-        self.second = Second(character, telnetHandler)
+    success_regexes = [
+        R.you_wield
+    ]
+    failure_regexes = [
+        R.weapon_broken, 
+        R.cannot_second, 
+        R.not_skilled
+    ]
+    error_regexes = [
+        R.dont_have, 
+        R.not_weapon, 
+        R.already_wielding
+    ]
+    # def __init__(self, character, telnetHandler, inventory):
+    #     self.character=character # How about not referring to character
+    #     super().__init__(telnetHandler, inventory)
+    #     # self.second = Second(character, telnetHandler) # Better get this as an argument so it can be subscribed
 
     def notify(self, r, m):
-        if r in RegexStore.you_wield:
+        if r in R.you_wield:
             if m.group('weapon').endswith('in your off hand'):
                 return
             self.character.weapon1 = m.group('weapon')
@@ -55,16 +65,28 @@ class Wield(Arm):
 
 class Second(Arm):
     command = 'seco'
-    success_regexes = [RegexStore.off_hand]
-    failure_regexes = [RegexStore.weapon_broken, RegexStore.no_primary, RegexStore.remove_shield, RegexStore.cannot_second, \
-                       RegexStore.primary_excludes, RegexStore.not_skilled, RegexStore.not_ranger]
-    error_regexes = [RegexStore.dont_have, RegexStore.not_weapon, RegexStore.already_seconding]
-
+    success_regexes = [
+        R.off_hand
+    ]
+    failure_regexes = [
+        R.weapon_broken, 
+        R.no_primary, 
+        R.remove_shield, 
+        R.cannot_second,
+        R.primary_excludes,
+        R.not_skilled,
+        R.not_ranger
+    ]
+    error_regexes = [
+        R.dont_have, 
+        R.not_weapon, 
+        R.already_seconding
+    ]
     def notify(self, r, m):
-        if r in RegexStore.off_hand:
+        if r in R.off_hand:
             magentaprint('Second notified, setting weapon2.')
             self.character.weapon2 = m.group('weapon')
-        # elif r in RegexStore.already_seconding:
+        # elif r in R.already_seconding:
         #     self.already_seconding_error = True
         super().notify(r,m)
 

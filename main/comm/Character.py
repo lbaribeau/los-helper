@@ -281,7 +281,8 @@ class Character(object):
     ]
     lvl6_monsters = [  # 100+ exp
         'dwarven field worker', 'dwarven bartender', 'school teacher', 'lyrist', 'nobleman', 'seeker', 'bull', 'hunter', 'usher',
-        'sword swallower', 'archer', 'yard supervisor', 'sawmill supervisor', 'large spider', 'blacksmith', 'farm foreman',
+        'sword swallower', 'archer', 'yard supervisor', 'sawmill supervisor', # chain mail armour
+        'large spider', 'blacksmith', 'farm foreman',
         'Old Man James', 'dwarven traveller', 'Goourd', # large sack
         'tourney organiser', 'Greenbough the Dryad'
         #'sentry' stand in pairs unfortunately...
@@ -323,9 +324,11 @@ class Character(object):
     ]  # respect the knights! (+1 difficulty)
     lvl10_monsters = [ # 350+
         'wounded knight', # -2 difficulty
-        'The Master of Ceremonies', # 280
+        'The Master of Ceremonies', # 280, adamantine sword 750g
         'Dame Brethil',  #makeup kit, trade to dalla, get dalla's blessing
-        'Kelluran', 'Jerrek', 'Rimark', 'Commander Rilmenson', 'Farmer McDermott', 'dwarven blacksmith'   # 400
+        'Kelluran', 'Jerrek', 'Rimark', # steel sleeves
+        'Commander Rilmenson', # heavy crossbow
+        'Farmer McDermott', 'dwarven blacksmith'   # 400
         'abbot', # 445
         'silver knight',  # 380, +1 difficulty
         'barbarian cook', "shaman's assistant",
@@ -340,8 +343,9 @@ class Character(object):
     lvl11_monsters = [
         'dwarven adventurer',  # dusty blue
         'enchantress', # 456 exp, appeard in the school on Stoneheart, silver rod (Purest adamantine. You feel no different - the want emits a brief glow)
-        'Brotain', 'minstrel', # silver ring
-        'brutalizer', 'Gregor', 'Bertram Dalrum', 'brother', 'priest'
+        'Brotain', 'minstrel', # silver ring, 400 exp
+        'brutalizer', 'Gregor', # good place to wait for mobs
+        'Bertram Dalrum', 'brother', 'priest'
     ]
     lvl12_monsters = [
         'barbarian shaman', 'barbarian warrior', 
@@ -349,7 +353,9 @@ class Character(object):
         'Horbuk', # steel collar like oremaster
         'The Floor Manager', 'Tardan', 'ranch foreman', 'Gorban', 'shadowed huorn', # heartwood nugget
         # dusty blue
-        'Boris Ironfounder', 'Lady Denlise', 'Annette Plover', 'house guest', 'Martin' # fireball/gold dagger/810 exp
+        'Boris Ironfounder', 'Lady Denlise', 
+        # Denlise calls for help
+        'Annette Plover', 'house guest', 'Martin' # fireball/gold dagger/810 exp
         #'The Saga Teacher', 'The Amber Mage', # cannot be killed ("This is not possible!")
         # Tardan 560 exp
         # 'vigil knight'

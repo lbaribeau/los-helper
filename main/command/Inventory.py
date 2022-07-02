@@ -198,7 +198,7 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'chain mail gloves', # mill worker
         'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring', 
         'greenwood jerkin',"paladins's plate armour", "master's habit", 
-        'maul hammer' # This we need to keep ONE
+        # 'maul hammer' # This we need to keep ONE (later)
         # 'iron shield'
         # 'platinum ring', 'gold ring', 'steel ring', 'silver ring'
         #'steel mask' # spiv, sawmill
@@ -281,14 +281,13 @@ class Inventory(SimpleCommand, ReferencingList):
         elif regex in R.you_now_have + R.gold_from_tip:
             self.gold = int(match.group(1))
         elif regex in R.you_wield and not match.group('weapon').endswith('in your off hand'):
-            weapon = match.group('weapon')
-            self.equipped_items['Wielded'] = [MudItem(weapon)]
+            self.equipped_items['Wielded'] = [MudItem(match.group('weapon'))]
             magentaprint('Inventory just made object ' + str(self.equipped_items['Wielded'][0].obj.name))
-            self.remove_many(weapon)
+            # self.remove_many(weapon) # Wield does this part now
             # self.get_equipment()
         elif regex in R.off_hand:
-            self.equipped_items['Second'] = [MudItem(weapon)]
-            self.remove_many(weapon)
+            self.equipped_items['Second'] = [MudItem(match.group('weapon'))]
+            # self.remove_many(weapon) # Second does this part now
             # self.get_equipment()
         elif regex in R.you_get:
             self.add(clip_from_a_container(match.group(1)))
