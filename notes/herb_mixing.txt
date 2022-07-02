@@ -9,6 +9,7 @@ disease mould eventually kills you when pasted
 flower + root = drinking item - failed
 leaf + yellow flower = pasted item - failed
 yellow + leaf = drinking item - failed
+yellow + root = yellow healing reagent for mixing
 
 berry + root = paste item - healing item
 berry + brown mould = paste item - healing item

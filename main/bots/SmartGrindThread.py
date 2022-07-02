@@ -31,9 +31,9 @@ class SmartGrindThread(TrackGrindThread):
 
         low_level_modifier = -1
         high_level_modifier = 0# + 1 #risky business
-        if self.is_character_class('Cle'):
-            low_level_modifier = -3
-            high_level_modifier = -1
+        # if self.is_character_class('Cle'):
+        #     low_level_modifier = -2
+        #     high_level_modifier = -1
 
         if self.is_character_class('Mag') or self.is_character_class('Dru') or self.is_character_class('Alc'):
             self.character.MANA_TO_ENGAGE = self.character.info.maxMP / 2
