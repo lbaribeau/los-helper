@@ -74,6 +74,9 @@ class WeaponBot(MiniBot):
         else:
             self.check_weapons()
 
+    def has_broken_weapon():
+        return self.broken_weapon
+
     def check_weapons(self):
         if self.char.level <= 2:
             return

@@ -127,7 +127,7 @@ class TrackGrindThread(GrindThread):
             'gate','s','w','e','s','gate','s','s','s','s','s','gate','e','s','s','chapel'
         ]
         self.DWARVEN_FIELD_WORKERS_PATH = ['out', 'south', 'east', 'south', 'south',
-            'south', 'west', 'gate', 'south', 'southeast', 'southeast',
+            'south', 'east', 'west', 'west', 'gate', 'south', 'southeast', 'southeast',
             'east', 'east', 'east', 'pathway', 'northwest', 'north', 'north',
             'north', 'southeast', 'east', 'east', 'gate', 'east', 'building',
             'out', 'east', 'east', 'southeast', 'field', 'road', 'southeast',
@@ -139,7 +139,7 @@ class TrackGrindThread(GrindThread):
         ]
         #both gates close at night unforunately...
         self.FIELD_WORKERS_PATH = [
-            'out', 'south', 'east', 'south', 'south', 'south','west',
+            'out', 'south', 'east', 'south', 'south', 'south', 'east', 'west', 'west',
             'gate', 'south', 'southeast', 'southeast', 'east', 'east',
             'east', 'pathway', 'northwest', 'north', 'north', 'north',
             'northwest', 'northwest', 'north', 'north', 'gate', 'west',
@@ -354,7 +354,7 @@ class TrackGrindThread(GrindThread):
             # self.track_builder(self.MUGGER_PATH, 9, 15, -1),
             self.track_builder(self.OLD_MAN_JAMES, 9, 20, 0),
             self.track_builder(self.GNOLL_CAVE, 9, 20, -1),
-            self.track_builder(self.FOUNDRY, 15, 20, 0),
+            # self.track_builder(self.FOUNDRY, 15, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             self.track_builder(self.RANCHER_SENTRY, 10, 15, 1),
             self.track_builder(self.KNIGHTS, 10, 20, 1),
             self.track_builder(self.CATHEDRAL, 10, 16, 1),
