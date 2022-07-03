@@ -73,7 +73,7 @@ class CombatReactions(object):
                 # number = M_obj.group(1)
                 mob = self.character.mobs.read_match(M_obj).lower()
 
-                count = 0
+                count = 1
                 if mob in self.mobs_killed:
                     count = self.mobs_killed[mob] + 1
                     del self.mobs_killed[mob]

@@ -414,7 +414,8 @@ class GrindThread(BotThread):
         # if self.stopping or self.character.ACTIVELY_MAPPING or not any(s.startswith(Spells.showaura) for s in self.character.spells):
         if self.stopping or self.character.ACTIVELY_MAPPING or Spells.showaura not in self.character.spells:
             magentaprint("GrindThread.update_aura() returning false", False)
-            return False
+            self.character.AURA = 'grey'
+            return True
 
         self.cast.update_aura(self.character)
 
