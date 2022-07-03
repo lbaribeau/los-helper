@@ -1,8 +1,6 @@
 
 prompt = [r"\[(\d+) H (\d+) M\]: (You feel the benefits)?"]
 
-rest = r"^You lean back to take some rest."
-
 __item = r"(?P<item>[A-Za-z0-9\-'\s]+)"
 __items = r"(?P<items>[A-Za-z0-9\-'\s,]+)"
 __player = r"(?P<player>[A-Za-z]+)"

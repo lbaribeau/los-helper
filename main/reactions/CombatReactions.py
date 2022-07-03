@@ -3,7 +3,6 @@ from misc_functions import *
 from db.Database import *
 from db.MudMap import *
 import comm.RegexStore as RegexStore
-from collections import deque
 
 class CombatReactions(object):
     def __init__(self, character):
@@ -53,13 +52,7 @@ class CombatReactions(object):
         self.damage_taken = 0
         self.in_combat = False
 
-        self.regex_cart = [RegexStore.attack_hit,
-                            RegexStore.attack_miss,
-                            RegexStore.mob_attacked,
-                            RegexStore.cast_failure,
-                            RegexStore.mob_defeated,
-                            RegexStore.spell_damage,
-                            RegexStore.rest]
+        self.regex_cart = [RegexStore.attack_hit, RegexStore.attack_miss, RegexStore.mob_attacked, RegexStore.cast_failure, RegexStore.mob_defeated, RegexStore.spell_damage]
 
     def notify(self, regex, M_obj):
         combat_state = self.in_combat
@@ -80,13 +73,10 @@ class CombatReactions(object):
                 # number = M_obj.group(1)
                 mob = self.character.mobs.read_match(M_obj).lower()
 
-                count = 0
-                if mob in self.mobs_killed:
-                    count = self.mobs_killed[mob] + 1
-                    del self.mobs_killed[mob]
-                
-                self.mobs_killed[mob] = count
+                if mob not in self.mobs_killed:
+                    self.mobs_killed[mob] = 0
 
+                self.mobs_killed[mob] += 1
                 # self.character.area_id, monster - map both into a MobLocation
                 # add a rank to the MobLocation
                 self.in_combat = False
@@ -191,8 +181,7 @@ class CombatReactions(object):
                 'phys_crit_rate': phys_crit_rate,
                 'average_spell_damage': average_spell_damage,
                 'spell_hit_rate': spell_hit_rate,
-                'spell_crit_rate': spell_crit_rate,
-                'character_state': self.character.STATE
+                'spell_crit_rate': spell_crit_rate
                 }
 
         return output

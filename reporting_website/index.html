@@ -18,7 +18,6 @@
     </div>
     <div class="box">
       <strong>Current State</strong>
-      <div class="stat">As of {{report.character_state}}</div>
       <div class="stat">As of {{report.timestamp}}</div>
       <div class="stat">Fighting {{report.mobs}}</div>
       <div class="stat">Area {{report.area}}</div>      
@@ -59,7 +58,7 @@
   </div>
   <div class="column">
     <div class="box"><strong>Mobs killed...</strong>
-      <div v-for="count, mob  in report.mobs_killed.slice().reverse()">{{count}} {{mob}}</div>
+      <div v-for="count, mob in report.mobs_killed">{{count}} {{mob}}</div>
     </div>
   </div>
 </div>

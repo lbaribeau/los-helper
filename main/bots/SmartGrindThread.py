@@ -62,12 +62,10 @@ class SmartGrindThread(TrackGrindThread):
             self.aura_updated_hook()
         
         if self.in_chapel() and not self.ready_for_combat(): #in healing area
-            self.character.STATE = 'resting'
             self.rest_and_check_aura()
         rest_end = get_timeint()
         self.character.REST_TIME += (rest_end - rest_start).total_seconds()
         self.track_start_time = get_timeint()
-        self.character.STATE = 'on track'
 
         self.check_weapons()
         self.check_armour()
