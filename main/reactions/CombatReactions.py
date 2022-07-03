@@ -73,10 +73,12 @@ class CombatReactions(object):
                 # number = M_obj.group(1)
                 mob = self.character.mobs.read_match(M_obj).lower()
 
-                if mob not in self.mobs_killed:
-                    self.mobs_killed[mob] = 0
+                count = 0
+                if mob in self.mobs_killed:
+                    count = self.mobs_killed[mob] + 1
+                    del self.mobs_killed[mob]
 
-                self.mobs_killed[mob] += 1
+                self.mobs_killed[mob] = count
                 # self.character.area_id, monster - map both into a MobLocation
                 # add a rank to the MobLocation
                 self.in_combat = False
