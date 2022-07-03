@@ -341,19 +341,19 @@ class TrackGrindThread(GrindThread):
             magentaprint("Character doesn't need to sell", False)
 
         all_tracks = [
-            SHOP_AND_TIP_PATH,
+            self.SHOP_AND_TIP_PATH,
             self.track_builder(self.THEATRE_PATH, 0, 20, 0),
             self.track_builder(self.MARKET_PATH, 0, 20, 0),
             self.track_builder(self.MILITIA_SOLDIERS_PATH, 0, 14, 1),
             self.track_builder(self.KOBOLD_PATH, 0, 11, -1), #sentries are suuuper tough
             self.track_builder(self.CORAL_ALLEY_PATH, 0, 6, -1),
-            SHOP_AND_TIP_PATH,
+            self.SHOP_AND_TIP_PATH,
             self.track_builder(self.FORT_PATH, 0, 20, 0),
             self.track_builder(self.NORTHERN_BANDITS_PATH, 0, 14, -1),
             self.track_builder(self.ZOMBIES, 7, 20, 0),
             self.track_builder(self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 0),
             self.track_builder(self.MILL_WORKERS, 9, 20, 0),
-            SHOP_AND_TIP_PATH,
+            self.SHOP_AND_TIP_PATH,
             # self.track_builder(self.MUGGER_PATH, 9, 15, -1),
             self.track_builder(self.OLD_MAN_JAMES, 9, 20, 0),
             self.track_builder(self.GNOLL_CAVE, 12, 20, -1),
@@ -364,7 +364,7 @@ class TrackGrindThread(GrindThread):
             self.track_builder(self.SPIDER_FOREST, 12, 20, -1),
             self.track_builder(self.EGAN_TRENT, 15, 20, -1),
             # self.track_builder(self.ALCHEMISTS, 15, 20, 0),
-            SHOP_AND_TIP_PATH
+            self.SHOP_AND_TIP_PATH
         ]
 
         self.__TOTALPATHS = len(all_tracks)
