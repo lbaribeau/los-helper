@@ -36,13 +36,11 @@ var app = new Vue({
       return this.report.exp + parseInt(this.info.total_exp);
     },
     total_kills: function() {
-      return 0
-      // console.log(this.report);
-      // var total = 0;
-      // for (var i= 0; i<this.report.mobs_killed.keys()length; i++) {
-      //   total += this.report.mobs_killed[i]
-      // }
-      // return total;
+      var total = 0;
+      for (var i= 0; i<this.report.mobs_killed.length; i++) {
+        total += this.report.mobs_killed[i];
+      }
+      return total;
     },
     classname: function() {
       switch (this.info.class) {

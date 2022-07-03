@@ -28,6 +28,7 @@ class Character(object):
         self.REST_TIME = 0
         self.TRACK_TIME = 0
         self.COMBAT_TIME = 0
+        self.STATE = 'starting'
         self.NEEDS_TO_SELL = False
         self.NEEDS_MAGIC = True
         self.BLACK_MAGIC = True

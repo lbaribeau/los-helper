@@ -756,6 +756,7 @@ class GrindThread(BotThread):
 
     def engage_monster(self, monster):
         start_combat = get_timeint()
+        self.character.STATE = 'in combat'
         self.kill.wait_until_ready()
         self.cast.wait_until_ready()
 
