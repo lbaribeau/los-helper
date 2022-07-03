@@ -2,3 +2,12 @@ Spell notes as per Twaek:
 - Immolate (lvl4 spell) is dropped by the mountain witch - this is the only found level 4 spell
 
 Level 5 spells are not really in the game
+
+- Invisible Gateway in Holbyn's shop stores a spell (Holbyn guards this gateway)
+- Detect Invis found in invsible shadowgate after beating Cal (Cal's Shadow guards this scroll)
+- Steel scroll dropped by lay priests
+- Vigor for purchase in the Chapel Chamber by Patriarch
+- Protection and Bless spells (and vigor) for sale in the Chapel arch by the trainer
+- Saga Teacher sells mirror scroll for show aura
+- Young wyvern in Gnoll cave (river system) drops wyven's sting which can teach shockbolt
+- Holbyn has a hidden gateway in his shop, when defeated you can get in there and fight his shadow which guards some magic

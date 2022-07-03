@@ -91,7 +91,7 @@ class LosHelper(object):
         self.mud_reader_handler = MudReaderHandler(self.mudReaderThread, self.character)
         self.inventory = Inventory(self.telnetHandler, self.character)
         self.character.inventory = self.inventory
-        self.analyser = Analyser(self.mud_reader_handler, self.character)
+        # self.analyser = Analyser(self.mud_reader_handler, self.character)
         self.mud_reader_handler.add_subscriber(self.character.prompt)
         self.mud_reader_handler.add_subscriber(self.character.server)
         self.mud_reader_handler.add_subscriber(self.inventory)

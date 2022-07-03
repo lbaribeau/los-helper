@@ -49,7 +49,6 @@ class Prompt(object):
            self.character.MANA == self.character.maxMP and \
            not self.alert_flag:
             self.alert_flag = True
-            print('\a')
         else:
             if self.character.HEALTH < self.character.maxHP or \
                self.character.MANA < self.character.maxMP:

@@ -353,10 +353,10 @@ class TrackGrindThread(GrindThread):
             self.track_builder(self.MILL_WORKERS, 9, 20, 0),
             # self.track_builder(self.MUGGER_PATH, 9, 15, -1),
             self.track_builder(self.OLD_MAN_JAMES, 9, 20, 0),
-            self.track_builder(self.GNOLL_CAVE, 9, 20, -1),
+            self.track_builder(self.GNOLL_CAVE, 12, 20, -1),
             # self.track_builder(self.FOUNDRY, 15, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             self.track_builder(self.RANCHER_SENTRY, 10, 15, 1),
-            self.track_builder(self.KNIGHTS, 10, 20, 1),
+            self.track_builder(self.KNIGHTS, 12, 20, 1),
             self.track_builder(self.CATHEDRAL, 10, 16, 1),
             self.track_builder(self.SPIDER_FOREST, 12, 20, -1),
             self.track_builder(self.EGAN_TRENT, 15, 20, -1),

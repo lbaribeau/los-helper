@@ -374,7 +374,7 @@ class WeaponBot(MiniBot):
 
     def go_buy_default_weapon(self):
         magentaprint("WeaponBot.go_buy_default_weapon()")
-        magentaprint("WeaponBot.go_buy_replacement() calling shopping_bot.go_buy " + str(self.get_possible_weapons()[0]))
+        magentaprint("WeaponBot.go_buy_replacement() calling shopping_bot.go_buy " + str(self.get_possible_weapons()[0]), False)
 
         if self.shopping_bot.go_buy(self.possible_weapons[0]):
             return True
@@ -387,7 +387,7 @@ class WeaponBot(MiniBot):
             return False
 
     def get_store_path(self):
-        return self.map.get_path(self.char.AREA_ID, self.get_possible_weapons()[0].area.id)
+        return self.map.get_path(self.char.AREA_ID, self.get_possible_weapons()[0].area.id, False)
 
     def wield_default_weapon(self):
         self.rewield(self.char.inventory.get_last_reference(self.possible_weapons[0].item.name))
