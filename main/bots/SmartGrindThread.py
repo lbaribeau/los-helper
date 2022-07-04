@@ -320,6 +320,7 @@ class SmartGrindThread(TrackGrindThread):
             self.max_target_aura = Aura('heavenly blue')
             aura_context = "way too good"
         else:
+            self.set_target_levels(-1, 0)
             self.min_target_aura = Aura('demonic red')
             self.max_target_aura = Aura('heavenly blue')
 
