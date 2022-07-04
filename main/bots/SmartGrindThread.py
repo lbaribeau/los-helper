@@ -31,16 +31,13 @@ class SmartGrindThread(TrackGrindThread):
 
         low_level_modifier = -1
         high_level_modifier = 0# + 1 #risky business
-        if self.is_character_class('Mon'):
-            low_level_modifier = -2 # kill everything in sight
 
         if self.is_character_class('Mag') or self.is_character_class('Dru') or self.is_character_class('Alc') or self.is_character_class('Cle'):
             self.character.MANA_TO_ENGAGE = self.character.info.maxMP / 2
             if self.character.MANA_TO_ENGAGE < 21 and self.character.info.maxMP > 21:
                 self.character.MANA_TO_ENGAGE = 21
 
-        self.low_level = int(math.floor(self.character.level / 2)) + low_level_modifier
-        self.high_level = max([int(math.ceil(self.character.level / 2)), self.character.level - 3]) + high_level_modifier
+        self.set_target_levels(low_level_modifier, high_level_modifier)
 
         self.min_target_aura = Aura('demonic red')
         self.max_target_aura = Aura('heavenly blue')
@@ -49,6 +46,10 @@ class SmartGrindThread(TrackGrindThread):
             self.KOBOLD_PATH = [
                 'areaid1679','areaid2'
                 ]
+
+    def set_target_levels(self, low_level_modifier, high_level_modifier):
+        self.low_level = int(math.floor(self.character.level / 2)) + low_level_modifier
+        self.high_level = max([int(math.ceil(self.character.level / 2)), self.character.level - 3]) + high_level_modifier
 
     def do_pre_go_actions(self):
         # super().do_pre_go_actions()
@@ -307,12 +308,14 @@ class SmartGrindThread(TrackGrindThread):
         if self.character.AURA < self.character.preferred_aura:
             # Too evil
             # self.low_level = 2
+            self.set_target_levels(-3, 0)
             self.min_target_aura = Aura('demonic red')
             self.max_target_aura = Aura('dusty red')
             aura_context = "too evil"
         elif self.character.AURA > self.character.preferred_aura:
             # Too good
             # self.low_level = 2
+            self.set_target_levels(-2, 0)
             self.min_target_aura = Aura('grey')
             self.max_target_aura = Aura('heavenly blue')
             aura_context = "way too good"
