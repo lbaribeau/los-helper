@@ -313,13 +313,13 @@ class TrackGrindThread(GrindThread):
         self.tracks = [
             Track("Theatre", self.THEATRE_PATH, 0, 20, 1),
             Track("Market", self.MARKET_PATH, 0, 20, 1),
-            Track("Militia Soldiers", self.MILITIA_SOLDIERS_PATH, 0, 14, 1),
+            Track("Militia Soldiers", self.MILITIA_SOLDIERS_PATH, 0, 14, 0),
             Track("Kobolds", self.KOBOLD_PATH, 0, 12, -1), #sentries are suuuper tough
             Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
             Track("Fort", self.FORT_PATH, 0, 20, -1),
             Track("North Bandits", self.NORTHERN_BANDITS_PATH, 0, 14, -1),
             Track("Eastern Zombies", self.ZOMBIES, 7, 20, 0),
-            Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,0,0),
+            Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,20,0),
             Track("Dwarven Field Workers", self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 1),
             Track("Mill Workers", self.MILL_WORKERS, 9, 20, 1),
             # Track("Muggers", self.MUGGER_PATH, 9, 15, -1),
@@ -331,7 +331,7 @@ class TrackGrindThread(GrindThread):
             Track("Cathedral", self.CATHEDRAL, 10, 16, 1),
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 20, -1),
             Track("Egan and Trent", self.EGAN_TRENT, 15, 20, -1),
-            Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,0,0,0)
+            Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,0,20,0)
         ]
     
     def decide_where_to_go(self):
