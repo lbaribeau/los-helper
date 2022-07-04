@@ -223,9 +223,6 @@ class GrindThread(BotThread):
         if not aura_updated:
             aura_updated = self.update_aura()
 
-        if aura_updated:
-            self.aura_updated_hook()
-
         # if self.character.level > 3 and self.character.maxMP > 10:
         #     self.heal_up()
         #     self.wait_for_mana()
@@ -409,6 +406,7 @@ class GrindThread(BotThread):
         return
 
     def update_aura(self):
+        cur_aura = self.character.AURA
         # magentaprint("in update aura {} {} {}".format(self.stopping, self.character.ACTIVELY_MAPPING, self.character.spells), False)
         # if self.stopping or self.character.ACTIVELY_MAPPING or not Spells.showaura in self.character.spells:
         # if self.stopping or self.character.ACTIVELY_MAPPING or not any(s.startswith(Spells.showaura) for s in self.character.spells):
@@ -423,13 +421,11 @@ class GrindThread(BotThread):
         else:
             self.character.AURA = self.cast.aura
             self.character.aura_check_count += 1
+            updated_aura = self.character.AURA
+            if str(cur_aura) != str(updated_aura):
+                self.aura_updated_hook()
+            
             return True
-
-    def aura_changed(self):
-        cur_aura = self.character.AURA
-        self.update_aura()
-        updated_aura = self.character.AURA
-        return str(cur_aura) != str(updated_aura)
 
         # if self.character.level < 3 or not \
         #         BotThread.can_use_timed_ability(self.character.AURA_LAST_UPDATE, 480):
@@ -756,6 +752,7 @@ class GrindThread(BotThread):
 
     def engage_monster(self, monster):
         start_combat = get_timeint()
+        self.character.STATE = 'in combat'
         self.kill.wait_until_ready()
         self.cast.wait_until_ready()
 

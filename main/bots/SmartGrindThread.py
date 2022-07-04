@@ -52,14 +52,15 @@ class SmartGrindThread(TrackGrindThread):
         self.high_level = max([int(math.ceil(self.character.level / 2)), self.character.level - 3]) + high_level_modifier
 
     def do_pre_go_actions(self):
+        if self.character.AURA == 'fake aura':
+            self.update_aura()
+        
         # super().do_pre_go_actions()
         if self.track_start_time != 0:
             self.track_end_time = get_timeint()
             self.character.TRACK_TIME += (self.track_end_time - self.track_start_time).total_seconds()
 
         rest_start = get_timeint()
-        if self.aura_changed():
-            self.aura_updated_hook()
         
         if self.in_chapel() and not self.ready_for_combat(): #in healing area
             self.rest_and_check_aura()
@@ -310,7 +311,7 @@ class SmartGrindThread(TrackGrindThread):
             # self.low_level = 2
             self.set_target_levels(-3, 0)
             self.min_target_aura = Aura('demonic red')
-            self.max_target_aura = Aura('dusty red')
+            self.max_target_aura = Aura('grey')
             aura_context = "too evil"
         elif self.character.AURA > self.character.preferred_aura:
             # Too good
