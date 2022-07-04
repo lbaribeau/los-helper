@@ -17,6 +17,8 @@ class TrackGrindThread(GrindThread):
         # of paths in decide_where_to_go is a way to truncate paths
         # you don't want to send low level characters on.
 
+        self.starting_path = starting_path
+
         if self.character.level <= 2:
             self.__TOTALPATHS = 8 # Kobolds are level 1 safe.
         elif self.character.level <= 6:
@@ -28,6 +30,8 @@ class TrackGrindThread(GrindThread):
             self.__TOTALPATHS = 24
         else:
             self.__TOTALPATHS = 30  # # Area ids unfortunately must be updated.
+        
+        self.__nextpath = -1
             # self.__TOTALPATHS = 24
         # elif self.character.level <= 10:
         #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
@@ -35,11 +39,6 @@ class TrackGrindThread(GrindThread):
         #     self.__TOTALPATHS = 24
         # else:
         #     self.__TOTALPATHS = 22 # start the fort and bandits at lvl 8
-
-        if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
-            self.__nextpath = starting_path
-        else:
-            self.__nextpath = random.randrange(0, self.__TOTALPATHS)
 
         self.LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
@@ -345,7 +344,7 @@ class TrackGrindThread(GrindThread):
             self.track_builder(self.THEATRE_PATH, 0, 20, -1),
             self.track_builder(self.MARKET_PATH, 0, 20, -1),
             self.track_builder(self.MILITIA_SOLDIERS_PATH, 0, 14, 1),
-            self.track_builder(self.KOBOLD_PATH, 0, 12, -1), #sentries are suuuper tough
+            self.track_builder(self.KOBOLD_PATH, 0, 11, -1), #sentries are suuuper tough
             self.track_builder(self.CORAL_ALLEY_PATH, 0, 6, -1),
             self.track_builder(self.FORT_PATH, 0, 20, -1),
             self.track_builder(self.NORTHERN_BANDITS_PATH, 0, 14, -1),
@@ -364,6 +363,11 @@ class TrackGrindThread(GrindThread):
             # self.track_builder(self.ALCHEMISTS, 15, 20, 0),
             self.SHOP_AND_TIP_PATH
         ]
+
+        if isinstance(self.starting_path, int) and self.starting_path < self.__TOTALPATHS:
+            self.__nextpath = self.starting_path
+        elif self.__nextpath == -1:
+            self.__nextpath = random.randrange(0, self.__TOTALPATHS)
 
         self.__TOTALPATHS = len(all_tracks)
         self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
