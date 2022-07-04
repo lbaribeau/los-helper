@@ -18,27 +18,13 @@ class TrackGrindThread(GrindThread):
         # you don't want to send low level characters on.
 
         self.starting_path = starting_path
-
-        if self.character.level <= 2:
-            self.__TOTALPATHS = 8 # Kobolds are level 1 safe.
-        elif self.character.level <= 6:
-            self.__TOTALPATHS = 12 # include hookers for level 3
-        elif self.character.level <= 7:
-            # lvl 7 strong enough for bandits
-            self.__TOTALPATHS = 16
-        elif self.character.level <= 11:
-            self.__TOTALPATHS = 24
-        else:
-            self.__TOTALPATHS = 30  # # Area ids unfortunately must be updated.
-        
-        self.__nextpath = -1
-            # self.__TOTALPATHS = 24
+            # len(self.tracks) = 24
         # elif self.character.level <= 10:
-        #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
+        #     len(self.tracks) = 20 # start the fort and bandits at lvl 8
         # elif self.character.level > 12:
-        #     self.__TOTALPATHS = 24
+        #     len(self.tracks) = 24
         # else:
-        #     self.__TOTALPATHS = 22 # start the fort and bandits at lvl 8
+        #     len(self.tracks) = 22 # start the fort and bandits at lvl 8
 
         self.LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
@@ -277,6 +263,13 @@ class TrackGrindThread(GrindThread):
 
         self.PATH_TO_SKIP_WITH = ['think']
 
+        self.setup_tracks()
+        
+        if isinstance(self.starting_path, int) and self.starting_path < len(self.tracks):
+            self.__nextpath = self.starting_path
+        else:
+            self.__nextpath = random.randrange(0, len(self.tracks))
+
     def do_go_hooks(self, exit_str):
         # magentaprint(str(self.character.AREA_ID) + ", " + exit_str, False)
         if exit_str == "slow_prepare":
@@ -316,6 +309,31 @@ class TrackGrindThread(GrindThread):
         self.use_extra_bless_item()
         self.use_extra_steel_bottle()
 
+    def setup_tracks(self):
+        self.tracks = [
+            Track("Theatre", self.THEATRE_PATH, 0, 20, 1),
+            Track("Market", self.MARKET_PATH, 0, 20, 1),
+            Track("Militia Soldiers", self.MILITIA_SOLDIERS_PATH, 0, 14, 1),
+            Track("Kobolds", self.KOBOLD_PATH, 0, 12, -1), #sentries are suuuper tough
+            Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
+            Track("Fort", self.FORT_PATH, 0, 20, -1),
+            Track("North Bandits", self.NORTHERN_BANDITS_PATH, 0, 14, -1),
+            Track("Eastern Zombies", self.ZOMBIES, 7, 20, 0),
+            Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,0,0),
+            Track("Dwarven Field Workers", self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 1),
+            Track("Mill Workers", self.MILL_WORKERS, 9, 20, 1),
+            # Track("Muggers", self.MUGGER_PATH, 9, 15, -1),
+            # Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
+            Track("Gnolls", self.GNOLL_CAVE, 12, 20, -1),
+            # Track("Foundry", self.FOUNDRY, 15, 20, 0), #Rimark joins in, not enough mobs actually are there by default
+            Track("Rancher Sentries", self.RANCHER_SENTRY, 10, 15, 1),
+            Track("Knights", self.KNIGHTS, 12, 20, 1),
+            Track("Cathedral", self.CATHEDRAL, 10, 16, 1),
+            Track("Large Spider Forest", self.SPIDER_FOREST, 12, 20, -1),
+            Track("Egan and Trent", self.EGAN_TRENT, 15, 20, -1),
+            Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,0,0,0)
+        ]
+    
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go", False)
 
@@ -339,62 +357,45 @@ class TrackGrindThread(GrindThread):
         # else:
         #     magentaprint("Character doesn't need to sell", False)
 
-        all_tracks = [
-            self.SHOP_AND_TIP_PATH,
-            self.track_builder(self.THEATRE_PATH, 0, 20, 1),
-            self.track_builder(self.MARKET_PATH, 0, 20, 1),
-            self.track_builder(self.MILITIA_SOLDIERS_PATH, 0, 14, 1),
-            self.track_builder(self.KOBOLD_PATH, 0, 11, -1), #sentries are suuuper tough
-            self.track_builder(self.CORAL_ALLEY_PATH, 0, 6, -1),
-            self.track_builder(self.FORT_PATH, 0, 20, -1),
-            self.track_builder(self.NORTHERN_BANDITS_PATH, 0, 14, -1),
-            self.track_builder(self.ZOMBIES, 7, 20, 0),
-            self.track_builder(self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 1),
-            self.track_builder(self.MILL_WORKERS, 9, 20, 1),
-            # self.track_builder(self.MUGGER_PATH, 9, 15, -1),
-            # self.track_builder(self.OLD_MAN_JAMES, 9, 20, 0),
-            self.track_builder(self.GNOLL_CAVE, 12, 20, -1),
-            # self.track_builder(self.FOUNDRY, 15, 20, 0), #Rimark joins in, not enough mobs actually are there by default
-            self.track_builder(self.RANCHER_SENTRY, 10, 15, 1),
-            self.track_builder(self.KNIGHTS, 12, 20, 1),
-            self.track_builder(self.CATHEDRAL, 10, 16, 1),
-            self.track_builder(self.SPIDER_FOREST, 12, 20, -1),
-            self.track_builder(self.EGAN_TRENT, 15, 20, -1),
-            # self.track_builder(self.ALCHEMISTS, 15, 20, 0),
-            self.SHOP_AND_TIP_PATH
-        ]
-
-        if isinstance(self.starting_path, int) and self.starting_path < self.__TOTALPATHS:
-            self.__nextpath = self.starting_path
-        elif self.__nextpath == -1:
-            self.__nextpath = random.randrange(0, self.__TOTALPATHS)
-
-        self.__TOTALPATHS = len(all_tracks)
-        self.__nextpath = (self.__nextpath + 1) % self.__TOTALPATHS
-        nextpath = all_tracks[self.__nextpath][:]
+        self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
+        nextpath = self.evaluate_track(self.tracks[self.__nextpath])
 
         return nextpath
 
-    def track_builder(self, track, min_level, max_level, track_aura):
-        level_range = range(min_level, max_level)        
+    def evaluate_track(self, track):
+        level_range = range(track.min_level, track.max_level)        
 
         character_aura = Aura(self.character.AURA)
         aura_acceptable = True
 
         #too evil shouldn't fight good (+1)
         #too good shouldn't fight evil (-1)
-        if (character_aura < self.character.preferred_aura and track_aura == 1) or \
-           (character_aura > self.character.preferred_aura and track_aura == -1):
-            aura_acceptable = False
+        if (character_aura < self.character.preferred_aura and track.track_aura == 1) or \
+           (character_aura > self.character.preferred_aura and track.track_aura == -1):
+            magentaprint("{0} isn't acceptabble to us due to aura".format(track.name), False)
+            return self.PATH_TO_SKIP_WITH[:]
 
         if self.character.level in level_range and aura_acceptable:
-            return track[:]
+            magentaprint("{0} is our chosen track".format(track.name), False)
+            return track.track[:]
         else:
+            magentaprint("{0} isn't acceptabble to us due to level".format(track.name), False)
             self.__nextpath = self.__nextpath + 1
             return self.PATH_TO_SKIP_WITH[:]
 
     def stop(self):
         super().stop()
+
+class Track():
+    def __init__(self, name, track, min_level, max_level, track_aura):
+        self.name = name
+        self.track = track
+        self.min_level = min_level
+        self.max_level = max_level
+        self.track_aura = track_aura
+        self.kills = 0
+        self.steps = 0
+        self.completes = 0
 
 # Just thinking about changing top level...
 
