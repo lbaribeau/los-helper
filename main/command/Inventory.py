@@ -171,7 +171,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         'large restorative', 'scarlet potion', 'golden potion', 'white potion',
         'first aid kit', 'Elixir of Morinva', 'granite potion', 'large granite potion',
         'philtre of perception', 'burnt ochre potion', 'master\'s habit', 'Aaashaaal\'s gift',
-        'gold chased whiskey flask',
+        'gold chased whiskey flask', 'misty potion',
         # 'granite rod', 'heathen amulet',
         'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand', #'makeup kit', 
         'diamantium cross',

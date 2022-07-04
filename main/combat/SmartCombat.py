@@ -221,7 +221,7 @@ class SmartCombat(CombatObject):
                 self.spell = None
 
         self.kill.wait_until_ready()
-        if self.character._class.id == 'Mag':
+        if self.is_caster_class():
             self.cast.wait_until_ready()
 
         if use_combat_ability:
@@ -264,7 +264,7 @@ class SmartCombat(CombatObject):
 
     def determine_whether_to_use_spells(self):
         # Mage/Alc/Druid should always cast
-        if (self.character._class.id != 'Dru' and self.character._class.id != 'Mag' and self.character._class.id != 'Alc') and \
+        if (!self.is_caster_class()) and \
             self.character.level > 10 and self.mob_target is not None:
             if self.mob_target.level is not None:
                 if self.mob_target.level <= ((self.character.level / 2) - 2) or self.character.level <= 2:
@@ -285,7 +285,8 @@ class SmartCombat(CombatObject):
         return self.favourite_spell
 
     def is_caster_class(self):
-        return self.character._class.id == 'Mag' or self.character._class.id == 'Alc' or self.character._class.id == 'Dru'
+        return self.character._class.id == 'Mag' or self.character._class.id == 'Alc' or \
+            self.character._class.id == 'Dru' or self.character._class.id == 'Cle'
         # or self.character._class == 'Cle'
 
     def get_favourite_combat_item(self):

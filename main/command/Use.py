@@ -1,9 +1,11 @@
 
 from threading import Thread
+from time import time
 
 from command.ThreadingMixin2 import ThreadingMixin2
 from comm import RegexStore
 from misc_functions import magentaprint
+from Aura import Aura
 
 class Use(ThreadingMixin2):
     # Erhm, maybe I don't want a Potion thread because it will use too many pots if a prompt is delayed.
@@ -12,9 +14,12 @@ class Use(ThreadingMixin2):
     cooldown_after_success = 0.86  # .83 too fast
     cooldown_after_failure = 0.86
     # It's tempting to try to make Inventory smart enough to use healing items...
-    success_regexes = [RegexStore.potion_drank]  # Todo: add rods/buffs  (Might be made simpler with a different class, ie. UseRod)
+    success_regexes = [RegexStore.potion_drank, RegexStore.mob_aura]  # Todo: add rods/buffs  (Might be made simpler with a different class, ie. UseRod)
     failure_regexes = []  # TODO: I believe flasks can fail
     error_regexes = [RegexStore.use_what, RegexStore.cant_use]
+    aura = None
+    aura_timer = 300
+    aura_refresh = 300
 
     def __init__(self, character, telnetHandler):
         self.character = character
@@ -28,6 +33,17 @@ class Use(ThreadingMixin2):
         super().notify(r, m)
         if r in RegexStore.prompt:
             self.prompt_flag = True
+        elif r in RegexStore.aura:
+            self.aura = Aura(M_obj.group('aura'))
+            self.aura_timer = time()
+
+    def update_aura(self, character):
+        if time() > (self.aura_timer + self.aura_refresh):
+            self.stopping = False
+            self.execute(self.character.inventory.get_reference('misty potion'))
+            character.AURA = str(self.aura)
+        else:
+            magentaprint("Last aura update %d seconds ago." % round(time() - self.aura_timer))
 
     def healing_potion(self):
         # big_pots = ['large restorative', 'scarlet potion']

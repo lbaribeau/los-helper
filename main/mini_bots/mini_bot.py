@@ -24,7 +24,7 @@ class MiniBot(object):
         self.thread = None
 
     def stop(self):
-        magentaprint("MiniBot.stop()")
+        # magentaprint("MiniBot.stop()")
         # if self.thread and self.thread.is_alive():  # We also want to stop on calls where a new thread was not made
         # (SmithyBot calls TravelBot directly, so TravelBot.thread is still None, but another thread can call TravelBot.stop
         # which should stop SmithyBot)

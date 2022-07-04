@@ -769,7 +769,7 @@ class CommandHandler(object):
                 magentaprint("Input not recognized - cannot start the mixer!", False)
 
     def stop_bot(self):
-        magentaprint("CommandHandler.stop_bot() self.bot_thread: " + str(self.bot_thread))
+        # magentaprint("CommandHandler.stop_bot() self.bot_thread: " + str(self.bot_thread))
         # if self.bot_thread:
         #     magentaprint("CommandHandler.stop_bot() self.bot_thread.is_alive(): " + str(self.bot_thread.is_alive()))
         # Error - smithy_bot doesn't have is_alive()

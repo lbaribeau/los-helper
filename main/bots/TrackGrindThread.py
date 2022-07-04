@@ -337,8 +337,8 @@ class TrackGrindThread(GrindThread):
             self.character.NEEDS_TO_SELL = False
             self.character.MONSTER_KILL_LIST = []
             return self.SHOP_AND_TIP_PATH[:]
-        else:
-            magentaprint("Character doesn't need to sell", False)
+        # else:
+        #     magentaprint("Character doesn't need to sell", False)
 
         all_tracks = [
             self.SHOP_AND_TIP_PATH,
