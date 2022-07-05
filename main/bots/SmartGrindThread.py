@@ -309,19 +309,19 @@ class SmartGrindThread(TrackGrindThread):
         if self.character.AURA < self.character.preferred_aura:
             # Too evil
             # self.low_level = 2
-            self.set_target_levels(-3, 0)
+            # self.set_target_levels(-1, 0)
             self.min_target_aura = Aura('demonic red')
             self.max_target_aura = Aura('grey')
             aura_context = "too evil"
         elif self.character.AURA > self.character.preferred_aura:
             # Too good
             # self.low_level = 2
-            self.set_target_levels(-2, 0)
+            # self.set_target_levels(-1, 0)
             self.min_target_aura = Aura('grey')
             self.max_target_aura = Aura('heavenly blue')
             aura_context = "way too good"
         else:
-            self.set_target_levels(-1, 0)
+            # self.set_target_levels(-1, 0)
             self.min_target_aura = Aura('demonic red')
             self.max_target_aura = Aura('heavenly blue')
 
