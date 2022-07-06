@@ -744,6 +744,7 @@ class CommandHandler(object):
         if self.bot_check():
             M_obj = re.search(r"domix (?P<target>[A-Za-z]+) (?P<mix_target>[A-Za-z]+)(?P<qty> \d+)?$", user_input)
             can_mix = True
+            magentaprint(M_obj, False)
 
             try:
                 target = M_obj.group('target')

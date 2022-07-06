@@ -167,7 +167,8 @@ class Inventory(BotReactionWithFlag, ReferencingList):
     keep_list = [
         # 'large bag',
         'large sack', 'black bag', 'silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
-        # 'small restorative', 'small flask', # 'chicken soup',  'tree root',
+        # 'small restorative', 'small flask', 'chicken soup',
+        'tree root',
         'large restorative', 'scarlet potion', 'golden potion', 'white potion',
         'first aid kit', 'Elixir of Morinva', 'granite potion', 'large granite potion',
         'philtre of perception', 'burnt ochre potion', 'master\'s habit', 'Aaashaaal\'s gift',

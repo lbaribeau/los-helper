@@ -3,6 +3,8 @@ brown + leaf = paste item - failed
 brown + berry = brown smells of disease and corruption
 disease brown + brown = more disease
 disease brown + leaf = disease :/
+brown + hand = disease and corruption
+brown + blackened = disease and corruption
 
 disease mould eventually kills you when pasted
 
@@ -10,14 +12,30 @@ flower + root = drinking item - failed
 leaf + yellow flower = pasted item - failed
 yellow + leaf = drinking item - failed
 yellow + root = yellow healing reagent for mixing
+yellow + aleanas = 5hp yellow healing item
+yell + yell = 5hp healing item
+yell + berry = healing = 5 hp
 
 berry + root = paste item - healing item
 berry + brown mould = paste item - healing item
 berry + leaf = paste item - healing item
+berry + aleanas = paste item (3hp)
+berry + fungal hand = paste item (2hp)
+berry + yellow = paste item (1hp)
+
+leaf + aleanas = cream = will cause harm
+leaf + blackened fungus = cream = will cause harm
+leaf + fungal hand = cream = will cause harm
 
 root + mould = edible item - healing
-root + berry = edible healing item that restore at least 10 hp
+root + berry = edible healing item that restore at least 7-10 hp
 root + leaf = edible healing item
 edible root + leaf = fails - still edible tho
+root + berry + aleanas = edible healing item 10 hp
+root + yellow = edible healing item 7 hp
+root + aleanas = edible healing item 7 hp
+root + aleanas = healing agent ~ 7 hp
+root + fungal hand = healing agent ~ 10 hp
+root + blackened = healing agent ~ 8 hp
 
 leaf + brown = cream item - deals damage when applied :/

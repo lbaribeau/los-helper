@@ -208,6 +208,8 @@ def remove_plural(m):
         return m[0:len(m)-3]
     elif m.endswith(' mice'):
         return m[0:len(m)-4] + 'mouse'
+    elif m.endswith('men'):
+        return m[0:len(m)-3] + 'man'
     else:
         return m
 
