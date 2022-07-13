@@ -327,9 +327,9 @@ class TrackGrindThread(GrindThread):
             Track("Gnolls", self.GNOLL_CAVE, 12, 20, -1),
             # Track("Foundry", self.FOUNDRY, 15, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.RANCHER_SENTRY, 10, 15, 0),
-            Track("Knights", self.KNIGHTS, 13, 20, 1),
+            Track("Knights", self.KNIGHTS, 14, 20, 1),
             Track("Cathedral", self.CATHEDRAL, 10, 16, 1),
-            Track("Large Spider Forest", self.SPIDER_FOREST, 13, 20, -1),
+            Track("Large Spider Forest", self.SPIDER_FOREST, 14, 20, -1),
             Track("Egan and Trent", self.EGAN_TRENT, 15, 20, -1),
             Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,0,20,0)
         ]

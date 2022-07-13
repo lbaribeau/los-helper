@@ -28,17 +28,18 @@ class FakeTelnetSocket(object):
         self.current_mud_area = None
         self.current_monster_list = [
             # 'Alaran the Market Manager',
-            'An acrobat', # chasing
+            # 'An acrobat', # chasing
             # self.actor.name,
             # self.barbarian_warrior.name,
             # 'juggler', # chasing
-            'three kobold champions', # weapon shatter
+            # 'three kobold champions', # weapon shatter
             # # 'kobold sentry', # spear break
             # 'The large kobold',    # maul hammer break
             # # 'militia soldier', # potting
             # self.stablehand.name,
             # self.tabby_cat.name,
-            'two ghouls'
+            # 'two ghouls'
+            "old knight"
         ]
         self.fso = FakeSocketOutput()
         self.rng = 0
