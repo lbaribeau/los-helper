@@ -50,7 +50,7 @@ class CharacterClass(object):
             self.lvl1_maxMP = 4
             self.mana_tick = 2
             abilities = [ Pray, Turn ]
-            Cast.cooldown_after_success = 3
+            Cast.cooldown_after_success = 4
         elif class_string == "Fig":
             self.lvl1_maxHP = 22
             self.lvl1_maxMP = 2
@@ -115,12 +115,13 @@ class CharacterClass(object):
             self.lvl1_maxHP = 15
             self.lvl1_maxMP = 4
             abilities = [ Barkskin ]
-            Cast.cooldown_after_success = 3
+            Cast.cooldown_after_success = 4
         elif class_string == "Alc":
             self.lvl1_maxHP = 15
             self.needs_weapon = False
             lvl1_maxMP = 4
             abilities = []
+            Cast.cooldown_after_success = 3
         elif class_string == "Dar":
             self.lvl1_maxHP = 19
             self.lvl1_maxMP = 4

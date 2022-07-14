@@ -1,8 +1,8 @@
 
 prompt = [r"\[(\d+) H (\d+) M\]: (You feel the benefits)?"]
 
-__item = r"(?P<item>[A-Za-z0-9\-'\s]+)"
-__items = r"(?P<items>[A-Za-z0-9\-'\s,]+)"
+__item = r"(?P<item>[A-Za-z0-9\-'\s\(\)\+]+)"
+__items = r"(?P<items>[A-Za-z0-9\-'\s,\(\)\+]+)"
 __player = r"(?P<player>[A-Za-z]+)"
 you_have = [r"You have: " + __items + r"\."]
 wont_buy = [r'The shopkeep says, "I won\'t buy that rubbish from you\."']

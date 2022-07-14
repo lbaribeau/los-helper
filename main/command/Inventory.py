@@ -177,7 +177,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand', #'makeup kit', 
         'diamantium cross',
         'copper thieves pass', 'steel thieves pass', 'silver thieves pass',# 'stilleto'
-        'druid\'s silver sickle',
+        'druid\'s silver sickle', 'protective robes',
         # 'blue scroll',
         # 'granite rod', 'zinc wand',
         # 'adamantine rod',
@@ -555,6 +555,9 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         # # This overwrites all state information (is_unusable), so only overwrite when the new dict is somehow different.
         # if not self.compare_mud_object_dicts(d, self.inventory):
         #     self.inventory = d
+
+        # remove magic and alc enchanted items
+        item_string = re.sub(" \(.?.\)", "", item_string)
 
         l = []
         l.extend(parse_item_list(item_string))
