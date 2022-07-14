@@ -31,11 +31,16 @@ class SmartGrindThread(TrackGrindThread):
 
         low_level_modifier = -1
         high_level_modifier = 0# + 1 #risky business
+        character_level = self.character.info.level
 
         if self.is_character_class('Mag') or self.is_character_class('Dru') or self.is_character_class('Alc') or self.is_character_class('Cle'):
             self.character.MANA_TO_ENGAGE = self.character.info.maxMP / 2
             if self.character.MANA_TO_ENGAGE < 21 and self.character.info.maxMP > 21:
                 self.character.MANA_TO_ENGAGE = 21
+        
+        if self.is_character_class('Mag') and character_level > 13:
+            high_level_modifier = -1
+            low_level_modifier = -2
 
         self.set_target_levels(low_level_modifier, high_level_modifier)
 
