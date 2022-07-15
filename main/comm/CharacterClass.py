@@ -120,7 +120,7 @@ class CharacterClass(object):
             self.lvl1_maxHP = 15
             self.needs_weapon = False
             lvl1_maxMP = 4
-            abilities = []
+            abilities = [ Slow ]
             Cast.cooldown_after_success = 3
         elif class_string == "Dar":
             self.lvl1_maxHP = 19

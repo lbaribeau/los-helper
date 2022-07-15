@@ -253,6 +253,15 @@ class Touch(SlowCombatAbility):
     # classes = ["Mon"]
     level = 10
 
+class Slow(SlowCombatAbility):
+    command = "slow"
+    cooldown_after_success = 340
+    cooldown_after_failure = 270
+    success_regexes = [RegexStore.slow]
+    failure_regexes = [RegexStore.slow_fail]
+    error_regexes = [RegexStore.slow_whom, RegexStore.not_here]
+    level = 10
+
     # def notify(self, r, m):
     #     magentaprint('Touch notified, timer: ' + str(round(self.__class__.timer - time.time(), 0)))
     #     super().notify(r, m)
