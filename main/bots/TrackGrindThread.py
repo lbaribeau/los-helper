@@ -261,6 +261,17 @@ class TrackGrindThread(GrindThread):
         self.EGAN_TRENT = ['areaid1999', 'areaid2']
         # self.LYRON = ['areaid2097', ] -- too much dmg
 
+        # Old Man James
+        # Dini Stonehammer
+        # Thereze
+        # Olmer
+        # Goourd
+        # cooper
+        # Farmer Calmor
+        # Kelluran
+        # Rimark ?
+        # Tag
+
         self.PATH_TO_SKIP_WITH = ['think']
 
         self.setup_tracks()

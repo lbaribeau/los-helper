@@ -3,7 +3,7 @@ Spell notes as per Twaek:
 
 Level 5 spells are not really in the game
 
-- Invisible Gateway in Holbyn's shop stores a spell (Holbyn guards this gateway)
+- Invisible Undead Shade / Gateway in Holbyn's shop stores a Burstflame spell (Holbyn guards this gateway, Shade drops the scroll)
 - Detect Invis found in invsible shadowgate after beating Cal (Cal's Shadow guards this scroll)
 - Steel scroll dropped by lay priests
 - Vigor for purchase in the Chapel Chamber by Patriarch
