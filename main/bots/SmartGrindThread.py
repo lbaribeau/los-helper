@@ -39,8 +39,12 @@ class SmartGrindThread(TrackGrindThread):
                 self.character.MANA_TO_ENGAGE = 21
         
         if self.is_character_class('Mag') and character_level > 13:
-            high_level_modifier = -1
-            low_level_modifier = -2
+            high_level_modifier = -2
+            low_level_modifier = -3
+        
+        if self.is_character_class('Fig'):
+            high_level_modifier = 1
+            low_level_modifier = 0
 
         self.set_target_levels(low_level_modifier, high_level_modifier)
 
@@ -90,6 +94,17 @@ class SmartGrindThread(TrackGrindThread):
 
         if len(self.character.MONSTER_KILL_LIST) == 0:
             self.get_targets()
+
+    def check_weapons(self):
+        magentaprint('check_weapons()')
+        # w = WeaponBot(self.char, self.command_handler, self.mrh, self.map)
+        # w.repair_or_replace_weapon()
+
+        monk_fist_user = self.is_character_class('Mon') and self.character.info.blunt > self.character.info.pole
+
+        if not self.stopping and not monk_fist_user:
+            # magentaprint("Checking weapons for " + self.character._class.id,False)
+            self.command_handler.weapon_bot.check_weapons()
 
     def do_reboot_hooks(self):
         if self.character.is_sleepy == False:

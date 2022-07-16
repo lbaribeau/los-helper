@@ -236,7 +236,7 @@ class SmartCombat(CombatObject):
             if self.fleeing and not self.cast.wait_time() - self.kill.wait_time() > self.kill.cooldown_after_success:
                 self.escape()
             else:
-                if self.character._class.id != 'Mag' or self.character.level < 6:
+                if self.character.level < 6:
                     if self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
                         if self.do_phys_attack(use_combat_ability):
                             break
