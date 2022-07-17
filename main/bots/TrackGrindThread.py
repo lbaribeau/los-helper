@@ -265,6 +265,18 @@ class TrackGrindThread(GrindThread):
         self.EGAN_TRENT = ['areaid1999', 'areaid2']
         self.ORCS = ['areaid747', 'areaid749', 'areaid2']
         self.OLMER = ['areaid297', 'areaid2']
+        self.CHERYN = ['areaid1380', 'areaid2']
+        self.ARTIFICERS = ['areaid1350', 'areaid1008', 'areaid2']
+        self.SILKEN_ALLEY = ['areaid686', 'areaid706', 'areaid705', 'areaid698', 'areaid699', 'areaid700', 'areaid2']
+        self.CORELLAN = ['areaid713', 'areaid2']
+        self.JERREK_TAG = ['areaid977', 'areaid979', 'areaid2']
+        self.MANIC_ELDER = ['areaid1465', 'areaid1491', 'areaid2']
+        self.VILADIN_CAL = ['areaid1498', 'areaid247', 'path', 'hut', 'areaid2']
+        self.DALLA_DOUVAN = ['areaid2449', 'areaid2430', 'areaid2']
+        self.ALDO_BROTAIN = ['areaid1254', 'areaid1226', 'areaid2']
+        self.PLOVERS = ['areaid1564', 'areaid1600', 'areaid2']
+        self.FLOOR_MANAGER = ['areaid1147', 'areaid2']
+        # self.WHITEBLADE_LYRON = ['areaid2110', 'areaid2097']
         # self.LYRON = ['areaid2097', ] -- too much dmg
 
         # Old Man James
@@ -329,28 +341,41 @@ class TrackGrindThread(GrindThread):
     def setup_tracks(self):
         self.tracks = [
             Track("Theatre", self.THEATRE_PATH, 0, 20, 0),
-            Track("Market", self.MARKET_PATH, 0, 20, 0),
+            Track("Market", self.MARKET_PATH, 0, 14, 0),
             Track("Militia Soldiers", self.MILITIA_SOLDIERS_PATH, 0, 14, 0),
-            Track("Kobolds", self.KOBOLD_PATH, 0, 10, -1), #sentries are suuuper tough
+            Track("Kobolds", self.KOBOLD_PATH, 0, 12, -1), #sentries are suuuper tough
             Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
             Track("Fort", self.FORT_PATH, 0, 20, 0),
             Track("North Bandits", self.NORTHERN_BANDITS_PATH, 0, 14, -1),
             Track("Eastern Zombies", self.ZOMBIES, 7, 20, -1),
-            Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,20,0),
+            Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,20,9),
             Track("Dwarven Field Workers", self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 0),
             Track("Mill Workers", self.MILL_WORKERS, 9, 20, 0),
             # Track("Muggers", self.MUGGER_PATH, 9, 15, -1),
             # Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
             Track("Gnolls", self.GNOLL_CAVE, 11, 20, -1),
             Track("Olmer", self.OLMER, 11, 20, -1),
+            Track("Cheryn", self.CHERYN, 11, 15, -1),
             Track("Orcs", self.ORCS, 11, 20, -1),
-            # Track("Foundry", self.FOUNDRY, 15, 20, 0), #Rimark joins in, not enough mobs actually are there by default
-            Track("Rancher Sentries", self.RANCHER_SENTRY, 10, 15, 0),
-            Track("Knights", self.KNIGHTS, 11, 20, 1),
+            Track("Artificers", self.ARTIFICERS, 11, 20, -1),
+            Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
+            Track("Rancher Sentries", self.RANCHER_SENTRY, 10, 20, 1),
+            Track("Knights", self.KNIGHTS, 10, 20, 1),
             Track("Cathedral", self.CATHEDRAL, 10, 16, 1),
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 20, -1),
-            Track("Egan and Trent", self.EGAN_TRENT, 15, 20, -1),
-            Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,0,20,0)
+            Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1),
+            Track("Tardan", self.EGAN_TRENT, 15, 20, 1),
+            Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,0,20,9),
+            Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0),
+            Track("Corellan", self.CORELLAN, 16, 20, 0),
+            Track("Jerrek and Tag", self.JERREK_TAG, 11, 20, -1),
+            Track("Manic and Elder", self.MANIC_ELDER, 13, 20, -1),
+            Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1),
+            Track("Plovers", self.PLOVERS, 12, 20, 1),
+            Track("Floor Manager", self.FLOOR_MANAGER, 12, 20, 1),
+            Track("Dalla and Douvan", self.DALLA_DOUVAN, 11, 20, 1),
+            Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 20, 1),
+            Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,0,20, 9)
         ]
     
     def decide_where_to_go(self):
@@ -391,6 +416,9 @@ class TrackGrindThread(GrindThread):
         character_aura = Aura(self.character.AURA)
         aura_acceptable = character_aura == self.character.preferred_aura
 
+        if track.track_aura == 9:
+            return track.track[:]
+
         #too evil shouldn't fight good (+1)
         #too good shouldn't fight evil (-1)
         if (not aura_acceptable and track.track_aura == 0) or \
@@ -405,7 +433,7 @@ class TrackGrindThread(GrindThread):
             return track.track[:]
         else:
             magentaprint("{0} isn't acceptable to us due to level".format(track.name), False)
-            self.__nextpath = self.__nextpath + 1
+            # self.__nextpath = self.__nextpath + 1 #skips the next path
             return self.PATH_TO_SKIP_WITH[:]
 
     def stop(self):
