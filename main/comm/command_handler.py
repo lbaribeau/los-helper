@@ -681,6 +681,11 @@ class CommandHandler(object):
             self.botThread = NoobGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
             self.botThread.start()
 
+    def start_campslave(self):
+        if self.bot_check():
+            self.botThread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, "camp", False)
+            self.botThread.start()
+
     def start_camp_grind(self):
         if self.bot_check():
             self.botThread = CampGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)

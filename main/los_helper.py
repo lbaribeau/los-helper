@@ -134,6 +134,9 @@ class LosHelper(object):
         if '-noobgrind' in sys.argv:
             self.command_handler.start_noob_grind()
 
+        if '-campslave' in sys.argv:
+            self.command_handler.start_campslave()
+
         if '-fast' in sys.argv:
             self.character.MANA_TO_ENGAGE = 0
             self.character.NEEDS_MAGIC = False
