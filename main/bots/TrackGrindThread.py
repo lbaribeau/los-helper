@@ -17,6 +17,9 @@ class TrackGrindThread(GrindThread):
         # of paths in decide_where_to_go is a way to truncate paths
         # you don't want to send low level characters on.
 
+        self.track_abandons = 0
+        self.abandoned_last_track = False
+        self.last_track = None
         self.starting_path = starting_path
             # len(self.tracks) = 24
         # elif self.character.level <= 10:
@@ -260,6 +263,8 @@ class TrackGrindThread(GrindThread):
         self.FOUNDRY = ['areaid1231', 'out', 'down', 'east', 'east', 'east', 'south', 'areaid2']
         self.ALCHEMISTS = ['areaid999', 'areaid2967', 'areaid2']
         self.EGAN_TRENT = ['areaid1999', 'areaid2']
+        self.ORCS = ['areaid747', 'areaid749', 'areaid2']
+        self.OLMER = ['areaid297', 'areaid2']
         # self.LYRON = ['areaid2097', ] -- too much dmg
 
         # Old Man James
@@ -326,22 +331,24 @@ class TrackGrindThread(GrindThread):
             Track("Theatre", self.THEATRE_PATH, 0, 20, 0),
             Track("Market", self.MARKET_PATH, 0, 20, 0),
             Track("Militia Soldiers", self.MILITIA_SOLDIERS_PATH, 0, 14, 0),
-            Track("Kobolds", self.KOBOLD_PATH, 0, 12, -1), #sentries are suuuper tough
+            Track("Kobolds", self.KOBOLD_PATH, 0, 10, -1), #sentries are suuuper tough
             Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
-            Track("Fort", self.FORT_PATH, 0, 20, -1),
+            Track("Fort", self.FORT_PATH, 0, 20, 0),
             Track("North Bandits", self.NORTHERN_BANDITS_PATH, 0, 14, -1),
-            Track("Eastern Zombies", self.ZOMBIES, 7, 20, 0),
+            Track("Eastern Zombies", self.ZOMBIES, 7, 20, -1),
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,20,0),
             Track("Dwarven Field Workers", self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 0),
             Track("Mill Workers", self.MILL_WORKERS, 9, 20, 0),
             # Track("Muggers", self.MUGGER_PATH, 9, 15, -1),
             # Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
-            Track("Gnolls", self.GNOLL_CAVE, 12, 20, -1),
+            Track("Gnolls", self.GNOLL_CAVE, 11, 20, -1),
+            Track("Olmer", self.OLMER, 11, 20, -1),
+            Track("Orcs", self.ORCS, 11, 20, -1),
             # Track("Foundry", self.FOUNDRY, 15, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.RANCHER_SENTRY, 10, 15, 0),
-            Track("Knights", self.KNIGHTS, 14, 20, 1),
+            Track("Knights", self.KNIGHTS, 11, 20, 1),
             Track("Cathedral", self.CATHEDRAL, 10, 16, 1),
-            Track("Large Spider Forest", self.SPIDER_FOREST, 14, 20, -1),
+            Track("Large Spider Forest", self.SPIDER_FOREST, 12, 20, -1),
             Track("Egan and Trent", self.EGAN_TRENT, 15, 20, -1),
             Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,0,20,0)
         ]
@@ -369,6 +376,10 @@ class TrackGrindThread(GrindThread):
         # else:
         #     magentaprint("Character doesn't need to sell", False)
 
+        if self.abandoned_last_track:
+            self.abandoned_last_track = False
+            return self.evaluate_track(self.last_track)
+
         self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
         nextpath = self.evaluate_track(self.tracks[self.__nextpath])
 
@@ -378,20 +389,22 @@ class TrackGrindThread(GrindThread):
         level_range = range(track.min_level, track.max_level)        
 
         character_aura = Aura(self.character.AURA)
-        aura_acceptable = True
+        aura_acceptable = character_aura == self.character.preferred_aura
 
         #too evil shouldn't fight good (+1)
         #too good shouldn't fight evil (-1)
-        if (character_aura < self.character.preferred_aura and track.track_aura == 1) or \
+        if (not aura_acceptable and track.track_aura == 0) or \
+           (character_aura < self.character.preferred_aura and track.track_aura == 1) or \
            (character_aura > self.character.preferred_aura and track.track_aura == -1):
-            magentaprint("{0} isn't acceptabble to us due to aura".format(track.name), False)
+            magentaprint("{0} isn't acceptable to us due to aura".format(track.name), False)
             return self.PATH_TO_SKIP_WITH[:]
 
-        if self.character.level in level_range and aura_acceptable:
+        if self.character.level in level_range:
             magentaprint("{0} is our chosen track".format(track.name), False)
+            self.last_track = track
             return track.track[:]
         else:
-            magentaprint("{0} isn't acceptabble to us due to level".format(track.name), False)
+            magentaprint("{0} isn't acceptable to us due to level".format(track.name), False)
             self.__nextpath = self.__nextpath + 1
             return self.PATH_TO_SKIP_WITH[:]
 

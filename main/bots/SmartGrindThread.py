@@ -29,24 +29,12 @@ class SmartGrindThread(TrackGrindThread):
         # if self.character.AREA_ID != 2:
         #     self.direction_list = self.get_heal_path()
 
-        low_level_modifier = -1
-        high_level_modifier = 0# + 1 #risky business
-        character_level = self.character.info.level
+        self.init_level_modifiers()
 
         if self.is_character_class('Mag') or self.is_character_class('Dru') or self.is_character_class('Alc') or self.is_character_class('Cle'):
             self.character.MANA_TO_ENGAGE = self.character.info.maxMP / 2
             if self.character.MANA_TO_ENGAGE < 21 and self.character.info.maxMP > 21:
                 self.character.MANA_TO_ENGAGE = 21
-        
-        if self.is_character_class('Mag') and character_level > 13:
-            high_level_modifier = -2
-            low_level_modifier = -3
-        
-        if self.is_character_class('Fig'):
-            high_level_modifier = 1
-            low_level_modifier = 0
-
-        self.set_target_levels(low_level_modifier, high_level_modifier)
 
         self.min_target_aura = Aura('demonic red')
         self.max_target_aura = Aura('heavenly blue')
@@ -55,6 +43,17 @@ class SmartGrindThread(TrackGrindThread):
             self.KOBOLD_PATH = [
                 'areaid1679','areaid2'
                 ]
+
+    def init_level_modifiers(self):
+        low_level_modifier = -1
+        high_level_modifier = 0# + 1 #risky business
+        character_level = self.character.info.level
+
+        if self.is_character_class('Mag') and character_level > 13:
+            high_level_modifier = -2
+            low_level_modifier = -3
+
+        self.set_target_levels(low_level_modifier, high_level_modifier)
 
     def set_target_levels(self, low_level_modifier, high_level_modifier):
         self.low_level = int(math.floor(self.character.level / 2)) + low_level_modifier
@@ -331,19 +330,22 @@ class SmartGrindThread(TrackGrindThread):
             # self.low_level = 2
             # self.set_target_levels(-1, 0)
             self.min_target_aura = Aura('demonic red')
-            self.max_target_aura = Aura('grey')
+            self.max_target_aura = Aura('dusty red')
             aura_context = "too evil"
+            self.set_target_levels(-2, 0)
         elif self.character.AURA > self.character.preferred_aura:
             # Too good
             # self.low_level = 2
             # self.set_target_levels(-1, 0)
-            self.min_target_aura = Aura('grey')
+            self.min_target_aura = Aura('dusty blue')
             self.max_target_aura = Aura('heavenly blue')
             aura_context = "way too good"
+            self.set_target_levels(-2, 0)
         else:
             # self.set_target_levels(-1, 0)
             self.min_target_aura = Aura('demonic red')
             self.max_target_aura = Aura('heavenly blue')
+            self.init_level_modifiers()
 
         magentaprint("My aura is {}".format(aura_context), False)
 
@@ -381,6 +383,8 @@ class SmartGrindThread(TrackGrindThread):
 
     def go_rest_if_not_ready(self):
         if not self.ready_for_combat():
+            self.abandoned_last_track = True
+            self.track_abandons += 1
             self.direction_list = self.get_heal_path()
             self.on_heal_path = True
 
