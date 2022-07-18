@@ -236,20 +236,19 @@ class SmartCombat(CombatObject):
             if self.fleeing and not self.cast.wait_time() - self.kill.wait_time() > self.kill.cooldown_after_success:
                 self.escape()
             else:
-                if self.character._class.id != 'Mag':
-                    if self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
-                        if self.do_phys_attack(use_combat_ability):
-                            break
-                    else:
-                        if self.do_magic_attack():
-                            continue
+                if self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
+                    if self.do_phys_attack(use_combat_ability):
+                        break
                 else:
-                    if self.cast.up() or self.cast.wait_time() <= self.kill.wait_time() or self.casting:
-                        if self.do_magic_attack():
-                            break
-                    else:
-                        if self.do_phys_attack(use_combat_ability):
-                            continue
+                    if self.do_magic_attack():
+                        continue
+                # else:
+                #     if self.cast.up() or self.cast.wait_time() <= self.kill.wait_time() or self.casting:
+                #         if self.do_magic_attack():
+                #             break
+                #     else:
+                #         if self.do_phys_attack(use_combat_ability):
+                #             continue
 
         self.activated = False
         magentaprint(str(self) + " ending run.")

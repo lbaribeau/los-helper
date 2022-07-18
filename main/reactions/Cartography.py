@@ -22,7 +22,7 @@ class Cartography(BotReactionWithFlag):
 
         self.regex_cart = [
             RegexStore.area, RegexStore.too_dark, RegexStore.blocked_path, RegexStore.please_wait,
-            RegexStore.cant_go, RegexStore.no_exit, RegexStore.class_prohibited, RegexStore.level_too_low,
+            RegexStore.cant_go, RegexStore.no_exit, RegexStore.no_see, RegexStore.class_prohibited, RegexStore.level_too_low,
             RegexStore.not_invited, RegexStore.not_open_during_day, RegexStore.not_open_during_night,
             RegexStore.no_items_allowed, RegexStore.locked, RegexStore.no_right, RegexStore.not_authorized,
             RegexStore.cannot_force, RegexStore.not_here, RegexStore.loot_blocked, RegexStore.teleported,
@@ -91,7 +91,7 @@ class Cartography(BotReactionWithFlag):
             #magentaprint("'" + name + "' => '" + aura + "'",False)
             magentaprint("Cartography mob aura: " + self.character.mobs.read_match(M_obj) + ', ' + M_obj.group('aura'))
             self.catalog_monster_aura(self.character.mobs.read_match(M_obj), M_obj.group('aura'))
-        elif regex in RegexStore.not_here or regex in RegexStore.no_exit:
+        elif regex in RegexStore.not_here or regex in RegexStore.no_exit or regex in RegexStore.no_see:
             #The state is confusion is usually caused by bad processing of good data (i.e. bugs)
             #The following is a set of work arounds to smoothe things out until those bugs are fixed
             if self.character.ACTIVELY_BOTTING:

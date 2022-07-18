@@ -257,6 +257,8 @@ backstab = [r"You backstab the (.+?)."]
 backstab_fail = [r"You failed\."]
 backstab_error = [r"Backstab requires sharp or thrusting weapons.", r"You don't see that here.", r"You need to be hidden or undetected to backstab!"]
 
+no_see = [r"You don't see that here\."]
+
 # Kill / Cast
 bad_k_target = [
     r"You don't see that here\.",

@@ -358,10 +358,10 @@ class TrackGrindThread(GrindThread):
             Track("Cheryn", self.CHERYN, 11, 15, -1),
             Track("Orcs", self.ORCS, 11, 20, -1),
             Track("Artificers", self.ARTIFICERS, 11, 20, -1),
-            Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
+            # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.RANCHER_SENTRY, 10, 20, 1),
             Track("Knights", self.KNIGHTS, 10, 20, 1),
-            Track("Cathedral", self.CATHEDRAL, 10, 16, 1),
+            # Track("Cathedral", self.CATHEDRAL, 10, 16, 1), # lay priest damage rolls too high
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 20, -1),
             Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1),
             Track("Tardan", self.EGAN_TRENT, 15, 20, 1),
@@ -371,8 +371,8 @@ class TrackGrindThread(GrindThread):
             Track("Jerrek and Tag", self.JERREK_TAG, 11, 20, -1),
             Track("Manic and Elder", self.MANIC_ELDER, 13, 20, -1),
             Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1),
-            Track("Plovers", self.PLOVERS, 12, 20, 1),
-            Track("Floor Manager", self.FLOOR_MANAGER, 12, 20, 1),
+            # Track("Plovers", self.PLOVERS, 12, 20, 1),
+            Track("Floor Manager", self.FLOOR_MANAGER, 12, 20, -1),
             Track("Dalla and Douvan", self.DALLA_DOUVAN, 11, 20, 1),
             Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 20, 1),
             Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,0,20, 9)
