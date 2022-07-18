@@ -353,6 +353,12 @@ class CommandHandler(object):
                     self.character.NEEDS_MAGIC = True
             except Exception as e:
                 magentaprint("Can't set manage to engage!", False)
+        elif re.match("h2e (.+)", user_input):
+            try:
+                M_obj = re.search("h2e (.+)", user_input)
+                self.character.HEALTH_TO_HEAL = int(M_obj.group(1))
+            except Exception as e:
+                magentaprint("Can't set manage to engage!", False)
         elif re.match("ml", user_input): #Monster List
             try:
                 magentaprint(str(self.character.MONSTER_LIST), False)

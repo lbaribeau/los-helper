@@ -352,7 +352,7 @@ class TrackGrindThread(GrindThread):
             Track("Dwarven Field Workers", self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 0),
             Track("Mill Workers", self.MILL_WORKERS, 9, 20, 0),
             # Track("Muggers", self.MUGGER_PATH, 9, 15, -1),
-            # Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
+            Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
             Track("Gnolls", self.GNOLL_CAVE, 11, 20, -1),
             Track("Olmer", self.OLMER, 11, 20, -1),
             Track("Cheryn", self.CHERYN, 11, 15, -1),
@@ -367,13 +367,13 @@ class TrackGrindThread(GrindThread):
             Track("Tardan", self.EGAN_TRENT, 15, 20, 1),
             Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,0,20,9),
             Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0),
-            Track("Corellan", self.CORELLAN, 16, 20, 0),
+            # Track("Corellan", self.CORELLAN, 16, 20, 0),
             Track("Jerrek and Tag", self.JERREK_TAG, 11, 20, -1),
             Track("Manic and Elder", self.MANIC_ELDER, 13, 20, -1),
             Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1),
             # Track("Plovers", self.PLOVERS, 12, 20, 1),
             Track("Floor Manager", self.FLOOR_MANAGER, 12, 20, -1),
-            Track("Dalla and Douvan", self.DALLA_DOUVAN, 11, 20, 1),
+            # Track("Dalla and Douvan", self.DALLA_DOUVAN, 11, 20, 1), # Dalla overheals and is too dangerous
             Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 20, 1),
             Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,0,20, 9)
         ]
@@ -401,7 +401,7 @@ class TrackGrindThread(GrindThread):
         # else:
         #     magentaprint("Character doesn't need to sell", False)
 
-        if self.abandoned_last_track:
+        if self.last_track is not None and self.abandoned_last_track:
             self.abandoned_last_track = False
             return self.evaluate_track(self.last_track)
 

@@ -38,7 +38,7 @@ def construct_items(string_list):
             item.map()
             items.append(item)
     except:
-        magentaprint("database error", False)
+        magentaprint("inventory database error, something didn't map properly", False)
         pass
 
     return items

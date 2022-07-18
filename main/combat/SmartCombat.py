@@ -287,7 +287,7 @@ class SmartCombat(CombatObject):
         weak_mob = self.mob_target.level is not None and self.mob_target.level <= 3
 
         if self.character.level > 10:
-            weak_mob = self.mob_target.level is not None and self.mob_target.level <= 5
+            weak_mob = self.mob_target.level is not None and self.mob_target.level <= 4
 
         return weak_mob
 
