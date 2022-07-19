@@ -244,7 +244,7 @@ class SmartCombat(CombatObject):
                         if self.do_magic_attack():
                             continue
                 else:
-                    if self.cast.up() or self.cast.wait_time() <= self.kill.wait_time() or self.casting:
+                    if self.cast.up() or self.cast.wait_time() <= self.kill.wait_time() or not self.casting:
                         if self.do_magic_attack():
                             break
                     else:
