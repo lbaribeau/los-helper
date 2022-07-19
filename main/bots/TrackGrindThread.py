@@ -290,6 +290,8 @@ class TrackGrindThread(GrindThread):
         # Rimark ?
         # Tag
 
+        self.GNOMES = ['areaid2113', 'areaid2099', 'areaid2104', 'areaid2106', 'areaid2138', 'areaid2138', 'areaid2093', 'areaid2094', 'areaid2095']
+
         self.PATH_TO_SKIP_WITH = ['think']
 
         self.setup_tracks()
@@ -352,7 +354,7 @@ class TrackGrindThread(GrindThread):
             Track("Dwarven Field Workers", self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 0),
             Track("Mill Workers", self.MILL_WORKERS, 9, 20, 0),
             # Track("Muggers", self.MUGGER_PATH, 9, 15, -1),
-            Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
+            # Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
             Track("Gnolls", self.GNOLL_CAVE, 11, 20, -1),
             Track("Olmer", self.OLMER, 11, 20, -1),
             Track("Cheryn", self.CHERYN, 11, 15, -1),
@@ -369,6 +371,7 @@ class TrackGrindThread(GrindThread):
             Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0),
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
             Track("Jerrek and Tag", self.JERREK_TAG, 11, 20, -1),
+            Track("Gnomes", self.GNOMES, 10, 12, 1),
             Track("Manic and Elder", self.MANIC_ELDER, 13, 20, -1),
             Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1),
             # Track("Plovers", self.PLOVERS, 12, 20, 1),

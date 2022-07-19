@@ -22,6 +22,7 @@ class Mob(NamedModel):
         mob = Mob.get_mob_by_name(self.name)
 
         if mob is None:
+            is_new_mapping = True
             super(Mob, self).save()
         else:
             self.id = mob.id

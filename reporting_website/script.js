@@ -46,7 +46,7 @@ var app = new Vue({
       var list = {};
       if (this.report.mobs_killed) {
         var keys = Object.keys(this.report.mobs_killed)
-        for (var i = keys.length - 1; i > 0; i--) {
+        for (var i = keys.length - 1; i >= 0; i--) {
           list[keys[i]] = this.report.mobs_killed[keys[i]]
         }
       }
@@ -70,7 +70,7 @@ var app = new Vue({
       var count = 0
       if (this.report.mobs_killed) {
         var keys = Object.keys(this.report.mobs_killed)
-        for (var i = keys.length - 1; i > 0; i--) {
+        for (var i = keys.length - 1; i >= 0; i--) {
           count += this.report.mobs_killed[keys[i]]
         }     
       }

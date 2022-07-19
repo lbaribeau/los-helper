@@ -16,6 +16,7 @@ class Item(NamedModel):
         item = Item.get_item_by_name(self.name)
 
         if item is None:
+            is_new_mapping = True
             super(Item, self).save()
         else:
             self.id = item.id

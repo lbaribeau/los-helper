@@ -19,9 +19,11 @@ from db.ItemTypeModel import *
 from db.ItemTypeData import *
 from db.AreaStoreItem import *
 from db.MudMap import *
+from db.MobLoot import *
 
 def create_tables():
     try:
+        try_create(MobLoot)
         try_create(MobMessage)
         try_create(Log)
         try_create(Area)

@@ -1,7 +1,11 @@
 
+from db.MudMob import *
 from misc_functions import *
+from command.Inventory import parse_item_list
 from db.Database import *
 from db.MudMap import *
+from db.MudItem import *
+from db.MobLoot import *
 import comm.RegexStore as RegexStore
 
 class CombatReactions(object):
@@ -52,7 +56,7 @@ class CombatReactions(object):
         self.damage_taken = 0
         self.in_combat = False
 
-        self.regex_cart = [RegexStore.attack_hit, RegexStore.attack_miss, RegexStore.mob_attacked, RegexStore.cast_failure, RegexStore.mob_defeated, RegexStore.spell_damage]
+        self.regex_cart = [RegexStore.attack_hit, RegexStore.attack_miss, RegexStore.mob_attacked, RegexStore.cast_failure, RegexStore.mob_defeated, RegexStore.spell_damage, RegexStore.loot_dropped]
 
     def notify(self, regex, M_obj):
         combat_state = self.in_combat
@@ -69,19 +73,30 @@ class CombatReactions(object):
                 self.lowest_damage = min(self.lowest_damage, dmg)
             except Exception as e:
                 magentaprint("Couldn't convert attack regex to dmg / int")
+        elif regex in RegexStore.loot_dropped:
+            mob_name = self.character.mobs.read_match(M_obj)
+            mob = Mob(name=str(mob_name).strip())
+            new_mob = mob.map()
+            if new_mob:
+                magentaprint(str(mob) + " new mob found on loot drop - this shouldn't be happening", False)
+            items = parse_item_list(M_obj.group('items'))
+            for mud_item in items:
+                mob_loot = MobLoot(mob=mob, item=mud_item.obj)
+                mob_loot.map()
+
         elif regex in RegexStore.mob_defeated:
-                # number = M_obj.group(1)
-                mob = self.character.mobs.read_match(M_obj).lower()
+            # number = M_obj.group(1)
+            mob = self.character.mobs.read_match(M_obj).lower()
 
-                count = 1
-                if mob in self.mobs_killed:
-                    count = self.mobs_killed[mob] + 1
-                    del self.mobs_killed[mob]
+            count = 1
+            if mob in self.mobs_killed:
+                count = self.mobs_killed[mob] + 1
+                del self.mobs_killed[mob]
 
-                self.mobs_killed[mob] = count
-                # self.character.area_id, monster - map both into a MobLocation
-                # add a rank to the MobLocation
-                self.in_combat = False
+            self.mobs_killed[mob] = count
+            # self.character.area_id, monster - map both into a MobLocation
+            # add a rank to the MobLocation
+            self.in_combat = False
         elif regex in RegexStore.attack_miss:
             self.hits_missed += 1
         elif regex is RegexStore.magic_crit:

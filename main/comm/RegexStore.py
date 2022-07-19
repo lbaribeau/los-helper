@@ -179,6 +179,7 @@ __aura = r"(?P<aura>[A-Za-z ]+)"
 mob_aura = [__Three_possible_mob_strings + r" glows with a " + __aura + r" aura\."]
 not_here = [r"You don't see that here\."]
 # loot_blocked = [r"(?:The " + __numbers2 + ")?(.+?) won't let you take anything\."] #The spiv won't let you take anything.
+loot_dropped = [__Three_possible_mob_strings + r" was carrying: "+__items+"\."]
 loot_blocked = [__Three_possible_mob_strings + r"won't let you take anything\."] #The spiv won't let you take anything.
 teleported = [r"### " + __player + r"'s body is teleported away to be healed\."]
 
