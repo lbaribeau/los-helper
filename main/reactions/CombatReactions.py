@@ -187,9 +187,9 @@ class CombatReactions(object):
                 'rest_time': self.character.REST_TIME,
                 'track_time': self.character.TRACK_TIME,
                 'combat_time': self.character.COMBAT_TIME,
-                'percent_track': self.character.percent_track,
-                'percent_rest': self.character.percent_rest,
-                'percent_combat': self.character.percent_combat
+                'percent_track': percent_track,
+                'percent_rest': percent_rest,
+                'percent_combat': percent_combat
                 }
 
         return output
