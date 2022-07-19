@@ -35,14 +35,56 @@ var app = new Vue({
     experience: function() {
       return this.report.exp + parseInt(this.info.total_exp);
     },
+    exph: function() {
+      var output = 0
+      if (this.report !== {}) {
+        output = this.report.expm*60
+      }
+      return output
+    },
+    mobs_killed: function() {
+      var list = {};
+      if (this.report.mobs_killed) {
+        var keys = Object.keys(this.report.mobs_killed)
+        for (var i = keys.length - 1; i > 0; i--) {
+          list[keys[i]] = this.report.mobs_killed[keys[i]]
+        }
+      }
+      return list
+    },
+    effective_phys: function() {
+      var output = 0
+      if (this.report !== {}) {
+        output = Math.round((this.report.phys_hit_rate/100 * this.report.average_phys_damage)*100)/100
+      }
+      return output
+    },
+    effective_spell: function() {
+      var output = 0
+      if (this.report !== {}) {
+        output = Math.round((this.report.spell_hit_rate/100 * this.report.average_spell_damage)*100)/100
+      }
+      return output
+    },
     total_kills: function() {
-      return 0
-      // console.log(this.report);
-      // var total = 0;
-      // for (var i= 0; i<this.report.mobs_killed.keys()length; i++) {
-      //   total += this.report.mobs_killed[i]
-      // }
-      // return total;
+      var count = 0
+      if (this.report.mobs_killed) {
+        var keys = Object.keys(this.report.mobs_killed)
+        for (var i = keys.length - 1; i > 0; i--) {
+          count += this.report.mobs_killed[keys[i]]
+        }     
+      }
+      return count
+    },
+    kpm: function() {
+      var output = 0
+      var runtime = Math.round(this.report.runtime)
+
+      if (runtime == 0) {
+        return -1
+      }
+
+      return Math.round((this.total_kills*100)/runtime)/100
     },
     classname: function() {
       switch (this.info.class) {

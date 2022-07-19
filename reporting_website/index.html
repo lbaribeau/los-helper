@@ -20,17 +20,23 @@
       <strong>Current State</strong>
       <div class="stat">As of {{report.timestamp}}</div>
       <div class="stat">Fighting {{report.mobs}}</div>
-      <div class="stat">Area {{report.area}}</div>      
-      <div class="stat">Total runtime {{report.runtime}}</div>      
+      <div class="stat">Area {{report.area}}</div>
+      <div class="stat">Total runtime {{report.runtime}}</div>
+      <div class="stat">Resting {{report.percent_rest}}% of the time</div>
+      <div class="stat">Tracking {{report.percent_track}}% of the time</div>
+      <div class="stat">Fighting {{report.percent_combat}}% of the time</div>
     </div>
     <div class="box"><strong>Juicy reporting...</strong>
       <div class="stat">Current Aura: {{report.aura}}</div>
-      <div class="stat">EXP/Min: {{report.expm}}</div>
+      <div class="stat">EXP/Min: {{report.expm}} ({{this.exph}}/hr)</div>
       <div class="stat">Exp Gained: {{report.exp}}</div>
-      <div class="stat">Average Dmg (Phys): {{report.average_phys_damage}}</div>
       <div class="stat">Hit Rate (Phys): {{report.phys_hit_rate}}%</div>
+      <div class="stat">Average Dmg (Phys): {{report.average_phys_damage}} ({{effective_phys}})</div>
+      <div class="stat">Hit Rate (Spell): {{report.spell_hit_rate}}%</div>
+      <div class="stat">Average Dmg (Spell): {{report.average_spell_damage}} ({{effective_spell}})</div>
       <div class="stat">Total KILLS: {{total_kills}}</div>
-      <div class="stat">KPM: {{report.kpm}}</div>
+      <div class="stat">KPM: {{this.kpm}}</div>
+      <div class="stat">DEATHS {{report.deaths}}</div>
     </div>
     <div class="box"><strong>Paper doll...</strong>
       <div class="stat">Preferred Aura: {{info.preferred_aura}}</div>
@@ -58,7 +64,7 @@
   </div>
   <div class="column">
     <div class="box"><strong>Mobs killed...</strong>
-      <div v-for="count, mob in report.mobs_killed">{{count}} {{mob}}</div>
+      <div v-for="count, mob in mobs_killed">{{count}} {{mob}}</div>
     </div>
   </div>
 </div>

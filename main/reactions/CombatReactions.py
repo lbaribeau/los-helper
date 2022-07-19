@@ -183,7 +183,13 @@ class CombatReactions(object):
                 'phys_crit_rate': phys_crit_rate,
                 'average_spell_damage': average_spell_damage,
                 'spell_hit_rate': spell_hit_rate,
-                'spell_crit_rate': spell_crit_rate
+                'spell_crit_rate': spell_crit_rate,
+                'rest_time': self.character.REST_TIME,
+                'track_time': self.character.TRACK_TIME,
+                'combat_time': self.character.COMBAT_TIME,
+                'percent_track': self.character.percent_track,
+                'percent_rest': self.character.percent_rest,
+                'percent_combat': self.character.percent_combat
                 }
 
         return output
