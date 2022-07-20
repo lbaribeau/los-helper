@@ -347,8 +347,8 @@ class TrackGrindThread(GrindThread):
             Track("Militia Soldiers", self.MILITIA_SOLDIERS_PATH, 0, 14, 0),
             Track("Kobolds", self.KOBOLD_PATH, 0, 12, -1), #sentries are suuuper tough
             Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
-            Track("Fort", self.FORT_PATH, 0, 20, 0),
-            Track("North Bandits", self.NORTHERN_BANDITS_PATH, 0, 14, -1),
+            Track("Fort", self.FORT_PATH, 9, 20, 0),
+            Track("North Bandits", self.NORTHERN_BANDITS_PATH, 9, 14, -1),
             Track("Eastern Zombies", self.ZOMBIES, 7, 20, -1),
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,20,9),
             Track("Dwarven Field Workers", self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 0),

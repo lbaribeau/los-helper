@@ -1,11 +1,12 @@
 var app = new Vue({
   el: '#app',
   data:  {
-    mkl: {},
+    mkl: [],
     info: {},
     report: {},
     pollInterval: '',
-    status: ''
+    status: '',
+    darkMode: true
   },
   created() {
     this.fetchData();
@@ -32,6 +33,12 @@ var app = new Vue({
     }
   },
   computed: {
+    bodyClass: function() {
+      return {'dark_mode': this.darkMode}
+    },
+    sorted_mkl: function() {
+      return this.mkl.sort();
+    },
     experience: function() {
       return this.report.exp + parseInt(this.info.total_exp);
     },

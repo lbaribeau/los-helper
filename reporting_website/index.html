@@ -9,7 +9,8 @@
 </head>
 <body>
 <!-- partial:index.partial.html -->
-<div class="wrapper columns" id="app">
+<div class="app" id="app" :class="[bodyClass]">
+<div class="wrapper columns">
   <div class="column">
     <div class="box"><strong>{{info.name}} the {{info.race}} {{classname}}</strong>
       <div class="stat">Level {{info.level}}</div>
@@ -59,7 +60,7 @@
   </div>
   <div class="column">
     <div class="box"><strong>Mobs targetted...</strong>
-      <div v-for="mob in mkl">{{mob}}</div>
+      <div v-for="mob in sorted_mkl">{{mob}}</div>
     </div>
   </div>
   <div class="column">
@@ -69,8 +70,8 @@
   </div>
 </div>
 <!-- partial -->
-  <script src='https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/vue@2.7.4/dist/vue.js'></script>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js'></script><script  src="./script.js"></script>
-
+</div>
 </body>
 </html>

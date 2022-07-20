@@ -63,6 +63,7 @@ class Cartography(BotReactionWithFlag):
             # (Erhm - never say never, this triggers all the time)
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
+            self.command_handler.process('l')
             self.set_area_exit_as_unusable(regex)  # TODO: Seems a little harsh... 
             if self.character.TRYING_TO_MOVE:
                 magentaprint("Cartography: unsuccessful go (can't go that way): " + str(self.character.LAST_DIRECTION))
