@@ -270,7 +270,7 @@ class TrackGrindThread(GrindThread):
         self.SILKEN_ALLEY = ['areaid686', 'areaid706', 'areaid705', 'areaid698', 'areaid699', 'areaid700', 'areaid2']
         self.CORELLAN = ['areaid713', 'areaid2']
         self.JERREK_TAG = ['areaid977', 'areaid979', 'areaid2']
-        self.MANIC_ELDER = ['areaid1465', 'areaid1491', 'areaid2']
+        self.MANIC_ELDER = ['areaid1899', 'areaid1465', 'areaid1491', 'areaid2']
         self.VILADIN_CAL = ['areaid1498', 'areaid247', 'path', 'hut', 'areaid2']
         self.DALLA_DOUVAN = ['areaid2449', 'areaid2430', 'areaid2']
         self.ALDO_BROTAIN = ['areaid1254', 'areaid1226', 'areaid2']
@@ -300,6 +300,28 @@ class TrackGrindThread(GrindThread):
             self.__nextpath = self.starting_path
         else:
             self.__nextpath = random.randrange(0, len(self.tracks))
+
+    def create_zombies_path(self):
+        path = ['out', 'south', 'east','east','east','north', 'try_gate',
+        'east', 'east', 
+        #McDermotts farm
+        'northeast', 'northeast', 'north', 'north', 'north', 'gate', 'north', 'east', 'east', 'southeast', 'east', 'southeast', 'southeast', 'southeast', 'trail', 'woods', 'deeper',
+        'out', 'trail', 'field', 'path', 'northwest', 'northwest', 'west', 'northwest', 'west', 'west', 'south', 'gate', 'south', 'south', 'south', 'sw', 'sw',
+        #Malbon farm
+        'southeast', 'southeast', 'south', 'gate', 'stile', 'northwest', 'southeast', 'southwest', 'northeast', 'stile', 'south', 'south',
+        'north', 'north', 'gate', 'north', 'northwest', 'northwest',
+        'ne', 'ne', 'east', 'east', 'east',
+        #Calmor farmstop
+        #'southeast', 'south', 'southeast', 'southeast', 'gate', 'southwest', 'sty', 'yard',
+        'northeast', 'northeast',
+        #into zombie farm
+        'northeast', 'north', 'northeast', 'north', 'gate', 'compound', 'west', 'barn', 'out', 'northwest', 'run', 'out', 'northeast', 'east', 'south', 'south',
+        #out of zombie farm and into highmarket
+        'path', 'gate', 'south', 'southwest', 'south', 'southwest', 'east', 'east', 'gate',
+        #from highmarket back to chapel
+        'south', 'southeast', 'southeast', 'south', 'east', 'gate', 'south', 'south', 'southeast', 'southeast', 'south', 'south',
+        'south', 'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest', 'north', 'gate', 'east', 'north', 'north',
+        'north', 'west', 'north', 'chapel']
 
     def do_go_hooks(self, exit_str):
         # magentaprint(str(self.character.AREA_ID) + ", " + exit_str, False)
@@ -349,7 +371,7 @@ class TrackGrindThread(GrindThread):
             Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
             Track("Fort", self.FORT_PATH, 9, 20, 0),
             Track("North Bandits", self.NORTHERN_BANDITS_PATH, 9, 14, -1),
-            Track("Eastern Zombies", self.ZOMBIES, 7, 20, -1),
+            Track("Eastern Zombies", self.ZOMBIES, 8, 20, -1),
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,20,9),
             Track("Dwarven Field Workers", self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 0),
             Track("Mill Workers", self.MILL_WORKERS, 9, 20, 0),
@@ -372,7 +394,7 @@ class TrackGrindThread(GrindThread):
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
             Track("Jerrek and Tag", self.JERREK_TAG, 11, 20, -1),
             Track("Gnomes", self.GNOMES, 10, 12, 1),
-            Track("Manic and Elder", self.MANIC_ELDER, 13, 20, -1),
+            Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 20, -1),
             Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1),
             # Track("Plovers", self.PLOVERS, 12, 20, 1),
             Track("Floor Manager", self.FLOOR_MANAGER, 12, 20, -1),

@@ -276,19 +276,18 @@ class GrindThread(BotThread):
         # After vigging and resting a full mana pool, hp may still not be very high,
         # and in that case, keep resting since benefits should be active.
         # *requires strong enemy for black magic users
-
-        magentaprint("In chapel_heal_up.")
-
-        if self.stopping or self.character.HEALTH >= self.health_to_go:
-            return
-
-        self.do_heal_skills()
-
-        # if self.character.HEALTH >= self.health_to_go or not any(s.startswith(Spells.vigor) for s in self.character.spells):
-        if self.character.HEALTH >= self.health_to_go or Spells.vigor not in self.character.spells:
-            return
-
         if not self.is_character_class('Mon'):
+            magentaprint("In chapel_heal_up.")
+
+            if self.stopping or self.character.HEALTH >= self.health_to_go:
+                return
+
+            self.do_heal_skills()
+
+            # if self.character.HEALTH >= self.health_to_go or not any(s.startswith(Spells.vigor) for s in self.character.spells):
+            if self.character.HEALTH >= self.health_to_go or Spells.vigor not in self.character.spells:
+                return
+
             self.cast.wait_until_ready()
             vig = 2
             chapel = 2  # additional hp tick amount

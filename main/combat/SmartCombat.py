@@ -244,7 +244,7 @@ class SmartCombat(CombatObject):
                         if self.do_magic_attack():
                             continue
                 else:
-                    if self.cast.up() or self.cast.wait_time() <= self.kill.wait_time() or not self.casting:
+                    if (self.cast.up() or self.cast.wait_time() <= self.kill.wait_time() or not self.casting) and self.character.MANA > 2:
                         if self.do_magic_attack():
                             break
                     else:
@@ -293,8 +293,8 @@ class SmartCombat(CombatObject):
         return weak_mob
 
     def is_caster_class(self):
-        return self.character._class.id == 'Mag' or self.character._class.id == 'Alc' or \
-            self.character._class.id == 'Dru' or self.character._class.id == 'Cle'
+        return self.character.info.int > 12 #self.character._class.id == 'Mag' or self.character._class.id == 'Alc' or \
+            #self.character._class.id == 'Dru' or self.character._class.id == 'Cle'
         # or self.character._class == 'Cle'
 
     def get_favourite_combat_item(self):
