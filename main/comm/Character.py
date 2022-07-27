@@ -112,6 +112,8 @@ class Character(object):
         self.AREA_TITLE=""
         self.EXIT_LIST=[]
         self.MONSTER_LIST=[]
+        self.MONSTER_KILL_LIST = []
+        self.MONSTER_KILL_LIST_TEMP = []
 
         self.TRYING_TO_MOVE = False
         self.EXIT_REGEX="self.character.EXIT_REGEX"

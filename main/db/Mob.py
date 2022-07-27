@@ -71,9 +71,8 @@ class Mob(NamedModel):
             sql = """SELECT *
                      FROM MOB
                      Where 
-                        (level between {0} and {1} or (level <= {1} and difficulty_rating = 1))
-                        and  (aura between {2} and {3})
-                        and (difficulty_rating is null or difficulty_rating != 2)""".format(
+                        (level + coalesce(difficulty_rating, 0)) between {0} and {1}
+                        and  (aura between {2} and {3})""".format(
                             low_level, high_level, low_aura, high_aura)
             # print(sql)
 

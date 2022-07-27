@@ -217,9 +217,17 @@ class TrackGrindThread(GrindThread):
         'southeast', 'east', 'trail', 'up', 'north', 'east', 'fissure', 'cleft', 'west', 'down', 'west',  'west',
         #gnoll jailer + barracks
         'shaft', 'door 2', 'south', 'out', 'south', 'east', 'door', 'out', 'door 2', 'out', 'east', 'west', 'west', 'north', 'north', 'out',
-        #gnoll sub chiefs + Gnardu
-        'west', 'opening', 'southwest', 'southwest', 'bridge', 'north', 'passage', 'northeast', 'east',
-        'west', 'passage', 'southwest', 'bridge', 'south', 'northeast', 'opening', 'northeast',
+        #gnoll sub chiefs
+        'west', 'opening', 'southwest', 'southwest', 'bridge', 'north', 'passage', 'northeast']
+        
+        if self.character.level >= 15:
+            # Gnardu the Warlord, also gnoll warriors block this path
+            self.GNOLL_CAVE += [
+            'east', 'west' 
+            ]
+        
+        self.GNOLL_CAVE += [
+        'passage', 'southwest', 'bridge', 'south', 'northeast', 'opening', 'northeast',
         'northeast', 'east', 'east', 'south', 'up', 'up', 'out', 'north', 'west', 'southwest', 'down', 'down', 'west', 'northwest', 'north',
         'northwest', 'northeast', 'northeast', 'northeast', 'northeast', 'north', 'north', 'north', 'north', 'north', 'north',
         'north', 'north', 'north', 'north', 'north', 'north', 'northwest', 'northwest', 'northwest', 'west', 'west', 'west',
@@ -383,7 +391,7 @@ class TrackGrindThread(GrindThread):
             Track("Orcs", self.ORCS, 11, 20, -1),
             Track("Artificers", self.ARTIFICERS, 11, 20, -1),
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
-            Track("Rancher Sentries", self.RANCHER_SENTRY, 10, 20, 1),
+            Track("Rancher Sentries", self.RANCHER_SENTRY, 12, 20, 1),
             Track("Knights", self.KNIGHTS, 10, 20, 1),
             # Track("Cathedral", self.CATHEDRAL, 10, 16, 1), # lay priest damage rolls too high
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 20, -1),

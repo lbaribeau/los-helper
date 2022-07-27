@@ -113,8 +113,15 @@ class GrindThread(BotThread):
             self.heal_up()
 
     def do_regular_actions(self):
+        if self.character.mobs.chase == "" and self.character.MONSTER_KILL_LIST_TEMP != []:
+            self.character.MONSTER_KILL_LIST_TEMP = []
+            self.character.MONSTER_KILL_LIST = self.character.MONSTER_KILL_LIST
+
         if self.character.mobs.chase != '':
-            new_target = self.character.mobs.chase
+            self.character.MONSTER_KILL_LIST_TEMP = self.character.MONSTER_KILL_LIST
+            self.character.MONSTER_KILL_LIST = []
+            # new_target = self.character.mobs.chase
+            new_target = ""
             self.character.mobs.chase = ''  # It should be a chase list
             self.character.mobs.chase_exit = ''
         elif self.ready_for_combat():

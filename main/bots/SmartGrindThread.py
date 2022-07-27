@@ -43,6 +43,8 @@ class SmartGrindThread(TrackGrindThread):
             self.KOBOLD_PATH = [
                 'areaid1679','areaid2'
                 ]
+        if self.is_character_class('Mon'):
+            self.command_handler.process('rem mast')
 
     def init_level_modifiers(self):
         low_level_modifier = 0
@@ -112,7 +114,8 @@ class SmartGrindThread(TrackGrindThread):
             self.character.is_sleepy = True
 
     def do_go_hooks(self, exit_str):
-        if self.go_rest_if_not_ready() and not self.on_heal_path:
+        if self.go_rest_if_not_ready() and self.character.mobs.chase != "" and not self.on_heal_path:
+        # if self.go_rest_if_not_ready() and not self.on_heal_path:
             magentaprint("going to rest and not on heal path", False)
             magentaprint(self.direction_list, False)
             return True
