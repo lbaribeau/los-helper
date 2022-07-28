@@ -293,8 +293,8 @@ class SmartCombat(CombatObject):
         return weak_mob
 
     def is_caster_class(self):
-        return self.character.info.int > 12 #self.character._class.id == 'Mag' or self.character._class.id == 'Alc' or \
-            #self.character._class.id == 'Dru' or self.character._class.id == 'Cle'
+        return self.character._class.id == 'Mag' or self.character._class.id == 'Alc' # or \
+            # self.character._class.id == 'Dru' or self.character._class.id == 'Cle'
         # or self.character._class == 'Cle'
 
     def get_favourite_combat_item(self):
