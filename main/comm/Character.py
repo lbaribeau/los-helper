@@ -202,25 +202,36 @@ class Character(object):
 
     def write_info_feed(self):
         feed = {
-        'name': self.info.name,
-        'class': self._class.id,
-        'race': self.info.race,
-        'title': self.info.title,
-        'level': self.info.level,
-        'preferred_aura': self.info.preferred_alignment,
-        'exp_to_level': self.info.exp_to_level,
-        'total_exp': self.info.exp,
-        'start_time': self.START_TIME,
-        'hp': self.info.maxHP,
-        'mp': self.info.maxMP,
-        'stats': [
-            {'name': 'Strength', 'value': self.info.str},
-            {'name': 'Dexterity', 'value': self.info.dex},
-            {'name': 'Constitution', 'value': self.info.con},
-            {'name': 'Intelligence', 'value': self.info.int},
-            {'name': 'Piety', 'value': self.info.pty},
-            {'name': 'Armor Class', 'value': self.info.AC},
-        ]}
+            'name': self.info.name,
+            'class': self._class.id,
+            'race': self.info.race,
+            'title': self.info.title,
+            'level': self.info.level,
+            'preferred_aura': self.info.preferred_alignment,
+            'exp_to_level': self.info.exp_to_level,
+            'total_exp': self.info.exp,
+            'start_time': self.START_TIME,
+            'hp': self.info.maxHP,
+            'mp': self.info.maxMP,
+            'stats': [
+                {'name': 'Strength', 'value': self.info.str},
+                {'name': 'Dexterity', 'value': self.info.dex},
+                {'name': 'Constitution', 'value': self.info.con},
+                {'name': 'Intelligence', 'value': self.info.int},
+                {'name': 'Piety', 'value': self.info.pty},
+                {'name': 'Armor Class', 'value': self.info.AC},
+                {'name': 'Sharp', 'value': self.info.sharp},
+                {'name': 'Thrust', 'value': self.info.thrust},
+                {'name': 'Blunt', 'value': self.info.blunt},
+                {'name': 'Pole', 'value': self.info.pole},
+                {'name': 'Missile', 'value': self.info.missile},
+                {'name': 'Earth', 'value': self.info.earth},
+                {'name': 'Wind', 'value': self.info.wind},
+                {'name': 'Fire', 'value': self.info.fire},
+                {'name': 'Water', 'value': self.info.water},
+                {'name': 'Astral', 'value': self.info.astral}
+            ]
+        }
 
         output_api_feed('info', feed)
 
@@ -552,6 +563,7 @@ class Character(object):
         if track.name not in self.tracks.keys():
             self.tracks[track.name] = track
 
+        self.tracks[track.name].start()
         self.current_track = track.name
         self.add_to_track_param("runs", 1)
 

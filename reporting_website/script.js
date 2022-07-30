@@ -57,6 +57,19 @@ var app = new Vue({
     bodyClass: function() {
       return {'dark_mode': this.darkMode}
     },
+    sorted_tracks: function() {
+      function compare(a,b) {
+        if (a.last_run < b.last_run) {
+          return 1;
+        } else if (a.last_run > b.last_run) {
+          return -1;
+        } else {
+          return 0;
+        }
+      }
+
+      return this.track_report.sort(compare);
+    },
     sorted_mkl: function() {
       return this.mkl.sort();
     },

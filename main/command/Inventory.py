@@ -59,6 +59,8 @@ def parse_item_names(inventory_string):
     for item in inv_list:
         if item.endswith(" gold coin") or item.endswith(" gold coins"):
             continue
+        if item.endswith(" silver coin") or item.endswith(" silver coins"):
+            continue
         if item.endswith(" platinum coins"):
             continue
 
@@ -105,7 +107,7 @@ def parse_item_list_dict(inventory_string):
 
     for item in inv_list:
         number_found = False
-        gold_coin_match = re.match("(\d+) gold coins?", item)
+        gold_coin_match = re.match("(\d+) (?:gold|silver) coins?", item)
         if gold_coin_match:
             # add_to_dict(return_dict, 'gold coin', int(gold_coin_match.group(1)))
             continue
@@ -514,8 +516,12 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 
         items = parse_item_list(item_string)  # This is overloaded for "hammer" and "a hammer"
         for i in items:
-            # magentaprint("Inventory adding %s" % str(i))
-            super().add(i)  # Turn it into a MudItem?
+            # magentaprint("[" + i.name + "] #" + str(len(i.name)), False)
+            if len(i.name) < 30:
+            #     magentaprint("Trying to add a really long item added - maybe we shouldn't do that?? " + i.name, False)
+            # else:
+                # magentaprint("Inventory adding %s" % str(i))
+                super().add(i)  # Turn it into a MudItem?
 
     def add_broken(self, item_string):
         items = parse_item_list(item_string)

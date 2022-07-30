@@ -72,7 +72,7 @@
             <th title="Kills">K</th>
             <th title="Duration in minutes">D</th>
           </tr>
-          <tr v-for="track in track_report">
+          <tr v-for="track in this.sorted_tracks">
             <td v-if="track.name == report.track">*</td>
             <td v-else></td>
             <td>{{track.name}}</td>

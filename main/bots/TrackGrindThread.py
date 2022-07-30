@@ -494,6 +494,7 @@ class Track():
     def __init__(self, name, track, min_level, max_level, track_aura):
         self.name = name
         self.track = track
+        self.last_run = 0
         self.min_level = min_level
         self.max_level = max_level
         self.track_aura = track_aura
@@ -504,9 +505,13 @@ class Track():
         self.exp = 0
         self.duration = 0
     
+    def start(self):
+        self.last_run = int(round(get_timeint().timestamp()))
+
     def toJson(self):
         return {
             "name": self.name,
+            "last_run": self.last_run,
             "min_level": self.min_level,
             "max_level": self.max_level,
             "track_aura": self.track_aura,
