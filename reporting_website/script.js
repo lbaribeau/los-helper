@@ -4,6 +4,7 @@ var app = new Vue({
     mkl: [],
     info: {},
     report: {},
+    track_report: [],
     pollInterval: '',
     status: '',
     darkMode: true
@@ -30,6 +31,26 @@ var app = new Vue({
       .then((response) => {
         this.report = response.data;
       });
+      axios.get('api/track_report.json?t=' + new Date().getTime())
+      .then((response) => {
+        this.track_report = response.data;
+      });
+    },
+    processExpm: function(track) {
+      var duration = 1
+      var exp = 0
+      if (track.duration && track.duration !== 0) {
+        duration = parseFloat(track.duration)/60
+      }
+      else {
+        return 0
+      }
+
+      if (track.exp && track.exp != 0) {
+        exp = track.exp
+      }
+
+      return Math.floor(exp / duration);
     }
   },
   computed: {

@@ -634,3 +634,5 @@ doesnt_fit = [__item + r" doesn't fit you\."]
 no_gold = [r"You don't have enough gold\."]
 # get_ring =  [r"(?s)You get .+? an? .+? ring((,.+?\.)|(\.))"]  # problem here.
 get_ring =  [r"(?s)You get " + __items + r"?an? [a-z]+ ring(([a-zA-Z0-1-',\s]+\.)|(\.))"]
+
+you_rest = [r"You lean back to take some rest\."]

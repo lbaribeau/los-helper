@@ -4,6 +4,7 @@ var app = new Vue({
     mkl: {},
     info: {},
     report: {},
+    track_report: [],
     pollInterval: null,
     status: ''
   },
@@ -25,6 +26,10 @@ var app = new Vue({
         this.info = response.data;
       });
       axios.get('/report?t=' + new Date().getTime())
+      .then((response) => {
+        this.report = response.data;
+      });
+      axios.get('/track_report?t=' + new Date().getTime())
       .then((response) => {
         this.report = response.data;
       });

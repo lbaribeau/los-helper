@@ -58,14 +58,53 @@
       <div class="stat">Can See: {{report.can_see}}</div>
     </div>
   </div>
-  <div class="column">
-    <div class="box"><strong>Mobs targetted...</strong>
-      <div v-for="mob in sorted_mkl">{{mob}}</div>
+  <div class="column is-half">
+    <div class="box"><strong>Tracks run...</strong>
+        <table class="table is-fullwidth">
+          <tr>
+            <th title="Active Track"></th>
+            <th>Name</th>
+            <th title="Runs">R</th>
+            <th title="Abandons">A</th>
+            <th title="Completes">C</th>
+            <th>Exp</th>
+            <th title="Exp per minute">Expm</th>
+            <th title="Kills">K</th>
+            <th title="Duration in minutes">D</th>
+          </tr>
+          <tr v-for="track in track_report">
+            <td v-if="track.name == report.track">*</td>
+            <td v-else></td>
+            <td>{{track.name}}</td>
+            <td>{{track.runs}}</td>
+            <td>{{track.abandons}}</td>
+            <td>{{track.completes}}</td>
+            <td>{{track.exp}}</td>
+            <td>{{ processExpm(track) }}/min</td>
+            <td>{{track.kills}}</td>
+            <td>{{ Math.floor(track.duration/60*100)/100 }}</td>
+          </tr>
+        </table>
+    </div>
+    <div class="box"><strong>Inventory...</strong>
+        <table class="table is-fullwidth">
+          <tr>
+            <th>Name</th>
+            <th>Quantity</th>
+          </tr>
+          <tr v-for="item,quantity in report.inventory">
+            <td>{{item}}</td>
+            <td>{{quantity}}</td>
+          </tr>
+        </table>
     </div>
   </div>
   <div class="column">
     <div class="box"><strong>Mobs killed...</strong>
       <div v-for="count, mob in mobs_killed">{{count}} {{mob}}</div>
+    </div>
+    <div class="box"><strong>Mobs targetted...</strong>
+      <div v-for="mob in sorted_mkl">{{mob}}</div>
     </div>
   </div>
 </div>

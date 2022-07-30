@@ -14,6 +14,9 @@ class Character(object):
         self.sleepy = False
         self.sleeping = False
 
+        self.current_track = None
+        self.tracks = {}
+
         # This is a class that holds a bunch of data,
         # mostly obtained by the MUD read thread.
         self.race = None
@@ -544,3 +547,26 @@ class Character(object):
     @property
     def MANA(self):
         return self.mp
+    
+    def start_track(self, track):
+        if track.name not in self.tracks.keys():
+            self.tracks[track.name] = track
+
+        self.current_track = track.name
+        self.add_to_track_param("runs", 1)
+
+    def end_track(self):
+        self.current_track = None
+
+    def add_to_track_param(self, param, value, output=True):
+        if self.tracks is not None and self.current_track is not None:
+            current_track = self.tracks[self.current_track]
+            if current_track is not None:
+                temp_value = getattr(current_track, param)
+                setattr(current_track, param, temp_value + value)
+            
+            if self.is_headless and output:
+                track_report = []
+                for track in self.tracks.values():
+                    track_report.append(track.toJson())
+                output_api_feed('track_report', track_report)

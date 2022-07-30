@@ -19,6 +19,7 @@ class TrackGrindThread(GrindThread):
 
         self.track_abandons = 0
         self.abandoned_last_track = False
+        self.on_track = False
         self.last_track = None
         self.starting_path = starting_path
             # len(self.tracks) = 24
@@ -284,6 +285,11 @@ class TrackGrindThread(GrindThread):
         self.ALDO_BROTAIN = ['areaid1254', 'areaid1226', 'areaid2']
         self.PLOVERS = ['areaid1564', 'areaid1600', 'areaid2']
         self.FLOOR_MANAGER = ['areaid1147', 'areaid2']
+        self.TARDAN = ['areaid1378', 'areaid2']
+        self.RIMARK = ['areaid1231', 'areaid2']
+        self.HORBUK = ['areaid1265', 'areaid2']
+        self.DOJO = ['areaid917', 'areaid2']
+        self.DINI = ['areaid629', 'areaid2']
         # self.WHITEBLADE_LYRON = ['areaid2110', 'areaid2097']
         # self.LYRON = ['areaid2097', ] -- too much dmg
 
@@ -396,7 +402,11 @@ class TrackGrindThread(GrindThread):
             # Track("Cathedral", self.CATHEDRAL, 10, 16, 1), # lay priest damage rolls too high
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 20, -1),
             Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1),
-            Track("Tardan", self.EGAN_TRENT, 15, 20, 1),
+            Track("Tardan", self.TARDAN, 15, 20, 0),
+            Track("Rimark", self.RIMARK, 15, 20, 1),
+            Track("Dojo", self.DOJO, 15, 20, 1),
+            Track("Dini", self.DINI, 15, 20, 0),
+            Track("Horbuk", self.HORBUK, 15, 20, 1),
             Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,0,20,9),
             Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0),
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
@@ -434,12 +444,15 @@ class TrackGrindThread(GrindThread):
         # else:
         #     magentaprint("Character doesn't need to sell", False)
 
+        nextpath = None
         if self.last_track is not None and self.abandoned_last_track:
-            self.abandoned_last_track = False
-            return self.evaluate_track(self.last_track)
-
-        self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
-        nextpath = self.evaluate_track(self.tracks[self.__nextpath])
+            magentaprint("abandoned last track so we're re-running it", False)
+            nextpath = self.evaluate_track(self.last_track)
+        else:
+            self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
+            nextpath = self.evaluate_track(self.tracks[self.__nextpath])
+    
+        self.abandoned_last_track = False
 
         return nextpath
 
@@ -462,7 +475,12 @@ class TrackGrindThread(GrindThread):
 
         if self.character.level in level_range:
             magentaprint("{0} is our chosen track".format(track.name), False)
-            self.last_track = track
+            if self.character.current_track is None:
+                self.track_start_time = get_timeint()
+                self.character.start_track(track)
+                self.last_track = track
+                self.on_track = True
+            
             return track.track[:]
         else:
             magentaprint("{0} isn't acceptable to us due to level".format(track.name), False)
@@ -479,9 +497,26 @@ class Track():
         self.min_level = min_level
         self.max_level = max_level
         self.track_aura = track_aura
-        self.kills = 0
-        self.steps = 0
+        self.runs = 0
+        self.abandons = 0
         self.completes = 0
+        self.kills = 0
+        self.exp = 0
+        self.duration = 0
+    
+    def toJson(self):
+        return {
+            "name": self.name,
+            "min_level": self.min_level,
+            "max_level": self.max_level,
+            "track_aura": self.track_aura,
+            "runs": self.runs,
+            "abandons": self.abandons,
+            "completes": self.completes,
+            "kills": self.kills,
+            "exp": self.exp,
+            "duration": self.duration
+        }
 
 # Just thinking about changing top level...
 

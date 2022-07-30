@@ -267,7 +267,8 @@ class SmartCombat(CombatObject):
         if (not self.is_caster_class()) and \
             self.character.level > 10 and self.mob_target is not None:
             if self.mob_target.level is not None:
-                if self.mob_target.level <= ((self.character.level / 2) - 2) or self.character.level <= 2:
+                if (self.mob_target.level < (self.character.level - 4) or self.character.level <= 2) and \
+                    self.mob_target.difficulty_rating is None:
                     return False
         return True
 

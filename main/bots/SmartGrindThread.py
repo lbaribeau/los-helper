@@ -66,17 +66,26 @@ class SmartGrindThread(TrackGrindThread):
             self.update_aura()
         
         # super().do_pre_go_actions()
-        if self.track_start_time != 0:
-            self.track_end_time = get_timeint()
-            self.character.TRACK_TIME += (self.track_end_time - self.track_start_time).total_seconds()
-
-        rest_start = get_timeint()
         
-        if self.in_chapel() and not self.ready_for_combat(): #in healing area
-            self.rest_and_check_aura()
-        rest_end = get_timeint()
-        self.character.REST_TIME += (rest_end - rest_start).total_seconds()
-        self.track_start_time = get_timeint()
+        if self.in_chapel():
+            if self.character.current_track is not None and self.on_track:
+                self.track_end_time = get_timeint()
+                track_time = (self.track_end_time - self.track_start_time).total_seconds()
+                self.character.TRACK_TIME += track_time
+                self.character.add_to_track_param('completes', 1)
+                self.character.add_to_track_param('duration', track_time)
+                self.character.end_track()
+                self.on_track = False
+                magentaprint("ending track", False)
+            
+            if not self.ready_for_combat(): #in healing area
+                rest_start = get_timeint()
+                self.rest_and_check_aura()
+                rest_end = get_timeint()
+                self.character.REST_TIME += (rest_end - rest_start).total_seconds()
+        else:
+            self.on_track = True
+
 
         self.check_weapons()
         self.check_armour()
@@ -95,6 +104,14 @@ class SmartGrindThread(TrackGrindThread):
 
         if len(self.character.MONSTER_KILL_LIST) == 0:
             self.get_targets()
+
+    def do_post_go_actions(self):
+        super().do_post_go_actions()
+
+        # if self.in_chapel():
+        #     magentaprint("track end " + str(self.on_track), False)
+
+            
 
     def check_weapons(self):
         magentaprint('check_weapons()')
@@ -388,8 +405,9 @@ class SmartGrindThread(TrackGrindThread):
 
     def go_rest_if_not_ready(self):
         if not self.ready_for_combat():
-            self.abandoned_last_track = True
-            self.track_abandons += 1
+            if not self.abandoned_last_track:
+                self.abandoned_last_track = True
+                self.character.add_to_track_param("abandons", 1)
             self.direction_list = self.get_heal_path()
             self.on_heal_path = True
 

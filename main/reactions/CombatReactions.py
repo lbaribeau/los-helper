@@ -56,7 +56,8 @@ class CombatReactions(object):
         self.damage_taken = 0
         self.in_combat = False
 
-        self.regex_cart = [RegexStore.attack_hit, RegexStore.attack_miss, RegexStore.mob_attacked, RegexStore.cast_failure, RegexStore.mob_defeated, RegexStore.spell_damage, RegexStore.loot_dropped]
+        self.regex_cart = [RegexStore.attack_hit, RegexStore.attack_miss, RegexStore.mob_attacked, RegexStore.cast_failure, RegexStore.mob_defeated,
+        RegexStore.spell_damage, RegexStore.loot_dropped]
 
     def notify(self, regex, M_obj):
         combat_state = self.in_combat
@@ -94,6 +95,7 @@ class CombatReactions(object):
                 del self.mobs_killed[mob]
 
             self.mobs_killed[mob] = count
+            
             # self.character.area_id, monster - map both into a MobLocation
             # add a rank to the MobLocation
             self.in_combat = False
@@ -121,6 +123,7 @@ class CombatReactions(object):
             self.spells_failed += 1
 
         if self.character.is_headless and combat_state != self.in_combat:
+            magentaprint("Reporting", False)
             output_api_feed('report', self.report())
 
     def report(self, no_print=True):
@@ -175,6 +178,7 @@ class CombatReactions(object):
                 'deaths': self.character.DEATHS,
                 'area': str(self.character.MUD_AREA),
                 'mobs': str(self.character.mobs.attacking),
+                'track': str(self.character.current_track),
                 'last_direction': self.character.LAST_DIRECTION,
                 'successful_go': self.character.SUCCESSFUL_GO,
                 'blocking_mob': self.character.GO_BLOCKING_MOB,
@@ -188,6 +192,7 @@ class CombatReactions(object):
                 'expm': expm,
                 'kills': kills,
                 'kpm': kpm,
+                'inventory': self.character.inventory.to_dict(),
                 'mobs_killed': self.mobs_killed,
                 'timestamp': get_timestamp(),
                 'runtime': str(runtime),

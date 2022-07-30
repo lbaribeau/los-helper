@@ -335,6 +335,8 @@ class MudReaderThread(threading.Thread):
             M_obj = re.search("You gain (.+?) experience\.", text_buffer)       
             if(M_obj):
                 self.character.EXPERIENCE = self.character.EXPERIENCE + int(M_obj.group(1))
+                self.character.add_to_track_param("kills", 1, False)
+                self.character.add_to_track_param("exp", int(M_obj.group(1)))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             # Monster flees.
             #TODO chasing function.

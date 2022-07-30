@@ -17,5 +17,9 @@ def info():
 def report():
     return app.send_static_file('reports/report.json')
 
+@app.route('/track_report')
+def track_report():
+    return app.send_static_file('reports/track_report.json')
+
 if __name__ == '__main__':
   app.run(debug=True)
