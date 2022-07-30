@@ -92,7 +92,7 @@
             <th>Name</th>
             <th>Quantity</th>
           </tr>
-          <tr v-for="item,quantity in report.inventory">
+          <tr v-for="quantity,item in report.inventory">
             <td>{{item}}</td>
             <td>{{quantity}}</td>
           </tr>
