@@ -240,10 +240,13 @@ class SmartGrindThread(TrackGrindThread):
         #     return []
         # else:
         try:
-            if from_path == -1:
-                paths = self.mud_map.get_paths_to_nearest_restorative_area(self.character.AREA_ID)
+            if self.has_ideal_health():
+                if from_path == -1:
+                    paths = self.mud_map.get_paths_to_nearest_restorative_area(self.character.AREA_ID)
+                else:
+                    paths = self.mud_map.get_paths_to_nearest_restorative_area(from_path)
             else:
-                paths = self.mud_map.get_paths_to_nearest_restorative_area(from_path)
+                return ["areaid2"]
         except Exception as e:
             #not a good situation - we can't find a way to the chapel from wherever we are
             #therefore we should just sit and wait here until we can go on the warpath again

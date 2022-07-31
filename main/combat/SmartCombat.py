@@ -216,8 +216,13 @@ class SmartCombat(CombatObject):
             self.mob_target = Mob.get_mob_by_name(self.target_fullref)
             use_combat_ability = self.should_use_combat_ability()
             if self.should_use_spells():
+                magentaprint("Mob is ripe for me to use bm on", False)
+                spell_percent = max(self.character.spell_proficiencies.values())
+                self.black_magic = self.character.info.pty < 7 or spell_percent >= 5 or self.character.PREFER_BM
                 self.spell = self.determine_favorite_spell_for_target()
             else:
+                magentaprint("Mob is too weak for me to cast spells on so I'ma heal", False)
+                self.black_magic = False
                 self.spell = None
 
         self.kill.wait_until_ready()

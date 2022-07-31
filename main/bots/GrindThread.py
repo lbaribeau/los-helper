@@ -237,7 +237,7 @@ class GrindThread(BotThread):
             # magentaprint("Resting for health", False)
             # Probably not the greatest logic but low level characters will need
             # to gain health other than healing up.
-        if not self.character.BLACK_MAGIC:
+        if not self.character.BLACK_MAGIC or self.character.MANA >= mana_to_wait:
             self.heal_up()
         self.rest_for_health()
 
@@ -284,13 +284,14 @@ class GrindThread(BotThread):
         # After vigging and resting a full mana pool, hp may still not be very high,
         # and in that case, keep resting since benefits should be active.
         # *requires strong enemy for black magic users
-        if not self.is_character_class('Mon'):
+        if not self.character.info.pty < 10:
             magentaprint("In chapel_heal_up.")
 
             if self.stopping or self.character.HEALTH >= self.health_to_go:
                 return
-
-            self.do_heal_skills()
+            
+            if not self.is_character_class('Mon'):
+                self.do_heal_skills()
 
             # if self.character.HEALTH >= self.health_to_go or not any(s.startswith(Spells.vigor) for s in self.character.spells):
             if self.character.HEALTH >= self.health_to_go or Spells.vigor not in self.character.spells:
@@ -313,9 +314,10 @@ class GrindThread(BotThread):
                     # Laurier does math!  (Mathing out whether we should vig or in the chapel)
                 magentaprint("Health ticks needed: " + str(round(self.health_ticks_needed(), 1)) + ", Mana ticks needed: " + str(round(self.mana_ticks_needed(), 1)))
 
-                if self.do_heal_skills():
-                    continue
-                # elif self.inventory.count_small_restoratives() > 7:
+                if not self.is_character_class('Mon'):
+                    if self.do_heal_skills():
+                        continue
+                    # elif self.inventory.count_small_restoratives() > 7:
                 #     self.command_handler.use.wait_until_ready()
                 #     self.command_handler.use.small_healing_potion()
                 #     self.command_handler.use.wait_for_flag()
