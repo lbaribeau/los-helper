@@ -16,6 +16,10 @@ class Arm(CommandThatRemovesFromInventory):
         if r in R.weapon_broken:
             # self.character.inventory  # unset usable perhaps
             self.broken_error = True
+            item = self.character.inventory.get(self._sent_target)
+            if item:
+                # item.set_unusable()
+                item.usable = False
         elif r in R.already_wielding + R.already_seconding:
             self.already_wielding_error = True
         super().notify(r, m)
@@ -32,7 +36,7 @@ class Wield(Arm):
     ]
     failure_regexes = [
         R.weapon_broken, 
-        R.cannot_second, 
+        # R.cannot_second, 
         R.not_skilled
     ]
     error_regexes = [

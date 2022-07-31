@@ -7,16 +7,18 @@ from combat.Kill import Kill
 from reactions.BotReactions import BotReactionWithFlag
 from comm import RegexStore
 from misc_functions import magentaprint
+from command.Command import Command
 
 # class Ability(ThreadingMixin2):
 #     def __init__(self):
 #         super().__init__()
 #         self.end_thread_regexes = self.success_regexes + self.error_regexes
 
-class Ability(ThreadingMixin2):
+class Ability(ThreadingMixin2, Command):
     def __init__(self, telnetHandler):   
         self.end_thread_regexes = self.success_regexes + self.error_regexes
-        super().__init__(telnetHandler)
+        Command.__init__(self, telnetHandler)
+        ThreadingMixin2.__init__(self)
         # ThreadingMixin2.__init__(self, telnetHandler)
         # super().__init__(telnetHandler)
 

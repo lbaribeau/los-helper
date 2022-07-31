@@ -75,7 +75,7 @@ class BotThread(threading.Thread):
             self.direction_list = self.decide_where_to_go()
             magentaprint('decide_where_to_go returned ' + str(self.direction_list))
 
-            while len(self.direction_list)!=0 and not self.stopping:
+            while self.direction_list and not self.stopping:
                 magentaprint("BotThread has direciton list")
                 self.do_regular_actions()
                 if self.go(self.direction_list[0]):
@@ -95,6 +95,8 @@ class BotThread(threading.Thread):
                         self.no_exit_count += 1
                         self.do_on_go_no_exit()
                         continue
+                    else:
+                        pass
                 # It's a loop, so we only need a hook on one side of it (no need for beginning + end hooks)
                 #do_post_go_actions() # This doesn't seem necessary
 
@@ -134,7 +136,7 @@ class BotThread(threading.Thread):
             # self.command_handler.go.wait_for_flag()
             # return self.command_handler.go.result is 'success'
             return self.command_handler.go.success
-            return self.check_for_successful_go()
+            # return self.check_for_successful_go()
             # if re.match("(.*?door)", exit_str):
             #     self.command_handler.process("open " + exit_str)
             # return self.go.persistent_execute(exit_str)

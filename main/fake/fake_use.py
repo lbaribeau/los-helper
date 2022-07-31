@@ -8,18 +8,18 @@ class FakeUse(FakeCommand):
         self.char = character
         self.inv = character.inv
         self.pots = [
-            "small restorative", "large restorative", "chicken soup", "scarlet potion", "small flask",
-            "white potion", "steel bottle", "silver chalice", "milky potion"
+            'small restorative', 'large restorative', 'chicken soup', 'scarlet potion', 'small flask',
+            'white potion', 'steel bottle', 'silver chalice', 'milky potion'
         ]
-        self.large_pots = ["large restorative", "scarlet potion"]
+        self.large_pots = ['large restorative', 'scarlet potion', 'philtre of health']
 
     def do(self, target):
         i = self.inv.index(target)
-        magentaprint("FakeUse.do i " + str(i))
+        magentaprint("FakeUse.do got index from inventory:".format(i))
         
         if i is None:
             self.socket_output.append("Use what?\n\r")
-        elif self.inv.l[i].to_string() not in self.pots:
+        elif self.inv.l[i].to_string() not in self.pots + self.large_pots:
             self.socket_output.append("How does one use that?\n\r")
         else:
             if self.inv.l[i].to_string() in self.large_pots:

@@ -9,28 +9,34 @@ __item            = r"(?P<item>[A-Za-z0-9\-'\s]+)"
 __items           = r"(?P<items>[A-Za-z0-9\-'\s,]+)"
 __player          = r"(?P<player>[A-Za-z]+)"
 you_have          = [r"You have: " + __items + r"\."]
-wont_buy          = [r'The shopkeep says, "I won\'t buy that rubbish from you\."']
+wont_buy          = [r'The shopkeep says, "I won\'t buy that rubbish from you\."'] # Could get the prompt with the regex, so ^ might not match
 wont_buy2         = [r"The shopkeep won't buy that from you\."]
 sold              = [r"The shopkeep gives you (\d+) gold for " + __item + r'\.']
 you_drop          = [r"You drop " + __items + r"\."]
 disintegrates     = [r"(?:A|Some) " + __item + r" disintegrates\."]
 gold_from_tip     = [r"You have (\d+) gold\."]
-not_a_pawn_shop   = [r"This is not a pawn shoppe\."]
-you_now_have      = [r"You now have (\d+) gold pieces\."]
-not_empty         = [r"It isn't empty!"]
+not_a_pawn_shop   = [r"^This is not a pawn shoppe\."]
+you_now_have      = [r"^You now have (\d+) gold pieces\."]
+not_empty         = [r"^It isn't empty!"]
 you_wear          = [r"You wear " + __items + r"\."]
-nothing_to_wear   = [r"You have nothing you can wear\."]
+nothing_to_wear   = [r"^You have nothing you can wear\."]
 # you_get         = [r"(?s)[^ ]You get (.+?)\.(?:\nYou now have (.+?) gold pieces\.)?"]
 # you_get         = [r"[^ ]You get " + __items + r"\."]  # We don't want this to miss because getting can happen in combat - maybe it shouldn't
-you_get           = [r"You get " + __items + r"\."]  # still TODO: deal with false positive on "You get the vague..." ... hard to deal with in regex
+you_get           = [r"^(You weren't able to carry everything\.\n\r)?You get " + __items + r"\."]  
+# False positives on "You get the vague..." ... hard to deal with in regex
+# (\n and \r didn't match at the beginning, but ^ rules out "You get" in descriptions.)
+# "... more than is assuring. You get the distinct feeling (newline) that the rangers are not winning...""
+# Ok, to test go timouts, go to this bog troll area, and delete the ^ in you_get, and spam that area and all the areas 
+# around it 30+ times
+# We could miss a "You get" this way
+# Eh now we don't match if you don't get everything because of the ^... so we put that in as an optional group, since we need the ^
 you_remove        = [r"You removed? " + __items + r"\."]
-nothing_to_remove = [r"You aren't wearing anything that can be removed\."]
+nothing_to_remove = [r"^You aren't wearing anything that can be removed\."]
 # you_wield       = [r"You wield (.+?)( in your off hand)?\."]
-you_give          = [r"You give " + __items + r" to " + __player + r"\."]
-bought            = [r"Bought\."]
-you_put_in_bag    = [r"You put " + __items + r" in(:?to)? " + __item + r"\."]
+you_give          = [r"^You give " + __items + r" to " + __player + r"\."]
+you_put_in_bag    = [r"^You put " + __items + r" in(:?to)? " + __item + r"\."]
 gave_you          = [__player + r" gave " + __items + r" to you\."]
-you_hold          = [r"You hold " + __items + r"\."]
+you_hold          = [r"^You hold " + __items + r"\."]
 # weapon_breaks   = [r"Your (.+?) breaks and you have to remove it\."]
 # weapon_shatters = [r"Your (.+?) shatters\."]
 armour_breaks     = [r"Your " + __item + r" fell apart\."]
@@ -564,11 +570,14 @@ cant_use = [
     r"How does one use that\?",
     r"You can only use a potion on yourself\."
 ]
+you_drink=[r"You drink the philtre of health's broth\."]
+cant_do=[r"You can't do that\."]
+# eat
 
 you_wield         = [r"You wield (an?|some) (?P<weapon>[A-Za-z ']+)\."]  # Gets a positive of the off-hand message
 off_hand          = [r"You wield (an?|some) (?P<weapon>[A-Za-z ']+) in your off hand\."]
 weapon_broken     = [r"You can't\. Its broken\."]  # grammatical error
-not_weapon        = ["You can't wield that\."]
+not_weapon        = [r"You can't wield that\."]
 dont_have         = [r"You don't have that\."]
 weapon_break      = [r"Your (?P<weapon>[A-Za-z' ]+?) breaks and you have to remove it\."]
 weapon_shatters   = [r"Your (?P<weapon>[A-Za-z' ]+?) shatters\."]
@@ -582,7 +591,8 @@ already_seconding = [r"You already have something in your off hand\."]
 not_skilled       = [r'You are not yet skilled enough to use this!']
 not_ranger        = [r'The skill is currently beyond you\.']
 
-bought       = [r"Bought\."]
+bought       = [r"^Bought\."]
+# bought       = [r"Bought\."]
 buy_what     = [r"Buy what\?"]
 not_a_shop   = [r"This is not a shoppe\."]
 not_for_sale = [r"That item is not for sale\."]  # TODO: this is made up and needs to be checked
@@ -597,7 +607,7 @@ repair = [r"The smithy hands (?:an?|some) (?P<weapon>[A-Za-z' ]+?) back to you, 
 darnitall = [r'"Darnitall!" shouts the smithy, "I broke another\. Sorry la(d|ss)\.']
 not_a_repair_shop = [r"This is not a repair shop\."]
 
-broken = [r"It is broken\."]
+broken = [r"It is broken\."] # I think this is for broken armour
 # terrible_condition = [r"It is in terrible condition\."]
 # bad_condition = [r"It is in bad condition\."]
 # poor_condition = [r"It is in poor condition\."]
@@ -610,6 +620,7 @@ condition = [r"It is in [a-z]+ condition\."]
 
 # Armour
 repair_what    = [r"Repair what\?"]
+cant_repair    = [r"The smithy cannot repair that\."]
 drop_what      = [r"Drop what\?"]
 sell_what      = [r"Sell what\?"]
 # fled         = [r"You run like a chicken\."]
@@ -627,4 +638,3 @@ rest = [r"You lean back to take some rest\."] # blue text
 you_feel_the_benefits = [r"You feel the benefits of resting\."]
 may_not_use           = [r'You may not use that\.'] # Haven't needed this one (double print with class_prevents)
 
-#"You drink the philtre of health's broth."

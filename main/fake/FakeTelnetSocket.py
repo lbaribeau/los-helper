@@ -20,10 +20,11 @@ class FakeTelnetSocket(object):
         self.socket_output = ["[%s H %s M]: " % (self.char.hp, self.char.mp)]
         self.mud_map = mud_map
         self.whois_string = None
-        self.actor = Actor(self.char, self.socket_output)
-        self.tabby_cat = TabbyCat(self.char, self.socket_output)
-        self.stablehand = Stablehand(self.char, self.socket_output)
+        self.actor             = Actor(self.char, self.socket_output)
+        self.tabby_cat         = TabbyCat(self.char, self.socket_output)
+        self.stablehand        = Stablehand(self.char, self.socket_output)
         self.barbarian_warrior = BarbarianWarrior(self.char, self.socket_output)
+        self.tardan            = Tardan(self.char, self.socket_output)
 
     def initialize_socket_output(self, character_name):
         self.char.name = character_name
@@ -40,6 +41,10 @@ class FakeTelnetSocket(object):
             # 'militia soldier', # potting
             self.stablehand.name,
             self.tabby_cat.name,
+            self.tardan.name
+        ]
+        self.current_item_list = [
+            'white potion'
         ]
         self.fso = FakeSocketOutput()
         self.rng = 0
@@ -53,7 +58,8 @@ class FakeTelnetSocket(object):
         self.inventory = FakeInventory(['awl'] + 6*['small lamp'] + 6*['small knive'] + ['large sack']*2 + \
             ['silver chalice']*7 + ['small flask']*2 + ['small lamp']*2 + ['small restorative']*2 + \
             ['steel bottle']*6 + ['steel ring']*6 + ['stilleto']*2 + ['white potion']*2 + ['maul hammer']*3 + \
-            ['buckler', 'burnt ochre potion', 'hammer', 'large bag', 'large mace', ] + ['long sword']*2 + ['sabre']*2  + ['silver torch', \
+            ['buckler', 'burnt ochre potion', 'hammer', 'large bag', 'large mace', ] + ['long sword']*2 + ['philtre of health']*3 +\
+            ['sabre']*2  + ['silver torch', \
              'spectacles', 'title deeds', 'morning star'] + 3*['heavy crossbow'] + ['small mace'])
         self.inventory.unset_usable('morning')
         self.inventory.unset_usable('maul 2')
@@ -107,7 +113,7 @@ class FakeTelnetSocket(object):
 
         self.info_string = (
             "/============================== Overview ==================================\\\n\r"
-            "|         " + self.char.name + " the Human, an Enlightened Brother of the 13th level      |\n\r"
+            "|         " + self.char.name + " the Human, an Enlightened Brother of the 15th level      |\n\r"
             "|                  Your preferred alignment is dusty red                   |\n\r"
             "\==========================================================================/\n\r"
             "\n\r"
@@ -204,6 +210,7 @@ class FakeTelnetSocket(object):
             self.mobdead(command[8:])
         elif command == 'nuke':
             self.current_monster_list = []
+            self.current_item_list = []
         elif command == 'me':
             self.socket_output.append('You feel at one with the universe.\n\r')
         elif re.match(r"(tou?|touc?|touch) [A-Za-z' ]+", command):
@@ -273,13 +280,20 @@ class FakeTelnetSocket(object):
                 self.inventory.remove(command.partition(' ')[2])
             else:
                 self.socket_output.append("You don't have that.\n\r")
-        elif command.startswith('use '):
+        # elif command.startswith('use ') or command.startswith('drin ') or command.startswith:
+        elif re.match('^(use|drink?) ', command):
             self.use.do(command.partition(' ')[2])
         elif command.startswith('buy '):
             self.buy.do(command.partition(' ')[2]) # ie. buy iron 2
         elif command == 'get all':
-            self.socket_output.append("There's nothing here.\n\r")
-        elif command.startswith('get '):
+            if self.current_item_list:
+                self.socket_output.append("You get a " + ', a '.join(self.current_item_list) + '.')
+                for i in self.current_item_list:
+                    self.char.inv.add(i)
+                self.current_item_list = []
+            else:
+                self.socket_output.append("There's nothing here.")
+        elif command != 'get all' and command.startswith('get '):
             self.socket_output.append("You get a %s." % command.partition(' ')[2])
             self.char.inv.add(command.partition(' ')[2])
         elif re.match('echo (.+)', command):
@@ -297,6 +311,16 @@ class FakeTelnetSocket(object):
                 self.socket_output.append("The smithy hands a " + str(item) + " back to you, almost good as new.")
             else:
                 self.socket_output.append('"Darnitall!" shouts the smithy, "I broke another. Sorry lad."')
+                # self.char.inv.remove(item)
+                # Did they just remove an item we didn't have???
+        elif re.match('wear? iron \d', command):
+            self.socket_output.append("You wear an iron shield.\n\ryou grip the shield firmly.\n\r")
+            self.inventory.remove(command.partition(' ')[2])
+            self.char.equipment.equip_shield()
+        elif re.match('wear chain 2', command):
+            self.socket_output.append("You wear the chain mail armour.\n\r")
+        elif re.match('wear chain$', command):
+            self.socket_output.append("It is broken.\n\r")
 
     def gen_area(self, area):
         magentaprint("FakeTelnetSocket generate area {0}".format(area))
@@ -331,20 +355,25 @@ class FakeTelnetSocket(object):
 
     def show_current_area(self):
         area_string = self.current_area
-        n_monsters = len(self.current_monster_list)
 
-        if n_monsters != 0:
-            area_string += "\n\rYou see "
-            # i = 0
-            # while i < len(self.current_monster_list) - 2:
-                # mob = str(self.current_monster_list[i])
-                # area_string += "a " + mob + ", "
-                # i += 1
-            # area_string += str(self.current_monster_list[i]) + "."
-            for m in self.current_monster_list[0:n_monsters-1]:
-                area_string += 'a ' + m + ', '
+        # n_monsters = len(self.current_monster_list)
+        # n_items = len(self.current_item_list)
+        # if n_monsters != 0:
+        #     area_string += "\n\rYou see "
+        #     # i = 0
+        #     # while i < len(self.current_monster_list) - 2:
+        #         # mob = str(self.current_monster_list[i])
+        #         # area_string += "a " + mob + ", "
+        #         # i += 1
+        #     # area_string += str(self.current_monster_list[i]) + "."
+        #     for m in self.current_monster_list[0:n_monsters-1]:
+        #         area_string += 'a ' + m + ', '
+        #     area_string += 'a ' + self.current_monster_list[n_monsters-1] + '.' 
 
-            area_string += 'a ' + self.current_monster_list[n_monsters-1] + '.' 
+        if self.current_monster_list:
+            area_string += '\n\rYou see ' + ', '.join(self.current_monster_list) + '.'
+        if self.current_item_list:
+            area_string += '\n\rYou see ' + ', '.join(self.current_item_list) + '.'
 
         return area_string + "\n\r"
 
@@ -464,6 +493,11 @@ class FakeTelnetSocket(object):
                 if self.barbarian_warrior.do_combat():
                     if self.barbarian_warrior.name in self.current_monster_list:
                         self.current_monster_list.remove(self.barbarian_warrior.name)
+            elif mob == self.tardan.name:
+                if self.tardan.do_combat():
+                    if self.tardan.name in self.current_monster_list:
+                        self.current_monster_list.remove(self.tardan.name)
+                        self.current_item_list.append('chain mail armour')
             # self.mobflee(mob, str(self.current_mud_area.area_exits[0].exit_type.name))
             else:
                 self.rng = (self.rng + 1) % 3

@@ -140,7 +140,16 @@ class BotReactionWithFlag(threading.Event, BotReaction):
     def notify(self, regex, M_obj):
         self.set()
     def wait_for_flag(self, **kwargs):
-        self.wait(**kwargs)
+        if 'timeout' in kwargs:
+            timed_out = not self.wait(**kwargs)
+        else:
+            timed_out = not self.wait(timeout=6) # This gets used unlike the old class variable
+            # Not sure how to test this
+            # Maybe at the grazing fields with the false inventory match
+        if timed_out:
+            magentaprint("BotReactionWithFlag {0} timed out!!! Wait() returning now. Also, set the flag for the next wait call.".format(self.__class__.__name__))
+            self.set()
+
     def set_waiter_flag(self):
         self.clear()
     #@classmethod

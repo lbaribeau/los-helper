@@ -15,7 +15,7 @@ class MudArea():
             else:
                 self.area_exits = area_exits
         else:
-            print ("Area is null for some awful reason.")
+            print("Area is null for some awful reason.")
 
     @staticmethod
     def map(area_title, area_description, exit_list, area_from, direction_from, cur_mud_area):

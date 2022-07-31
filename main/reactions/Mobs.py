@@ -136,13 +136,20 @@ class Mobs(BotReactionWithFlag):
                 M = M[:-4]
             # It seems like this part gets done elsewhere
             # It turns Cheryn into Ch and Olmer into O somewhere
+            # Ok "The Floor Manager" has to be "Floor Manager" because you can't hit it with 'The'
+            # So the policy will be to remove "The" with capital T
+            # "the" with little 't' probably won't happen
 
             if any(m.startswith(single + ' ') for single in self.singles):
                 # m_dict[m.partition(' ')[2]] = 1
                 m_list.extend([M.partition(' ')[2]])
                 # number_check = [m.startswith(n) for n in numbers]
             elif any(m.startswith(n + ' ') for n in self.numbers):
+                magentaprint("Mobs.parse_mob_string extending {0}".format([remove_plural(M.partition(' ')[2])] * (self.numbers.index(M.split(' ')[0]) + 2)))
                 m_list.extend([remove_plural(M.partition(' ')[2])] * (self.numbers.index(M.split(' ')[0]) + 2))
+            elif m.startswith('the '):
+                magentaprint("Mobs.parse_mob_string appending " + M[4:])
+                m_list.append(M[4:]) 
             else:
                 magentaprint("Mobs.parse_mob_string appending " + M)
                 m_list.append(M)
@@ -194,13 +201,16 @@ def remove_plural(m):
     #     return m.partition(' ')[2]
     # number_check = [m.startswith(n) for n in numbers]
     if m.endswith('sses'):
-        return m[0:len(m)-2]
+        return m[:-2]
     elif m.endswith('s'):
-        return m[0:len(m)-1]
+        return m[:-1]
     elif m.endswith('children'):
-        return m[0:len(m)-3]
+        return m[:-3]
     elif m.endswith(' mice'):
-        return m[0:len(m)-4] + 'mouse'
+        return m[:-4] + 'mouse'
+    elif m.endswith('men'):
+        # gnoll spearsman, gloll spearsmen, townsman
+        return m[:-3] + 'man'
     else:
         return m
 

@@ -8,6 +8,7 @@ from command.Inventory import Inventory
 from fake.FakeTelnetHandler import FakeTelnetHandler
 from comm.Character import Character
 from misc_functions import magentaprint
+from db.MudItem import MudItem
 
 class TestInventory(unittest.TestCase):
     def test_two_sets_of_leggings(self):
@@ -36,3 +37,40 @@ class TestInventory(unittest.TestCase):
         # It was a plural s removal
         # Which should be done when something is a set of things
         # because the singular is still one set of the thing(s) and is still "plural"
+
+    def test_get_reference_from_index(self):
+        i = Inventory(
+            FakeTelnetHandler(),
+            Character()
+        )
+        # i.set_inventory(MudItem('maul hammer'), MudItem('maul hammer')) # Maybe it does this
+        i.set_inventory('maul hammer', 'maul hammer')
+        ref = i.get_reference_from_index(1),
+        self.assertTrue(
+            ref == 'maul 2' or
+            ref == 'hammer 2')
+
+    def test_get_broken(self):
+        i = Inventory(
+            FakeTelnetHandler(),
+            Character()
+        )
+        i.set_inventory('maul hammer', 'maul hammer')
+        i.list[1].is_usable=False
+        ref = i.get_broken('maul hammer')
+        self.assertTrue(
+            ref == 'maul 2' or
+            ref == 'hammer 2')
+
+    def test_get_unbroken(self):
+        i = Inventory(
+            FakeTelnetHandler(),
+            Character()
+        )
+        i.set_inventory('maul hammer', 'maul hammer')
+        i.list[1].is_usable=False
+        ref = i.get_unbroken('maul hammer')
+        self.assertTrue(
+            ref == 'maul' or
+            ref == 'hammer')
+

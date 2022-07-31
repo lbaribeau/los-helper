@@ -5,7 +5,10 @@ from itertools import chain
 from command.Command import Command
 from misc_functions import magentaprint
 
-class ThreadingMixin2(Command):
+class ThreadingMixin2:
+    # This needs Command or CommandThatRemovesFromInventory also mixed in
+    # (Needs .execute)
+
     # "prayc" or "hastec" or "berserkc"
     # Since abilities can fail, it's nice to have an object that knows the cooldown
     # You can use this to queue up the command to go when it's ready
@@ -21,16 +24,19 @@ class ThreadingMixin2(Command):
     # kk, use, haste... could maybe all use the same code with different cooldowns
     # Use needs CommandThatRemovesFromInventory but also has a cooldown
 
-    def __init__(self, telnetHandler):
-        super().__init__(telnetHandler)
+    def notify(self, regex, M_obj):
+        super().notify(regex, M_obj)
+        # if regex in self.success_regexes or regex in self.error_regexes:
+        if regex in chain.from_iterable(self.end_thread_regexes):
+            self.stop()
+
+    # def __init__(self, telnetHandler):
+    def __init__(self):
+        # super().__init__(telnetHandler)
         self.thread = None
 
-    def stop(self):
-        self.stopping = True
-
-    def keep_going(self):
-        magentaprint(str(self) + ": keep_going() (stopped:  " + str(self.stopping) + ")")
-        self.stopping = False
+    def start_thread(self, target=None):
+        self.spam(target)
 
     def spam(self, target=None):
         self.stopping = False
@@ -47,9 +53,6 @@ class ThreadingMixin2(Command):
             # Maybe we write its code smarter to handle this case... don't sleep till after the cooldown's verified
             magentaprint("Command will be sent in " + str(round(self.wait_time())) + " seconds.")
 
-    def start_thread(self, target=None):
-        self.spam(target)
-
     # run
         # kk, cc, SmartCombat need a version that stops when combat over.
         # Abilities need a version that stops on command success or error.
@@ -60,11 +63,12 @@ class ThreadingMixin2(Command):
             if self.stopping:
                 magentaprint(str(self) + " ability ready.")
             else:
-                self.execute(target)
+                self.execute(target) # This part needs command
                 self.wait_for_flag()
 
-    def notify(self, regex, M_obj):
-        super().notify(regex, M_obj)
-        # if regex in self.success_regexes or regex in self.error_regexes:
-        if regex in chain.from_iterable(self.end_thread_regexes):
-            self.stop()
+    def stop(self):
+        self.stopping = True
+
+    def keep_going(self):
+        magentaprint(str(self) + ": keep_going() (stopped:  " + str(self.stopping) + ")")
+        self.stopping = False

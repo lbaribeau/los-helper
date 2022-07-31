@@ -13,6 +13,11 @@ from mini_bots.shopping_bot import ShoppingBot
 from db.Database            import AreaStoreItem
 
 class WeaponBot(MiniBot):
+    # This one handles a lot of cases (dual wielding)
+    # It works well if a pile of weapons are available in the bag already
+    # But I want to guarantee a weapon available in the bag
+    # So I wrote weapon bot 2 to make that extra purchase
+
     # def __init__(self, char, command_handler, simple_weapon_bot):
     def __init__(self, char, command_handler):
         super().__init__()
@@ -24,18 +29,18 @@ class WeaponBot(MiniBot):
             # R.you_wield: (lambda self, match : self.weapon = match.group('weapon')),
             # R.off_hand: (lambda self, match : self.second = match.group('weapon')),
             # R.weapon_break: lambda match : if
-            R.you_wield[0]:       self.react_to_wield,
-            R.off_hand[0]:        self.react_to_off_hand,
-            R.weapon_break[0]:    self.react_to_weapon_break,
-            R.weapon_shatters[0]: self.react_to_weapon_break,
-            R.shield[0]:          self.set_shield_or_offhand
+            R.you_wield[0]       : self.react_to_wield,
+            R.off_hand[0]        : self.react_to_off_hand,
+            R.weapon_break[0]    : self.react_to_weapon_break,
+            R.weapon_shatters[0] : self.react_to_weapon_break,
+            R.shield[0]          : self.set_shield_or_offhand
         }
         # self.regex_cart = self.actions.keys()
         self.regex_cart = [R.you_wield, R.off_hand, R.weapon_break, R.weapon_shatters, R.shield]
-        self.broken_weapon = []
-        self.possible_weapons = []
+        self.broken_weapon     = []
+        self.possible_weapons  = []
         self.shield_or_offhand = False
-        self.temporary_weapon = False
+        self.temporary_weapon  = False
 
     def add_in_map(self, mud_map):
         # Methods which require navigation or knowing possible weapons to wield require this to be called

@@ -68,16 +68,21 @@ class ReferencingList(object):
             self.add(x)
 
     def remove(self, obj):
-        # magentaprint("ReferencingList removing " + str(obj))
+        magentaprint("ReferencingList remove: " + str(obj))
+        # Ehrm don't we need to be specific
+        # What if one mob is attacking
+        # Remove the right one?
+        # Well it's not like they're mob objects with an attacking attribute
         self.list.remove(obj)
 
     def remove_by_ref(self, ref):
         # if item in self.list:
         #     self.list.remove(item)
-        magentaprint("Referencing list removing {0} at index {1}: ".format(ref, self.index(ref)))
+        # magentaprint("Referencing list removing {0} at index {1}: ".format(ref, self.index(ref)))
         self.remove_by_index(self.index(ref))
 
     def remove_by_index(self, ind):
+        magentaprint("Referencing list removed index {0} should be {1}".format(ind, self.list[ind]))
         self.list.pop(ind)
 
     def remove_from_list(self, list):
@@ -99,7 +104,9 @@ class ReferencingList(object):
             if i.name == string:
                 return True
 
-        magentaprint("ReferencingList.has() returned False.")
+        # magentaprint("ReferencingList.has() returned False.") 
+        # This prints a ton since things have to check for things
+        # ie. checking if any potions are in the inventory
         return False
 
         return any(x.name == string for x in self.list)
@@ -179,14 +186,15 @@ class ReferencingList(object):
 
     def get(self, ref):
         i = self.index(ref)
-
-        if i != None:
+        # if i: # This would be false for i==0, we want i != None
+        if i == None:
+            magentaprint("ReferencingList.get() found nothing. ref/index: " + str(ref) + '/' + str(i))
+        else:
             # magentaprint("Inventory list: " + str(self.list))
             # magentaprint("Inventory.get() returning " + str(self.list[i]))
             #magentaprint("ReferencingList.get() ref/index/str(item): " + str(ref) + '/' + str(i) + '/' + str(self.list[i]))
+            magentaprint('ReferencingList.get({0}) got {1} returning {2}'.format(ref, i,self.list[i]))
             return self.list[i]
-        else:
-            magentaprint("ReferencingList.get() found nothing. ref/index: " + str(ref) + '/' + str(i))
 
     def get_usable_object_of_type(self, model, data, level=-1):
         for obj in self.list:
@@ -194,6 +202,21 @@ class ReferencingList(object):
                 for instance in self.dictionary[obj].objs:
                     if instance.usable:  # I think the caller may want to know about broken objects
                         return str(obj.obj)
+
+    def get_reference_from_index(self, index):
+        word = self.list[index].name.split(' ')[0]
+        identifier = 1
+        for item in self.list:
+            if item is self.list[index]:
+                # Ok we need full equal here not string equal
+                break
+            else:
+                if word in item.name.split(' '):
+                    identifier = identifier + 1
+        if identifier > 1:
+            return word + ' ' + str(identifier)
+        else:
+            return word
 
     def get_reference(self, obj, first_or_second_word=1):
         if isinstance(obj, 'str'.__class__):
@@ -232,8 +255,8 @@ class ReferencingList(object):
                     # i = i + len(self.inventory.dictionary[k].objs)
                     i = i + self.count(list_name)
 
-        magentaprint("Caution: referencing_list.get_first_reference() returned None! " + name)
-        magentaprint("Whole list is " + str(self.list))
+        # magentaprint("Caution: referencing_list.get_first_reference() returned None! " + name)
+        # magentaprint("Whole list is " + str(self.list))
         return None
 
     def get_2nd_word_reference(self, item_name):
@@ -358,3 +381,5 @@ class ReferencingList(object):
 
     def __iter__(self):
         return iter(self.list)
+
+

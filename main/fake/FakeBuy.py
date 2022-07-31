@@ -1,6 +1,6 @@
 
 from fake.fake_command import FakeCommand
-from misc_functions import greenprint
+from misc_functions import magentaprint, greenprint
 
 class FakeBuy(FakeCommand):
     def __init__(self, inventory, socket_output):

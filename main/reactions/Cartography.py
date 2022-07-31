@@ -408,7 +408,7 @@ class Cartography(BotReactionWithFlag):
             return []
 
         MUD_mob_str = MUD_mob_str.replace("\n\r", ' ')
-        mob_match = re.match(r"(?s)You see (.+?)\.", MUD_mob_str) # Eh won't this match items also
+        mob_match = re.match(r"(?s)You see (.+?)\.", MUD_mob_str)
 
         if mob_match is None:
             # return self.character.MONSTER_LIST

@@ -1,5 +1,5 @@
 from peewee import *
-import networkx as nx
+import networkx
 
 from db.Database import *
 # from misc_functions import *
@@ -35,7 +35,7 @@ class MudMap(object):
 
     def re_map(self):
         self.ready = False
-        self.los_map = nx.DiGraph()
+        self.los_map = networkx.DiGraph()
         self.populate_map()
         self.ready = True
 
@@ -76,7 +76,7 @@ class MudMap(object):
     def get_path(self, start_area_id, end_area_id):
         # do_magentaprint("MudMap.get_path() los_map: {0}, start: {1}, end: {2}".format(self.los_map, start_area_id, end_area_id))
         try:
-            node_path = nx.shortest_path(self.los_map, source=start_area_id, target=end_area_id)
+            node_path = networkx.shortest_path(self.los_map, source=start_area_id, target=end_area_id)
         except Exception as e:
             do_magentaprint("MudMap: " + str(e))
             raise e
