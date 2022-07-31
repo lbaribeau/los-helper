@@ -69,14 +69,7 @@ class SmartGrindThread(TrackGrindThread):
         
         if self.in_chapel():
             if self.character.current_track is not None and self.on_track:
-                self.track_end_time = get_timeint()
-                track_time = (self.track_end_time - self.track_start_time).total_seconds()
-                self.character.TRACK_TIME += track_time
-                self.character.add_to_track_param('completes', 1)
-                self.character.add_to_track_param('duration', track_time)
-                self.character.end_track()
-                self.on_track = False
-                magentaprint("ending track", False)
+                self.end_track()
             
             if not self.ready_for_combat(): #in healing area
                 rest_start = get_timeint()

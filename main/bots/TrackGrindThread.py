@@ -513,17 +513,31 @@ class TrackGrindThread(GrindThread):
 
         if self.character.level in level_range:
             magentaprint("{0} is our chosen track".format(track.name), False)
-            if self.character.current_track is None:
-                self.track_start_time = get_timeint()
-                self.character.start_track(track)
-                self.last_track = track
-                self.on_track = True
+            if self.character.current_track is not None:
+                self.end_track()
+            self.start_track(track)
             
             return track.track[:]
         else:
             magentaprint("{0} isn't acceptable to us due to level".format(track.name), False)
             # self.__nextpath = self.__nextpath + 1 #skips the next path
             return self.PATH_TO_SKIP_WITH[:]
+
+    def start_track(self, track):
+        self.track_start_time = get_timeint()
+        self.character.start_track(track)
+        self.last_track = track
+        self.on_track = True
+
+    def end_track(self):
+        self.track_end_time = get_timeint()
+        track_time = (self.track_end_time - self.track_start_time).total_seconds()
+        self.character.TRACK_TIME += track_time
+        self.character.add_to_track_param('completes', 1)
+        self.character.add_to_track_param('duration', track_time)
+        self.character.end_track()
+        self.on_track = False
+        magentaprint("ending track", False)
 
     def stop(self):
         super().stop()
