@@ -237,7 +237,8 @@ class GrindThread(BotThread):
             # magentaprint("Resting for health", False)
             # Probably not the greatest logic but low level characters will need
             # to gain health other than healing up.
-        self.heal_up()
+        if not self.character.BLACK_MAGIC:
+            self.heal_up()
         self.rest_for_health()
 
         self.buff_up()

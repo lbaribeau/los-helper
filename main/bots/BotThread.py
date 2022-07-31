@@ -222,7 +222,8 @@ class BotThread(threading.Thread):
         if re.match("areaid[\d]*", exit_str):
             #magentaprint("go hook found with: " + str(self.direction_list), False)
             area_id = int(exit_str.replace("areaid", ""))
-            self.direction_list.pop(0)
+            if len(self.direction_list) > 0:
+                self.direction_list.pop(0)
 
             try:
                 path = self.mud_map.get_path(self.character.AREA_ID, area_id)

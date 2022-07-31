@@ -214,8 +214,8 @@ class SmartCombat(CombatObject):
 
         if self.target_fullref is not None and self.character.ACTIVELY_BOTTING:
             self.mob_target = Mob.get_mob_by_name(self.target_fullref)
-            use_combat_ability = self.determine_whether_to_use_combat_ability()
-            if self.determine_whether_to_use_spells():
+            use_combat_ability = self.should_use_combat_ability()
+            if self.should_use_spells():
                 self.spell = self.determine_favorite_spell_for_target()
             else:
                 self.spell = None
@@ -228,6 +228,9 @@ class SmartCombat(CombatObject):
             self.use_any_fast_combat_abilities()  # ie. Touch, Dance
 
         while not self.stopping:
+            # if we have too many mobs attacking then we should start casting even if they're weak
+            if self.spell is None and len(self.character.mobs.attacking) > 2:
+                self.spell = self.determine_favorite_spell_for_target()
             # if self.broken_weapon:
             #     self.reequip_weapon()  # TODO: This can get spammed... answer on to unset is_usable on weapon objects in inventory
             # magentaprint("SmartCombat loop kill.timer " + str(round(self.kill.wait_time(), 1)) + " cast.timer " + str(round(self.cast.wait_time(), 1)) + ".")
@@ -254,44 +257,44 @@ class SmartCombat(CombatObject):
         self.activated = False
         magentaprint(str(self) + " ending run.")
 
-    def determine_whether_to_use_combat_ability(self):
+    def should_use_combat_ability(self):
         if self.mob_target is not None:
             if self.mob_target.level is not None:
                 # magentaprint("ml {} < cl {} - 4 = {}".format(self.mob_target.level, self.character.level, self.mob_target.level < (self.character.level - 4)),False)
-                if self.mob_target.level < (self.character.level - 4) and not self.mob_target.is_named:
+                if self.is_mob_weak():
                     return False
-        return True
 
-    def determine_whether_to_use_spells(self):
-        # Mage/Alc/Druid should always cast
+        if self.character.weapon1 is not None and self.character._class.id == 'Mon':
+            return False
+        else:
+            return True
+
+    def should_use_spells(self):
+        # Mage/Alc/Druid should always cast        
         if (not self.is_caster_class()) and \
             self.character.level > 10 and self.mob_target is not None:
             if self.mob_target.level is not None:
-                if (self.mob_target.level < (self.character.level - 4) or self.character.level <= 2) and \
-                    self.mob_target.difficulty_rating is None:
+                if self.is_mob_weak():
                     return False
         return True
 
     def determine_favorite_spell_for_target(self):
         if self.mob_target is not None:
-            if self.is_caster_class() or self.mob_target.is_named:
-                if self.is_mob_weak():
-                    return self.favourite_spell
-                else:
-                    return self.favourite_nuke
-            else:
+            if self.is_mob_weak(3):
                 return self.favourite_spell
-        if self.is_caster_class():
-            return self.favourite_nuke
+            else:
+                return self.favourite_nuke
         return self.favourite_spell
 
-    def is_mob_weak(self):
-        weak_mob = self.mob_target.level is not None and self.mob_target.level <= 3
+    def is_mob_weak(self, level_diff=5):
+        if self.mob_target.level is None:
+            return False
+        
+        mob_level = self.mob_target.level
+        if self.mob_target.difficulty_rating is not None and self.mob_target.difficulty_rating != "":
+            mob_level += self.mob_target.difficulty_rating
 
-        if self.character.level > 10:
-            weak_mob = self.mob_target.level is not None and self.mob_target.level <= 4
-
-        return weak_mob
+        return mob_level < (self.character.level - level_diff)
 
     def is_caster_class(self):
         return self.character._class.id == 'Mag' or self.character._class.id == 'Alc' # or \
