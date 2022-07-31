@@ -32,23 +32,31 @@ class TrackGrindThread(GrindThread):
 
         self.LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
-        self.SHOP_AND_TIP_PATH = [
+        self.SHOP_AND_TIP_PATH = ["areaid2",
             "out", "south", "west", 'west', 'west', 'south', 'south', "shop",
             "sell_items","out", "southeast", 'east', 'east', 'east', 'east', "northeast", "tip",
             "drop_items","out", 'north', 'north', 'west', 'west', 'west', 'north', "chapel"
         ]
-        self.THEATRE_PATH = [
+        self.smart_theatre_path = ['areaid14', "theatre", "stairs","cubby", "out", "box", "out", "box 2",
+            "out", "down", "swing", "seat", "out", "down", "seat", "out", "door", "office", "out",
+            "stage","side 2","backstage", "door", "out", "door 2", "out", "curtain", "stage",
+            "side", "door","up", "out", "out"]
+        self.THEATRE_PATH = ["areaid2",
             "out", "s", "w", "w", "w", "s", "theat", "stairs","cubby", "out", "box", "out", "box 2",
             "out", "down", "swing", "seat", "out", "down", "seat", "out", "door", "office", "out",
             "stage","side 2","backstage", "door", "out", "door 2", "out", "curtain", "stage",
             "side", "door","up", "out", "out", "n", "e","e", "e", "n", "chapel"
         ]
-        # self.THEATRE_PATH = Path(Aura, self.THEATRE_PATH)
-        self.MARKET_PATH = [
+        self.smart_market_path = ['areaid113','w', 'w', 'office', 'out', 'n', 'n','s', 'w', 'e', 's', 'w', 's', 'n', 'w', 'e', 'n',
+            's', 'e', 'e', "out"]
+        self.MARKET_PATH = ["areaid2", 
             "out", 's', 'e', 'e', 'e', 'n', 'w', 'w', 'office', 'out', 'n', 'n','s', 'w', 'e', 's', 'w', 's', 'n', 'w', 'e', 'n',
             's', 'e', 'e', "out", 's', 'w', 'w', 'w', 'n',"chapel"
         ]
-        self.MILITIA_SOLDIERS_PATH = [
+        self.smart_militia_path = ['areaid524','s','s','s','s','s','s','w','doo','stor','ou','ou','w','w','w','n','n','s','s','e','e','e','e','n','n','e',
+            'e','e','e','e','e','e','e','e','ne','e','ne','ne','ne','ne','ne','ne','n','n','w','s','sw','ne','n','e',
+            'n','n','n','n','n','n','n','n','n','n','nw','nw','nw','path','nw','n','n','n','nw','nw','n','n']
+        self.MILITIA_SOLDIERS_PATH = ["areaid2", 
             'out','s','e','s','s','s','w','gate','s','s','sw','sw','sw','sw','s','s','s','sw','southeast','s','s','s','s',
             's','s','s','s','s','w','doo','stor','ou','ou','w','w','w','n','n','s','s','e','e','e','e','n','n','e',
             'e','e','e','e','e','e','e','e','ne','e','ne','ne','ne','ne','ne','ne','n','n','w','s','sw','ne','n','e',
@@ -56,7 +64,12 @@ class TrackGrindThread(GrindThread):
             'w','n','nw','nw','n','e','e','e','s','s','s','s','gate','s','s','southeast','southeast','s','s','s','southeast','s','w','w',
             'w','nw','nw','n','gate','e','n','n','n','w','n','chapel'
         ]
-        self.KOBOLD_PATH = [
+        self.smart_kobold_path = ['areaid1165','glowing portal','passage','mines',
+            'down','n','n','n','n','ne','n','w','n','n','e','door','w','gully','up','boulder','up',
+            'cave 3','ne','ne','n','s','up','e','se','cave','out','ladder','cave','out','sw','w',
+            'sw','se','nw','w','out','down','boulder','down','down','e','door','w','s','s','e','s','sw','s','s','s',
+            's','gully','glowing portal']
+        self.KOBOLD_PATH = ["areaid2",
             'out','south','east','south','south','south','west','gate','south','southeast','southeast','east',
             'east','east','southeast','southeast','southeast','south','south','south','south','south','east',
             'east','southeast','east','south','south','south','south','glowing portal','passage','mines',
@@ -84,7 +97,7 @@ class TrackGrindThread(GrindThread):
             'north','north','north','north','north','northwest','northwest', 'northwest', 'west', 'west', 'west',
             'northwest','northwest', 'north', 'gate', 'east', 'north', 'north', 'north','west', 'north', 'chapel'
         ]
-        self.CORAL_ALLEY_PATH = [
+        self.CORAL_ALLEY_PATH = ["areaid2",
             'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','se','se','se','s','s','s','s','w','alley',
             's','s','door','stairs', #angry hooker should be avoided unless lvl 5.
             #'do 3', 'ou',
@@ -95,27 +108,35 @@ class TrackGrindThread(GrindThread):
             'n','n','n','n','e','n','n','n','n','nw','nw','nw','w','w','w','nw','nw','n','gate','e','n','n','n','w',
             'n','chapel'
         ]
+        self.smart_fort_path = ['areaid314', 'n','n','w','s','store','out','s','e','e','n',"door", "door",
+            'n','w','s','s']
         self.FORT_PATH = [
             'out','n','n', 'w','gate','n','n','n','n','n','gate','n','n','w','s','store','out','s','e','e','n',"door", "door",
             'n','w','s','s','gate', 's','s','s','s','s','gate','w','sw','s','s','s','e','e','e','e','n','w','n','chap'
         ]
         self.OLD_MAN_JAMES = [
-            'areaid611', 'out', 'west', 'north', 'smithy', 'areaid2'
+            'areaid611', 'out', 'west', 'north', 'smithy'
         ]
         # self.GOOURD = [
         #     'areaid1899'
         # ]
-        self.MUGGER_PATH = [
+        self.MUGGER_PATH = ["areaid2",
             'ou','s','w','w','w','s','alley','w','alley','e','e','e','e','e','n','w','n','chap'
         ]
-        self.NORTHERN_BANDITS_PATH = [
+        self.smart_northern_bandits_path = ['areaid421','south','s','s','n','n','n']
+        self.NORTHERN_BANDITS_PATH = ["areaid2", 
             'out','n','n','w','gate','n','n','n','n','n','gate','n','n','gate','n','nw','nw','sw','sw','sw','sw','s',
             'sw','sw','w','w','sw','sw','sw','sw','sw','sw','w','w','w','w','nw','w','w','nw','sw','nw','w','w','w',
             'nw','w','w','w','w','south','s','s','n','n','n','e','e','e','e','se','e','e','e','se','ne','se','e','e',
             'se','e','e','e','e','ne','ne','ne','ne','ne','ne','e','e','ne','ne','n','ne','ne','ne','ne','se','se','s',
             'gate','s','w','e','s','gate','s','s','s','s','s','gate','e','s','s','chapel'
         ]
-        self.DWARVEN_FIELD_WORKERS_PATH = ['out', 'south', 'east', 'south', 'south',
+
+        self.smart_dwarven_path = ['areaid1082', 'east', 'building', 'kitchen', 'out',
+            'out', 'hall', 'out', 'east', 'east', 'forge', 'out', 'southeast', 'field', 'road', 'field 2', 'road', 'southeast',
+            'southeast', 'field', 'road', 'southeast', 'field', 'stile', 'stile', 'road',
+            'southeast', 'field', 'road', 'southeast', 'station']
+        self.DWARVEN_FIELD_WORKERS_PATH = ["areaid2",'out', 'south', 'east', 'south', 'south',
             'south', 'east', 'west', 'west', 'gate', 'south', 'southeast', 'southeast',
             'east', 'east', 'east', 'pathway', 'northwest', 'north', 'north',
             'north', 'southeast', 'east', 'east', 'gate', 'east', 'building', 'kitchen', 'out',
@@ -128,7 +149,7 @@ class TrackGrindThread(GrindThread):
             'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel'
         ]
         #both gates close at night unforunately...
-        self.FIELD_WORKERS_PATH = [
+        self.FIELD_WORKERS_PATH = ["areaid2",
             'out', 'south', 'east', 'south', 'south', 'south', 'east', 'west', 'west',
             'gate', 'south', 'southeast', 'southeast', 'east', 'east',
             'east', 'pathway', 'northwest', 'north', 'north', 'north',
@@ -140,8 +161,9 @@ class TrackGrindThread(GrindThread):
             'northeast', 'stile', 'gate', 'north', 'northwest', 'northwest',
             'west', 'west', 'gate', 'south', 'west', 'west', 'west', 'north', 'chapel'
         ]
+        self.smart_mill_path = ['areaid515', 'areaid518', 'areaid1450', 'areaid541', 'areaid1452']
         #Contains lvl 2&3 mobs (stacker, furniture maker, sawmill operator, mill worker) and lvl 6 mobs (sawmill / mill supervisors)
-        self.MILL_WORKERS = [
+        self.MILL_WORKERS = ["areaid2",
             'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate',
             'south', 'south', 'south', 'south', 'south', 'southwest', 'south',
             'southeast', 'southwest', 'south', 'south', 'southeast', 'south',
@@ -153,7 +175,10 @@ class TrackGrindThread(GrindThread):
             'northeast', 'northeast', 'north', 'north', 'gate', 'east', 'north',
             'north', 'north', 'west', 'north', 'chapel'
         ]
-        self.RANCHER_SENTRY = [
+        self.smart_rancher_path = ['areaid1517', 'arch', 'north', 'east', 'north', 'northwest',
+            'gate', 'north', 'east', 'east', 'south', 'east', 'north', 'south',
+            'west', 'west', 'west']
+        self.RANCHER_SENTRY = ["areaid2",
             'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate',
             'south', 'southeast', 'southeast', 'east', 'east', 'east', 'pathway',
             'northwest', 'north','north', 'north', 'northwest', 'northwest', 'north',
@@ -187,7 +212,11 @@ class TrackGrindThread(GrindThread):
         self.SPIDER_FOREST = ['areaid1886','areaid2355','areaid1886','areaid2355', 'areaid2']
 
         #The following areas repeat a bit because the spawns are fast
-        self.KNIGHTS = [
+        self.smart_knights_path = ['areaid1053', 'south',
+            'southeast', 'east', 'east', 'northeast', 'north', 'red tent', 'out', 's', 'w', 'w', 'w', 'e', 'e', 'e',
+            'sw', 'w', 'w', 'nw', 'n', 'n', 'ne', 'stands', 'stand', 'out', 'stand 2', 'out', #'stand 3', 'out' #Tario
+            'e', 'se', 'w', 'w', 'w', 'e', 'e', 'e', 's', 'red tent']
+        self.KNIGHTS = ["areaid2",
             'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south', 'southwest', 'southwest',
             'southwest', 'southwest', 'south', 'south', 'south', 'southwest', 'southeast', 'south', 'south', 'south',
             'south', 'south', 'east', 'east', 'east', 'southeast', 'south', 'east', 'east', 'east', 'east', 'east',
@@ -212,7 +241,12 @@ class TrackGrindThread(GrindThread):
         #    'north', 'north', 'northwest', 'northwest', 'northwest', 'west', 'west', 'west', 'northwest', 'northwest',
         #    'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
 
-        self.GNOLL_CAVE = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'southeast', 'southeast',
+        self.smart_gnoll_cave = ['areaid1763', 'west', 'down', 'west',  'west',
+        #gnoll jailer + barracks
+        'shaft', 'door 2', 'south', 'out', 'south', 'east', 'door', 'out', 'door 2', 'out', 'east', 'west', 'west', 'north', 'north', 'out',
+        #gnoll sub chiefs
+        'west', 'opening', 'southwest', 'southwest', 'bridge', 'north', 'passage', 'northeast']
+        self.GNOLL_CAVE = ["areaid2",'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'southeast', 'southeast',
         'east', 'east', 'east', 'southeast', 'southeast', 'southeast', 'south', 'south', 'south', 'south', 'south', 'south', 'south',
         'south', 'south', 'south', 'south', 'south', 'southwest', 'southwest', 'southwest', 'southwest', 'brush', 'south',
         'southeast', 'east', 'trail', 'up', 'north', 'east', 'fissure', 'cleft', 'west', 'down', 'west',  'west',
@@ -226,6 +260,9 @@ class TrackGrindThread(GrindThread):
             self.GNOLL_CAVE += [
             'east', 'west' 
             ]
+            self.smart_gnoll_cave += [
+            'east', 'west' 
+            ]
         
         self.GNOLL_CAVE += [
         'passage', 'southwest', 'bridge', 'south', 'northeast', 'opening', 'northeast',
@@ -234,7 +271,7 @@ class TrackGrindThread(GrindThread):
         'north', 'north', 'north', 'north', 'north', 'north', 'northwest', 'northwest', 'northwest', 'west', 'west', 'west',
         'northwest', 'northwest', 'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
 
-        self.CATHEDRAL = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south',
+        self.CATHEDRAL = ["areaid2",'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south',
          'southwest', 'southwest', 'southwest', 'southwest', 'south', 'south', 'south', 'southwest', 'southeast',
          'south', 'south', 'south', 'south', 'south', 'south', 'south', 'south', 'south', 'south', 'cathedral',
          'doors', 'east', 'east', 'south', 'north', 'east', 'door', 'door', 'west', 'west', 'west', 'out',
@@ -243,7 +280,7 @@ class TrackGrindThread(GrindThread):
          'north', 'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel'
          ]
 
-        self.ZOMBIES = ['out', 'south', 'east','east','east','north', 'try_gate',
+        self.ZOMBIES = ['areaid113', 'try_gate',
         'east', 'east', 
         #McDermotts farm
         'northeast', 'northeast', 'north', 'north', 'north', 'gate', 'north', 'east', 'east', 'southeast', 'east', 'southeast', 'southeast', 'southeast', 'trail', 'woods', 'deeper',
@@ -260,36 +297,37 @@ class TrackGrindThread(GrindThread):
         #out of zombie farm and into highmarket
         'path', 'gate', 'south', 'southwest', 'south', 'southwest', 'east', 'east', 'gate',
         #from highmarket back to chapel
-        'south', 'southeast', 'southeast', 'south', 'east', 'gate', 'south', 'south', 'southeast', 'southeast', 'south', 'south',
-        'south', 'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest', 'north', 'gate', 'east', 'north', 'north',
-        'north', 'west', 'north', 'chapel']
+        # 'south', 'southeast', 'southeast', 'south', 'east', 'gate', 'south', 'south', 'southeast', 'southeast', 'south', 'south',
+        # 'south', 'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest', 'north', 'gate', 'east', 'north', 'north',
+        # 'north', 'west', 'north', 'chapel'
+        ]
         #Farmer's gate / Dragon Road
 
         # self.BANDIT_CAMP = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south',
         # 'southwest', 'southwest', 'southwest', 'trail', 'northwest', 'northwest', 'west', 'west',
         # ]
 
-        self.FOUNDRY = ['areaid1231', 'out', 'down', 'east', 'east', 'east', 'south', 'areaid2']
-        self.ALCHEMISTS = ['areaid999', 'areaid2967', 'areaid2']
-        self.EGAN_TRENT = ['areaid1999', 'areaid2']
-        self.ORCS = ['areaid747', 'areaid749', 'areaid2']
-        self.OLMER = ['areaid297', 'areaid2']
-        self.CHERYN = ['areaid1380', 'areaid2']
-        self.ARTIFICERS = ['areaid1350', 'areaid1008', 'areaid2']
-        self.SILKEN_ALLEY = ['areaid686', 'areaid706', 'areaid705', 'areaid698', 'areaid699', 'areaid700', 'areaid2']
-        self.CORELLAN = ['areaid713', 'areaid2']
-        self.JERREK_TAG = ['areaid977', 'areaid979', 'areaid2']
-        self.MANIC_ELDER = ['areaid1899', 'areaid1465', 'areaid1491', 'areaid2']
-        self.VILADIN_CAL = ['areaid1498', 'areaid247', 'path', 'hut', 'areaid2']
-        self.DALLA_DOUVAN = ['areaid2449', 'areaid2430', 'areaid2']
-        self.ALDO_BROTAIN = ['areaid1254', 'areaid1226', 'areaid2']
-        self.PLOVERS = ['areaid1564', 'areaid1600', 'areaid2']
-        self.FLOOR_MANAGER = ['areaid1147', 'areaid2']
-        self.TARDAN = ['areaid1378', 'areaid2']
-        self.RIMARK = ['areaid1231', 'areaid2']
-        self.HORBUK = ['areaid1265', 'areaid2']
-        self.DOJO = ['areaid917', 'areaid2']
-        self.DINI = ['areaid629', 'areaid2']
+        self.FOUNDRY = ['areaid1231', 'out', 'down', 'east', 'east', 'east', 'south']
+        self.ALCHEMISTS = ['areaid999', 'areaid2967']
+        self.EGAN_TRENT = ['areaid1999']
+        self.ORCS = ['areaid747', 'areaid749']
+        self.OLMER = ['areaid297']
+        self.CHERYN = ['areaid1380']
+        self.ARTIFICERS = ['areaid1350', 'areaid1008']
+        self.SILKEN_ALLEY = ['areaid686', 'areaid706', 'areaid705', 'areaid698', 'areaid699', 'areaid700']
+        self.CORELLAN = ['areaid713']
+        self.JERREK_TAG = ['areaid977', 'areaid979']
+        self.MANIC_ELDER = ['areaid1899', 'areaid1465', 'areaid1491']
+        self.VILADIN_CAL = ['areaid1498', 'areaid247', 'path', 'hut']
+        self.DALLA_DOUVAN = ['areaid2449', 'areaid2430']
+        self.ALDO_BROTAIN = ['areaid1254', 'areaid1226']
+        self.PLOVERS = ['areaid1564', 'areaid1600']
+        self.FLOOR_MANAGER = ['areaid1147']
+        self.TARDAN = ['areaid1378']
+        self.RIMARK = ['areaid1231']
+        self.HORBUK = ['areaid1265']
+        self.DOJO = ['areaid917']
+        self.DINI = ['areaid629']
         # self.WHITEBLADE_LYRON = ['areaid2110', 'areaid2097']
         # self.LYRON = ['areaid2097', ] -- too much dmg
 
@@ -378,27 +416,27 @@ class TrackGrindThread(GrindThread):
 
     def setup_tracks(self):
         self.tracks = [
-            Track("Theatre", self.THEATRE_PATH, 0, 20, 0),
-            Track("Market", self.MARKET_PATH, 0, 14, 0),
-            Track("Militia Soldiers", self.MILITIA_SOLDIERS_PATH, 0, 14, 0),
-            Track("Kobolds", self.KOBOLD_PATH, 0, 10, -1), #sentries are suuuper tough
+            Track("Theatre", self.smart_theatre_path, 0, 20, 0),
+            Track("Market", self.smart_market_path, 0, 14, 0),
+            Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0),
+            Track("Kobolds", self.smart_kobold_path, 0, 10, -1), #sentries are suuuper tough
             Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
-            Track("Fort", self.FORT_PATH, 9, 20, 0),
-            Track("North Bandits", self.NORTHERN_BANDITS_PATH, 9, 14, -1),
-            # Track("Eastern Zombies", self.ZOMBIES, 8, 20, -1),
+            Track("Fort", self.smart_fort_path, 9, 20, 0),
+            Track("North Bandits", self.smart_northern_bandits_path, 9, 14, -1),
+            Track("Eastern Zombies", self.ZOMBIES, 8, 20, -1),
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,20,9),
-            Track("Dwarven Field Workers", self.DWARVEN_FIELD_WORKERS_PATH, 9, 20, 0),
-            Track("Mill Workers", self.MILL_WORKERS, 9, 20, 0),
+            Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 20, 0),
+            Track("Mill Workers", self.smart_mill_path, 9, 20, 0),
             # Track("Muggers", self.MUGGER_PATH, 9, 15, -1),
             # Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
-            Track("Gnolls", self.GNOLL_CAVE, 11, 20, -1),
+            Track("Gnolls", self.smart_gnoll_cave, 11, 20, -1),
             Track("Olmer", self.OLMER, 11, 20, -1),
             Track("Cheryn", self.CHERYN, 11, 15, -1),
             Track("Orcs", self.ORCS, 11, 20, -1),
             Track("Artificers", self.ARTIFICERS, 11, 20, -1),
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
-            Track("Rancher Sentries", self.RANCHER_SENTRY, 12, 20, 1),
-            Track("Knights", self.KNIGHTS, 10, 20, 1),
+            Track("Rancher Sentries", self.smart_rancher_path, 12, 20, 1),
+            Track("Knights", self.smart_knights_path, 10, 20, 1),
             # Track("Cathedral", self.CATHEDRAL, 10, 16, 1), # lay priest damage rolls too high
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 20, -1),
             Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1),
@@ -412,7 +450,7 @@ class TrackGrindThread(GrindThread):
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
             Track("Jerrek and Tag", self.JERREK_TAG, 11, 20, -1),
             Track("Gnomes", self.GNOMES, 10, 12, 1),
-            Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 13, -1),
+            Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 13, 0),
             Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1),
             # Track("Plovers", self.PLOVERS, 12, 20, 1),
             Track("Floor Manager", self.FLOOR_MANAGER, 12, 20, -1),
@@ -424,8 +462,8 @@ class TrackGrindThread(GrindThread):
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go", False)
 
-        if self.character.AREA_ID != 2:
-            return ['areaid2']
+        # if self.character.AREA_ID != 2:
+        #     return ['areaid2']
 
         magentaprint("next path = " + str(self.__nextpath), False)
 

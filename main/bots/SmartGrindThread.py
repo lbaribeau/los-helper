@@ -165,8 +165,9 @@ class SmartGrindThread(TrackGrindThread):
         self.cur_area_id = self.character.AREA_ID
 
         if self.is_actually_dumb:
-            if self.cur_area_id != 2:
-                self.direction_list = ["areaid2"]
+            # if not self.in_chapel():
+            #     self.direction_list = self.get_heal_path()
+                # self.direction_list = ["areaid2"]
 
             return super().decide_where_to_go()
         else:
@@ -240,29 +241,29 @@ class SmartGrindThread(TrackGrindThread):
 
     def get_heal_path(self, from_path=-1):
         # magentaprint("SmartGrindThread.get_heal_path() from_path is " + str(from_path) + ", character.AREA_ID is " + str(self.character.AREA_ID) + ".", False)
-        if self.is_actually_dumb and self.character.AREA_ID != 2:
-            return ["areaid2"]
-        elif self.character.AREA_ID == 2:
+        # if self.is_actually_dumb and self.character.AREA_ID != 2:
+        #     return ["areaid2"]
+        # elif self.character.AREA_ID == 2:
+        #     return []
+        # else:
+        try:
+            if from_path == -1:
+                paths = self.mud_map.get_paths_to_nearest_restorative_area(self.character.AREA_ID)
+            else:
+                paths = self.mud_map.get_paths_to_nearest_restorative_area(from_path)
+        except Exception as e:
+            #not a good situation - we can't find a way to the chapel from wherever we are
+            #therefore we should just sit and wait here until we can go on the warpath again
+            magentaprint("Exception getting heal path.")
+            magentaprint(e, False)
+            raise e
+
+        if not paths:
+            magentaprint("SmartGrindThread.get_heal_path() error... no exception but no path returned... make sure the DB is accessible.")
+            self.rest_and_check_aura()
             return []
         else:
-            try:
-                if from_path == -1:
-                    paths = self.mud_map.get_paths_to_nearest_restorative_area(self.character.AREA_ID)
-                else:
-                    paths = self.mud_map.get_paths_to_nearest_restorative_area(from_path)
-            except Exception as e:
-                #not a good situation - we can't find a way to the chapel from wherever we are
-                #therefore we should just sit and wait here until we can go on the warpath again
-                magentaprint("Exception getting heal path.")
-                magentaprint(e, False)
-                raise e
-
-            if not paths:
-                magentaprint("SmartGrindThread.get_heal_path() error... no exception but no path returned... make sure the DB is accessible.")
-                self.rest_and_check_aura()
-                return []
-            else:
-                return get_shortest_array(paths)
+            return get_shortest_array(paths)
 
     def get_vendor_paths(self):
         directions = []
