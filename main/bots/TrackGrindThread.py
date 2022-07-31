@@ -209,7 +209,7 @@ class TrackGrindThread(GrindThread):
         #  'southeast', 'southeast', 'south', 'gate', 'south', 'south', 'gate', 'south', 'south', 'south', 
         #  'south', 'south', 'gate', 'east', 'south', 'south', 'chapel']
 
-        self.SPIDER_FOREST = ['areaid1886','areaid2355','areaid1886','areaid2355', 'areaid2']
+        self.SPIDER_FOREST = ['areaid1886','areaid2355','areaid1886','areaid2355']
 
         #The following areas repeat a bit because the spawns are fast
         self.smart_knights_path = ['areaid1053', 'south',
