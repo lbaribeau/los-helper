@@ -220,7 +220,7 @@ class SmartCombat(CombatObject):
                 spell_percent = max(self.character.spell_proficiencies.values())
                 self.black_magic = self.character.info.pty < 7 or spell_percent >= 5 or self.character.PREFER_BM
                 self.spell = self.determine_favorite_spell_for_target()
-            else:
+            elif self.character.info.pty > 10:
                 magentaprint("Mob is too weak for me to cast spells on so I'ma heal", False)
                 self.black_magic = False
                 self.spell = None
