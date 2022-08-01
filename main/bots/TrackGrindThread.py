@@ -108,7 +108,7 @@ class TrackGrindThread(GrindThread):
             'n','n','n','n','e','n','n','n','n','nw','nw','nw','w','w','w','nw','nw','n','gate','e','n','n','n','w',
             'n','chapel'
         ]
-        self.smart_fort_path = ['areaid314', 'n','n','w','s','store','out','s','e','e','n',"door", "door",
+        self.smart_fort_path = ['areaid314', 'gate', 'n','n','w','s','store','out','s','e','e','n',"door", "door",
             'n','w','s','s']
         self.FORT_PATH = [
             'out','n','n', 'w','gate','n','n','n','n','n','gate','n','n','w','s','store','out','s','e','e','n',"door", "door",
