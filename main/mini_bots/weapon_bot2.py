@@ -133,7 +133,12 @@ class MainhandWeaponBot(MiniBot):
     def has_broken_weapon_in_inventory(self):
         return any([self.command_handler.inventory.has_broken(p.item.name) for p in self.get_possible_weapons()])
     def has_usable_weapon_in_inventory(self):
+        # Ehrm can we start doing "looks" here in case we can't maintain is_usable
         return any([self.command_handler.inventory.has_unbroken(p.item.name) for p in self.get_possible_weapons()])
+    def look_at_each_possible_weapon(self):
+        for w in self.get_possible_weapons():
+            for r in self.command_handler.inventory.get_all_references(w.item.name):
+                self.command_handler.look.execute_and_wait(r)
     def get_usable_weapon_ref(self):
         if not self.has_usable_weapon_in_inventory():
             return None
@@ -151,6 +156,7 @@ class MainhandWeaponBot(MiniBot):
 
     def check_weapons(self):
         self.get_possible_weapons()
+        self.look_at_each_possible_weapon()
         if self.possible_weapons[0].item.name not in self.inventory.keep_list:
             self.inventory.keep_list.append(self.possible_weapons[0].item.name)
             magentaprint("Weapon bot added {0} to inventory keep list, {1}".format(self.possible_weapons[0].item.name, self.possible_weapons[0].item.name in self.inventory.keep_list))
@@ -181,8 +187,8 @@ class MainhandWeaponBot(MiniBot):
                     # Maybe easier to just spam wield on our entire inventory
             elif self.has_broken_weapon_in_inventory():
                 repair = self.command_handler.repair
-                weapon = self.get_broken_weapon_ref()
                 self.travel_bot.go_to_nearest_smithy(grinding=False)
+                weapon = self.get_broken_weapon_ref()
                 repair.execute_and_wait(weapon)
                 if repair.success or repair.failure:
                     # Repair is in charge of updating inventory, so we know that's done
@@ -205,8 +211,8 @@ class MainhandWeaponBot(MiniBot):
                 return 0
             elif self.has_broken_weapon_in_inventory():
                 repair = self.command_handler.repair
-                weapon = self.get_broken_weapon_ref()
                 self.travel_bot.go_to_nearest_smithy(grinding=False)
+                weapon = self.get_broken_weapon_ref()
                 repair.execute_and_wait(weapon)
                 if repair.success:
                     return 0
@@ -274,7 +280,7 @@ class MainhandWeaponBot(MiniBot):
             # What if we passed the baton to the smartCombat run
             # Since it'd be nice to get feedback on this rewield
             # Not sure what happened to is_usable
-            
+
         else:
             # Try weapon bot 1?
             # Try one of the functions below from weapon bot 1?
@@ -667,8 +673,10 @@ class MainhandWeaponBot(MiniBot):
             magentaprint("WeaponBot: Warning: get_possible_weapons() was called before init_with_map.")
             return None
         else:
-            self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max('weapon', self.character.weapon_type, self.character.weapon_level)
-            self.possible_weapons = sorted(self.possible_weapons, key = lambda i: i.item.level, reverse=True)
+            # self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max('weapon', self.character.weapon_type, self.character.weapon_level)
+            # self.possible_weapons = sorted(self.possible_weapons, key = lambda i: i.item.level, reverse=True)
+            # Strict about level
+            self.possible_weapons = AreaStoreItem.get_by_item_type_and_level('weapon', self.character.weapon_type, self.character.weapon_level)
             magentaprint("WeaponBot possible weapons: " + str(self.possible_weapons))
             return self.possible_weapons
 

@@ -6,7 +6,8 @@ from comm import RegexStore as R
 class Repair(Command):
     command = 'repair'
     success_regexes = [
-        R.repair
+        R.repair,
+        R.not_broken # Weird if this happens but may as well act as if the thing got repaired
     ]
     failure_regexes = [
         R.darnitall

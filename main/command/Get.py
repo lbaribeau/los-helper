@@ -32,7 +32,7 @@ class Get(Command):
     def notify(self, regex, match):
         if regex in R.you_get:
             # Erhm, currently Inventory adds stuff to itself on its own, which is fine
-            # The we want an organized place to put automatic ring wearing... is it here??
+            # We want an organized place to put automatic ring wearing... is it here??
             # For the human, sure, we may as well automate rings... it should be optional...
             # but defaulted to yes... so where do we do it... I want to take mudReaderHandler 
             # off of the bot, so the bot can be pure sequential action... smartCombat has 

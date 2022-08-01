@@ -52,15 +52,15 @@ class ReferencingList(object):
         # magentaprint("RefList adding %s." % str(obj))
         for i in range(0, len(self.list)):
             if self.list[i] > obj:
-                self.list.insert(i, obj)
-                # magentaprint("RefList inserted %s at index %s." % (str(obj), str(i)))
+                self.list.insert(i, obj) # Seem like this does add it at the proper place
+                magentaprint("RefList inserted %s at index %s." % (str(obj), str(i)))
                 return
 
         # magentaprint("RefList appended %s." % str(obj))
         # self.list.append(FakeItem(item))
         # self.list.sort()  # We want to keep broken items sorted properly by inserting manually
         # self.list.append(obj)
-        self.list = sorted(self.list + [obj])
+        self.list = sorted(self.list + [obj]) # Ehhh do we really want to sort here
 
     def add_from_list(self, list):
         # Could be made more efficient by separating sorting from obj/string managing in add()
@@ -90,9 +90,11 @@ class ReferencingList(object):
             self.remove(x)
 
     def set_usable(self, ref):
+        magentaprint("ReferencingList set_usable on {0} ({1})".format(ref, self.get(ref)))
         self.get(ref).usable = True
 
     def unset_usable(self, ref):
+        magentaprint("ReferencingList unset_usable on {0} ({1})".format(ref, self.get(ref)))
         self.get(ref).usable = False
 
     def set_unusable(self, ref):
@@ -291,13 +293,16 @@ class ReferencingList(object):
                 if len(last_ref.split()) > 1:
                     r.extend([first_ref + ' ' + str(x) for x in range(2, int(last_ref.split()[1]) + 1)])
                 return r
-
-        return []
+        else:
+            return [] # Why we get None in the list of .get_all_by_name I do not know (should get this empty list)
 
     def get_all(self, ref_list):
         result = []
         for ref in ref_list:
             result.append(self.get(ref))
+            # i = self.get(ref) # Appending None?
+            # if i:
+            #     result.append(i)
         return result
 
     def get_all_by_name(self, name):

@@ -633,7 +633,6 @@ class Inventory(SimpleCommand, ReferencingList):
 
     def add(self, item_string):
         magentaprint("Inventory.add %s parses as %s." % (item_string, str(parse_item_list(item_string))))
-
         items = parse_item_list(item_string)  # This is overloaded for "hammer" and "a hammer"
         for i in items:
             # magentaprint("Inventory adding %s" % str(i))

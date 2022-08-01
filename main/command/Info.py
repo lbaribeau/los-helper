@@ -23,7 +23,12 @@ class Info(BotReactionWithFlag):
         " \|        AC : (-?\d+) +\|  \|    Gold : (\d+) +\|  \|  Objects : (\d+)"
     )
 
-    regexes = [header, your_preferred, first, second]
+    regexes = [
+        header, 
+        your_preferred, 
+        first, 
+        second
+    ]
 
     got_first = False
     got_second = False

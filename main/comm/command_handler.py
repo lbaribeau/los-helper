@@ -45,6 +45,7 @@ from reactions.referencing_list import ReferencingList
 from mini_bots.sell_bot         import SellBot
 from command.CommandThatRemovesFromInventory import Sell, Drop, Drink, Use
 from command.potion_thread import PotionThreadHandler, Consume
+from command.look               import Look
 
 class CommandHandler(object):
     def init_map_and_bots(self):
@@ -126,6 +127,8 @@ class CommandHandler(object):
         self.sell_bot = SellBot(self.character.inventory, self.sell, self.drop)
         # Use will have to keep inventory up to date, right
         # That is if items support usable (small inhaler, white amulet, rods)
+        self.look = Look(self.character.inventory, telnetHandler)
+        mudReaderHandler.add_subscriber(self.look)
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
@@ -321,8 +324,10 @@ class CommandHandler(object):
             # self.user_wie2(user_input[4:].lstrip())
         elif re.match("wear? ", user_input):
             self.wear.execute(user_input.partition(' ')[2])
-        elif re.match("repa?|repair?", user_input):
+        elif re.match("(repai?|repair) ", user_input):
             self.repair.execute(user_input.partition(' ')[2])
+        elif re.match("(lo?|look?) ", user_input):
+            self.look.execute(user_input.partition(' ')[2])
         elif re.match("fle?$|flee$", user_input):
             self.stop_bot()
             self.user_flee()

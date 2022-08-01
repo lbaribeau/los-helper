@@ -12,6 +12,8 @@ class MudItem(GenericMudObject):
         # references depend on the container
         # ie. Given large bag, small knife, small bag: small bag is small 2 or bag 2
         # (an object doesn't know it's reference on its own)
+        # This is supposed to be like, 
+        # use the first word, or use the second word, and hope it doesn't clash with anything in case of lag
         self.usable = True
 
     def map(self):

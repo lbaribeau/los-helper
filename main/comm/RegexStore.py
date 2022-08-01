@@ -607,20 +607,22 @@ repair = [r"The smithy hands (?:an?|some) (?P<weapon>[A-Za-z' ]+?) back to you, 
 darnitall = [r'"Darnitall!" shouts the smithy, "I broke another\. Sorry la(d|ss)\.']
 not_a_repair_shop = [r"This is not a repair shop\."]
 
-broken = [r"It is broken\."] # I think this is for broken armour
-# terrible_condition = [r"It is in terrible condition\."]
-# bad_condition = [r"It is in bad condition\."]
-# poor_condition = [r"It is in poor condition\."]
-# fair_condition = [r"It is in fair condition\."]
-# fine_condition = [r"It is in fine condition\."]
-# good_condition = [r"It is in good condition\."]
+# pristine_condition = [r"It is in pristine condition\."]
 # excellent_condition = [r"It is in excellent condition\."]
-# pristine_condidtion = [r"It is in pristine condition\."]
-condition = [r"It is in [a-z]+ condition\."]
+# good_condition      = [r"It is in good condition\."]
+# fair_condition      = [r"It is in fair condition\."]
+# fine_condition      = [r"It is in fine condition\."]
+# poor_condition      = [r"It is in poor condition\."]
+# bad_condition       = [r"It is in bad condition\."]
+# terrible_condition  = [r"It is in terrible condition\."]
+condition = [r"It is in ([a-z]+) condition\."]
+broken = [r"It is broken\."] # I think this is for broken armour
+unusable = [r"It is unusable\."] # weapons
 
 # Armour
 repair_what    = [r"Repair what\?"]
 cant_repair    = [r"The smithy cannot repair that\."]
+not_broken     = [r"It's not broken yet\."]
 drop_what      = [r"Drop what\?"]
 sell_what      = [r"Sell what\?"]
 # fled         = [r"You run like a chicken\."]

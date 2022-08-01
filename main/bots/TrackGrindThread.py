@@ -17,25 +17,17 @@ class TrackGrindThread(GrindThread):
         elif self.character.level <= 6:
             self.__TOTALPATHS = 12 # include hookers for level 3
         elif self.character.level <= 7:
-            # lvl 7 strong enough for bandits
-            self.__TOTALPATHS = 16
+            self.__TOTALPATHS = 16 # used to do bandits at level 7
         elif self.character.level <= 10:
             self.__TOTALPATHS = 22
+        elif self.character.level <= 14:
+            self.__TOTALPATHS = 75 
+        elif self.character.level <= 15:
+            self.__TOTALPATHS = 89
+        elif self.character.level <= 16:
+            self.__TOTALPATHS = 101
         else:
-            # self.__TOTALPATHS = 28  # # Area ids unfortunately must be updated.
-            #self.__TOTALPATHS = 30
-            # self.__TOTALPATHS = 52 # Added some graph pathing
-            # self.__TOTALPATHS = 83
-
-            # self.__TOTALPATHS = 75 # includes level 10s for level 14
-            # self.__TOTALPATHS = 89 # includes level 11s for level 15
-            self.__TOTALPATHS = 101 # includes level 12s for level 16
-        # elif self.character.level <= 10:
-        #     self.__TOTALPATHS = 20 # start the fort and bandits at lvl 8
-        # elif self.character.level > 12:
-        #     self.__TOTALPATHS = 24
-        # else:
-        #     self.__TOTALPATHS = 22 # start the fort and bandits at lvl 8
+            self.__TOTALPATHS = 101
 
         if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
             self.__nextpath = starting_path
@@ -388,7 +380,9 @@ class TrackGrindThread(GrindThread):
         elif self.__nextpath == 33:
             return self.get_path_to_and_from_mob("Aldo")
         elif self.__nextpath == 35:
-            return self.get_path_to_and_from_mob("Jerrek") # He gets fought occasionally but we should fight him before tag
+            return self.get_path_to_and_from_mob("Jerrek") 
+            # He gets fought occasionally but we should fight him before Tag
+            # This can spend some time if he's not in the kill list
         elif self.__nextpath == 37:
             return self.get_path_to_and_from_mob("Tag")
         elif self.__nextpath == 39:
@@ -420,10 +414,12 @@ class TrackGrindThread(GrindThread):
             # stevedore
             # forge worker
             # steel collar
+        # CHARACTER 13 / MOBS 9
         elif self.__nextpath == 57:
             return self.get_path_with_all_mobs('Elder Barthrodue')
         elif self.__nextpath == 59:
             return self.get_path_with_all_mobs('director')
+        # CHARACTER 14 / MOBS 10
         elif self.__nextpath == 61:
             return self.get_path_with_all_mobs('Dame Brethil')
             # Director
@@ -448,6 +444,7 @@ class TrackGrindThread(GrindThread):
             return self.get_path_with_all_mobs('dwarven blacksmith')
             # barbarian cook
             # shaman's assistant
+        # CHARACTER 15 / MOBS 11
         elif self.__nextpath == 77:
             return self.get_path_with_all_mobs('minstrel')
         elif self.__nextpath == 79:
@@ -464,6 +461,7 @@ class TrackGrindThread(GrindThread):
             return self.get_specific_path_to_and_from_mob('brother', 0) # throwing stars
         # elif self.__nextpath == 85:
         #     return self.get_specific_path_to_and_from_mob('brother', 1) # Didn't have a brother waiting there
+        # CHARACTER 16 / MOBS 12
         elif self.__nextpath == 89:
             return self.get_path_with_all_mobs('Horbuk') # easy
         # elif self.__nextpath == 89:
@@ -510,7 +508,7 @@ class TrackGrindThread(GrindThread):
         # Human paladin likes steel collars (oremaster) steel armour (Rimark) steel mask (spiv) rings (bandits, sawmill, minstrel)
         # Corien
         # Shaldena the Red
-        
+
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.__nextpath))
             return list(self.PATH_TO_SKIP_WITH[:])

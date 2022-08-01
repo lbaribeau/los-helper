@@ -248,7 +248,8 @@ class Character(object):
     # thugs hostile.  They drop leather collar
     lvl3_monsters = [ # 25-35 exp
         'market official', 'street trader', 'field worker', 'harvester', 'horse', 'cow', 'doorman', 'stilt walker',  'messenger',
-        'cashier', 'thatcher',  'tax inspector', 'journeyman', 'human miner', 'hobbitish miner', 'hawk', 'stacker', 'mill worker',
+        'cashier', 'thatcher',  'tax inspector', 'journeyman', 'human miner', 'hobbitish miner', 'hawk', 'stacker', # ring mail gauntlets
+        'mill worker',
         'General', # (The)
         'bouncer', 'yard worker', 'town clerk', 'stevedore', 'scared trawlerman', 'cooper','digger', 'pulley operator',
         'ore carrier', # copper ring
@@ -277,13 +278,15 @@ class Character(object):
     ]
     # hungry spiders are hostile
     lvl4_red_monsters = [
-        'kobold shaman', 'kobold champion', 'hungry spider', 'ghoul'
+        'kobold shaman', 'kobold champion', # studded leather leggings
+        'hungry spider', 'ghoul'
         # dice player
         # loser
     ]
     lvl5_monsters = [
         'dwarven farm hand', 'dwarven barmaid', 'fort sentry', 'fur trader', 'aristocrat',
-        'nobleman', 'lyrist', 'logger', 'veteran', 'bruiser', 'axeman', 'seeker', 'hunter', 'bull', 'aspirant',
+        'nobleman', 'lyrist', 'logger', 'veteran', # leather gloves
+        'bruiser', 'axeman', 'seeker', 'hunter', 'bull', 'aspirant',
         'shaft manager', 'mine foreman',
         'adjudicator', 'eagle', 'giant crab' # arrived by the pool by gnolls
         # 'vicar', 'lay priest', 'protector', 'battered knight', 'orange picker' # makes trackgrind too red?
@@ -303,7 +306,8 @@ class Character(object):
     ]
     lvl6_red_monsters = [ #1574 for gnoll camp
         'gnoll sentry', 'bandit swordsman', # silver ring
-        'gnoll spearsman', 'gnoll raider', 'gnoll bandit','kobold priest','kobold chieftain' # Levels aren't right but paths are
+        'gnoll spearsman', 'gnoll raider', 'gnoll bandit','kobold priest','kobold chieftain', # Levels aren't right but paths are
+        'bounty hunter' # Spawns at Tardan, dusty red, elven bow, yew staff
     ]
     lvl7_monsters = [ # ~200 exp
         'dwarven cook', 'swordsman', 'fort sergeant', 
@@ -322,7 +326,7 @@ class Character(object):
         'Douvan', # 472 gold
         'Olmer', 'Thereze', 'Farmer Viladin', 'Rancher Renstone', 'berzerker', 'dwarven hunter',
         'initiate', 'berserk orc', #'hedge knight', 
-        'refinery supervisor', 'owlbear','warrior' #'sentry'
+        'refinery supervisor', 'owlbear','warrior', #'sentry'
         'elven trader', # elven waybread "It has only a very mild subtle taste, blandly inoffensive."
         # 'elven trader', 'old knight', 'dusty warrior'
         # dark warrior  sacrificing priestess
@@ -349,7 +353,7 @@ class Character(object):
         'Rimark', # steel sleeves(s), leggings, armour(!)(many sizes)
         'Commander Rilmenson', # heavy crossbow
         'Master of Ceremonies', # 280, adamantine sword 750g (The)
-        'Farmer McDermott', 'dwarven blacksmith' # 400
+        'Farmer McDermott', 'dwarven blacksmith', # 400
         'abbot', # 445
         'barbarian cook', "shaman's assistant",
         'Ringmaster', 'Marie', 'market guard', #(<=10 (need to check these)) (The)
@@ -402,13 +406,13 @@ class Character(object):
     ]
     lvl14_monsters = [
         'Olarma', 
-        'Manic Soothsayer' # dragon claws (thief boots), stolen contract (rare), crypt dust (The)
+        'Manic Soothsayer', # dragon claws (thief boots), stolen contract (rare), crypt dust (The)
         'Team Leader Egan', # night blade (E)
         'Rancher Plover', # assassin's dagger
         'Qimoth', "Th'kit the HorseMaster", 'warmonger',
         'Lord Tamaran', # aaashaaal's gift (protect air), diamantium cross (trade to Douvan for ram staff)
         'castle priest',
-        'cave troll guard', 
+        'cave troll guard'
     ]
     # platinum crucifix
     # Farmer Woldis
@@ -461,7 +465,7 @@ class Character(object):
     lvl16_monsters = ['Holbyn', # Holby closes at night
     'Ordaran the White', 'Pansy', 'Vickie', 'Matriarch Sara']  # Hawk camp
     lvl17_monsters = ['Faldomet', 
-    'Patriarch Jedd Morhennon', # Not possible
+    # 'Patriarch Jedd Morhennon', # Not possible
     'Farside', 'Lord Arduis', 'Lady Arielle']
     lvl18_monsters = ['Lady Jenlira', # vigil knight guards the entrance
     'Deep Root',
@@ -492,12 +496,9 @@ class Character(object):
 
     def set_monster_kill_list(self):
         self.MONSTER_KILL_LIST = []
-
         self.MONSTER_KILL_LIST.extend(self.lvl1_red_monsters)
-
         if self.level <= 7:
             self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
-
         if self.level >= 4:
             if self.level < 13:
                 self.MONSTER_KILL_LIST.extend(self.lvl2_monsters)
