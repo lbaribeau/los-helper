@@ -272,7 +272,10 @@ class BotThread(threading.Thread):
     def in_chapel(self):
         magentaprint("BotThread.in_chapel(): MUD_AREA is " + str(self.character.MUD_AREA))
         # return self.character.AREA_ID == 2
-        return self.character.MUD_AREA.area.is_restorative
+        if self.character.MUD_AREA is not None:
+            return self.character.MUD_AREA.area.is_restorative
+        else:
+            return False
 
     def decide_where_to_go(self): #each logic thread will have to implement this function
         #self.direction_list = []
