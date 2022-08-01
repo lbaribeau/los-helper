@@ -1,5 +1,6 @@
 
 import threading
+import traceback
 from threading import Thread
 import atexit
 import time
@@ -107,6 +108,7 @@ class BotThread(threading.Thread):
                     self.do_post_go_actions()
                 self.do_after_directions_travelled()
         except Exception as e:
+            traceback.print_exc()
             print (e)
             self.stop()
 
