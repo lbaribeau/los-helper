@@ -114,9 +114,7 @@ class TrackGrindThread(GrindThread):
             'out','n','n', 'w','gate','n','n','n','n','n','gate','n','n','w','s','store','out','s','e','e','n',"door", "door",
             'n','w','s','s','gate', 's','s','s','s','s','gate','w','sw','s','s','s','e','e','e','e','n','w','n','chap'
         ]
-        self.OLD_MAN_JAMES = [
-            'areaid611', 'out', 'west', 'north', 'smithy'
-        ]
+        self.OLD_MAN_JAMES = ['areaid611', 'out', 'west', 'north', 'smithy']
         # self.GOOURD = [
         #     'areaid1899'
         # ]
@@ -545,6 +543,8 @@ class TrackGrindThread(GrindThread):
 class Track():
     def __init__(self, name, track, min_level, max_level, track_aura):
         self.name = name
+        # setup the track with a buffer at the end so that last node mobs don't get misattributed to the next track
+        track.append("think")
         self.track = track
         self.last_run = 0
         self.min_level = min_level
