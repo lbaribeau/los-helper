@@ -172,6 +172,13 @@ class CombatReactions(object):
         magentaprint("Combat Time: " + str(round(self.character.COMBAT_TIME/60, 2)) + ", " + str(percent_combat) + "%", no_print)
         magentaprint("Minutes Run: " + str(runtime), no_print)
 
+        # equipped_items = self.character.inventory.equipped_items
+        # magentaprint(equipped_items, False)
+        # equipment = {}
+        # for slot in self.character.inventory.equipped_items.keys():
+        #     equipment[slot] = equipped_items[slot]
+        # magentaprint(equipment, False)
+
         output = {
                 'hp': self.character.hp,
                 'mp': self.character.mp,
@@ -192,6 +199,9 @@ class CombatReactions(object):
                 'expm': expm,
                 'kills': kills,
                 'kpm': kpm,
+                'weapon1': self.character.weapon1,
+                'weapon2': self.character.weapon2,
+                # 'equipment': self.character.inventory.equipped_items,
                 'inventory': self.character.inventory.to_dict(),
                 'mobs_killed': self.mobs_killed,
                 'timestamp': get_timestamp(),

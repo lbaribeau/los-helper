@@ -86,6 +86,10 @@
           </tr>
         </table>
     </div>
+    <div class="box"><strong>Equipment...</strong>
+        <div class="stat">Wielded: [{{report.weapon1}}]</div>
+        <div class="stat" v-if="report.weapon2 != ''">Wielded: {{report.weapon2}}</div>
+    </div>
     <div class="box"><strong>Inventory...</strong>
         <table class="table is-fullwidth">
           <tr>
