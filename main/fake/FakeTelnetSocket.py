@@ -140,7 +140,7 @@ class FakeTelnetSocket(object):
         print ("Connected to FakeTelnetSocket!")
 
     def read_some(self):
-        if len(self.socket_output) is not 0:
+        if len(self.socket_output) != 0:
             fso = FakeSocketOutput(self.socket_output.pop(0))
             return fso
         else:

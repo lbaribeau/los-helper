@@ -53,7 +53,7 @@ class ExitType(NamedModel):
             #print("Could not find exit Type with name: " + name, False)
             exit_types = None
 
-        print("Matched exit given: " + str(name) + ", to: " + str(exit_types))
+        # print("Matched exit given: " + str(name) + ", to: " + str(exit_types))
         return exit_types
 
     def get_exit_type_by_name_and_opposite(name, exit_id): #this should always be unique

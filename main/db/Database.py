@@ -68,7 +68,7 @@ where a.id in (
         Unknown.save()
 
     except Exception as e:
-        print("Database.py ignoring exception in create_tables(): "+str(e))
+        # print("Database.py ignoring exception in create_tables(): "+str(e))
         pass
 
 def drop_tables():
@@ -88,21 +88,21 @@ def drop_tables():
         try_drop(ItemTypeData)
         try_drop(AreaStoreItem)
     except Exception as e:
-        print("Database.py ignoring exception in drop_tables(): "+str(e))
+        # print("Database.py ignoring exception in drop_tables(): "+str(e))
         pass
 
 def try_create(cls):
     try:
         cls.create_table()
     except Exception as e:
-        print("Database.py ignoring exception in try_create(): "+str(e))
+        # print("Database.py ignoring exception in try_create(): "+str(e))
         pass
 
 def try_drop(cls):
     try:
         cls.drop_table()
     except Exception as e:
-        print("Database.py ignoring exception in try_drop(): "+str(e))
+        # print("Database.py ignoring exception in try_drop(): "+str(e))
         pass
 
 from sys import argv
