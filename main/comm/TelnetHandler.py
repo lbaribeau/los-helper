@@ -63,7 +63,7 @@ class TelnetHandler(object):
         try:
             self.tn.write(command.encode('ascii'))
         except socket.error:
-            magentaprint("TelnetHandler write() error: " + str(socket.error))
+            magentaprint("Seems fatal. Reraising TelnetHandler write() error: " + str(socket.error))
             raise socket.error
         # After "### Shutting down now.", we get an exception on this write:
         # ConnectionAbortedError: [WinError 10053] An established connection was aborted 

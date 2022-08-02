@@ -1,12 +1,31 @@
 from peewee import *
-import networkx as nx
+import networkx
 
 from db.Database import *
-from misc_functions import *
-# from misc_functions import magentaprint
+# from misc_functions import *
+from misc_functions import do_magentaprint
 from comm.ConsoleHandler import newConsoleHandler
 
+def get_shortest_array(list_of_arrays):
+    shortest_array = []
+
+    for array in list_of_arrays:
+        shortest_array.append(len(array))
+
+    #lengths=[len(a) for a in list_of_arrays]
+    #return list_of_arrays[lengths.index(min(lengths, key=int))]
+    #return min(list_of_arrays, key=len)
+
+    return list_of_arrays[
+        shortest_array.index(min(shortest_array, key=int))
+    ]
+
 class MudMap(object):
+    # def magentaprint(self, text):
+    #     newConsoleHandler().magenta()
+    #     print(text)
+    #     newConsoleHandler().white()
+
     def __init__(self):
         # magentaprint("MudMap: initialized.")
         los_map = None
@@ -16,15 +35,15 @@ class MudMap(object):
 
     def re_map(self):
         self.ready = False
-        self.los_map = nx.DiGraph()
+        self.los_map = networkx.DiGraph()
         self.populate_map()
         self.ready = True
 
     def populate_map(self):
         areas = Area.raw('select * from v_areas_for_graph')
         area_exits = AreaExit.raw('select * from v_areaexits_for_graph')
-        # self.magentaprint("MudMap populate_map areas:" + str(areas))
-        # self.magentaprint("MudMap populate_map area_exits:" + str(area_exits))
+        # do_magentaprint("MudMap populate_map areas:" + str(areas))
+        # do_magentaprint("MudMap populate_map area_exits:" + str(area_exits))
 
         for area in areas:
             self.los_map.add_node(area.id)
@@ -39,7 +58,7 @@ class MudMap(object):
             # if area_exit.area_to is not None:
             #     area_to_id = area_exit.area_to.id
             #     area_is_useable = area_exit.is_useable
-            #     #magentaprint("area useable: " + str(area_is_useable) + " " + str(area_exit.is_useable), False)
+            #     #do_magentaprint("area useable: " + str(area_is_useable) + " " + str(area_exit.is_useable), False)
 
             # if area_is_useable: #don't add unusable areas to the graph
             #     name = area_exit.exit_type.name
@@ -63,9 +82,9 @@ class MudMap(object):
         # self.magentaprint("MudMap.get_path self.los_map: " + str(self.los_map), False)
         # self.magentaprint("MudMap.get_path start/end: " + str(start_area_id) + "/" + str(end_area_id) + '.', False)
         try:
-            node_path = nx.shortest_path(self.los_map, source=start_area_id, target=end_area_id)
+            node_path = networkx.shortest_path(self.los_map, source=start_area_id, target=end_area_id)
         except Exception as e:
-            self.magentaprint("MudMap: " + str(e))
+            do_magentaprint("MudMap: " + str(e))
             raise e
 
         edge_path = []
@@ -94,38 +113,67 @@ class MudMap(object):
     def get_nearest_unexplored_path(self, start_area_id):
         return self.get_path(start_area_id, 1)
 
-    def get_paths_to_nearest_restorative_area(self, start_area_id):
+    def get_paths_to_restorative_area(self, start_area_id):
         paths = []
-
         areas = Area.get_restorative_areas()
-
         for area in areas:
             try:
                 paths.append(self.get_path(start_area_id, area.id))
             except Exception as e:
                 continue
                 # print ("couldn't path to area")
-                # magentaprint("couldn't path to area")
+                # do_magentaprint("couldn't path to area")
 
         return paths
 
     def get_smithy_paths(self, start_area_id):
         paths = []
-
         areas = Area.get_smithy_areas()
-
         for area in areas:
             try:
                 paths.append(self.get_path(start_area_id, area.id))
             except Exception as e:
                 continue
                 # print ("couldn't path to area")
-                # magentaprint("couldn't path to area")
+                # do_magentaprint("couldn't path to area")
 
         return paths
 
+    def get_pawn_paths(self, start_area_id):
+        paths = []
+        areas = Area.get_pawn_shops()
+        for area in areas:
+            try:
+                paths.append(self.get_path(start_area_id, area.id))
+            except Exception as e:
+                continue
+                # print ("couldn't path to area")
+                # do_magentaprint("couldn't path to area")
+        return paths
+
+    def get_tip_paths(self, start_area_id):
+        paths = []
+        areas = Area.get_tips()
+        for area in areas:
+            try:
+                paths.append(self.get_path(start_area_id, area.id))
+            except Exception as e:
+                continue
+        return paths
+
+    def get_path_to_nearest_restorative_area(self, start_area_id):
+        # We will need evil restorative areas and good restorative areas
+        return get_shortest_array(self.get_paths_to_restorative_area(start_area_id))
+    def get_path_to_nearest_smithy(self, start_area_id):
+        return get_shortest_array(self.get_smithy_paths(start_area_id))
+    def get_path_to_nearest_pawn_shop(self, start_area_id):
+        return get_shortest_array(self.get_pawn_paths(start_area_id))
+    def get_path_to_nearest_tip(self, start_area_id):
+        return get_shortest_array(self.get_tip_paths(start_area_id))
+
     #static functions
     def find(text):
+        # text can be an area or a mob name
         areas = Area.get_areas_by_partial_name(text)
         mob_locations = MobLocation.get_locations_by_partial_mob_name(text)
         mobs = Mob.get_mobs_by_partial_name(text)
@@ -151,7 +199,7 @@ class MudMap(object):
         return locations
 
     def next_node(self, aid, exit_name):
-        # magentaprint(str(self.mud_map.los_map[self.character.AREA_ID]))
+        # do_magentaprint(str(self.mud_map.los_map[self.character.AREA_ID]))
         node_dict = self.los_map[aid]
         for n in node_dict.keys():
             # (Pdb) print g[5]
@@ -165,13 +213,4 @@ class MudMap(object):
         # item = Item(armour_name)
         # item.map()
         return Item.lookup_armour_type(armour_name)
-
-
-
-
-
-
-
-
-
 

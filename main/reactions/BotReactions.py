@@ -1,6 +1,7 @@
 
 from misc_functions import magentaprint 
 import time
+import threading
 
 """ A BotReaction is an object that defines 'regexes' and 'notify' and
 gets registered with the MudReader, which will call notify with a regex
@@ -30,6 +31,8 @@ class BotReaction(object):
 #         text can be used.
 #         """
 #         raise NotImplementedError()
+    # So my Use thread uses this but I'm not sure anything else does
+    # Because with threading.Event things don't need a polling loop
     def wait_loop(self, flag_name):
         start_time = time.time()
         run_time = 0
@@ -45,7 +48,9 @@ class BotReaction(object):
             setattr(self, flag_name, False)
             return True
 
-def wait_for_a_flag(class_with_flag):
+def wait_for_class_flag(class_with_flag):
+    # --- Deprecated. Inherit threading.Event functions. ---
+    # No, this is not for command coming back... this is also for attack cooldown
     # magentaprint("wait_for_flag() called on " + str(class_with_flag) + " starting " + str(class_with_flag._waiter_flag) + ".")
     # I dunno why this always gets to 8 seconds and doesn't detect the flag.
     class_with_flag._waiter_flag = False  # Use __class__ for writing or else it will make an instance level flag
@@ -70,8 +75,11 @@ def wait_for_a_flag(class_with_flag):
         class_with_flag._waiter_flag = False
         return True
 
+# def wait_for_given_flag(f):
 
-class BotReactionWithFlag(BotReaction):
+#class BotReactionWithFlag(BotReaction):
+class PollingBotReactionWithFlag(BotReaction):
+    ### DEPRECATED: INHERIT THREADING.EVENT INSTEAD ###
     """ wait_for_flag() is useful when you send a telnet command and
     want to wait for the server's response to that command. """
 
@@ -90,7 +98,7 @@ class BotReactionWithFlag(BotReaction):
 
     def wait_for_flag(self):
         # magentaprint("Waiting for flag " + str(self), end="")
-        wait_for_a_flag(self.__class__)
+        wait_for_class_flag(self.__class__)
 
         # self._waiter_flag = False
         # start_time = time.time()
@@ -118,7 +126,7 @@ class BotReactionWithFlag(BotReaction):
     def wait_for_class_flag(cls):
         # magentaprint("wait_for_class_flag on " + str(cls))
         # magentaprint(str(cls._waiter_flag))
-        wait_for_a_flag(cls)
+        wait_for_class_flag(cls)
         # magentaprint("wait_for_class_flag done ")
 
 
@@ -128,10 +136,36 @@ class BotReactionWithFlag(BotReaction):
     # missing, so having this high shouldn't slow anything down.  If it does,
     # a regex can be handled better.
 
+class BotReactionWithFlag(threading.Event, BotReaction):
+    def notify(self, regex, M_obj):
+        self.set()
+    def wait_for_flag(self, **kwargs):
+        if 'timeout' in kwargs:
+            timed_out = not self.wait(**kwargs)
+        else:
+            timed_out = not self.wait(timeout=6) # This gets used unlike the old class variable
+            # Not sure how to test this
+            # Maybe at the grazing fields with the false inventory match
+        if timed_out:
+            magentaprint("BotReactionWithFlag {0} timed out!!! Wait() returning now. Also, set the flag for the next wait call.".format(self.__class__.__name__))
+            self.set()
+
+    def set_waiter_flag(self):
+        self.clear()
+    #@classmethod
+    def wait_for_class_flag(cls):
+        # Eh do I have to add this? CombatObjectr is using it
+        # magentaprint("wait_for_class_flag on " + str(cls))
+        # magentaprint(str(cls._waiter_flag))
+        #wait_for_class_flag(cls)
+        cls.wait() # Waiter flag is a class variable or object variable....
+        # Hmph
+        # Eh can we pretend we are an object?
+
+        # magentaprint("wait_for_class_flag done ")
 # class BotReactionWithClassFlag(BotReaction):
 #     """ This reaction provides a flag that can be watched at the class level,
 #     so you don't need to have the reaction object on hand to watch the flag."""
-
 
 class GenericBotReaction(object):
     """ BotReaction which takes telnet_commands as an additional argument,

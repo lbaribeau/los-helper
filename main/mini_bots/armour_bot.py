@@ -4,17 +4,19 @@ import re
 
 from misc_functions import *
 from Exceptions import *
-from comm import RegexStore as R
+from comm                           import RegexStore as R
 from combat.mob_target_determinator import MobTargetDeterminator
-from mini_bots.travel_bot import TravelBot
-from mini_bots.smithy_bot import SmithyBot
-from mini_bots.shopping_bot import ShoppingBot
-from mini_bots.mini_bot import MiniBot
+from mini_bots.travel_bot           import TravelBot
+from mini_bots.smithy_bot           import SmithyBot
+from mini_bots.shopping_bot         import ShoppingBot
+from mini_bots.mini_bot             import MiniBot
+from db.Database                    import AreaStoreItem
 
 class ArmourBot(MiniBot):
     def __init__(self, char, command_handler, map):
         super().__init__()
         self.char = char
+        self.inventory = self.char.inventory 
         self.command_handler = command_handler
         self.map = map
         self.broken_armour = []
@@ -23,8 +25,11 @@ class ArmourBot(MiniBot):
         #     R.armour_breaks[0]: self.react_to_armour_break,
         # }
         # self.regex_cart = self.actions.keys()
-        self.actions = {R.armour_breaks[0]: self.react_to_armour_break}
-        self.regex_cart = [R.armour_breaks]
+        self.regex_cart = [R.armour_breaks, R.repair]
+        self.actions = {
+            R.armour_breaks[0]: self.react_to_armour_break,
+            R.repair[0]: self.react_to_repair
+        }
         # magentaprint("ArmourBot regex cart: " + str(self.regex_cart))
         # self.thread = None  # smithy_bot or shopping_bot
         # self.stopping = False  # backwards compatibility
@@ -58,8 +63,16 @@ class ArmourBot(MiniBot):
         else:
             self.broken_armour.append(match.group('item'))
 
+    def react_to_repair(self, match):
+        if match.group(1) in self.broken_armour:
+            magentaprint("Armour bot removed " + match.group(1) + "from self.broken_armour.")
+            self.broken_armour.remove(match.group(1))
+
     def suit_up(self):
         magentaprint("ArmourBot suit_up()")
+        # Maybe start by checking self.broken_armour
+        # We know the armour broke, but we can't assume it didn't get dropped
+        # Unless we have the bot keep broken armour...
         self.go_repair_or_replace_broken_armour()
         self.get_needed_default_armour()
         # Need to cancel if inventory doesn't have the broken armour piece (user manually repairs armour)
@@ -84,9 +97,17 @@ class ArmourBot(MiniBot):
 
     #     self.broken_armour = broken_armour_copy
     def go_repair_or_replace_broken_armour(self):
+        # These functions can unset self.broken_armour if they successfully wear a piece
+        # And they operate on self.broken_armour
+
+        # if self.do_for_each_broken_piece(self.try_armour_from_inventory):
+        #     return
+
         self.do_for_each_broken_piece(self.try_armour_from_inventory)
 
-        if self.broken_armour:
+        # if any(a in [i.name for i in self.inventory.list] for a in self.broken_armour):
+        # if self.broken_armour:
+        if any(a in [i.name for i in self.inventory.list] for a in self.broken_armour):
             self.go_to_nearest_smithy()
 
         self.do_for_each_broken_piece(self.repair_and_wear)
@@ -111,9 +132,17 @@ class ArmourBot(MiniBot):
 
     def try_armour_from_inventory(self, a):
         ref = self.char.inventory.get_first_reference(a)
-        last_ref = self.char.inventory.get_last_reference(a)
 
-        while ref != last_ref:
+        if ref is None:
+            # Armour breaks on the way to the tpi, the bot trashes it before armour bot gets called, we end up here
+            return
+
+        last_ref_plus_one = MobTargetDeterminator().increment_ref(self.char.inventory.get_last_reference(a))
+        # Did this just assume that the last one is the broken one (fixed)
+        # Why trust is_broken if we don't have to
+
+        while ref != last_ref_plus_one:
+            # Is it safe to do it this way... I think so... (or can it miss and loop infinitely)
             self.command_handler.wear.execute_and_wait(ref)
             if self.command_handler.wear.success:
                 return True
@@ -127,17 +156,39 @@ class ArmourBot(MiniBot):
             while self.char.inventory.name_from_reference(armour_ref) == a:
                 self.command_handler.repair.execute_and_wait(armour_ref)
                 if self.command_handler.repair.success:
+                    # The smithy doesn't take and give back the item (same ref is good)
                     self.command_handler.wear.execute_and_wait(armour_ref)
                     if self.command_handler.wear.success:
                         return True
                     else:
-                        raise Exception("ArmourBot - not sure why that didn't work.")
+                        # This can be when the smithy is angry - you can't do that because you're fighting...
+                        # raise Exception("ArmourBot - wear should have worked there.")
+                        magentaprint("UNCOMMON EXCEPTION - wear should have worked there.")
+                        return False 
+                        # Try returning... maybe the bot will reset, try going back to chapel, call suit up again and finish the job
+                        # What if Hurn blocks us, maybe travel-bot will exit also
                         # Could be that something got put on in that slot (ie. after a 'wear all' for ring wearing)
+                elif self.command_handler.repair.failure:
+                    # self.char.inventory.remove_by_ref(armour_ref) # Repair does this
+                    # armour_ref = MobTargetDeterminator().decrement_ref(armour_ref) 
+                    # Do the next piece?? No decrement ref could get something else
+                    # Ok the loop condition would have caught that - call get_last_reference here anyway
+                    armour_ref = self.char.inventory.get_last_reference(a)
+                    # Contiue loop (try next in inventory if there is one)
+                elif self.command_handler.repair.result is R.cant_repair:
+                    # This can happen if the character was wearing something odd, so don't raise an exception
+                    # ie. big nose and glasses
+                    # Caller will remove it from the broken list
+                    return True
                 else:
-                    self.char.inventory.remove_by_ref(armour_ref)
-                    armour_ref = MobTargetDeterminator().decrement_ref(armour_ref)
+                    magentaprint("Confused ArmourBot.")
+                    # Could try go to smithy again here if necessary
+                    # "It's not broken yet".... well my command was wrong... steel 3 not steel 2...
+                    # That was from assuming in try_armour_from_inventory that the last ref was going to be the broken one
+                    raise
         else:
-            magentaprint("ArmourBot.repair_and_wear() error - no inventory ref for " + str(a) + ".")  # TODO: What if the armour fell apart... then it's not in inventory.
+            magentaprint("ArmourBot.repair_and_wear() error - no inventory ref for " + str(a) + ".")  
+            # Todo? What if the armour fell apart... then it's not in inventory...
 
     def go_buy_and_wear(self, a):
         # I think we won't try to shop for the same armour that just broke, and just fall back immediately to the default set
@@ -166,6 +217,12 @@ class ArmourBot(MiniBot):
                 return
             if self.shopping_bot.buy_from_shop(asi):
                 self.command_handler.wear.execute_and_wait(self.char.inventory.get_last_reference(str(asi.item.name)))
+                if self.command_handler.wear.result == R.no_room:
+                    # This is probably the equipment command messing up and buying unnecessarily
+                    # The equipment dict didn't get set up right
+                    self.get_needed_default_armour() 
+                    # This will call determine_shopping_list again
+                    break # This will prevent finishing the current version of the loop
                 if asi.item.name in self.broken_armour:
                     self.broken_armour.remove(asi.item.name)
                 else:
@@ -218,7 +275,7 @@ class ArmourBot(MiniBot):
                 # level = ArmourLevelDeterminator().determine(self.char.class_string)
                 size = self.get_size(self.char.race)
                 level = self.get_armour_level(self.char.level)  # checks class and level (low level paladin can't wear steel yet)
-                magentaprint("determine_shopping_list() size " + size + ", slot: " + str(slot) + ", level: " + str(level))
+                #magentaprint("determine_shopping_list() size " + size + ", slot: " + str(slot) + ", level: " + str(level))
                 if slot == 'wielded' or slot == 'seconded':
                     continue
                 if slot == 'face' or slot == 'holding':
@@ -228,7 +285,7 @@ class ArmourBot(MiniBot):
                 slot = slot.title()
                 # items = AreaStoreItem.get_by_item_type_and_level_max(size, slot, level)
                 items = AreaStoreItem.get_buyable_armour(size, slot, level)
-                magentaprint("determine_shopping_list() items: " + str(items))
+                #magentaprint("determine_shopping_list() items: " + str(items))
                 # if items:
                 #     if len(items) > 0:
                 #         magentaprint(str(len(items)))  # Object of type 'SelectQuery' has no len()
@@ -241,13 +298,16 @@ class ArmourBot(MiniBot):
                 #     # 'SelectQuery' object has no attribute 'sort'  ... maybe it is an iterator though
                 #     magentaprint("determine_shopping_list chose " + items[0].item.name)
                 #     desired_items.append(items[0])
-                dir(items)
+                #dir(items)
+                # magentaprint("ArmourBot determine_shopping_list() size {0}, slot {1}, level {2}, found {3}".format(size, slot, level, str(items)))
                 for item in items:
                     magentaprint("Won't print if there's no valid item: " + str(item))
                     # Don't bother sorting for now
                     desired_items.append(item)
                     break
 
+        #magentaprint("Armour bot shopping list " + str(desired_items))
+        magentaprint("Armour bot shopping list " + str([asi.item.name for asi in desired_items]))
         return desired_items
         # TODO: One issue: shields aren't sized - so queries that use any size need to return the shield, whose type may be
         # the generic armour type.   SELECT "t1"."id", "t1"."area_id", "t1"."item_id" FROM "areastoreitem" AS t1 INNER JOIN "item"
@@ -313,7 +373,7 @@ class ArmourBot(MiniBot):
         return self.char.class_string in ['Ran', 'Cle', 'Ass']
 
     def steel(self):
-        magentaprint("ArmourBot.steel() class string is: " + str(self.char.class_string))
+        #magentaprint("ArmourBot.steel() class string is: " + str(self.char.class_string))
         return self.char.class_string in ['Pal', 'Dk', 'Bar', 'Fig', 'Brd']
 
     def go_to_nearest_smithy(self):

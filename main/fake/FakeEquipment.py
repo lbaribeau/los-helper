@@ -4,12 +4,7 @@ class FakeEquipment(object):
         self.character_name = character_name
         self.weapon = ''
         self.seconded = ''
-
-    def lself(self):
-        return "You see " + self.character_name + " the Human Vicar.\n\r" "He is in general good health.\n\r" + self.output_string()
-
-    def output_string(self):
-        armour = (
+        self.armour1 = (
             "On body:   some chain mail armour\n\r"
             "On arms:   some chain mail sleeves\n\r"
             "On legs:   some chain mail leggings\n\r"
@@ -27,17 +22,23 @@ class FakeEquipment(object):
             "On finger: an iron ring\n\r"
             "On finger: an iron ring\n\r"
             "On finger: an iron ring\n\r"
-            # "Shield:    a cast iron shield\n\r"
         )
+        self.armour = self.armour1
+
+    def lself(self):
+        return "You see " + self.character_name + " the Human Vicar.\n\r" "He is in general good health.\n\r" + self.output_string()
+
+    def output_string(self):
+        eq = self.armour
         if self.weapon:
-            armour += "Wielded:   " + self.weapon + "\n\r"
+            eq += "Wielded:   " + self.weapon + "\n\r"
         else:
-            return armour
+            return eq
 
         if self.seconded:
-            return armour + "Seconded:  " + self.seconded + "\n\r"
+            return eq + "Seconded:  " + self.seconded + "\n\r"
         else:
-            return armour
+            return eq
 
     def wield(self, weapon):
         self.weapon = weapon
@@ -45,4 +46,6 @@ class FakeEquipment(object):
     def second(self, weapon):
         self.seconded = weapon
 
+    def equip_shield(self):
+        self.armour = self.armour1 + "Shield:    a cast iron shield\n\r"
 

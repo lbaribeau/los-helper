@@ -4,7 +4,7 @@ import sys
 import json
 from inspect import getframeinfo, stack
 
-from db.Database import *
+# from db.Database import Log
 from datetime import datetime
 import comm.ConsoleHandler
 
@@ -39,12 +39,12 @@ def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=Fals
         log.save()
 
 def do_magentaprint(text, caller):
-    newConsoleHandler().magenta()
+    comm.ConsoleHandler.newConsoleHandler().magenta()
     # output = str(get_timestamp() + "| <" + str(text) + ">")
     output = "{} | {} | {}".format(str(get_timestamp()), str(text), caller)
 
     print(output)
-    newConsoleHandler().white()
+    comm.ConsoleHandler.newConsoleHandler().white()
 
 
 def greenprint(text):
@@ -64,8 +64,7 @@ def get_timeint():
     return datetime.now()
 
 def get_timestamp():
-    curtime = datetime.now().time().strftime("%H:%M:%S.%f")
-    return curtime[:len(curtime)-5]
+    return datetime.now().time().strftime("%H:%M:%S.%f")[:-4]
 
 def get_runtime():
     global startTime
@@ -77,7 +76,7 @@ def get_runtime_in_minutes():
     magentaprint("Seconds run: " + str(seconds))
     if seconds <= 1:
         seconds = 60
-    minutes = (seconds / 60) #at least display 1 minute
+    minutes = seconds / 60 #at least display 1 minute
     return minutes
 
 def calculate_vpm(value):
@@ -117,9 +116,13 @@ def get_shortest_array(list_of_arrays):
     for array in list_of_arrays:
         shortest_array.append(len(array))
 
-    index = shortest_array.index(min(shortest_array, key=int))
+    #lengths=[len(a) for a in list_of_arrays]
+    #return list_of_arrays[lengths.index(min(lengths, key=int))]
+    #return min(list_of_arrays, key=len)
 
-    return list_of_arrays[index]
+    return list_of_arrays[
+        shortest_array.index(min(shortest_array, key=int))
+    ]
 
 def key_with_max_val(d):
      """ a) create a list of the dict's keys and values; 

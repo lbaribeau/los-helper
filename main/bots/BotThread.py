@@ -12,10 +12,14 @@ from Exceptions import *
 from db.Database import *
 from db.MudMap import MudMap
 
+# Refer to https://docs.python.org/3/library/threading.html
+# excepthook is available as a method from threading
+# Only override .__init__ and .run()
+
 class BotThread(threading.Thread):
-    def __init__(self, character, command_handler, mudReaderHandler, mud_map):
+    def __init__(self, character, command_handler, mudReaderHandler, mud_map, name='BotThread'):
         # Thread.__init__(self)
-        super().__init__()
+        super().__init__(name=name) # Do this first
         self.stopping = False
         self.exceptionCount = 0
 
@@ -171,7 +175,7 @@ class BotThread(threading.Thread):
             # self.command_handler.go.wait_for_flag()
             # return self.command_handler.go.result is 'success'
             return self.command_handler.go.success
-            return self.check_for_successful_go()
+            # return self.check_for_successful_go()
             # if re.match("(.*?door)", exit_str):
             #     self.command_handler.process("open " + exit_str)
             # return self.go.persistent_execute(exit_str)

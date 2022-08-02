@@ -7,11 +7,17 @@ from Exceptions import *
 from comm import RegexStore as R
 from combat.mob_target_determinator import MobTargetDeterminator
 # from mini_bots.travel_bot import TravelBot
-from mini_bots.smithy_bot import SmithyBot
-from mini_bots.mini_bot import MiniBot
+from mini_bots.smithy_bot   import SmithyBot
+from mini_bots.mini_bot     import MiniBot
 from mini_bots.shopping_bot import ShoppingBot
+from db.Database            import AreaStoreItem
 
 class WeaponBot(MiniBot):
+    # This one handles a lot of cases (dual wielding)
+    # It works well if a pile of weapons are available in the bag already
+    # But I want to guarantee a weapon available in the bag
+    # So I wrote weapon bot 2 to make that extra purchase
+
     # def __init__(self, char, command_handler, simple_weapon_bot):
     def __init__(self, char, command_handler):
         super().__init__()
@@ -22,23 +28,23 @@ class WeaponBot(MiniBot):
         self.actions = {
             # R.you_wield: (lambda self, match : self.weapon = match.group('weapon')),
             # R.off_hand: (lambda self, match : self.second = match.group('weapon')),
-            R.you_wield[0]: self.react_to_wield,
-            R.off_hand[0]: self.react_to_off_hand,
-            R.weapon_break[0]: self.react_to_weapon_break,
             # R.weapon_break: lambda match : if
-            R.weapon_shatters[0]: self.react_to_weapon_break,
-            R.shield[0]: self.set_shield_or_offhand
+            R.you_wield[0]       : self.react_to_wield,
+            R.off_hand[0]        : self.react_to_off_hand,
+            R.weapon_break[0]    : self.react_to_weapon_break,
+            R.weapon_shatters[0] : self.react_to_weapon_break,
+            R.shield[0]          : self.set_shield_or_offhand
         }
         # self.regex_cart = self.actions.keys()
         self.regex_cart = [R.you_wield, R.off_hand, R.weapon_break, R.weapon_shatters, R.shield]
-        self.broken_weapon = []
-        self.possible_weapons = []
+        self.broken_weapon     = []
+        self.possible_weapons  = []
         self.shield_or_offhand = False
-        self.temporary_weapon = False
+        self.temporary_weapon  = False
 
     def add_in_map(self, mud_map):
         # Methods which require navigation or knowing possible weapons to wield require this to be called
-        self.smithy_bot = SmithyBot(self.char, self.command_handler, mud_map)
+        self.smithy_bot   = SmithyBot(self.char, self.command_handler, mud_map)
         self.shopping_bot = ShoppingBot(self.char, self.command_handler, mud_map)
 
     def notify(self, regex, match):
@@ -49,7 +55,7 @@ class WeaponBot(MiniBot):
         self.weapon = match.group('weapon')
 
     def react_to_off_hand(self, match):
-        magentaprint("WeaponBot matched off_hand regex!!!")
+        magentaprint("WeaponBot matched off_hand regex.")
         self.shield_or_offhand = True
         self.second = match.group('weapon')
 
@@ -198,6 +204,7 @@ class WeaponBot(MiniBot):
             else:
                 self.second = weapon_name  # ??? This should get set by the notify
         else:
+            #magentaprint("self.command_handler.")
             raise Exception("WeaponBot.rewield() wield error!")
 
     def try_weapons_from_inventory(self, weapon_name):
@@ -405,17 +412,17 @@ class WeaponBot(MiniBot):
             magentaprint("self.char.inventory.has_any([w.item.name for w in self.get_possible_weapons()]: " + str(self.char.inventory.has_any([w.item.name for w in self.get_possible_weapons()])))
 
             # if self.get_possible_weapons()
-            # usable_possible_weapons_in_inv = any(x.usable for x in possible_weapons_in_inventory)
+            # usable_possible_weapons_in_inv = any(x.usable for x in self.possible_weapons_in_inventory)
             # if self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()]) and \
             #    any([x.usable for x in self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])]):
 # [asi.item.name for asi in self.get_possible_weapons()])):
 
-            # if possible_weapons_in_inventory and any(x.usable for x in possible_weapons_in_inventory):
+            # if self.possible_weapons_in_inventory and any(x.usable for x in self.possible_weapons_in_inventory):
             #     pass
             # elif self.char.inventory.has_any([w.item.name for w in self.get_possible_weapons()]):
-            # possible_weapons_in_inventory = self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])
+            # self.possible_weapons_in_inventory = self.char.inventory.get_all_by_name_list([asi.item.name for asi in self.get_possible_weapons()])
             if self.possible_weapons_in_inventory:
-                if any(x.usable for x in possible_weapons_in_inventory):
+                if any(x.usable for x in self.possible_weapons_in_inventory):
                     pass
                 else:
                     magentaprint('Ensure that one is usable to serve as the backup')

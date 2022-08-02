@@ -94,6 +94,7 @@ class MudReaderThread(threading.Thread):
             while self.__left_off_index == len(self.MUDBuffer.buffer) and run_time < timeout:
                  time.sleep(0.005)
                  run_time = time.time() - start_time
+                 # This should be an event flag with MUDBuffer or MUDListener
 
             # Note that that check on the length of the MUD buffer means
             # that now there's probably new text data.  It doesn't matter
@@ -130,7 +131,7 @@ class MudReaderThread(threading.Thread):
                     currently_escaping = False
                     # Finished an escape sequence... change color.
                     # Print all the stuff in buffer from before the esc
-                    # Must be printed here so that the color change occurse 
+                    # Must be printed here so that the color change occurs 
                     # at the right point.
                     if get_verbose_mode():
                         sys.stdout.write(text_out)
@@ -171,13 +172,13 @@ class MudReaderThread(threading.Thread):
                 text_buffer = text_buffer[L-self.MUDBuffer.size:L]
             #print "<REPRINT>"+MUD_buffer+"<\REPRINT>"
 
-            while(self.MUDBuffer.access_flag == True):
-                time.sleep(0.05)
+            while self.MUDBuffer.access_flag == True:
+                time.sleep(0.05) # Gotta get rid of these sleeps with threading.Event
 
             self.MUDBuffer.access_flag = True
             L = len(self.MUDBuffer.buffer)
 
-            if(L > self.MUDBuffer.size):
+            if L > self.MUDBuffer.size:
                 trim_amount = L - self.MUDBuffer.size
                 self.__left_off_index = self.__left_off_index - trim_amount
                 self.MUDBuffer.buffer = self.MUDBuffer.buffer[trim_amount:L]
@@ -251,12 +252,13 @@ class MudReaderThread(threading.Thread):
             #                  " reactions left.")
 
             #TODO: continue with MAXHP, MAXMP, GOLD, EXP, LEVELGOLD, LEVELEXP, etc.
+            # (Would be better to use "Commands" to do this)
             M_obj = re.search("Exp : (\d+)",text_buffer)
-            if (M_obj != None):
+            if M_obj:
                 self.character.TOTAL_EXPERIENCE = M_obj.group(1)
 
             M_obj = re.search("Gold : (\d+)",text_buffer)
-            if (M_obj != None):
+            if M_obj:
                 self.character.TOTAL_GOLD = M_obj.group(1)
 
             #### Set weapon strings ####
@@ -333,7 +335,7 @@ class MudReaderThread(threading.Thread):
 
             # Experience
             M_obj = re.search("You gain (.+?) experience\.", text_buffer)       
-            if(M_obj):
+            if M_obj:
                 self.character.EXPERIENCE = self.character.EXPERIENCE + int(M_obj.group(1))
                 self.character.add_to_track_param("kills", 1, False)
                 self.character.add_to_track_param("exp", int(M_obj.group(1)))
@@ -354,7 +356,7 @@ class MudReaderThread(threading.Thread):
             new_trunc = 0
             temp_buf = text_buffer[:] # copy
             # Need to check for multiple matches here.
-            while(M_obj):
+            while M_obj:
                 new_trunc = new_trunc + M_obj.end()
                 text_buffer_trunc = max([text_buffer_trunc, new_trunc])
                 self.character.MOBS_JOINED_IN.append(M_obj.group(2))
@@ -370,7 +372,7 @@ class MudReaderThread(threading.Thread):
             M_obj = re.search(second_join_in_regex, text_buffer)
             new_trunc = 0
             temp_buf = text_buffer[:] # copy
-            while(M_obj):
+            while M_obj:
                 new_trunc = new_trunc + M_obj.end()
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
                 self.character.MOBS_JOINED_IN.append(M_obj.group(2))
@@ -414,32 +416,32 @@ class MudReaderThread(threading.Thread):
         calls the ConsoleHandler class routines to have the windows console react."""
         bright_char = ANSI_escape_sequence[2]
         colour_char = ANSI_escape_sequence[3]
-        if(bright_char == '3'):
+        if bright_char == '3':
             self.consoleHander.set_dark()
-        elif(bright_char == '4'):
+        elif bright_char == '4':
             self.consoleHander.set_bright()
         else:
             pass # do nothing
         # Maybe check if character 2 is a '3' or '4' which designate colour
         # commands but I'm too lazy.
-        if(colour_char == '0'):
+        if colour_char == '0':
             self.consoleHander.black()
-        elif(colour_char == '1'):
+        elif colour_char == '1':
             self.consoleHander.red()
-        elif(colour_char == '2'):
+        elif colour_char == '2':
             self.consoleHander.green()
-        elif(colour_char == '3'):
+        elif colour_char == '3':
             self.consoleHander.yellow()
-        elif(colour_char == '4'):
+        elif colour_char == '4':
             self.consoleHander.blue()
-        elif(colour_char == '5'):
+        elif colour_char == '5':
             self.consoleHander.magenta()
-        elif(colour_char == '6'):
+        elif colour_char == '6':
             self.consoleHander.cyan()
-        elif(colour_char == '7' or colour_char == '9'):
+        elif colour_char == '7' or colour_char == '9':
             self.consoleHander.white()
         else:
-            # Do nothing (don't know this ANSI code)
+            magentaprint("MudReaderThread saw unrecognized escape sequence.")
             pass
 
     def start_recording_mud_text(self):

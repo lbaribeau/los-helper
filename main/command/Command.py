@@ -21,21 +21,26 @@ from comm import RegexStore
     # commands can just copy Info and Whois.
 
 class SimpleCommand(BotReactionWithFlag):
-    # Commands like Whois, Info, Spells with no cooldown and no success/fail, only execute.
-    # command
+    # Command with no cooldown, no success/fail, only execute.
+    # ie. whois, info, spells
+    # eq maybe
     def __init__(self, telnetHandler):
+        super().__init__() #threading.Event
         self.telnetHandler = telnetHandler
 
-    @classmethod
-    def send(cls, telnetHandler, target=None):
+    # @classmethod
+    # Better use an object, not the class variables
+    def send(self, telnetHandler, target=None):
+        #self.
         if target:
-            telnetHandler.write(cls.command + ' ' + target)
+            telnetHandler.write(self.command + ' ' + target)
         else:
-            telnetHandler.write(cls.command)
+            telnetHandler.write(self.command)
 
     def execute(self, target=None):
         # Same as send() but gets called from instance
         # (send() doesn't need an instance but needs telnetHandler put in)
+        self.clear()
         self.send(self.telnetHandler, target)
         # self.wait_for_flag()  # Just expect caller to call wait.
 
@@ -106,10 +111,12 @@ class Command(SimpleCommand):
         # magentaprint(str(self.__class__) + " init regex_cart: " + str(self.regex_cart))
         # self.result = 'success/failure/error'
         self._executing = False
+        self._sent_target = None
 
     def notify(self, regex, M_obj):
         self.notify_success_fail_or_error(regex, M_obj)
-        self.set_completion_flag()
+        self._executing = False
+        super().notify(None, None)  # maintains wait_for_flag()
 
     def notify_success_fail_or_error(self, regex, M_obj):
         # 'success' and 'fail' could be renamed to 'long cooldown' and 'short cooldown'
@@ -136,7 +143,9 @@ class Command(SimpleCommand):
         elif self.error and self._executing:
             # if (regex in RegexStore.not_here and not self._waiter_flag) or regex not in RegexStore.not_here:  
             # if (regex in RegexStore.not_here and not self._waiter_flag) or regex not in RegexStore.not_here:  
-            magentaprint(str(self) + " clearing timer... wf is " + str(self._waiter_flag) + ', class wf is ' + str(self.__class__._waiter_flag) + 'regex is ' + regex[0:10] + '...')
+            #magentaprint(str(self) + " clearing timer... wf is " + str(self._waiter_flag) + ', class wf is ' + str(self.__class__._waiter_flag) + 'regex is ' + regex[0:10] + '...')
+            #magentaprint(str(self) + " clearing timer... wf is " + str(self.is_set()) + ', class wf is ' + str(self.__class__._waiter_flag) + 'regex is ' + regex[0:10] + '...')
+            magentaprint(str(self) + " clearing timer... wf is " + str(self.is_set()) + 'regex is ' + regex[0:10] + '...')
             self.clear_timer()
         elif self.please_wait1:
             self.please_wait_time = int(M_obj.group(1))
@@ -144,10 +153,6 @@ class Command(SimpleCommand):
         elif self.please_wait2:
             self.please_wait_time = 60*int(M_obj.group(1)) + int(M_obj.group(2))
             self.notify_please_wait()
-
-    def set_completion_flag(self):
-        super().notify(None, None)   # maintains wait_for_flag()
-        self._executing = False
 
     @property
     def success(self):
@@ -168,10 +173,10 @@ class Command(SimpleCommand):
     def please_wait(self):
         return self.please_wait1 or self.please_wait2
 
-    @classmethod
-    def notify_failure(cls, regex, M_obj):
+    # @classmethod
+    def notify_failure(self, regex, M_obj):
         # This gets overriden by Cast
-        cls.timer = cls.timer - cls.cooldown_after_success + cls.cooldown_after_failure
+        self.timer = self.timer - self.cooldown_after_success + self.cooldown_after_failure
 
     def notify_please_wait(self):
         # A problem with Please wait is we can be notified even when it's from a different command.
@@ -212,55 +217,78 @@ class Command(SimpleCommand):
                 # Clipping with the cooldowns helps a bit.
                 magentaprint("Set wait time to " + str(self.wait_time()) + ', self: ' + str(self))
 
-    @classmethod
-    def clear_timer(cls):
+    # @classmethod
+    def clear_timer(self):
         # Like when the command is ready to be issued
         # magentaprint('Clearing timer: ' + str(cls))
-        cls.timer = time.time() - max(cls.cooldown_after_success, cls.cooldown_after_failure)
+        self.timer = time.time() - max(self.cooldown_after_success, self.cooldown_after_failure)
 
-    @classmethod
-    def start_timer(cls):
+    # @classmethod
+    def start_timer(self):
         # Like when command was just sent
-        cls.timer = time.time() + cls.cooldown_after_success
+        self.timer = time.time() + self.cooldown_after_success
 
-    @classmethod
-    def up(cls):
-        return True if not cls.timer else cls.timer < time.time()
+    # @classmethod
+    def up(self):
+        return True if not self.timer else self.timer < time.time()
         # return cls.timer < time.time()
 
-    @classmethod
-    def wait_time(cls):
+    # @classmethod
+    def wait_time(self):
         # return cls.timer - time.time()
         # return 0 if not cls.timer else cls.timer - time.time()
-        if not cls.timer:
+        if not self.timer:
             # magentaprint(str(cls) + ".wait_time() returning 0 because timer is None.")
             return 0
         else:
             # magentaprint(str(cls) + ".wait_time() returning " + str(round(max(0, cls.timer - time.time()), 1)) + ".")
-            return max(0, cls.timer - time.time())
+            return max(0, self.timer - time.time())
 
-    @classmethod
-    def send(cls, telnetHandler, target=None):
-        # This function will be called by command handler when the human user uses the command 
-        # and will do the things that the user wants.  If the cooldown is close, it'll wait that 
-        # little bit before sending.  It updates the cooldown timer.
+    # @classmethod
+    # def send(cls, telnetHandler, target=None):
+    #     # This function will be called by command handler when the human user uses the command 
+    #     # and will do the things that the user wants.  If the cooldown is close, it'll wait that 
+    #     # little bit before sending.  It updates the cooldown timer.
 
-        # target needs to be a class variable at the lower class level (__class__.target)
-        # command is also set by the child class
-        #  X - target as a class variable is used only by CombatObject for threading...
-        #    - target for Command must be a function argument (no class variable)
+    #     # target needs to be a class variable at the lower class level (__class__.target)
+    #     # command is also set by the child class
+    #     #  X - target as a class variable is used only by CombatObject for threading...
+    #     #    - target for Command must be a function argument (no class variable)
 
-        # magentaprint("Command.send: cls.timer - time.time(): %.1f" % round(cls.timer - time.time(), 1))
+    #     # magentaprint("Command.send: cls.timer - time.time(): %.1f" % round(cls.timer - time.time(), 1))
 
-        cls._waiter_flag = False
-            # We set the waiter flag here because the 'Please wait' notify uses it to 
-            # know that the 'Please wait' corresponds to the current command
+    #     cls._waiter_flag = False 
+    #         # We set the waiter flag here because the 'Please wait' notify uses it to 
+    #         # know that the 'Please wait' corresponds to the current command
+    #     # Eh we need 'self' for threading.Event - need objects for state (an object)
 
-        if cls.wait_time() < 3.0:
-            # time.sleep(max(0, cls.timer - time.time()))
-            cls.wait_until_ready()
+    #     if cls.wait_time() < 3.0:
+    #         # time.sleep(max(0, cls.timer - time.time()))
+    #         cls.wait_until_ready()
+    #     else:
+    #         magentaprint("Command: not ready for %.1f seconds." % round(cls.timer - time.time(), 1))
+    #         telnetHandler.write("") 
+    #         return
+
+    #     # cls.success = False
+    #     # cls.failure = False
+    #     # cls.error = False
+    #     # cls.please_wait_time = -1
+
+    #     telnetHandler.write(cls.compose_command(target))
+
+    #     cls.start_timer()
+    def send(self, telnetHandler, target=None):
+        # We need 'self' for threading.Event - need objects for state (an object)
+        # self._waiter_flag = False 
+        self.clear()
+        # Well we won't know which command Please wait is for
+
+        if self.wait_time() < 3.0:
+            # time.sleep(max(0, self.timer - time.time()))
+            self.wait_until_ready()
         else:
-            magentaprint("Command: not ready for %.1f seconds." % round(cls.timer - time.time(), 1))
+            magentaprint("Command: not ready for %.1f seconds." % round(self.timer - time.time(), 1))
             telnetHandler.write("") 
             return
 
@@ -269,21 +297,23 @@ class Command(SimpleCommand):
         # cls.error = False
         # cls.please_wait_time = -1
 
-        telnetHandler.write(cls.compose_command(target))
+        telnetHandler.write(self.compose_command(target))
 
-        cls.start_timer()
+        self.start_timer()
 
-    @classmethod
-    def compose_command(cls, target=None):
+    # @classmethod
+    def compose_command(self, target=None):
         # Overridden by Go which isn't always "go ____" ie. "out", "up", "d", n/s/e/w
-        return cls.command + " " + target if target else cls.command
+        return self.command + " " + target if target else self.command
 
     def execute(self, target=None):
         # Same as send() but gets called from instance
         # (send() doesn't need an instance but needs telnetHandler put in)
+        # magentaprint("Command set _sent_target to {0}".format(target))
         self.result = ''
         self._executing = True
-        super().execute(target)  # just calls send
+        self._sent_target = target # Some cases want to know what the target was when the regex comes back (remove from inventory)
+        super().execute(target)  # sets the waiter flag and calls send
 
     def execute_and_wait(self, target=None):
         super().execute_and_wait(target)
@@ -295,11 +325,12 @@ class Command(SimpleCommand):
         while self.please_wait1:
             self.execute_and_wait(target)
 
-    @classmethod
-    def wait_until_ready(cls):
-        if cls.wait_time() > 0:
-            magentaprint(str(cls) + " wait_until_ready waiting " + str(round(cls.wait_time(), 1)))
+    # @classmethod
+    def wait_until_ready(self):
+        if self.wait_time() > 0:
+            magentaprint(str(self) + " wait_until_ready waiting " + str(round(self.wait_time(), 1)))
         # return if not cls.timer else time.sleep(max(0, cls.wait_time()))
         # time.sleep(max(0, cls.timer - time.time()))  # timer is a class variable
-        time.sleep(cls.wait_time())
+        time.sleep(self.wait_time())
+
 

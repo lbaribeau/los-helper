@@ -15,13 +15,27 @@ class ReferencingList(object):
         if not initializer:
             self.list = []
         elif isinstance(initializer, 'str'.__class__):
+            # Children need to support parse
             self.list = self.parse(initializer)
         elif isinstance(initializer[0], 'str'.__class__):
-            self.list = sorted(GameObject(s) for s in initializer)
+            #self.list = sorted(GameObject(s) for s in initializer)
+            if None in initializer:
+                magentaprint("ReferencingList can't have None since it's sorted: {0}".format(initializer))
+                self.list = [GameObject(s) for s in initializer if s != None]
+            else:
+                self.list = [GameObject(s) for s in initializer]
+        elif isinstance(initializer, list):
+            if None in initializer:
+                magentaprint("ReferencingList can't have None since it's sorted: {0}".format(initializer))
+            self.list = initializer[:]
+            while None in self.list:
+                self.list.remove(None)
+            #self.list = sorted([i for i in list if i != None])
         else:
-            self.list = sorted(initializer)
-
-        # Children need to support parse methods
+            self.list = initializer
+            
+        # See if that works...
+        self.list.sort() 
 
         # magentaprint("Referencing list: " + str(self.list))
         self.numbers = [
@@ -38,15 +52,15 @@ class ReferencingList(object):
         # magentaprint("RefList adding %s." % str(obj))
         for i in range(0, len(self.list)):
             if self.list[i] > obj:
-                self.list.insert(i, obj)
-                # magentaprint("RefList inserted %s at index %s." % (str(obj), str(i)))
+                self.list.insert(i, obj) # Seem like this does add it at the proper place
+                magentaprint("RefList inserted %s at index %s." % (str(obj), str(i)))
                 return
 
         # magentaprint("RefList appended %s." % str(obj))
         # self.list.append(FakeItem(item))
         # self.list.sort()  # We want to keep broken items sorted properly by inserting manually
         # self.list.append(obj)
-        self.list = sorted(self.list + [obj])
+        self.list = sorted(self.list + [obj]) # Ehhh do we really want to sort here
 
     def add_from_list(self, list):
         # Could be made more efficient by separating sorting from obj/string managing in add()
@@ -54,15 +68,21 @@ class ReferencingList(object):
             self.add(x)
 
     def remove(self, obj):
-        # magentaprint("ReferencingList removing " + str(obj))
+        magentaprint("ReferencingList remove: " + str(obj))
+        # Ehrm don't we need to be specific
+        # What if one mob is attacking
+        # Remove the right one?
+        # Well it's not like they're mob objects with an attacking attribute
         self.list.remove(obj)
 
     def remove_by_ref(self, ref):
         # if item in self.list:
         #     self.list.remove(item)
+        # magentaprint("Referencing list removing {0} at index {1}: ".format(ref, self.index(ref)))
         self.remove_by_index(self.index(ref))
 
     def remove_by_index(self, ind):
+        magentaprint("Referencing list removed index {0} should be {1}".format(ind, self.list[ind]))
         self.list.pop(ind)
 
     def remove_from_list(self, list):
@@ -70,9 +90,11 @@ class ReferencingList(object):
             self.remove(x)
 
     def set_usable(self, ref):
+        magentaprint("ReferencingList set_usable on {0} ({1})".format(ref, self.get(ref)))
         self.get(ref).usable = True
 
     def unset_usable(self, ref):
+        magentaprint("ReferencingList unset_usable on {0} ({1})".format(ref, self.get(ref)))
         self.get(ref).usable = False
 
     def set_unusable(self, ref):
@@ -84,7 +106,9 @@ class ReferencingList(object):
             if i.name == string:
                 return True
 
-        magentaprint("ReferencingList.has() returned False.")
+        # magentaprint("ReferencingList.has() returned False.") 
+        # This prints a ton since things have to check for things
+        # ie. checking if any potions are in the inventory
         return False
 
         return any(x.name == string for x in self.list)
@@ -164,14 +188,15 @@ class ReferencingList(object):
 
     def get(self, ref):
         i = self.index(ref)
-
-        if i != None:
+        # if i: # This would be false for i==0, we want i != None
+        if i == None:
+            magentaprint("ReferencingList.get() found nothing. ref/index: " + str(ref) + '/' + str(i))
+        else:
             # magentaprint("Inventory list: " + str(self.list))
             # magentaprint("Inventory.get() returning " + str(self.list[i]))
             #magentaprint("ReferencingList.get() ref/index/str(item): " + str(ref) + '/' + str(i) + '/' + str(self.list[i]))
+            magentaprint('ReferencingList.get({0}) got {1} returning {2}'.format(ref, i,self.list[i]))
             return self.list[i]
-        # else:
-            # magentaprint("ReferencingList.get() found nothing. ref/index: " + str(ref) + '/' + str(i))
 
     def get_usable_object_of_type(self, model, data, level=-1):
         for obj in self.list:
@@ -179,6 +204,21 @@ class ReferencingList(object):
                 for instance in self.dictionary[obj].objs:
                     if instance.usable:  # I think the caller may want to know about broken objects
                         return str(obj.obj)
+
+    def get_reference_from_index(self, index):
+        word = self.list[index].name.split(' ')[0]
+        identifier = 1
+        for item in self.list:
+            if item is self.list[index]:
+                # Ok we need full equal here not string equal
+                break
+            else:
+                if word in item.name.split(' '):
+                    identifier = identifier + 1
+        if identifier > 1:
+            return word + ' ' + str(identifier)
+        else:
+            return word
 
     def get_reference(self, obj, first_or_second_word=1):
         if isinstance(obj, 'str'.__class__):
@@ -217,8 +257,8 @@ class ReferencingList(object):
                     # i = i + len(self.inventory.dictionary[k].objs)
                     i = i + self.count(list_name)
 
-        magentaprint("Caution: referencing_list.get_first_reference() returned None! " + name)
-        magentaprint("Whole list is " + str(self.list))
+        # magentaprint("Caution: referencing_list.get_first_reference() returned None! " + name)
+        # magentaprint("Whole list is " + str(self.list))
         return None
 
     def get_2nd_word_reference(self, item_name):
@@ -253,13 +293,16 @@ class ReferencingList(object):
                 if len(last_ref.split()) > 1:
                     r.extend([first_ref + ' ' + str(x) for x in range(2, int(last_ref.split()[1]) + 1)])
                 return r
-
-        return []
+        else:
+            return [] # Why we get None in the list of .get_all_by_name I do not know (should get this empty list)
 
     def get_all(self, ref_list):
         result = []
         for ref in ref_list:
             result.append(self.get(ref))
+            # i = self.get(ref) # Appending None?
+            # if i:
+            #     result.append(i)
         return result
 
     def get_all_by_name(self, name):
@@ -343,3 +386,5 @@ class ReferencingList(object):
 
     def __iter__(self):
         return iter(self.list)
+
+

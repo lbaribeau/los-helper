@@ -9,48 +9,70 @@ import json
 
 import misc_functions
 from misc_functions import magentaprint
-from combat.SmartCombat import SmartCombat
 from db.Database import *
 from db.MudMap import *
-from command.Go import Go
-from comm import RegexStore
-from bots.TrackGrindThread import TrackGrindThread
-from bots.SmartGrindThread import SmartGrindThread
-from bots.NoobGrindThread import NoobGrindThread
-from bots.CampGrindThread import CampGrindThread
-from bots.CrawlThread import CrawlThread
-from bots.SmartCrawlThread import SmartCrawlThread
-from bots.GotoThread import GotoThread
-from bots.MixThread import MixThread
-from bots.SlaveThread import SlaveThread
-from bots.TopDownGrind import TopDownGrind
-from command.Quit import Quit
-from command.Command import Command
-from reactions.CombatReactions import CombatReactions
-from command.Buy import Buy
-from command.Drop import Drop
-from command.Get import Get
-from comm.Spells import *
-from comm.thread_maker import ThreadMaker
-from Aura import Aura
-from command.Repair import Repair
-from command.wear import Wear
-from mini_bots.armour_bot import ArmourBot
-from command.equipment import Equipment
-from mini_bots.smithy_bot import SmithyBot
-from mini_bots.weapon_bot import WeaponBot
-from mini_bots.simple_weapon_bot import SimpleWeaponBot
-from mini_bots.travel_bot import TravelBot
+import comm.Spells
+from combat.SmartCombat         import SmartCombat
+from command.Go                 import Go
+from comm                       import RegexStore
+from bots.TrackGrindThread      import TrackGrindThread
+from bots.SmartGrindThread      import SmartGrindThread
+from bots.CrawlThread           import CrawlThread
+from bots.SmartCrawlThread      import SmartCrawlThread
+from bots.GotoThread            import GotoThread
+from bots.MixThread             import MixThread
+from bots.SlaveThread           import SlaveThread
+from bots.TopDownGrind          import TopDownGrind
+from bots.NoobGrindThread          import NoobGrindThread
+from bots.CampGrindThread          import CampGrindThread
+from command.Quit               import Quit
+from command.Command            import Command
+from reactions.CombatReactions  import CombatReactions
+from combat.Kill                import Kill
+from combat.Cast                import Cast
+from command.Wield              import Wield
+from command.Wield              import Second
+from command.Buy                import Buy
+# from command.Drop               import Drop
+from command.Get                import Get
+from comm.thread_maker          import ThreadMaker
+from command.Repair             import Repair
+from command.wear               import Wear
+from mini_bots.armour_bot       import ArmourBot
+from command.equipment          import Equipment
+from mini_bots.smithy_bot       import SmithyBot
+# from mini_bots.weapon_bot     import WeaponBot
+from mini_bots.weapon_bot2      import MainhandWeaponBot
+# from mini_bots.simple_weapon_bot import SimpleWeaponBot
+from mini_bots.travel_bot       import TravelBot
 from reactions.referencing_list import ReferencingList
+from mini_bots.sell_bot         import SellBot
+from command.CommandThatRemovesFromInventory import Sell, Drop, Drink, Use
+from command.potion_thread import PotionThreadHandler, Consume
+from command.Look               import Look
 
 class CommandHandler(object):
+    def init_map_and_bots(self):
+        # magentaprint("CommandHandler generating the mapfile....", False)
+        self.mud_map = MudMap() # Takes a few seconds
+        # Initialize things that NEED the map
+        # (The map takes a few seconds)
+        self.armour_bot = ArmourBot(self.character, self, self.mud_map)
+        self.mudReaderHandler.add_subscriber(self.armour_bot)
+        self.weapon_bot.add_in_map(self.mud_map)
+        self.travel_bot = TravelBot(self.character, self, self.mud_map)
+        magentaprint("CommandHandler: Mapfile completed.", False)
+
     def __init__(self, character, mudReaderHandler, telnetHandler):
+        # It's ok to have a "dependency injection container" that instantirates everything in one spot
+        # Also, lately I'm ok with something like SmartCombat needing a long list of arguments
+        # They are good arguments... it's a list of the commands it needs... it makes sense
         self.threaded_map_setup = True
 
-        self.character = character
+        self.character        = character
         self.mudReaderHandler = mudReaderHandler
-        self.telnetHandler = telnetHandler
-        self.inventory = character.inventory
+        self.telnetHandler    = telnetHandler
+        self.inventory        = character.inventory
 
         # mudReaderHandler.register_reaction(self.smartCombat.kill)
         # mudReaderHandler.register_reaction(self.smartCombat.cast)
@@ -60,36 +82,57 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.combat_reactions)
         # self.simple_weapon_bot = SimpleWeaponBot(self.telnetHandler, self.character)
         # mudReaderHandler.add_subscriber(self.simple_weapon_bot)
-        self.weapon_bot = WeaponBot(self.character, self)
+        # self.weapon_bot = WeaponBot(self.character, self) # This guy takes the map after it's available... seems like his functions should be made thread safe
+        self.weapon_bot = MainhandWeaponBot(self.character, self) # This guy takes the map after it's available... seems like his functions should be made thread safe
         self.mudReaderHandler.add_subscriber(self.weapon_bot)
-        self.smartCombat = SmartCombat(self.telnetHandler, self.character, self.weapon_bot)
-        self.kill = self.smartCombat.kill
-        self.cast = self.smartCombat.cast
+
+        self.kill = Kill(telnetHandler)
         mudReaderHandler.add_subscriber(self.kill)
+        self.cast = Cast(telnetHandler)
         mudReaderHandler.add_subscriber(self.cast)
-        self.go = Go(telnetHandler, character)
+        self.drink = Drink(telnetHandler, self.inventory)
+        mudReaderHandler.add_subscriber(self.drink)
+        self.use = Use(telnetHandler, self.inventory)
+        mudReaderHandler.add_subscriber(self.use)
+        self.drink = Drink(telnetHandler, self.inventory)
+        mudReaderHandler.add_subscriber(self.drink)
+        self.wield = Wield(character, telnetHandler, self.inventory)
+        mudReaderHandler.add_subscriber(self.wield)
+        self.second = Second(character, telnetHandler, self.inventory)
+        mudReaderHandler.add_subscriber(self.second)
+        # self.potion_thread_handler = PotionThreadHandler(Consume(self.use, self.drink, self.eat))
+        self.potion_thread_handler = PotionThreadHandler(Consume(self.use, self.drink))
+        self.smartCombat = SmartCombat(self.kill,self.cast,self.potion_thread_handler,self.wield,self.telnetHandler,self.character,self.weapon_bot)
+        mudReaderHandler.add_subscriber(self.smartCombat)
+
+        self.go = Go(self.kill, self.cast, telnetHandler, character)
         mudReaderHandler.add_subscriber(self.go)
         mudReaderHandler.add_subscriber(self.go.open)
-        mudReaderHandler.add_subscriber(self.smartCombat.wield)
-        mudReaderHandler.add_subscriber(self.smartCombat.wield.second)
-        mudReaderHandler.add_subscriber(self.smartCombat)
-        mudReaderHandler.add_subscriber(self.smartCombat.use)
-        self.buy = Buy(telnetHandler)
+        self.buy = Buy(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.buy)
-        self.drop = Drop(telnetHandler)
-        mudReaderHandler.add_subscriber(self.drop)
+        # self.drop = Drop(telnetHandler)
+        # mudReaderHandler.add_subscriber(self.drop)
         self.get = Get(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.get)
-        self.use = self.smartCombat.use
-        self.repair = Repair(telnetHandler)
+        self.repair = Repair(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.repair)
-        self.wear = Wear(telnetHandler)
+        # self.wear = Wear(telnetHandler)
+        self.wear = Wear(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.wear)
-        magentaprint(str(Equipment))
+        # magentaprint(str(Equipment))
         self.equipment = Equipment(telnetHandler)
+        # self.eq_bot = EquipmentBot(character, self, self.mudReaderHandler, self.mud_map)
         mudReaderHandler.add_subscriber(self.equipment)
         mudReaderHandler.add_buffer_completion_subscriber(self.equipment)
-        # self.eq_bot = EquipmentBot(character, self, self.mudReaderHandler, self.mud_map)
+        self.sell = Sell(telnetHandler, self.inventory)
+        mudReaderHandler.add_subscriber(self.sell)
+        self.drop = Drop(telnetHandler, self.inventory)
+        # mudReaderHandler.add_subscriber(self.drop)
+        self.sell_bot = SellBot(self.character.inventory, self.sell, self.drop)
+        # Use will have to keep inventory up to date, right
+        # That is if items support usable (small inhaler, white amulet, rods)
+        self.look = Look(self.character.inventory, telnetHandler)
+        mudReaderHandler.add_subscriber(self.look)
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
@@ -111,6 +154,7 @@ class CommandHandler(object):
 
         self.actions = {
             'go_smithy' : self.go_smithy,
+            # 'go_pawn' : self.go_to_nearest_pawn_shop,
             'suit_up': self.suit_up,
             'bdrop' : self.bulk_drop,
             'lookup_armour' : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
@@ -119,14 +163,6 @@ class CommandHandler(object):
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
-
-    def init_map_and_bots(self):
-        # magentaprint("CommandHandler generating the mapfile....", False)
-        self.mud_map = MudMap()
-        self.armour_bot = ArmourBot(self.character, self, self.mud_map)
-        self.mudReaderHandler.add_subscriber(self.armour_bot)
-        self.weapon_bot.add_in_map(self.mud_map)
-        magentaprint("CommandHandler: Mapfile completed.", False)
 
     def join_mud_map_thread(self):
         if self.threaded_map_setup:
@@ -216,6 +252,7 @@ class CommandHandler(object):
         elif re.match('^ki? |^kill?', user_input):
             self.kill.execute(arg1)
         elif user_input.startswith('kk '):
+            self.smartCombat.stop()
             self.kill.start_thread(user_input.partition(' ')[2].strip())
         elif user_input == 'sk' or user_input == 'skc':
             self.kill.stop()
@@ -224,6 +261,9 @@ class CommandHandler(object):
         elif re.match('ca? |cast?', user_input):
             self.cast.cast(arg1, arg2)
         elif user_input.startswith('cc '):
+            if self.smartCombat.thread and self.smartCombat.thread.is_alive():
+                # See comments in user_cc
+                self.smartCombat.stop_casting() # could keep attacking
             self.cast.start_thread(arg1, arg2)
         elif user_input == 'sc':
             self.cast.stop()
@@ -233,8 +273,12 @@ class CommandHandler(object):
             self.user_kkc(user_input.partition(' ')[2].strip())
         elif user_input.startswith('kk2 '):
             self.user_kk2(user_input.partition(' ')[2].strip())
-        elif re.match('dro? ', user_input):
-            self.user_dr(user_input)
+        elif re.match('^(dro?|drop) ', user_input):
+            # self.user_dr(user_input)
+            self.drop.execute(user_input.split(" ", maxsplit=1)[1]) # This approach keeps the inventory correct
+        elif re.match('^sell? ', user_input):
+            # self.user_sell(user_input)
+            self.sell.execute(user_input.split(" ", maxsplit=1)[1])
         elif user_input.startswith('sella'):
             #magentaprint(str(self.inventory.sellable()))
             # magentaprint(
@@ -242,17 +286,25 @@ class CommandHandler(object):
             #         [self.inventory.get(i) for i in self.inventory.sellable()]
             #     )
             # )
-            self.inventory.sellable()
+            # self.inventory.sellable()
+            self.sell_bot.sellable()
         elif user_input.startswith('droppable'):
             magentaprint(str(self.inventory.droppable()))
         elif user_input.startswith('Sel') and not user_input.startswith('Sella'):
-            self.inventory.sell_stuff()
+            # self.inventory.sell_stuff()
+            self.sell_bot.sell_stuff() # Stoppable? Maybe not needed
         elif user_input.startswith('Dr') and not user_input.startswith('Dropp'):
             self.inventory.drop_stuff()
         elif user_input.startswith('ugo'):
             self.process("unlock east wood")
             self.process("east")
             self.user_move("east")
+            # self.inventory.drop_stuff()
+            self.sell_bot.drop_stuff()
+        elif user_input == 'gopawn':
+            self.travel_bot.go_to_nearest_pawn_shop() # Try ctrl C to kill the thread
+        elif user_input == 'gotip':
+            self.travel_bot.go_to_nearest_tip()
         elif user_input == 'ga':
             self.telnetHandler.write('get all')
             self.get.execute('all')
@@ -273,19 +325,38 @@ class CommandHandler(object):
             self.go.persistent_execute('door')
         elif re.match("find (.+)", user_input):
             self.find(user_input)
+        elif re.match("(wiel?|wield) ", user_input):
+            self.wield.execute(user_input.partition(' ')[2])
         elif re.match("wie?2 +[a-zA-Z]+( +\d+)?", user_input):
-            self.user_wie2(user_input[4:].lstrip())
+            self.wield.execute_and_wait(user_input.partition(' ')[2])
+            self.second.execute(user_input.partition(' ')[2])
+            # self.user_wie2(user_input[4:].lstrip())
+        elif re.match("wear? ", user_input):
+            self.wear.execute(user_input.partition(' ')[2])
+        elif re.match("(repai?|repair) ", user_input):
+            self.repair.execute(user_input.partition(' ')[2])
+        elif re.match("(lo?|look?) ", user_input):
+            self.look.execute(user_input.partition(' ')[2])
         elif re.match("fle?$|flee$", user_input):
             self.stop_bot()
             self.user_flee()
         elif user_input == 'p':
             self.smartCombat.use.healing_potion()
+        elif user_input.startswith('use '):
+            self.use.execute(user_input.partition(' ')[2])
+        elif re.match('drink? ', user_input):
+            self.drink.execute(user_input.partition(' ')[2])
+        # elif user_input.startswith('eat '):
+        #     self.eat.execute(user_input.partition(' ')[2])
+        elif user_input == 'pot':
+            # NOTICE THIS COMMAND
+            self.smartCombat.potion_thread_handler.consume.healing_potion()
         elif re.match("usec$", user_input):  # 'use c' following my pet syntax: end a command with 'c' to start a thread
-            self.smartCombat.use.spam_pots()
+            self.smartCombat.potion_thread_handler.spam_pots()
         elif re.match("usec2$", user_input):
-            self.smartCombat.use.spam_pots(prefer_big=True)
+            self.smartCombat.potion_thread_handler.spam_pots(prefer_big=True)
         elif re.match("su$", user_input):
-            self.smartCombat.use.stop()
+            self.smartCombat.potion_thread_handler.stop()
         elif re.match("bot ?$|bot [0-9]+$", user_input):
             self.start_track_grind(user_input)
         elif re.match("reboot", user_input):
@@ -325,6 +396,8 @@ class CommandHandler(object):
             self.start_mix(user_input)
         elif re.match("slave", user_input):
             self.start_slave(user_input)
+        elif user_input.startswith('buy '):
+            self.buy.execute(user_input.partition(' ')[2])
         elif re.match("bbuy (.+?)", user_input):
             self.bbuy(user_input)
         elif re.match("giver (.+?)", user_input):
@@ -460,6 +533,8 @@ class CommandHandler(object):
         elif user_input == 'i':
             self.inventory.get_inventory()
             #self.inventory.sellable()
+        elif user_input == 'go_repair':
+            self.armour_bot.start_thread()
         else: # Doesn't match any command we are looking for
             self.telnetHandler.write(user_input) # Just shovel to telnet.
 
@@ -506,13 +581,19 @@ class CommandHandler(object):
         #     self.telnetHandler.write(user_input)
         # else:
         
-    def user_dr(self, user_input):
-        [command, item] = user_input.split(" ", 1)
-        user_input = "drop " + item
-        self.telnetHandler.write(user_input)
+    # def user_dr(self, user_input):
+    #     # [command, item] = user_input.split(" ", maxsplit=1)
+    #     # user_input = "drop " + item
+    #     # self.telnetHandler.write(user_input)
+    #     self.drop.execute(user_input.split(" ", maxsplit=1)[1]) # This approach keeps the inventory correct
+
+    # def user_sell(self, user_input):
+    #     # [command, item] = user_input.split(" ", maxsplit=1)
+    #     # self.sell.execute(item)
+    #     self.sell.execute(user_input.split(" ", maxsplit=1)[1])
     
-    # Commented: user_kk is deprecated and this code also doesn't work
     def user_kk(self, monster):
+        # Commented: user_kk is deprecated and this code also doesn't work
         magentaprint("CommandHandler.telnetHandler: " + str(self.telnetHandler))
         # self.kill.engage(self.telnetHandler, argv[3:].lstrip())
         # self.kill.engage(self.telnetHandler, monster)
@@ -535,7 +616,7 @@ class CommandHandler(object):
         # self.telnetHandler.write("")
 
     def user_cc(self, argv):
-        # TODO: Bug for user input "cc "
+        # This doesn't get called!
         if argv == "":
             magentaprint("Usage:  cc <spell> [<target> [<number>]]")
             self.telnetHandler.write("") # TODO: Keep a prompt up to date so we can print
@@ -546,8 +627,45 @@ class CommandHandler(object):
         else:
             spell = argv
             target = ""
-        
-        if self.CastThread != None and self.CastThread.is_alive():
+
+        if self.smartCombat and self.smartCombat.thread and self.smartCombat.thread.is_alive() and not self.smartCombat.stopping and spell:
+            #if re.match('vi?g?o?r?', spell) or re.match('me?n?d?-?w?o?u?n?:
+            # What about healing a party member???
+            # Don't use smart combat then?
+            # We like the vig reaction on it, right?
+            # Very interesting
+            # Friend won't become smartCombat.target certainly
+            # Could just append the target to healing_spell
+            # Eh smartCombat won't heal the friend if self hp is high, since it checks self hp
+            # So, don't use smart combat if healing friend? Fair enough...
+            # What about abilities... like turn... maybe you can queue it with turnc and sk
+            # Is smart combat really bot combat
+            # Well we like that it uses abilities
+            # Let's have smart combat let the person change the spell, right
+            # Maybe better would be to have it try to do it on its own
+            # It can ask for vig amount, right...
+            # Calculate a default based on piety.... yikes....
+            # So better not use smartcombat in group?
+            # Maybe cc kills smart combat and starts kk and cc
+            # So we can open with combat ability then switch
+            # That sounds good
+            self.smartCombat.stop()
+            self.kill.start_thread(user_input.partition(' ')[2].strip())
+            # self.CastThread.set_spell(spell)
+            # self.CastThread.set_target(target)
+            # self.CastThread.keep_going()
+
+            # if spell.startswith('v'):
+            #     self.smartCombat.healing_spell = 'v ' + target if target else 'v' 
+            # elif spell.startswith('m'):
+            #     self.smartCombat.healing_spell = 'm ' + target if target else 'm'
+            # else:
+            #     # Update smart combat with this cc command input
+            #     # (Don't start a cast thread if smart combat is running)
+            #     self.smartCombat.healing = spell # Now we have to worry about typos, right?
+            #     # .spell is for black magic...
+
+        if self.CastThread and self.CastThread.is_alive():
             magentaprint("Updating existing cast thread.")
             self.CastThread.set_spell(spell)
             self.CastThread.set_target(target)
@@ -578,6 +696,7 @@ class CommandHandler(object):
             spell = theSplit[0]
             target = theSplit[1] + " " + " ".join(theSplit[2:])
 
+        magentaprint("Command handler kkc with target " + target)
         self.smartCombat.start_thread(target, spell)
 
     def user_kk2(self, argv):
@@ -585,14 +704,27 @@ class CommandHandler(object):
         # Uses smart combat with level 2 spell
         teh_split = argv.split(" ")
         self.user_kkc(" ".join(teh_split))
-        if self.smartCombat.favourite_spell is burn:
-            teh_split.insert(0, fireball)
-        elif self.smartCombat.favourite_spell is hurt:
-            teh_split.insert(0, dustgust)
-        elif self.smartCombat.favourite_spell is blister:
-            teh_split.insert(0, waterbolt)
-        elif self.smartCombat.favourite_spell is rumble:
-            teh_split.insert(0, crush)
+        if self.smartCombat.favourite_spell is comm.Spells.burn:
+            teh_split.insert(0, comm.Spells.fireball)
+        elif self.smartCombat.favourite_spell is comm.Spells.hurt:
+            teh_split.insert(0, comm.Spells.dustgust)
+        elif self.smartCombat.favourite_spell is comm.Spells.blister:
+            teh_split.insert(0, comm.Spells.waterbolt)
+        elif self.smartCombat.favourite_spell is comm.Spells.rumble:
+            teh_split.insert(0, comm.Spells.crush)
+        self.user_kkc(" ".join(teh_split))
+
+    def user_kk3(self, argv):
+        teh_split = argv.split(" ")
+        self.user_kkc(" ".join(teh_split))
+        if self.smartCombat.favourite_spell is comm.Spells.burn:
+            teh_split.insert(0, comm.Spells.burstflame)
+        elif self.smartCombat.favourite_spell is comm.Spells.hurt:
+            teh_split.insert(0, comm.Spells.shockbolt)
+        elif self.smartCombat.favourite_spell is comm.Spells.blister:
+            teh_split.insert(0, comm.Spells.waterbolt)
+        elif self.smartCombat.favourite_spell is comm.Spells.rumble:
+            teh_split.insert(0, comm.Spells.crush)
         self.user_kkc(" ".join(teh_split))
 
     def user_sc(self):
@@ -600,9 +732,9 @@ class CommandHandler(object):
         self.smartCombat.stop_casting()
         self.telnetHandler.write("")
 
-    def user_wie2(self, argv):
-        self.telnetHandler.write("wield %s\n" % (argv))
-        self.telnetHandler.write("second %s\n" % (argv))
+    # def user_wie2(self, argv):
+    #     self.telnetHandler.write("wield %s\n" % (argv))
+    #     self.telnetHandler.write("second %s\n" % (argv))
 
     def user_flee(self):
         self.smartCombat.stop()
@@ -798,8 +930,9 @@ class CommandHandler(object):
         # if self.bot_thread and self.bot_thread.is_alive():
         if self.bot_thread:
             self.bot_thread.stop()
-        # self.weapon_bot.stop()
-        # self.armour_bot.stop()
+        self.weapon_bot.stop()
+        self.armour_bot.stop()
+        self.travel_bot.stop()
 
     def bbuy(self, user_input):
         try:
@@ -827,14 +960,19 @@ class CommandHandler(object):
             raise e
 
     def bulk_drop(self, arg_string):
+        # self.sell_bot.bulk_drop(argv=arg_string.split(' ', maxsplit=1)[1])
         if arg_string:
             unique_word = arg_string.split(' ')[0]
             if ' ' in arg_string:
-                qty = int(arg_string.split(' ')[1])
+                if arg_string.split(' ')[1] == 'all':
+                    quantity = 'all'
+                else:
+                    quantity = int(arg_string.split(' ')[1])
             else:
-                qty = 1
+                quantity = 'all'
 
-            self.inventory.bulk_drop(unique_word, qty)
+            # self.inventory.bulk_drop(unique_word, quantity)
+            self.sell_bot.bulk_drop(unique_word, quantity)
         else:
             magentaprint("Bulk drop missing arguments")
 

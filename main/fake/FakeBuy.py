@@ -1,6 +1,6 @@
 
 from fake.fake_command import FakeCommand
-from misc_functions import greenprint
+from misc_functions import magentaprint, greenprint
 
 class FakeBuy(FakeCommand):
     def __init__(self, inventory, socket_output):
@@ -20,6 +20,9 @@ class FakeBuy(FakeCommand):
                 self.inventory.add('sabre')
             elif target == 'long':
                 self.inventory.add('long sword')
+            elif target == 'iron 2':
+                magentaprint("FakeBuy iron shield")
+                self.inventory.add('iron shield')
             else:
                 greenprint("FakeBuy error/incomplete: Fake telnet doesn't support buying EVERYTHING\n\r")
                 greenprint("FakeBuy adding %s to inventory.\n\r" % target)

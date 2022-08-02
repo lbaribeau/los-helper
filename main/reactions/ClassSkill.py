@@ -1,5 +1,8 @@
+
 # This thread is used to time retries for cool abilities (haste, pray, berserk, etc.).  
 # Construct it with a CoolAbility.
+
+### I THINK ABILITY IS WHAT WE USE NOT THIS ###
   
 from misc_functions import *
 from reactions.BotReactions import *
@@ -8,7 +11,7 @@ import time
 
 from misc_functions import *
 
-class SkillTimer():
+class SkillTimer:
     def __init__(self, regex, set_timer_to=0, func_pointer=None):
         self.regex = regex
         self.set_timer_to = set_timer_to
