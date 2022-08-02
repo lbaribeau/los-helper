@@ -10,6 +10,7 @@ class Alerter(object):
         self.num_ticks = 0
 
     def notify(self, regex, M_obj):
+        return # Turned off sound
         if not hasattr(self.char, 'info'):
             return
 

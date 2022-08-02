@@ -27,6 +27,7 @@ class CombatObject(object):
         self.result = regex
         if self.end_combat:
             # magentaprint(str(self) + " ending combat.")
+            # Need to add check to make sure it was the mob that fled.
             self.stop()
 
     @property

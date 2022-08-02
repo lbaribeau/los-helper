@@ -1,11 +1,13 @@
+
 from peewee import *
 from db.BaseModel import *
+
 from misc_functions import *
 from db.NamedModel import NamedModel
 
 class Mob(NamedModel):
-    description = CharField(null=True)
-    level = IntegerField(null=True)
+    description       = CharField(null=True)
+    level             = IntegerField(null=True)
     approximate_level = IntegerField(null=True)
     difficulty_rating = IntegerField(null=True)
     aura = IntegerField(null=True)
@@ -25,20 +27,20 @@ class Mob(NamedModel):
             is_new_mapping = True
             super(Mob, self).save()
         else:
-            self.id = mob.id
-            self.blocks_pickup = mob.blocks_pickup
-            self.blocks_exit = mob.blocks_exit
-            self.level = mob.level
+            self.id                = mob.id
+            self.blocks_pickup     = mob.blocks_pickup
+            self.blocks_exit       = mob.blocks_exit
+            self.level             = mob.level
             self.approximate_level = mob.approximate_level
             self.aura = mob.aura
             # self.health = mob.health
             # self.approximate_health = mob.approximate_health
-            #update other fields if you want
 
         return is_new_mapping
 
     def to_string(self):
-        return str(self.id) + ", " + str(self.name) + ", " + str(self.level) + ", " + str(self.aura)
+        #return 'ID: '+str(self.id) + ", " + str(self.name) + ", " + str(self.level) + ", " + str(self.aura)
+        return 'ID: {0}\nName: {1}\nLevel: {2}\nAura: {3}\n'.format(self.id, self.name, self.level, self.aura)
 
     def __str__(self):
         return self.to_string()
@@ -65,9 +67,7 @@ class Mob(NamedModel):
         return mobs
 
     def get_mobs_by_level_and_aura_ranges(low_level, high_level, low_aura, high_aura):
-
         try:
-
             sql = """SELECT *
                      FROM MOB
                      Where 

@@ -84,7 +84,7 @@ class ReferencingList(object):
             if i.name == string:
                 return True
 
-        # magentaprint("Inventory.has() returned False.")
+        magentaprint("ReferencingList.has() returned False.")
         return False
 
         return any(x.name == string for x in self.list)
@@ -105,7 +105,25 @@ class ReferencingList(object):
         return len(self.list)
 
     def to_string(self):
-        return str(self.list)
+        # #return str(self.list)
+        # d=self.to_dict() # key is name, value is count
+        # magentaprint(str(['\t{0} {1}\n'.format(d[n], n) for n in d.keys()]))
+        # magentaprint("Check 1st loop iteration.")
+        # #magentaprint('\t{0} {1}\n'.format(d[0],0))
+        # magentaprint(str(d.keys()))
+        # #magentaprint(str(['\t{0} {1}\n'.format(d[0],0)]))
+        # #magentaprint((sum(['\t{0} {1}\n'.format(d[0],0)]))
+        # # return '{\n'+\
+        # #     sum(['\t{0} {1}\n'.format(d[n], n) for n in d.keys()])+\
+        # # '}'
+        # # (sum isn't concatenating, I think it's converting the strings to ints and summing)
+        # magentaprint('{\n'+''.join(['\t{0} {1}\n'.format(d[n],n) for n in d.keys()])+'}')
+        # return '{\n'+''.join(['\t{0} {1}\n'.format(d[n],n) for n in d.keys()])+'}'
+        # #d[n].count
+        # #lambda 
+        #return '{\n'+''.join(['\t{0} {1}\n'.format(d[n],n) for n in d.keys() for d in [self.to_dict()]])+'}'
+        d=self.to_dict()
+        return '{\n'+''.join(['\t{0} {1}\n'.format(d[name],name) for name in d.keys()])+'}'
 
     def __str__(self):
         return self.to_string()
@@ -148,9 +166,9 @@ class ReferencingList(object):
         i = self.index(ref)
 
         if i != None:
-            # magentaprint("ReferencingList.get() ref/index/str(item): " + str(ref) + '/' + str(i) + '/' + str(self.list[i]))
             # magentaprint("Inventory list: " + str(self.list))
             # magentaprint("Inventory.get() returning " + str(self.list[i]))
+            #magentaprint("ReferencingList.get() ref/index/str(item): " + str(ref) + '/' + str(i) + '/' + str(self.list[i]))
             return self.list[i]
         # else:
             # magentaprint("ReferencingList.get() found nothing. ref/index: " + str(ref) + '/' + str(i))
@@ -200,6 +218,7 @@ class ReferencingList(object):
                     i = i + self.count(list_name)
 
         magentaprint("Caution: referencing_list.get_first_reference() returned None! " + name)
+        magentaprint("Whole list is " + str(self.list))
         return None
 
     def get_2nd_word_reference(self, item_name):

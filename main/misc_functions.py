@@ -5,6 +5,8 @@ import json
 from inspect import getframeinfo, stack
 
 from db.Database import *
+from datetime import datetime
+import comm.ConsoleHandler
 
 debugMode = False
 verboseMode = True
@@ -44,11 +46,13 @@ def do_magentaprint(text, caller):
     print(output)
     newConsoleHandler().white()
 
+
 def greenprint(text):
-    newConsoleHandler().magenta()
-    output = str(get_timestamp() + "   | " + str(text))
-    print(output)
-    newConsoleHandler().white()
+    comm.ConsoleHandler.newConsoleHandler().green()
+    #output = str(get_timestamp() + "   | " + str(text))
+    #print(output)
+    print(get_timestamp() + "   | " + str(text))
+    comm.ConsoleHandler.newConsoleHandler().white()
 
 def safe_divide(x,y):
     try:
@@ -69,8 +73,7 @@ def get_runtime():
     return runtime
 
 def get_runtime_in_minutes():
-    runtime = get_runtime()
-    seconds = int(runtime.total_seconds()) #no millisecond nonsense please
+    seconds = int(get_runtime().total_seconds()) #no millisecond nonsense please
     magentaprint("Seconds run: " + str(seconds))
     if seconds <= 1:
         seconds = 60
@@ -78,9 +81,9 @@ def get_runtime_in_minutes():
     return minutes
 
 def calculate_vpm(value):
+    # (Value per minute)
     minutes = get_runtime_in_minutes()
-    vpm = int(value / minutes) #no decimals
-    return vpm
+    return int(value / minutes) #no decimals
 
 # def my_list_search(thelist, item):
 #     """ Searches the list for the item and returns the index of the item.
@@ -137,6 +140,18 @@ def flush_input():
 def output_api_feed(filename, data):
     with open('reporting_website/api/{}.json'.format(filename), 'w') as outfile:
         json.dump(data, outfile)
+
+def list_to_count_dict(l):
+    d={}
+    for i in l:
+        if i in d:
+            d[i]+=1
+        else:
+            d[i]=1
+    return d
+
+def count_dict_to_string(d):
+    return '{\n'+''.join(['\t{0} {1}\n'.format(d[key],key) for key in d.keys()])+'}'
 
 ######
 

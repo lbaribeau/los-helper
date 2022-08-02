@@ -1,32 +1,31 @@
 
-prompt = [r"\[(\d+) H (\d+) M\]: (You feel the benefits)?"]
-
-__item = r"(?P<item>[A-Za-z0-9\-'\s\(\)\+]+)"
-__items = r"(?P<items>[A-Za-z0-9\-'\s,\(\)\+]+)"
-__player = r"(?P<player>[A-Za-z]+)"
-you_have = [r"You have: " + __items + r"\."]
-wont_buy = [r'The shopkeep says, "I won\'t buy that rubbish from you\."']
+prompt    = [r"\[(\d+) H (\d+) M\]: (You feel the benefits)?"]
+__item    = r"(?P<item>[A-Za-z0-9\-'\s]+)"
+__items   = r"(?P<items>[A-Za-z0-9\-'\s,]+)"
+__player  = r"(?P<player>[A-Za-z]+)"
+you_have  = [r"You have: " + __items + r"\."]
+wont_buy  = [r'The shopkeep says, "I won\'t buy that rubbish from you\."']
 wont_buy2 = [r"The shopkeep won't buy that from you\."]
-sold = [r"The shopkeep gives you (\d+) gold for " + __item + r'\.']
-you_drop = [r"You drop " + __items + r"\."]
+sold      = [r"The shopkeep gives you (\d+) gold for " + __item + r'\.']
+you_drop  = [r"You drop " + __items + r"\."]
 disintegrates = [r"(?:A|Some) " + __item + r" disintegrates\."]
 gold_from_tip = [r"You have (\d+) gold\."]
 not_a_pawn_shop = [r"This is not a pawn shoppe\."]
-you_now_have = [r"You now have (\d+) gold pieces\."]
-not_empty = [r"It isn't empty!"]
-you_wear = [r"You wear " + __items + r"\."]
+you_now_have    = [r"You now have (\d+) gold pieces\."]
+not_empty       = [r"It isn't empty!"]
+you_wear        = [r"You wear " + __items + r"\."]
 nothing_to_wear = [r"You have nothing you can wear\."]
 # you_get = [r"(?s)[^ ]You get (.+?)\.(?:\nYou now have (.+?) gold pieces\.)?"]
 # you_get = [r"[^ ]You get " + __items + r"\."]  # We don't want this to miss because getting can happen in combat - maybe it shouldn't
-you_get = [r"You get " + __items + r"\."]  # still TODO: deal with false positive on "You get the vague..." ... hard to deal with in regex
+you_get    = [r"You get " + __items + r"\."]  # still TODO: deal with false positive on "You get the vague..." ... hard to deal with in regex
 you_remove = [r"You removed? " + __items + r"\."]
 nothing_to_remove = [r"You aren't wearing anything that can be removed\."]
 # you_wield = [r"You wield (.+?)( in your off hand)?\."]
-you_give = [r"You give " + __items + r" to " + __player + r"\."]
-bought = [r"Bought\."]
+you_give       = [r"You give " + __items + r" to " + __player + r"\."]
+bought         = [r"Bought\."]
 you_put_in_bag = [r"You put " + __items + r" in(:?to)? " + __item + r"\."]
-gave_you = [__player + r" gave " + __items + r" to you\."]
-you_hold = [r"You hold " + __items + r"\."]
+gave_you       = [__player + r" gave " + __items + r" to you\."]
+you_hold       = [r"You hold " + __items + r"\."]
 # weapon_breaks = [r"Your (.+?) breaks and you have to remove it\."]
 # weapon_shatters = [r"Your (.+?) shatters\."]
 armour_breaks = [r"Your " + __item + r" fell apart\."]
@@ -56,7 +55,7 @@ __Numbered_mob = r"(?P<numbered_mob>[A-Z](?:he " + __numbers_opt + ")?[a-z '-]+)
 # __The_mob = "[A-Z](?:he " + __numbers_opt + ")?(?P<mob>[a-z '-]+) "
 __the_mob = r"(?:the " + __numbers_opt + ")?(?P<mob>[a-z '-]+) "
 # The_mob2 won't try to match 1st/2nd with the regex.  Turns out it gets hairy accounting for that and The mobs and named mobs.
-__The_mob2 = r"(P<mob>[A-Z][\w '-]+) " 
+__The_mob2 = r"(P<mob>[A-Z][\w '-]+) "
 # __the_mob2 = "(P<mob>[\w '-]+) "
 __mob = r"[a-z '-]+"
 __the_mob2 = r"(P<mob>(?:[A-Z][a-z '-]+)|(?:the " + __numbers_opt + __mob + ")) "
@@ -65,11 +64,11 @@ __the_mob2 = r"(P<mob>(?:[A-Z][a-z '-]+)|(?:the " + __numbers_opt + __mob + ")) 
 # __3_possible_mob_strings = r"((?P<mob1>The [A-Z][a-z '-]+ )|(?P<mob2>([A-Z][a-z'-]+ )+)|(?:[Tt]he " + __numbers_opt + r"(?P<mob3>([a-z '-]+ ))))"  # Alaran problem... try prioritizing named mob last
 # __3_possible_mob_strings = r"((?P<mob1>The [A-Z][a-z '-]+ )|(?:[Tt]he " + __numbers_opt + r"(?P<mob3>([a-z '-]+ ))|(?P<mob2>[A-Z][a-z'-]+ ([a-z'-]+ )*)))"  # Need 2nd capital letter (The General)
 # __Three_possible_mob_strings = r"((?P<mob1>The [A-Z][a-z '-]+ )|(?:The " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>([A-Z][a-z'-]+ )+)))"  # Still no good for Hef/Alaran (mob3)
-# __Three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:The " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>[A-Z][A-Za-z '-]+ )))"  
-# __Three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:The " + __numbers_opt + r"((?P<mob2>[a-z '-]+) ))|(?P<mob3>[A-Z][A-Za-z '-]+ ))"  
-__Three_possible_mob_strings = r"((?P<mob1>The( [A-Z][a-z'-]+)+)|(?:The " + __numbers_opt + r"(?P<mob2>[a-z '-]+))|(?P<mob3>[A-Z][A-Za-z '-]+))"
-# __three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:the " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>[A-Z][A-Za-z '-]+ )))"  
-# __three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:the " + __numbers_opt + r"((?P<mob2>[a-z '-]+) ))|(?P<mob3>[A-Z][A-Za-z '-]+ ))"  
+# __Three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:The " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>[A-Z][A-Za-z '-]+ )))"
+# __Three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:The " + __numbers_opt + r"((?P<mob2>[a-z '-]+) ))|(?P<mob3>[A-Z][A-Za-z '-]+ ))"
+__Three_possible_mob_strings = r"(?P<whole_mob_name>((?P<mob1>The( [A-Z][a-z'-]+)+)|(?:The " + __numbers_opt + r"(?P<mob2>[a-z '-]+))|(?P<mob3>[A-Z][A-Za-z '-]+)))"
+# __three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:the " + __numbers_opt + r"(?P<mob2>([a-z '-]+ ))|(?P<mob3>[A-Z][A-Za-z '-]+ )))"
+# __three_possible_mob_strings = r"((?P<mob1>The ([A-Z][a-z '-]+ )+)|(?:the " + __numbers_opt + r"((?P<mob2>[a-z '-]+) ))|(?P<mob3>[A-Z][A-Za-z '-]+ ))"
 # __three_possible_mob_strings = r"(?:the " + __numbers_opt + r"((?P<mob1>(?P<mob3>(?P<mob2>[a-z '-]+))) ))"  # Simplefied mob2 only, you_attack not working
 # __three_possible_mob_strings = "(?:the ((?P<mob1>(?P<mob3>(?P<mob2>[a-z '-]+))) ))"
 # __three_possible_mob_strings = "(?:the ((?P<mob1>(?P<mob3>(?P<mob2>.+?))) ))"
@@ -328,7 +327,8 @@ attack_miss = [
 
     "Your missile arcs towards (?:the )?(" + __numbers + " )?(.+?), but fails\s+to\s+hit\s+them\.",
     "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
-    "(?s)You use your .+?, but nothing hits (?:the )?(" + __numbers + " )?(.+?)\."
+    "(?s)You use your .+?, but nothing hits (?:the )?(" + __numbers + " )?(.+?)\.",
+    "Your blow did no damage\." # Should be a hit for 0
 ]
 
 aura = [r"You glow with a " + __aura + " aura\."]
@@ -635,5 +635,5 @@ doesnt_fit = [__item + r" doesn't fit you\."]
 no_gold = [r"You don't have enough gold\."]
 # get_ring =  [r"(?s)You get .+? an? .+? ring((,.+?\.)|(\.))"]  # problem here.
 get_ring =  [r"(?s)You get " + __items + r"?an? [a-z]+ ring(([a-zA-Z0-1-',\s]+\.)|(\.))"]
-
 you_rest = [r"You lean back to take some rest\."]
+occupied_area=[r"Someone is blocking the way\."]

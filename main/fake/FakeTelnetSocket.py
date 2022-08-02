@@ -372,7 +372,7 @@ class FakeTelnetSocket(object):
     def mobdead(self, mob):
         dead_string = 'Your attack overwhelms the ' + mob + ' and he collapses!\nYour enemy, the ' + mob + ' has been defeated.\nYou gain 11 experience.\n\r'
         self.mob_lost_battle(mob, dead_string)
-    
+
     def mob_lost_battle(self, mob, lost_string):
         self.rng = 0
         if mob in self.current_monster_list:

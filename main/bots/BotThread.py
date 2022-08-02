@@ -54,13 +54,12 @@ class BotThread(threading.Thread):
     '''
     BotThread hooks.  2 and 3 are the main ones
     1  run startup
-    2  pre go   (actions when direction list has emptied)
-    3  regular  (actions on every node travelled through)
-    4   on successful go
-    5   on blocking mob
-    6   on go please wait
-    7   on go timeout
-    8   on go no exit
+    3   regular  (actions on every node travelled through)
+    4     on successful go
+    5     on blocking mob
+    6     on go please wait
+    7     on go timeout
+    8     on go no exit
     9  post go (similar to successful go except also applies to failed go)
     A  do after directions travelled
     '''
@@ -229,19 +228,21 @@ class BotThread(threading.Thread):
 
             try:
                 path = self.mud_map.get_path(self.character.AREA_ID, area_id)
-
                 if len(path) == 0:
                     self.direction_list = ["buffer"] + self.direction_list
                 else:
                     self.direction_list = ["buffer"] + path + self.direction_list
-
             except Exception:
                 magentaprint("BotThread.do_go_hooks() problem with go hook " + exit_str + ", unsuccessful go.")
                 if len(self.direction_list) > 0:
                     self.direction_list.pop(0) #remove the areaid[/d]*
                 return False
+
             #magentaprint("path added to list: " + str(self.direction_list), False)
             return True
+        # elif re.match("mobname *", exit_str):
+            # Expand out "mobname" shortcut specified by TrackGrind
+            # (Why not have TrackGrind expand it out?)
         return False
 
     def do_reboot_hooks(self):
@@ -251,6 +252,7 @@ class BotThread(threading.Thread):
     def do_run_startup(self):
         #self.set_up_automatic_ring_wearing()
         #setup heal reactions
+        #self.__stopping=False
         return
 
     def do_pre_go_actions(self):

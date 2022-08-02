@@ -57,12 +57,16 @@ def parse_item_names(inventory_string):
     numbers.extend([str(i) + " " for i in range(21, 200)])
 
     for item in inv_list:
-        if item.endswith(" gold coin") or item.endswith(" gold coins"):
+        if (item.endswith(' gold coin') or 
+            item.endswith(' gold coins') or 
+            item.endswith(' platinum coins') or 
+            item.endswith(' silver coins') or
+            item.lower() in ['gold coins', 'platinum coins', 'silver coins', 'small jade fragment', 'amethyst gem']):
             continue
-        if item.endswith(" silver coin") or item.endswith(" silver coins"):
-            continue
-        if item.endswith(" platinum coins"):
-            continue
+        #if item.endswith(" platinum coins"):  
+        # (Misses "The auctioneer was carrying: 13 gold coins, a gavel, platinum coins.")
+        # One platinum coin comes in as "platinum coins" 
+        # (without a quantifier, so the preceding space got stripped).
 
         if not any(item.startswith(s) for s in singles + numbers):
             return_list.append(item)  # ie 'maul hammer'
@@ -79,8 +83,7 @@ def parse_item_names(inventory_string):
 
                 if item.startswith("sets of"):
                     item = item.replace("sets of ", "")
-
-                if item.endswith('ses') or item.endswith('xes'):
+                elif item.endswith('ses') or item.endswith('xes'):
                     item = item[:len(item)-2]
                 elif item.endswith('s'):
                     item = item[:len(item)-1]
@@ -88,6 +91,9 @@ def parse_item_names(inventory_string):
                 return_list.extend([item]*(n+2))
 
     return return_list
+    # Two sets of plate mail leggings
+    # some plate mail leggings
+    # So don't remove the plural s if it started with sets of
 
 def parse_item_list(inventory_string):
     return construct_items(parse_item_names(inventory_string))
@@ -159,6 +165,12 @@ def add_to_dict(d, item_str, qty):
     mud_item.map()
     d[mud_item] = GenericMudList([mud_item] * qty)
 
+# class RegexMatch(object):
+#     def __init__(self, regex, M_obj):
+#         self.regex=regex
+#         self.M_obj=M_obj
+# Note that the match object actually holds regex info
+
 class Inventory(BotReactionWithFlag, ReferencingList):
     # keep_list = ["large bag", "large sack", "black bag",
     #     "silver chalice", "steel bottle", 'glowing potion',
@@ -210,10 +222,10 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 
     def __init__(self, telnetHandler, character):
         self.regex_cart = [
-            R.you_have, R.wont_buy, R.wont_buy2, R.sold, R.you_drop, R.disintegrates, R.gold_from_tip, R.not_a_pawn_shop,
-            R.you_now_have, R.not_empty, R.you_wear, R.nothing_to_wear, R.you_get, R.you_remove, R.nothing_to_remove, R.you_wield,
-            R.you_give, R.bought, R.you_put_in_bag, R.gave_you, R.you_hold, R.weapon_break, R.weapon_shatters, R.armour_breaks,
-            R.current_equipment, R.no_inventory, R.wearing
+            R.you_have,          R.sold,         R.you_drop,       R.disintegrates,   R.gold_from_tip,   
+            R.you_now_have,      R.not_empty,    R.you_wear,       R.nothing_to_wear, R.you_get,  R.you_remove,    R.nothing_to_remove, R.you_wield,
+            R.you_give,          R.bought,       R.you_put_in_bag, R.gave_you,        R.you_hold, R.weapon_break,  R.weapon_shatters,   R.armour_breaks,
+            R.current_equipment, R.no_inventory, R.wearing,  R.wont_buy, R.wont_buy2, R.not_a_pawn_shop
         ]
         self.telnetHandler = telnetHandler
         self.character = character
@@ -221,7 +233,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         self.__stopping = False
         self.is_bulk_vendoring = False
         self.equipped_items = {}
-        self.already_removed_dropped_item = False
+        #self.already_removed_dropped_item = False
         # equipped_items = {'body': [], 'arms':[], 'legs':[],'neck':[],'hands':[],'head':[],'feet':[],'face':[],'finger':[],'Shield':[],'Wielded':[],'Second':[]}
 
         for index, item in enumerate(self.keep_list):
@@ -237,15 +249,30 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 
         BotReactionWithFlag.__init__(self)
         ReferencingList.__init__(self)
+        self.__sell_function = False
+        self.__drop_function = False
+        #self.__previous_regex = None
+        self.__return_buffer = [] # List of (regex,M_obj) pairs needed when the command that was sent is needed together with the reply
+
+    # def push_return_buffer(self, regex, M_obj):
+    #     #self.__return_buffer.append({'regex':regex,'M_obj':M_obj})
+    #     self.__return_buffer.append(M_obj)
 
     def notify(self, regex, M_obj):
         if regex in R.you_have:
             # magentaprint('Inventory you_have item list: ' + M_obj.group(1))
             self.set_inventory(M_obj.group(1))
             # magentaprint(str(self.list))
+            #magentaprint(str(self.to_dict()))
+            #magentaprint(self)
         elif regex in R.sold:
             self.gold = self.gold + int(M_obj.group(1))
-            self.remove_many(M_obj.group(2))
+            # Do nothing on "wont_buy" except set the wait flag (super)
+            if self.__sell_function:
+                # We will remove the item from the scope where we know the command that was sent (self.sell)
+                self.__return_buffer.append(M_obj)
+            else:
+                self.remove_many(M_obj.group(2))
         elif regex in R.you_now_have + R.gold_from_tip:
             self.gold = int(M_obj.group(1))
         elif regex in R.you_wield and not M_obj.group('weapon').endswith('in your off hand'):
@@ -261,15 +288,29 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         elif regex in R.you_get:
             item = clip_from_a_container(M_obj.group(1))
             self.add(item)
-        elif regex in R.you_drop + R.you_give + R.you_put_in_bag + R.disintegrates:
+        elif regex in R.you_drop:
             # magentaprint(str(M_obj.group(1)), False)
             # Problem: we don't know which item was dropped, so it's hard to keep track of is_usable
             # Maybe we just want to reset everthing after dropping... or the bot needs to manage things,
             # or inventory needs full control of many commands (drop, sell...) ... hmph ... preferring to
             # ask the server
-            if self.already_removed_dropped_item:
-                self.already_removed_dropped_item = False
+            # No we can do blocking calls to sell and drop from the bot
+            # Remove the item from the reaction if necessary
+            # But if we are in self.sell/drop and waiting, may as well do it right
+            # Ok solution is to save the match to self and deal with it in drop function after the wait call
+            # Other solution would be to save the command to self and deal with it here
+            # The plan is to have inventory do a blocking call to Sell...
+            # (Sometimes we don't like blocking calls...)
+            # Ok so store the command that was sent
+            #if self.already_removed_dropped_item:
+                #self.already_removed_dropped_item = False
+            #else:
+                #self.remove_many(M_obj.group(1))
+            if self.__drop_function:
+                pass
             else:
+                self.remove_many(M_obj.group(1))
+        elif regex in R.you_give + R.you_put_in_bag + R.disintegrates:
                 self.remove_many(M_obj.group(1))
         elif regex in R.you_wear + R.you_hold:
             self.remove_many(M_obj.group(1))
@@ -409,20 +450,38 @@ class Inventory(BotReactionWithFlag, ReferencingList):
                 return
 
     def sell(self, item_ref):
+        self.__sell_function = True
         self.telnetHandler.write("sell " + item_ref)
-        self.wait_for_flag()
+        self.wait_for_flag() 
+        # return_regexes=[m.pattern for m in self.__return_buffer]:
+        # if R.sold in return_regexes:
+        #     # Need m or to remove the m with this pattern
+        # elif R.wont_buy in [m.pattern for m in self.__return_buffer] or R.wont_buy2 in :
+        for m in self.__return_buffer:
+            #if m.re.pattern in R.sold + R.wont_buy + R.wont_buy2:
+            if m.re.pattern in R.sold:
+                self.remove_by_ref(item_ref)
+                self.__return_buffer.remove(m)
+                break
+            #elif m.re.pattern in R.wont_buy + R.wont_buy2:
+        self.__sell_function = False
+        # Ok we don't know which item got sold... assuming that the last one got sold would be better
+        # Bot selling we can assume it's the last one since the bot sells in reverse order
+        # User selling... could use a Sell object...
+        # Bot should probably use a Sell object...
+        # Right here, do a blocking call, then remove the correct item using item_ref instead of with the reaction
+        # (Getting the right one can help if one is broken)
 
     def bulk_sell(self, item_string, quantity):
-        i = 0
         magentaprint("Bulk selling: " + item_string + " #" + quantity)
         self.is_bulk_vendoring = True
+        i = 0
 
-        while i < (quantity ):
+        while i < quantity:
             self.sell(item_string)
             i += 1
 
         time.sleep(3) #breathe!
-
         self.is_bulk_vendoring = False
 
     def buy_stuff(self, item_string):
@@ -476,8 +535,15 @@ class Inventory(BotReactionWithFlag, ReferencingList):
                 return
 
     def drop(self, item_ref):
+        # Ok let's not trust the reaction to do the removal, since it doesn't know the command that was sent, like sell
+        # But we need to know what happened!
+        # Do we have a previous regex variable?
+        # There is a thread trade happening
+        self.__drop_function = True
         self.telnetHandler.write("drop " + item_ref)
         self.wait_for_flag()
+        self.remove_by_ref(item_ref)
+        self.__drop_function = False
 
     def drop_last(self, item_string):
         # item_ref = self._item_string_to_reference(item_string)  # TODO: This looks like it would crash
@@ -488,10 +554,11 @@ class Inventory(BotReactionWithFlag, ReferencingList):
     def bulk_drop(self, unique_word, qty):
         # item_ref = self.get_first_reference(unique_word)
         for i in range(qty):
-            self.already_removed_dropped_item = True
-            self.telnetHandler.write("drop " + unique_word)
-            self.wait_for_flag()
-            self.remove_by_ref(unique_word)
+            #self.already_removed_dropped_item = True
+            #self.telnetHandler.write("drop " + unique_word)
+            #self.wait_for_flag()
+            #self.remove_by_ref(unique_word)
+            self.drop(unique_word) # Drop will remove by ref now (don't need already_removed_dropped_item)
 
     def stop(self):
         self.__stopping = True
@@ -517,11 +584,10 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         items = parse_item_list(item_string)  # This is overloaded for "hammer" and "a hammer"
         for i in items:
             # magentaprint("[" + i.name + "] #" + str(len(i.name)), False)
-            if len(i.name) < 30:
             #     magentaprint("Trying to add a really long item added - maybe we shouldn't do that?? " + i.name, False)
             # else:
-                # magentaprint("Inventory adding %s" % str(i))
-                super().add(i)  # Turn it into a MudItem?
+            # magentaprint("Inventory adding %s" % str(i))
+            super().add(i)  # Turn it into a MudItem?
 
     def add_broken(self, item_string):
         items = parse_item_list(item_string)
@@ -569,8 +635,8 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         l.extend(parse_item_list(item_string))
         if not self.compare_lists(self.list, l):
             magentaprint("Inventory.set_inventory overwriting self.list, len %s." % len(l))
-            magentaprint(str(self.to_dict()))
             self.list = l
+            #magentaprint(self) # Could try cyan print
         else:
             magentaprint("Inventory.set_inventory didn't overwrite self.list, lengths: %s, %s." % (len(l), len(self.list)))
 
@@ -638,12 +704,17 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         self.wait_for_flag()
 
     def sellable(self):
-        self.get_inventory()
+        self.get_inventory() # This line isn't necessary if we assume everything is always works perfectly
         slist = self.get_unique_references(self.keep_list)
         slist.reverse()
         magentaprint("Sellable items: " + str(slist))
+        magentaprint("Sellable items: " + str(ReferencingList([self.get(i) for i in slist])))
+        magentaprint("Keeping items: " + str(ReferencingList(
+            [i for i in self.list if i in self.keep_list])))
+        self.telnetHandler.write('')
         # return self.inventory.get_unique_references(self.keep_list)
         return slist
+        #https://www.geeksforgeeks.org/python-intersection-two-lists/
 
     def droppable(self):
         return self.broken_junk()
@@ -906,8 +977,11 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 
 # Ok I am ready for a regex list in BotReactions.
 
-# Your brass ring fell apart.
-# You are not yet adept enough to use this!
+# Plan is to have a Sel object that supports a non-blocking and blocking call
+# It can store the command that was sent to get the right item removed from inventory
+# This applies to a lot of other things - drop, give, wear
+# Stores the command(s) that went out
+# Not sure if each command needs its own class
 
 
 # BUYING STUFF
@@ -917,6 +991,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 # Oooh, maybe we could convince MudReaderThread to repress the output.
 # Well, we could have command_handler call 'buy' and then confirm ...
 # oooff that doesn't even work because we don't have the full name of what we bought
+# (Database should know that)
 # Maybe printing the inventory won't be too annoying...
 
 # NEWLINES
@@ -927,5 +1002,8 @@ class Inventory(BotReactionWithFlag, ReferencingList):
 # that doesn't constitute a newline.  The mud always puts them between words.
 # so s = s.replace('\r\n', ' ') is always a good move.
 
-# Would be nice to keep track of white amulet usages
+# Would be nice to keep track of white amulet usages, also small flask
 # It'd be good to consider the weight when deciding whether to sell.
+
+# Your brass ring fell apart.
+# You are not yet adept enough to use this!

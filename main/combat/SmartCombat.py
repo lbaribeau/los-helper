@@ -169,11 +169,7 @@ class SmartCombat(CombatObject):
         self.set_target(target)
 
     def start_thread(self, target, spell=None):
-        self.set_target(target)
-        self.spell = spell if spell else self.favourite_spell
-        magentaprint("SmartCombat spell set to " + str(self.spell), False)
-        self.set_pot_thread = False
-
+        self._initialize(target, spell)
         # if self.thread is None or not self.thread.is_alive():
         if self.thread and self.thread.is_alive():
             self.keep_going(target)
@@ -185,6 +181,12 @@ class SmartCombat(CombatObject):
     def engage_target(self, target_shorthand, monster):
         self.target = target_shorthand
         self.target_fullref = monster
+    
+    def _initialize(self, target, spell=None):
+        self.set_target(target)
+        self.spell = spell if spell else self.favourite_spell
+        magentaprint("SmartCombat spell set to " + str(self.spell))
+        self.set_pot_thread = False
 
     def set_target(self, target=None):
         if target:
@@ -199,12 +201,12 @@ class SmartCombat(CombatObject):
             self.target = None
 
     def run(self):
-        self.stopping = False
+        self.stopping    = False
         self.mob_charmed = False
-        self.circled = False
-        self.activated = True
-        self.fleeing = False
-        self.broke_ring = False
+        self.circled     = False
+        self.activated   = True
+        self.fleeing     = False
+        self.broke_ring  = False
         self.casting = self.black_magic or Spells.vigor in self.character.spells
         self.favourite_combat_item = self.get_favourite_combat_item()
         is_combat_ready = True

@@ -2,6 +2,7 @@
 from bots.GrindThread import GrindThread
 from misc_functions import magentaprint, get_timeint
 from Aura import Aura
+import db.Area
 import random
 
 class Path():
@@ -192,6 +193,7 @@ class TrackGrindThread(GrindThread):
             'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel'
         ]
         #aid418, 1975, 1979, 1951, 415, 45
+
         # These area numbers are unfortunately for a different database... (except "2")
 
         # need to fix this!
@@ -228,6 +230,7 @@ class TrackGrindThread(GrindThread):
             'northeast', 'northeast', 'northeast', 'north', 'north', 'gate', 'east', 'north', 'north', 'north',
             'west', 'north', 'chapel'
         ]
+
         self.GNOLL_CAMP = ['think']
 
         # self.GNOLL_CAMP = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'southeast',
@@ -466,10 +469,11 @@ class TrackGrindThread(GrindThread):
         magentaprint("next path = " + str(self.__nextpath), False)
 
         if self.character.DEAD:
-            # crash
             self.character.DEAD = False
             self.character.DEATHS += 1
-            magentaprint("Died; Pulling up my bootstraps and starting again", False)
+            # magentaprint("Died: Pulling up my bootstraps and starting again", False)
+            magentaprint("Died: stopping bot thread.", False)
+            self.stop()
             return self.LIMBO_TO_CHAPEL[:]
 
         if self.character.NEEDS_TO_SELL:

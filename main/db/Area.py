@@ -1,14 +1,14 @@
 import sys
-from peewee import *
+import peewee
 from misc_functions import *
 from db.NamedModel import NamedModel
 
 class Area(NamedModel):
-    description = CharField(null=True) #This will only be used for crawler comparisons
-    is_always_dark = BooleanField(default=False)
-    is_dark_at_night = BooleanField(default=False)
-    is_restorative = BooleanField(default=False)
-    is_smithy = BooleanField(default=False)
+    description      = peewee.CharField(null=True) #This will only be used for crawler comparisons
+    is_always_dark   = peewee.BooleanField(default=False)
+    is_dark_at_night = peewee.BooleanField(default=False)
+    is_restorative   = peewee.BooleanField(default=False)
+    is_smithy        = peewee.BooleanField(default=False)
     #does_damage_on_entry = BooleanField(default=False)
     #teleports_character = Area(null=True)
 
@@ -129,25 +129,58 @@ class Area(NamedModel):
     '''Static Area Functions'''
     def get_areas_by_name(area_name):
         areas = []
-
         try:
             areas = Area.select().where((Area.name == area_name))
-
         except Area.DoesNotExist:
             areas = []
-
         return areas
+
+    def get_by_name(area_name):
+        # NamedModel.get_by_name wasn't working for me (overwrite it)
+        #return Area.get_areas_by_name(area_name).get()
+        return Area.get_areas_by_name(area_name)[0]
 
     def get_areas_by_name_and_description(area_name, area_description):
         areas = []
-
         try:
             areas = Area.select().where((Area.name == area_name) & (Area.description == area_description))  
             # ',' might work over '&'
+        except Area.DoesNotExist:
+            areas = []
+        return areas
+
+    def get_area_by_id(area_id):
+        area = []
+        try:
+            area = Area.select().where(Area.id == area_id).get()
+        except Area.DoesNotExist:
+            area = None
+        return area
+
+    def get_areas_by_partial_name(area_name_part):
+        areas = []
+        area_name = "*" + area_name_part + "*"
+        try:
+            areas = Area.select().where((Area.name % area_name))
+        except Area.DoesNotExist:
+            areas = []
+        return areas
+
+    def get_restorative_areas():
+        areas = []
+        try:
+            areas = Area.select().where((Area.is_restorative == 1))
 
         except Area.DoesNotExist:
             areas = []
+        return areas
 
+    def get_smithy_areas():
+        areas = []
+        try:
+            areas = Area.select().where((Area.is_smithy == 1))
+        except Area.DoesNotExist:
+            areas = []
         return areas
 
     def get_areas_by_name_and_exits(area_name, exit_type_list, area_description=""):
@@ -159,7 +192,7 @@ class Area(NamedModel):
         if area_description != "":
             description_clause = " and a.description = '%s'" % area_description.replace("'", "''")
 
-        if (exit_count > 0):
+        if exit_count > 0:
             exit_id_list += str(exit_type_list[0].id)
             for i in range(1, exit_count):
                 exit_id_list += ", " + str(exit_type_list[i].id)
@@ -193,51 +226,6 @@ having count(*) = %s
             except Area.DoesNotExist:
                 areas = []
         else:
-            areas = []
-
-        return areas
-
-
-    def get_area_by_id(area_id):
-        area = []
-
-        try:
-            area = Area.select().where(Area.id == area_id).get()
-        except Area.DoesNotExist:
-            area = None
-
-        return area
-
-    def get_areas_by_partial_name(area_name_part):
-        areas = []
-
-        area_name = "*" + area_name_part + "*"
-
-        try:
-            areas = Area.select().where((Area.name % area_name))
-
-        except Area.DoesNotExist:
-            areas = []
-
-        return areas
-
-    def get_restorative_areas():
-        areas = []
-
-        try:
-            areas = Area.select().where((Area.is_restorative == 1))
-
-        except Area.DoesNotExist:
-            areas = []
-
-        return areas
-
-    def get_smithy_areas():
-        areas = []
-
-        try:
-            areas = Area.select().where((Area.is_smithy == 1))
-        except Area.DoesNotExist:
             areas = []
 
         return areas
