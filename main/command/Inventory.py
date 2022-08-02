@@ -199,6 +199,7 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'burnt ochre potion',
         # 'spear',
         # 'bolos',
+        'quarter staff', #'heavy crossbow', 
         'javelin', #'heavy crossbow', 
         'throwing stars', 'throwing star',
         #'crossbow', 'horn bow', 'long bow' # < 70% missile

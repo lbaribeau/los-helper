@@ -28,6 +28,7 @@ class Get(Command):
     def __init__(self, telnetHandler, inv):
         super().__init__(telnetHandler)
         self.inv = inv
+        self.failed_to_get_items = False
 
     def notify(self, regex, match):
         if regex in R.cant_carry:

@@ -195,7 +195,7 @@ class ReferencingList(object):
             # magentaprint("Inventory list: " + str(self.list))
             # magentaprint("Inventory.get() returning " + str(self.list[i]))
             #magentaprint("ReferencingList.get() ref/index/str(item): " + str(ref) + '/' + str(i) + '/' + str(self.list[i]))
-            magentaprint('ReferencingList.get({0}) got {1} returning {2}'.format(ref, i,self.list[i]))
+            # magentaprint('ReferencingList.get({0}) got {1} returning {2}'.format(ref, i,self.list[i]))
             return self.list[i]
 
     def get_usable_object_of_type(self, model, data, level=-1):

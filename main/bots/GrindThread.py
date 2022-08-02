@@ -11,6 +11,7 @@ from reactions.ring_reaction import RingWearingReaction
 from Exceptions import *
 from comm import Spells
 from db.MudItem import MudItem
+from db.AreaStoreItem import AreaStoreItem
 
 class GrindThread(BotThread):
     def __init__(self, character, command_handler, mudReaderHandler, mud_map):
@@ -97,7 +98,7 @@ class GrindThread(BotThread):
         else:
             self.command_handler.process('rest')
             self.command_handler.quit()
-            crash  # failed to buy weapon
+            # crash  # failed to buy weapon
             return False
 
     def wield(self, item):
@@ -129,7 +130,7 @@ class GrindThread(BotThread):
             self.character.mobs.chase = ''  # It should be a chase list
             self.character.mobs.chase_exit = ''
         elif self.ready_for_combat():
-            new_target = self.decide_which_mob_to_kill(C.mobs.list)
+            new_target = self.decide_which_mob_to_kill(self.character.mobs.list)
         else:
             new_target = ""
             # magentaprint("TrackGrindThread.do_post_go_actions() calling do_rest_hooks()") # Out of date print...
@@ -179,12 +180,12 @@ class GrindThread(BotThread):
             self.engage_any_attacking_mobs()
             self.check_weapons()  # TODO: shopping doesn't work everywhere
 
-            if not C.BLACK_MAGIC:
+            if not self.character.BLACK_MAGIC:
                 self.heal_up()
 
             if self.ready_for_combat():
                 magentaprint("GrindThread picking a new target since " + new_target + " was defeated")
-                new_target = self.decide_which_mob_to_kill(C.mobs.list)
+                new_target = self.decide_which_mob_to_kill(self.character.mobs.list)
             else:
                 new_target = ""
 
@@ -471,7 +472,7 @@ class GrindThread(BotThread):
         if self.has_ideal_health():
             return
 
-        if BotThread.can_cast_spell(C.MANA, heal_cost, C.KNOWS_VIGOR):
+        if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
             self.cast.cast('v')
             self.cast.wait_for_flag()
 
@@ -480,17 +481,17 @@ class GrindThread(BotThread):
 
             self.cast.start_thread('v')
 
-        C.HAS_RESTORE_ITEMS = False # Restore items disabled?
+        self.character.HAS_RESTORE_ITEMS = False # Restore items disabled?
 
         while BotThread.should_heal_up(
-            C.HEALTH, C.HEALTH_TO_HEAL, C.MANA, heal_cost, C.KNOWS_VIGOR, C.HAS_RESTORE_ITEMS\
+            self.character.HEALTH, self.character.HEALTH_TO_HEAL, self.character.MANA, heal_cost, self.character.KNOWS_VIGOR, self.character.HAS_RESTORE_ITEMS\
             ) and not self.stopping:
 
             self.do_heal_skills()
             # self.use_restorative_items() #spam them!!!
 
             if self.engage_any_attacking_mobs():
-                if BotThread.can_cast_spell(C.MANA, heal_cost, C.KNOWS_VIGOR):
+                if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
                     self.cast.start_thread('v')
 
             self.sleep(0.05)
@@ -779,7 +780,7 @@ class GrindThread(BotThread):
 
         # self.smartCombat.target = monster
         magentaprint("GrindThread engage_monster get_first_reference({0})".format(monster))
-        new_target = C.mobs.list.get_first_reference(monster)
+        new_target = self.character.mobs.list.get_first_reference(monster)
         # So... suppose someone (Qerp) runs by and kills the nobleman we have chased
         # Ok a fixed that up a level
         # I think we are assuming here that the target is in the list
@@ -801,83 +802,83 @@ class GrindThread(BotThread):
         # Ok it might not BE in the list (we chase, we call engage monster on the target we assume is there...)
         # Here is a good place to check smartCombat.fleeing... smartCombat.escape is blocking call with a bit of a sleep
         # Ok this really is the place to add some smarts
-        if C.mobs.chase != '' and C.mobs.chase_exit != '':
+        if self.character.mobs.chase != '' and self.character.mobs.chase_exit != '':
             magentaprint("GrindThread.engage_monster() chasing mob, pushing onto direction list!")
-            if C.AREA_ID is not None:
+            if self.character.AREA_ID is not None:
                 # We can't assume it'll work here - we have to check to see if it'll work.
-                magentaprint(str(self.mud_map.los_map[C.AREA_ID]))
-                # magentaprint(str(self.mud_map.los_map[C.AREA_ID].edges(data=True)))  # dict object has no attribute 'edges'
-                # magentaprint(str(self.mud_map.los_map[C.AREA_ID].edges()))
+                magentaprint(str(self.mud_map.los_map[self.character.AREA_ID]))
+                # magentaprint(str(self.mud_map.los_map[self.character.AREA_ID].edges(data=True)))  # dict object has no attribute 'edges'
+                # magentaprint(str(self.mud_map.los_map[self.character.AREA_ID].edges()))
 
-                # chase_aid = self.mud_map.los_map[C.AREA_ID][C.chase_dir]
-                # magentaprint('Current node will definitely have chase node as a neighbor: ' + str(chase_aid in self.mud_map.los_map.neighbors(C.AREA_ID)))
-                # magentaprint('Chase node neighbors() should have current node: ' + str(C.AREA_ID in self.mud_map.los_map.neighbors(chase_aid)))
-                # return_path = self.mud_map.get_path(chase_aid, C.AREA_ID)
+                # chase_aid = self.mud_map.los_map[self.character.AREA_ID][self.character.chase_dir]
+                # magentaprint('Current node will definitely have chase node as a neighbor: ' + str(chase_aid in self.mud_map.los_map.neighbors(self.character.AREA_ID)))
+                # magentaprint('Chase node neighbors() should have current node: ' + str(self.character.AREA_ID in self.mud_map.los_map.neighbors(chase_aid)))
+                # return_path = self.mud_map.get_path(chase_aid, self.character.AREA_ID)
 
                 # Should be able to iterate through neighbors to find the one with our edge data (15: {'name': 'east'})
-                # g.neighbors(n) or c.all_neighbors()
+                # g.neighbors(n) or self.character.all_neighbors()
                 # for n in neighbors:
                 #    if c
                 # use G.edges(nbunch) to get the edges adjacent to my node, and pick out the one with the right exit name, and follow it.
 
                 # pdb.set_trace()
-                # area_exits = self.mud_map.los_map.edges(C.AREA_ID)
+                # area_exits = self.mud_map.los_map.edges(self.character.AREA_ID)
                 # magentaprint('GrindThread area_exits trying area_id to index area: ' + str(area_exit))
-                # area_exits2 = self.mud_map.los_map.edges(self.mud_map.los_map[C.AREA_ID])
+                # area_exits2 = self.mud_map.los_map.edges(self.mud_map.los_map[self.character.AREA_ID])
                 # magentaprint('GrindThread area_exits longer way of getting edges, using whole node to index: ' + str(area_exit2))
                 # area_exit = area_exits
 
                 # return_path = self.
-                # chase_aid = self.mud_map.next_node(C.AREA_ID, C.chase_dir)
-                # return_path = self.mud_map.get_path(C.chase_dir, C.AREA_ID)
+                # chase_aid = self.mud_map.next_node(self.character.AREA_ID, self.character.chase_dir)
+                # return_path = self.mud_map.get_path(self.character.chase_dir, self.character.AREA_ID)
 
-                # chase_aid = self.mud_map.next_node(C.AREA_ID, C.chase_dir)
+                # chase_aid = self.mud_map.next_node(self.character.AREA_ID, self.character.chase_dir)
                 # magentaprint("Got chase id! " + str(chase_aid))
 
                 try:
-                    # chase_aid = self.mud_map.los_map[C.AREA_ID][C.chase_dir]
-                    chase_aid = self.mud_map.next_node(C.AREA_ID, C.mobs.chase_exit)
+                    # chase_aid = self.mud_map.los_map[self.character.AREA_ID][self.character.chase_dir]
+                    chase_aid = self.mud_map.next_node(self.character.AREA_ID, self.character.mobs.chase_exit)
                     magentaprint('engage_monster() chase_aid: ' + str(chase_aid))
                     # I need to find the edge - the area exit.
-                    return_path = self.mud_map.get_path(chase_aid, C.AREA_ID)
+                    return_path = self.mud_map.get_path(chase_aid, self.character.AREA_ID)
                     magentaprint('engage_monster() return_path: ' + str(return_path))
 
                     if len(return_path) > 0:
-                        magentaprint("GrindThread.engage_monster adding directions " + str([C.mobs.chase_exit] + return_path))
-                        self.direction_list = [C.mobs.chase_exit] + return_path + self.direction_list
+                        magentaprint("GrindThread.engage_monster adding directions " + str([self.character.mobs.chase_exit] + return_path))
+                        self.direction_list = [self.character.mobs.chase_exit] + return_path + self.direction_list
                         # buffer necessary?
                 except Exception:
                     magentaprint("GrindThread.engage_monster() cannot chase because we would then be lost.")
-                    C.mobs.chase = ''
-                    C.mobs.chase_exit = ''
+                    self.character.mobs.chase = ''
+                    self.character.mobs.chase_exit = ''
             else:
                 magentaprint("BotThread.engage_monster() area id is none, so go to chapel after chasing.")
                 go_hook = "areaid2"
                 self.direction_list.insert(0, go_hook)
 
-            # self.go(C.chase_dir)
-            # C.chase_dir = ""
-            # C.chase_mob = ""
+            # self.go(self.character.chase_dir)
+            # self.character.chase_dir = ""
+            # self.character.chase_mob = ""
         elif self.smartCombat.error:
-            magentaprint("GrindThread engage_monster caught bad target - remove from mobs.list, which is {0}".format(C.mobs.list))
-            if C.mobs.list.get(new_target):
-                C.mobs.list.remove_by_ref(new_target)
+            magentaprint("GrindThread engage_monster caught bad target - remove from mobs.list, which is {0}".format(self.character.mobs.list))
+            if self.character.mobs.list.get(new_target):
+                self.character.mobs.list.remove_by_ref(new_target)
             # (Normally mobs.list will removed stuff from itself by noticing the mob die,
             # but "Attack What?" (smartCombat.error isn't going to trigger any removal)
 
         # #magentaprint("end of enage dir list: " + str(self.direction_list), False)
 
         # Commenting: a) Mobs now does it's own removal and b) MOBS_ATTACKING is deprecated
-        # if monster in C.MOBS_ATTACKING:
-        #     C.MOBS_ATTACKING.remove(monster)
-        magentaprint("engage monster \"" + monster + ",\" in attacking list: " + str(monster in C.mobs.attacking))
-        if monster in C.mobs.attacking:
+        # if monster in self.character.MOBS_ATTACKING:
+        #     self.character.MOBS_ATTACKING.remove(monster)
+        magentaprint("engage monster \"" + monster + ",\" in attacking list: " + str(monster in self.character.mobs.attacking))
+        if monster in self.character.mobs.attacking:
             magentaprint("GrindThread doing cleanup on erroneous mobs.attacking list, removing " + monster)
-            C.mobs.attacking.remove(monster)
+            self.character.mobs.attacking.remove(monster)
             # Reason: if Mobs gets notified in the wrong order, smelly beggar gets added after it gets removed,
             # and I got a bad mobs.attacking... order has been fixed.
 
-        if not C.mobs.attacking:
+        if not self.character.mobs.attacking:
             self.get_items_if_weapon()
         
         end_combat = get_timeint()
