@@ -9,6 +9,8 @@ class Area(NamedModel):
     is_dark_at_night = peewee.BooleanField(default=False)
     is_restorative   = peewee.BooleanField(default=False)
     is_smithy        = peewee.BooleanField(default=False)
+    is_pawn_shop     = peewee.BooleanField(default=False)
+    is_tip           = peewee.BooleanField(default=False)
     #does_damage_on_entry = BooleanField(default=False)
     #teleports_character = Area(null=True)
 
