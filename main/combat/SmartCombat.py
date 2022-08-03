@@ -338,6 +338,10 @@ class SmartCombat(CombatObject):
     def get_high_rank_spell(self):
         character = self.character
         spell_percent = max(character.spell_proficiencies.values())
+
+        if spell_percent < 40:
+            return self.get_low_rank_spell()
+
         return Spells.crush if spell_percent == character.info.earth else \
                                Spells.dustgust if spell_percent == character.info.wind else \
                                Spells.fireball if spell_percent == character.info.fire else \

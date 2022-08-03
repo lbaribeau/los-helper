@@ -80,7 +80,7 @@ class AreaStoreItem(BaseModel):
         items = []
         itemtypemodel = ItemTypeModel.get_by_name(model_name).get().id
         itemtypedata = ItemTypeData.get_by_name(data_name).get().id
-        # print("AreaStoreItem get model_name/data_name: " + model_name + '/' + data_name + ", ids: " + str(itemtypemodel) + "/" + str(itemtypedata) )
+        print("AreaStoreItem get model_name/data_name: " + model_name + '/' + data_name + ", ids: " + str(itemtypemodel) + "/" + str(itemtypedata) )
         items = AreaStoreItem.select().join(Item).where(Item.level<=level_max).join(ItemType).where((ItemType.model==itemtypemodel) & (ItemType.data==itemtypedata))
         # obj = NamedModel.select().where(fn.Lower(NamedModel.name) == fn.Lower(name)).get()
         # print("AreaStoreItem get_by_item_type_and_level_max returning " + str(items))

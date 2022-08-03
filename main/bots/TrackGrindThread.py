@@ -65,7 +65,7 @@ class TrackGrindThread(GrindThread):
             'w','n','nw','nw','n','e','e','e','s','s','s','s','gate','s','s','southeast','southeast','s','s','s','southeast','s','w','w',
             'w','nw','nw','n','gate','e','n','n','n','w','n','chapel'
         ]
-        self.smart_kobold_path = ['areaid1165','glowing portal','passage','mines',
+        self.smart_kobold_path = ['areaid1165','glowing portal','mines',
             'down','n','n','n','n','ne','n','w','n','n','e','door','w','gully','up','boulder','up',
             'cave 3','ne','ne','n','s','up','e','se','cave','out','ladder','cave','out','sw','w',
             'sw','se','nw','w','out','down','boulder','down','down','e','door','w','s','s','e','s','sw','s','s','s',
@@ -282,26 +282,31 @@ class TrackGrindThread(GrindThread):
          ]
 
         self.ZOMBIES = ['areaid113', 'try_gate',
-        'east', 'east', 
+        'east', 'east']
         #McDermotts farm
-        'northeast', 'northeast', 'north', 'north', 'north', 'gate', 'north', 'east', 'east', 'southeast', 'east', 'southeast', 'southeast', 'southeast', 'trail', 'woods', 'deeper',
-        'out', 'trail', 'field', 'path', 'northwest', 'northwest', 'west', 'northwest', 'west', 'west', 'south', 'gate', 'south', 'south', 'south', 'sw', 'sw',
+        if self.character.level >= 8:
+            self.ZOMBIES += [
+            'northeast', 'northeast', 'north', 'north', 'north', 'gate', 'north', 'east', 'east', 'southeast', 'east', 'southeast', 'southeast', 'southeast', 'trail', 'woods', 'deeper',
+            'out', 'trail', 'field', 'path', 'northwest', 'northwest', 'west', 'northwest', 'west', 'west', 'south', 'gate', 'south', 'south', 'south', 'sw', 'sw']
         #Malbon farm
+        self.ZOMBIES += [
         'southeast', 'southeast', 'south', 'gate', 'stile', 'northwest', 'southeast', 'southwest', 'northeast', 'stile', 'south', 'south',
         'north', 'north', 'gate', 'north', 'northwest', 'northwest',
-        'ne', 'ne', 'east', 'east', 'east',
+        'ne', 'ne', 'east', 'east', 'east'
         #Calmor farmstop
         #'southeast', 'south', 'southeast', 'southeast', 'gate', 'southwest', 'sty', 'yard',
-        'northeast', 'northeast',
-        #into zombie farm
-        'northeast', 'north', 'northeast', 'north', 'gate', 'compound', 'west', 'barn', 'out', 'northwest', 'run', 'out', 'northeast', 'east', 'south', 'south',
-        #out of zombie farm and into highmarket
-        'path', 'gate', 'south', 'southwest', 'south', 'southwest', 'east', 'east', 'gate',
-        #from highmarket back to chapel
-        # 'south', 'southeast', 'southeast', 'south', 'east', 'gate', 'south', 'south', 'southeast', 'southeast', 'south', 'south',
-        # 'south', 'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest', 'north', 'gate', 'east', 'north', 'north',
-        # 'north', 'west', 'north', 'chapel'
-        ]
+        'northeast', 'northeast']
+        if self.character.level >= 8:
+            self.ZOMBIES += [
+            #into zombie farm
+            'northeast', 'north', 'northeast', 'north', 'gate', 'compound', 'west', 'barn', 'out', 'northwest', 'run', 'out', 'northeast', 'east', 'south', 'south',
+            #out of zombie farm and into highmarket
+            'path', 'gate', 'south', 'southwest', 'south', 'southwest', 'east', 'east', 'gate',
+            #from highmarket back to chapel
+            # 'south', 'southeast', 'southeast', 'south', 'east', 'gate', 'south', 'south', 'southeast', 'southeast', 'south', 'south',
+            # 'south', 'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest', 'north', 'gate', 'east', 'north', 'north',
+            # 'north', 'west', 'north', 'chapel'
+            ]
         #Farmer's gate / Dragon Road
 
         # self.BANDIT_CAMP = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south',
@@ -424,7 +429,7 @@ class TrackGrindThread(GrindThread):
             Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
             Track("Fort", self.smart_fort_path, 9, 20, 0),
             Track("North Bandits", self.smart_northern_bandits_path, 9, 14, -1),
-            Track("Eastern Zombies", self.ZOMBIES, 8, 20, -1),
+            Track("Eastern Zombies", self.ZOMBIES, 6, 20, -1),
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,20,9),
             Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 20, 0),
             Track("Mill Workers", self.smart_mill_path, 9, 20, 0),
@@ -446,7 +451,7 @@ class TrackGrindThread(GrindThread):
             Track("Dojo", self.DOJO, 15, 20, 1),
             Track("Dini", self.DINI, 11, 15, 0),
             Track("Horbuk", self.HORBUK, 15, 20, 1),
-            Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,0,20,9),
+            Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,8,20,9),
             Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0),
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
             Track("Jerrek and Tag", self.JERREK_TAG, 11, 20, -1),
@@ -457,7 +462,7 @@ class TrackGrindThread(GrindThread):
             Track("Floor Manager", self.FLOOR_MANAGER, 12, 20, -1),
             # Track("Dalla and Douvan", self.DALLA_DOUVAN, 11, 20, 1), # Dalla overheals and is too dangerous
             Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 20, 1),
-            Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,0,20, 9)
+            Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9)
         ]
     
     def decide_where_to_go(self):
@@ -503,7 +508,10 @@ class TrackGrindThread(GrindThread):
         aura_acceptable = character_aura == self.character.preferred_aura
 
         if track.track_aura == 9:
-            return track.track[:]
+            if self.character.level in level_range:
+                return track.track[:]
+            else:
+                return self.PATH_TO_SKIP_WITH[:]
 
         #too evil shouldn't fight good (+1)
         #too good shouldn't fight evil (-1)

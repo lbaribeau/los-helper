@@ -189,7 +189,7 @@ class Inventory(BotReactionWithFlag, ReferencingList):
         'gold chased whiskey flask', 'misty potion',
         # 'granite rod', 'heathen amulet',
         'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand', #'makeup kit', 
-        'diamantium cross',
+        'diamantium cross', 'silver ram staff',
         'copper thieves pass', 'steel thieves pass', 'silver thieves pass',# 'stilleto'
         'druid\'s silver sickle', 'protective robes', 'alchemist\'s ring',
         # 'blue scroll',

@@ -306,7 +306,7 @@ class GrindThread(BotThread):
             # while   (self.health_ticks_needed() > self.mana_ticks_needed() or
             #         self.character.MANA - (maxMP % mana_tick+chapel) % (mana_tick+chapel) >= 2) and (
             while   (self.health_ticks_needed() > self.mana_ticks_needed() and
-                    self.character.MANA >= vig and
+                    self.character.MANA >= vig and self.character.MANA_TO_ENGAGE != 0 and
                     not self.ready_for_combat() and
                     not self.stopping):
                     # self.character.mana_tick+2 % self.character.maxMP - self.character.MANA > 2:
@@ -314,9 +314,8 @@ class GrindThread(BotThread):
                     # Laurier does math!  (Mathing out whether we should vig or in the chapel)
                 magentaprint("Health ticks needed: " + str(round(self.health_ticks_needed(), 1)) + ", Mana ticks needed: " + str(round(self.mana_ticks_needed(), 1)))
 
-                if not self.is_character_class('Mon'):
-                    if self.do_heal_skills():
-                        continue
+                if not self.is_character_class('Mon') and self.do_heal_skills():
+                    continue
                     # elif self.inventory.count_small_restoratives() > 7:
                 #     self.command_handler.use.wait_until_ready()
                 #     self.command_handler.use.small_healing_potion()

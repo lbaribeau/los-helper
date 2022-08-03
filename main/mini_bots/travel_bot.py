@@ -104,7 +104,7 @@ class TravelBot(MiniBot):
         while not self.follow_path(path) and not self.stopping:
             path = self.map.get_path(self.char.AREA_ID, aid)
             self.command_handler.go.wait_until_ready()
-            self.command_handler.go.execute_and_wait(path.pop(0))
+            self.command_handler.go.persistent_execute(path.pop(0))
             if not self.command_handler.go.success:
                 raise Exception("TravelBot aborting due to errors!")
                 # Could be that AREA_ID is wrong - try doing a look.
