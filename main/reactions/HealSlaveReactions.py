@@ -51,6 +51,10 @@ class HealSlaveReactions(BotReaction):
 
         return should_do_thing
 
+    def cast_spell(self, spell):
+        self.cast.cast(spell, self.target)
+        time.sleep(4)
+
     def should_buff_target(self):
         buff_key = self.target + "_buff"
         mana_requirement = 24        
@@ -64,17 +68,17 @@ class HealSlaveReactions(BotReaction):
     
     def heal_target(self):
         if self.should_heal_target(4):
-            self.cast.persistent_cast("mend", self.target)
+            self.cast_spell("mend", self.target)
         elif self.should_heal_target(1):
-            self.cast.persistent_cast("vigor", self.target)
+            self.cast_spell("vigor", self.target)
         else:
-            magentaprint("target already healed or I can't cast so no go", False)
+            magentaprint("target already healed or I can't cast recently so no go", False)
 
     def buff_target(self):
         if self.should_buff_target():
-            self.cast.persistent_cast("bless", self.target)
-            self.cast.persistent_cast("protection", self.target)
-            self.cast.persistent_cast("light", self.target)
+            self.cast_spell("bless", self.target)
+            self.cast_spell("protection", self.target)
+            self.cast_spell("light", self.target)
         else:
             magentaprint("target already buffed recently so no go", False)
 
@@ -89,7 +93,7 @@ class HealSlaveReactions(BotReaction):
             self.target = M_obj.group(1)
             magentaprint("should continue healing " + self.target, False)
             if self.character.MANA > 1:
-                self.cast.persistent_cast("vigor", self.target)
+                self.cast_spell("vigor", self.target)
         elif regex == self.heal_stop:
             self.command_handler.process("rest")
         elif regex == self.target_not_here:
