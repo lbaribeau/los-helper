@@ -210,14 +210,16 @@ class GrindThread(BotThread):
         # This method is only efficient in a healing area
         magentaprint("BotThread.rest_and_check_aura()")
         mana_to_wait = 0
-        if self.character.MANA_TO_ENGAGE > 0:
+        is_slow_steady = self.character.MANA_TO_ENGAGE > 0
+        if is_slow_steady:
             mana_to_wait = self.character.maxMP - 2*(self.character._class.mana_tick + 2)
             # MANA_TO_WAIT differentiates between hitting 'rest' and just hitting
             # 'enter' a bunch (waiting vs resting)
 
         aura_updated = self.update_aura()  # Most reasonable reason to fail is if we have no mana
 
-        self.chapel_heal_up()
+        if is_slow_steady:
+            self.chapel_heal_up()
             # TODO: Keep track of when ticks are coming and how big they'll be, and avoid vigging
             # away all the mana for characters with low piety, whose vigors will not do much,
             # and may just be one tick away from good health.
@@ -237,7 +239,7 @@ class GrindThread(BotThread):
             # magentaprint("Resting for health", False)
             # Probably not the greatest logic but low level characters will need
             # to gain health other than healing up.
-        if not self.character.BLACK_MAGIC or self.character.MANA >= mana_to_wait:
+        if (not self.character.BLACK_MAGIC or self.character.MANA >= mana_to_wait) and is_slow_steady:
             self.heal_up()
         self.rest_for_health()
 

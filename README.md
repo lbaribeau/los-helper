@@ -4,7 +4,8 @@ los-helper is a python script meant to automate certain aspects of mudding.
 
 ## Installation
 
-* Python3+
+* Python3+ + Pip
+* sudo apt install python3-pip
 * Peewee - pip install peewee
 * NetworkX - pip install networkx
 
@@ -16,7 +17,10 @@ los-helper is a python script meant to automate certain aspects of mudding.
 ## Running on a server
 
 * Starting the report host from the reporting_website directory:
+python
 `sudo python -m SimpleHTTPServer 80`
+python3
+`sudo python3 -m http.server 8080`
 
 ~`export FLASK_APP=server.py`~
 ~`python -m flask run`~
@@ -30,7 +34,15 @@ los-helper is a python script meant to automate certain aspects of mudding.
 ## Startup Parameters
 * -grind: starts SmartGrind immediately after the map loads
 * -fast: sets mana_to_wait and magic requirements to 0
-* -headless: pushes data to the report.json file in /main
+* -headless: pushes data to the report.json file in /reporting_website/api
+* -campslave: sits in the chapel then buffs and heals anyone who rests (w/ cooldowns)
+
+## Running headlessly
+This will run the bot headlessly so you can watch on the remote server - output goes to the nohup.out file so you can cat/grep as needed for debug info
+`nohup python3 main/los-helper username password -grind -headless &`
+
+This will run the bot headlessly so you can watch on the remote server - output goes to the nohup.out file so you can cat/grep as needed for debug info
+`nohup sudo python3 -m http.server 8080 &`
 
 ## Setting up a new vm
 sudo apt-get git
