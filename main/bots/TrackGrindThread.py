@@ -425,7 +425,7 @@ class TrackGrindThread(GrindThread):
             Track("Theatre", self.smart_theatre_path, 0, 20, 0),
             Track("Market", self.smart_market_path, 0, 14, 0),
             Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0),
-            Track("Kobolds", self.smart_kobold_path, 0, 10, -1), #sentries are suuuper tough
+            Track("Kobolds", self.smart_kobold_path, 0, 11, -1), #sentries are suuuper tough
             Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
             Track("Fort", self.smart_fort_path, 9, 20, 0),
             Track("North Bandits", self.smart_northern_bandits_path, 9, 14, -1),

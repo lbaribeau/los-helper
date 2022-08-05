@@ -339,7 +339,7 @@ class SmartCombat(CombatObject):
         character = self.character
         spell_percent = max(character.spell_proficiencies.values())
 
-        if spell_percent < 40:
+        if spell_percent < 50 and not self.is_caster_class():
             return self.get_low_rank_spell()
 
         return Spells.crush if spell_percent == character.info.earth else \
