@@ -49,8 +49,13 @@ sudo apt-get git
 sudo curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
 sudo python3.5 get-pip.py
 
+## Helpful vm commands
+* `pkill -f los` (kill all processes with los in the name)
+* `grep -a -B 200 "### Ferp was defated"` (logs on death w/ 200 lines before, replace with your char name)
+
 ## Modifying the Database
-DB Browser for SQLite workers well
+* DBeaver is the best client - just open a new SQLite browser and go ham
+* DB Browser for SQLite workers well
 You can open multiple windows on Mac OSX with this command `/Applications/DB\ Browser\ for\ SQLite.app/Contents/MacOS/DB\ Browser\ for\ SQLite &`
 
 ## SQL to add new hidden path
