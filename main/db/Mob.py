@@ -15,6 +15,7 @@ class Mob(NamedModel):
     blocks_exit = BooleanField(default=False)
     blocks_pickup = BooleanField(default=False)
     is_named = BooleanField(default=False)
+    should_farm = BooleanField(default=False)
     # health = IntegerField(default=0)
     # approximate_health = IntegerField(default=0)
 
@@ -71,7 +72,7 @@ class Mob(NamedModel):
             sql = """SELECT *
                      FROM MOB
                      Where 
-                        (level + coalesce(difficulty_rating, 0)) between {0} and {1}
+                        ((level + coalesce(difficulty_rating, 0)) between {0} and {1} or ((level + coalesce(difficulty_rating, 0)) < {1} and should_farm = 1))
                         and  (aura between {2} and {3})""".format(
                             low_level, high_level, low_aura, high_aura)
             # print(sql)

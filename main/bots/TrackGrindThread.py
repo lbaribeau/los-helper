@@ -437,7 +437,7 @@ class TrackGrindThread(GrindThread):
             # Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
             Track("Gnolls", self.smart_gnoll_cave, 10, 20, -1),
             Track("Olmer", self.OLMER, 11, 20, -1),
-            Track("Cheryn", self.CHERYN, 11, 15, -1),
+            Track("Cheryn", self.CHERYN, 11, 20, -1),
             Track("Orcs", self.ORCS, 11, 20, -1),
             Track("Artificers", self.ARTIFICERS, 11, 20, -1),
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
