@@ -212,6 +212,7 @@ class Character(object):
         self.spell_proficiency = self.spell_proficiencies[self.spell_type]
 
         if self.level >= 9:
+            # Isn't class important to this
             self.armor_level = 3  # steel
         elif self.level >= 4:
             self.armor_level = 2  # chain
@@ -271,7 +272,7 @@ class Character(object):
                 return 'broad sword'  # silver dagger (k. shaman) is good, stilleto (sentry) is better
         elif self.weapon_type == 'Blunt':
             if self.weapon_level >= 2:
-                return 'morning star'  # expensive, doesn't require 40%, also, war hammer (lvl2), footman's flail, large mace
+                return 'morning star'  # expensive, doesn't require 40%, also, war hammer (lvl2), footman's flail, large mace, maul hammer
             else:
                 return 'small mace'  # large mace (amethyst guards, vicars, Malbon)
         elif self.weapon_type == 'Pole':
@@ -343,7 +344,8 @@ class Character(object):
         'streetsweeper', 'shopper', 'window shopper', 'window cleaner', 'waitress', 'housewife', 'squirrel', 'milk maid', 'rabbit',
         'one man band', 'heather seller', 'irate teenager', 'peasant', 'one-armed beggar', 'village elder', 'small dog', 'tribesman',
         'searcher', 'delivery boy', 'traveller', 'wanderer', 'villager', 'vagrant', 'dropout', 'tramp', 'serf', 'dishwasher',
-        'punter','chicken'
+        'punter','chicken','coopers apprentice', 'diner', "cook's assistant", "miner's assistant", 'surveyor', 'pit pony', 'cleaner',
+        'hungy busker', 'beggar', 'dropout', 'one-armed beggar', 'sitting beggar'
     ]
     lvl1_red_monsters = [ # 8-15 exp
         'old kobold', 'kobold child', 'kobold dam'
@@ -351,70 +353,101 @@ class Character(object):
     lvl2_monsters = [
         'hawker', 'barmaid', 'smelly beggar', 'black crow', 'sheep', 'goose', 'singer', 'musician', 'spiv', 'bidder', 'dairy cow',
         'scholar', 'juggler', 'shepherd', 'gazelle', 'dancer', 'jongleur', 'clerk', 'stablehand', 'rich kid', 'bladesman',
-        "cook's assistant", "miner's assistant", 'mare', 'tabby cat', 'plumber'
-        'acolyte' #, 'penitent'  # aur
+        "cook's assistant", "miner's assistant", 'mare', 'tabby cat', 'plumber', 'old fisherman', 'hungry diner',
+        # 'acolyte',
+        'fletcher', 'baker', #, 'penitent'  # aur
+        'retired fisherman' # to confirm
     ]
     lvl2_red_monsters = [
         'kobold sentry', 'blond hooker', 'sultry hooker', 'kobold', 'spiv', 'drunken miner', 'kobold miner', 'kobold archer',
-        'angry hooker', 'angry kobold', 'red axer', 'pickpocket', 'thug', 'tired hooker', 'scruffy man'
+        'angry hooker', 'angry kobold', 'red axer', 'pickpocket', 'thug', 'tired hooker', 'scruffy man','conman',
+        'zombie', 'stumbling skeleton'
     ]
     # pickpockets drop leather collars and masks
     # red axer drops studded leather collar
     # thugs hostile.  They drop leather collar
     lvl3_monsters = [ # 25-35 exp
         'market official', 'street trader', 'field worker', 'harvester', 'horse', 'cow', 'doorman', 'stilt walker',  'messenger',
-        'cashier', 'thatcher',  'tax inspector', 'journeyman', 'human miner', 'hobbitish miner', 'hawk', 'stacker', 'mill worker',
-        'The General', 'bouncer', 'yard worker', 'town clerk', 'stevedore'
+        'cashier', 'thatcher',  'tax inspector', 'journeyman', 'human miner', 'hobbitish miner', 'hawk', 'stacker', # ring mail gauntlets
+        'mill worker',
+        'General', # (The)
+        'bouncer', 'yard worker', 'town clerk', 'stevedore', 'scared trawlerman', 'cooper','digger', 'pulley operator',
+        'ore carrier', # copper ring
+        'furniture maker', 'cabinet maker' # SW part of lumber yards (glue)
         # 'robed pilgrim'  # aura
-        #'miner's mule"  # mill worker drops chain mail gloves
+        #"miner's mule"  # mill worker drops chain mail gloves
         # stevedore leather gloves
     ]
     lvl3_red_monsters = [
-        'large kobold', 'insane kobold', 'kobold scout', 'drunk', 'drunken trouble-maker'
+        'large kobold', 'insane kobold', 'kobold scout', 'drunk', 'drunken trouble-maker',
+        'goblin skeleton'
     ]
     lvl4_monsters = [ # 45-60 exp
         'actor', 'grip', 'theatre goer', 'merchant', 'journeyman', 'logger', 'trader', 'butcher', 'acrobat', 'militia soldier',
         'carpenter', 'stagehand', 'hungry spider', 'cook', 'joiner', 'ranch hand', 'old rancher', 'tired ranch hand',
-        'drinking ranch hand', 'busy ranch hand', 'sawmill operator', 'vulture', 'auctioneer', 'barbecue cook', 'stable attendant',
-        'steer', 'sage' # Stoneheart Road
+        'drinking ranch hand', 'busy ranch hand', 'sawmill operator', # steel mask!
+        'vulture', 'auctioneer', 'barbecue cook', 'stable attendant', 'dwarven miner', # first aid
+        'gnomish miner', 'determined ranch hand', 'forge worker', # leather gloves
+        'steer', 'sage', # Stoneheart Road
+        'forge worker', # burnt ochre potion
         # 'actress', #'young knight' # For blue balance
         #'miner'
         # enlightened  # "arrives" in the large Kings road dojo (not always there)
+        'bandit cook', # leather bracers
+        'bandit sentry', 'bandit', 'ghast'
     ]
     # hungry spiders are hostile
     lvl4_red_monsters = [
-        'kobold shaman', 'kobold champion', 'hungry spider'
+        'kobold shaman', 'kobold champion', # studded leather leggings
+        'hungry spider', 'ghoul'
+        # dice player
+        # loser
     ]
     lvl5_monsters = [
         'dwarven farm hand', 'dwarven barmaid', 'fort sentry', 'fur trader', 'aristocrat',
-        'nobleman', 'lyrist', 'logger', 'veteran', 'bruiser', 'axeman', 'seeker', 'hunter', 'bull', 'aspirant'
+        'nobleman', 'lyrist', 'logger', 'veteran', # leather gloves
+        'bruiser', 'axeman', 'seeker', 'hunter', 'bull', 'aspirant',
+        'shaft manager', 'mine foreman',
+        'adjudicator', 'eagle', 'giant crab' # arrived by the pool by gnolls
         # 'vicar', 'lay priest', 'protector', 'battered knight', 'orange picker' # makes trackgrind too red?
     ]
     lvl5_red_monsters = [
-        'large bandit', 'kobold guard', 'mugger', 'large spider', 'mime artist'
+        'large bandit', # silver ring
+        'kobold guard', 'mugger', 'large spider', 'mime artist',
+        'massive zombie'
     ]
     lvl6_monsters = [  # 100+ exp
         'dwarven field worker', 'dwarven bartender', 'school teacher', 'lyrist', 'nobleman', 'seeker', 'bull', 'hunter', 'usher',
-        'sword swallower', 'archer', 'yard supervisor', 'sawmill supervisor', 'large spider', 'blacksmith', 'farm foreman',
-        'Old Man James', 'dwarven traveller', 'Goourd', 'tourney organiser', 'Greenbough the Dryad'
+        'sword swallower', 'archer', 'yard supervisor', 'sawmill supervisor', # chain mail armour(s)(!)
+        'large spider', 'blacksmith', 'farm foreman',
+        'Old Man James', 'dwarven traveller', 'Goourd', # large sack
+        'tourney organiser', 'Greenbough the Dryad'
         #'sentry' stand in pairs unfortunately...
     ]
     lvl6_red_monsters = [ #1574 for gnoll camp
-        'gnoll sentry', 'bandit swordsman', 'gnoll spearsman', 'gnoll raider', 'gnoll bandit'
+        'gnoll sentry', 'bandit swordsman', # silver ring
+        'gnoll spearsman', 'gnoll raider', 'gnoll bandit','kobold priest','kobold chieftain', # Levels aren't right but paths are
+        'bounty hunter' # Spawns at Tardan, dusty red, elven bow, yew staff
     ]
     lvl7_monsters = [ # ~200 exp
-        'dwarven cook', 'swordsman', 'fort sergeant', 'oremaster', 'giant spider', 'rock spider', 'Aldo', 'dwarven trader',
-        'gnoll chaplain', 'Cheryn', 'orc scout', 'bouncer', 'rancher sentry', 'dwarven shepherd', 'clown', 'war horse,'
-        'top ranch hand', 'raging bull'  # top ranch hand dusty blue
-        # oremaster steel collar (m) for paladin
+        'dwarven cook', 'swordsman', 'fort sergeant', 
+        'oremaster', # steel collar(m)!, granite rod
+        'giant spider', 'rock spider', 'Aldo', 'dwarven trader',
+        'gnoll chaplain', 'Cheryn', 'orc scout', 'bouncer', 'rancher sentry', 'dwarven shepherd', 'clown', 'war horse',
+        'top ranch hand', 'raging bull', 'master miner',  # top ranch hand dusty blue
+        'half-elf traveller' # appears in the silken alleys
         # 'Cheryn (E)'
         # 'robed priest',
     ]  # There are also lvl 5 rancher sentries... they're a bit blue
     lvl8_monsters = [  # There are 2 amethyst guards and 3 amber guards of this level
-        'Alaran the Market Manager', 'hauler', 'Farmer Malbon', 'sonneteer', 'Tag', 'mine manager', 'artificer',
+        'Alaran the Market Manager', # small chain hood
+        'hauler', 'Farmer Malbon', 'sonneteer', 'Tag', 'mine manager', 'artificer',
         'Dini Stonehammer', # horseman's flail 500g
+        'Douvan', # 472 gold
         'Olmer', 'Thereze', 'Farmer Viladin', 'Rancher Renstone', 'berzerker', 'dwarven hunter',
-        'initiate', 'berserk orc', 'hedge knight', 'refinery supervisor', 'owlbear', #'sentry'
+        'initiate', 'berserk orc', #'hedge knight', 
+        'refinery supervisor', 'owlbear','warrior', #'sentry'
+        'elven trader', # elven waybread "It has only a very mild subtle taste, blandly inoffensive."
         # 'elven trader', 'old knight', 'dusty warrior'
         # dark warrior  sacrificing priestess
         # forger        weathered barbarian
@@ -422,77 +455,150 @@ class Character(object):
         # deaconess     initiate      
         # gnome smith   Farmer Calmor 
     ]  # elves are very blue
+    # sharper? by the lyrist
     lvl9_monsters = [ # ~300 exp
-        'director', 'Elder Barthrodue', 'Farmer Calmor', 'orc warrior', 'giant beetle', 'white knight',  # 380
-        'weathered barbarian', 
+        'director', 'Elder Barthrodue', 'Farmer Calmor', 'orc warrior', 'giant beetle', 
+        #'white knight',  # 380
+        'weathered barbarian',
+        'dwarven foreman',
         'Trent the Merchant' # silver rod guarded by Egan
         #'old man'
         # gnoll sub-chief
         # unholy master
     ]  # respect the knights! (+1 difficulty)
     lvl10_monsters = [ # 350+
-        'wounded knight', # -2 difficulty
-        'The Master of Ceremonies', # 280
-        'Dame Brethil', 'Kelluran', 'Jerrek', 'Rimark', 'Commander Rilmenson', 'Farmer McDermott', 'dwarven blacksmith'   # 400
+        # 'wounded knight', # -2 difficulty
+        'Dame Brethil',  #makeup kit, trade to dalla, get dalla's blessing
+        'Jerrek',  # plate armour, sleeves (all sizes), steel plate shield(!)
+        'Rimark', # steel sleeves(s), leggings, armour(!)(many sizes)
+        'Commander Rilmenson', # heavy crossbow
+        'Master of Ceremonies', # 280, adamantine sword 750g (The)
+        'Farmer McDermott', 'dwarven blacksmith', # 400
         'abbot', # 445
-        'silver knight',  # 380, +1 difficulty
         'barbarian cook', "shaman's assistant",
-        'The Ringmaster', 'Marie', 'market guard', #(<=10 (need to check these))
-        'surveyor','master miner','shaft manager','pit pony','cleaner' # check the levels on these
+        'Ringmaster', 'Marie', 'market guard', #(<=10 (need to check these)) (The)
+        'Kelluran' 
         # gnomish miner
         # Maybe try master miners then mine managers
         # Mine track looks tougher than others
         # hero?
     ]  # wounded knight -2 difficulty
-    # I think Rilmenson could get a +1 level
+    # Rilmenson has good damage
     # 'gnoll sub-chief', 'Gnardu'
     lvl11_monsters = [
-        'dwarven adventurer',  # dusty blue
-        'enchantress', # 456 exp, appeard in the school on Stoneheart, silver rod (Purest adamantine. You feel no different - the want emits a brief glow)
-        'Brotain', 'minstrel', # silver ring
-        'brutalizer', 'Gregor', 'Bertram Dalrum', 'brother', 'priest'
+        'Brotain', # heavy crossbow, 490 exp, 226 g, 
+        'minstrel', # silver ring, small prism (show aura 1 charge) 400 exp
+        'brutalizer', 
+        'Gregor', # good place to wait for mobs. Gregor gives gold. Another one is Boris's farm. 
+        'Bertram Dalrum', 'brother', # 500 exp, 36 gold
+        'priest'
+        # 'enchantress', # 456 exp, appeard in the school on Stoneheart, silver rod (Purest adamantine. You feel no different - the want emits a brief glow)
+        # 'silver knight',  # 380, actually level 10, adamantine poleaxe
     ]
+    # The Hermit Cal
     lvl12_monsters = [
-        'barbarian shaman', 'barbarian warrior', 
+        'Tardan', # 560 exp, chain mail leggings(!)(L), steel gauntlets(L)
+        'Boris Ironfounder',  # rare coin, plate mail helm(!)(s), plate mail gauntlets(s), diamantium leggings(s)
+        'Horbuk', # steel collar like oremaster, dwarven axe, 361 gold, 570 exp
         'Hurn the Smith', # 600xp, 733g
-        'Horbuk', # steel collar like oremaster
-        'The Floor Manager', 'Tardan', 'ranch foreman', 'Gorban', 'shadowed huorn', # dusty blue
-        'Boris Ironfounder', 'Lady Denlise', 'Annette Plover', 'house guest', 'Martin' # fireball/gold dagger/810 exp
-        #'The Saga Teacher', 'The Amber Mage', # cannot be killed ("This is not possible!")
-        # Tardan 560 exp
+        'Annette Plover', 
+        'Gorban', # (dusty blue) golden potion
+        'dwarven adventurer',# dusty blue, 760 gold, 490 exp, walks into Silken Alleys
+        'ranch foreman',
+        'barbarian shaman',  # grey; fireball, burstflame
+        'barbarian warrior', 
+        'Floor Manager',  # 550 exp ('The') diamantium longsword
+        'shadowed huorn', # heartwood nugget
+        'Lady Denlise', # golden potion
+        # Denlise calls for help
+        'house guest', # fireball/gold dagger/810 exp
+        'Martin'
+        #'Saga Teacher', 'Amber Mage', # cannot be killed ("This is not possible!") (The)
         # 'vigil knight'
         # Servant of the Night
     ]
     lvl13_monsters = [
-        'The Dojo Administrator', 
+        'Dojo Administrator', # (The)
         'Elsuria', # fine elven cloak
         'Tendrurn', # adamantine axe 600g
-        'Nospe' # under the Casino
+        'Nospe', # under the Casino, dwarven hammer, thieves blade (trade to alch NPC for slow disease)
+        'tiger' # Actually level 7 but there are two of them
     ]
     lvl14_monsters = [
-        'cave troll guard', 'Rancher Plover', # assassin's dagger
-        'Team Leader Egan', 'Qimoth', "Th'kit the HorseMaster", 'warmonger',
-        'Lord Tamaran', # aaashaaal's gift
-        'Olarma', 'castle priest',
-        'The Manic Soothsayer' # dragon claws (thief boots)
+        'Olarma', 
+        'Manic Soothsayer', # dragon claws (thief boots), stolen contract (rare), crypt dust (The)
+        'Team Leader Egan', # night blade (E)
+        'Rancher Plover', # assassin's dagger
+        'Qimoth', "Th'kit the HorseMaster", 'warmonger',
+        'Lord Tamaran', # aaashaaal's gift (protect air), diamantium cross (trade to Douvan for ram staff)
+        'castle priest',
+        'cave troll guard'
     ]
-    lvl15_monsters = ['Thomas Ironheart', 'Earl Mardley', 'The Immigration Officer', 
-    'Mayor Demlin',  # crumpled parchment
-    'Madame Zara', # Can only fit one in the tent
-    'Rogue Oak'] # confirm Madame Zara
+    # platinum crucifix
+    # Farmer Woldis
+    # Shady Copse without a period is an ambush of bugbears
+    # paths cross
+    # Path, hut, 
+    # Cal the Hermit
+    # Priestly ghost
+    # go floor Back Cellar
+    # Farmer Grangers Ghost
+    # fens is the swamp
+    # fen lich
+    # daemons in lich area
+    # wracked daemon
+    # Fens road is a swamp
+    # trail? wagon? North of the fort "pathway"
+    # large dell
+    # diamantium cross is good for a ram staff
+    # kill a wraith
+    # lich on blood rock
+    # weapons master
+    # Esrhae
+    # steel plate shield from bandits weighs 15 but gives me nice AC
+    # shrew
+
+    lvl15_monsters = [
+        'Thomas Ironheart', # 1000 gold
+        'Earl Mardley',  # chased whisky flask healing item
+        'Immigration Officer', # (The)
+        'Mayor Demlin',  # crumpled parchment
+        'Madame Zara', # Can only fit one in the tent
+        'Rogue Oak',
+        'huorn shepherd',
+        'Queen Dalla',
+        'grey cloaked strager' # showed up at north intersection of Silken Alleys
+    ] # confirm Madame Zara
+    # Dalla will take golden pots
+    # trade diamantium cross for rusty key at Douvan (door)
+    # best pole weapon is there silver ram staff
+    # arielle gets mad when you kill her holy sisters
+    # Shaldena the Red
+    # Lyron
+    # bush exit
+    # Choorga can't find
+    # ongrak
+    # Druid 1000 gold
+    # stepping stones east
+    # Get choorga's head and give the tiger eye gem to lyron
+    # invis potions, buff, go in the room, and all attack at once
     lvl16_monsters = ['Holbyn', # Holby closes at night
     'Ordaran the White', 'Pansy', 'Vickie', 'Matriarch Sara']  # Hawk camp
-    lvl17_monsters = ['Faldomet', 'Patriarch Jedd Morhennon', 'Farside', 'Lord Arduis', 'Lady Arielle']
-    lvl18_monsters = ['Lady Jenlira', 'Deep Root'] # vigil knight guards the entrance
-    lvl20_monsters = ['The Archbishop'] # needles me at 16
+    lvl17_monsters = ['Faldomet', 
+    # 'Patriarch Jedd Morhennon', # Not possible
+    'Farside', 'Lord Arduis', 'Lady Arielle']
+    lvl18_monsters = ['Lady Jenlira', # vigil knight guards the entrance
+    'Deep Root',
+    'weapons master'] 
+    lvl20_monsters = ['Archbishop', 'Haram','hero'] # needles me at 16 (The)
     # A list of monsters redundant to the above lists that
     # I may want to kill even if they are too low of level.
     # Mostly hostiles and things that don't let you loot.
-    # Level 18 <= 'master', 'Magus Bregum', 'Magus Cristyl', 'Magus Olthim', 'Magus Tertial', 'Dwar', 'Joffi the Mystic'
+    # Level 18 <= 'master', 'Magus Bregum', 'Magus Cristyl', 'Magus Olthim', 'Magus Tertial', 'Dwar', 
+    # Level 19 <= 'Joffi the Mystic'
     # Lich on blood rock (shadow lich). Giant bog troll. Wyvern
-    # "Grand Master Yang-Shi" "The Sensei"
-    # "The Master Artificer" (That is not possible!)
-    # scared trawlerman
+    # "Grand Master Yang-Shi" "Sensei" (The)
+    # "Master Artificer" (That is not possible!) (The)
     # Combat Master
     # Green Branch
     # Haelyn
@@ -503,7 +609,6 @@ class Character(object):
     # Farmer Viladin
     # ogrish guard
     # caretaker
-
     preferred_lvl_1_2_monsters = [
         'oaf', 'wanderer', 'thug', 'spiv', 'kobold sentry', 'tired hooker', 'waitress',
         'blond hooker', 'angry hooker', 'sultry hooker', 'journeyman', 'housewife', # 'acolyte'
@@ -511,14 +616,12 @@ class Character(object):
 
     def set_monster_kill_list(self):
         self.MONSTER_KILL_LIST = []
-
         self.MONSTER_KILL_LIST.extend(self.lvl1_red_monsters)
-
         if self.level <= 7:
             self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
-
         if self.level >= 4:
-            self.MONSTER_KILL_LIST.extend(self.lvl2_monsters)
+            if self.level < 13:
+                self.MONSTER_KILL_LIST.extend(self.lvl2_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl2_red_monsters)
         if self.level >= 5:
             self.MONSTER_KILL_LIST.extend(self.lvl3_monsters)
@@ -538,14 +641,23 @@ class Character(object):
             self.MONSTER_KILL_LIST.extend(self.lvl6_red_monsters)
         if self.level >= 11:
             self.MONSTER_KILL_LIST.extend(self.lvl7_monsters)
-        if self.level >= 13:
+        if self.level >= 12:
             self.MONSTER_KILL_LIST.extend(self.lvl8_monsters)
-        if self.level >= 15:
+        if self.level >= 13:
             self.MONSTER_KILL_LIST.extend(self.lvl9_monsters)
-        if self.level >= 16:
+        if self.level >= 14:
             self.MONSTER_KILL_LIST.extend(self.lvl10_monsters)
-        if self.level >= 17:
-            self.MONSTER_KILL_LIST.extend(self.lvl11_monsters) # Brotain seems a bit tough... need mend wounds logic... or maybe the bot will surprise me with heals or something
+        if self.level >= 15:
+            self.MONSTER_KILL_LIST.extend(self.lvl11_monsters) 
+        if self.level >= 16:
+            self.MONSTER_KILL_LIST.extend(self.lvl12_monsters) 
+            # Brotain seems a bit tough... need mend wounds logic... or maybe the bot will surprise me with heals or something
+            # Ok, brocolli can do this, the second weapon is there and mend wounds logic is there
+            # Also the pot thread is working
+            # Will need to guarantee aura also
+            # With lots of tracks now we can be choosier about aura
+            # Rings could also be checked
+
 # Drops -
 #  Alaran, Aldo, Farmer Calmor for rings (platinum, gold, etc.)
 
@@ -655,17 +767,21 @@ class Character(object):
         return self.info.maxMP
 
     def max_vigor(self):
-        return self.info.pty / 2.3
+        #return self.info.pty / 2.3
+        return self.info.pty * 0.7
         # if self.health_monitor.vig_amounts:
         #     return max(self.health_monitor.vig_amounts)
         # else:
         #     return self.info.pty / 2.3
 
     def max_mend(self):
-        if self.health_monitor.mend_amounts:
+        if hasattr(self,'health_monitor') and self.health_monitor.mend_amounts:
+            # Eh health_monitor doesn't exist (yet?)
             return max(self.mend_amounts)
         else:
-            return 9
+            #return 9
+            return self.info.pty*26/21
+            # Maybe using a data point at less pty would have less projection error
 
         # if self.__class__.tick_times:
            #  self.__class__.tick_times.append(time.time() - self.__class__)

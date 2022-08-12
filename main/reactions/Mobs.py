@@ -20,6 +20,7 @@ class Mobs(BotReactionWithFlag):
     ]
 
     def __init__(self):
+        super().__init__() # threading.Event
         self.list = ReferencingList([])
         self.attacking = []
         self.singles = ['a', 'an', 'the']
@@ -75,11 +76,13 @@ class Mobs(BotReactionWithFlag):
         if r in R.mob_arrived:
             self.list.add_from_list(self.read_mobs(m_obj.group('mobs')))
         elif r in R.mob_died:
+            magentaprint("Mobs noticed " + str(self.read_match(m_obj)) + " died, it's in the self.list: " + str(self.read_match(m_obj) in self.list))
             if self.read_match(m_obj) in self.list:
                 self.remove_mob(self.read_match(m_obj))
             magentaprint("Mobs notify matched " + str(self.read_match(m_obj)) + " in self.attacking: " + str(self.read_match(m_obj) in self.attacking) + ", self.attacking: " + str(self.attacking))
             if self.read_match(m_obj) in self.attacking:
-                self.attacking.remove(self.read_match(m_obj))  # TODO: if a mob is one-shot, it's not removed because the You attacked notify is after
+                self.attacking.remove(self.read_match(m_obj))  
+                # TODO: if a mob is one-shot, it's not removed because the You attacked notify is after
             magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(round(self.mean(self.damage), 1)) + ', stdev=' + str(round(self.stdev(self.damage), 1)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/max(len(self.damage),1), 2)))
             # m = sum(self.damage) / max(len(self.damage), 1)
             # s = sum(self.damage - [m]*len(self.damage))
@@ -142,13 +145,20 @@ class Mobs(BotReactionWithFlag):
                 M = M[:-4]
             # It seems like this part gets done elsewhere
             # It turns Cheryn into Ch and Olmer into O somewhere
+            # Ok "The Floor Manager" has to be "Floor Manager" because you can't hit it with 'The'
+            # So the policy will be to remove "The" with capital T
+            # "the" with little 't' probably won't happen
 
             if any(m.startswith(single + ' ') for single in self.singles):
                 # m_dict[m.partition(' ')[2]] = 1
                 m_list.extend([M.partition(' ')[2]])
                 # number_check = [m.startswith(n) for n in numbers]
             elif any(m.startswith(n + ' ') for n in self.numbers):
+                magentaprint("Mobs.parse_mob_string extending {0}".format([remove_plural(M.partition(' ')[2])] * (self.numbers.index(M.split(' ')[0]) + 2)))
                 m_list.extend([remove_plural(M.partition(' ')[2])] * (self.numbers.index(M.split(' ')[0]) + 2))
+            elif m.startswith('the '):
+                magentaprint("Mobs.parse_mob_string appending " + M[4:])
+                m_list.append(M[4:]) 
             else:
                 magentaprint("Mobs.parse_mob_string appending " + M)
                 m_list.append(M)
@@ -218,15 +228,16 @@ def remove_plural(m):
     #     return m.partition(' ')[2]
     # number_check = [m.startswith(n) for n in numbers]
     if m.endswith('sses'):
-        return m[0:len(m)-2]
+        return m[:-2]
     elif m.endswith('s'):
-        return m[0:len(m)-1]
+        return m[:-1]
     elif m.endswith('children'):
-        return m[0:len(m)-3]
+        return m[:-3]
     elif m.endswith(' mice'):
-        return m[0:len(m)-4] + 'mouse'
+        return m[:-4] + 'mouse'
     elif m.endswith('men'):
-        return m[0:len(m)-3] + 'man'
+        # gnoll spearsman, gloll spearsmen, townsman
+        return m[:-3] + 'man'
     else:
         return m
 

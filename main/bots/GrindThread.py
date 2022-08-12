@@ -11,6 +11,7 @@ from reactions.ring_reaction import RingWearingReaction
 from Exceptions import *
 from comm import Spells
 from db.MudItem import MudItem
+from db.AreaStoreItem import AreaStoreItem
 
 class GrindThread(BotThread):
     def __init__(self, character, command_handler, mudReaderHandler, mud_map):
@@ -18,8 +19,9 @@ class GrindThread(BotThread):
         self.loot_threshold = 1  # the amount of loot to collect before selling
 
     def do_run_startup(self):
-        if not self.is_character_class("Mon"):
-          self.set_up_automatic_ring_wearing()
+        pass
+        # if not self.is_character_class("Mon"):
+        #   self.set_up_automatic_ring_wearing()
         # if self.direction_list is None:
         #   self.direction_list = [] #could append areaid45
 
@@ -96,7 +98,7 @@ class GrindThread(BotThread):
         else:
             self.command_handler.process('rest')
             self.command_handler.quit()
-            crash  # failed to buy weapon
+            # crash  # failed to buy weapon
             return False
 
     def wield(self, item):
@@ -111,6 +113,9 @@ class GrindThread(BotThread):
 
         if not self.character.BLACK_MAGIC:
             self.heal_up()
+
+    def do_on_successful_go(self):
+        super().do_on_successful_go() 
 
     def do_regular_actions(self):
         if self.character.mobs.chase == "" and self.character.MONSTER_KILL_LIST_TEMP != []:
@@ -128,14 +133,14 @@ class GrindThread(BotThread):
             new_target = self.decide_which_mob_to_kill(self.character.mobs.list)
         else:
             new_target = ""
-            magentaprint("TrackGrindThread.do_post_go_actions() calling do_rest_hooks()")
+            # magentaprint("TrackGrindThread.do_post_go_actions() calling do_rest_hooks()") # Out of date print...
+            magentaprint("GrindThread.regular_actions() not ready for combat")
             return
             # Commented - I don't understand what do_rest_hooks is supposed to do at all...
             # self.do_rest_hooks()
 
         while new_target != "" and not self.stopping:
-            # MudReader maintains MONSTER_LIST pretty well by
-            # adding and removing.
+            # MudReader maintains MONSTER_LIST pretty well by adding and removing.
             # It will not remove from MOBS_JOINED_IN nor
             # MOBS_ATTACKING because the three lists can contain
             # common mobs.  So before engaging a mob in one of the
@@ -179,7 +184,7 @@ class GrindThread(BotThread):
                 self.heal_up()
 
             if self.ready_for_combat():
-                magentaprint("Picking a new target since " + new_target + " was defeated")
+                magentaprint("GrindThread picking a new target since " + new_target + " was defeated")
                 new_target = self.decide_which_mob_to_kill(self.character.mobs.list)
             else:
                 new_target = ""
@@ -468,7 +473,7 @@ class GrindThread(BotThread):
         if self.has_ideal_health():
             return
 
-        if BotThread.can_cast_spell(C.MANA, heal_cost, C.KNOWS_VIGOR):
+        if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
             self.cast.cast('v')
             self.cast.wait_for_flag()
 
@@ -477,17 +482,17 @@ class GrindThread(BotThread):
 
             self.cast.start_thread('v')
 
-        C.HAS_RESTORE_ITEMS = False # Restore items disabled?
+        self.character.HAS_RESTORE_ITEMS = False # Restore items disabled?
 
         while BotThread.should_heal_up(
-            C.HEALTH, C.HEALTH_TO_HEAL, C.MANA, heal_cost, C.KNOWS_VIGOR, C.HAS_RESTORE_ITEMS\
+            self.character.HEALTH, self.character.HEALTH_TO_HEAL, self.character.MANA, heal_cost, self.character.KNOWS_VIGOR, self.character.HAS_RESTORE_ITEMS\
             ) and not self.stopping:
 
             self.do_heal_skills()
             # self.use_restorative_items() #spam them!!!
 
             if self.engage_any_attacking_mobs():
-                if BotThread.can_cast_spell(C.MANA, heal_cost, C.KNOWS_VIGOR):
+                if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
                     self.cast.start_thread('v')
 
             self.sleep(0.05)
@@ -659,7 +664,7 @@ class GrindThread(BotThread):
         if self.stopping:
             return
 
-        self.inventory.sell_stuff()
+        # self.inventory.sell_stuff()
         # This is too much authority for Inventory, but this is also not a job for grind thread.
         # Time to make a mini bot (?) to support human Sel
 
@@ -670,9 +675,14 @@ class GrindThread(BotThread):
         #         self.sell(item_ref)
         #     else:
         #         return
+        # Ok we got it
+        self.command_handler.sell_bot.sell_stuff()
+        # Should this really be Grindthread though
+        # There should be a puppet master that chooses between grinding and selling, I think
 
     def item_was_sold(self):
         # TODO: class Sell(Command)  - Get rid of these all caps flag variables and copypasta polling code
+        magentaprint("GrindThread item_was_sold deprecated! use command_handler.sell.wait()")
         self.character.MUD_RETURN_ITEM_SOLD = False
         self.character.SELL_CHECK_FLAG = 1
         now = time.time()
@@ -686,11 +696,12 @@ class GrindThread(BotThread):
     def drop_items(self):
         if self.stopping:
             return
-        self.inventory.drop_stuff()
-
+        # self.inventory.drop_stuff()
         # This should maybe be a mini bot...
         # self.drop_refs(self.inventory.sellable())
         # self.drop_refs(self.inventory.droppable())
+        self.command_handler.sell_bot.drop_stuff()
+        # We also have broken rings...
 
     def drop_refs(self):
         pass
@@ -766,8 +777,14 @@ class GrindThread(BotThread):
         if self.stopping:
             return
 
+        C = self.character
+
         # self.smartCombat.target = monster
+        magentaprint("GrindThread engage_monster get_first_reference({0})".format(monster))
         new_target = self.character.mobs.list.get_first_reference(monster)
+        # So... suppose someone (Qerp) runs by and kills the nobleman we have chased
+        # Ok a fixed that up a level
+        # I think we are assuming here that the target is in the list
 
         if new_target:
             self.smartCombat.engage_target(new_target, monster)
@@ -780,9 +797,14 @@ class GrindThread(BotThread):
 
         self.smartCombat.spell = self.smartCombat.favourite_spell
         self.smartCombat.run()
-
+        # What about flee... can we rest after a flee maybe, or quit...
+        # Do lowest risk at this point, right... or do we want to rest
+        # If the mob isn't there... better remove it from the lists
+        # Ok it might not BE in the list (we chase, we call engage monster on the target we assume is there...)
+        # Here is a good place to check smartCombat.fleeing... smartCombat.escape is blocking call with a bit of a sleep
+        # Ok this really is the place to add some smarts
         if self.character.mobs.chase != '' and self.character.mobs.chase_exit != '':
-            magentaprint("BotThread.engage_monster() chasing mob, pushing onto direction list!")
+            magentaprint("GrindThread.engage_monster() chasing mob, pushing onto direction list!")
             if self.character.AREA_ID is not None:
                 # We can't assume it'll work here - we have to check to see if it'll work.
                 magentaprint(str(self.mud_map.los_map[self.character.AREA_ID]))
@@ -795,7 +817,7 @@ class GrindThread(BotThread):
                 # return_path = self.mud_map.get_path(chase_aid, self.character.AREA_ID)
 
                 # Should be able to iterate through neighbors to find the one with our edge data (15: {'name': 'east'})
-                # g.neighbors(n) or c.all_neighbors()
+                # g.neighbors(n) or self.character.all_neighbors()
                 # for n in neighbors:
                 #    if c
                 # use G.edges(nbunch) to get the edges adjacent to my node, and pick out the one with the right exit name, and follow it.
@@ -831,7 +853,6 @@ class GrindThread(BotThread):
                     self.character.mobs.chase = ''
                     self.character.mobs.chase_exit = ''
             else:
-                # This doesn't make sense to me
                 magentaprint("BotThread.engage_monster() area id is none, so go to chapel after chasing.")
                 go_hook = "areaid2"
                 self.direction_list.insert(0, go_hook)
@@ -839,6 +860,12 @@ class GrindThread(BotThread):
             # self.go(self.character.chase_dir)
             # self.character.chase_dir = ""
             # self.character.chase_mob = ""
+        elif self.smartCombat.error:
+            magentaprint("GrindThread engage_monster caught bad target - remove from mobs.list, which is {0}".format(self.character.mobs.list))
+            if self.character.mobs.list.get(new_target):
+                self.character.mobs.list.remove_by_ref(new_target)
+            # (Normally mobs.list will removed stuff from itself by noticing the mob die,
+            # but "Attack What?" (smartCombat.error isn't going to trigger any removal)
 
         # #magentaprint("end of enage dir list: " + str(self.direction_list), False)
 
@@ -847,7 +874,7 @@ class GrindThread(BotThread):
         #     self.character.MOBS_ATTACKING.remove(monster)
         magentaprint("engage monster \"" + monster + ",\" in attacking list: " + str(monster in self.character.mobs.attacking))
         if monster in self.character.mobs.attacking:
-            magentaprint("GrindThread doing cleanup on erroneous mobs.attacking list, removing " + monster, False)
+            magentaprint("GrindThread doing cleanup on erroneous mobs.attacking list, removing " + monster)
             self.character.mobs.attacking.remove(monster)
             # Reason: if Mobs gets notified in the wrong order, smelly beggar gets added after it gets removed,
             # and I got a bad mobs.attacking... order has been fixed.
@@ -858,9 +885,10 @@ class GrindThread(BotThread):
         end_combat = get_timeint()
         self.character.COMBAT_TIME += (end_combat - start_combat).total_seconds()
 
-    def do_flee_hook(self):
-        self.stop()
-        self.command_handler.user_flee()
+    # def do_flee_hook(self):
+    #     self.stop()
+    #     self.command_handler.user_flee()
+    #     # We could do a blocking thing here to start a rest
 
     def get_items_if_weapon(self):
         self.command_handler.get.execute('all')
@@ -881,23 +909,30 @@ class GrindThread(BotThread):
 
     def get_items(self):
         # self.command_handler.process('ga')
+        self.command_handler.get.execute_and_wait('all')
+        # self.command_handler.get.wait_for_flag()
 
         while self.command_handler.get.cant_carry and not self.stopping:
-            magentaprint("Number of steel bottles: " + str(self.inventory.count('steel bottle')))
+            magentaprint("GrindThread.get_items, number of steel bottles: " + str(self.inventory.count('steel bottle')))
             if self.inventory.count('steel bottle') > 1:
                 # TODO: make an Ability for steel bottle (protection spell)
                 self.command_handler.use.by_name('steel bottle')
                 self.command_handler.use.wait_for_flag()
-            elif self.inventory.count_restoratives() > 5:
-                self.command_handler.use.healing_potion()
-                self.command_handler.use.wait_for_flag()
-                if self.command_handler.use.error:
+            elif self.inventory.count_restoratives() > 6:
+                # self.command_handler.potion_thread_handler.consume.healing_potion()
+                # self.command_handler.potion_thread_handler.consume.wait_for_flag()
+                self.command_handler.potion_thread_handler.consume.execute_and_wait()
+                # if self.command_handler.use.error:
+                if self.command_handler.potion_thread_handler.consume.error:
+                    # What is this inventory bug
+                    # What about drink error
+                    # Ooookkkk we put in consume.error so we don't loop infinitely
+                    # We also made sure that drink removes from inventory, also so we won't loop infinitely
                     return
             else:
                 # just leave it there
                 return
-            self.command_handler.get.execute('all')
-            self.command_handler.get.wait_for_flag()
+            self.command_handler.get.execute_and_wait('all')
 
     def engage_mobs_who_joined_in(self):
         # while self.character.MOBS_JOINED_IN != []:
@@ -925,7 +960,10 @@ class GrindThread(BotThread):
     def ready_for_combat(self):
         return self.character.HEALTH >= self.character.HEALTH_TO_HEAL and \
                self.character.MANA >= self.character.MANA_TO_ENGAGE and \
-               (hasattr(self.command_handler.weapon_bot, 'weapon') or not self.character._class.needs_weapon)
+               ((hasattr(self.command_handler.weapon_bot, 'weapon') and \
+               self.command_handler.weapon_bot.has_usable_weapon_in_inventory()) or \
+               not self.character._class.needs_weapon)
+
         # return (self.has_ideal_health() and
         #         self.has_ideal_mana())
 
@@ -947,4 +985,14 @@ class GrindThread(BotThread):
             self.sleep(1)
             if self.engage_any_attacking_mobs():
                 self.command_handler.process('rest')
+                # Maybe subscribe to an event about mobs attacking
 
+    def set_up_automatic_ring_wearing(self):
+        """ Makes some BotReactions so that when MudReaderHandler sees us
+        pick up a ring, we'll wear it."""
+        # r = GenericBotReaction("(?s)You get .+? an? .+? ring((,.+?\.)|(\.))", self.command_handler, "wear all")  # Regex problem
+        # self.mudReaderHandler.register_reaction(r)
+        rwr=RingWearingReaction(self.command_handler.wear, self.character.inventory)
+        # self.command_handler.wear.ring_wearing_reaction = rwr # Well we decided not to do it this way
+        self.mudReaderHandler.register_reaction(rwr)
+        #Todo: fix for case where there's ring mail in the inventory or multiple rings are dropped

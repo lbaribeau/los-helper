@@ -1,0 +1,73 @@
+14:15:47.1   | Cast setting command to 'c v'
+14:15:47.1   | "c v"
+Vigor spell cast.
+[97 H 40 M]: 14:15:47.3   | <combat.Cast.Cast object at 0x6fffebc3ad0> notified.
+14:15:47.3   | <class 'combat.Kill.Kill'> wait_until_ready waiting 2.6
+eq
+14:15:49.5   | "q"
+On body:   some chain mail armour
+On arms:   some steel sleeves
+On legs:   some steel leggings
+On neck:   a plate mail collar
+On neck:   a plate mail collar
+On hands:  some steel gauntlets
+On head:   a chain mail hood
+On feet:   some chain mail boots
+On finger: a brass ring
+On finger: a silver ring
+On finger: a steel ring
+On finger: a steel ring
+On finger: a steel ring
+On finger: a steel ring
+On finger: a brass ring
+Shield:    an iron shield
+Wielded:   a maul hammer
+14:15:49.6   | match.group('slot').lower() is on neck and is not in dict_keys(['     body', 'head', 'neck', 'finger8', 'seconded', 'finger6', 'finger7', 'finger4', '     finger5', 'finger2', 'arms', 'face', 'feet', 'finger3', 'neck2', 'finger', 'hold     ing', 'hands', 'wielded', 'legs', 'shield'])
+14:15:49.6   | match.group('slot').lower() is on neck and is not in dict_keys(['     body', 'head', 'neck', 'finger8', 'seconded', 'finger6', 'finger7', 'finger4', '     finger5', 'finger2', 'arms', 'face', 'feet', 'finger3', 'neck2', 'finger', 'hold     ing', 'hands', 'wielded', 'legs', 'shield'])
+14:15:49.6   | match.group('slot').lower() is on finger and is not in dict_keys(     ['body', 'head', 'neck', 'finger8', 'seconded', 'finger6', 'finger7', 'finger4',      'finger5', 'finger2', 'arms', 'face', 'feet', 'finger3', 'neck2', 'finger', 'ho     lding', 'hands', 'wielded', 'legs', 'shield'])
+14:15:49.6   | match.group('slot').lower() is on finger and is not in dict_keys(     ['body', 'head', 'neck', 'finger8', 'seconded', 'finger6', 'finger7', 'finger4',      'finger5', 'finger2', 'arms', 'face', 'feet', 'finger3', 'neck2', 'finger', 'ho     lding', 'hands', 'wielded', 'legs', 'shield'])
+14:15:49.6   | match.group('slot').lower() is on finger and is not in dict_keys(     ['body', 'head', 'neck', 'finger8', 'seconded', 'finger6', 'finger7', 'finger4',      'finger5', 'finger2', 'arms', 'face', 'feet', 'finger3', 'neck2', 'finger', 'ho     lding', 'hands', 'wielded', 'legs', 'shield'])
+14:15:49.6   | match.group('slot').lower() is on finger and is not in dict_keys(     ['body', 'head', 'neck', 'finger8', 'seconded', 'finger6', 'finger7', 'finger4',      'finger5', 'finger2', 'arms', 'face', 'feet', 'finger3', 'neck2', 'finger', 'ho     lding', 'hands', 'wielded', 'legs', 'shield'])
+14:15:49.6   | match.group('slot').lower() is on finger and is not in dict_keys(     ['body', 'head', 'neck', 'finger8', 'seconded', 'finger6', 'finger7', 'finger4',      'finger5', 'finger2', 'arms', 'face', 'feet', 'finger3', 'neck2', 'finger', 'ho     lding', 'hands', 'wielded', 'legs', 'shield'])
+14:15:49.6   | match.group('slot').lower() is on finger and is not in dict_keys(     ['body', 'head', 'neck', 'finger8', 'seconded', 'finger6', 'finger7', 'finger4',      'finger5', 'finger2', 'arms', 'face', 'feet', 'finger3', 'neck2', 'finger', 'ho     lding', 'hands', 'wielded', 'legs', 'shield'])
+14:15:49.6   | WeaponBot set shield_or_offhand.
+14:15:49.7   | Equipment dict is {'body': 'chain mail armour', 'head': 'chain ma     il hood', 'neck': 'plate mail collar', 'finger8': 'brass ring', 'seconded': None     , 'finger6': 'steel ring', 'finger7': 'brass ring', 'finger4': 'steel ring', 'fi     nger5': 'steel ring', 'finger2': 'silver ring', 'arms': 'steel sleeves', 'face':      None, 'feet': 'chain mail boots', 'finger3': 'steel ring', 'neck2': 'plate mail      collar', 'finger': 'brass ring', 'holding': None, 'hands': 'steel gauntlets', '     wielded': 'maul hammer', 'legs': 'steel leggings', 'shield': 'iron shield'}
+[97 H 42 M]: 14:15:49.9   | "k sword"
+Your goodness increases your damage.
+You bludgeon the sword swallower for 11 damage.
+[97 H 42 M]: The sword swallower tries to grab you, but you break free of his gr     asp.
+14:15:50.1   | mobs.list [dustman, sword swallower]; notification from regex: ((     ?P<mob1>
+14:15:50.1   | mobs.attacking ['sword swallower', 'sword swallower']
+
+14:15:50.1   | <combat.Kill.Kill object at 0x6fffebc3b50> notified.
+14:15:50.1   | <class 'combat.Cast.Cast'> wait_until_ready waiting 2.0
+[97 H 42 M]: 14:15:52.9   | "k sword"
+Your goodness increases your damage.
+You smash your maul hammer into the sword swallower, causing 13 damage.
+[97 H 42 M]: The sword swallower lashes out and thumps you for 3 damage.
+14:15:53.1   | mobs.list [dustman, sword swallower]; notification from regex: ((     ?P<mob1>
+14:15:53.1   | mobs.attacking ['sword swallower', 'sword swallower']
+14:15:53.1   | <combat.Kill.Kill object at 0x6fffebc3b50> notified.
+[94 H 42 M]: eq
+14:15:53.9   | "eq"
+On body:   some chain mail armour
+On arms:   some steel sleeves
+On legs:   some steel leggings
+On neck:   a plate mail collar
+On neck:   a plate mail collar
+On hands:  some steel gauntlets
+On head:   a chain mail hood
+On feet:   some chain mail boots
+On finger: a brass ring
+On finger: a silver ring
+On finger: a steel ring
+On finger: a steel ring
+On finger: a steel ring
+On finger: a steel ring
+On finger: a brass ring
+Shield:    an iron shield
+Wielded:   a maul hammer
+14:15:54.1   | WeaponBot set shield_or_offhand.
+[94 H 42 M]: 14:15:54.2   | Equipment dict is {'body': 'chain mail armour', 'hea     d': 'chain mail hood', 'neck': 'plate mail collar', 'finger8': None, 'seconded':      None, 'finger6': 'steel ring', 'finger7': 'brass ring', 'finger4': 'steel ring'     , 'finger5': 'steel ring', 'finger2': 'silver ring', 'arms': 'steel sleeves', 'f     ace': None, 'feet': 'chain mail boots', 'finger3': 'steel ring', 'neck2': 'plate      mail collar', 'finger': 'brass ring', 'holding': None, 'hands': 'steel gauntlet     s', 'wielded': 'maul hammer', 'legs': 'steel leggings', 'shield': 'iron shield'}
+14:15:55.9   | "k sword"
+The sword swallower kicks you for 7 damage.

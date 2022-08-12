@@ -39,7 +39,8 @@ class FakeInventory(object):
                     output += self.numbers[count-1] + 'sets of ' + i.name
                 elif i.name.endswith('fe'):
                     output += self.numbers[count-1] + ' ' + i.name[:len(i.name)-2] + 'ves'
-                elif i.name.endswith('h') or i.name.endswith('j') or i.name.endswith('s') or i.name.endswith('u') or i.name.endswith('x'):
+                # elif i.name.endswith('h') or i.name.endswith('j') or i.name.endswith('s') or i.name.endswith('u') or i.name.endswith('x'):
+                elif i.name.endswith('j') or i.name.endswith('s') or i.name.endswith('u') or i.name.endswith('x'):
                     output += self.numbers[count-1] + ' ' + i.name + 'es'
                 # elif i.name.endswith('y'):  # Unfortunately the server prefers "red berrys"
                 else:
@@ -94,7 +95,6 @@ class FakeInventory(object):
 
     def get(self, ref):
         i = self.index(ref)
-
         if i is not None:
             return self.l[i]
 

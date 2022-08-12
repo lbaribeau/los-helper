@@ -35,6 +35,7 @@ class TravelBot(MiniBot):
         self.thread.start()
 
     def follow_path(self, path, grinding=False):
+        magentaprint("--- TRAVEL_BOT.FOLLOW_PATH() ---\n" + str(path))
         self.stopping = False
 
         for exit in path:
@@ -108,6 +109,29 @@ class TravelBot(MiniBot):
             if not self.command_handler.go.success:
                 raise Exception("TravelBot aborting due to errors!")
                 # Could be that AREA_ID is wrong - try doing a look.
+
+    def get_pawn_path(self):
+        try:
+            paths = self.map.get_pawn_paths(self.char.AREA_ID)
+        except Exception as e:
+            #not a good situation - we can't find a way to the chapel from wherever we are
+            #therefore we should just sit and wait here until we can go on the warpath again
+            magentaprint("Exception getting pawn path.")
+            magentaprint(e, False)
+            raise e
+
+        if paths:
+            return misc_functions.get_shortest_array(paths)
+        else:
+            magentaprint("get_pawn_path() error... no exception but no path returned... make sure the DB is accessible.")
+            return []
+
+    def go_to_nearest_pawn_shop(self, grinding=False):
+        self.follow_path(self.map.get_path_to_nearest_pawn_shop(self.char.AREA_ID))
+    def go_to_nearest_smithy(self, grinding=False):
+        self.follow_path(self.map.get_path_to_nearest_smithy(self.char.AREA_ID))
+    def go_to_nearest_tip(self, grinding=False):
+        self.follow_path(self.map.get_path_to_nearest_tip(self.char.AREA_ID))
 
 # class GotoThread(BotThread):
 #     def decide_where_to_go(self):

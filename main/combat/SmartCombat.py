@@ -6,18 +6,15 @@ from combat.CombatObject import CombatObject
 from command.Ability import *
 from misc_functions import magentaprint
 import comm.Spells as Spells
-from comm import RegexStore
-from combat.Kill import Kill
-from combat.Cast import Cast
-from command.Use import Use
-from command.Wield import Wield
+from comm import RegexStore as R
 from combat.mob_target_determinator import MobTargetDeterminator
 from db.Mob import Mob
+from command.potion_thread import PotionThreadHandler
 
 class SmartCombat(CombatObject):
     black_magic = True
 
-    def __init__(self, telnetHandler, character, weapon_bot):
+    def __init__(self, kill, cast, potion_thread_handler, wield, telnetHandler, character, weapon_bot):
         super().__init__(telnetHandler)
         self.thread = None
         self.target = None
@@ -26,19 +23,19 @@ class SmartCombat(CombatObject):
         self.stopping = None
         self.broken_weapon = ''
         self.activated = False
-        self.kill = Kill(telnetHandler)
-        self.cast = Cast(telnetHandler)
-        self.use = Use(character, telnetHandler)
-        self.wield = Wield(character, telnetHandler)
-        # self.wear = Wear(character, telnetHandler)
+        self.kill  = kill
+        self.cast  = cast
+        self.wield = wield
+        self.potion_thread_handler = potion_thread_handler
+        #self.wear = Wear(character, telnetHandler)
         self.abilities = character._class.abilities.values()
 
         # self.heal_abilities = [a for a in self.abilities if isinstance(a, HealAbility)]
         # # self.heal_abilities_that_fail = [a for a in self.abilities if isinstance(a, HealAbility) and isinstance(a, AbilityWithFailure)]
         # self.fast_combat_abilities = [a for a in self.abilities if isinstance(a, FastCombatAbility)]
         # self.combat_abilities = [a for a in self.abilities if isinstance(a, CombatAbility)]
-        self.heal_abilities = character._class.heal_skills
-        self.buff_abilities = character._class.buff_skills
+        self.heal_abilities        = character._class.heal_skills
+        self.buff_abilities        = character._class.buff_skills
         self.slow_combat_abilities = character._class.slow_combat_skills
         self.fast_combat_abilities = character._class.fast_combat_skills
 
@@ -61,74 +58,95 @@ class SmartCombat(CombatObject):
 
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
         self.regex_cart.extend([
-            RegexStore.prompt, RegexStore.weapon_break, RegexStore.weapon_shatters, RegexStore.mob_attacked, RegexStore.armour_breaks,
-            RegexStore.mob_arrived, RegexStore.mob_wandered, RegexStore.mob_left, RegexStore.not_here
+            R.prompt, 
+            R.weapon_break, 
+            R.weapon_shatters, 
+            R.mob_attacked, 
+            R.armour_breaks,
+            R.mob_arrived, 
+            R.mob_wandered, 
+            R.mob_left,
+            R.not_here
         ])
         self.mob_target_determinator = MobTargetDeterminator()
         # We can let SmartCombat do a few extra things, like make kill/cast/use commands, but let's not go overboard.
         # Let the parent make WeaponBot.  I think the parent should make use of an Initializer.
         self.weapon_bot = weapon_bot
         self.set_pot_thread = False
+        self.healing_spell='v' 
+        # command handler can change this
+        # Right now human can hit 'cc m' to switch the spell to mend
+        # I think command handler needs to be able to hit self.black_magic, in theory
+        # Maybe not... just support 'cc m' and 'cc v'
+        # With the entire words...
+        # So nevermind a target right... well we have kk2... then they could hit kkc to switch it
+        # That'll do...
+        self.full_rings = False
 
-    def notify(self, regex, M_obj):
+    def notify(self, regex, match):
         # Notifications are used for healing
         # So SmartCombat needs to be registered/unregistered... or have a boolean for whether we're in combat.
         # I prefer the latter.
-        super().notify(regex, M_obj)
-        if regex in RegexStore.prompt:
+        # magentaprint("SmartCombat notify " + match.re.pattern) # gets prompt (too many prints)
+        super().notify(regex, match)
+        if regex in R.prompt:
             if self.activated:
                 if self.should_use_heal_ability():
                     self.heal_abilities[0].execute()
                 elif self.needs_heal():
-                    if self.weapon_bot.broken_weapon or not self.character.inventory.has_restorative():
+                    # if self.weapon_bot.broken_weapon or not self.character.inventory.has_restorative():
+                    if not hasattr(self.weapon_bot, 'weapon') or not self.character.inventory.has_restorative():
                         self.fleeing = True  # TODO: Do pots interfere with the flee timer?  (Should I use a pot?)
                     self.spam_pots()
                 else:
                     self.stop_pots_if_started_by_smart_combat()
         # elif regex in itertools.chain(self.end_combat_regexes) and self.activated:
         elif self.end_combat and self.activated:  # requires super() to be called
-            self.use.stop()
+            self.potion_thread_handler.stop()
             self.activated = False
-            self.check_rings()
-        elif regex in RegexStore.mob_attacked and self.needs_heal():
+            # self.check_rings()
+        elif regex in R.mob_attacked and self.needs_heal() and not self.character.inventory.has_large_restorative():
             magentaprint("SmartCombat.fleeing = True")
             self.fleeing = True
-        elif regex in RegexStore.weapon_break or regex in RegexStore.weapon_shatters:
-            magentaprint("SmartCombat weapon break: " + str(M_obj.group('weapon')))
-            self.broken_weapon = M_obj.group('weapon')
-        elif regex in RegexStore.armour_breaks:
-            magentaprint("SmartCombat armour break: " + str(M_obj.group(1)) + ', len ' + str(len(M_obj.group(1).split(' '))))
-            if len(M_obj.group(1).split(' ')) >= 2:
-                if M_obj.group(1).split(' ')[1] == 'ring':
+        elif regex in R.weapon_break + R.weapon_shatters:
+            magentaprint("SmartCombat weapon break: " + str(match.group('weapon')))
+            # self.broken_weapon = match.group('weapon')
+            self.weapon_bot.combat_rewield()
+        elif regex in R.armour_breaks:
+            magentaprint("SmartCombat armour break: " + str(match.group(1)) + ', len ' + str(len(match.group(1).split(' '))))
+            if len(match.group(1).split(' ')) >= 2:
+                if match.group(1).split(' ')[1] == 'ring':
                     self.broke_ring = True
-        elif regex in RegexStore.mob_arrived:
-            # magentaprint("mob arrived", False)
-            # magentaprint('{} {} {}'.format(self.target, self.character.mobs.read_mobs(M_obj.group('mobs')), self.character.mobs.list), False)
+        elif regex in R.mob_arrived:
             self.target = self.mob_target_determinator.on_mob_arrival(
                 self.target,
-                self.character.mobs.read_mobs(M_obj.group('mobs')),
+                self.character.mobs.read_mobs(match.group('mobs')),
                 self.character.mobs.list
             )
-            # magentaprint('{} {} {}'.format(self.target, self.character.mobs.read_mobs(M_obj.group('mobs')), self.character.mobs.list), False)
-        elif regex in RegexStore.mob_wandered + RegexStore.mob_left:            
-            # magentaprint("mob left", False)
-            # magentaprint('{} {} {}'.format(self.target, self.character.mobs.read_match(M_obj), self.character.mobs.list), False)
+            # magentaprint("SmartCombat mob arrived, new target: " + str(self.target))
+        elif regex in R.mob_wandered + R.mob_left:
             self.target = self.mob_target_determinator.on_mob_departure(
                 self.target,
-                self.character.mobs.read_match(M_obj),
+                self.character.mobs.read_match(match),
                 self.character.mobs.list
             )
             # magentaprint('{} {} {}'.format(self.target, self.character.mobs.read_match(M_obj), self.character.mobs.list), False)
         elif regex in RegexStore.not_here:
             self.telnetHandler.write("l")
             pass
+        # magentaprint("SmartCombat notify done " + match.re.pattern)
 
     def stop(self):
         super().stop()
         self.activated = False
+        # Eh should we stop the potion thread?
+        # sure
+        self.potion_thread_handler.stop
 
     def should_use_heal_ability(self):
-        return len(self.heal_abilities) > 0 and self.heal_ability_is_up and \
+        return \
+            len(self.heal_abilities) > 0 and \
+            self.heal_ability_is_up and \
             self.character.HEALTH <= self.character.maxHP - 0.9*self.heal_abilities[0].max_amount
 
     def needs_big_heal(self):
@@ -160,16 +178,25 @@ class SmartCombat(CombatObject):
             return 0.20 * self.character.maxHP
 
     def stop(self):
-        self.use.stop()
-        self.stopping = True
+        self.potion_thread_handler.stop()
+        #self.stopping = True
+        super().stop() #.stopping
 
     def keep_going(self, target=None):
-        self.stopping = False
-        self.casting = True
+        # self.stopping = False
+        # self.casting = True
+        # Leave casting how it is, just let the thread continue
         self.set_target(target)
+        super().keep_going()
 
     def start_thread(self, target, spell=None):
-        self._initialize(target, spell)
+        # Doesn't ThreadingMixin do this?
+        self.set_target(target)
+        self.spell = spell if spell else self.favourite_spell
+        magentaprint("SmartCombat spell set to " + str(self.spell))
+        self.set_pot_thread = False
+        self.kill.stop()
+        self.cast.stop()
         # if self.thread is None or not self.thread.is_alive():
         if self.thread and self.thread.is_alive():
             self.keep_going(target)
@@ -206,7 +233,7 @@ class SmartCombat(CombatObject):
         self.circled     = False
         self.activated   = True
         self.fleeing     = False
-        self.broke_ring  = False
+        self.error       = False
         self.casting = self.black_magic or Spells.vigor in self.character.spells
         self.favourite_combat_item = self.get_favourite_combat_item()
         is_combat_ready = True
@@ -241,8 +268,9 @@ class SmartCombat(CombatObject):
             # if self.broken_weapon:
             #     self.reequip_weapon()  # TODO: This can get spammed... answer on to unset is_usable on weapon objects in inventory
             # magentaprint("SmartCombat loop kill.timer " + str(round(self.kill.wait_time(), 1)) + " cast.timer " + str(round(self.cast.wait_time(), 1)) + ".")
-            if self.weapon_bot.broken_weapon:
-                self.weapon_bot.combat_rewield()
+            # if self.weapon_bot.broken_weapon:
+            #     self.weapon_bot.combat_rewield()
+            # Why not call rewield on reaction
             if self.fleeing and not self.cast.wait_time() - self.kill.wait_time() > self.kill.cooldown_after_success:
                 self.escape()
             else:
@@ -253,6 +281,33 @@ class SmartCombat(CombatObject):
                     else:
                         if self.do_magic_attack():
                             continue
+                # LDev combat logic
+                # self.cast.wait_until_ready()
+                # damage = self.character.maxHP - self.character.HEALTH
+                # if self.stopping:
+                #     continue
+                # elif not self.black_magic and \
+                #     self.character.MANA >= 2 and \
+                #     damage >= self.character.max_vigor() or \
+                #     (self.character.MANA >= self.character.maxMP and damage > self.character.max_vigor()*0.75):
+                #     # Let the first one come out early
+                #     if damage >= self.character.max_mend() + self.character.hp_tick and self.character.MANA >= 5:
+                #         self.do_cast('m')
+                #     else:
+                #         self.do_cast('v')
+                #      # (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7 and damage > self.character.hp_tick):
+                #     # TODO: cast vigor if a tick is about to come and we're full mana
+                #     # How will we do mend wounds... maybe hp below 50%? start with supporting manual
+                #     # self.do_cast(self.healing_spell)
+                #     # (This doesn't consider healing teammates: cc will turn off smart combat for manual teammate healing)
+                # elif self.mob_charmed:
+                #     time.sleep(min(0.2, self.kill.wait_time()))
+                #     # time.sleep(min(0.2, self.kill.wait_time() + 0.05))
+                # elif self.black_magic and ((self.spell in Spells._lvl1 and self.character.MANA >= 3) or
+                #                            (self.spell in Spells._lvl2 and self.character.MANA >= 7)):  # Todo: add oom check
+                #     self.do_cast(self.spell, self.target)
+                # elif self.black_magic and self.spell in Spells._lvl2 and self.character.MANA < 7 and self.character.MANA >= 3:
+                #     self.do_cast(Spells._lvl1[Spells._lvl2.index(self.spell)], self.target)
                 else:
                     if (self.cast.up() or self.cast.wait_time() <= self.kill.wait_time() or not self.casting) and self.character.MANA > 2:
                         if self.do_magic_attack():
@@ -388,6 +443,7 @@ class SmartCombat(CombatObject):
     def do_cast(self, spell, target=None, is_item=False):
         self.cast.persistent_cast(spell, target, is_item)
         if self.cast.error:
+            self.error = True
             self.stop()
 
     def use_any_fast_combat_abilities(self):
@@ -409,6 +465,7 @@ class SmartCombat(CombatObject):
                 if a.success and isinstance(a, DanceOfTheCobra):
                     self.mob_charmed = True
                 elif a.error:
+                    self.error = True
                     self.stop()
                 # if self.stopping:
                 #     return
@@ -446,9 +503,13 @@ class SmartCombat(CombatObject):
                     return
 
         # self.attack_wait()
-        self.kill.execute(self.target)
-        self.kill.wait_for_flag()
+        # self.kill.execute(self.target)
+        # self.kill.wait_for_flag()
+        self.kill.execute_and_wait(self.target) # Wait here please??? Thank you 
+
+        # magentaprint("Debugging smart combat should catch kill.error: {0}".format(self.kill.error))
         if self.kill.error:
+            self.error = True
             self.stop()
         # self.character.ATTACK_CLK = time.time()  # TODO: Kill should be smart enough to keep the clock set
                                                  # Kill should actually own the clock...
@@ -481,8 +542,7 @@ class SmartCombat(CombatObject):
         if ref == None:
             magentaprint("SmartCombat got ref == None for weapon " + weapon_name)
             return False
-        self.wield.execute(ref)
-        self.wield.wait_for_flag()
+        self.wield.execute_and_wait(ref)
         if self.wield.success:
             self.broken_weapon = False
             return True
@@ -541,29 +601,29 @@ class SmartCombat(CombatObject):
     def reequip_weapon(self):
         # Tries to wield all weapons with the same name from inventory
         # This could likely be made much shorter using equip_weapon()
+        # I don't think this gets used... it doesn't look good though
         magentaprint("SmartCombat.reequip_weapon()... broken, weapons1/2: '" + self.broken_weapon + "', '" + self.character.weapon1 + "'/'" + self.character.weapon2 + "'")
         ref = self.character.inventory.get_reference(self.broken_weapon, 2)
         if ref == None:
             return False
         if self.character.weapon1 == self.broken_weapon:
             # ref = self.character.inventory.get_reference(self.broken_weapon)
-            self.wield.execute(ref)
-            self.wield.wait_for_flag()
+            self.wield.execute_and_wait(ref)
+            # self.wield.wait_for_flag()
             if self.wield.success:
                 self.broken_weapon = False
                 return True
-            while self.wield.broken_error:  # found broken one from inventory...
+
+            while self.wield.failure:  # found broken one from inventory...
                 # need to try the next one
                 ref = self.mob_target_determinator.increment_ref(ref)
                 if self.character.inventory.get_item_name_from_reference(ref) == self.broken_weapon:
-                    self.wield.execute(ref)
-                    self.wield.wait_for_flag()
+                    self.wield.execute_and_wait(ref)
+                    # self.wield.wait_for_flag()
                     if self.wield.success:
                         self.broken_weapon = False
                         return True
-                else:
-                    # Ran through all items with the same name
-                    return False
+
             if (self.wield.already_wielding_error and self.character.weapon1 == self.character.weapon2) or \
                (self.character.weapon2 == self.broken_weapon):
                 self.wield.second.execute(ref)
@@ -671,7 +731,7 @@ class SmartCombat(CombatObject):
 
         time.sleep(0.1)
         self.stop_pots_if_started_by_smart_combat()
-        self.use.stop()
+        self.potion_thread_handler.stop()
 
         if self.character.weapon1 != "":
             self.wield.execute(self.character.inventory.get_last_reference(self.character.weapon1))
@@ -680,26 +740,33 @@ class SmartCombat(CombatObject):
 
     def check_rings(self):
         # magentaprint("SmartCombat check_rings()")
-        if self.broke_ring:
+        # if self.broke_ring or not self.full_rings:
             # self.telnetHandler.write('wear all')
+        ring_ref = self.character.inventory.first_usable_ring_ref()
+        while ring_ref and (self.broke_ring or not self.full_rings):
+            # self.telnetHandler.write('wear ' + ring_ref)
+            self.wear.execute_and_wait(ring_ref) # This will set it as broken
+            # This may not be reliable since it assumes we already know if a ring is broken.
+            # No biggie really.  One alternative is to have two 'stopping' variables, since we want to wear rings
+            # after the mob dies but maybe not after the player calls stop.
+            # However, this solution might work most of the time.
+            if self.wear.result in R.no_room:
+                self.full_rings = True
+                self.broke_ring = False
+            # If the ring was broken, the loop should exit by itself (won't come back as usable)
+            # If we wore it, then it's no longer in the inventory (won't come up in inventory)
             ring_ref = self.character.inventory.first_usable_ring_ref()
-            if ring_ref:
-                self.telnetHandler.write('wear ' + self.character.inventory.first_usable_ring_ref())
-                # This may not be reliable since it assumes we already know if a ring is broken.
-                # No biggie really.  One alternative is to have two 'stopping' variables, since we want to wear rings
-                # after the mob dies but maybe not after the player calls stop.
-                # However, this solution might work most of the time.
 
     def spam_pots(self):
         self.set_pot_thread = True
         if self.needs_big_heal():
-            self.use.spam_pots(prefer_big=True)
+            self.potion_thread_handler.spam_pots(prefer_big=True)
         else:
-            self.use.spam_pots()
+            self.potion_thread_handler.spam_pots()
 
     def stop_pots_if_started_by_smart_combat(self):
         if self.set_pot_thread:
-            self.use.stop()
+            self.potion_thread_handler.stop()
         self.set_pot_thread = False
 
 #  SmartCombat will have to wait for the DB!!!

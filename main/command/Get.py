@@ -4,10 +4,17 @@ import comm.RegexStore as R
 
 class Get(Command):
     command = 'get'
-    failed_to_get_items = False
-    success_regexes = [R.you_get]
-    failure_regexes = [R.cant_carry, R.loot_blocked]
-    error_regexes = [R.isnt_here, R.nothing_here]
+    success_regexes = [
+        R.you_get
+    ]
+    failure_regexes = [
+        R.cant_carry, 
+        R.loot_blocked
+    ]
+    error_regexes = [
+        R.isnt_here, 
+        R.nothing_here
+    ]
 
     # This one's different because it can succeed AND fail
     # Since the fail regex (cant carry) comes last, failure takes precedence
@@ -21,13 +28,14 @@ class Get(Command):
     def __init__(self, telnetHandler, inv):
         super().__init__(telnetHandler)
         self.inv = inv
+        self.failed_to_get_items = False
 
     def notify(self, regex, match):
         if regex in R.cant_carry:
             self.failed_to_get_items = True
         elif regex in R.you_get:
             # Erhm, currently Inventory adds stuff to itself on its own, which is fine
-            # The we want an organized place to put automatic ring wearing... is it here??
+            # We want an organized place to put automatic ring wearing... is it here??
             # For the human, sure, we may as well automate rings... it should be optional...
             # but defaulted to yes... so where do we do it... I want to take mudReaderHandler 
             # off of the bot, so the bot can be pure sequential action... smartCombat has 

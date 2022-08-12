@@ -38,10 +38,17 @@ class GenericMudObject(object):
         return self.to_string()
 
     def __eq__(self, other):
-        if isinstance(other, 'str'.__class__):
+        # Does this work for None? or does it check None.name?
+        if isinstance(other, 'str'.__class__): # maximum recursion depth
             return self.name == other
-        else:
+        if isinstance(other, self.__class__):
             return self.name == other.name
+        return False
+        # else:
+        #     return self == other # works for None?
+        # else:
+        #     return self == other
+        # I think I fixed that to work with None
 
     def __lt__(self, other):
         if isinstance(other, 'str'.__class__):

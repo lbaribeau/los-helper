@@ -6,6 +6,7 @@ from misc_functions import *
 
 class MixingReactions(BotReactionWithFlag):
     def __init__(self, mudReaderHandler, telnetHandler, inventory):
+        super().__init__() # threading.Event
         self.prepare_success = "You finish preparing a (.+?)\."
         self.prepare_fail = "Your preparation of a (.+?) fails\."
 
@@ -34,7 +35,7 @@ class MixingReactions(BotReactionWithFlag):
             #crud - ok we want to drop that bad root
             self.mix_succeeded = False
 
-        super(MixingReactions, self).notify(regex, M_obj)  # sets __waiter_flag
+        super(MixingReactions, self).notify(regex, M_obj)  # sets __waiter_flag? Now sets threading.Event's internal flag
 
     def mix_target_to_target(self, target, mix_target):
         self.telnetHandler.write("hold " + target)
@@ -59,5 +60,3 @@ class MixingReactions(BotReactionWithFlag):
 
         self.finished = True
         magentaprint("Finished batch with " + str(self.fail_count) + " failures" , False)
-
-

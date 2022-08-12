@@ -7,16 +7,18 @@ from combat.Kill import Kill
 from reactions.BotReactions import BotReactionWithFlag
 from comm import RegexStore
 from misc_functions import magentaprint
+from command.Command import Command
 
 # class Ability(ThreadingMixin2):
 #     def __init__(self):
 #         super().__init__()
 #         self.end_thread_regexes = self.success_regexes + self.error_regexes
 
-class Ability(ThreadingMixin2):
+class Ability(ThreadingMixin2, Command):
     def __init__(self, telnetHandler):   
         self.end_thread_regexes = self.success_regexes + self.error_regexes
-        super().__init__(telnetHandler)
+        Command.__init__(self, telnetHandler)
+        ThreadingMixin2.__init__(self)
         # ThreadingMixin2.__init__(self, telnetHandler)
         # super().__init__(telnetHandler)
 
@@ -95,7 +97,7 @@ class SlowCombatAbility(CombatAbility):
     #     super().notify(r, m)
 
     def execute(self, target=None):
-        Kill.start_timer()
+        self.start_timer()
         super().execute(target)
         # self.character.ATTACK_CLK = time()
         # Hmmm.... do abilities need to be constructed with a cooldowns object?
@@ -269,7 +271,7 @@ class Slow(SlowCombatAbility):
 
 class Wither(SlowCombatAbility):
     command = "withe"
-    cooldown_after_success = 300  # Guessed out of the blue
+    cooldown_after_success = 240  # Guessed out of the blue
     cooldown_after_failure = 10  # can't attack/flee/move immediately
     success_regexes = [RegexStore.wither]  # regex needs work
     failure_regexes = [RegexStore.wither_fail]

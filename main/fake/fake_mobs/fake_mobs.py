@@ -109,5 +109,37 @@ class BarbarianWarrior(FakeMob):
             self.socket_output.append('[%s H %s M]: Your chain mail armour fell apart.\n\r' % (self.char.hp, self.char.mp))
             self.char.inv.add_broken('chain mail armour')
 
+class Tardan(FakeMob):
+    def __init__(self, fake_character, socket):
+        super().__init__(fake_character, socket)
+        self.name = 'Tardan'
+    def sub_combat(self, rng):
+        magentaprint('Tardan rng is {0}'.format(rng))
+        if rng == 1:
+            # self.socket_output.append('I am going to break your armour and then drop some of the same.')
+            self.socket_output.append('[%s H %s M]: %s throws a wild punch at you, but it misses.\n\r' % (str(self.char.hp), str(self.char.mp), str(self.name)))
+        if rng == 2:
+            self.socket_output.append('[%s H %s M]: %s throws a wild punch at you, but it misses.\n\r' % (str(self.char.hp), str(self.char.mp), str(self.name)))
+            self.socket_output.append('[%s H %s M]: Your chain mail armour fell apart.\n\r' % (self.char.hp, self.char.mp))
+            self.char.inv.add_broken('chain mail armour') # This is the inventory on the fake side - real inventory will also do this
+        if rng == 3:
+            self.socket_output.append('[%s H %s M]: %s throws a wild punch at you, but it misses.\n\r' % (str(self.char.hp), str(self.char.mp), str(self.name)))
+    def mobdead(self):
+        self.socket_output.append(''                                                +\
+            'You heave your maul hammer at Tardan, smashing him for 19 damage.\n\r' +\
+            'Your attack overwhelms Tardan and he collapses!\n\r'                   +\
+            'Your enemy, Tardan has been defeated.\n\r'                             +\
+            'You gain 560 experience.\n\r'                                          +\
+            'Tardan was carrying: 99 gold coins, some chain mail armour.\n\r')
+
+# class Spiv(FakeMob):
+#     def __init__(self, fake_character, socket):
+#         super().__init__(fake_character, socket)
+#         self.name = 'spiv'
+# This was going to be for... You can't carry everything.\n\rYou get ...
+# Which I broke when I added ^ to R.you_get
+# But I fixed it already
+
+
 
 

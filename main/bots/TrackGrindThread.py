@@ -96,7 +96,77 @@ class TrackGrindThread(GrindThread):
             'sw','se','nw','w','out','down','boulder','down','down','e','door','w','s','s','e','s','sw','s','s','s',
             's','gully','glowing portal','passage','coral','north','north','north','north','west','northwest','west','west',
             'north','north','north','north','north','northwest','northwest', 'northwest', 'west', 'west', 'west',
-            'northwest','northwest', 'north', 'gate', 'east', 'north', 'north', 'north','west', 'north', 'chapel'
+            'northwest','northwest', 'north', 'gate', 'east', 'north', 'north', 'north','west', 'north', 'chapel']
+        # Since kobolds are so far, we won't do what we did with bandits
+        self.KOBOLDS1 = [
+            # For somewhat low level characters (this is pretty safe)
+            # Also go fight the children first, we don't want to miss out on them
+            'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','se','se','se','s','s','s','s','s','e','e',
+            'se','e','s','s','s','s','glowing portal','passage','mines','down','n','n','n','n','ne','n','w','n','n',
+            'e','door','w','gully','up','boulder','up','cave 3','ne','ne','n','s','up','e','cave','out', # child large
+            'se','cave','out', # large kobolds (danger?)
+            #'prepare', 'e', 'ne', 'door', 'door', 'prepare', 'sw','w',
+            'ladder','cave','out', # champion
+            'sw','w',
+            # 'cave', 'out',  # Comment out insane kobold
+            'sw','se',# shaman
+            'nw','w','out','down','boulder','down','down','e','door','w','s','s','e','s','sw','s','s','s',
+            's','gully','glowing portal','passage','coral','n','n','n','n','w','nw','w','w','n','n','n','n','n','nw',
+            'nw', 'nw', 'w', 'w', 'w','nw','nw', 'n', 'gate', 'e', 'n', 'n', 'n','w', 'n', 'chapel'
+        ]
+        self.kobold_guards_and_insane = [
+            # Take the scenic route so we fight in the safest order (some auras can choose not to fight)
+            'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','se','se','se','s','s','s','s','s','e','e',
+            'se','e','s','s','s','s','glowing portal','passage','mines','down','n','n','n','n','ne','n','w','n','n',
+            'e','door','w','gully','up','boulder','up','cave 3','ne','ne',#'n','s',
+            'up','e','se',
+            'prepare', 'e', 'ne', # guards
+            #'door', 'door', # priests
+            'prepare', 'sw','w', 
+            'ladder','sw','w','cave','out', # insane 1st after guards
+            'sw','se', # shaman
+            'nw','ne','e','ne','cave','out', # champion
+            'ladder','cave','out', # 2 large
+            'nw','cave','out', # child large
+            'w','d','n','s', # family
+            'sw','sw','out',
+            'down','boulder','down','down','e','door','w','s','s','e','s','sw','s','s','s',
+            's','gully','glowing portal','passage','coral','n','n','n','n','w','nw','w','w','n','n','n','n','n','nw',
+            'nw', 'nw', 'w', 'w', 'w','nw','nw', 'n', 'gate', 'e', 'n', 'n', 'n','w', 'n', 'chapel'
+        ] 
+        self.kobold_priests = self.kobold_guards_and_insane[0:59] + ['door','door'] + self.kobold_guards_and_insane[60:]
+            # Priests turn you very blue.  These fights may be difficult.
+            # Also useful to test mobs who join in.
+            # They're optional because kobolds are allowed when you're pale blue, which is one off of blue... and these guards
+            # and priests are dangerous unless the bot decides on his own to engage.  Todo: check aura here (if health is
+            # high enough,) and go in if all's good.  Even fight the priests - because the more 'good' we can get the
+            # more chalices we can farm.
+        self.kobold_massacre = [
+            # Brocolli wants to get ALL the kobolds in one shot... even the chief? Yeahh.
+            # This route is optimal traval and isn't picky about order
+            'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','se','se','se','s','s','s','s','s','e','e',
+            'se','e','s','s','s','s','glowing portal','passage','mines','down','n','n','n','n','ne','n','w','n','n',
+            'e','door','w','gully','up','boulder','up','cave 3','ne','ne','n','s','up','e','cave','out', # child, large
+            'se','cave','out', # large kobolds
+            'prepare', 'e', 'ne', 'door', 
+            'stat','d','d','d','d','hole','room','out','corr',
+            's','sw','s','w','s','s','se','n','n','n','e','s','s','s','e','n','n','e',#temple
+            's','s','e','n','e','cave', # unlock trap key; trap; out;
+            'out','n','nw','n','n','w','n','w','passage','out','hole',
+            'u','u','u','u','out',
+            # First try convoluted (after corridor)
+            # 'e','e','se','w','w','w','sw','s','w','s','s','se','n','n','n','e',
+            # 'e','s','w','s','s','e','e','n','e','s','n','e','cave',# unlock trap key; trap; out
+            # 'out','n','nw','n','sw','s','w','s','s','se','n','n','n','e','s','s','s','e','n','n','e','s','s','e','n','e','cave',
+            # 'out'
+            'door', 'prepare', 'sw','w',
+            'ladder','cave','out', # champion
+            'sw','w',
+            # 'cave', 'out', #insane (maybe don't take that fight in case both hammers are gonzo)
+            'sw','se',# shaman
+            'nw','w','out','down','boulder','down','down','e','door','w','s','s','e','s','sw','s','s','s',
+            's','gully','glowing portal','passage','coral','n','n','n','n','w','nw','w','w','n','n','n','n','n','nw',
+            'nw', 'nw', 'w', 'w', 'w','nw','nw', 'n', 'gate', 'e', 'n', 'n', 'n','w', 'n', 'chapel'
         ]
         self.CORAL_ALLEY_PATH = ["areaid2",
             'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','se','se','se','s','s','s','s','w','alley',
@@ -124,11 +194,9 @@ class TrackGrindThread(GrindThread):
         ]
         self.smart_northern_bandits_path = ['areaid421','south','s','s','n','n','n']
         self.NORTHERN_BANDITS_PATH = ["areaid2", 
-            'out','n','n','w','gate','n','n','n','n','n','gate','n','n','gate','n','nw','nw','sw','sw','sw','sw','s',
-            'sw','sw','w','w','sw','sw','sw','sw','sw','sw','w','w','w','w','nw','w','w','nw','sw','nw','w','w','w',
-            'nw','w','w','w','w','south','s','s','n','n','n','e','e','e','e','se','e','e','e','se','ne','se','e','e',
-            'se','e','e','e','e','ne','ne','ne','ne','ne','ne','e','e','ne','ne','n','ne','ne','ne','ne','se','se','s',
-            'gate','s','w','e','s','gate','s','s','s','s','s','gate','e','s','s','chapel'
+            'out','n','n', 'w','gate','n','n','n','n','n','gate',
+            'n','n','w','s','s','e','e','n','n','w','s','s','gate',
+            's','s','s','s','s','gate','w','sw','s','s','s','e','e','e','e','n','w','n','chap'
         ]
 
         self.smart_dwarven_path = ['areaid1082', 'east', 'building', 'kitchen', 'out',
@@ -177,23 +245,64 @@ class TrackGrindThread(GrindThread):
         self.smart_rancher_path = ['areaid1517', 'arch', 'north', 'east', 'north', 'northwest',
             'gate', 'north', 'east', 'east', 'south', 'east', 'north', 'south',
             'west', 'west', 'west']
-        self.RANCHER_SENTRY = ["areaid2",
-            'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate',
-            'south', 'southeast', 'southeast', 'east', 'east', 'east', 'pathway',
-            'northwest', 'north','north', 'north', 'northwest', 'northwest', 'north',
-            'north', 'gate', 'northeast', 'north', 'northeast', 'north', 'gate',
-            'east', 'east', 'east', 'north', 'north', 'northeast', 'north',
-            'northeast', 'gate', 'arch', 'north', 'east', 'north', 'northwest',
-            'gate', 'north', 'east', 'east', 'south', 'east', 'north', 'south',
-            'west', 'west', 'west', 'gate', 'southwest', 'south', 'east', 'south',
-            'arch', 'gate', 'southwest', 'south', 'southwest', 'south', 'south', 'west',
-            'west', 'west', 'gate', 'south', 'southwest', 'south', 'southwest', 'gate',
-            'south', 'south', 'southeast', 'southeast', 'south', 'south', 'south',
-            'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest',
-            'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel'
+        
+        self.MUGGER_PATH = [
+            'ou','s','w','w','w','s','alley','w','alley','e','e','e','e','e','n','w','n','chap'
+        ]
+        self.DWARVEN_FIELD_WORKERS_PATH = [
+            'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','pathway','nw','n','n','n','se','e','e',
+            'gate',
+            'sty','out','stable','out', # nothing
+            'e','e','w','building', # See Boris before going in to fight cooks etc.
+            'kitchen','out', # dwarven cooks
+            'out',
+            'hall','out',#nothing
+            'e','barn','out','s','n',#nothing
+            'e','shed','out','hut','out','forge','out',# blacksmith 380 exp war hammer
+            'se','field','road','field 2','road',
+            'se','se','field','road','se',
+            'field','stile','stile','road','se',
+            'se','field','road',
+            'se','station',
+            'room','hall', # nothing
+            'cellar','up','out','nw','nw','nw','nw','nw','nw','w','w','w','gate',
+            'w','w','nw','s','s','s','se','s','w','w','w','nw','nw','n','gate',
+            'e','n','n','n','w','n','chapel'
+            # So this path seemed wrong
+            # So I did a complete depth first path
+            # Not sure if I should reorder the nodes... strongest 1st I suppose
+            # Dwarven shephards are dangerous... (join in)
+            # Brocolli won't care
+            # I'm not sure if I used to do something sensitively here
+            # This will be a test of the ready-for-combat checks
+            # 'e','se','field','road','se','se','field','road','se',
+            # 'sw','se','field','stile','stile','road',
+            # 'nw','nw','nw','nw','w','w','w','gate','w','w','nw','s','s','s','se','s','w','w','w','nw','nw','n','gate',
+            # 'e','n','n','n','w','n','chapel'
+        ]
+        self.MILL_WORKERS = [
+            'out','s','e','s','s','s','w','gate','s','s','s','s','s','sw','s','se','sw','s','s','se','s','s','sw',
+            'bridge','s','sw','w','canal','s','s','s','e','e','w','s','e','w','n','n','e','s','s','sw','out','w','n',
+            'n','n','n','n','nw','ne','n','n','n','ne','ne','ne','ne','n','n','gate','e','n','n','n','w','n','chapel'
+        ]#Contains lvl 2&3 mobs (stacker, furniture maker, sawmill operator, mill worker) and lvl 6 mobs (saw)?mill supervisor
+        self.BANDITS1 = [ # Could be safer with secret exit
+            'out','s','e','s','s','s','w','gate','s','s','sw','sw','sw','trail',
+            'nw','nw','w','w','e','e','se','se','road',
+            'ne','ne','ne','n','n','gate','e','n','n','n','w','n','chapel'
+        ]
+        self.BANDITS2 = self.BANDITS1 # second responders to alarm
+        self.BANDITS3 = [
+            'out','s','e','s','s','s','w','gate','s','s','sw','sw','sw','trail',
+            'nw','nw','w','w','n','n','s','s','s','s','n','n',
+            'e','e','se','se','road',
+            'ne','ne','ne','n','n','gate','e','n','n','n','w','n','chapel']
+        self.BANDITS4 = [
+            'out','s','e','s','s','s','w','gate','s','s','sw','sw','sw','trail','nw','nw','w','w',
+            'w','s','n','w','s','hut 3','out','hut','out','n','n','hut 2','out','s','hill',# cave level < 13
+            'down','e','e','e','e','se','se','road',
+            'ne','ne','ne','n','n','gate','e','n','n','n','w','n','chapel'
         ]
         #aid418, 1975, 1979, 1951, 415, 45
-
         # These area numbers are unfortunately for a different database... (except "2")
 
         # need to fix this!
@@ -551,6 +660,60 @@ class TrackGrindThread(GrindThread):
 
     def stop(self):
         super().stop()
+
+    def get_path_to_previous_node(self, name):
+        chapel_aid  = db.Area.Area.get_by_name("The Chapel of Healing").id
+        # mob_aid     = db.MobLocation.MobLocation.get_locations_by_exact_mob_name(name)[0].area.id
+        mob_locations = db.MobLocation.MobLocation.get_locations_by_exact_mob_name(name)
+        paths = [self.mud_map.get_path(chapel_aid, mob_location.area.id) for mob_location in mob_locations]
+        lengths = [len(p) for p in paths]
+        # index = min([len(p) for p in paths])
+        index_min = min(range(len(lengths)), key=lengths.__getitem__) # https://stackoverflow.com/questions/2474015/
+        mob_aid = mob_locations[index_min].area.id
+        magentaprint("TrackGrindThread get_path_to_and_from_mob chapel_aid {0} mob_aid {1}".format(chapel_aid,mob_aid))
+        return self.mud_map.get_path(chapel_aid, mob_aid)[:-1] + self.mud_map.get_path(mob_aid, chapel_aid)[1:]
+        # That does assume the return path is similar
+
+    def get_specific_path_to_and_from_mob(self, name, index):
+        #return ['areaid{0}'.format(MobLocation.get_locations_by_exact_mob_name(name)),
+        # package.file.class.function
+        chapel_aid    = db.Area.Area.get_by_name("The Chapel of Healing").id
+        mob_aid     = db.MobLocation.MobLocation.get_locations_by_exact_mob_name(name)[index].area.id
+        # mob_locations = db.MobLocation.MobLocation.get_locations_by_exact_mob_name(name)
+        # paths = [self.mud_map.get_path(chapel_aid, mob_location.area.id) for mob_location in mob_locations]
+        # lengths = [len(p) for p in paths]
+        # index = min([len(p) for p in paths])
+        # index_min = min(range(len(lengths)), key=lengths.__getitem__) # https://stackoverflow.com/questions/2474015/
+        # mob_aid = mob_locations[index_min].area.id
+        magentaprint("TrackGrindThread get_path_to_and_from_mob chapel_aid {0} mob_aid {1}".format(chapel_aid,mob_aid))
+        return self.mud_map.get_path(chapel_aid, mob_aid) + self.mud_map.get_path(mob_aid, chapel_aid)
+
+    def get_path_to_and_from_mob(self, name):
+        #return ['areaid{0}'.format(MobLocation.get_locations_by_exact_mob_name(name)),
+        # package.file.class.function
+        chapel_aid    = db.Area.Area.get_by_name("The Chapel of Healing").id
+        # mob_aid     = db.MobLocation.MobLocation.get_locations_by_exact_mob_name(name)[0].area.id
+        mob_locations = db.MobLocation.MobLocation.get_locations_by_exact_mob_name(name)
+        paths = [self.mud_map.get_path(chapel_aid, mob_location.area.id) for mob_location in mob_locations]
+        lengths = [len(p) for p in paths]
+        # index = min([len(p) for p in paths])
+        index_min = min(range(len(lengths)), key=lengths.__getitem__) # https://stackoverflow.com/questions/2474015/
+        mob_aid = mob_locations[index_min].area.id
+        magentaprint("TrackGrindThread get_path_to_and_from_mob chapel_aid {0} mob_aid {1}".format(chapel_aid,mob_aid))
+        return self.mud_map.get_path(chapel_aid, mob_aid) + self.mud_map.get_path(mob_aid, chapel_aid)
+    def get_path_with_all_mobs(self, name):
+        chapel_aid = db.Area.Area.get_by_name("The Chapel of Healing").id
+        P = self.path_through_areas(
+            [chapel_aid]+
+            [ML.area.id for ML in db.MobLocation.MobLocation.get_locations_by_exact_mob_name(name)]+
+            [chapel_aid])
+        return P
+
+    def path_through_areas(self, area_ids):
+        path = []
+        for i in range(1,len(area_ids)):
+            path += self.mud_map.get_path(area_ids[i-1], area_ids[i])
+        return path
 
 class Track():
     def __init__(self, name, track, min_level, max_level, track_aura):

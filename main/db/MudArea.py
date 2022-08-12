@@ -15,7 +15,7 @@ class MudArea():
             else:
                 self.area_exits = area_exits
         else:
-            print ("Area is null for some awful reason.")
+            print("Area is null for some awful reason.")
 
     def is_restorative(self):
         if self.area is not None:

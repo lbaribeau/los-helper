@@ -1,3 +1,4 @@
+#!python3
 
 # FEATURES of this program
 
@@ -30,23 +31,23 @@ import sys, time, getpass, threading, atexit, re, os, socket
 # import_subdir("../reactions")
 # import_subdir("../threads")
 
-from misc_functions import *
-from comm.Character import Character
-from comm.CharacterClass import CharacterClass
-from comm.command_handler import CommandHandler
-from comm.MudReaderHandler import MudReaderHandler
-from comm.MudReaderThread import MudReaderThread
-from comm.MudListenerThread import MudListenerThread
-from comm.MyBuffer import MyBuffer
-from command.Inventory import Inventory
+from misc_functions            import *
+from comm.Character            import Character
+from comm.CharacterClass       import CharacterClass
+from comm.command_handler      import CommandHandler
+from comm.MudReaderHandler     import MudReaderHandler
+from comm.MudReaderThread      import MudReaderThread
+from comm.MudListenerThread    import MudListenerThread
+from comm.MyBuffer             import MyBuffer
+from command.Inventory         import Inventory
 from reactions.CombatReactions import CombatReactions
-from reactions.Mobs import Mobs
-from combat.SmartCombat import SmartCombat
-from command.Info import Info
-from command.Whois import Whois
-from command.SpellsCommand import SpellsCommand
-from reactions.Cartography import Cartography
-from reactions.BotReactions import *
+from reactions.Mobs            import Mobs
+from combat.SmartCombat        import SmartCombat
+from command.Info              import Info
+from command.Whois             import Whois
+from command.SpellsCommand     import SpellsCommand
+from reactions.Cartography     import Cartography
+from reactions.BotReactions    import *
 # from reactions.WieldReaction import WieldReaction
 from comm.TelnetHandler import TelnetHandler
 from fake.FakeTelnetHandler import FakeTelnetHandler
@@ -57,7 +58,7 @@ from reactions.server_reaction import ServerReaction
 from reactions.health_monitor import HealthMonitor
 from comm.analyser import Analyser
 from Exceptions import *
-# from reactions.ring_reaction import RingWearingReaction
+from reactions.ring_reaction import RingWearingReaction
 
 class LosHelper(object):
     def __init__(self):
@@ -85,14 +86,14 @@ class LosHelper(object):
 
         # if self.threaded_map_setup:
         #     self.mud_map_thread.start()  # Don't forget to uncomment .join()
-        self.consoleHandler = newConsoleHandler()
-        self.MUDBuffer = MyBuffer()
-        self.mudListenerThread = MudListenerThread(self.telnetHandler, self.MUDBuffer)
-        self.mudReaderThread = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
-        self.mud_reader_handler = MudReaderHandler(self.mudReaderThread, self.character)
-        self.inventory = Inventory(self.telnetHandler, self.character)
+        self.consoleHandler      = newConsoleHandler()
+        self.MUDBuffer           = MyBuffer()
+        self.mudListenerThread   = MudListenerThread(self.telnetHandler, self.MUDBuffer)
+        self.mudReaderThread     = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
+        self.mud_reader_handler  = MudReaderHandler(self.mudReaderThread, self.character)
+        self.inventory           = Inventory(self.telnetHandler, self.character)
         self.character.inventory = self.inventory
-        # self.analyser = Analyser(self.mud_reader_handler, self.character)
+        self.analyser            = Analyser(self.mud_reader_handler, self.character)
         self.mud_reader_handler.add_subscriber(self.character.prompt)
         self.mud_reader_handler.add_subscriber(self.character.server)
         self.mud_reader_handler.add_subscriber(self.inventory)
@@ -142,6 +143,10 @@ class LosHelper(object):
             self.character.MANA_TO_ENGAGE = 0
             self.character.NEEDS_MAGIC = False
             self.character.PREFER_BM = True
+        
+        if self.character._class.id != "Mon":
+            # self.mud_reader_handler.register_reaction(RingWearingReaction(self.character.inventory, self.commandHandler))
+            self.mud_reader_handler.register_reaction(RingWearingReaction(self.command_handler.wear, self.character.inventory))
 
     def close(self):
         self.mudListenerThread.stop()
@@ -176,9 +181,6 @@ class LosHelper(object):
     def main(self):
         magentaprint("LosHelper main()", False)
         stopping = False
-
-        # self.ring_reaction = RingWearingReaction(self.character.inventory, self.command_handler)
-        # self.mud_reader_handler.register_reaction(self.ring_reaction)
 
         while not stopping:
             try:

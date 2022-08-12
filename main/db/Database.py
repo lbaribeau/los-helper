@@ -5,6 +5,7 @@ http://peewee.readthedocs.org/en/latest/peewee/installation.html
 '''
 
 import peewee
+import sys
 
 db = peewee.Proxy()
 
@@ -23,6 +24,24 @@ from db.ItemTypeData import *
 from db.AreaStoreItem import *
 from db.MudMap import *
 from db.MobLoot import *
+
+create_view_named_mobs = """
+CREATE VIEW [v_named_mobs] AS 
+select *
+from mob
+where name != lower(name);"""
+create_view_areas_inc_dirt = """CREATE VIEW [v_areas_inc_dirt] AS 
+select a.*, 1 as Derp
+from area as a;"""
+create_view_exits_for_graph = """CREATE VIEW [v_areaexits_for_graph] AS 
+select ae.id, ae.area_from_id, coalesce(ae.area_to_id, 1) as area_to_id, ae.exit_type_id, ae.is_useable, ae.note, ae.is_hidden
+from areaexit as ae
+where ae.is_useable = 1;"""
+create_view_areas_for_graph = """CREATE VIEW [v_areas_for_graph] AS 
+select a.* from area as a
+where a.id in (
+      select distinct(area_from_id)
+      from v_areaexits_for_graph);"""
 
 def create_tables():
     try:
@@ -105,14 +124,12 @@ def try_drop(cls):
         # print("Database.py ignoring exception in try_drop(): "+str(e))
         pass
 
-from sys import argv
-
-if "-nodb" in argv:
-    database_file = "no.db"
+if "-nodb" in sys.argv:
+    db.initialize(peewee.SqliteDatabase("no.db", check_same_thread=False))
 else:
-    database_file = "maplos.db"
+    db.initialize(peewee.SqliteDatabase("maplos.db", check_same_thread=False))
 
-database = SqliteDatabase(database_file, check_same_thread=False)
+database = SqliteDatabase("maplos.db", check_same_thread=False)
 db.initialize(database)
 
 
