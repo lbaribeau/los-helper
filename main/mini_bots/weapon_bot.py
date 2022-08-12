@@ -190,7 +190,7 @@ class WeaponBot(MiniBot):
     #     del self.broken_weapon
     #     self.go_buy_and_wield(bw)
 
-    def rewield(self, weapon_ref):
+    def rewield(self, weapon_ref, failover=False):
         weapon_name = self.char.inventory.name_from_reference(weapon_ref)
         self.command_handler.smartCombat.wield.persistent_execute(weapon_ref)
         self.command_handler.smartCombat.wield.wait_for_flag()
@@ -204,8 +204,9 @@ class WeaponBot(MiniBot):
             else:
                 self.second = weapon_name  # ??? This should get set by the notify
         else:
-            #magentaprint("self.command_handler.")
-            raise Exception("WeaponBot.rewield() wield error!")
+            self.rewield(weapon_ref + " 2", True)
+            if failover:
+                raise Exception("WeaponBot.rewield() wield error!")
 
     def try_weapons_from_inventory(self, weapon_name):
         if weapon_name is None:

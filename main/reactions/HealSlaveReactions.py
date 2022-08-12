@@ -27,37 +27,77 @@ class HealSlaveReactions(BotReaction):
         self.mudReaderHandler = mudReaderHandler
         self.cast = cast
         self.target = ""
+        self.known_targets = {}
         
         self.__waiter_flag = False
         self.__stopping = False
         self.mudReaderHandler.register_reaction(self)
 
+    def check_healslave_cooldown(self, buff_key, req_mana, seconds):
+        should_do_thing = False
+        if self.character.MANA > req_mana:
+            if buff_key in self.known_targets.keys() and self.known_targets[buff_key] is not None:
+                last_buff_time = self.known_targets[buff_key]
+                now = get_timeint()
+                seconds_since_last_buff = (now - last_buff_time).total_seconds()
+                if seconds_since_last_buff > seconds:
+                    should_do_thing = True
+            else:
+                should_do_thing = True
+        
+        if should_do_thing:
+            self.known_targets[buff_key] = get_timeint()
+            magentaprint("Setting updating target with this key right now:" + buff_key, False)
+
+        return should_do_thing
+
+    def cast_spell(self, spell):
+        self.cast.cast(spell, self.target)
+        time.sleep(4)
+
+    def should_buff_target(self):
+        buff_key = self.target + "_buff"
+        mana_requirement = 24        
+        cooldown_in_seconds = 60
+        return self.check_healslave_cooldown(buff_key, mana_requirement, cooldown_in_seconds)
+
+    def should_heal_target(self, mana_requirement):
+        buff_key = self.target + "_heal"
+        cooldown_in_seconds = 20
+        return self.check_healslave_cooldown(buff_key, mana_requirement, cooldown_in_seconds)
+    
+    def heal_target(self):
+        if self.should_heal_target(4):
+            self.cast_spell("mend")
+        elif self.should_heal_target(1):
+            self.cast_spell("vigor")
+        else:
+            magentaprint("target already healed or I can't cast recently so no go", False)
+
+    def buff_target(self):
+        if self.should_buff_target():
+            self.cast_spell("bless")
+            self.cast_spell("protection")
+            self.cast_spell("light")
+        else:
+            magentaprint("target already buffed recently so no go", False)
+
     def notify(self, regex, M_obj):
         magentaprint(regex, False)
         if regex == self.heal_trigger:
             self.target = M_obj.group(1)
-            time.sleep(4)
+            self.buff_target()
             magentaprint("should start healing " + self.target, False)
-            if self.character.MANA > 24:
-                self.cast.cast("bless", self.target)
-                time.sleep(4)
-                self.cast.cast("protection", self.target)
-                time.sleep(4)
-            if self.character.MANA > 4:
-                self.cast.cast("mend", self.target)
-            elif self.character.MANA > 1:
-                self.cast.cast("vigor", self.target)
+            self.heal_target()
         elif regex == self.heal_continue:
             self.target = M_obj.group(1)
-            time.sleep(4)
             magentaprint("should continue healing " + self.target, False)
             if self.character.MANA > 1:
-                self.cast.cast("vigor", self.target)
+                self.cast_spell("vigor")
         elif regex == self.heal_stop:
             self.command_handler.process("rest")
         elif regex == self.target_not_here:
             self.target = ""
-            # self.target
         elif regex == self.group_damage:
             self.dmg += int(M_obj.group(1))
 

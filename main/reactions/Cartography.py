@@ -194,7 +194,8 @@ class Cartography(BotReactionWithFlag):
                 #magentaprint("Cartography monster list: " + str(C.mobs.list))
                 self.catalog_monsters(
                     C.MUD_AREA.area, 
-                    [str(m).lower() for m in C.mobs.list.list]
+                    [str(m) for m in C.mobs.list.list]
+                    # [str(m).lower() for m in C.mobs.list.list]
                 )
                 # I think we catalog in lower case?
                 # Still don't know how m is a GameObject and we need str(m).lower() 
@@ -400,7 +401,7 @@ class Cartography(BotReactionWithFlag):
                     if exit_list[i] == key:
                         if count != 1:
                             exit_list[i] += " " + str(count)
-                            magentaprint('Cartography.number_exists found multiple {0}'.format(exit_list[i]), False)
+                            magentaprint('Cartography.number_exists found multiple {0}'.format(exit_list[i]))
                         count += 1 #I miss my i++
 
         return exit_list
