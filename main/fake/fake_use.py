@@ -22,15 +22,20 @@ class FakeUse(FakeCommand):
         elif self.inv.l[i].to_string() not in self.pots + self.large_pots:
             self.socket_output.append("How does one use that?\n\r")
         else:
-            if self.inv.l[i].to_string() in self.large_pots:
+            if self.inv.l[i].to_string() == 'small flask':
+                self.socket_output.append('You feel no different.\n\rPotion drank.\n\rahhhhhh\n\r')
+                self.socket_output.append('[%s H %s M]: ' % (str(self.char.hp), str(self.char.mp)))
+                return
+            elif self.inv.l[i].to_string() in self.large_pots:
                 self.char.hp = self.char.hp + 10
             else:
                 self.char.hp = self.char.hp + 4
+
             self.socket_output.append('Potion drank.\n\rYou feel much better.\n\rA %s disintegrates.\n\r' % self.inv.l[i].to_string())
             self.socket_output.append('[%s H %s M]: ' % (str(self.char.hp), str(self.char.mp)))
             self.inv.remove_by_index(i)
 
-        # todo maybe: flask doesn't get consumed immediately
+        # flask with RNG
         # if 'small flask' in self.pots:
         #     self.flask_rng = self.flask_rng + 1 % 2
         #     self.char.hp = self.char.hp + 2

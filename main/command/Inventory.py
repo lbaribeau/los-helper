@@ -207,7 +207,7 @@ class Inventory(SimpleCommand, ReferencingList):
         # kobold champion
         # 'plate mail leggings', # Jerrek drops
         'plate mail armor',
-        'ring mail armour', 'ring mail sleeves', 'ring mail leggings', #'ring mail hood',
+        # 'ring mail armour', 'ring mail sleeves', 'ring mail leggings', #'ring mail hood',
         # 'ring mail gauntlets',
         # 'chain mail armour',  # sawmill
         'chain mail sleeves', 'chain mail leggings',
@@ -233,7 +233,7 @@ class Inventory(SimpleCommand, ReferencingList):
             R.gave_you          ,
             R.bought            ,
             R.you_hold          ,
-            # R.disintegrates     ,
+            R.disintegrates     ,
             R.sold              ,
             R.not_a_pawn_shop   ,
             R.wont_buy          ,
@@ -246,7 +246,7 @@ class Inventory(SimpleCommand, ReferencingList):
             R.weapon_break      ,
             R.weapon_shatters   ,
             R.armour_breaks     ,
-            R.current_equipment ,
+            # R.current_equipment ,
             R.gold_from_tip     ,
             R.you_now_have      
         ]
@@ -335,8 +335,8 @@ class Inventory(SimpleCommand, ReferencingList):
             else:
                 # self.remove_many(match.group(1))
                 pass # Use drop command object
-        # elif regex in R.you_give + R.you_put_in_bag + R.disintegrates + R.you_drink:
-        elif regex in R.you_give + R.you_put_in_bag:
+        elif regex in R.you_give + R.you_put_in_bag + R.disintegrates + R.you_drink:
+        # elif regex in R.you_give + R.you_put_in_bag:
                 self.remove_many(match.group(1))
         # elif regex in R.you_wear + R.you_hold:
         elif regex in R.you_hold:
@@ -360,19 +360,24 @@ class Inventory(SimpleCommand, ReferencingList):
             magentaprint('Inventory weapon_shatters')
             item = match.group(1)
             self.unequip_weapon(item)
-        elif regex in R.current_equipment:
-            # Todo: Delete this, since it triggers when looking at another player
-            # (it works for 'l self' but not for 'eq')
-            character_name = match.group(1)
-            equipment_list = re.findall(R.wearing[0], match.group(2))
+        # elif regex in R.current_equipment:
+        #     # Todo: Delete this, since it triggers when looking at another player
+        #     # (it works for 'l self' but not for 'eq')
+        #     # Shaldena the Red triggers this... anyone one with "the" like that as a player does
+        #     character_name = match.group(1)
+        #     equipment_list = re.findall(R.wearing[0], match.group(2))
 
-            if character_name == self.character.name:
-                for slot in equipment_list:
-                    if slot[0] not in self.equipped_items:
-                        self.equipped_items[slot[0]] = []
+        #     if character_name == self.character.name:
+        #         for slot in equipment_list:
+        #             if slot[0] not in self.equipped_items:
+        #                 self.equipped_items[slot[0]] = []
 
-                    self.equipped_items[slot[0]].append(MudItem(slot[1]))
-            # magentaprint(self.equipped_items,False)
+        #             self.equipped_items[slot[0]].append(MudItem(slot[1]))
+        #     # magentaprint(self.equipped_items,False)
+        else:
+            magentaprint("Inventory uncaught notify")
+            # "use all": "You have nothing you can wear."
+
         # magentaprint(self.list, False)
         super().notify(regex, match)
         # magentaprint("Inventory notify completely done.")

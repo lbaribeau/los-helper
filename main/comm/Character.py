@@ -385,7 +385,7 @@ class Character(object):
         'Gorban', # (dusty blue) golden potion
         'dwarven adventurer',# dusty blue, 760 gold, 490 exp, walks into Silken Alleys
         'ranch foreman',
-        'barbarian shaman',  # grey; fireball, burstflame
+        'barbarian shaman',  # grey; fireball, burstflame, 830 exp, did it with just mend
         'barbarian warrior', 
         'Floor Manager',  # 550 exp ('The') diamantium longsword
         'shadowed huorn', # heartwood nugget
@@ -398,6 +398,7 @@ class Character(object):
         # Servant of the Night
     ]
     lvl13_monsters = [
+        'Shaldena the Red' # 730 exp, 400 gold, 2 burstflames
         'Dojo Administrator', # (The)
         'Elsuria', # fine elven cloak
         'Tendrurn', # adamantine axe 600g
@@ -414,30 +415,6 @@ class Character(object):
         'castle priest',
         'cave troll guard'
     ]
-    # platinum crucifix
-    # Farmer Woldis
-    # Shady Copse without a period is an ambush of bugbears
-    # paths cross
-    # Path, hut, 
-    # Cal the Hermit
-    # Priestly ghost
-    # go floor Back Cellar
-    # Farmer Grangers Ghost
-    # fens is the swamp
-    # fen lich
-    # daemons in lich area
-    # wracked daemon
-    # Fens road is a swamp
-    # trail? wagon? North of the fort "pathway"
-    # large dell
-    # diamantium cross is good for a ram staff
-    # kill a wraith
-    # lich on blood rock
-    # weapons master
-    # Esrhae
-    # steel plate shield from bandits weighs 15 but gives me nice AC
-    # shrew
-
     lvl15_monsters = [
         'Thomas Ironheart', # 1000 gold
         'Earl Mardley',  # chased whisky flask healing item
@@ -453,7 +430,6 @@ class Character(object):
     # trade diamantium cross for rusty key at Douvan (door)
     # best pole weapon is there silver ram staff
     # arielle gets mad when you kill her holy sisters
-    # Shaldena the Red
     # Lyron
     # bush exit
     # Choorga can't find
@@ -463,14 +439,20 @@ class Character(object):
     # Get choorga's head and give the tiger eye gem to lyron
     # invis potions, buff, go in the room, and all attack at once
     lvl16_monsters = ['Holbyn', # Holby closes at night
-    'Ordaran the White', 'Pansy', 'Vickie', 'Matriarch Sara']  # Hawk camp
-    lvl17_monsters = ['Faldomet', 
-    # 'Patriarch Jedd Morhennon', # Not possible
-    'Farside', 'Lord Arduis', 'Lady Arielle']
-    lvl18_monsters = ['Lady Jenlira', # vigil knight guards the entrance
-    'Deep Root',
-    'weapons master'] 
-    lvl20_monsters = ['Archbishop', 'Haram','hero'] # needles me at 16 (The)
+    'Ordaran the White', 'Pansy', 'Vickie', # Hawk camp
+    'Matriarch Sara', 
+    'keep guard' # N of greenhaven, avenue, Lion keep, they are in pairs so +2 to level
+    ] 
+    lvl17_monsters = [
+        'Faldomet', 
+        # 'Patriarch Jedd Morhennon', # Not possible
+        'Farside', 'Lord Arduis', 'Lady Arielle']
+    lvl18_monsters = [
+    'Lady Jenlira', # vigil knight guards the entrance
+        'Deep Root',
+        'weapons master'
+    ] 
+    lvl20_monsters = ['Archbishop', 'Haram','hero','Corien'] # needles me at 16 (The Archbishop)
     # A list of monsters redundant to the above lists that
     # I may want to kill even if they are too low of level.
     # Mostly hostiles and things that don't let you loot.
@@ -648,4 +630,26 @@ class Character(object):
            #  self.__class__.tick_times.append(time.time() - self.__class__)
        # else:
 
-
+    # platinum crucifix
+    # Farmer Woldis
+    # Shady Copse without a period is an ambush of bugbears
+    # paths cross
+    # Path, hut, 
+    # Cal the Hermit
+    # Priestly ghost
+    # go floor Back Cellar
+    # Farmer Grangers Ghost
+    # fens is the swamp
+    # fen lich
+    # daemons in lich area
+    # wracked daemon
+    # Fens road is a swamp
+    # trail? wagon? North of the fort "pathway"
+    # large dell
+    # diamantium cross is good for a ram staff
+    # kill a wraith
+    # lich on blood rock
+    # weapons master
+    # Esrhae
+    # steel plate shield from bandits weighs 15 but gives me nice AC
+    # shrew

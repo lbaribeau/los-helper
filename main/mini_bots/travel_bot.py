@@ -68,8 +68,10 @@ class TravelBot(MiniBot):
                         magentaprint("TravelBot engaging blocking mob!")
                         #self.command_handler.smartCombat._initialize(self.char.mobs.get_reference(self.command_handler.go.M_obj(0)))
                         #self.command_handler.smartCombat._initialize(self.char.mobs.list.get_reference(self.char.mobs.read_match(self.command_handler.go.M_obj))
-                        self.command_handler.smartCombat._initialize(self.char.mobs.get_reference(self.char.mobs.read_match(self.command_handler.go.M_obj)))
                         #self.command_handler.smartCombat._initialize(self.char.mobs.get_reference_from_mob_match_object(self.command_handler.go.M_obj))
+                        # self.command_handler.smartCombat._initialize(self.char.mobs.get_reference(self.char.mobs.read_match(self.command_handler.go.M_obj)))
+                        self.command_handler.smartCombat.target = self.char.mobs.get_reference(self.char.mobs.read_match(self.command_handler.go.M_obj))
+                        self.command_handler.smartCombat.set_pot_thread = False
                         self.command_handler.smartCombat.run()  # Calling run explicitly since we don't want to spawn a thread
                         magentaprint("TravelBot's smartCombat completed")
                         self.command_handler.go.wait_execute_and_wait(exit)

@@ -105,16 +105,20 @@ class SellBot(MiniBot):
         self.bulk_drop_or_sell(self.drop, unique_word, qty)
     def bulk_sell(self, unique_word, qty='all'):
         bulk_drop_or_sell(self.sell, unique_word, qty)
-    def bulk_drop_or_sell(self, command, unique_word, quantity):
+    def bulk_drop_or_sell(self, command_object, unique_word, quantity):
         # Suppose they say bdrop scarlet... let's just get all of one type of item
         self.stopping = False
 
         if quantity == 'all':
-            quantity = self.inventory.count(self.inventory.get(unique_word).name)
+            if self.inventory.get(unique_word) is None:
+                quantity = 0
+            else:
+                quantity = self.inventory.count(self.inventory.get(unique_word).name)
+                # This just takes the first hit from unique_word and bulks that out
 
         # while item_name in self.inventory.list
         for i in range(quantity):
             if self.stopping:
                 break
             else:
-                command.execute_and_wait(unique_word) # Drop will remove by ref now (don't need already_removed_dropped_item)
+                command_object.execute_and_wait(unique_word)

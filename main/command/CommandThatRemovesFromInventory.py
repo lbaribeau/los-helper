@@ -69,7 +69,7 @@ class Drop(CommandThatRemovesFromInventory):
 
 # wield, second, wear, repair, give, hold, eat 
 
-class Drink(CommandThatRemovesFromInventory):
+class Drink(Command):
     cooldown_after_success = 0.86  # .83 too fast
     # cooldown_after_failure = 0.86
     cooldown_after_failure = 0
@@ -85,15 +85,20 @@ class Drink(CommandThatRemovesFromInventory):
         R.drop_what,
         R.cant_do
     ]
+    def __init__(self, telnetHandler, inventory):
+        super().__init__(telnetHandler)
+        self.inventory = inventory # not used
 
-class Use(CommandThatRemovesFromInventory):
+# class Use(CommandThatRemovesFromInventory):
+class Use(Command):
+    # Ehhh because of small flasks it's not simple enough for inheritance
     cooldown_after_success = 0.86  # .83 too fast
     # cooldown_after_failure = 0.86
     cooldown_after_failure = 0
     command = 'use'
     success_regexes = [
         R.potion_drank,
-        R.you_drink,
+        R.you_drink, # Or is this just for drink?
         R.disintegrates
     ]  
     # It's tempting to try to make Inventory smart enough to use healing items...
@@ -112,10 +117,55 @@ class Use(CommandThatRemovesFromInventory):
         R.use_what, 
         R.cant_use
     ]
-    # def __init__(self, telnetHandler, inventory):
-    #     super().__init__(self, telnetHandler, inventory)
 
     def by_name(self, name):
         self.execute(self.inventory.get_reference(name))  # error checking...
 
-# eat
+    def __init__(self, telnetHandler, inventory):
+        super().__init__(telnetHandler)
+        self.inventory = inventory # not used
+    
+    # def notify(self, regex, match):
+    #     self.result = regex
+    #     if regex in R.you_drink + R.disintegrates:
+    #         # got = self.inventory.get(self._sent_target)
+    #         # magentaprint('CommandThatRemovesFromInventory inventory sent {0} got {1}'.format(self._sent_target, got))
+    #         # magentaprint('CommandThatRemovesFromInventory is got None: {0}'.format(got != None))
+    #         # magentaprint('CommandThatRemovesFromInventory condition: {0}'.format(self.inventory_removal and got != None))
+    #         # if self.inventory_removal and got != None:
+    #         # if self.inventory_removal and self._executing and self.inventory.get(self._sent_target) != None:
+    #         if self._executing and self.inventory.get(self._sent_target) != None:
+    #             # After 'buy' the inventory isn't correct
+    #             # This could hit the wrong item though!
+    #             # Need to check inventory after buy, then wear
+    #             # Maybe shopping bot can add to inventory, so that inventory is correct
+    #             # magentaprint('*ComandThatRemovesFromInventory REMOVING: {0}'.format(self._sent_target))
+    #             self.inventory.remove_by_ref(self._sent_target)
+    #         else:
+    #             magentaprint("Did not remove {0} from inventory (either not executing, or get didn't find.)".format(self._sent_target))
+    #     super().notify(regex, match)
+
+# [115 H 51 M]: l flask
+# 15:51:30.00   | "l flask"
+# a small plain flask of liquid
+# It is in poor condition.
+# ReferencingList.get(flask) got 22 returning small flask
+# [115 H 51 M]: 15:51:32.08   | CommandHandler: Mapfile completed.
+# use flask
+# 15:51:45.68   | "use flask"
+# You feel no different.
+# Potion drank.
+# ahhhhhh
+# A small flask disintegrates.
+# [115 H 51 M]: 15:51:45.80   | Did not remove None from inventory (either not executing, or get didn't find.)
+# ReferencingList.get(flask) got 22 returning small flask
+# Referencing list removed index 22 should be small flask
+# 15:51:45.82   | Did not remove None from inventory (either not executing, or get didn't find.)
+
+# It just adds disintegrates
+# So how do we do this…
+# Do we expect it in one shot…
+# No way to know disintegrates is coming…
+# Why not revert to inventory doing it
+# So we aren’t sure the correct item is getting removed
+# That’s fine

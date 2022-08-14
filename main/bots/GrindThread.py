@@ -859,6 +859,8 @@ class GrindThread(BotThread):
                     # What about drink error
                     # Ooookkkk we put in consume.error so we don't loop infinitely
                     # We also made sure that drink removes from inventory, also so we won't loop infinitely
+                    # ACK small flasks don't always disappear
+
                     return
             else:
                 # just leave it there

@@ -386,5 +386,3 @@ class ReferencingList(object):
 
     def __iter__(self):
         return iter(self.list)
-
-

@@ -487,6 +487,8 @@ class TrackGrindThread(GrindThread):
             # Golden potion, but seems hard, could be rng
         elif self.__nextpath == 101:
             return self.get_path_with_all_mobs('floor manager') # About the same as Tardan
+        elif self.__nextpath == 103:
+            return self.get_path_with_all_mobs('Shaldena the Red') # Burstflame might cause some characters problems
         elif self.__nextpath == "XXX":
             # Watch out for mob targetting bug (ranch foreman hitting Rancher Plover!)
             return self.get_path_with_all_mobs('ranch foreman')
@@ -507,7 +509,6 @@ class TrackGrindThread(GrindThread):
         #     return self.KNIGHTS[:]
         # Human paladin likes steel collars (oremaster) steel armour (Rimark) steel mask (spiv) rings (bandits, sawmill, minstrel)
         # Corien
-        # Shaldena the Red
 
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.__nextpath))

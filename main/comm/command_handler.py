@@ -324,7 +324,7 @@ class CommandHandler(object):
             # self.user_wie2(user_input[4:].lstrip())
         elif re.match("wear? ", user_input):
             self.wear.execute(user_input.partition(' ')[2])
-        elif re.match("(repai?|repair) ", user_input):
+        elif re.match("(repai?|repair) ", user_input) or user_input.startswith('fix '):
             self.repair.execute(user_input.partition(' ')[2])
         elif re.match("(lo?|look?) ", user_input):
             self.look.execute(user_input.partition(' ')[2])

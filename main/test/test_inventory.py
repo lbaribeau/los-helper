@@ -44,7 +44,9 @@ class TestInventory(unittest.TestCase):
             Character()
         )
         # i.set_inventory(MudItem('maul hammer'), MudItem('maul hammer')) # Maybe it does this
-        i.set_inventory('maul hammer', 'maul hammer')
+        # i.set_inventory('maul hammer, maul hammer')
+        i.add('maul hammer')
+        i.add('maul hammer')
         ref = i.get_reference_from_index(1),
         self.assertTrue(
             ref == 'maul 2' or
@@ -55,7 +57,9 @@ class TestInventory(unittest.TestCase):
             FakeTelnetHandler(),
             Character()
         )
-        i.set_inventory('maul hammer', 'maul hammer')
+        # i.set_inventory('maul hammer', 'maul hammer')
+        i.add('maul hammer')
+        i.add('maul hammer')
         i.list[1].is_usable=False
         ref = i.get_broken('maul hammer')
         self.assertTrue(
