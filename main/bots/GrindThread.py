@@ -162,15 +162,17 @@ class GrindThread(BotThread):
             # then have smart combat backstab
 
             # if self.is_character_class('Thi') or self.is_character_class('Ass'):
+            #     hide_attempt = 0
             #     first = True
-            #     while not self.character.HIDDEN:
-            #         if self.character.mobs.chase == '' or \
-            #          self.character.mobs.attacking == []:
+            #     while not self.character.HIDDEN and hide_attempt < 3:
+            #         if self.character.mobs.chase != '' or \
+            #          self.character.mobs.attacking != []:
             #          break
 
             #         if not first and not self.character.HIDDEN:
             #             self.sleep(6)
             #         self.pre_combat_actions()
+            #         hide_attempt += 1
             #         first = False
             #         if self.character.HIDDEN:
             #             time.sleep(3)
@@ -291,6 +293,7 @@ class GrindThread(BotThread):
         # After vigging and resting a full mana pool, hp may still not be very high,
         # and in that case, keep resting since benefits should be active.
         # *requires strong enemy for black magic users
+        return False
         if not self.character.info.pty < 10:
             magentaprint("In chapel_heal_up.")
 

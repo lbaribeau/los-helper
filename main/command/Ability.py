@@ -279,7 +279,7 @@ class Wither(SlowCombatAbility):
     # classes = ["Dar"]
     level = 1
 
-class Backstab(SlowCombatAbility):
+class Backstab(FastCombatAbility):
     command = "back"
     cooldown_after_success = 7
     cooldown_after_failure = 7

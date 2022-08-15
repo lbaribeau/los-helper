@@ -110,7 +110,7 @@ class SmartCombat(CombatObject):
             self.fleeing = True
         elif regex in R.weapon_break + R.weapon_shatters:
             magentaprint("SmartCombat weapon break: " + str(match.group('weapon')))
-            # self.broken_weapon = match.group('weapon')
+            self.broken_weapon = match.group('weapon')
             self.weapon_bot.combat_rewield()
         elif regex in R.armour_breaks:
             magentaprint("SmartCombat armour break: " + str(match.group(1)) + ', len ' + str(len(match.group(1).split(' '))))
@@ -455,9 +455,14 @@ class SmartCombat(CombatObject):
                         continue
                     else:
                         magentaprint("SmartCombat " + str(self.target) + " in turn targets " + str(a.valid_targets))
+ 
+                if isinstance(a, Backstab):
+                    if not self.character.HIDDEN:
+                        continue
 
                 # magentaprint("Using " + str(a))
                 a.execute(self.target)
+                self.character.HIDDEN = False
                 #todo optionally ignore this for moves like touch
                 a.wait_for_flag()
                 # magentaprint("SmartCombat finished using ability.")

@@ -1,6 +1,6 @@
 
 # from main.misc_functions import magentaprint
-from print_magenta import magentaprint
+from misc_functions import magentaprint
 from reactions.game_object import GameObject
 # from db.GenericMudObject import GenericMudObject
 
@@ -68,7 +68,7 @@ class ReferencingList(object):
             self.add(x)
 
     def remove(self, obj):
-        magentaprint("ReferencingList remove: " + str(obj))
+        # magentaprint("ReferencingList remove: " + str(obj))
         # Ehrm don't we need to be specific
         # What if one mob is attacking
         # Remove the right one?

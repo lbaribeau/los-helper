@@ -185,7 +185,8 @@ class ArmourBot(MiniBot):
                     # Could try go to smithy again here if necessary
                     # "It's not broken yet".... well my command was wrong... steel 3 not steel 2...
                     # That was from assuming in try_armour_from_inventory that the last ref was going to be the broken one
-                    raise
+                    # raise
+                    return True
         else:
             magentaprint("ArmourBot.repair_and_wear() error - no inventory ref for " + str(a) + ".")  
             # Todo? What if the armour fell apart... then it's not in inventory...

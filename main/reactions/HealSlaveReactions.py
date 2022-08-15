@@ -78,7 +78,7 @@ class HealSlaveReactions(BotReaction):
         if self.should_buff_target():
             self.cast_spell("bless")
             self.cast_spell("protection")
-            self.cast_spell("light")
+            # self.cast_spell("light")
         else:
             magentaprint("target already buffed recently so no go", False)
 

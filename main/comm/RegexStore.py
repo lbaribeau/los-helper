@@ -55,8 +55,8 @@ you_arent_wearing_anything = [r"You aren't wearing anything\."]
 __exit           = r"(?P<exit>[A-Za-z ]+)"
 found_exit       = [r"You found an exit: " + __exit + r"\."]
 search_fail      = [r"You didn't find anything\."]
-hide             = [r"You slip into the shadows unnoticed\."]
-hide_fail        = [r"You attempt to hide in the shadows\."]  # This occurs on success as well
+hide             = [r"You slip into the shadows unnoticed\.", r"You are already hiding\."]
+hide_fail        = [r"You attempt to hide in the shadows\.$"]  # This occurs on success as well
 prepare          = [r"You prepare yourself for traps\."]
 already_prepared = [r"You've already prepared\."]
 
@@ -647,7 +647,7 @@ unusable = [r"It is unusable\."] # weapons
 
 # Armour
 repair_what    = [r"Repair what\?"]
-cant_repair    = [r"The smithy cannot repair that\."]
+cant_repair    = [r"The smithy cannot repair that\.", r"You can only repair weapons and armor\."]
 not_broken     = [r"It's not broken yet\."]
 drop_what      = [r"Drop what\?"]
 sell_what      = [r"Sell what\?"]

@@ -11,13 +11,13 @@ startTime = datetime.now()
 VERSION = "2"
 #databaseFile = "maplos.db"
 
-def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=False):
+def magentaprint(text, is_debug_command=False, log_output=False, show_hidden=False):
     global debugMode
 
     if show_hidden:
         text = repr(text)  # escape all characters in string
 
-    if debugMode or not is_debug_command:
+    if debugMode or is_debug_command:
         do_magentaprint(text)
 
     if log_output:

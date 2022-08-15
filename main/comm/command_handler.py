@@ -35,6 +35,7 @@ from command.Wield              import Second
 from command.Buy                import Buy
 # from command.Drop               import Drop
 from command.Get                import Get
+from Aura                       import Aura
 from comm.thread_maker          import ThreadMaker
 from command.Repair             import Repair
 from command.wear               import Wear

@@ -26,8 +26,8 @@ class Repair(Command):
 
     def notify(self, regex, match):
         self.result = regex
-        if self.success:
-            self.inventory.get(self._sent_target).usable = True
+        if self.success and self._sent_target is not None:
+                self.inventory.get(self._sent_target).usable = True
         if self.failure:
             self.inventory.remove_by_ref(self._sent_target)
         super().notify(regex, match)
