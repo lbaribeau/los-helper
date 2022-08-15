@@ -79,9 +79,9 @@ class SmartGrindThread(TrackGrindThread):
         else:
             self.on_track = True
 
-
-        self.check_weapons()
-        self.check_armour()
+        if not self.on_heal_path and not self.skipped_last_track:
+            self.check_weapons()
+            self.check_armour()
 
         if self.has_buff_ability():
             if self.use_buff_ability():

@@ -20,6 +20,7 @@ class TrackGrindThread(GrindThread):
 
         self.track_abandons = 0
         self.abandoned_last_track = False
+        self.skipped_last_track = False
         self.on_track = False
         self.last_track = None
         self.starting_path = starting_path
@@ -611,6 +612,7 @@ class TrackGrindThread(GrindThread):
         return nextpath
 
     def evaluate_track(self, track):
+        self.skipped_last_track = False
         level_range = range(track.min_level, track.max_level)        
 
         character_aura = Aura(self.character.AURA)
@@ -620,6 +622,7 @@ class TrackGrindThread(GrindThread):
             if self.character.level in level_range:
                 return track.track[:]
             else:
+                self.skipped_last_track = True
                 return self.PATH_TO_SKIP_WITH[:]
 
         #too evil shouldn't fight good (+1)
@@ -628,6 +631,7 @@ class TrackGrindThread(GrindThread):
            (character_aura < self.character.preferred_aura and track.track_aura == 1) or \
            (character_aura > self.character.preferred_aura and track.track_aura == -1):
             magentaprint("{0} isn't acceptable to us due to aura".format(track.name), False)
+            self.skipped_last_track = True
             return self.PATH_TO_SKIP_WITH[:]
 
         if self.character.level in level_range:

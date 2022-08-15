@@ -335,20 +335,27 @@ class ArmourBot(MiniBot):
             return items[0]
 
     def get_armour_level(self, character_lvl):
+        armour_level = 1
         if character_lvl > 9:
             if self.steel():
-                return 3
+                armour_level = 3
+            elif self.ringmail():
+                armour_level = 4
             elif self.chain():
-                return 2
+                armour_level = 2
             else:
-                return 1
+                armour_level = 1
         elif character_lvl > 4:
-            if self.clothie():
-                return 1
+            if self.ringmail():
+                armour_level = 4
+            elif self.chain():
+                armour_level = 2
             else:
-                return 2
-        else:
-            return 1
+                armour_level = 1
+    
+        magentaprint("armour level is " + str(armour_level), False)
+
+        return armour_level
 
     def get_size(self, race):
         if race.lower() in ['hobbit','halfling','half-elf','gnome','dark-elf','dwarf']:
@@ -365,10 +372,10 @@ class ArmourBot(MiniBot):
         return self.char.class_string == 'Mon'
 
     def clothie(self):
-        return self.char.class_string in ["Mag", 'Dru', 'Alc', 'Thi']
+        return self.char.class_string in ["Mag", 'Dru']
 
-    # def leather(self):
-    #     return self.char.class_string in ['Dru', 'Alc', 'Thi']
+    def ringmail(self):
+        return self.char.class_string in ['Alc', 'Thi']
 
     def chain(self):
         return self.char.class_string in ['Ran', 'Cle', 'Ass']

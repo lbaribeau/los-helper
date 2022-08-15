@@ -66,7 +66,7 @@ class Cartography(BotReactionWithFlag):
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
             if self.character.ACTIVELY_BOTTING:
-                self.command_handler.process('l')
+                self.commandHandler.process('l')
             self.set_area_exit_as_unusable(regex)  # TODO: Seems a little harsh... 
             if self.character.TRYING_TO_MOVE:
                 magentaprint("Cartography: unsuccessful go (can't go that way): " + str(self.character.LAST_DIRECTION))
@@ -100,12 +100,12 @@ class Cartography(BotReactionWithFlag):
             if self.character.ACTIVELY_BOTTING:
                 if self.character.CONFUSED:
                     if (not self.character.CAN_SEE):
-                        self.command_handler.process('c light') #look around to stop the "you don't see that here bug"
+                        self.commandHandler.process('c light') #look around to stop the "you don't see that here bug"
 
                     #clear the attacking list
                     self.character.MOBS_ATTACKING = []
 
-                    self.command_handler.process('l') #look around to stop the "you don't see that here bug"
+                    self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
                 else:
                     self.character.CONFUSED = True
 
@@ -295,7 +295,7 @@ class Cartography(BotReactionWithFlag):
 
                 if (self.character.ACTIVELY_BOTTING):
                     if (mob.approximate_level == None):
-                        self.command_handler.process('l ' + str(monster))
+                        self.commandHandler.process('l ' + str(monster))
 
                 # magentaprint(str(mob))
 
