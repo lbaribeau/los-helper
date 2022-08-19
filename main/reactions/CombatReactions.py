@@ -218,6 +218,7 @@ class CombatReactions(object):
                 'runtime': str(runtime),
                 'total_phys_attacks': total_phys_attacks,
                 'total_phys_hits': self.hits_dealt,
+                'spells_cast': self.spells_cast,
                 'spells_hit': spells_hit,
                 'average_phys_damage': average_phys_damage,
                 'phys_hit_rate': phys_hit_rate,

@@ -107,13 +107,20 @@ var app = new Vue({
       }
       return output
     },
-    // crit_to_cast: function() {
-    //   output = 0
-    //   if (this.report !== {} & this.report.total_phys_attacks > 0) {
-    //     output = Math.round((this.report.phys_crits / this.report.total_phys_attacks)*100)/100
-    //   }
-    //   return output
-    // },
+    crit_to_cast: function() {
+      output = 0
+      if (this.report !== {} & this.report.spells_cast > 0) {
+        output = Math.round((this.report.spell_crits / this.report.spells_cast)*10000)/100
+      }
+      return output
+    },
+    crit_to_cast_hit: function() {
+      output = 0
+      if (this.report !== {} & this.report.spells_hit > 0) {
+        output = Math.round((this.report.spell_crits / this.report.spells_hit)*10000)/100
+      }
+      return output
+    },
     effective_phys: function() {
       var output = 0
       if (this.report !== {}) {
