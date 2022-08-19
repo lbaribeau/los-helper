@@ -65,13 +65,12 @@ class CombatReactions(object):
 
         # magentaprint("Combat Reaction happened on: " + regex, False)
         if regex in RegexStore.attack_hit:
-            magentaprint("Attack hit!!", False)
             self.in_combat = True
             self.hits_dealt += 1
             dmg = 0
             try:
                 dmg = int(M_obj.group('d'))
-                self.attacks.append(Attack("physical", "normal", True, dmg).toJson())
+                self.attacks.append(Attack("p", "n", 1, dmg).toJson())
                 self.damage_dealt += dmg
                 self.highest_damage = max(self.highest_damage, dmg)
                 self.lowest_damage = min(self.lowest_damage, dmg)
@@ -104,12 +103,10 @@ class CombatReactions(object):
             self.in_combat = False
         elif regex in RegexStore.attack_miss:
             self.hits_missed += 1
-            self.attacks.append(Attack("physical", "normal", False, 0).toJson())
+            self.attacks.append(Attack("p", "n", 0, 0).toJson())
         elif regex in RegexStore.spell_crit:
-            magentaprint("Spell crit!!", False)
             self.spells_crit += 1
         elif regex in RegexStore.crit:
-            magentaprint("Physical crit!!", False)
             self.physical_crit += 1
         elif regex in RegexStore.mob_attacked:
             self.in_combat = True
@@ -120,17 +117,16 @@ class CombatReactions(object):
             else:
                 self.hits_evaded += 1
         elif regex in RegexStore.spell_damage:
-            magentaprint("Spell dmg!!", False)
             dmg = int(M_obj.group('d'))
             self.in_combat = True
             self.spells_cast += 1
             self.spell_damage_dealt += dmg
-            self.attacks.append(Attack("spell", "normal", True, dmg).toJson())
+            self.attacks.append(Attack("s", "n", 1, dmg).toJson())
             self.highest_damage = max(self.highest_damage, int(M_obj.group('d')))
             self.lowest_damage = min(self.lowest_damage, int(M_obj.group('d')))
         elif regex in RegexStore.cast_failure:
             self.in_combat = True
-            self.attacks.append(Attack("spell", "normal", False, 0).toJson())
+            self.attacks.append(Attack("s", "n", 0, 0).toJson())
             self.spells_cast += 1
             self.spells_failed += 1
 
@@ -156,11 +152,11 @@ class CombatReactions(object):
         try:
             average_phys_damage = (round(self.damage_dealt / self.hits_dealt, 1) if self.hits_dealt > 0 else 0)
             phys_hit_rate = (round((self.hits_dealt / total_phys_attacks) * 100, 1) if total_phys_attacks > 0 else 0)
-            phys_crit_rate = -1#round(self.crits_landed / total_phys_attacks * 100, 1)
+            phys_crit_rate = round(self.physical_crit / total_phys_attacks * 100, 1)
             
             average_spell_damage = (round(self.spell_damage_dealt / spells_hit) if spells_hit > 0 else 0)
             spell_hit_rate = (round((spells_hit / self.spells_cast) * 100, 1) if self.spells_cast > 0 else 0)
-            spell_crit_rate = -1
+            spell_crit_rate = round(self.spells_crit / self.spells_cast * 100, 1)
         except Exception as e:
             magentaprint(e, no_print)
             average_phys_damage = -2
@@ -221,6 +217,7 @@ class CombatReactions(object):
                 'timestamp': get_timestamp(),
                 'runtime': str(runtime),
                 'total_phys_attacks': total_phys_attacks,
+                'total_phys_hits': self.hits_dealt,
                 'spells_hit': spells_hit,
                 'average_phys_damage': average_phys_damage,
                 'phys_hit_rate': phys_hit_rate,

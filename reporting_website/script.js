@@ -93,10 +93,17 @@ var app = new Vue({
       }
       return list
     },
-    phys_crit_attack_rate: function() {
+    crit_to_hit: function() {
+      output = 0
+      if (this.report !== {} & this.report.total_phys_hits > 0) {
+        output = Math.round((this.report.phys_crits / this.report.total_phys_hits)*100)/100
+      }
+      return output
+    },
+    crit_to_attack: function() {
       output = 0
       if (this.report !== {} & this.report.total_phys_attacks > 0) {
-        output = Math.round((this.report.phys_crits/100 * this.report.total_phys_attacks)*100)/100
+        output = Math.round((this.report.phys_crits / this.report.total_phys_attacks)*100)/100
       }
       return output
     },
