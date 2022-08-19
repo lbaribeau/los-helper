@@ -93,6 +93,13 @@ var app = new Vue({
       }
       return list
     },
+    phys_crit_attack_rate: function() {
+      output = 0
+      if (this.report !== {} & this.report.total_phys_attacks > 0) {
+        output = Math.round((this.report.phys_crits/100 * this.report.total_phys_attacks)*100)/100
+      }
+      return output
+    },
     effective_phys: function() {
       var output = 0
       if (this.report !== {}) {
