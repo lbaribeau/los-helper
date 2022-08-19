@@ -54,21 +54,24 @@ class CombatReactions(object):
         self.hits_received = 0
         self.hits_evaded = 0
         self.damage_taken = 0
+        self.attacks = []
         self.in_combat = False
 
         self.regex_cart = [RegexStore.attack_hit, RegexStore.attack_miss, RegexStore.mob_attacked, RegexStore.cast_failure, RegexStore.mob_defeated,
-        RegexStore.spell_damage, RegexStore.loot_dropped]
+        RegexStore.spell_damage, RegexStore.loot_dropped, RegexStore.crit, RegexStore.spell_crit]
 
     def notify(self, regex, M_obj):
         combat_state = self.in_combat
 
-        # magentaprint("Combat Reaction happened on: " + regex)
+        # magentaprint("Combat Reaction happened on: " + regex, False)
         if regex in RegexStore.attack_hit:
+            magentaprint("Attack hit!!", False)
             self.in_combat = True
             self.hits_dealt += 1
             dmg = 0
             try:
                 dmg = int(M_obj.group('d'))
+                self.attacks.append(Attack("physical", "normal", True, dmg).toJson())
                 self.damage_dealt += dmg
                 self.highest_damage = max(self.highest_damage, dmg)
                 self.lowest_damage = min(self.lowest_damage, dmg)
@@ -101,8 +104,13 @@ class CombatReactions(object):
             self.in_combat = False
         elif regex in RegexStore.attack_miss:
             self.hits_missed += 1
-        elif regex is RegexStore.magic_crit:
-            self.character.CRITS_LANDED += 1
+            self.attacks.append(Attack("physical", "normal", False, 0).toJson())
+        elif regex in RegexStore.spell_crit:
+            magentaprint("Spell crit!!", False)
+            self.spells_crit += 1
+        elif regex in RegexStore.crit:
+            magentaprint("Physical crit!!", False)
+            self.physical_crit += 1
         elif regex in RegexStore.mob_attacked:
             self.in_combat = True
             # if M_obj.group('d'):
@@ -112,13 +120,17 @@ class CombatReactions(object):
             else:
                 self.hits_evaded += 1
         elif regex in RegexStore.spell_damage:
+            magentaprint("Spell dmg!!", False)
+            dmg = int(M_obj.group('d'))
             self.in_combat = True
             self.spells_cast += 1
-            self.spell_damage_dealt += int(M_obj.group('d'))
+            self.spell_damage_dealt += dmg
+            self.attacks.append(Attack("spell", "normal", True, dmg).toJson())
             self.highest_damage = max(self.highest_damage, int(M_obj.group('d')))
             self.lowest_damage = min(self.lowest_damage, int(M_obj.group('d')))
         elif regex in RegexStore.cast_failure:
             self.in_combat = True
+            self.attacks.append(Attack("spell", "normal", False, 0).toJson())
             self.spells_cast += 1
             self.spells_failed += 1
 
@@ -161,7 +173,8 @@ class CombatReactions(object):
         magentaprint(str(self.hits_dealt) + ",  " + str(total_phys_attacks) + ",  " + str(spells_hit) + ",  " + str(self.spells_cast))
         magentaprint("Average Phys Damage: " + str(average_phys_damage) + " | Average Spell Damage: " + str(average_spell_damage), no_print)
         magentaprint("Phys Hit Rate: " + str(phys_hit_rate) + "% | Spell Hit Rate: " + str(spell_hit_rate) + "%", no_print)
-        magentaprint("Phys Crit Rate: " + str(phys_crit_rate) + " | Spell Crit Rate: " + str(spell_crit_rate) + "%", no_print)
+        magentaprint("Phys Crits: " + str(self.physical_crit) + " | Spell Crits: " + str(self.spells_crit), no_print)
+        magentaprint("Phys Crit %: " + str(phys_crit_rate) + " | Spell Crit %: " + str(spell_crit_rate), no_print)
         runtime = round(get_runtime_in_minutes(), 2)
         total_time = self.character.TRACK_TIME + self.character.REST_TIME + self.character.COMBAT_TIME
         percent_track = round(safe_divide(self.character.TRACK_TIME, total_time) * 100, 2)
@@ -199,6 +212,7 @@ class CombatReactions(object):
                 'expm': expm,
                 'kills': kills,
                 'kpm': kpm,
+                'attacks': self.attacks,
                 'weapon1': self.character.weapon1,
                 'weapon2': self.character.weapon2,
                 # 'equipment': self.character.inventory.equipped_items,
@@ -210,9 +224,11 @@ class CombatReactions(object):
                 'spells_hit': spells_hit,
                 'average_phys_damage': average_phys_damage,
                 'phys_hit_rate': phys_hit_rate,
+                'phys_crits': self.physical_crit,
                 'phys_crit_rate': phys_crit_rate,
                 'average_spell_damage': average_spell_damage,
                 'spell_hit_rate': spell_hit_rate,
+                'spell_crits': self.spells_crit,
                 'spell_crit_rate': spell_crit_rate,
                 'rest_time': self.character.REST_TIME,
                 'track_time': self.character.TRACK_TIME,
@@ -223,3 +239,19 @@ class CombatReactions(object):
                 }
 
         return output
+
+class Attack():
+    def __init__(self, name, type, hit, dmg):
+        self.name = name
+        self.type = type
+        self.hit = hit
+        self.dmg = dmg
+
+    def toJson(self):
+        return [self.name, self.hit, self.dmg]
+        # return {
+        #     "name": self.name,
+        #     "type": self.type,
+        #     "hit": self.hit,
+        #     "dmg": self.dmg
+        # }

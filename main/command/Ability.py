@@ -97,7 +97,7 @@ class SlowCombatAbility(CombatAbility):
     #     super().notify(r, m)
 
     def execute(self, target=None):
-        self.start_timer()
+        # self.start_timer()
         super().execute(target)
         # self.character.ATTACK_CLK = time()
         # Hmmm.... do abilities need to be constructed with a cooldowns object?

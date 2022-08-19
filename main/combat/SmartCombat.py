@@ -494,6 +494,7 @@ class SmartCombat(CombatObject):
 
                     # magentaprint("SmartCombat executing " + str(a), False)
                     a.execute(self.target)
+                    self.kill.start_timer()
                     # let's also do our magic attack ASAP
                     if self.cast.up() or self.cast.wait_time() <= self.kill.wait_time() or self.casting:
                         self.do_magic_attack()

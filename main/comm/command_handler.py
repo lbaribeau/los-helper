@@ -128,7 +128,7 @@ class CommandHandler(object):
         self.sell = Sell(telnetHandler, self.inventory)
         mudReaderHandler.add_subscriber(self.sell)
         self.drop = Drop(telnetHandler, self.inventory)
-        # mudReaderHandler.add_subscriber(self.drop)
+        mudReaderHandler.add_subscriber(self.drop)
         self.sell_bot = SellBot(self.character.inventory, self.sell, self.drop)
         # Use will have to keep inventory up to date, right
         # That is if items support usable (small inhaler, white amulet, rods)

@@ -293,9 +293,10 @@ class Cartography(BotReactionWithFlag):
                 mob = Mob(name=str(monster))
                 mob.map()
 
-                if (self.character.ACTIVELY_BOTTING):
-                    if (mob.approximate_level == None):
-                        self.commandHandler.process('l ' + str(monster))
+                # if (self.character.ACTIVELY_BOTTING):
+                #     if (mob.approximate_level == None):
+                #         magentaprint("looking at monster for level info " + str(monster), False)
+                #         self.commandHandler.process('l ' + str(monster))
 
                 # magentaprint(str(mob))
 

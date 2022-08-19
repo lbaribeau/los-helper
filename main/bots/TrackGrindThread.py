@@ -394,10 +394,10 @@ class TrackGrindThread(GrindThread):
         self.ZOMBIES = ['areaid113', 'try_gate',
         'east', 'east']
         #McDermotts farm
-        # if self.character.level >= 8:
-        self.ZOMBIES += [
-        'northeast', 'northeast', 'north', 'north', 'north', 'gate', 'north', 'east', 'east', 'southeast', 'east', 'southeast', 'southeast', 'southeast', 'trail', 'woods', 'deeper',
-        'out', 'trail', 'field', 'path', 'northwest', 'northwest', 'west', 'northwest', 'west', 'west', 'south', 'gate', 'south', 'south', 'south', 'sw', 'sw']
+        if self.character.level >= 8:
+            self.ZOMBIES += [
+            'northeast', 'northeast', 'north', 'north', 'north', 'gate', 'north', 'east', 'east', 'southeast', 'east', 'southeast', 'southeast', 'southeast', 'trail', 'woods', 'deeper',
+            'out', 'trail', 'field', 'path', 'northwest', 'northwest', 'west', 'northwest', 'west', 'west', 'south', 'gate', 'south', 'south', 'south', 'sw', 'sw']
         #Malbon farm
         self.ZOMBIES += [
         'southeast', 'southeast', 'south', 'gate', 'stile', 'northwest', 'southeast', 'southwest', 'northeast', 'stile', 'south', 'south',
@@ -406,12 +406,12 @@ class TrackGrindThread(GrindThread):
         #Calmor farmstop
         #'southeast', 'south', 'southeast', 'southeast', 'gate', 'southwest', 'sty', 'yard',
         'northeast', 'northeast']
-        # if self.character.level >= 8:
-        self.ZOMBIES += [
-        #into zombie farm
-        'northeast', 'north', 'northeast', 'north', 'gate', 'compound', 'west', 'barn', 'out', 'northwest', 'run', 'out', 'northeast', 'east', 'south', 'south',
-        #out of zombie farm and into highmarket
-        'path', 'gate', 'south', 'southwest', 'south', 'southwest', 'east', 'east', 'gate',
+        if self.character.level >= 8:
+            self.ZOMBIES += [
+            #into zombie farm
+            'northeast', 'north', 'northeast', 'north', 'gate', 'compound', 'west', 'barn', 'out', 'northwest', 'run', 'out', 'northeast', 'east', 'south', 'south',
+            #out of zombie farm and into highmarket
+            'path', 'gate', 'south', 'southwest', 'south', 'southwest', 'east', 'east', 'gate',
         #from highmarket back to chapel
         # 'south', 'southeast', 'southeast', 'south', 'east', 'gate', 'south', 'south', 'southeast', 'southeast', 'south', 'south',
         # 'south', 'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest', 'north', 'gate', 'east', 'north', 'north',
@@ -532,6 +532,7 @@ class TrackGrindThread(GrindThread):
 
     def setup_tracks(self):
         self.tracks = [
+            Track("Shop and Tip 0",self.SHOP_AND_TIP_PATH,0,20,9),
             Track("Theatre", self.smart_theatre_path, 0, 20, 0),
             Track("Market", self.smart_market_path, 0, 14, 0),
             Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0),
@@ -539,20 +540,20 @@ class TrackGrindThread(GrindThread):
             Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
             Track("Fort", self.smart_fort_path, 9, 20, 0),
             Track("North Bandits", self.smart_northern_bandits_path, 9, 14, -1),
-            Track("Eastern Zombies", self.ZOMBIES, 6, 20, -1),
+            Track("Eastern Zombies", self.ZOMBIES, 6, 20, 0),
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,20,9),
             Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 20, 0),
             Track("Mill Workers", self.smart_mill_path, 7, 20, 0),
             # Track("Muggers", self.MUGGER_PATH, 9, 15, -1),
             # Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
-            Track("Gnolls", self.smart_gnoll_cave, 10, 20, -1),
+            Track("Gnolls", self.smart_gnoll_cave, 10, 20, -1, 0, 10),
             Track("Olmer", self.OLMER, 11, 20, -1),
             Track("Cheryn", self.CHERYN, 11, 20, -1),
             Track("Orcs", self.ORCS, 11, 20, -1),
             Track("Artificers", self.ARTIFICERS, 11, 20, -1),
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.smart_rancher_path, 12, 20, 1),
-            Track("Knights", self.smart_knights_path, 7, 20, 1),
+            Track("Knights", self.smart_knights_path, 7, 20, 1, 6, 18),
             # Track("Cathedral", self.CATHEDRAL, 10, 16, 1), # lay priest damage rolls too high
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 20, -1),
             Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1),
@@ -586,9 +587,9 @@ class TrackGrindThread(GrindThread):
         if self.character.DEAD:
             self.character.DEAD = False
             self.character.DEATHS += 1
-            # magentaprint("Died: Pulling up my bootstraps and starting again", False)
-            magentaprint("Died: stopping bot thread.", False)
-            self.stop()
+            magentaprint("Died: Pulling up my bootstraps and starting again", False)
+            # magentaprint("Died: stopping bot thread.", False)
+            # self.stop()
             return self.LIMBO_TO_CHAPEL[:]
 
         if self.character.NEEDS_TO_SELL:
@@ -624,6 +625,10 @@ class TrackGrindThread(GrindThread):
             else:
                 self.skipped_last_track = True
                 return self.PATH_TO_SKIP_WITH[:]
+
+        if character_aura < track.min_aura or character_aura > track.max_aura:
+            magentaprint("Character too good or evil for this track", False)
+            return self.PATH_TO_SKIP_WITH[:]
 
         #too evil shouldn't fight good (+1)
         #too good shouldn't fight evil (-1)
@@ -720,7 +725,7 @@ class TrackGrindThread(GrindThread):
         return path
 
 class Track():
-    def __init__(self, name, track, min_level, max_level, track_aura):
+    def __init__(self, name, track, min_level, max_level, track_aura, min_aura=0, max_aura=18):
         self.name = name
         # setup the track with a buffer at the end so that last node mobs don't get misattributed to the next track
         track.append("think")
@@ -735,6 +740,8 @@ class Track():
         self.kills = 0
         self.exp = 0
         self.duration = 0
+        self.min_aura = min_aura
+        self.max_aura = max_aura
     
     def start(self):
         self.last_run = int(round(get_timeint().timestamp()))

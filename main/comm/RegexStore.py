@@ -279,14 +279,27 @@ bad_k_target = [
     r"You don't see that here\.",
     r"Attack what\?"
 ]
+
+# You knock the wind out of the mime artist!!
 crit = [
-    "You knock the wind out of " + __three_possible_mob_strings + '!!',
-    "Your attack knocks " + __three_possible_mob_strings + ' off balance!!',
-    __Three_possible_mob_strings + " is caught off guard by your attack!!"
+    r"You knock the wind out of (?:.+?)",
+    r"Your attack knocks (?:.+?) off balance",
+    r"(?:.+?) is caught off guard by your attack"
 ]
-magic_crit = [
-    "Your wind magic buffets " + __three_possible_mob_strings + "\.",
-    "Your earth magic slams hard into the " + __three_possible_mob_strings + "."
+# crit = [
+#     r"You knock the wind out of " + __three_possible_mob_strings + r'!!',
+#     r"Your attack knocks " + __three_possible_mob_strings + r' off balance!!',
+#     __Three_possible_mob_strings + r" is caught off guard by your attack!!"
+# ]
+
+# Your wind magic buffets the usher.
+# You cast a dustgust spell on usher.
+# The spell did 39 damage.
+
+spell_crit = [
+    r"Your wind magic buffets " + __three_possible_mob_strings + r"\.",
+    r"Your earth magic slams hard into " + __three_possible_mob_strings + r"\.",
+    r"Your fire magic explodes into " + __three_possible_mob_strings + r"\."
 ]
 attack_hit = [
     "(?s)You swing with your .+?, hacking (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\.",

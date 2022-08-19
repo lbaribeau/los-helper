@@ -288,7 +288,7 @@ class Command(SimpleCommand):
             # time.sleep(max(0, self.timer - time.time()))
             self.wait_until_ready()
         else:
-            magentaprint("Command: not ready for %.1f seconds." % round(self.timer - time.time(), 1))
+            magentaprint("Command: not ready for %.1f seconds." % round(self.timer - time.time(), 1), False)
             telnetHandler.write("") 
             return
 

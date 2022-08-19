@@ -199,7 +199,7 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'burnt ochre potion',
         # 'spear',
         # 'bolos',
-        'quarter staff', #'heavy crossbow', 
+        # 'quarter staff', #'heavy crossbow', 
         'javelin', #'heavy crossbow', 
         'throwing stars', 'throwing star',
         #'crossbow', 'horn bow', 'long bow' # < 70% missile
@@ -235,7 +235,7 @@ class Inventory(SimpleCommand, ReferencingList):
             R.you_have          ,
             R.no_inventory      ,
             R.you_get           ,
-            R.you_drop          ,
+            # R.you_drop          ,
             R.you_give          ,
             R.you_put_in_bag    ,
             R.not_empty         ,
@@ -323,7 +323,7 @@ class Inventory(SimpleCommand, ReferencingList):
         elif regex in R.you_get:
             self.add(clip_from_a_container(match.group('items')))
         elif regex in R.you_drop:
-            # magentaprint(str(match.group(1)), False)
+            magentaprint("Droppping " + str(match.group(1)), False)
             # Problem: we don't know which item was dropped, so it's hard to keep track of is_usable
             # Maybe we just want to reset everthing after dropping... or the bot needs to manage things,
             # or inventory needs full control of many commands (drop, sell...) ... hmph ... preferring to

@@ -65,7 +65,7 @@ class CharacterClass(object):
             self.lvl1_maxHP = 14
             self.lvl1_maxMP = 5
             self.needs_weapon = False
-            self.mana_tick = 3  # unsure
+            self.mana_tick = 4  # unsure
             self.levelPath = [ ["out", "s", "w", "w", "w", "s", "e", "shop", "backroom", "portal"],
                           ["door", "out", "out", "w", "n", "e", "e", "e", "n", "cha"]]
             abilities = []
