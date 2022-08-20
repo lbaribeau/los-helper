@@ -35,7 +35,7 @@ class TrackGrindThread(GrindThread):
         self.LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
         self.SHOP_AND_TIP_PATH = ["areaid2",
-            "out", "south", "west", 'west', 'west', 'south', 'south', "shop",
+            "out", "north", "south", "south", "west", 'west', 'west', 'south', 'south', "shop",
             "sell_items","out", "southeast", 'east', 'east', 'east', 'east', "northeast", "tip",
             "drop_items","out", 'north', 'north', 'west', 'west', 'west', 'north', "chapel"
         ]
@@ -406,17 +406,17 @@ class TrackGrindThread(GrindThread):
         #Calmor farmstop
         #'southeast', 'south', 'southeast', 'southeast', 'gate', 'southwest', 'sty', 'yard',
         'northeast', 'northeast']
-        if self.character.level >= 8:
-            self.ZOMBIES += [
-            #into zombie farm
-            'northeast', 'north', 'northeast', 'north', 'gate', 'compound', 'west', 'barn', 'out', 'northwest', 'run', 'out', 'northeast', 'east', 'south', 'south',
-            #out of zombie farm and into highmarket
-            'path', 'gate', 'south', 'southwest', 'south', 'southwest', 'east', 'east', 'gate',
+        # if self.character.level >= 8:
+        #     self.ZOMBIES += [
+        #     #into zombie farm
+        #     'northeast', 'north', 'northeast', 'north', 'gate', 'compound', 'west', 'barn', 'out', 'northwest', 'run', 'out', 'northeast', 'east', 'south', 'south',
+        #     #out of zombie farm and into highmarket
+        #     'path', 'gate', 'south', 'southwest', 'south', 'southwest', 'east', 'east', 'gate',
         #from highmarket back to chapel
         # 'south', 'southeast', 'southeast', 'south', 'east', 'gate', 'south', 'south', 'southeast', 'southeast', 'south', 'south',
         # 'south', 'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest', 'north', 'gate', 'east', 'north', 'north',
         # 'north', 'west', 'north', 'chapel'
-        ]
+        # ]
         #Farmer's gate / Dragon Road
 
         # self.BANDIT_CAMP = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south',

@@ -1,17 +1,20 @@
 Werp monk (lvl 17, no habit)
 Derp monk (lvl 14, masters habit)
 Drerp barbarian (lvl 10)
-Qerp mage (lvl 14)
+Qerp mage (lvl 10)
 Serp Alchemist lvl 10
 Cerp cleric lvl 12 (3 12 3 18 18)
 Twerp cleric lvl 6
-Ferp mage (beetle cave)
+Ferp fighter 18 3 4 18 11
 Rerp cleric gnome lvl 7
 Ierp thief dwarf lvl 6
 Trerp druid elf lvl 9 3 12 3 18 18
 Oerp dark knight dwarf 14 15 10 7 8 (15 15 10 7 7)
-Aerp assassin 18 6 4 16 10
+Aerp assassin dwarf 16 16 3 16 3
+Kerp dark knight dwarf 16 16 3 16 3
+Herp Thief dwarf 16 16 3 16 3
 Yerp monk 18 3 4 18 11
+Terp thief 18 3 4 18 11
 
 Dwarp thief (swamp troll)
 Gerp mage (w/ blis + show)
