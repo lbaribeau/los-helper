@@ -417,6 +417,9 @@ class TrackGrindThread(GrindThread):
         # 'south', 'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest', 'north', 'gate', 'east', 'north', 'north',
         # 'north', 'west', 'north', 'chapel'
         # ]
+        self.ZOMBIES += [
+            'east', 'east', 'gate'
+        ]
         #Farmer's gate / Dragon Road
 
         # self.BANDIT_CAMP = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south',
@@ -546,14 +549,14 @@ class TrackGrindThread(GrindThread):
             Track("Mill Workers", self.smart_mill_path, 7, 20, 0),
             # Track("Muggers", self.MUGGER_PATH, 9, 15, -1),
             # Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
-            Track("Gnolls", self.smart_gnoll_cave, 10, 20, -1, 0, 10),
+            Track("Gnolls", self.smart_gnoll_cave, 10, 20, -1, 0, 9),
             Track("Olmer", self.OLMER, 11, 20, -1),
             Track("Cheryn", self.CHERYN, 11, 20, -1),
             Track("Orcs", self.ORCS, 11, 20, -1),
             Track("Artificers", self.ARTIFICERS, 11, 20, -1),
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.smart_rancher_path, 12, 20, 1),
-            Track("Knights", self.smart_knights_path, 7, 20, 1, 6, 18),
+            Track("Knights", self.smart_knights_path, 7, 20, 1, 7, 18),
             # Track("Cathedral", self.CATHEDRAL, 10, 16, 1), # lay priest damage rolls too high
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 20, -1),
             Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1),
