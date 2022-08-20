@@ -62,6 +62,8 @@ class MainhandWeaponBot(MiniBot):
         self.character = character
         self.inventory = character.inventory
         self.command_handler = command_handler
+        self.weapon_check_cooldown = 10
+        self.last_weapon_check_time = None
         # self.simple_weapon_bot = simple_weapon_bot
 
         self.actions = {
@@ -154,7 +156,25 @@ class MainhandWeaponBot(MiniBot):
     def needs_smithy(self):
         return self.has_broken_weapon_in_inventory() and not self.has_unbroken_weapon_in_inventory()
 
+    def should_check_weapons(self):
+        now = get_timeint()
+        should_do_thing = False
+
+        if not self.last_weapon_check_time:
+            self.last_weapon_check_time = now
+            should_do_thing = True
+        else:
+            seconds_since_last_check = (now - self.last_weapon_check_time).total_seconds()
+            if seconds_since_last_check > self.weapon_check_cooldown:
+                self.last_weapon_check_time = now
+                should_do_thing = True
+        return should_do_thing
+
     def check_weapons(self):
+        if not self.should_check_weapons():
+            # magentaprint("Already checked weapons recently in the last " + str(self.weapon_check_cooldown) + " seconds.", False)
+            return 0
+        
         self.get_possible_weapons()
         self.look_at_each_possible_weapon()
         if self.possible_weapons[0].item.name not in self.inventory.keep_list:
