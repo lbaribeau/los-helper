@@ -7,6 +7,7 @@ from command.Inventory import *
 from Exceptions import *
 from db.MudMob import *
 from Aura import Aura
+from mini_bots.potion_bot import PotionBot
 
 class SmartGrindThread(TrackGrindThread):
     smart_target_list = []
@@ -25,6 +26,7 @@ class SmartGrindThread(TrackGrindThread):
 
         self.track_start_time = 0
         self.track_end_time = 0
+        # self.potion_bot = PotionBot(character, command_handler, mud_map)
 
         # if self.character.AREA_ID != 2:
         #     self.direction_list = self.get_heal_path()
@@ -82,6 +84,7 @@ class SmartGrindThread(TrackGrindThread):
         # if not self.on_heal_path and not self.skipped_last_track:
         self.check_weapons()
         self.check_armour()
+        # self.potion_bot.run()
 
         if self.has_buff_ability():
             if self.use_buff_ability():

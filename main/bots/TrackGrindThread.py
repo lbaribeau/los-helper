@@ -635,8 +635,8 @@ class TrackGrindThread(GrindThread):
 
         #too evil shouldn't fight good (+1)
         #too good shouldn't fight evil (-1)
-        if (not aura_acceptable and track.track_aura == 0) or \
-           (character_aura < self.character.preferred_aura and track.track_aura == 1) or \
+        # if (not aura_acceptable and track.track_aura == 0) or \
+        if (character_aura < self.character.preferred_aura and track.track_aura == 1) or \
            (character_aura > self.character.preferred_aura and track.track_aura == -1):
             magentaprint("{0} isn't acceptable to us due to aura".format(track.name), False)
             self.skipped_last_track = True
