@@ -9,6 +9,13 @@ los-helper is a python script meant to automate certain aspects of mudding.
 * Peewee - pip install peewee
 * NetworkX - pip install networkx
 
+## Reporting server
+* sudo apt install nodejs npm
+* From the reporting_website folder
+    * npm install
+    * npm run serve
+* Run the bot with -headless to write api files
+
 ## Running the helper
 
 * Create a new account on the mud then logout
@@ -16,6 +23,7 @@ los-helper is a python script meant to automate certain aspects of mudding.
 
 ## Running on a server
 
+* Deprecated
 * Starting the report host from the reporting_website directory:
 python
 `sudo python -m SimpleHTTPServer 80`
