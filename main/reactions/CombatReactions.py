@@ -54,7 +54,7 @@ class CombatReactions(object):
         self.hits_received = 0
         self.hits_evaded = 0
         self.damage_taken = 0
-        self.attacks = []
+        self.attacks = {'p': {}, 's': {}}
         self.in_combat = False
 
         self.regex_cart = [RegexStore.attack_hit, RegexStore.attack_miss, RegexStore.mob_attacked, RegexStore.cast_failure, RegexStore.mob_defeated,
@@ -70,7 +70,7 @@ class CombatReactions(object):
             dmg = 0
             try:
                 dmg = int(M_obj.group('d'))
-                self.attacks.append(Attack("p", "n", 1, dmg).toJson())
+                self.add_to_attacks(Attack("p", "n", 1, dmg))
                 self.damage_dealt += dmg
                 self.highest_damage = max(self.highest_damage, dmg)
                 self.lowest_damage = min(self.lowest_damage, dmg)
@@ -103,7 +103,7 @@ class CombatReactions(object):
             self.in_combat = False
         elif regex in RegexStore.attack_miss:
             self.hits_missed += 1
-            self.attacks.append(Attack("p", "n", 0, 0).toJson())
+            # self.add_to_attacks(Attack("p", "n", 0, 0))
         elif regex in RegexStore.spell_crit:
             self.spells_crit += 1
         elif regex in RegexStore.crit:
@@ -121,18 +121,24 @@ class CombatReactions(object):
             self.in_combat = True
             self.spells_cast += 1
             self.spell_damage_dealt += dmg
-            self.attacks.append(Attack("s", "n", 1, dmg).toJson())
+            self.add_to_attacks(Attack("s", "n", 1, dmg))
             self.highest_damage = max(self.highest_damage, int(M_obj.group('d')))
             self.lowest_damage = min(self.lowest_damage, int(M_obj.group('d')))
         elif regex in RegexStore.cast_failure:
             self.in_combat = True
-            self.attacks.append(Attack("s", "n", 0, 0).toJson())
+            # self.add_to_attacks(Attack("s", "n", 0, 0))
             self.spells_cast += 1
             self.spells_failed += 1
 
         if self.character.is_headless and combat_state != self.in_combat:
             magentaprint("Reporting", False)
             output_api_feed('report', self.report())
+
+    def add_to_attacks(self, attack):
+        if str(attack.dmg) in self.attacks[attack.name]:
+            self.attacks[attack.name][str(attack.dmg)] += 1
+        else:
+            self.attacks[attack.name][str(attack.dmg)] = 1
 
     def report(self, no_print=True):
         exp = self.character.TOTAL_EXPERIENCE
