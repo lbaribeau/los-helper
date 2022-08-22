@@ -22,6 +22,13 @@ los-helper is a python script meant to automate certain aspects of mudding.
     * nohup npm run serve &
 * Run the bot with -headless to write api files
 
+### Old ways
+* Starting the report host from the reporting_website directory:
+python
+`sudo python -m SimpleHTTPServer 80`
+python3
+`sudo python3 -m http.server 8080`
+
 ## Startup Parameters
 * -grind: starts SmartGrind immediately after the map loads
 * -fast: sets mana_to_wait and magic requirements to 0

@@ -161,21 +161,21 @@ class GrindThread(BotThread):
             # if using a thief or assassin then hide, check if hidden
             # then have smart combat backstab
 
-            # if self.is_character_class('Thi') or self.is_character_class('Ass'):
-            #     hide_attempt = 0
-            #     first = True
-            #     while not self.character.HIDDEN and hide_attempt < 3:
-            #         if self.character.mobs.chase != '' or \
-            #          self.character.mobs.attacking != []:
-            #          break
+            if self.is_character_class('Thi') or self.is_character_class('Ass'):
+                hide_attempt = 0
+                first = True
+                while not self.character.HIDDEN and hide_attempt < 2:
+                    if self.character.mobs.chase != '' or \
+                     self.character.mobs.attacking != []:
+                     break
 
-            #         if not first and not self.character.HIDDEN:
-            #             self.sleep(6)
-            #         self.pre_combat_actions()
-            #         hide_attempt += 1
-            #         first = False
-            #         if self.character.HIDDEN:
-            #             time.sleep(3)
+                    if not first and not self.character.HIDDEN:
+                        self.sleep(6)
+                    self.pre_combat_actions()
+                    hide_attempt += 1
+                    first = False
+                    if self.character.HIDDEN:
+                        time.sleep(3)
 
             self.engage_monster(new_target)
             self.engage_mobs_who_joined_in()
