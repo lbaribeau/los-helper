@@ -1,0 +1,39 @@
+.app {
+  width: 100%;
+}
+
+.wrapper {
+  max-width: 1200px;
+  margin: 15px;
+}
+.wrapper .container .section {
+  margin-bottom: 10px;
+}
+.wrapper .container .section:last-of-type {
+  margin-bottom: 0;
+}
+.dark_mode {
+  background: #010101;
+  color: #c7c7c7;
+  margin: -15px 0;
+  padding: 15px 0;
+}
+
+.dark_mode .box {
+  color: #00c5c7;
+  background-color: #000;
+  box-shadow: 0 0.5em 1em -0.125em rgb(240 240 240 / 10%), 0 0 0 1px rgb(240 240 240 / 2%);
+}
+
+.dark_mode strong {
+  color: #00c200;
+}
+
+.dark_mode .table {
+  background-color: #010101;
+  color: #c7c7c7;
+}
+
+.dark_mode .table th {
+  color: #00c5c7;
+}
