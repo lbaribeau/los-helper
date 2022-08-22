@@ -8,36 +8,19 @@ los-helper is a python script meant to automate certain aspects of mudding.
 * sudo apt install python3-pip
 * Peewee - pip install peewee
 * NetworkX - pip install networkx
-
-## Reporting server
-* sudo apt install nodejs npm
-* From the reporting_website folder
-    * npm install
-    * npm run serve
-* Run the bot with -headless to write api files
-
 ## Running the helper
 
 * Create a new account on the mud then logout
 * Open a prompt in the los-helper/main directory and run "py los-helper.py Username Password"
 
-## Running on a server
-
-* Deprecated
-* Starting the report host from the reporting_website directory:
-python
-`sudo python -m SimpleHTTPServer 80`
-python3
-`sudo python3 -m http.server 8080`
-
-~`export FLASK_APP=server.py`~
-~`python -m flask run`~
-* Starting the bot in headless (reporting mode):
-`nohup python3.5 los_helper.py user pass -grind -fast -headless &`
-* Copy the reporting website files to the root folder `~/`
-`cp ~/los-helper/reporting_website/* ~/`
-
-^ then you can hit the server and see your character's stats and stuff :)
+## Setup & Running Reporting server
+* install node and npm
+    * sudo apt install nodejs npm
+* From the reporting_website folder
+    * npm install
+    * npm run serve
+    * nohup npm run serve &
+* Run the bot with -headless to write api files
 
 ## Startup Parameters
 * -grind: starts SmartGrind immediately after the map loads

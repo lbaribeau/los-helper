@@ -221,7 +221,7 @@ return {
     },
     attackSeries: function() {
       let output = [{
-          name: 'phys',
+          name: 'hits',
           data: [0]
         }]
       let physHits = []
@@ -234,7 +234,7 @@ return {
         }
 
         output = [{
-          name: 'phys',
+          name: 'hits',
           data: physHits
         }]
       }
@@ -270,7 +270,7 @@ return {
         }
 
         output = [{
-          name: 'phys',
+          name: 'hits',
           data: physHits
         }]
       }
