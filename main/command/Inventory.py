@@ -92,7 +92,7 @@ def parse_item_names(item_string_list):
 
                 if item.startswith("sets of"):
                     item = item.replace("sets of ", "")
-                elif item.endswith('ses') or item.endswith('xes'):
+                elif (item.endswith('ses') or item.endswith('xes')) and not item.endswith('axes'):
                     item = item[:len(item)-2]
                 elif item.endswith('s'):
                     item = item[:len(item)-1]
