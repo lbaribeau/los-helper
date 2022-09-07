@@ -8,34 +8,9 @@ import misc_functions
 class Character(object):
     """ This is a class that holds a bunch of data,
     mostly obtained by the MUD read thread."""
-    @property
-    def hp(self):
-        return self.prompt.hp
-    @property
-    def mp(self):
-        return self.prompt.mp
-    @property
-    def maxHP(self):
-        return self.info.maxHP
-    @property
-    def maxMP(self):
-        return self.info.maxMP
-    @property
-    def HEALTH(self):
-        return self.hp
-    @property
-    def MANA(self):
-        return self.mp
-    def hp_maxed(self):
-        return self.hp == self.info.maxHP
-    def mp_maxed(self):
-        return self.mp == self.info.maxMP
 
     def __init__(self):
         self.mobs = Mobs()
-
-        self.race         = None
-        self.title        = None
         self._class       = None
         self.class_string = None
         self.level        = None
@@ -56,9 +31,13 @@ class Character(object):
             "(?:.+?) should be really hard to kill\.",  #+3 levels from this character
             "(?:.+?) could kill you with a needle\."    #+4 or more levels from this character
         ]
-        self.WEAPON_TYPES = ["Sharp", "Thrust", "Blunt", "Pole", "Missile" ]
-        self.ARMOR_SLOTS = []
-        self.ARMOR_SIZE = "m" # todo: set this in info or whois
+        self.WEAPON_TYPES = [
+            "Sharp", 
+            "Thrust", 
+            "Blunt", 
+            "Pole", 
+            "Missile"
+        ]
         # self.equipment  # We have an Equipment object for this
         # WEAPON_SLOTS = []  use character._class.weapon_slots
 
@@ -100,22 +79,22 @@ class Character(object):
         self.GO_NO_EXIT      = False
         self.GO_TIMEOUT      = False
 
-        self.CONFUSED = False
-        self.CAN_SEE = True
+        self.CONFUSED         = False
+        self.CAN_SEE          = True
         self.ACTIVELY_MAPPING = False
         self.ACTIVELY_BOTTING = False
 
-        self.MUD_AREA = None
-        self.AREA_TITLE = ""
-        self.EXIT_LIST = []
-        self.MONSTER_LIST = []
+        self.MUD_AREA       = None
+        self.AREA_TITLE     = ""
+        self.EXIT_LIST      = []
+        self.MONSTER_LIST   = []
         self.MOBS_JOINED_IN = []
         self.MOBS_ATTACKING = []
 
         self.TRYING_TO_MOVE = False
-        self.EXIT_REGEX="self.character.EXIT_REGEX"
-        self.AREA_ID = None
+        self.AREA_ID        = None
         self.LAST_DIRECTION = None
+        self.EXIT_REGEX = "self.character.EXIT_REGEX"
 
         self.START_TIME = time.time()
 
@@ -179,13 +158,14 @@ class Character(object):
         self.spell_type = misc_functions.key_with_max_val(self.spell_proficiencies)
         self.spell_proficiency = self.spell_proficiencies[self.spell_type]
 
-        if self.level >= 9:
-            # Isn't class important to this
-            self.armor_level = 3  # steel
-        elif self.level >= 4:
-            self.armor_level = 2  # chain
-        else:
-            self.armor_level = 1  # ring mail wearable immediately
+        # if self.level >= 9:
+        #     self.armor_level = 3  # steel
+        # elif self.level >= 4:
+        #     self.armor_level = 2  # chain
+        # else:
+        #     self.armor_level = 1  # ring mail wearable immediately
+        #     # Mages can't wear ring mail
+        #     # So it's more of a class thing than a level thing
 
         self.weapon_to_buy = self.pick_weapon()
 
@@ -362,6 +342,7 @@ class Character(object):
         # Maybe try master miners then mine managers
         # Mine track looks tougher than others
         # hero?
+        # baron arrives by minstrel
     ]  # wounded knight -2 difficulty
     # Rilmenson has good damage
     # 'gnoll sub-chief', 'Gnardu'
@@ -629,6 +610,29 @@ class Character(object):
         # if self.__class__.tick_times:
            #  self.__class__.tick_times.append(time.time() - self.__class__)
        # else:
+
+    @property
+    def hp(self):
+        return self.prompt.hp
+    @property
+    def mp(self):
+        return self.prompt.mp
+    @property
+    def maxHP(self):
+        return self.info.maxHP
+    @property
+    def maxMP(self):
+        return self.info.maxMP
+    @property
+    def HEALTH(self):
+        return self.hp
+    @property
+    def MANA(self):
+        return self.mp
+    def hp_maxed(self):
+        return self.hp == self.info.maxHP
+    def mp_maxed(self):
+        return self.mp == self.info.maxMP
 
     # platinum crucifix
     # Farmer Woldis

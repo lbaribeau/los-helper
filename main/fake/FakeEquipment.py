@@ -25,10 +25,12 @@ class FakeEquipment(object):
         )
         self.armour = self.armour1
 
+
     def lself(self):
         return "You see " + self.character_name + " the Human Vicar.\n\r" "He is in general good health.\n\r" + self.output_string()
 
     def output_string(self):
+        return "You aren't wearing anything.\n\r[89 H 27 M]: "
         eq = self.armour
         if self.weapon:
             eq += "Wielded:   " + self.weapon + "\n\r"

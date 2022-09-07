@@ -170,7 +170,7 @@ class TrackGrindThread(GrindThread):
             'se','field','road','field 2','road',
             'se','se','field','road','se',
             'field','stile','stile','road','se',
-            'se','field','road',
+            # 'se','field','road', # Comment out - I think this part of the path is wrong
             'se','station',
             'room','hall', # nothing
             'cellar','up','out','nw','nw','nw','nw','nw','nw','w','w','w','gate',
@@ -364,13 +364,29 @@ class TrackGrindThread(GrindThread):
         elif self.__nextpath == 19:
             return self.MILL_WORKERS[:]
         elif self.__nextpath == 21:
-            return self.BANDITS1
+            if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
+                return self.BANDITS1
+            else:
+                self.__nextpath = self.__nextpath + 1 # So that we don't go selling
+                return self.PATH_TO_SKIP_WITH[:]
         elif self.__nextpath == 23:
-            return self.BANDITS2
+            if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
+                return self.BANDITS2
+            else:
+                self.__nextpath = self.__nextpath + 1
+                return self.PATH_TO_SKIP_WITH[:]
         elif self.__nextpath == 25:
-            return self.BANDITS3
+            if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
+                return self.BANDITS3
+            else:
+                self.__nextpath = self.__nextpath + 1
+                return self.PATH_TO_SKIP_WITH[:]
         elif self.__nextpath == 27:
-            return self.BANDITS4
+            if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
+                return self.BANDITS4
+            else:
+                self.__nextpath = self.__nextpath + 1
+                return self.PATH_TO_SKIP_WITH[:]
         elif self.__nextpath == 29:
             return self.RANCHER_SENTRY[:]
         # elif self.__nextpath == 23:
@@ -508,7 +524,6 @@ class TrackGrindThread(GrindThread):
         # elif self.__nextpath == 53:
         #     return self.KNIGHTS[:]
         # Human paladin likes steel collars (oremaster) steel armour (Rimark) steel mask (spiv) rings (bandits, sawmill, minstrel)
-        # Corien
 
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.__nextpath))

@@ -24,13 +24,23 @@ class CharacterClass(object):
         # self.buff_skills = []
         # class_string = character.class_string
 
-        self.ARMOR_SLOTS = [ "Body", "Arms", "Legs", "Neck", "Hands", "Head",
-                             "Feet", "Finger", "Shield"
+        self.ARMOR_SLOTS = [
+            "Body", 
+            "Arms", 
+            "Legs", 
+            "Neck", 
+            "Hands", 
+            "Head",
+            "Feet", 
+            "Finger", 
+            "Shield"
+        ]
+        self.weapon_slots = [
+            "Wielded"
         ]
 
-        self.weapon_slots = ["Wielded"]
-
         self.mana_tick = 2
+        # NOTE: 18 Int gives you +1 mana tick, not sure of other thresholds
         abilities = []
 
         if class_string == "Ass":
@@ -138,6 +148,8 @@ class CharacterClass(object):
 
         for h in self.heal_skills:
             h.set_level(level)
+        # for s in self.slow_combat_skills:
+        #     s.kill = 
 
         # self.abilities.append(Search(telnetHandler))
         # self.abilities = [a for a in self.abilities if level >= a.level]
@@ -148,7 +160,6 @@ class CharacterClass(object):
         # magentaprint("CharacterClass abilities before dict comprehension: " + str(self.abilities))
         # self.abilities = {a.command: a for a in self.abilities if level >= a.level}
         magentaprint("CharacterClass final abilities: " + str(self.abilities))
-
 
 # OLD IDEAS
 

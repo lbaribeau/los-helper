@@ -31,3 +31,12 @@ class Repair(Command):
         if self.failure:
             self.inventory.remove_by_ref(self._sent_target)
         super().notify(regex, match)
+
+        
+# [96 H 42 M]: repair Arrum's
+# 20:23:38.91   | "repair Arrum's"
+# You don't have that.
+# [96 H 42 M]: 20:23:39.08   | <command.repair.Repair object at 0x000001C66C604910> clearing timer... wf is Falseregex is You don't ...
+# repair Arrum
+# 20:23:44.42   | "repair Arrum"
+# The smithy cannot repair that.

@@ -122,3 +122,6 @@ class SellBot(MiniBot):
                 break
             else:
                 command_object.execute_and_wait(unique_word)
+
+# TODO: write bulk drop that takes a full item name ie. "steel bottle"
+# (Right now it only takes one word)

@@ -53,8 +53,9 @@ class ShoppingBot(MiniBot):
                     # self.command_handler.use.execute_and_wait(self.char.inventory.get_reference('steel bottle'))
                     # self.command_handler.use.command = 'use'
                     self.command_handler.drink.execute_and_wait(self.char.inventory.get_reference('steel bottle'))
-                self.sell_bot.bulk_drop('steel bottle')
-                self.command_handler.buy.execute_and_wait(ref) # Eh what if ref changed (steel sleeves???)
+                self.sell_bot.bulk_drop('bottle') # Hopefully no valuable "bottles"
+                # Otherwise, write bulk drop that takes full item name
+                self.command_handler.buy.execute_and_wait(ref) # ref is a reference to a shop item so it doesn't depend on inventory
                 # We might have too many weapons, that can happen right now
                 self.command_handler.telnetHandler.write('get all')
                 if self.command_handler.buy.success:

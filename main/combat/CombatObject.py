@@ -35,13 +35,14 @@ class CombatObject(ThreadingMixin):
     def notify(self, regex, M_obj):
         self.result = regex
         if self.end_combat:
-            # magentaprint(str(self) + " ending combat.")
+            magentaprint("Combat object "+str(self.__class__.__name__) + " ending combat.")
             # Need to add check to make sure it was the mob that fled.
             self.stop()
 
     @property
     def end_combat(self):
-        return self.result in R.mob_died or self.result in R.mob_fled or self.result in R.you_died
+        # return self.result in R.mob_died or self.result in R.mob_fled or self.result in R.you_died
+        return self.result in R.mob_died + R.mob_fled + R.you_died
         #return self.result in self.end_combat_regexes
     @property
     def mob_died(self):

@@ -269,6 +269,8 @@ class CommandHandler(object):
             self.user_kkc(user_input.partition(' ')[2].strip())
         elif user_input.startswith('kk2 '):
             self.user_kk2(user_input.partition(' ')[2].strip())
+        elif user_input.startswith('kk3 '):
+            self.user_kk3(user_input.partition(' ')[2].strip())
         elif re.match('^(dro?|drop) ', user_input):
             # self.user_dr(user_input)
             self.drop.execute(user_input.split(" ", maxsplit=1)[1]) # This approach keeps the inventory correct

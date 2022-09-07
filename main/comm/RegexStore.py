@@ -371,12 +371,12 @@ spells = [(
     # r"(?P<white>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
     r"\|(?P<white>.+?)\|\s+"
     r"(?:\|(?P<white2>.+?)\|\s+)?"
-    # r"(?:\|(?P<white3>.+?)\|\s+)?"
+    r"(?:\|(?P<white3>.+?)\|\s+)?"
     r"/======================================= Miscellaneous ==================\\\s+"
     # r"(?P<misc>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
     r"\|(?P<misc>.+?)\|\s+"
     r"(?:\|(?P<misc2>.+?)\|\s+)?"
-    # r"(?:\|(?P<misc3>.+?)\|\s+)?"
+    r"(?:\|(?P<misc3>.+?)\|\s+)?"
     r"/===================================================== Running Spells ===\\\s+"
     # r"(?P<buffs>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
     r"\|(?P<buffs>.+?)\|\s+"
@@ -631,6 +631,7 @@ no_room        = [r"There is no room to wear that\!"]
 in_combat      = [r"You are fighting\! you can't do that now\!"]
 doesnt_fit     = [__item + r" doesn't fit you\."]
 class_prevents = [r'Your class prevents you from using '+__items+r'\.']
+not_yet        = [r'You are not yet adept enough to use this\!']
 no_gold        = [r"You don't have enough gold\."]
 # get_ring     = [r"(?s)You get .+? an? .+? ring((,.+?\.)|(\.))"]  # problem here.
 get_ring       = [r"(?s)You get " + __items + r"?an? [a-z]+ ring(([a-zA-Z0-1-',\s]+\.)|(\.))"]

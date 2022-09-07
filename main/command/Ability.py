@@ -42,19 +42,18 @@ class Ability(ThreadingMixin2, Command):
 # class BuffAbility(AbilityWithFailure):
 class BuffAbility(Ability):
     active = False
-
     # @property 
     # def already_buffed_regex(self):
     #     raise NotImplementedError()
     # @property 
     # def wear_off_regex(self):
     #     raise NotImplementedError() 
-
     def notify(self, regex, M_obj):
         if regex in self.success_regexes:
             self.active = True
         elif regex is self.wear_off_regex:
             # self.__class__.timer = time.time() + self.__class__.cooldown_after_success - self.lasts
+            self.timer = time.time() + self.cooldown_after_success - self.lasts
             self.active = False
         # elif regex is self.already_buffed_regex:
         #     if self.up():
@@ -94,7 +93,7 @@ class SlowCombatAbility(CombatAbility):
     #     super().notify(r, m)
 
     def execute(self, target=None):
-        Kill.start_timer()
+        Kill.start_timer() # TODO: ABILITIES NEED the kill object for this
         super().execute(target)
         # self.character.ATTACK_CLK = time()
         # Hmmm.... do abilities need to be constructed with a cooldowns object?

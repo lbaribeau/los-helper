@@ -245,7 +245,7 @@ class ArmourBot(MiniBot):
         #     db_item = Item.get_item_by_name(a)
         #     if db_item and db_item.itemtype and db_item.itemtype.data:
         #         wear_location = db_item.itemtype.data
-        #         desired_item = self.pick_areastoreitem(wear_location, self.char.class_string, self.char.race, self.char.level)
+        #         desired_item = self.pick_areastoreitem(wear_location, self.char.class_string, self.char.info.race, self.char.info.level)
         #         if desired_item and desired_item.area:
         #             items.append(desired_item)
         #         else:
@@ -267,13 +267,13 @@ class ArmourBot(MiniBot):
                 continue
             else:
                 # Search db for a piece given size, class, slot
-                # size = self.determine_size(self.char.race)
+                # size = self.determine_size(self.char.info.race)
                 # level = self.determine_armour_level(self.char.class_string)
-                # size = ArmourSizeDeterminator().determine(self.char.race)
+                # size = ArmourSizeDeterminator().determine(self.char.info.race)
                 # level = ArmourLevelDeterminator().determine(self.char.class_string)
-                size = self.get_size(self.char.race)
-                level = self.get_armour_level(self.char.level)  # checks class and level (low level paladin can't wear steel yet)
-                #magentaprint("determine_shopping_list() size " + size + ", slot: " + str(slot) + ", level: " + str(level))
+                size = self.get_size(self.char.info.race)
+                level = self.get_armour_level(self.char.info.level)  # checks class and level (low level paladin can't wear steel yet)
+                # magentaprint("armour_bot.determine_shopping_list() size: " + size + ", slot: " + str(slot) + ", level: " + str(level))
                 if slot == 'wielded' or slot == 'seconded':
                     continue
                 if slot == 'face' or slot == 'holding':
@@ -299,13 +299,15 @@ class ArmourBot(MiniBot):
                 #dir(items)
                 # magentaprint("ArmourBot determine_shopping_list() size {0}, slot {1}, level {2}, found {3}".format(size, slot, level, str(items)))
                 for item in items:
-                    magentaprint("Won't print if there's no valid item: " + str(item))
+                    # magentaprint("Won't print if there's no valid item: " + str(item))
                     # Don't bother sorting for now
                     desired_items.append(item)
                     break
 
         #magentaprint("Armour bot shopping list " + str(desired_items))
-        magentaprint("Armour bot shopping list " + str([asi.item.name for asi in desired_items]))
+        # magentaprint("Armour bot shopping list: \n" + str([asi.item.name for asi in desired_items]))
+        magentaprint("ARMOUR BOT SHOPPING LIST: \n" + "\n".join("    {} {}".format(asi.item, asi.item.name) for asi in desired_items))
+        magentaprint("Size: {}; Level: {}".format(self.get_size(self.char.info.race), self.get_armour_level(self.char.info.level)))
         return desired_items
         # TODO: One issue: shields aren't sized - so queries that use any size need to return the shield, whose type may be
         # the generic armour type.   SELECT "t1"."id", "t1"."area_id", "t1"."item_id" FROM "areastoreitem" AS t1 INNER JOIN "item"
@@ -320,27 +322,26 @@ class ArmourBot(MiniBot):
         if cls == 'Mon':
             return
 
-        armour_level = self.get_armour_level(character_lvl)
-        size = self.get_size(race)
-
-        # Select an armour comparing data to slot with the given armour level
-        items = AreaStoreItem.get_by_item_type_and_level_max(size, slot, armour_level)
+        items = AreaStoreItem.get_by_item_type_and_level_max(
+            self.get_size(race), 
+            slot, 
+            self.get_armour_level(character_lvl)
+        )
 
         if items:
             items.sort(key=lambda item: item.level, reverse=True)
             return items[0]
 
     def get_armour_level(self, character_lvl):
-        if character_lvl > 9:
-            if self.steel():
-                return 3
-            elif self.chain():
-                return 2
+        # cloth, ring mail, chain, plate, steel (1-5)
+        if self.steel():
+            if character_lvl > 9:
+                return 5
             else:
-                return 1
-        elif character_lvl > 4:
-            if self.clothie():
-                return 1
+                return 4
+        elif self.chain():
+            if character_lvl > 9:
+                return 3
             else:
                 return 2
         else:
@@ -349,26 +350,23 @@ class ArmourBot(MiniBot):
     def get_size(self, race):
         if race.lower() in ['hobbit','halfling','half-elf','gnome','dark-elf','dwarf']:
             return 's-armor'
-        elif race.lower() in ['human', 'half-orc','elf']:
+        elif race.lower() in ['human','half-orc','elf']:
             return 'm-armor'
         elif race.lower() in ['half-giant']:
             return 'l-armor'
         else:
             # raise Exception("ArmourBot doesn't know what size of armour to get.")
+            magentaprint("WARNING: ArmourBot doesn't know what size of armour to get")
             return None
 
     def no_armour(self):
         return self.char.class_string == 'Mon'
-
     def clothie(self):
-        return self.char.class_string in ["Mag", 'Dru', 'Alc', 'Thi']
-
+        return self.char.class_string in ["Mag"]
     # def leather(self):
     #     return self.char.class_string in ['Dru', 'Alc', 'Thi']
-
     def chain(self):
-        return self.char.class_string in ['Ran', 'Cle', 'Ass']
-
+        return self.char.class_string in ['Alc', 'Thi', 'Dru', 'Ran', 'Cle', 'Ass']
     def steel(self):
         #magentaprint("ArmourBot.steel() class string is: " + str(self.char.class_string))
         return self.char.class_string in ['Pal', 'Dk', 'Bar', 'Fig', 'Brd']

@@ -57,20 +57,21 @@ def parse_item_names(item_string_list):
             item.endswith(' rare coins') or 
             item.endswith(' white chips') or
             item.lower() in [
-                'gold coins', 
-                'platinum coins', 
+                'gold coins', # Maybe one gold coin comes in as simply "gold coins"
+                'platinum coins', # auctioneers 
                 'silver coins', 
                 'rare coin',  # Boris Ironfounder
                 'white chip', # Floor Manager
                 'black chip', # Floor Manager
-                'silver chest', 
-                'small jade fragment', 
+                'silver chest', # Bosses (Hef, kobold chieftain maybe)
+                'small jade fragment', # Manic Soothsayer
                 'amethyst gem']):
             continue
         #if item.endswith(" platinum coins"):  
         # (Misses "The auctioneer was carrying: 13 gold coins, a gavel, platinum coins.")
         # One platinum coin comes in as "platinum coins" 
         # (without a quantifier, so the preceding space got stripped).
+        # It's "1 gold coins" so maybe not all the cases are necessary (kobold sentry)
 
         if not any(item.startswith(s) for s in singles + numbers):
             return_list.append(item)  # ie 'maul hammer'
@@ -81,16 +82,25 @@ def parse_item_names(item_string_list):
             continue
 
         for n in range(0, len(numbers)):
+            # Maybe "enum" ('n' and 'number' are both used)
             number = numbers[n]
             if item.startswith(number):
                 item = item[len(number):]
 
-                if item.startswith("sets of"):
+                if item.startswith("sets of "):
                     item = item.replace("sets of ", "")
-                elif item.endswith('ses') or item.endswith('xes'):
+
+                if (item.endswith('ses') or item.endswith('xes')) and not item.endswith('axes') :
+                    # sets of title deeds->title deeds (hence "elif")
+                    # I think sets of steel sleeves -> some steel sleeves (or leggings)
+                    # Any word that ends in x???
+                    # boxes->box; crucifixes->crucifix
                     item = item[:len(item)-2]
                 elif item.endswith('s'):
+                    # Axes->axe (needs to be excluded from previous case and keep the 'e')
+                    # maul hammers-> maul hammer (normal plural)
                     item = item[:len(item)-1]
+                    # Dissatisfying that axes are different from boxes and crucifixes
 
                 return_list.extend([item]*(n+2))
 
@@ -191,7 +201,7 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'spear',
         # 'bolos',
         'javelin', #'heavy crossbow', 
-        'throwing stars', 'throwing star',
+        #'throwing stars', 'throwing star',
         #'crossbow', 'horn bow', 'long bow' # < 70% missile
         # 'broad sword',
         'adamantine axe', 'rapier', #'adamantine sword', # Master of Ceremonies
