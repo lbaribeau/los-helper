@@ -5,7 +5,7 @@ from Aura import Aura
 from misc_functions import magentaprint
 
 class Info(BotReactionWithFlag):
-    header = "     (\S+) the (.+?), a (.+?) of the (1st|2nd|3rd|\d\d?th) level    "
+    header = "     (\S+) the (.+?), an? (.+?) of the (1st|2nd|3rd|\d\d?th) level    "
     your_preferred = "Your preferred alignment is (.+?)     "
 
     first = (
@@ -49,8 +49,10 @@ class Info(BotReactionWithFlag):
 
     def notify(self, regex, M_obj):
         # pass in character, or just edit self?
+        magentaprint("Info notify {}: ".format(M_obj.re))
         if regex is self.header:
             self.name = M_obj.group(1)
+            magentaprint("Info got race: {}".format(M_obj.group(2)))
             self.race = M_obj.group(2)
             self.title = M_obj.group(3)
             # self.level = int(re.search("\d+",M_obj.group(4)).group(0))

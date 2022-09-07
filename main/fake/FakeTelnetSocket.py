@@ -31,10 +31,10 @@ class FakeTelnetSocket(object):
         self.current_area = ""
         self.current_mud_area = None
         self.current_monster_list = [
-            'acrobat', # chasing
+            'acrobat',         # chasing
             self.actor.name,
             self.barbarian_warrior.name,
-            'juggler', # chasing
+            'juggler',         # chasing
             'kobold champion', # weapon shatter
             # 'kobold sentry', # spear break
             'large kobold',    # maul hammer break
@@ -89,8 +89,8 @@ class FakeTelnetSocket(object):
             "-----------------------------------------------------------------------------\n" +
             # "Derp                  Mon  M  [12]Brother                    16    Human\n")
             # self.char.name + spaces + "Mon  M  [12]Brother                    16    Human\n"
-            # self.char.name + spaces + "Ran  M  [08]Keeper                    16    Human\n"
-            self.char.name + spaces + "Pal  M  [13]Keeper                    16    Human\n"
+            self.char.name + spaces + "Ran  M  [08]Keeper                    16    Human\n"
+            # self.char.name + spaces + "Pal  M  [13]Keeper                    16    Human\n"
         )
         self.spells_string = (
             "\n\r"
@@ -104,6 +104,7 @@ class FakeTelnetSocket(object):
             "/================== Healing and Protection ==============================\\\n\r"
             "|   Vigor            Mend-Wounds                                         |\n\r"
             "|                                     Protection                         |\n\r"
+            "|                    Slow-Disease                                        |\n\r"
             "/======================================= Miscellaneous ==================\\\n\r"
             "|   Light                                                                |\n\r"
             "|   Show-Aura                                                            |\n\r"
@@ -117,7 +118,9 @@ class FakeTelnetSocket(object):
 
         self.info_string = (
             "/============================== Overview ==================================\\\n\r"
-            "|         " + self.char.name + " the Human, an Enlightened Brother of the 15th level      |\n\r"
+            # "|         " + self.char.name + " the Human, an Enlightened Brother of the 15th level      |\n\r"
+            "|         " + self.char.name + " the Hobbit, an Enlightened Brother of the 15th level      |\n\r"
+            # "|         " + self.char.name + " the Hobbit, a Woodsman of the 14th level           |\n\r"
             "|                  Your preferred alignment is dusty red                   |\n\r"
             "\==========================================================================/\n\r"
             "\n\r"
@@ -325,6 +328,8 @@ class FakeTelnetSocket(object):
             self.socket_output.append("You wear the chain mail armour.\n\r")
         elif re.match('wear chain$', command):
             self.socket_output.append("It is broken.\n\r")
+        elif re.match("l maul?( \d)?", command) or re.match("l dwarven", command):
+            self.socket_output.append("It is in pristine condition.")
 
     def gen_area(self, area):
         magentaprint("FakeTelnetSocket generate area {0}".format(area))

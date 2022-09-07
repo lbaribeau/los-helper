@@ -260,6 +260,14 @@ class ReferencingList(object):
         # magentaprint("Caution: referencing_list.get_first_reference() returned None! " + name)
         # magentaprint("Whole list is " + str(self.list))
         return None
+        # Ehrm TODO Fix Arrum's Arrow
+        # [96 H 42 M]: repair Arrum's
+        # 20:23:38.91   | "repair Arrum's"
+        # You don't have that.
+        # [96 H 42 M]: 20:23:39.08   | <command.repair.Repair object at 0x000001C66C604910> clearing timer... wf is Falseregex is You don't ...
+        # repair Arrum
+        # 20:23:44.42   | "repair Arrum"
+        # The smithy cannot repair that.
 
     def get_2nd_word_reference(self, item_name):
         return self.get_reference(item_name, 2)

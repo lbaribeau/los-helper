@@ -16,6 +16,19 @@ light      = 'l'
 showaura   = 'show'
 protection = 'prot'
 
-_lvl1 = [burn, rumble, blister, hurt]
-_lvl2 = [fireball, crush, waterbolt, dustgust]
-_lvl3 = [shockbolt, burstflame]
+_lvl1 = [
+	burn, 
+	rumble, 
+	blister, 
+	hurt
+]
+_lvl2 = [
+	fireball, 
+	crush, 
+	waterbolt, 
+	dustgust
+]
+_lvl3 = [
+	shockbolt, 
+	burstflame
+]

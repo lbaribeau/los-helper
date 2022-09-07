@@ -128,6 +128,13 @@ class SmartCombat(CombatObject):
             pass
         # magentaprint("SmartCombat notify done " + match.re.pattern)
 
+    def notify_of_buffer_completion():
+        pass
+        # Ok we need to tell MudReaderThread to call this
+        # That will be our way of checking if the mob died or didn't after one hit
+        # (Wait for all notifies to finish before sending cast)
+        # It'll usually work... we could shorten "Your attack overwhelms" to help with clumping
+
     def stop(self):
         super().stop()
         self.activated = False
@@ -219,7 +226,7 @@ class SmartCombat(CombatObject):
 
         self.use_any_fast_combat_abilities()  # ie. Touch, Dance
 
-        while not self.stopping:
+        while not self.stopping and not self.end_combat:
             # if self.broken_weapon:
             #     self.reequip_weapon()  # TODO: This can get spammed... answer on to unset is_usable on weapon objects in inventory
             # magentaprint("SmartCombat loop kill.timer " + str(round(self.kill.wait_time(), 1)) + " cast.timer " + str(round(self.cast.wait_time(), 1)) + ".")
@@ -235,6 +242,7 @@ class SmartCombat(CombatObject):
                 self.use_slow_combat_ability_or_attack()
                 # magentaprint("SmartCombat finished attack, stopping: " + str(self.stopping))
                 # time.sleep(0.1)
+                magentaprint("Smart combat attacked, end combat is: {}".format(self.end_combat))
             else:
                 self.cast.wait_until_ready()
                 damage = self.character.maxHP - self.character.HEALTH
@@ -313,6 +321,7 @@ class SmartCombat(CombatObject):
 
                 magentaprint("SmartCombat executing " + str(a))
                 a.execute(self.target)
+                # self.kill.start_timer()
                 a.wait_for_flag()
                 if a.error:
                     self.error = True

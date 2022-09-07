@@ -11,7 +11,8 @@ class Wear(CommandThatRemovesFromInventory):
         R.broken, 
         R.doesnt_fit, 
         R.no_room, 
-        R.class_prevents
+        R.class_prevents,
+        R.not_yet
     ]
     error_regexes = [
         R.wear_what, 

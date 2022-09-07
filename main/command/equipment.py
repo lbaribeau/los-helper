@@ -40,7 +40,7 @@ class Equipment(Command):
 
     def notify(self, r, match):
         # magentaprint("Equipment notify, match 0 is " + match.group(0))
-
+        # magentaprint("Equipment notified.")
         # if r in R.eq:
         #     for slot_name in self.equipment.keys():
         #         magentaprint("Equipment command matched " + slot_name + " to " + match(slot_name))
