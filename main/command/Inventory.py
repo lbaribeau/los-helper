@@ -187,7 +187,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'tree root',
         'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand', #'makeup kit', 
         'diamantium cross', 'silver ram staff',
-        'copper thieves pass', 'steel thieves pass', 'silver thieves pass',# 'stilleto'
+        'copper thieves pass', 'bronze thieves pass', 'steel thieves pass', 'silver thieves pass',# 'stilleto'
         'druid\'s silver sickle', 'protective robes', 'alchemist\'s ring',
         'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
         'small flask', 'large restorative', 'scarlet potion', #'tree root', # kobold priest
@@ -216,10 +216,10 @@ class Inventory(SimpleCommand, ReferencingList):
         # kobold champion
         # 'plate mail leggings', # Jerrek drops
         'plate mail armor',
-        'ring mail armour', 'ring mail sleeves', 'ring mail leggings', #'ring mail hood',
+        # 'ring mail armour', 'ring mail sleeves', 'ring mail leggings', #'ring mail hood',
         # 'ring mail gauntlets',
         # 'chain mail armour',  # sawmill
-        'chain mail sleeves', 'chain mail leggings',
+        # 'chain mail sleeves', 'chain mail leggings',
         #'chain mail hood', # These pile up (Alaran)
         # 'chain mail gloves', # mill worker
         'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring', 

@@ -28,6 +28,7 @@ python
 `sudo python -m SimpleHTTPServer 80`
 python3
 `sudo python3 -m http.server 8080`
+`nohup sudo python3 -m http.server 8080 &`
 
 ## Startup Parameters
 * -grind: starts SmartGrind immediately after the map loads

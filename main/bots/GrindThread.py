@@ -404,7 +404,8 @@ class GrindThread(BotThread):
         if self.has_ideal_health():
             return
 
-        self.do_heal_skills()
+        if not self.character.info.pty < 10:
+            self.do_heal_skills()
         self.command_handler.process("rest")
         # magentaprint(self.has_ideal_health(), False)
 
@@ -412,8 +413,9 @@ class GrindThread(BotThread):
             magentaprint("GrindThread.rest_for_health() stopping is: " + str(self.stopping))
             if self.engage_any_attacking_mobs():
                 self.command_handler.process("rest")
-            elif self.do_heal_skills():
-                self.command_handler.process("rest")
+            elif not self.character.info.pty < 10:
+                if self.do_heal_skills():
+                    self.command_handler.process("rest")
 
             self.sleep(1.2)
 
@@ -476,14 +478,15 @@ class GrindThread(BotThread):
         if self.has_ideal_health():
             return
 
-        if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
-            self.cast.cast('v')
-            self.cast.wait_for_flag()
+        if not self.character.info.pty < 10:
+            if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
+                self.cast.cast('v')
+                self.cast.wait_for_flag()
 
-            if self.has_ideal_health():
-                return
+                if self.has_ideal_health():
+                    return
 
-            self.cast.start_thread('v')
+                self.cast.start_thread('v')
 
         self.character.HAS_RESTORE_ITEMS = False # Restore items disabled?
 
