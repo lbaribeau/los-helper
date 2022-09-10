@@ -345,13 +345,13 @@ class SmartCombat(CombatObject):
 
     def determine_favorite_spell_for_target(self):
         if self.mob_target is not None:
-            if self.is_mob_weak(3):
+            if self.is_mob_weak():
                 return self.favourite_spell
             else:
                 return self.favourite_nuke
         return self.favourite_spell
 
-    def is_mob_weak(self, level_diff=7):
+    def is_mob_weak(self, level_diff=5):
         if self.mob_target.level is None:
             return False
         
