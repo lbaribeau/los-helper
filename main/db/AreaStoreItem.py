@@ -77,7 +77,7 @@ class AreaStoreItem(BaseModel):
         return AreaStoreItem.get_armour_by_size_location_and_level(size, location, max_level)
 
     def get_armour_by_size_location_and_level(size, location, max_level=1):
-        # print("getting" + str(size) + "m" + str(location))
+        # print("getting size:" + str(size) + ", loc:" + str(location) + ",lvl" + str(max_level))
         if size in ('s-armor', 'm-armor', 'l-armor', 'armor'):
             sized_armours = list(AreaStoreItem.get_by_item_type_and_level_max(size, location, max_level))
             unsized_armours = list(AreaStoreItem.get_by_item_type_and_level_max('armor', location, max_level))

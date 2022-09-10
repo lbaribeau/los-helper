@@ -20,6 +20,8 @@ class ArmourBot(MiniBot):
         self.command_handler = command_handler
         self.map = map
         self.broken_armour = []
+        self.armor_check_cooldown = 30
+        self.last_armor_check_time = None
 
         # self.actions = {
         #     R.armour_breaks[0]: self.react_to_armour_break,
@@ -240,7 +242,23 @@ class ArmourBot(MiniBot):
     #     self.travel_bot = TravelBot(self.char, self.command_handler, self.mrh, self.map)
     #     self.travel_bot.follow_path(smithy_path)
 
+    def should_check_armor(self):
+        now = get_timeint()
+        should_do_thing = False
+
+        if not self.last_armor_check_time:
+            self.last_armor_check_time = now
+            should_do_thing = True
+        else:
+            seconds_since_last_check = (now - self.last_armor_check_time).total_seconds()
+            if seconds_since_last_check > self.armor_check_cooldown:
+                self.last_armor_check_time = now
+                should_do_thing = True
+        return should_do_thing
+
     def determine_shopping_list(self, broken_armour):
+        if not self.should_check_armor():
+            return []
         # return []
         # items = []
         # for a in broken_armour:
@@ -261,6 +279,7 @@ class ArmourBot(MiniBot):
         # Plate same as Steel maybe (large iron shield)
         # Chain: Rangers, assassins, clerics (iron shield)
         # Ring mail: Mages, druids, alchemists, thieves (bone shield)
+
 
         self.command_handler.equipment.execute_and_wait()
         desired_items = []
@@ -382,7 +401,7 @@ class ArmourBot(MiniBot):
         return self.char.class_string in ['Alc']
 
     def leather(self):
-        return self.char.class_string in ['Thi']
+        return self.char.class_string in ['Thi', 'Ass']
 
     def chain(self):
         return self.char.class_string in ['Ran', 'Cle', 'Ass']

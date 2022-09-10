@@ -81,9 +81,9 @@ class SmartGrindThread(TrackGrindThread):
         else:
             self.on_track = True
 
-        # if not self.on_heal_path and not self.skipped_last_track:
-        self.check_weapons()
-        self.check_armour()
+        if not self.on_heal_path and not self.skipped_last_track:
+            self.check_weapons()
+            self.check_armour()
         # self.potion_bot.run()
 
         # if self.has_buff_ability():
@@ -95,8 +95,8 @@ class SmartGrindThread(TrackGrindThread):
         # self.inventory.get_inventory()
         # # self.inventory.get_equipment(self.character.name)
 
-        self.check_weapons()
-        self.check_armour()
+        # self.check_weapons()
+        # self.check_armour()
 
         if len(self.character.MONSTER_KILL_LIST) == 0:
             self.get_targets()
