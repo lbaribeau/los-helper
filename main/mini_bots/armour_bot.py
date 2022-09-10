@@ -372,7 +372,7 @@ class ArmourBot(MiniBot):
             elif self.chain():
                 armour_level = 2
             elif self.leather():
-                armour_level = 5
+                armour_level = 1
             else:
                 armour_level = 0
 
@@ -408,7 +408,7 @@ class ArmourBot(MiniBot):
 
     def steel(self):
         #magentaprint("ArmourBot.steel() class string is: " + str(self.char.class_string))
-        return self.char.class_string in ['Pal', 'Dk', 'Bar', 'Fig', 'Brd']
+        return self.char.class_string in ['Pal', 'Dar', 'Bar', 'Fig', 'Brd']
 
     def go_to_nearest_smithy(self):
         # self.thread.stop()
