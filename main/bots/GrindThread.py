@@ -161,6 +161,7 @@ class GrindThread(BotThread):
             # if using a thief or assassin then hide, check if hidden
             # then have smart combat backstab
 
+            self.pre_combat_actions()
             if self.is_character_class('Thi') or self.is_character_class('Ass'):
                 hide_attempt = 0
                 first = True
@@ -171,7 +172,7 @@ class GrindThread(BotThread):
 
                     if not first and not self.character.HIDDEN:
                         self.sleep(6)
-                    self.pre_combat_actions()
+                    self.backstab_prep()
                     hide_attempt += 1
                     first = False
                     if self.character.HIDDEN:
@@ -191,11 +192,8 @@ class GrindThread(BotThread):
             else:
                 new_target = ""
 
-    def pre_combat_actions(self):
+    def backstab_prep(self):
         success = False
-     
-        self.use_buff_ability()
-
         for skill in self.character._class.pre_combat_skills:
             if skill.up() and skill.command == 'hid':
                 skill.execute()
@@ -204,6 +202,9 @@ class GrindThread(BotThread):
 
         self.character.HIDDEN = success
         return success
+
+    def pre_combat_actions(self):     
+        self.use_buff_ability()
 
 
     def set_up_automatic_ring_wearing(self):
