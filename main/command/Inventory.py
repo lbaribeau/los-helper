@@ -205,7 +205,8 @@ class Inventory(SimpleCommand, ReferencingList):
         #'crossbow', 'horn bow', 'long bow' # < 70% missile
         # 'broad sword',
         'adamantine axe', 'rapier', #'adamantine sword', # Master of Ceremonies
-        'claymore', 'spider leg', 'large orcish sword', 'drow sabre',
+        'claymore', 'spider leg', #'large orcish sword',
+        'drow sabre',
         # 'silver dagger', 'long sword',  #these pile up
         # 'bastard sword',  # bandits
         # 'small mace',

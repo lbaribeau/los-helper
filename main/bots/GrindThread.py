@@ -194,6 +194,8 @@ class GrindThread(BotThread):
     def pre_combat_actions(self):
         success = False
      
+        self.use_buff_ability()
+
         for skill in self.character._class.pre_combat_skills:
             if skill.up() and skill.command == 'hid':
                 skill.execute()
@@ -293,8 +295,7 @@ class GrindThread(BotThread):
         # After vigging and resting a full mana pool, hp may still not be very high,
         # and in that case, keep resting since benefits should be active.
         # *requires strong enemy for black magic users
-        return False
-        if not self.character.info.pty < 10:
+        if not self.character.info.pty < 12:
             magentaprint("In chapel_heal_up.")
 
             if self.stopping or self.character.HEALTH >= self.health_to_go:
@@ -404,7 +405,7 @@ class GrindThread(BotThread):
         if self.has_ideal_health():
             return
 
-        if not self.character.info.pty < 10:
+        if not self.character.info.pty < 12:
             self.do_heal_skills()
         self.command_handler.process("rest")
         # magentaprint(self.has_ideal_health(), False)
@@ -508,7 +509,7 @@ class GrindThread(BotThread):
     def buff_up(self):
         if self.stopping:
             return
-        self.do_buff_skills()
+        # self.do_buff_skills()
         if BotThread.can_use_timed_ability(self.character.LAST_BUFF, 180):
             self.use_buff_items()
             self.character.LAST_BUFF = time.time()
