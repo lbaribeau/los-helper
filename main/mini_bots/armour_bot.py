@@ -196,7 +196,7 @@ class ArmourBot(MiniBot):
         pass
 
     def get_needed_default_armour(self):
-        pass
+        # pass
         # Given size, armor level, slot, choose best piece from shop
         # Ie. steel, medium, neck - plate mail collar
         #desired_items = sorted(self.determine_shopping_list(self.broken_armour), key=lambda item : item.area)
@@ -206,7 +206,7 @@ class ArmourBot(MiniBot):
         # shopping_bot = ShoppingBot(self.char, self.command_handler, self.map)
         self.stopping = False
         desired_asi_list = self.determine_shopping_list(self.broken_armour)
-        # magentaprint("ArmourBot.get_needed_default_armour() desired_asi_list: " + str(desired_asi_list))
+        # magentaprint("ArmourBot.get_needed_default_armour() desired_asi_list: " + str(desired_asi_list), False)
 
         for asi in desired_asi_list:
             if self.stopping:
@@ -241,7 +241,7 @@ class ArmourBot(MiniBot):
     #     self.travel_bot.follow_path(smithy_path)
 
     def determine_shopping_list(self, broken_armour):
-        return []
+        # return []
         # items = []
         # for a in broken_armour:
         #     # wear_location = map.lookup_wear_location(a)A
@@ -343,17 +343,21 @@ class ArmourBot(MiniBot):
                 armour_level = 4
             elif self.chain():
                 armour_level = 2
-            else:
+            elif self.leather():
                 armour_level = 1
+            else:
+                armour_level = 0
         elif character_lvl > 4:
             if self.ringmail():
                 armour_level = 4
             elif self.chain():
                 armour_level = 2
+            elif self.leather():
+                armour_level = 5
             else:
-                armour_level = 1
-    
-        magentaprint("armour level is " + str(armour_level), False)
+                armour_level = 0
+
+        # magentaprint("armour level is " + str(armour_level), False)
 
         return armour_level
 
@@ -375,7 +379,10 @@ class ArmourBot(MiniBot):
         return self.char.class_string in ["Mag", 'Dru']
 
     def ringmail(self):
-        return self.char.class_string in ['Alc', 'Thi']
+        return self.char.class_string in ['Alc']
+
+    def leather(self):
+        return self.char.class_string in ['Thi']
 
     def chain(self):
         return self.char.class_string in ['Ran', 'Cle', 'Ass']
