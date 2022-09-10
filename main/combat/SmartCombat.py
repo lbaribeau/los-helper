@@ -320,6 +320,9 @@ class SmartCombat(CombatObject):
         magentaprint(str(self) + " ending run.")
 
     def should_use_combat_ability(self):
+        if self.character.HIDDEN and (self.character._class.id == 'Thi' or self.character._class.id == 'Ass'):
+            return True
+
         if self.mob_target is not None:
             if self.mob_target.level is not None:
                 # magentaprint("ml {} < cl {} - 4 = {}".format(self.mob_target.level, self.character.level, self.mob_target.level < (self.character.level - 4)),False)
@@ -348,7 +351,7 @@ class SmartCombat(CombatObject):
                 return self.favourite_nuke
         return self.favourite_spell
 
-    def is_mob_weak(self, level_diff=5):
+    def is_mob_weak(self, level_diff=7):
         if self.mob_target.level is None:
             return False
         
