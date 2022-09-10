@@ -86,11 +86,11 @@ class SmartGrindThread(TrackGrindThread):
         self.check_armour()
         # self.potion_bot.run()
 
-        if self.has_buff_ability():
-            if self.use_buff_ability():
-                self.use_extra_buff_items()
-        else:
-            pass
+        # if self.has_buff_ability():
+        #     if self.use_buff_ability():
+        #         self.use_extra_buff_items()
+        # else:
+        #     pass
 
         # self.inventory.get_inventory()
         # # self.inventory.get_equipment(self.character.name)

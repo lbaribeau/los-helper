@@ -518,11 +518,11 @@ class TrackGrindThread(GrindThread):
         self.check_weapons()
         self.check_armour()
 
-        if self.has_buff_ability():
-            if self.use_buff_ability():
-                self.use_extra_buff_items()
-        else:
-            pass
+        # if self.has_buff_ability():
+        #     if self.use_buff_ability():
+        #         self.use_extra_buff_items()
+        # else:
+        #     pass
             # Need a timer for this...
             # self.use_extra_buff_items()
 
