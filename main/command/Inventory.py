@@ -64,8 +64,9 @@ def parse_item_names(item_string_list):
                 'white chip', # Floor Manager
                 'black chip', # Floor Manager
                 'silver chest', # Bosses (Hef, kobold chieftain maybe)
-                'small jade fragment', # Manic Soothsayer
-                'amethyst gem']):
+                'small jade fragment', # Kelluran
+                'amethyst gem' # Manic Soothsayer
+                ]):
             continue
         #if item.endswith(" platinum coins"):  
         # (Misses "The auctioneer was carrying: 13 gold coins, a gavel, platinum coins.")
@@ -89,8 +90,7 @@ def parse_item_names(item_string_list):
 
                 if item.startswith("sets of "):
                     item = item.replace("sets of ", "")
-
-                if (item.endswith('ses') or item.endswith('xes')) and not item.endswith('axes') :
+                elif (item.endswith('ses') or item.endswith('xes')) and not item.endswith('axes') :
                     # sets of title deeds->title deeds (hence "elif")
                     # I think sets of steel sleeves -> some steel sleeves (or leggings)
                     # Any word that ends in x???
@@ -101,7 +101,6 @@ def parse_item_names(item_string_list):
                     # maul hammers-> maul hammer (normal plural)
                     item = item[:len(item)-1]
                     # Dissatisfying that axes are different from boxes and crucifixes
-
                 return_list.extend([item]*(n+2))
 
     # magentaprint("parse_item_names from {0}  got  {1}".format(item_string_list, return_list))

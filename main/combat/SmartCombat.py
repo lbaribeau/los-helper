@@ -330,7 +330,7 @@ class SmartCombat(CombatObject):
 
                 magentaprint("SmartCombat executing " + str(a))
                 a.execute(self.target)
-                self.kill.start_timer()
+                # self.kill.start_timer()
                 a.wait_for_flag()
                 if a.error:
                     self.error = True
