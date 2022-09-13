@@ -7,8 +7,9 @@ from misc_functions import magentaprint
 from combat.Cast import Cast
 
 class HealthMonitor(object):
-    def __init__(self, character):
-        self.char = character
+    def __init__(self, prompt, info):
+        self.prompt=prompt
+        self.info=info
         self.regex_cart = [RegexStore.prompt]
 
         # first_tick      = None
@@ -75,13 +76,13 @@ class HealthMonitor(object):
         pass
 
     def hp_delta(self):
-        return self.char.prompt.hp_delta()
+        return self.prompt.hp_delta()
     def mp_delta(self):
-        return self.char.prompt.mp_delta()
+        return self.prompt.mp_delta()
     def hp_maxed(self):
-        return self.char.prompt.hp == self.char.info.maxHP
+        return self.prompt.hp == self.info.maxHP
     def mp_maxed(self):
-        return self.char.prompt.mp == self.char.info.maxMP
+        return self.prompt.mp == self.info.maxMP
     def tick_period(self):
         return round(sum(self.tick_periods) / len(self.tick_periods), 1) 
     def tick_period2(self):

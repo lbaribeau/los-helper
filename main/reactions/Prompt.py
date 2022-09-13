@@ -1,9 +1,10 @@
 
+import threading
 from comm import RegexStore as R
 from misc_functions import magentaprint
 from datetime import datetime
 
-class Prompt(object):
+class Prompt(threading.Event):
     def __init__(self):
         self.regex_cart = [R.prompt]
         self.hp = 100
@@ -11,6 +12,7 @@ class Prompt(object):
         self.prev_hp = 100
         self.prev_mp = 100
         self.tick_timelog = [datetime.now()]
+        super().__init__()
         
     def notify(self, regex, match):
         # Maybe we want hp/mp deltas clumped (prev_hp == hp on black magic cast...)
@@ -33,6 +35,7 @@ class Prompt(object):
         # self.prev_mp = self.mp if int(match.group(2)) != self.mp else self.prev_mp
         # self.hp = int(match.group(1))
         # self.mp = int(match.group(2))
+        self.set()
 
     def hp_delta(self):
         return self.hp - self.prev_hp

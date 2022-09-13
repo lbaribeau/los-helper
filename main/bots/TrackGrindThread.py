@@ -30,9 +30,9 @@ class TrackGrindThread(GrindThread):
             self.__TOTALPATHS = 101
 
         if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
-            self.__nextpath = starting_path
+            self.nextpath = starting_path
         else:
-            self.__nextpath = 0
+            self.nextpath = 0
 
         self.LIMBO_TO_CHAPEL = [
             'ame','out','w','n','chapel'
@@ -264,7 +264,7 @@ class TrackGrindThread(GrindThread):
         if self.character.AREA_ID != 2:
             return ['areaid2']
 
-        magentaprint("next path = " + str(self.__nextpath), False)
+        magentaprint("next path = " + str(self.nextpath), False)
 
         if self.character.DEAD:
             self.character.DEAD = False
@@ -274,9 +274,9 @@ class TrackGrindThread(GrindThread):
             self.stop()
             return self.LIMBO_TO_CHAPEL[:]
 
-        self.__nextpath = (self.__nextpath + 1) % (self.__TOTALPATHS+1)
+        self.nextpath = (self.nextpath + 1) % (self.__TOTALPATHS+1)
 
-        if self.__nextpath % 2 == 0:
+        if self.nextpath % 2 == 0:
             # self.inventory.get_inventory()
             #magentaprint(str(int(len(self.inventory.sellable()))) + " items to sell - threshold is " + str(self.loot_threshold) + '.')
             # I see... sellable doesn't return a list now
@@ -288,17 +288,17 @@ class TrackGrindThread(GrindThread):
                 return self.SHOP_AND_TIP_PATH[:]
             else:
                 magentaprint("Trackgrind skipped pawning/dropping.")
-        elif self.__nextpath == 1:
+        elif self.nextpath == 1:
             return self.THEATRE_PATH[:]
-        elif self.__nextpath == 3:
+        elif self.nextpath == 3:
             return self.MARKET_PATH[:]
-        elif self.__nextpath == 5:
+        elif self.nextpath == 5:
             return self.MILITIA_SOLDIERS_PATH[:]
-        elif self.__nextpath == 7:
+        elif self.nextpath == 7:
             if not self.cast.aura or self.cast.aura >= Aura('pale blue'):
                 if self.character.level in [1,2,3,4,5]:
                     magentaprint("Not going to do kobolds - aura unknown and level too low.")
-                    self.__nextpath = self.__nextpath + 1  # So that we don't go selling
+                    self.nextpath = self.nextpath + 1  # So that we don't go selling
                     return self.PATH_TO_SKIP_WITH[:]
                 elif self.character.level in [6,7]:
                     return self.KOBOLDS1[:]
@@ -314,12 +314,12 @@ class TrackGrindThread(GrindThread):
             #     self.cast.aura <= self.character.preferred_aura:
             elif self.cast.aura > self.character.preferred_aura:
                     magentaprint("Not going to do kobolds - too blue right now")
-                    self.__nextpath = self.__nextpath + 1  # So that we don't go selling
+                    self.nextpath = self.nextpath + 1  # So that we don't go selling
                     return self.PATH_TO_SKIP_WITH[:]
             else:
                 # # magentaprint("Not going to do kobolds. Current aura, and preferred, comparison: %s,  %s, %s" %
                 # #              (str(self.cast.aura), str(self.character.preferred_aura), str(self.cast.aura <= self.character.preferred_aura)))
-                # self.__nextpath = self.__nextpath + 1  # So that we don't go selling
+                # self.nextpath = self.nextpath + 1  # So that we don't go selling
                 # return self.PATH_TO_SKIP_WITH[:]
                 if self.character.level in [1,2,3,4,5]:
                     return self.KOBOLDS1[:]
@@ -329,7 +329,7 @@ class TrackGrindThread(GrindThread):
                     return self.kobold_priests[:]
                 else:
                     return self.kobold_massacre[:]
-        elif self.__nextpath == 9:
+        elif self.nextpath == 9:
             # hookers ... I would avoid the drunken trouble makers, but I don't
             # quite remember where they are and don't want to go through Amber
             # Also I think it's safe enough in the dark... maybe just lvl 4
@@ -337,17 +337,17 @@ class TrackGrindThread(GrindThread):
             if self.character.level <= 6:
                 return self.CORAL_ALLEY_PATH[:]
             else:
-                self.__nextpath = self.__nextpath + 1  # So that we don't go selling
+                self.nextpath = self.nextpath + 1  # So that we don't go selling
                 return self.PATH_TO_SKIP_WITH[:]
-        elif self.__nextpath == 11:
+        elif self.nextpath == 11:
             return self.FORT_PATH[:]
-        elif self.__nextpath == 13:
+        elif self.nextpath == 13:
             if not self.cast.aura:
                 if self.character.level >= 8:
                     return self.NORTHERN_BANDITS_PATH[:]
                 else:
                     magentaprint("Not going to do bandits - aura unknown.")
-                    self.__nextpath = self.__nextpath + 1  # So that we don't go selling
+                    self.nextpath = self.nextpath + 1  # So that we don't go selling
                     return self.PATH_TO_SKIP_WITH[:]
             elif (self.character.level >= 8 or self.cast.aura < Aura('pale blue')) or \
                 self.cast.aura <= self.character.preferred_aura:
@@ -355,75 +355,75 @@ class TrackGrindThread(GrindThread):
             else:
                 magentaprint("Not going to do bandits. Current aura, and preferred: %s,  %s" %
                              (self.cast.aura, self.character.preferred))
-                self.__nextpath = self.__nextpath + 1   # So that we don't go selling
+                self.nextpath = self.nextpath + 1   # So that we don't go selling
                 return self.PATH_TO_SKIP_WITH[:]
-        elif self.__nextpath == 15:
+        elif self.nextpath == 15:
             return self.MUGGER_PATH[:]
-        elif self.__nextpath == 17:
+        elif self.nextpath == 17:
             return self.DWARVEN_FIELD_WORKERS_PATH[:]
-        elif self.__nextpath == 19:
+        elif self.nextpath == 19:
             return self.MILL_WORKERS[:]
-        elif self.__nextpath == 21:
+        elif self.nextpath == 21:
             if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
                 return self.BANDITS1
             else:
-                self.__nextpath = self.__nextpath + 1 # So that we don't go selling
+                self.nextpath = self.nextpath + 1 # So that we don't go selling
                 return self.PATH_TO_SKIP_WITH[:]
-        elif self.__nextpath == 23:
+        elif self.nextpath == 23:
             if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
                 return self.BANDITS2
             else:
-                self.__nextpath = self.__nextpath + 1
+                self.nextpath = self.nextpath + 1
                 return self.PATH_TO_SKIP_WITH[:]
-        elif self.__nextpath == 25:
+        elif self.nextpath == 25:
             if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
                 return self.BANDITS3
             else:
-                self.__nextpath = self.__nextpath + 1
+                self.nextpath = self.nextpath + 1
                 return self.PATH_TO_SKIP_WITH[:]
-        elif self.__nextpath == 27:
+        elif self.nextpath == 27:
             if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
                 return self.BANDITS4
             else:
-                self.__nextpath = self.__nextpath + 1
+                self.nextpath = self.nextpath + 1
                 return self.PATH_TO_SKIP_WITH[:]
-        elif self.__nextpath == 29:
+        elif self.nextpath == 29:
             return self.RANCHER_SENTRY[:]
-        # elif self.__nextpath == 23:
+        # elif self.nextpath == 23:
         #     return self.get_path_with_all_mobs('Olmer') # Doesn't fight - something about the bright wallposter I think...
-        elif self.__nextpath == 31:
+        elif self.nextpath == 31:
             return self.get_path_to_and_from_mob("Brotain")
-        elif self.__nextpath == 33:
+        elif self.nextpath == 33:
             return self.get_path_to_and_from_mob("Aldo")
-        elif self.__nextpath == 35:
+        elif self.nextpath == 35:
             return self.get_path_to_and_from_mob("Jerrek") 
             # He gets fought occasionally but we should fight him before Tag
             # This can spend some time if he's not in the kill list
-        elif self.__nextpath == 37:
+        elif self.nextpath == 37:
             return self.get_path_to_and_from_mob("Tag")
-        elif self.__nextpath == 39:
+        elif self.nextpath == 39:
             return self.get_path_to_and_from_mob("Olmer")
-        elif self.__nextpath == 41:
+        elif self.nextpath == 41:
             return self.get_path_with_all_mobs('Dini Stonehammer')
             # Viladin
             # Douvan would be good but isn't on my map
             # Servant of the Night
             # Trent the Merchant
-        elif self.__nextpath == 43:
+        elif self.nextpath == 43:
             return self.get_path_to_and_from_mob("sonneteer")
-        elif self.__nextpath == 45:
+        elif self.nextpath == 45:
             return self.get_path_with_all_mobs('Thereze')
-        elif self.__nextpath == 47:
+        elif self.nextpath == 47:
             return self.get_path_with_all_mobs('Rancher Renstone')
-        elif self.__nextpath == 49:
+        elif self.nextpath == 49:
             return self.get_path_with_all_mobs('artificer')
-        elif self.__nextpath == 51:
+        elif self.nextpath == 51:
             return self.get_path_with_all_mobs('enchantress') 
             # Higher level but needs to be done right after artificer
             # Maybe she's too blue though
-        elif self.__nextpath == 53:
+        elif self.nextpath == 53:
             return self.get_path_with_all_mobs("mine manager") # tough path
-        elif self.__nextpath == 55:
+        elif self.nextpath == 55:
             return self.get_path_with_all_mobs('refinery supervisor')
             # tough path
             # oremaster steel collar (m) and (l), granite rods in keep list right now
@@ -431,84 +431,84 @@ class TrackGrindThread(GrindThread):
             # forge worker
             # steel collar
         # CHARACTER 13 / MOBS 9
-        elif self.__nextpath == 57:
+        elif self.nextpath == 57:
             return self.get_path_with_all_mobs('Elder Barthrodue')
-        elif self.__nextpath == 59:
+        elif self.nextpath == 59:
             return self.get_path_with_all_mobs('director')
         # CHARACTER 14 / MOBS 10
-        elif self.__nextpath == 61:
+        elif self.nextpath == 61:
             return self.get_path_with_all_mobs('Dame Brethil')
             # Director
             # makeup kits don't sell well
-        elif self.__nextpath == 63:
+        elif self.nextpath == 63:
             return self.get_path_with_all_mobs('Kelluran')
-        elif self.__nextpath == 65:
+        elif self.nextpath == 65:
             return self.get_path_with_all_mobs('Master of Ceremonies')
             # Remove silver knight if you don't want to fight him
             # Also there will be tourney organiser and other things on this path
             # He seems to have a long spawn time
-        elif self.__nextpath == 67:
+        elif self.nextpath == 67:
             return self.get_path_with_all_mobs('war horse')
             # white knights on this path
-        elif self.__nextpath == 69:
+        elif self.nextpath == 69:
             return self.FORT_PATH # fort sergeant prefight
-        elif self.__nextpath == 71:
+        elif self.nextpath == 71:
             return self.get_path_with_all_mobs('Commander Rilmenson') # hastes
-        elif self.__nextpath == 73:
+        elif self.nextpath == 73:
             return self.get_path_with_all_mobs('Rimark') # This guy is like a guard, right?
-        elif self.__nextpath == 75:
+        elif self.nextpath == 75:
             return self.get_path_with_all_mobs('dwarven blacksmith')
             # barbarian cook
             # shaman's assistant
         # CHARACTER 15 / MOBS 11
-        elif self.__nextpath == 77:
+        elif self.nextpath == 77:
             return self.get_path_with_all_mobs('minstrel')
-        elif self.__nextpath == 79:
+        elif self.nextpath == 79:
             return self.get_path_with_all_mobs('Brotain')
-        elif self.__nextpath == 81:
+        elif self.nextpath == 81:
             # Pre-fights (sawmill people) can make this harder
             # Maybe do path -1
             return self.get_path_to_previous_node('Gregor')
-        elif self.__nextpath == 83:
+        elif self.nextpath == 83:
             return self.get_path_with_all_mobs('Gregor')
-        elif self.__nextpath == 85:
+        elif self.nextpath == 85:
             return self.get_path_with_all_mobs('Bertram Dalram') # Longer respawn?
-        elif self.__nextpath == 87:
+        elif self.nextpath == 87:
             return self.get_specific_path_to_and_from_mob('brother', 0) # throwing stars
-        # elif self.__nextpath == 85:
+        # elif self.nextpath == 85:
         #     return self.get_specific_path_to_and_from_mob('brother', 1) # Didn't have a brother waiting there
         # CHARACTER 16 / MOBS 12
-        elif self.__nextpath == 89:
+        elif self.nextpath == 89:
             return self.get_path_with_all_mobs('Horbuk') # easy
-        # elif self.__nextpath == 89:
+        # elif self.nextpath == 89:
         #     return self.get_path_with_all_mobs('Horbuk') 
         #    Do twice in case a mine manager was there... hoping engage controls are high (?)
         #    Actually they got cleared in one pass, on the mine manager path, so never mind this double
-        elif self.__nextpath == 91:
+        elif self.nextpath == 91:
             # Remember to check character level restriction
             return self.get_path_with_all_mobs('Tardan') # he got me to 0 mana somehow but didn't potion
             # He also made me run like a chicken at [1 HP 1 MP]... so let's wait for level 16
             # Did he have a +1 war hammer (1250 gold)
-        elif self.__nextpath == 93:
+        elif self.nextpath == 93:
             # Prefight some dwarven travellers? Was 5 hp
             return self.get_path_with_all_mobs('Boris Ironfounder')
             # He is also in another path...
             # He does respawn though
-        elif self.__nextpath == 95:
+        elif self.nextpath == 95:
             return self.get_path_to_previous_node('Hurn the Smith') # swordsman
-        elif self.__nextpath == 97:
+        elif self.nextpath == 97:
             return self.get_path_with_all_mobs('Hurn the Smith') # 600 exp, 202-290g, easy peasy
-        elif self.__nextpath == 99:
+        elif self.nextpath == 99:
             return self.get_path_with_all_mobs('Gorban')
             # Golden potion, but seems hard, could be rng
-        elif self.__nextpath == 101:
+        elif self.nextpath == 101:
             return self.get_path_with_all_mobs('floor manager') # About the same as Tardan
-        elif self.__nextpath == 103:
+        elif self.nextpath == 103:
             return self.get_path_with_all_mobs('Shaldena the Red') # Burstflame might cause some characters problems
-        elif self.__nextpath == "XXX":
+        elif self.nextpath == "XXX":
             # Watch out for mob targetting bug (ranch foreman hitting Rancher Plover!)
             return self.get_path_with_all_mobs('ranch foreman')
-        elif self.__nextpath == "XXX":
+        elif self.nextpath == "XXX":
             # Via rancher plover!!
             return self.get_path_with_all_mobs('Annette Plover') # Seemed harder
             # Has novice prefight
@@ -517,16 +517,16 @@ class TrackGrindThread(GrindThread):
             # hobo
             # village elder lvl 1
             # scared trawlerman 33 exp 53 gold
-        # elif self.__nextpath == 49:
+        # elif self.nextpath == 49:
         #     return self.SPIDER_FOREST[:]
-        # elif self.__nextpath == 51:
+        # elif self.nextpath == 51:
         #     return self.GNOLL_CAMP[:]
-        # elif self.__nextpath == 53:
+        # elif self.nextpath == 53:
         #     return self.KNIGHTS[:]
         # Human paladin likes steel collars (oremaster) steel armour (Rimark) steel mask (spiv) rings (bandits, sawmill, minstrel)
 
         else:
-            magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.__nextpath))
+            magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.nextpath))
             return list(self.PATH_TO_SKIP_WITH[:])
         return list(self.PATH_TO_SKIP_WITH[:])
 

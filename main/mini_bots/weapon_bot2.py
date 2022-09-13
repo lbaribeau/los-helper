@@ -676,7 +676,7 @@ class MainhandWeaponBot(MiniBot):
             # self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max('weapon', self.character.weapon_type, self.character.weapon_level)
             # self.possible_weapons = sorted(self.possible_weapons, key = lambda i: i.item.level, reverse=True)
             # Strict about level
-            self.possible_weapons = AreaStoreItem.get_by_item_type_and_level('weapon', self.character.weapon_type, self.character.weapon_level)
+            self.possible_weapons = AreaStoreItem.get_by_item_type_and_level('weapon', self.character.info.weapon_type, self.character.info.weapon_level)
             magentaprint("WeaponBot possible weapons: " + str(self.possible_weapons))
             return self.possible_weapons
 
@@ -684,12 +684,12 @@ class MainhandWeaponBot(MiniBot):
             # while not self.possible_weapons and level > 0:
 
             #     areastoreitems = AreaStoreItem.get_by_item_type_and_level(model_name, data_name, level)
-            #     self.possible_weapons = list(MudItem.get_suitable_item_of_type('weapon', self.character.weapon_type, level).values())
+            #     self.possible_weapons = list(MudItem.get_suitable_item_of_type('weapon', self.character.info.weapon_type, level).values())
             #     areastoreitems = AreaStoreItem.get_by_item_type_and_level(model_name, data_name, level)
 
             # while not self.possible_weapons and level > 0:
             #     magentaprint("check_weapons() trying lower level weapons.")
-            #     self.possible_weapons = list(MudItem.get_suitable_item_of_type('weapon', self.character.weapon_type, level).values())
+            #     self.possible_weapons = list(MudItem.get_suitable_item_of_type('weapon', self.character.info.weapon_type, level).values())
             #     level = level - 1
 
             # if not self.possible_weapons:

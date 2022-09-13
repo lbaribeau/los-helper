@@ -43,7 +43,7 @@ from command.Inventory         import Inventory
 from reactions.CombatReactions import CombatReactions
 from reactions.Mobs            import Mobs
 from combat.SmartCombat        import SmartCombat
-from command.Info              import Info
+# from command.Info              import Info
 from command.Whois             import Whois
 from command.SpellsCommand     import SpellsCommand
 from reactions.Cartography     import Cartography
@@ -53,9 +53,8 @@ from comm.TelnetHandler        import TelnetHandler
 from fake.FakeTelnetHandler    import FakeTelnetHandler
 from db.Database               import *
 from db.MudMap                 import *
-from reactions.Prompt          import Prompt
-from reactions.health_monitor  import HealthMonitor
-from comm.analyser             import Analyser
+# from reactions.health_monitor  import HealthMonitor
+# from comm.analyser             import Analyser
 from reactions.ring_reaction import RingWearingReaction
 
 class LosHelper(object):
@@ -64,7 +63,6 @@ class LosHelper(object):
 
         # self.initializer = Initializer()
         self.character = Character()
-        self.character.prompt = Prompt()
         sys.argv = [s.strip() for s in sys.argv]  # removes \r since git can add them to run.sh
 
         if '-fake' in sys.argv:
@@ -82,8 +80,7 @@ class LosHelper(object):
         self.mud_reader_handler  = MudReaderHandler(self.mudReaderThread, self.character)
         self.inventory           = Inventory(self.telnetHandler, self.character)
         self.character.inventory = self.inventory
-        self.analyser            = Analyser(self.mud_reader_handler, self.character)
-        self.mud_reader_handler.add_subscriber(self.character.prompt)
+        # self.analyser            = Analyser(self.mud_reader_handler, self.character)
         self.mud_reader_handler.add_subscriber(self.inventory)
         self.mud_reader_handler.add_subscriber(self.character.mobs)
 
@@ -96,12 +93,12 @@ class LosHelper(object):
         #     magentaprint("LosHelper joining mud_map_thread.")  # Ha this print can cause the lock error
         #     self.mud_map_thread.join()
         self.write_username_and_pass()
-        self.initialize_reactions()
+        # self.initialize_reactions()
         self.check_class_and_level()
         self.check_spells()
-        self.check_info()
 
         self.commandHandler = CommandHandler(self.character, self.mud_reader_handler, self.telnetHandler)
+        self.check_info()
         self.cartography = Cartography(self.mud_reader_handler, self.commandHandler, self.character)
         self.commandHandler.go.cartography = self.cartography
             # Cartography shouldn't need commandHandler to fix dependencies
@@ -249,11 +246,30 @@ class LosHelper(object):
         spells.wait_for_flag()
 
     def check_info(self):
-        info = Info(self.mud_reader_handler, self.telnetHandler)
-        info.execute()
+        pass
+        # info = Info(self.mud_reader_handler, self.telnetHandler)
+        # self.command_handler.info.execute_and_wait()
         # magentaprint("LosHelper.check_info() calling character.process_info()")
-        self.character.info = info
-        self.character.process_info()
+        # self.character.info = self.command_handler.info
+        # self.character.process_info()
+
+        # Well I'm getting away from giving character prompt and info
+        # I want command handler to have info
+        # And command handler can do all the dependency injection in one spot
+        # So I moved the Info constructor down
+        # los-helper can still do this procedure... los-helper doesn't things that both the bot and human user need
+        # [121 H 54 M]: 11:32:13.22   | Spells: ['hu', 'blis', 'water', 'v', 'm', 'prot', 'l', 'show']
+        # Traceback (most recent call last):
+        #   File "C:\Users\lauri\Documents\los-helper\hd_copy\main\los_helper.py", line 260, in <module>
+        #     L = LosHelper()
+        #   File "C:\Users\lauri\Documents\los-helper\hd_copy\main\los_helper.py", line 100, in __init__
+        #     self.commandHandler = CommandHandler(self.character, self.mud_reader_handler, self.telnetHandler)
+        #   File "C:\Users\lauri\Documents\los-helper\hd_copy\main\comm\command_handler.py", line 107, in __init__
+        #     self.smartCombat = SmartCombat(self.kill,self.cast,self.potion_thread_handler,self.wield,self.telnetHandler,self.character,self.weapon
+        # _bot,self.prompt)
+        #   File "C:\Users\lauri\Documents\los-helper\hd_copy\main\combat\SmartCombat.py", line 40, in __init__
+        #     spell_percent = max(character.spell_proficiencies.values())
+        # AttributeError: 'Character' object has no attribute 'spell_proficiencies'
 
 L = LosHelper()
 L.main()

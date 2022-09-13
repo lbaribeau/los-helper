@@ -45,7 +45,11 @@ from reactions.referencing_list import ReferencingList
 from mini_bots.sell_bot         import SellBot
 from command.CommandThatRemovesFromInventory import Sell, Drop, Drink, Use
 from command.potion_thread import PotionThreadHandler, Consume
-from command.look               import Look
+from command.look          import Look
+from reactions.prompt      import Prompt
+from comm.analyser         import Analyser
+from command.Info          import Info
+
 
 class CommandHandler(object):
     def init_map_and_bots(self):
@@ -98,7 +102,14 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.second)
         # self.potion_thread_handler = PotionThreadHandler(Consume(self.use, self.drink, self.eat))
         self.potion_thread_handler = PotionThreadHandler(Consume(self.use, self.drink))
-        self.smartCombat = SmartCombat(self.kill,self.cast,self.potion_thread_handler,self.wield,self.telnetHandler,self.character,self.weapon_bot)
+        self.prompt = Prompt()
+        mudReaderHandler.add_subscriber(self.prompt)
+        self.character.prompt = self.prompt
+        self.info = Info(self.mudReaderHandler, self.telnetHandler)
+        self.info.execute_and_wait()
+        self.character.info = self.info
+        self.character.process_info()
+        self.smartCombat = SmartCombat(self.kill,self.cast,self.potion_thread_handler,self.wield,self.telnetHandler,self.character,self.weapon_bot,self.prompt, self.info) 
         mudReaderHandler.add_subscriber(self.smartCombat)
 
         self.go = Go(self.kill, self.cast, telnetHandler, character)
@@ -129,6 +140,7 @@ class CommandHandler(object):
         # That is if items support usable (small inhaler, white amulet, rods)
         self.look = Look(self.character.inventory, telnetHandler)
         mudReaderHandler.add_subscriber(self.look)
+        self.analyser = Analyser(self.mudReaderHandler, self.prompt, self.info)
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
@@ -478,8 +490,12 @@ class CommandHandler(object):
             #self.inventory.sellable()
         elif user_input == 'go_repair':
             self.armour_bot.start_thread()
-        else: # Doesn't match any command we are looking for
-            self.telnetHandler.write(user_input) # Just shovel to telnet.
+        elif user_input == 'trackno':
+            magentaprint("command_handler.bot_thread.__nextpath is " + str(self.bot_thread.nextpath))
+            self.telnetHandler.write('')
+        else:
+            # Doesn't match any command we are looking for, send it to server
+            self.telnetHandler.write(user_input)
 
     def user_move(self, user_input):
         # if user_input.startswith("go "):

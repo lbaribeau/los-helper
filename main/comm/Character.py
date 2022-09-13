@@ -130,33 +130,33 @@ class Character(object):
         # self.ARMOR_SLOTS = self._class.ARMOR_SLOTS
         # self.WEAPON_SLOTS = self._class.WEAPON_SLOTS
 
-        self.weapon_proficiencies = {
-            'Sharp'   : self.info.sharp, 
-            'Thrust'  : self.info.thrust, 
-            'Blunt'   : self.info.blunt,
-            'Pole'    : self.info.pole, 
-            'Missile' : self.info.missile
-        }
-        self.spell_proficiencies = {
-            'Earth'  : self.info.earth, 
-            'Wind'   : self.info.wind, 
-            'Fire'   : self.info.fire,
-            'Water'  : self.info.water, 
-            'Astral' : self.info.astral
-        }
+        # self.weapon_proficiencies = {
+        #     'Sharp'   : self.info.sharp, 
+        #     'Thrust'  : self.info.thrust, 
+        #     'Blunt'   : self.info.blunt,
+        #     'Pole'    : self.info.pole, 
+        #     'Missile' : self.info.missile
+        # }
+        # self.spell_proficiencies = {
+        #     'Earth'  : self.info.earth, 
+        #     'Wind'   : self.info.wind, 
+        #     'Fire'   : self.info.fire,
+        #     'Water'  : self.info.water, 
+        #     'Astral' : self.info.astral
+        # }
 
-        self.weapon_type = misc_functions.key_with_max_val(self.weapon_proficiencies)
-        self.weapon_proficiency = self.weapon_proficiencies[self.weapon_type]
+        # self.weapon_type = misc_functions.key_with_max_val(self.weapon_proficiencies)
+        # self.weapon_proficiency = self.weapon_proficiencies[self.weapon_type]
 
-        if self.weapon_proficiency >= 70:
-            self.weapon_level = 3
-        elif self.weapon_proficiency >= 40:
-            self.weapon_level = 2
-        else:
-            self.weapon_level = 1
+        # if self.weapon_proficiency >= 70:
+        #     self.weapon_level = 3
+        # elif self.weapon_proficiency >= 40:
+        #     self.weapon_level = 2
+        # else:
+        #     self.weapon_level = 1
 
-        self.spell_type = misc_functions.key_with_max_val(self.spell_proficiencies)
-        self.spell_proficiency = self.spell_proficiencies[self.spell_type]
+        # self.spell_type = misc_functions.key_with_max_val(self.spell_proficiencies)
+        # self.spell_proficiency = self.spell_proficiencies[self.spell_type]
 
         # if self.level >= 9:
         #     self.armor_level = 3  # steel
@@ -167,34 +167,34 @@ class Character(object):
         #     # Mages can't wear ring mail
         #     # So it's more of a class thing than a level thing
 
-        self.weapon_to_buy = self.pick_weapon()
+        # self.weapon_to_buy = self.pick_weapon()
 
-    def pick_weapon(self):
-        # Now we go to the db... (this isn't used)
-        if self.weapon_type == 'Sharp':
-            if self.weapon_level >= 2:
-                return 'leaf blade'
-            else:
-                return 'rapier'  # 'battle axe', cleaver, scimitar
-        elif self.weapon_type == 'Thrust':
-            if self.weapon_level >= 2:
-                return 'long sword'
-            else:
-                return 'broad sword'  # silver dagger (k. shaman) is good, stilleto (sentry) is better
-        elif self.weapon_type == 'Blunt':
-            if self.weapon_level >= 2:
-                return 'morning star'  # expensive, doesn't require 40%, also, war hammer (lvl2), footman's flail, large mace, maul hammer
-            else:
-                return 'small mace'  # large mace (amethyst guards, vicars, Malbon)
-        elif self.weapon_type == 'Pole':
-            return 'quarter staff'
-        elif self.weapon_type == 'Missile':
-            if self.weapon_level >= 3:
-                return 'heavy crossbow'
-            elif self.weapon_level >= 2:
-                return 'long bow'  # GREAT starting missile weapon, beware of roaming lion though (maybe bad for long-running lowish lvl bot )
-            else:
-                return 'javelin'
+    # def pick_weapon(self):
+    #     # Now we go to the db... (this isn't used)
+    #     if self.weapon_type == 'Sharp':
+    #         if self.weapon_level >= 2:
+    #             return 'leaf blade'
+    #         else:
+    #             return 'rapier'  # 'battle axe', cleaver, scimitar
+    #     elif self.weapon_type == 'Thrust':
+    #         if self.weapon_level >= 2:
+    #             return 'long sword'
+    #         else:
+    #             return 'broad sword'  # silver dagger (k. shaman) is good, stilleto (sentry) is better
+    #     elif self.weapon_type == 'Blunt':
+    #         if self.weapon_level >= 2:
+    #             return 'morning star'  # expensive, doesn't require 40%, also, war hammer (lvl2), footman's flail, large mace, maul hammer
+    #         else:
+    #             return 'small mace'  # large mace (amethyst guards, vicars, Malbon)
+    #     elif self.weapon_type == 'Pole':
+    #         return 'quarter staff'
+    #     elif self.weapon_type == 'Missile':
+    #         if self.weapon_level >= 3:
+    #             return 'heavy crossbow'
+    #         elif self.weapon_level >= 2:
+    #             return 'long bow'  # GREAT starting missile weapon, beware of roaming lion though (maybe bad for long-running lowish lvl bot )
+    #         else:
+    #             return 'javelin'
 
     # All monster lists are mutually exclusive except for "preferred."
     # Monsters may be placed in a higher level group if they are difficult to kill.
@@ -657,3 +657,5 @@ class Character(object):
     # Esrhae
     # steel plate shield from bandits weighs 15 but gives me nice AC
     # shrew
+    # steel boots that fit Brocolli in Silken Alleys
+    

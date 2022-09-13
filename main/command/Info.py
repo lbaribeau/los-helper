@@ -1,8 +1,11 @@
 
+from math import floor
+
 from reactions.BotReactions import BotReactionWithFlag
 from Aura import Aura
 
 from misc_functions import magentaprint
+import misc_functions
 
 class Info(BotReactionWithFlag):
     header = "     (\S+) the (.+?), an? (.+?) of the (1st|2nd|3rd|\d\d?th) level    "
@@ -39,13 +42,43 @@ class Info(BotReactionWithFlag):
         self.telnetHandler = telnetHandler
         # magentaprint(str(self.regexes))
 
-    def execute(self):
+    def execute_and_wait(self):
         self.got_first = False
         self.got_second = False
         self.mudReaderHandler.register_reaction(self)
         self.telnetHandler.write("info")
         self.wait_for_flag()
         self.mudReaderHandler.unregister_reaction(self)
+
+        self.weapon_proficiencies = {
+            'Sharp'   : self.sharp, 
+            'Thrust'  : self.thrust, 
+            'Blunt'   : self.blunt,
+            'Pole'    : self.pole, 
+            'Missile' : self.missile
+        }
+        self.weapon_type = misc_functions.key_with_max_val(self.weapon_proficiencies)
+        self.weapon_proficiency = self.weapon_proficiencies[self.weapon_type]
+
+        if self.weapon_proficiency >= 70:
+            self.weapon_level = 3
+        elif self.weapon_proficiency >= 40:
+            self.weapon_level = 2
+        else:
+            self.weapon_level = 1
+
+        self.weapon_to_buy = self.pick_weapon()
+
+        self.spell_proficiencies = {
+            'Earth'  : self.earth, 
+            'Wind'   : self.wind, 
+            'Fire'   : self.fire,
+            'Water'  : self.water, 
+            'Astral' : self.astral
+        }
+        self.spell_type = misc_functions.key_with_max_val(self.spell_proficiencies)
+        self.spell_proficiency = self.spell_proficiencies[self.spell_type]
+        self.hp_tick = floor((self.con-1)/3)  # +3 in chapel
 
     def notify(self, regex, M_obj):
         # pass in character, or just edit self?
@@ -98,11 +131,36 @@ class Info(BotReactionWithFlag):
             super().notify(regex, M_obj)
             # magentaprint("Objects: " + str(self.objects))
 
-        @property
-        def success(self):
-            return got_first and got_second
+    @property
+    def success(self):
+        return got_first and got_second
 
-
+    def pick_weapon(self):
+        # Now we go to the db... (this isn't used)
+        if self.weapon_type == 'Sharp':
+            if self.weapon_level >= 2:
+                return 'leaf blade'
+            else:
+                return 'rapier'  # 'battle axe', cleaver, scimitar
+        elif self.weapon_type == 'Thrust':
+            if self.weapon_level >= 2:
+                return 'long sword'
+            else:
+                return 'broad sword'  # silver dagger (k. shaman) is good, stilleto (sentry) is better
+        elif self.weapon_type == 'Blunt':
+            if self.weapon_level >= 2:
+                return 'morning star'  # expensive, doesn't require 40%, also, war hammer (lvl2), footman's flail, large mace, maul hammer
+            else:
+                return 'small mace'  # large mace (amethyst guards, vicars, Malbon)
+        elif self.weapon_type == 'Pole':
+            return 'quarter staff'
+        elif self.weapon_type == 'Missile':
+            if self.weapon_level >= 3:
+                return 'heavy crossbow'
+            elif self.weapon_level >= 2:
+                return 'long bow'  # GREAT starting missile weapon, beware of roaming lion though (maybe bad for long-running lowish lvl bot )
+            else:
+                return 'javelin'
 
     # stats_skills = \
     #     "\|       Str : (\d+) +\|  \|     Sharp   : (\d+) *%  \|  \|     Earth : (\d+) *%     \| +\n\r" + \

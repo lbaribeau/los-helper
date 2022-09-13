@@ -152,7 +152,7 @@ class MudReaderThread(threading.Thread):
             sys.stdout.flush()
 
             if self.recording:
-                self.recorded_text +=  text_out
+                self.recorded_text += text_out
 
             # Debug:  Print ascii out!  (doesn't do every character)
             #for i in range(0, len(out_str)):
@@ -189,7 +189,7 @@ class MudReaderThread(threading.Thread):
             ###### Now match the buffer with some REs  #######
             text_buffer_trunc = 0
 
-            # MudEvents
+            # MUD EVENTS (MudReaderHandler.add_subscriber makes these!)
             # Regexes with lists of objects to notify.
             # for key, m_e in self.mud_events.items():
             for m_e in self.mud_events.values():
