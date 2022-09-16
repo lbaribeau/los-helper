@@ -9,6 +9,7 @@ waterbolt  = 'water'
 crush      = 'crush'
 shockbolt  = 'shock'
 burstflame = 'burstflame'
+shatterstone = 'shatterstone'
 
 vigor      = 'v'
 mendwounds = 'm'
@@ -18,4 +19,4 @@ protection = 'prot'
 
 _lvl1 = [burn, rumble, blister, hurt]
 _lvl2 = [fireball, crush, waterbolt, dustgust]
-_lvl3 = [shockbolt, burstflame]
+_lvl3 = [burstflame, shatterstone, '??', shockbolt]

@@ -46,8 +46,8 @@ class SmartCombat(CombatObject):
         self.black_magic = character.info.pty < 7 or spell_percent >= 5 or character.PREFER_BM
         # self.favourite_spell = Spells.vigor if not self.black_magic else \    
 
-        self.favourite_spell = self.get_low_rank_spell()
-        self.favourite_nuke = self.get_high_rank_spell()
+        self.favourite_spell = self.get_min_rank_spell()
+        self.favourite_nuke = self.get_max_rank_spell()
 
         self.earth_item = "dusty scroll"
         self.water_item = "blue scroll"
@@ -379,11 +379,29 @@ class SmartCombat(CombatObject):
             return combat_item
         return None
 
-
-    def get_low_rank_spell(self):
+    def get_min_rank_spell(self):
         character = self.character
         spell_percent = max(character.spell_proficiencies.values())
-        
+        spell = self.get_t1_spell(character, spell_percent)
+        return spell
+
+    def get_max_rank_spell(self):
+        character = self.character
+        spell_percent = max(character.spell_proficiencies.values())
+        spell = ""
+
+        if spell_percent < 50 and not self.is_caster_class():
+            spell = self.get_t1_spell(character, spell_percent)
+        elif spell_percent < 75:
+            spell = self.get_t2_spell(character, spell_percent)
+        else:
+            spell = self.get_t3_spell(character, spell_percent)
+
+        # magentaprint("Trying to use my spell: " + str(spell), False)
+        # magentaprint("my spells: " + str(character.spells), False)
+        return spell
+
+    def get_t1_spell(self, character, spell_percent):        
         if spell_percent == 0 and self.black_magic:
             return Spells.hurt if Spells.hurt in character.spells else \
                    Spells.rumble if Spells.rumble in character.spells else \
@@ -393,17 +411,24 @@ class SmartCombat(CombatObject):
                            Spells.hurt if spell_percent == character.info.wind else \
                            Spells.burn if spell_percent == character.info.fire else Spells.blister
 
-    def get_high_rank_spell(self):
-        character = self.character
-        spell_percent = max(character.spell_proficiencies.values())
+    def get_t2_spell(self, character, spell_percent):
+        spell = Spells.crush if spell_percent == character.info.earth else \
+                                    Spells.dustgust if spell_percent == character.info.wind else \
+                                    Spells.fireball if spell_percent == character.info.fire else \
+                                    Spells.waterbolt if spell_percent == character.info.water else self.get_t1_spell()
+        if spell not in character.spells:
+            return self.get_t1_spell(character, spell_percent)
+        
+        return spell
 
-        if spell_percent < 50 and not self.is_caster_class():
-            return self.get_low_rank_spell()
+    def get_t3_spell(self, character, spell_percent):
+        spell = Spells.shockbolt if spell_percent == character.info.wind else \
+                    Spells.burstflame if spell_percent == character.info.fire else self.get_low_rank_spell()
+        if spell not in character.spells:
+            return self.get_t2_spell(character, spell_percent)
+        
+        return spell
 
-        return Spells.crush if spell_percent == character.info.earth else \
-                               Spells.dustgust if spell_percent == character.info.wind else \
-                               Spells.fireball if spell_percent == character.info.fire else \
-                               Spells.waterbolt if spell_percent == character.info.water else self.get_low_rank_spell()
 
     def do_phys_attack(self, use_combat_ability):
         self.kill.wait_until_ready()
@@ -434,10 +459,13 @@ class SmartCombat(CombatObject):
             combat_item_reference = self.character.inventory.get_reference(self.favourite_combat_item)
             self.do_cast(combat_item_reference, self.target, True)
         elif self.black_magic and ((self.spell in Spells._lvl1 and self.character.MANA >= 3) or
-                                   (self.spell in Spells._lvl2 and self.character.MANA >= 7)):  # Todo: add oom check
+                                   (self.spell in Spells._lvl2 and self.character.MANA >= 7) or
+                                   (self.spell in Spells._lvl3 and self.character.MANA >= 10)):  # Todo: add oom check
             self.do_cast(self.spell, self.target)
         elif self.black_magic and self.spell in Spells._lvl2 and self.character.MANA < 7 and self.character.MANA >= 3:
             self.do_cast(Spells._lvl1[Spells._lvl2.index(self.spell)], self.target, False)
+        elif self.black_magic and self.spell in Spells._lvl3 and self.character.MANA < 10 and self.character.MANA >= 3:
+            self.do_cast(Spells._lvl1[Spells._lvl3.index(self.spell)], self.target, False)
         else:
             time.sleep(min(0.2, self.kill.wait_time()))
 

@@ -357,9 +357,9 @@ class ArmourBot(MiniBot):
         armour_level = 1
         if character_lvl > 9:
             if self.steel():
-                armour_level = 3
-            elif self.ringmail():
                 armour_level = 4
+            elif self.ringmail():
+                armour_level = 3
             elif self.chain():
                 armour_level = 2
             elif self.leather():
@@ -368,7 +368,7 @@ class ArmourBot(MiniBot):
                 armour_level = 0
         elif character_lvl > 4:
             if self.ringmail():
-                armour_level = 4
+                armour_level = 3
             elif self.chain():
                 armour_level = 2
             elif self.leather():

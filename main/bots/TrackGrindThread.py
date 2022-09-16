@@ -590,9 +590,9 @@ class TrackGrindThread(GrindThread):
         if self.character.DEAD:
             self.character.DEAD = False
             self.character.DEATHS += 1
-            magentaprint("Died: Pulling up my bootstraps and starting again", False)
-            # magentaprint("Died: stopping bot thread.", False)
-            # self.stop()
+            # magentaprint("Died: Pulling up my bootstraps and starting again", False)
+            magentaprint("Died: stopping bot thread.", False)
+            self.stop()
             return self.LIMBO_TO_CHAPEL[:]
 
         if self.character.NEEDS_TO_SELL:
