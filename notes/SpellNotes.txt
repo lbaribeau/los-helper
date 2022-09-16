@@ -13,3 +13,5 @@ Level 5 spells are not really in the game
 - Holbyn has a hidden gateway in his shop, when defeated you can get in there and fight his shadow which guards lvl 3 fire magic blastburn
 - Can trade a thieves blade dropped by Nospe (need a key from the Floor Manager and then he's in a locked room in the basement -> side door, panel)
   to the Chief Alchemist for an iodide scroll which is slow-disease
+- Shatterstone is a brown scroll guarded by a stone golem in the tower north of Lyron,
+  you can reach him by "invoking" a tiger eye gem that you get from Lyron by trading him Choorga's head

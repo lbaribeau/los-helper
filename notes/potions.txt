@@ -1,9 +1,14 @@
-cyan - invisibility
-smoky - blindness
-green - protection
-lady's tears - detect invis
+elixir of morinva, cyan potion - invisibility
+smoky potion - blindness
+??? - silence
+dark chalice - fear
+milky potion, silver chalice - bless
+green, steel bottle - protection
+lady's tears, indigo potion - detect invis
+??? - detect magic
 granite - teleport to safety
 burnt ochre - fire protection
+aaashaal's gift - air protection
 glowing potion - light
-gold potion - healing
+gold potion - strong healing
 amber vial - poison subsides (doesn't stop it though)

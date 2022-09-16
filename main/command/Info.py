@@ -75,7 +75,7 @@ class Info(BotReactionWithFlag):
             self.pty     = int(M_obj.group(13))
             self.sharp   = int(M_obj.group(2))
             self.thrust  = int(M_obj.group(5))
-            self.blunt   = 0 #int(M_obj.group(8))
+            self.blunt   = int(M_obj.group(8))
             self.pole    = int(M_obj.group(11))
             self.missile = int(M_obj.group(14))
             self.earth   = int(M_obj.group(3))

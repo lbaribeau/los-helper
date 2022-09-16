@@ -145,7 +145,10 @@ return {
         id: 'attack-chart'
       },
       yaxis: {
-        categories: ['0', '10']
+        categories: ['0', '10'],
+      },
+      xaxis: {
+        tickAmount: 20
       }
     },
     series: [{
