@@ -191,7 +191,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'druid\'s silver sickle', 'protective robes', 'alchemist\'s ring',
         'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
         'small flask', 'large restorative', 'scarlet potion', #'tree root', # kobold priest
-        #'white potion', 'small restorative', 'chicken soup',
+        'white potion', # 'small restorative', 'chicken soup',
         'Elixir of Morinva', 'granite potion', 'philtre of perception', 'philtre of health',
         'golden potion', #'platinum crucifix', # Helps disease? Worth a lot of money?
         # 'granite rod', # oremaster, kobold chieftain
