@@ -225,6 +225,7 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'chain mail gloves', # mill worker
         'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring', 
         'greenwood jerkin',"paladins's plate armour", "master's habit", 
+        'lucky pebble',"blue ioun stone",
         # 'maul hammer' # This we need to keep ONE (later)
         # 'iron shield'
         # 'platinum ring', 'gold ring', 'steel ring', 'silver ring'
