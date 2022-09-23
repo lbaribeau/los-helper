@@ -383,6 +383,8 @@ class SmartCombat(CombatObject):
         character = self.character
         spell_percent = max(character.spell_proficiencies.values())
         spell = self.get_t1_spell(character, spell_percent)
+        if spell_percent > 50 and self.is_caster_class():
+            spell = self.get_t2_spell(character, spell_percent)
         return spell
 
     def get_max_rank_spell(self):
