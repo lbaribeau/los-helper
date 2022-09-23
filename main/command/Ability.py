@@ -56,6 +56,9 @@ class BuffAbility(Ability):
         elif regex is self.wear_off_regex:
             # self.__class__.timer = time.time() + self.__class__.cooldown_after_success - self.lasts
             self.active = False
+        elif regex in self.failure_regexes:
+            self.__class__.timer = time.time() + self.__class__.cooldown_after_failure
+            self.active = False
         # elif regex is self.already_buffed_regex:
         #     if self.up():
         #         # Timer is completely wrong -> Just set it very high and wait for wear_off_regex

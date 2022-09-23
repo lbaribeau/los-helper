@@ -5,6 +5,7 @@ import time
 from math import floor, ceil
 
 from bots.BotThread import BotThread
+from db.Mob import Mob
 from misc_functions import magentaprint, get_timeint
 from reactions.BotReactions import GenericBotReaction
 from reactions.ring_reaction import RingWearingReaction
@@ -161,7 +162,7 @@ class GrindThread(BotThread):
             # if using a thief or assassin then hide, check if hidden
             # then have smart combat backstab
 
-            self.pre_combat_actions()
+            self.pre_combat_actions(new_target)
             if self.is_character_class('Thi') or self.is_character_class('Ass'):
                 hide_attempt = 0
                 first = True
@@ -203,8 +204,20 @@ class GrindThread(BotThread):
         self.character.HIDDEN = success
         return success
 
-    def pre_combat_actions(self):     
-        self.use_buff_ability()
+    def is_mob_weak(self, mob_target, level_diff=5):
+        if mob_target.level is None:
+            return False
+        
+        mob_level = mob_target.level
+        if mob_target.difficulty_rating is not None and mob_target.difficulty_rating != "":
+            mob_level += mob_target.difficulty_rating
+
+        return mob_level < (self.character.level - level_diff)
+
+    def pre_combat_actions(self, target):
+        mob_target = Mob.get_mob_by_name(target)
+        if not self.is_mob_weak(mob_target):
+            self.use_buff_ability()
 
 
     def set_up_automatic_ring_wearing(self):
