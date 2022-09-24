@@ -84,7 +84,7 @@ class SimpleCombatObject(CombatObject, Command):
     def end_combat(self):
         # magentaprint("SimpleCombatObject.end_combat():\n\tsuper().end_combat: {0}\n\tself.result: {1}\n\tself.error_regexes: {2}\n\tresult in error regexes: {3}".format(
         #     super().end_combat, self.result, self.error_regexes, self.result in itertools.chain.from_iterable(self.error_regexes)))
-        magentaprint("Checking simpleCombatObject.end_combat, getting {0}".format(super().end_combat or self.result in itertools.chain.from_iterable(self.error_regexes)))
+        magentaprint("Checking simpleCombatObject.end_combat, getting {0}".format(super().end_combat or self.result in itertools.chain.from_iterable(self.error_regexes)), False)
         return super().end_combat or self.result in itertools.chain.from_iterable(self.error_regexes)
 
     # Needs to be a class method because the human doesn't have the object.

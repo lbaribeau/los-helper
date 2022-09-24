@@ -258,8 +258,10 @@ slow_whom = [r"Slow whom\?"]
 touch                   = [r"You touched the (.+?) for (.+?) damage\."]
 touch_fail              = [r"You failed to harm the (.+?)\."]
 touch_whom              = [r"Touch whom\?"]
-wither                  = [r"You withered the (.+?) for (.+?) damage\."]  # TODO: Obviously needs work
-wither_fail             = [r"Your withering touch did not hurt " + __the_mob + "\."]
+wither                  = [r"You withered " + __three_possible_mob_strings  + r" for (?P<d>\d+) damage\."]
+#You withered Farmer Woldis for 64 damage.
+
+wither_fail             = [r"Your withering touch did not hurt " + __three_possible_mob_strings + r"\."]
 wither_whom             = [r"Wither whom\?"]
 bash                    = [r"You bash the (.+?), confusing them\."]
 bash_fail               = [r"You failed to bash it\."]
