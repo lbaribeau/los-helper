@@ -63,7 +63,7 @@ class SmartGrindThread(TrackGrindThread):
         self.low_level = int(math.floor(self.character.level / 2)) + low_level_modifier
 
         if self.low_level < (self.character.level - 7):
-            self.low_level = self.character.level - 7
+            self.low_level = self.character.level - 7 + low_level_modifier
 
         self.high_level = max([int(math.ceil(self.character.level / 2)), self.character.level - 3]) + high_level_modifier
 

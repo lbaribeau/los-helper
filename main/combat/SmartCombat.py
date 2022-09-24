@@ -394,10 +394,10 @@ class SmartCombat(CombatObject):
 
         if spell_percent < 50:
             spell = self.get_t1_spell(character, spell_percent)
-        elif spell_percent < 75:
-            spell = self.get_t2_spell(character, spell_percent)
-        else:
+        elif spell_percent > 74 and self.character.info.int > 18:
             spell = self.get_t3_spell(character, spell_percent)
+        else:
+            spell = self.get_t2_spell(character, spell_percent)
 
         # magentaprint("Trying to use my spell: " + str(spell), False)
         # magentaprint("my spells: " + str(character.spells), False)
