@@ -17,10 +17,11 @@ VERSION = "2"
 def get_verbose_mode():
     return verboseMode
 
-def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=False):
-    global debugMode    
-    # caller = getframeinfo(stack()[2][0])
+def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=False, show_stacktrace=False):
+    global debugMode
     caller = []
+    if show_stacktrace:
+        caller = getframeinfo(stack()[2][0])
 
     if debugMode:
         for st in stack():

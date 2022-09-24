@@ -33,6 +33,7 @@ class CombatObject(ThreadingMixin):
         self.regex_cart = self.end_combat_regexes[:]
 
     def notify(self, regex, M_obj):
+        # magentaprint(str(self) + str(regex) +  " notified combat object.", False)
         self.result = regex
         if self.end_combat:
             # magentaprint(str(self) + " ending combat.")
@@ -50,12 +51,13 @@ class CombatObject(ThreadingMixin):
     def mob_fled(self):
         return self.result in itertools.chain.from_iterable(R.mob_fled)
     def in_combat(self):
-        magentaprint(str(self) + " in combat returning " + str(hasattr(self, 'thread') and self.thread and self.thread.is_alive()))
+        # magentaprint(str(self) + " in combat returning " + str(hasattr(self, 'thread') and self.thread and self.thread.is_alive()))
         return hasattr(self, 'thread') and self.thread and self.thread.is_alive()
 
 class SimpleCombatObject(CombatObject, Command):
     # This is for code used by Kill and Cast but not SmartCombat
     timer = time() - 10
+    target_dead = False
 
     def __init__(self, telnetHandler):
         Command.__init__(self, telnetHandler)
@@ -73,7 +75,7 @@ class SimpleCombatObject(CombatObject, Command):
         # magentaprint("SimepleCombatObject end_combat_regexes: " + str(self.end_combat_regexes))
 
     def notify(self, regex, M_obj):
-        # magentaprint(str(self) + " notified.")
+        # magentaprint(str(self) + str(regex) +  " notified.")
         CombatObject.notify(self, regex, M_obj)
         Command.notify(self, regex, M_obj)
         # magentaprint('SimpleCombatObject r ' + regex + ' errors ' + str(self.error_regexes))
@@ -84,7 +86,7 @@ class SimpleCombatObject(CombatObject, Command):
     def end_combat(self):
         # magentaprint("SimpleCombatObject.end_combat():\n\tsuper().end_combat: {0}\n\tself.result: {1}\n\tself.error_regexes: {2}\n\tresult in error regexes: {3}".format(
         #     super().end_combat, self.result, self.error_regexes, self.result in itertools.chain.from_iterable(self.error_regexes)))
-        magentaprint("Checking simpleCombatObject.end_combat, getting {0}".format(super().end_combat or self.result in itertools.chain.from_iterable(self.error_regexes)), False)
+        # magentaprint("Checking simpleCombatObject.end_combat, getting {0}".format(super().end_combat or self.result in itertools.chain.from_iterable(self.error_regexes)), False)
         return super().end_combat or self.result in itertools.chain.from_iterable(self.error_regexes)
 
     # Needs to be a class method because the human doesn't have the object.
@@ -110,8 +112,10 @@ class SimpleCombatObject(CombatObject, Command):
         self.stopping = False
         self.target = target
         self.wait_until_ready()
+        self.target_dead = False
 
-        while not self.stopping:
+        while not self.stopping and not self.target_dead:
+            # magentaprint("Combat object " + str(self.target), False)
             self.send(telnetHandler, self.target)
             # cls.wait_until_ready()  # Too early
             # Just wait_for_flag should do the trick.

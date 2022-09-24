@@ -1,6 +1,7 @@
 
 from combat.CombatObject import SimpleCombatObject
 from comm import RegexStore as R
+from misc_functions import magentaprint
 
 class Kill(SimpleCombatObject):
     command = 'k'
@@ -17,11 +18,20 @@ class Kill(SimpleCombatObject):
 
     def __init__(self, telnetHandler):
         super().__init__(telnetHandler)
+
         # self.regex_cart.extend([R.hastened, R.already_hastened, R.feel_slower, R.circle_fail])
         self.regex_cart.extend([R.hastened, R.already_hastened, R.feel_slower])
 
     def notify(self, regex, M_obj):
-        if regex in R.hastened or regex in R.already_hastened:
+        if regex in R.attack_hit:
+            # magentaprint("kill notified: " + str(M_obj.group(0)), False)
+            if "over" in M_obj.groupdict() and M_obj.group('over') is not None:
+                # magentaprint("Mob killed - stopping kill thread", False)
+                self.target_dead = True
+                self.stop()
+            else:
+                target_dead = False
+        elif regex in R.hastened or regex in R.already_hastened:
             Kill.cooldown_after_success = 2
             Kill.cooldown_after_failure = 2
         elif regex in R.feel_slower:

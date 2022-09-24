@@ -303,33 +303,34 @@ spell_crit = [
     r"Your earth magic slams hard into " + __three_possible_mob_strings + r"\.",
     r"Your fire magic explodes into " + __three_possible_mob_strings + r"\."
 ]
+__mob_overwhelmed = r"(?P<over>\n?\r?.+?\n?\r?Your attack overwhelms)?"
 attack_hit = [
-    "(?s)You swing with your .+?, hacking (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\.",
-    "(?s)You slice (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+)\s+damage\s+with\s+your\s+.+?\.",
-    "You slash at (?:the )?(" + __numbers + " )?(.+?) and hit for (?P<d>\d+) damage\.",
+    "(?s)You swing with your .+?, hacking (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\." + __mob_overwhelmed,
+    "(?s)You slice (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+)\s+damage\s+with\s+your\s+.+?\." + __mob_overwhelmed,
+    "You slash at (?:the )?(" + __numbers + " )?(.+?) and hit for (?P<d>\d+) damage\." + __mob_overwhelmed,
 
-    "You chop at (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-    "(?s)You stab (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+causing\s+(?P<d>\d+)\s+damage",
-    "You lunge at (?:the )?(" + __numbers + " )?(.+?), striking for (?P<d>\d+) damage\.",
+    "You chop at (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\." + __mob_overwhelmed,
+    "(?s)You stab (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+causing\s+(?P<d>\d+)\s+damage" + __mob_overwhelmed,
+    "You lunge at (?:the )?(" + __numbers + " )?(.+?), striking for (?P<d>\d+) damage\." + __mob_overwhelmed,
 
-    "You lash out and thump (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-    "You punch (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-    "You kick (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-    "You head-butt (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-    "You grab (?:the )?(" + __numbers + " )?(.+?) and gouge (him|her|it) for (?P<d>\d+)\s+damage\.",
+    "You lash out and thump (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\." + __mob_overwhelmed,
+    "You punch (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\." + __mob_overwhelmed,
+    "You kick (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\." + __mob_overwhelmed,
+    "You head-butt (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\." + __mob_overwhelmed,
+    "You grab (?:the )?(" + __numbers + " )?(.+?) and gouge (him|her|it) for (?P<d>\d+)\s+damage\." + __mob_overwhelmed,
 
-    "(?s)You smash your .+? into (?:the )?(" + __numbers + " )?(.+?),\s+causing\s+(?P<d>\d+)\s+damage\.",
-    "You heave your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+smashing\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
-    "You bludgeon (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+    "(?s)You smash your .+? into (?:the )?(" + __numbers + " )?(.+?),\s+causing\s+(?P<d>\d+)\s+damage\." + __mob_overwhelmed,
+    "You heave your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+smashing\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\." + __mob_overwhelmed,
+    "You bludgeon (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\." + __mob_overwhelmed,
 
-    "You lunge at (?:the )?(" + __numbers + " )?(.+?), hitting them for (?P<d>\d+) damage\.",
-    "You swing your .+?, striking for (?P<d>\d+) damage\.",
-    "(?s)You sweep (?:the )?(" + __numbers + " )?(.+?) with your .+?\s+for\s+(?P<d>\d+)\s+damage\.",
+    "You lunge at (?:the )?(" + __numbers + " )?(.+?), hitting them for (?P<d>\d+) damage\." + __mob_overwhelmed,
+    "You swing your .+?, striking for (?P<d>\d+) damage\." + __mob_overwhelmed,
+    "(?s)You sweep (?:the )?(" + __numbers + " )?(.+?) with your .+?\s+for\s+(?P<d>\d+)\s+damage\." + __mob_overwhelmed,
 
-    "Your missile slams into (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-    "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
-    "You use your .+? to strike (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\.",
-    "Your touch completely overwhelms the (.+?)!"
+    "Your missile slams into (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\." + __mob_overwhelmed,
+    "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\." + __mob_overwhelmed,
+    "You use your .+? to strike (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\." + __mob_overwhelmed,
+    r"(?P<over>Your touch completely overwhelms the (.+?)!)"
 ]
 attack_miss = [
     "Your blow did no damage.",
@@ -365,9 +366,9 @@ aura = [r"You glow with a " + __aura + " aura\."]
 mob_aura = [__Three_possible_mob_strings + r" glows with a " + __aura + " aura\."]
 
 cast = [
-    r"You cast a (.+?) spell on (.+?)\.",
-    r"(.+?) spell cast\.",
-    r"You cast a (.+?) spell\."
+    r"You cast a (.+?) spell on (.+?)\." + __mob_overwhelmed,
+    r"(.+?) spell cast\." + __mob_overwhelmed,
+    r"You cast a (.+?) spell\." + __mob_overwhelmed
 ]
 spell_damage = [
     r"The spell did (?P<d>\d+) damage."

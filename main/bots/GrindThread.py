@@ -911,14 +911,14 @@ class GrindThread(BotThread):
     #     self.command_handler.user_flee()
     #     # We could do a blocking thing here to start a rest
 
-    def get_items_if_weapon(self):
-        self.command_handler.get.execute('all')
-        self.command_handler.get.wait_for_flag()
+    def get_all_loot_items(self): #named for improved findability
+        self.command_handler.get.execute_and_wait('all')
         if self.command_handler.get.failed_to_get_items:
             self.character.NEEDS_TO_SELL = True
             self.command_handler.get.failed_to_get_items = False
-        
-        if hasattr(self.smartCombat.weapon_bot, 'weapon'):
+
+    def get_items_if_weapon(self):        
+        if hasattr(self.smartCombat.weapon_bot, 'weapon') or self.is_character_class('Mon'):
             self.get_items()
         else:
             magentaprint("GrindThread leaving items behind since weapon is broken.")
@@ -930,7 +930,7 @@ class GrindThread(BotThread):
 
     def get_items(self):
         # self.command_handler.process('ga')
-        self.command_handler.get.execute_and_wait('all')
+        self.get_all_loot_items()
         # self.command_handler.get.wait_for_flag()
 
         while self.command_handler.get.cant_carry and not self.stopping:
@@ -953,7 +953,8 @@ class GrindThread(BotThread):
             else:
                 # just leave it there
                 return
-            self.command_handler.get.execute_and_wait('all')
+            self.get_all_loot_items()
+            
 
     def engage_mobs_who_joined_in(self):
         # while self.character.MOBS_JOINED_IN != []:

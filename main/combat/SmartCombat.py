@@ -240,6 +240,8 @@ class SmartCombat(CombatObject):
         is_cast_ready = True
         use_combat_ability = True
         mob_target = None
+        self.kill.target_dead = False
+        self.cast.target_dead = False
 
         if self.target_fullref is not None and self.character.ACTIVELY_BOTTING:
             self.mob_target = Mob.get_mob_by_name(self.target_fullref)
@@ -261,7 +263,7 @@ class SmartCombat(CombatObject):
         if use_combat_ability:
             self.use_any_fast_combat_abilities()  # ie. Touch, Dance
 
-        while not self.stopping:
+        while not self.stopping and not self.kill.target_dead and not self.cast.target_dead:
             # if we have too many mobs attacking then we should start casting even if they're weak
             if self.spell is None and len(self.character.mobs.attacking) > 2:
                 self.spell = self.determine_favorite_spell_for_target()

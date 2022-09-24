@@ -429,6 +429,7 @@ class TrackGrindThread(GrindThread):
         self.FOUNDRY = ['areaid1231', 'out', 'down', 'east', 'east', 'east', 'south']
         self.ALCHEMISTS = ['areaid999', 'areaid2967']
         self.EGAN_TRENT = ['areaid1999']
+        self.BARBS = ['areaid1421', 'west', 'out','nw','ne','tent','out','east','se','s','sw','w','nw','tent','out']
         self.ORCS = ['areaid747', 'areaid749']
         self.OLMER = ['areaid297']
         self.CHERYN = ['areaid1380']
@@ -560,6 +561,7 @@ class TrackGrindThread(GrindThread):
             # Track("Cathedral", self.CATHEDRAL, 10, 16, 1), # lay priest damage rolls too high
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1),
             Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1),
+            Track("Combat Master / barbs", self.BARBS, 8, 14, 0),
             Track("Tardan", self.TARDAN, 15, 20, 0),
             Track("Rimark", self.RIMARK, 15, 20, 1),
             Track("Dojo", self.DOJO, 15, 20, 1),

@@ -14,6 +14,7 @@ class Cast(SimpleCombatObject):
     cooldown_after_failure = 0
     regexes = []
 
+    # cast = RegexStore.cast
     success_regexes = [RegexStore.cast, RegexStore.aura, RegexStore.mob_aura]
     failure_regexes = [RegexStore.cast_failure, RegexStore.no_mana]
     error_regexes = [RegexStore.bad_target_or_spell, RegexStore.not_here]
@@ -32,6 +33,7 @@ class Cast(SimpleCombatObject):
 
     def __init__(self, telnetHandler):
         super().__init__(telnetHandler)
+
         self.end_combat_regexes.append(RegexStore.no_mana)
 
     # Commented... hmmm.. I went with the notify_failure(), I think so I wasn't checking for the regex twice...
@@ -48,7 +50,13 @@ class Cast(SimpleCombatObject):
        #     super().notify(regex, M_obj)
 
     def notify(self, regex, M_obj):
-        if regex in RegexStore.aura:
+        if regex in RegexStore.cast:
+            # magentaprint("cast notified: " + str(M_obj.group(0)), False)
+            if "over" in M_obj.groupdict() and M_obj.group('over') is not None:
+                # magentaprint("Mob killed - stopping cast thread", False)
+                self.target_dead = True
+                self.stop()
+        elif regex in RegexStore.aura:
             self.aura = Aura(M_obj.group('aura'))
             self.aura_timer = time()
         elif regex in RegexStore.no_mana:
