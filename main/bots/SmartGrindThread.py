@@ -61,6 +61,10 @@ class SmartGrindThread(TrackGrindThread):
 
     def set_target_levels(self, low_level_modifier, high_level_modifier):
         self.low_level = int(math.floor(self.character.level / 2)) + low_level_modifier
+
+        if self.low_level < (self.character.level - 7):
+            self.low_level = self.character.level - 7
+
         self.high_level = max([int(math.ceil(self.character.level / 2)), self.character.level - 3]) + high_level_modifier
 
     def do_pre_go_actions(self):

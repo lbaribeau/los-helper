@@ -15,7 +15,8 @@ Kerp dark knight dwarf 16 16 3 16 3
 Herp Thief dwarf 16 16 3 16 3
 Yerp monk 18 3 4 18 11
 Terp thief 18 3 4 18 11
-Eerp fighter dward 15 16 3 16 3
+Eerp fighter dwarf 15 16 3 16 4
+Lerp alc dwarf 15 16 3 16 4
 
 Dwarp thief (swamp troll)
 Gerp mage (w/ blis + show)
