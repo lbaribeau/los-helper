@@ -452,6 +452,7 @@ class Character(object):
     # Farmer Viladin
     # ogrish guard
     # caretaker
+    # "sharper" on Cardemom way
     preferred_lvl_1_2_monsters = [
         'oaf', 'wanderer', 'thug', 'spiv', 'kobold sentry', 'tired hooker', 'waitress',
         'blond hooker', 'angry hooker', 'sultry hooker', 'journeyman', 'housewife', # 'acolyte'

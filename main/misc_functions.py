@@ -33,6 +33,7 @@ def do_magentaprint(text, **kwargs):
     #print(output)
     print(get_timestamp() + "   | " + str(text), **kwargs)
     comm.ConsoleHandler.newConsoleHandler().white()
+    sys.stdout.flush()
 
 def greenprint(text):
     comm.ConsoleHandler.newConsoleHandler().green()
@@ -42,7 +43,8 @@ def greenprint(text):
     comm.ConsoleHandler.newConsoleHandler().white()
 
 def get_timestamp():
-    return datetime.now().time().strftime("%H:%M:%S.%f")[:-4]
+    # return datetime.now().time().strftime("%H:%M:%S.%f")[:-4]
+    return datetime.now().time().strftime("%H:%M:%S.%f")[:-3]
 
 def get_runtime():
     global startTime

@@ -109,7 +109,7 @@ class CommandHandler(object):
         self.info.execute_and_wait()
         self.character.info = self.info
         self.character.process_info()
-        self.smartCombat = SmartCombat(self.kill,self.cast,self.potion_thread_handler,self.wield,self.telnetHandler,self.character,self.weapon_bot,self.prompt, self.info) 
+        self.smartCombat = SmartCombat(self.kill,self.cast,self.potion_thread_handler,self.wield,self.telnetHandler,self.character,self.weapon_bot,self.prompt, self.info, self.mudReaderHandler.mudReaderThread.mud_reader_completion_event) 
         mudReaderHandler.add_subscriber(self.smartCombat)
 
         self.go = Go(self.kill, self.cast, telnetHandler, character)
@@ -491,8 +491,10 @@ class CommandHandler(object):
         elif user_input == 'go_repair':
             self.armour_bot.start_thread()
         elif user_input == 'trackno':
-            magentaprint("command_handler.bot_thread.__nextpath is " + str(self.bot_thread.nextpath))
+            magentaprint("command_handler.bot_thread.nextpath is " + str(self.bot_thread.nextpath))
             self.telnetHandler.write('')
+        elif user_input == 'mud_events':
+            magentaprint("MudReaderThread mud events:\n\t{}".format('\n\t'.join([str(m.regexes) for m in self.mudReaderHandler.mudReaderThread.mud_events.values()])))
         else:
             # Doesn't match any command we are looking for, send it to server
             self.telnetHandler.write(user_input)

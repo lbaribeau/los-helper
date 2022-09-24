@@ -239,7 +239,7 @@ class Turn(FastCombatAbility):
 
     # TODO: needs work:
     valid_targets = ['zombie', 'skeleton', 'ghast', 'poltergeist', 'geist', 'ghoul', 'shadow lich', 
-        'shadowed huorn']
+        'shadowed huorn', 'massive zombie']
 
 class Touch(SlowCombatAbility):
     command = "to"

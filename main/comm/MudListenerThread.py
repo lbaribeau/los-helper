@@ -12,7 +12,7 @@ class MudListenerThread(threading.Thread):
     to the buffer for the MudReaderThread to read it.'''
 
     def __init__(self, telnetHandler, MUDBuffer):
-        super().__init__(name='MudListenerThread')
+        super().__init__(name='MudListener')
         self.telnetHandler = telnetHandler
         self.MUDBuffer     = MUDBuffer
         self.stopping      = False

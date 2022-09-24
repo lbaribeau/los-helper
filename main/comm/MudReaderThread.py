@@ -1,6 +1,5 @@
 
 import threading
-from threading import Thread
 import atexit
 import time
 import re
@@ -14,7 +13,7 @@ class MudReaderThread(threading.Thread):
     to the buffer for the MudReaderThread to read it."""
 
     def __init__(self, MUDBuffer, character, consoleHander):
-        Thread.__init__(self)
+        super().__init__(name='MudReader')
         # Constants
         self.ASCII_EOT = 4
         self.ASCII_ESC = 27
@@ -70,6 +69,8 @@ class MudReaderThread(threading.Thread):
 
         self.stopping = False
         atexit.register(self.stop)
+        # self.mud_reader_completion_event = MudReaderCompletionEvent()
+        self.mud_reader_completion_event = threading.Event()
 
     def stop(self):
         self.stopping = True
@@ -148,7 +149,8 @@ class MudReaderThread(threading.Thread):
 
             # Not using print because it inserts extra spaces.
 
-            #sys.stdout.write("/"+out_str)  # puts slashes between text fragments for debugging
+            # sys.stdout.write("/"+out_str)  # puts slashes between text fragments for debugging
+            # sys.stdout.write("/")  # puts slashes between text fragments for debugging (clumps)
             sys.stdout.flush()
 
             if self.recording:
@@ -192,12 +194,15 @@ class MudReaderThread(threading.Thread):
             # MUD EVENTS (MudReaderHandler.add_subscriber makes these!)
             # Regexes with lists of objects to notify.
             # for key, m_e in self.mud_events.items():
+            # i2=0
             for m_e in self.mud_events.values():
+                # i2=i2+1
                 for r in m_e.regexes:
                     match_iterator = re.finditer(r, text_buffer)
                     for match in match_iterator:
                         for s in m_e.subscribers:
                             s.notify(r, match)
+                        # magentaprint("MudReaderThread iteration {}".format(i2))
                         m_e.notify()
                         text_buffer_trunc = max([text_buffer_trunc, match.end()])
                         # import RegexStore
@@ -395,6 +400,10 @@ class MudReaderThread(threading.Thread):
     def notify_subscribers_of_buffer_completion(self):
         for s in self.buffer_completion_subscribers:
             s.notify_of_buffer_completion()
+        # magentaprint("MudReaderThread setting completion event.")
+        # sys.stdout.flush()
+        self.mud_reader_completion_event.set()
+        # sys.stdout.write("/")  # puts slashes between text fragments for debugging (clumps)
 
     def copy_MUDBuffer(self):
         # Routine to copy the buffer shared with MudListenerThread.

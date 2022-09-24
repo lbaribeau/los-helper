@@ -13,7 +13,7 @@ from command.potion_thread import PotionThreadHandler
 class SmartCombat(CombatObject):
     black_magic = True
 
-    def __init__(self, kill, cast, potion_thread_handler, wield, telnetHandler, character, weapon_bot, prompt, info):
+    def __init__(self, kill, cast, potion_thread_handler, wield, telnetHandler, character, weapon_bot, prompt, info, mud_reader_completion_event):
         super().__init__(telnetHandler)
         self.thread   = None
         self.target   = None
@@ -79,13 +79,14 @@ class SmartCombat(CombatObject):
         self.full_rings = False
         self.prompt = prompt
         self.info = info
+        self.mud_reader_completion_event = mud_reader_completion_event
 
     def notify(self, regex, match):
         # Notifications are used for healing
         # So SmartCombat needs to be registered/unregistered... or have a boolean for whether we're in combat.
         # I prefer the latter.
         # magentaprint("SmartCombat notify " + match.re.pattern) # gets prompt (too many prints)
-        super().notify(regex, match)
+        super().notify(regex, match) # Calls self.stop if it's an end-combat regex
         if regex in R.prompt:
             if self.activated:
                 if self.should_use_heal_ability():
@@ -228,6 +229,12 @@ class SmartCombat(CombatObject):
         cast = self.cast
         kill = self.kill
 
+        # magentaprint("SmartCombat Why isn't this wait waiting1")
+        # magentaprint(self.mud_reader_completion_event)
+        # self.mud_reader_completion_event.clear()
+        # self.mud_reader_completion_event.wait()
+        # magentaprint("SmartCombat Why isn't this wait waiting2")
+
         self.use_any_fast_combat_abilities()  # ie. Touch, Dance
         while not self.stopping and not self.end_combat:
             # if self.broken_weapon:
@@ -240,17 +247,23 @@ class SmartCombat(CombatObject):
                 # If the cast wait time is so long that we should hit once before fleeing, don't flee yet
                 self.escape()
             elif kill.up() or kill.wait_time() <= cast.wait_time() or not self.casting:
+                magentaprint("SmartCombat kill block")
                 kill.wait_until_ready()
                 if self.stopping:
                     break
                 self.prompt.clear()
+                self.mud_reader_completion_event.clear()
                 self.use_slow_combat_ability_or_attack()
-                magentaprint("Smart combat attacked, end combat is {}, stopping is {}".format(self.end_combat, self.stopping))
+                self.mud_reader_completion_event.clear()
+                magentaprint("Smart combat attacked, end combat is {}, stopping is {}, event is {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
                 self.prompt.wait() # Wait for prompt to come to give time for mob death info to get through
                 # magentaprint("SmartCombat finished attack, stopping: " + str(self.stopping))
                 # time.sleep(0.1) # How do we wait to know if the mob was killed. (Wait for prompt)
-                magentaprint("After prompt wait, end combat is {}, stopping is {}".format(self.end_combat, self.stopping))
+                magentaprint("After prompt wait, end combat is {}, stopping is {}, event is {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
+                self.mud_reader_completion_event.wait()
+                magentaprint("After mud reader completion, end combat is {}, stopping is {}, event is {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
             else:
+                magentaprint("SmartCombat cast block")
                 C = self.character
                 damage = C.maxHP - C.HEALTH
                 cast.wait_until_ready()

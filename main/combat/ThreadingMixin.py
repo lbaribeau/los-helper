@@ -44,8 +44,8 @@ class ThreadingMixin:
         if self.thread is None or not self.thread.is_alive():
             # not is_alive() means it won't look at stopping anymore so we're good.
             #cls.thread = Thread(target=cls.run, args=(telnetHandler, target))
-            self.thread = Thread(target=self.run, args=(telnetHandler, target)) 
-            # One target is the thread target function
+            self.thread = Thread(target=self.run, args=(telnetHandler, target), name="ThreadingMixin") 
+            # One target is the thread target function (_target)
             # The other target is from the telnet command string
             self.thread.daemon = True # the program will exit even if this thread is still alive
             self.thread.start()
@@ -58,7 +58,5 @@ class ThreadingMixin:
     def start_thread(self, target=None):
         self.spam(self.telnetHandler, target)
 
-
     # Expect run to be defined by child
     # We aren't inheriting Thread, we are making a thread by giving self.run
-
