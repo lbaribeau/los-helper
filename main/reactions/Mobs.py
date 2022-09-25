@@ -15,8 +15,17 @@ class Mobs(BotReactionWithFlag):
     # The main reason for this object is too further clean up MudReaderThread, which is ALMOST readable/maintainable now.
     # Cartography initializes this upon entry of a new area
     regex_cart = [
-        R.mob_arrived, R.mob_died,    R.mob_fled,     R.mob_defeated, R.mob_wandered, R.mob_left,
-        R.mob_joined1, R.mob_joined2, R.mob_attacked, R.you_attack,   R.mob_aggro
+        R.mob_arrived,
+        R.mob_left,
+        R.mob_wandered,
+        R.you_attack,
+        R.mob_attacked,
+        R.mob_joined1,
+        R.mob_joined2,
+        R.mob_aggro,
+        R.mob_died,
+        R.mob_defeated,
+        R.mob_fled
     ]
 
     def __init__(self):
@@ -33,38 +42,8 @@ class Mobs(BotReactionWithFlag):
         self.chase = ''
         self.chase_exit = ''
 
-    def read_match(self, m):
-        if m.group('mob1'):
-            return m.group('mob1').strip()
-        elif m.group('mob2'):
-            # magentaprint("Mobs mob2")
-            if m.group('mob2').startswith('The '):
-                return m.group('mob2').partition(' ')[2].strip()
-            else:
-                return m.group('mob2').strip()
-        elif m.group('mob3'):
-            # magentaprint("Mobs mob3")
-            return m.group('mob3').strip()
-
-    def read_mobs(self, arrived_mobs):
-        mob_parse  = arrived_mobs.partition(' ')
-        first_word = mob_parse[0]
-
-        if first_word.lower() in self.singles:
-            # Note that lower() doesn't modify first_word; it just returns the lowered string.
-            # We'll keep the case on first word so Jerrek gets added to the monster list with capitol J so he matches the monster lists
-            return [mob_parse[2]]
-        elif first_word.lower() in self.numbers:
-            #magentaprint("Mobs mobs: " + arrived_mobs + ", first_word: " + first_word)
-            return [remove_plural(mob_parse[2])] * (int(self.numbers.index(first_word.lower())) + 2)
-        else:
-            # Named mob
-            magentaprint("Mobs arrived no article: first_word " + first_word + " mobs: " + arrived_mobs)
-            # self.list.append(mob_parse[0])
-            return [mob_parse[0]]
-
     def notify(self, r, m_obj):
-        # We'll let Cartography handle the initialization of monster_list with the area regex since it already does a great job.
+        # We'll let Cartography handle the initialization of monster_list with the area regex.
         #magentaprint("mobs.list " + str(self.list) + "; notification from regex: " + str(r[0:min(10, len(r))]))
         if r in R.mob_arrived:
             self.list.add_from_list(self.read_mobs(m_obj.group('mobs')))
@@ -119,14 +98,13 @@ class Mobs(BotReactionWithFlag):
         # (Two lay followers) just arrived.
         s = s.replace("\n\r", ' ')
         # comma_items = [comma_item.strip().lower() for comma_item in s.split(',')]
-
         # return [Mobs.remove_plural(m.strip()) for m in mob_match.group(1).split(',')]
         m_list = []
         # for c in comma_items:
         for comma_item in s.split(','):
-            # Make sure to keep capitols in names, but don't miss any comparisons because of capitols at the beginnings of sentences
-            M = comma_item.strip()
-            m = M.lower()
+            # Make sure to keep capitals in names, but don't miss any comparisons because of capitols at the beginnings of sentences
+            M = comma_item.strip() # monster with caps
+            m = M.lower()          # monster lower case
 
             #if m[len(m)-4:len(m)-2] == ' (' and m[len(m)-1] == ')':
             if m[-4:-2] == ' (' and m[-1] == ')':
@@ -169,6 +147,36 @@ class Mobs(BotReactionWithFlag):
 
     def get_reference(self, target):
         return self.list.get_reference(target)
+
+    def read_mobs(self, arrived_mobs):
+        mob_parse  = arrived_mobs.partition(' ')
+        first_word = mob_parse[0]
+
+        if first_word.lower() in self.singles:
+            # Note that lower() doesn't modify first_word; it just returns the lowered string.
+            # We'll keep the case on first word so Jerrek gets added to the monster list with capitol J so he matches the monster lists
+            return [mob_parse[2]]
+        elif first_word.lower() in self.numbers:
+            #magentaprint("Mobs mobs: " + arrived_mobs + ", first_word: " + first_word)
+            return [remove_plural(mob_parse[2])] * (int(self.numbers.index(first_word.lower())) + 2)
+        else:
+            # Named mob
+            magentaprint("Mobs arrived no article: first_word " + first_word + " mobs: " + arrived_mobs)
+            # self.list.append(mob_parse[0])
+            return [mob_parse[0]]
+
+    def read_match(self, m):
+        if m.group('mob1'):
+            return m.group('mob1').strip()
+        elif m.group('mob2'):
+            # magentaprint("Mobs mob2")
+            if m.group('mob2').startswith('The '):
+                return m.group('mob2').partition(' ')[2].strip()
+            else:
+                return m.group('mob2').strip()
+        elif m.group('mob3'):
+            # magentaprint("Mobs mob3")
+            return m.group('mob3').strip()
 
     # Todo: Why are these part Mobs? Shouldn'they be misc functions?
     def mean(self, a):

@@ -676,7 +676,11 @@ class MainhandWeaponBot(MiniBot):
             # self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max('weapon', self.character.weapon_type, self.character.weapon_level)
             # self.possible_weapons = sorted(self.possible_weapons, key = lambda i: i.item.level, reverse=True)
             # Strict about level
-            self.possible_weapons = AreaStoreItem.get_by_item_type_and_level('weapon', self.character.info.weapon_type, self.character.info.weapon_level)
+            self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max(
+                'weapon', 
+                self.character.info.weapon_type, 
+                self.character.info.weapon_level
+            )
             magentaprint("WeaponBot possible weapons: " + str(self.possible_weapons))
             return self.possible_weapons
 
@@ -696,6 +700,20 @@ class MainhandWeaponBot(MiniBot):
             #     magentaprint("WeaponBot didn't come up with a default weapon!")
 
             # return self.possible_weapons
+
+            # SELECT 
+            #     "t1"."id", 
+            #     "t1"."area_id", 
+            #     "t1"."item_id" 
+            # FROM "areastoreitem"  AS "t1" 
+            # INNER JOIN "item"     AS "t2" ON ("t1"."item_id"     = "t2"."id") 
+            # INNER JOIN "itemtype" AS "t3" ON ("t2"."itemtype_id" = "t3"."id") 
+            # WHERE (
+            #     ("t2"."level" = 2) AND (
+            #         ("t3"."model_id" = 1) AND 
+            #         ("t3"."data_id" = 2)
+            #     )
+            # )
 
     # def get_smithy_path(self):
     #     try:

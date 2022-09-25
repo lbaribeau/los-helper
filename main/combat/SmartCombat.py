@@ -8,7 +8,7 @@ from misc_functions import magentaprint
 import comm.Spells as Spells
 from comm import RegexStore as R
 from combat.mob_target_determinator import MobTargetDeterminator
-from command.potion_thread import PotionThreadHandler
+from command.potion_thread          import PotionThreadHandler
 
 class SmartCombat(CombatObject):
     black_magic = True
@@ -87,17 +87,16 @@ class SmartCombat(CombatObject):
         # I prefer the latter.
         # magentaprint("SmartCombat notify " + match.re.pattern) # gets prompt (too many prints)
         super().notify(regex, match) # Calls self.stop if it's an end-combat regex
-        if regex in R.prompt:
-            if self.activated:
-                if self.should_use_heal_ability():
-                    self.heal_abilities[0].execute()
-                elif self.needs_heal():
-                    # if self.weapon_bot.broken_weapon or not self.character.inventory.has_restorative():
-                    if not hasattr(self.weapon_bot, 'weapon') or not self.character.inventory.has_restorative():
-                        self.fleeing = True  # TODO: Do pots interfere with the flee timer?  (Should I use a pot?)
-                    self.spam_pots()
-                else:
-                    self.stop_pots_if_started_by_smart_combat()
+        if regex in R.prompt and self.activated:
+            if self.should_use_heal_ability():
+                self.heal_abilities[0].execute()
+            elif self.needs_heal():
+                # if self.weapon_bot.broken_weapon or not self.character.inventory.has_restorative():
+                if not hasattr(self.weapon_bot, 'weapon') or not self.character.inventory.has_restorative():
+                    self.fleeing = True  # TODO: Do pots interfere with the flee timer?  (Should I use a pot?)
+                self.spam_pots()
+            else:
+                self.stop_pots_if_started_by_smart_combat()
         # elif regex in itertools.chain(self.end_combat_regexes) and self.activated:
         elif self.end_combat and self.activated:  # requires super() to be called
             self.potion_thread_handler.stop()
@@ -115,14 +114,15 @@ class SmartCombat(CombatObject):
             if len(match.group(1).split(' ')) >= 2:
                 if match.group(1).split(' ')[1] == 'ring':
                     self.broke_ring = True
-        elif regex in R.mob_arrived:
+        elif regex in R.mob_arrived and self.activated:
+            # self.activated prevents unnecessary prints (calls to referencing_list.get)
             self.target = self.mob_target_determinator.on_mob_arrival(
                 self.target,
                 self.character.mobs.read_mobs(match.group('mobs')),
                 self.character.mobs.list
             )
             # magentaprint("SmartCombat mob arrived, new target: " + str(self.target))
-        elif regex in R.mob_wandered + R.mob_left:
+        elif regex in R.mob_wandered + R.mob_left and self.activated:
             self.target = self.mob_target_determinator.on_mob_departure(
                 self.target,
                 self.character.mobs.read_match(match),
@@ -193,7 +193,16 @@ class SmartCombat(CombatObject):
     def start_thread(self, target, spell=None):
         # Doesn't ThreadingMixin do this?
         self.set_target(target)
-        self.spell = spell if spell else self.favourite_spell
+        if spell:
+            self.spell = spell 
+        else:
+            # So target is a string
+            # We could have the 'bot' in charge of picking the spell
+            # (We want level 2 magic for lvl >= 8 or 9)
+            # We need to resolve the target against the mob list
+            # I think that smart combat just expects a string
+            # Mob list stuff is typically the 'bot's job
+            self.spell = self.favourite_spell
         magentaprint("SmartCombat spell set to " + str(self.spell))
         self.set_pot_thread = False
         self.kill.stop()
@@ -254,7 +263,7 @@ class SmartCombat(CombatObject):
                 self.prompt.clear()
                 self.mud_reader_completion_event.clear()
                 self.use_slow_combat_ability_or_attack()
-                self.mud_reader_completion_event.clear()
+                self.mud_reader_completion_event.clear() # How does this work at all...
                 magentaprint("Smart combat attacked, end combat is {}, stopping is {}, event is {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
                 self.prompt.wait() # Wait for prompt to come to give time for mob death info to get through
                 # magentaprint("SmartCombat finished attack, stopping: " + str(self.stopping))
@@ -283,10 +292,16 @@ class SmartCombat(CombatObject):
                     time.sleep(min(0.2, kill.wait_time()))
                     # time.sleep(min(0.2, kill.wait_time() + 0.05))
                     # This should check if there are other mobs fighting and target them... that's kind of out of scope of taking down one target though
-                elif self.black_magic and \
-                    ((self.spell in Spells._lvl1 and C.MANA >= 3) or (self.spell in Spells._lvl2 and C.MANA >= 7)):  # Todo: add oom check
+                elif self.black_magic and (
+                    (self.spell in Spells._lvl1 and C.MANA >= 3) or 
+                    (self.spell in Spells._lvl2 and C.MANA >= 7) or
+                    (self.spell in Spells._lvl3 and C.MANA >= 10)):  # Todo: add oom check
+                    # Have enough mana for spell
                     self.do_cast(self.spell, self.target)
-                elif self.black_magic and self.spell in Spells._lvl2 and C.MANA < 7 and C.MANA >= 3:
+                elif self.black_magic and \
+                    ((self.spell in Spells._lvl2 and C.MANA < 7) or (self.spell in Spells._lvl3 and C.MANA < 10)) and \
+                    C.MANA >= 3:
+                    # Don't have enough mana for spell but do have enough for level 1
                     self.do_cast(Spells._lvl1[Spells._lvl2.index(self.spell)], self.target)
                 else:
                     time.sleep(min(0.2, kill.wait_time()))
@@ -614,6 +629,10 @@ class SmartCombat(CombatObject):
         if self.set_pot_thread:
             self.potion_thread_handler.stop()
         self.set_pot_thread = False
+
+    def get_mob_level(self):
+        # Uses self.target and self.character.mobs.list to ask the DB for mob level
+        # To choose spell with (or is that too "smart")
 
 #  SmartCombat will have to wait for the DB!!!
 # Alternatives: Split WeaponBot into itself and SimpleWeaponBot doesn't work because SmartCombat is supposed to rewield any

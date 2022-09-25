@@ -632,6 +632,7 @@ class CommandHandler(object):
             self.CastThread.start()      
 
     def user_kkc(self, argv):
+        magentaprint("kkc with argv: {}".format(argv))
         theSplit = argv.split(" ")
         n = len(theSplit)
 
@@ -659,30 +660,31 @@ class CommandHandler(object):
     def user_kk2(self, argv):
         # Usage: "kk2 target"
         # Uses smart combat with level 2 spell
-        teh_split = argv.split(" ")
-        self.user_kkc(" ".join(teh_split))
+        magentaprint("Command_handler.user_kk2 {}".format(argv))
+        command_split = argv.split(" ")
+        # Insert a spell into the command split
         if self.smartCombat.favourite_spell is comm.Spells.burn:
-            teh_split.insert(0, comm.Spells.fireball)
+            command_split.insert(0, comm.Spells.fireball)
         elif self.smartCombat.favourite_spell is comm.Spells.hurt:
-            teh_split.insert(0, comm.Spells.dustgust)
+            command_split.insert(0, comm.Spells.dustgust)
         elif self.smartCombat.favourite_spell is comm.Spells.blister:
-            teh_split.insert(0, comm.Spells.waterbolt)
+            command_split.insert(0, comm.Spells.waterbolt)
         elif self.smartCombat.favourite_spell is comm.Spells.rumble:
-            teh_split.insert(0, comm.Spells.crush)
-        self.user_kkc(" ".join(teh_split))
+            command_split.insert(0, comm.Spells.crush)
+        self.user_kkc(" ".join(command_split))
 
     def user_kk3(self, argv):
-        teh_split = argv.split(" ")
-        self.user_kkc(" ".join(teh_split))
+        magentaprint("Command_handler.user_kk3 {}".format(argv))
+        command_split = argv.split(" ")
         if self.smartCombat.favourite_spell is comm.Spells.burn:
-            teh_split.insert(0, comm.Spells.burstflame)
+            command_split.insert(0, comm.Spells.burstflame)
         elif self.smartCombat.favourite_spell is comm.Spells.hurt:
-            teh_split.insert(0, comm.Spells.shockbolt)
+            command_split.insert(0, comm.Spells.shockbolt)
         elif self.smartCombat.favourite_spell is comm.Spells.blister:
-            teh_split.insert(0, comm.Spells.waterbolt)
+            command_split.insert(0, comm.Spells.waterbolt)
         elif self.smartCombat.favourite_spell is comm.Spells.rumble:
-            teh_split.insert(0, comm.Spells.crush)
-        self.user_kkc(" ".join(teh_split))
+            command_split.insert(0, comm.Spells.crush)
+        self.user_kkc(" ".join(command_split))
 
     def user_sc(self):
         self.cast.stop()

@@ -190,7 +190,7 @@ class ReferencingList(object):
         i = self.index(ref)
         # if i: # This would be false for i==0, we want i != None
         if i == None:
-            magentaprint("ReferencingList.get() found nothing. ref/index: " + str(ref) + '/' + str(i))
+            magentaprint("ReferencingList.get('{}'') found nothing.".format(ref))
         else:
             # magentaprint("Inventory list: " + str(self.list))
             # magentaprint("Inventory.get() returning " + str(self.list[i]))
@@ -262,7 +262,6 @@ class ReferencingList(object):
         return None
         # Ehrm TODO Fix Arrum's Arrow
         # [96 H 42 M]: repair Arrum's
-        # 20:23:38.91   | "repair Arrum's"
         # You don't have that.
         # [96 H 42 M]: 20:23:39.08   | <command.repair.Repair object at 0x000001C66C604910> clearing timer... wf is Falseregex is You don't ...
         # repair Arrum
