@@ -275,7 +275,7 @@ class Slow(SlowCombatAbility):
 class Wither(SlowCombatAbility):
     command = "withe"
     cooldown_after_success = 240  # Guessed out of the blue
-    cooldown_after_failure = 10  # can't attack/flee/move immediately
+    cooldown_after_failure = 30  # 10secs Adjusted so that it doesn't re-attempt in fights since it misses lots
     success_regexes = [RegexStore.wither]  # regex needs work
     failure_regexes = [RegexStore.wither_fail]
     error_regexes = [RegexStore.wither_whom, RegexStore.not_here]

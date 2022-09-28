@@ -396,7 +396,7 @@ class SmartCombat(CombatObject):
 
         if spell_percent < 50:
             spell = self.get_t1_spell(character, spell_percent)
-        elif spell_percent > 74 and self.character.info.int > 18:
+        elif spell_percent > 74 and self.character.info.int > 18 and self.character.MANA > 29:
             spell = self.get_t3_spell(character, spell_percent)
         else:
             spell = self.get_t2_spell(character, spell_percent)
@@ -469,7 +469,7 @@ class SmartCombat(CombatObject):
         elif self.black_magic and self.spell in Spells._lvl2 and self.character.MANA < 7 and self.character.MANA >= 3:
             self.do_cast(Spells._lvl1[Spells._lvl2.index(self.spell)], self.target, False)
         elif self.black_magic and self.spell in Spells._lvl3 and self.character.MANA < 10 and self.character.MANA >= 3:
-            self.do_cast(Spells._lvl1[Spells._lvl3.index(self.spell)], self.target, False)
+            self.do_cast(Spells._lvl2[Spells._lvl3.index(self.spell)], self.target, False)
         else:
             time.sleep(min(0.2, self.kill.wait_time()))
 
@@ -550,6 +550,7 @@ class SmartCombat(CombatObject):
 
         # magentaprint("Debugging smart combat should catch kill.error: {0}".format(self.kill.error))
         if self.kill.error:
+            magentaprint("kill error - stopping", False)
             self.error = True
             self.stop()
         # self.character.ATTACK_CLK = time.time()  # TODO: Kill should be smart enough to keep the clock set

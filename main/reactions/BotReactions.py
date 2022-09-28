@@ -1,4 +1,5 @@
 
+from re import M
 from misc_functions import magentaprint 
 import time
 import threading
@@ -139,6 +140,7 @@ class PollingBotReactionWithFlag(BotReaction):
 class BotReactionWithFlag(threading.Event, BotReaction):
     def notify(self, regex, M_obj):
         self.set()
+
     def wait_for_flag(self, **kwargs):
         if 'timeout' in kwargs:
             timed_out = not self.wait(**kwargs)
@@ -147,7 +149,7 @@ class BotReactionWithFlag(threading.Event, BotReaction):
             # Not sure how to test this
             # Maybe at the grazing fields with the false inventory match
         if timed_out:
-            magentaprint("BotReactionWithFlag {0} timed out!!! Wait() returning now. Also, set the flag for the next wait call.".format(self.__class__.__name__))
+            magentaprint("BotReactionWithFlag {0} timed out!!! Wait() returning now. Also, set the flag for the next wait call.".format(self.__class__.__name__), False)
             self.set()
 
     def set_waiter_flag(self):

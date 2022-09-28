@@ -204,19 +204,21 @@ class Inventory(SimpleCommand, ReferencingList):
         'throwing stars', 'throwing star',
         #'crossbow', 'horn bow', 'long bow' # < 70% missile
         # 'broad sword',
-        'adamantine axe', 'rapier', #'adamantine sword', # Master of Ceremonies
-        'claymore', 'spider leg', #'large orcish sword',
-        'drow sabre',
+        #'adamantine axe', 'rapier', #'adamantine sword', # Master of Ceremonies
+        #'claymore', 'spider leg', #'large orcish sword',
+        #'drow sabre',
         # 'silver dagger', 'long sword',  #these pile up
         # 'bastard sword',  # bandits
         # 'small mace',
         # 'morning star', 'superior dwarven hammer', 'stout cudgel', "horseman's mace",
         # 'war hammer',
+        # steel gear
+        'steel sleeves', 'steel gauntlets', 'steel leggings',
         'mountain boots with crampons', 'leather mask', 'leather collar', 'studded leather collar',
         # 'studded leather sleeves', 'studded leather boots', 'studded leather pants', 'studded leather gloves','studded leather leggings',
         # kobold champion
         # 'plate mail leggings', # Jerrek drops
-        'plate mail armor',
+        #'plate mail armor',
         # 'ring mail armour', 'ring mail sleeves', 'ring mail leggings', #'ring mail hood',
         # 'ring mail gauntlets',
         # 'chain mail armour',  # sawmill

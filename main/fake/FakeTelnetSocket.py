@@ -126,7 +126,7 @@ class FakeTelnetSocket(object):
             " /===== Status 1 ======\  /====== Status 2 =====\  /=====  Status 3 ======\\\n\r"
             " |   Curr HP : 86      |  |     Exp : 440607    |  | GameTime :  25:22:47 |\n\r"
             " |    Max HP : 89      |  |    Gold : 1578462   |  | Game Age : 16        |\n\r"
-            " |   Curr MP : 1       |  |  -Needed to Level-  |  |                      |\n\r"
+            " |   Curr MP : 27      |  |  -Needed to Level-  |  |                      |\n\r"
             " |    Max MP : 27      |  |     Exp : 560992    |  |   Weight : 113       |\n\r"
             " |        AC : 0       |  |    Gold : 70124     |  |  Objects : 33        |\n\r"
             " \=====================/  \=====================/  \======================/\n\r"
@@ -418,7 +418,8 @@ class FakeTelnetSocket(object):
             # mob = sorted_mob_list[startswith_boolean_list.index(1)]
             # mob = target
             if spell:
-                self.socket_output.append('You cast a ' + spell + ' spell on the ' + mob + ' for 12 damage.\n\r')
+                # self.socket_output.append('You cast a ' + spell + ' spell on the ' + mob + ' for 12 damage.\n\r')
+                self.socket_output.append('Please wait 1 more second.\n\r')
             else:
                 self.socket_output.append('You lash out and thump the ' + mob + ' for 8 damage.\n\r')
 

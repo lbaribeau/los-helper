@@ -125,7 +125,7 @@ class CharacterClass(object):
         elif class_string == "Dar":
             self.lvl1_maxHP = 19
             self.lvl1_maxMP = 4
-            abilities = [ Berserk, Wither]
+            abilities = [ Berserk, Wither ] # Wither causes death :(
             Cast.cooldown_after_success = 5
         else:
             magentaprint("CharacterClass error: could not recognize class string.")
