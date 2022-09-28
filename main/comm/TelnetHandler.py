@@ -52,11 +52,12 @@ class TelnetHandler(object):
         try:
             self.tn.write(command.encode('ascii'))
         except socket.error:
-            magentaprint("Seems fatal. Reraising TelnetHandler write() error: " + str(socket.error))
+            magentaprint("TelnetHandler write socket error (on '{}'), seems fatal. \aReraising TelnetHandler write() error: {}".format(command,str(socket.error)))
+            # \a is a sound alert
+            # After "### Shutting down now.", we get an exception on this write:
+            # ConnectionAbortedError: [WinError 10053] An established connection was aborted 
+            # by the software in your host machine
             raise socket.error
-        # After "### Shutting down now.", we get an exception on this write:
-        # ConnectionAbortedError: [WinError 10053] An established connection was aborted 
-        # by the software in your host machine
 
     def keep_connection_open(self):
         # The server times out every 5 minutes - I'd prefer it to be 10 minutes,
