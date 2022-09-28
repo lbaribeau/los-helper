@@ -214,9 +214,9 @@ class Character(object):
         'hawker', 'barmaid', 'smelly beggar', 'black crow', 'sheep', 'goose', 'singer', 'musician', 'spiv', 'bidder', 'dairy cow',
         'scholar', 'juggler', 'shepherd', 'gazelle', 'dancer', 'jongleur', 'clerk', 'stablehand', 'rich kid', 'bladesman',
         "cook's assistant", "miner's assistant", 'mare', 'tabby cat', 'plumber', 'old fisherman', 'hungry diner',
-        # 'acolyte',
-        'fletcher', 'baker', #, 'penitent'  # aur
-        'retired fisherman' # to confirm
+        'fletcher', 'baker',
+        'retired fisherman', # to confirm
+        # 'acolyte', 'penitent' # for aura (!)
     ]
     lvl2_red_monsters = [
         'kobold sentry', 'blond hooker', 'sultry hooker', 'kobold', 'spiv', 'drunken miner', 'kobold miner', 'kobold archer',
@@ -234,7 +234,7 @@ class Character(object):
         'bouncer', 'yard worker', 'town clerk', 'stevedore', 'scared trawlerman', 'cooper','digger', 'pulley operator',
         'ore carrier', # copper ring
         'furniture maker', 'cabinet maker' # SW part of lumber yards (glue)
-        # 'robed pilgrim'  # aura
+        # 'robed pilgrim'  # aura (!)
         #"miner's mule"  # mill worker drops chain mail gloves
         # stevedore leather gloves
     ]
@@ -250,7 +250,7 @@ class Character(object):
         'gnomish miner', 'determined ranch hand', 'forge worker', # leather gloves
         'steer', 'sage', # Stoneheart Road
         'forge worker', # burnt ochre potion
-        # 'actress', #'young knight' # For blue balance
+        # 'actress', 'young knight' # For blue balance #(!)
         #'miner'
         # enlightened  # "arrives" in the large Kings road dojo (not always there)
         'bandit cook', # leather bracers
@@ -269,7 +269,7 @@ class Character(object):
         'bruiser', 'axeman', 'seeker', 'hunter', 'bull', 'aspirant',
         'shaft manager', 'mine foreman',
         'adjudicator', 'eagle', 'giant crab' # arrived by the pool by gnolls
-        # 'vicar', 'lay priest', 'protector', 'battered knight', 'orange picker' # makes trackgrind too red?
+        # 'vicar', 'lay priest', 'protector', 'battered knight', 'orange picker' # makes trackgrind too red? #(!)
     ]
     lvl5_red_monsters = [
         'large bandit', # silver ring
@@ -281,7 +281,7 @@ class Character(object):
         'sword swallower', 'archer', 'yard supervisor', 'sawmill supervisor', # chain mail armour(s)(!)
         'large spider', 'blacksmith', 'farm foreman',
         'Old Man James', 'dwarven traveller', 'Goourd', # large sack
-        'tourney organiser', 'Greenbough the Dryad'
+        'tourney organiser', 'Greenbough the Dryad', 
         #'sentry' stand in pairs unfortunately...
     ]
     lvl6_red_monsters = [ #1574 for gnoll camp
@@ -295,7 +295,8 @@ class Character(object):
         'giant spider', 'rock spider', 'Aldo', 'dwarven trader',
         'gnoll chaplain', 'Cheryn', 'orc scout', 'bouncer', 'rancher sentry', 'dwarven shepherd', 'clown', 'war horse',
         'top ranch hand', 'raging bull', 'master miner',  # top ranch hand dusty blue
-        'half-elf traveller' # appears in the silken alleys
+        'half-elf traveller,' # appears in the silken alleys
+        'old dame' # white potion, Te'Kalns' Walk
         # 'Cheryn (E)'
         # 'robed priest',
     ]  # There are also lvl 5 rancher sentries... they're a bit blue
@@ -384,7 +385,8 @@ class Character(object):
         'Elsuria', # fine elven cloak
         'Tendrurn', # adamantine axe 600g
         'Nospe', # under the Casino, dwarven hammer, thieves blade (trade to alch NPC for slow disease)
-        'tiger' # Actually level 7 but there are two of them
+        'tiger', # Actually level 7 but there are two of them
+        "Th'kit the HorseMaster"
     ]
     lvl14_monsters = [
         'Olarma', 
@@ -405,7 +407,9 @@ class Character(object):
         'Rogue Oak',
         'huorn shepherd',
         'Queen Dalla',
-        'grey cloaked strager' # showed up at north intersection of Silken Alleys
+        'grey cloaked stranger', # showed up at north intersection of Silken Alleys
+        "Al'Sik the Carver",
+        "Byr'Ula the Smith"
     ] # confirm Madame Zara
     # Dalla will take golden pots
     # trade diamantium cross for rusty key at Douvan (door)
@@ -422,16 +426,19 @@ class Character(object):
     lvl16_monsters = ['Holbyn', # Holby closes at night
     'Ordaran the White', 'Pansy', 'Vickie', # Hawk camp
     'Matriarch Sara', 
+    "Vas'Polu the HawkMaster",
     'keep guard' # N of greenhaven, avenue, Lion keep, they are in pairs so +2 to level
     ] 
     lvl17_monsters = [
         'Faldomet', 
+        'ascended',
         # 'Patriarch Jedd Morhennon', # Not possible
         'Farside', 'Lord Arduis', 'Lady Arielle']
     lvl18_monsters = [
-    'Lady Jenlira', # vigil knight guards the entrance
+        'Lady Jenlira', # vigil knight guards the entrance
         'Deep Root',
-        'weapons master'
+        'weapons master',
+        "Ha'Chans the Shaman" # needles at 14
     ] 
     lvl20_monsters = ['Archbishop', 'Haram','hero','Corien'] # needles me at 16 (The Archbishop)
     # A list of monsters redundant to the above lists that
@@ -490,11 +497,11 @@ class Character(object):
         if self.level >= 13:
             self.MONSTER_KILL_LIST.extend(self.lvl9_monsters)
         if self.level >= 14:
-            self.MONSTER_KILL_LIST.extend(self.lvl10_monsters)
+            self.MONSTER_KILL_LIST.extend(self.lvl10_monsters) # Dame Brethil, Jerrek, Commander RIlmenson 
         if self.level >= 15:
-            self.MONSTER_KILL_LIST.extend(self.lvl11_monsters) 
+            self.MONSTER_KILL_LIST.extend(self.lvl11_monsters) # Brotain, minstrel, Gregor, Bertram Dalram
         if self.level >= 16:
-            self.MONSTER_KILL_LIST.extend(self.lvl12_monsters) 
+            self.MONSTER_KILL_LIST.extend(self.lvl12_monsters) # Tardan, Horbuk, Gorban
             # Brotain seems a bit tough... need mend wounds logic... or maybe the bot will surprise me with heals or something
             # Ok, brocolli can do this, the second weapon is there and mend wounds logic is there
             # Also the pot thread is working

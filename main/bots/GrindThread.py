@@ -10,6 +10,7 @@ from reactions.ring_reaction import RingWearingReaction
 from Exceptions import *
 from comm import Spells
 from db.MudItem import MudItem
+from db.Mob import Mob
 
 class GrindThread(BotThread):
     def __init__(self, character, command_handler, mudReaderHandler, mud_map):
@@ -133,7 +134,7 @@ class GrindThread(BotThread):
         C.mobs.chase_exit = ''
 
         if chase_ref:
-            new_target = chase_ref
+            new_target = chase_ref # This is a reference, but the other clause hasn't made a reference yet
             # new_target = C.mobs.chase 
         elif self.ready_for_combat():
             new_target = self.decide_which_mob_to_kill(C.mobs.list)
@@ -252,10 +253,22 @@ class GrindThread(BotThread):
         # and in that case, keep resting since benefits should be active.
         # *requires strong enemy for black magic users
 
+        # Todo: don't stay if the chapel bonus isn't needed (2 mana, some hp)
+        # ie. 18 int and need only 3 mana
+
         magentaprint("In chapel_heal_up.")
 
         if self.stopping or self.character.HEALTH >= self.health_to_go:
             return
+
+        # self.command_handler.print_experience()
+        self.command_handler.inventory.execute_and_wait() # Just display while resting
+        self.command_handler.process('experience')
+        self.command_handler.process('aura')
+        self.command_handler.cast.print_aura_timer()
+        magentaprint("Last target was " + str(self.smartCombat.target))
+        self.command_handler.process('trackno')
+        self.command_handler.process('time') 
 
         self.do_heal_skills()
 
@@ -283,9 +296,9 @@ class GrindThread(BotThread):
             if self.do_heal_skills():
                 continue
             elif self.inventory.count_small_restoratives() > 7:
-                self.command_handler.use.wait_until_ready()
-                self.command_handler.use.small_healing_potion()
-                self.command_handler.use.wait_for_flag()
+                self.command_handler.potion_thread_handler.consume.small_healing_potion()
+                self.command_handler.potion_thread_handler.consume.wait()
+                self.command_handler.potion_thread_handler.consume.wait_until_ready()
             else:
                 # if self.engage_any_attacking_mobs():
                 #     if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
@@ -318,7 +331,8 @@ class GrindThread(BotThread):
         return (self.character.maxMP - self.character.MANA) / (self.character._class.mana_tick + 2)
 
     def rest_until_ready(self):
-        magentaprint("BotThread.rest_until_ready()")
+        magentaprint("GrindThread.rest_until_ready()")
+
 
         # Rest until one of hp or mp is maxed.  This way we aren't waiting for both.
         # Hopefully things are somewhat balanced.  If things are unbalanced, benefits
@@ -547,6 +561,7 @@ class GrindThread(BotThread):
             magentaprint("check_weapons() trying lower level weapons.")
             possible_weapons = list(MudItem.get_suitable_item_of_type('weapon', self.character.weapon_type, level).values())
             level = level - 1
+            # Could use level_max for that
 
         return possible_weapons
 
@@ -718,8 +733,8 @@ class GrindThread(BotThread):
             return
 
         C = self.character
+        SC = self.smartCombat
 
-        # self.smartCombat.target = monster
         magentaprint("GrindThread engage_monster get_first_reference({0})".format(monster))
         new_target = C.mobs.list.get_first_reference(monster)
         # So... suppose someone (Qerp) runs by and kills the nobleman we have chased
@@ -727,16 +742,27 @@ class GrindThread(BotThread):
         # I think we are assuming here that the target is in the list
 
         if new_target:
-            self.smartCombat.target = new_target
+            SC.target = new_target
         else:
             # ie. dark room
             if len(monster.split(' ')) > 1:
-                self.smartCombat.target = str(monster).split(' ')[0]
+                SC.target = str(monster).split(' ')[0]
             else:
-                self.smartCombat.target = str(monster)
+                SC.target = str(monster)
 
-        self.smartCombat.spell = self.smartCombat.favourite_spell
-        self.smartCombat.run()
+        mob_level = Mob.get_mob_level_by_name(monster)
+
+        if mob_level:
+            if mob_level >= 12:
+                SC.spell = Spells._get_level_3(SC.favourite_spell)
+            elif mob_level >= 8:
+                SC.spell = Spells._get_level_2(SC.favourite_spell)
+            else:
+                SC.spell = SC.favourite_spell
+        else:
+            SC.spell = SC.favourite_spell
+
+        SC.run()
         # What about flee... can we rest after a flee maybe, or quit...
         # Do lowest risk at this point, right... or do we want to rest
         # If the mob isn't there... better remove it from the lists
@@ -800,7 +826,7 @@ class GrindThread(BotThread):
             # self.go(C.chase_dir)
             # C.chase_dir = ""
             # C.chase_mob = ""
-        elif self.smartCombat.error:
+        elif SC.error:
             magentaprint("GrindThread engage_monster caught bad target - remove from mobs.list, which is {0}".format(C.mobs.list))
             if C.mobs.list.get(new_target):
                 C.mobs.list.remove_by_ref(new_target)

@@ -53,7 +53,7 @@ class ReferencingList(object):
         for i in range(0, len(self.list)):
             if self.list[i] > obj:
                 self.list.insert(i, obj) # Seem like this does add it at the proper place
-                magentaprint("RefList inserted %s at index %s." % (str(obj), str(i)))
+                magentaprint("ReferencingList inserted %s at index %s, length is %s." % (str(obj), str(i), str(len(self.list))))
                 return
 
         # magentaprint("RefList appended %s." % str(obj))
@@ -68,7 +68,7 @@ class ReferencingList(object):
             self.add(x)
 
     def remove(self, obj):
-        magentaprint("ReferencingList remove: " + str(obj))
+        magentaprint("ReferencingList remove: " + str(obj) + ", length is " + str(len(self.list)))
         # Ehrm don't we need to be specific
         # What if one mob is attacking
         # Remove the right one?

@@ -21,13 +21,13 @@ class TrackGrindThread(GrindThread):
         elif self.character.level <= 10:
             self.__TOTALPATHS = 22
         elif self.character.level <= 14:
-            self.__TOTALPATHS = 75 
+            self.__TOTALPATHS = 77 
         elif self.character.level <= 15:
-            self.__TOTALPATHS = 89
+            self.__TOTALPATHS = 91
         elif self.character.level <= 16:
-            self.__TOTALPATHS = 101
+            self.__TOTALPATHS = 103
         else:
-            self.__TOTALPATHS = 101
+            self.__TOTALPATHS = 103
 
         if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
             self.nextpath = starting_path
@@ -106,7 +106,7 @@ class TrackGrindThread(GrindThread):
             # more chalices we can farm.
         self.kobold_massacre = [
             # Brocolli wants to get ALL the kobolds in one shot... even the chief? Yeahh.
-            # This route is optimal traval and isn't picky about order
+            # This route is optimal travel and isn't picky about order
             'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','se','se','se','s','s','s','s','s','e','e',
             'se','e','s','s','s','s','glowing portal','passage','mines','down','n','n','n','n','ne','n','w','n','n',
             'e','door','w','gully','up','boulder','up','cave 3','ne','ne','n','s','up','e','cave','out', # child, large
@@ -295,7 +295,7 @@ class TrackGrindThread(GrindThread):
         elif self.nextpath == 5:
             return self.MILITIA_SOLDIERS_PATH[:]
         elif self.nextpath == 7:
-            if not self.cast.aura or self.cast.aura >= Aura('pale blue'):
+            if not self.cast.aura or (self.cast.aura and self.cast.aura >= Aura('pale blue') and self.cast.aura <= self.character.preferred_aura):
                 if self.character.level in [1,2,3,4,5]:
                     magentaprint("Not going to do kobolds - aura unknown and level too low.")
                     self.nextpath = self.nextpath + 1  # So that we don't go selling
@@ -349,16 +349,24 @@ class TrackGrindThread(GrindThread):
                     magentaprint("Not going to do bandits - aura unknown.")
                     self.nextpath = self.nextpath + 1  # So that we don't go selling
                     return self.PATH_TO_SKIP_WITH[:]
-            elif (self.character.level >= 8 or self.cast.aura < Aura('pale blue')) or \
+            elif (self.character.level >= 8 or self.cast.aura < aura('pale blue')) and \
                 self.cast.aura <= self.character.preferred_aura:
+                # Can handle bandits even if blue if level is high enough
+                # However, don't do them if aura is bluer than preferred
                 return self.NORTHERN_BANDITS_PATH[:]
             else:
-                magentaprint("Not going to do bandits. Current aura, and preferred: %s,  %s" %
-                             (self.cast.aura, self.character.preferred))
+                magentaprint("Not going to do northern bandits. (Level %s, current aura %s, and preferred %s.)" %
+                             (self.character.level, self.cast.aura, self.character.preferred_aura))
                 self.nextpath = self.nextpath + 1   # So that we don't go selling
                 return self.PATH_TO_SKIP_WITH[:]
         elif self.nextpath == 15:
-            return self.MUGGER_PATH[:]
+            if self.character.level >= 5 and (not self.cast.aura or self.cast.aura <= self.character.preferred_aura):
+                return self.MUGGER_PATH[:]
+            else:
+                magentaprint("Not going to do muggers. (Level %s, current aura %s, and preferred %s.)" %
+                             (self.character.level, self.cast.aura, self.character.preferred_aura))
+                self.nextpath = self.nextpath + 1   # So that we don't go selling
+                return self.PATH_TO_SKIP_WITH[:]
         elif self.nextpath == 17:
             return self.DWARVEN_FIELD_WORKERS_PATH[:]
         elif self.nextpath == 19:
@@ -434,76 +442,77 @@ class TrackGrindThread(GrindThread):
         elif self.nextpath == 57:
             return self.get_path_with_all_mobs('Elder Barthrodue')
         elif self.nextpath == 59:
+            return self.MUGGER_PATH[:] # Clear the muggers so we don't run out of mana later
+        elif self.nextpath == 61:
             return self.get_path_with_all_mobs('director')
         # CHARACTER 14 / MOBS 10
-        elif self.nextpath == 61:
-            return self.get_path_with_all_mobs('Dame Brethil')
-            # Director
-            # makeup kits don't sell well
         elif self.nextpath == 63:
-            return self.get_path_with_all_mobs('Kelluran')
+            return self.get_path_with_all_mobs('Dame Brethil')
+            # makeup kits don't sell well
         elif self.nextpath == 65:
+            return self.get_path_with_all_mobs('Kelluran')
+        elif self.nextpath == 67:
             return self.get_path_with_all_mobs('Master of Ceremonies')
             # Remove silver knight if you don't want to fight him
             # Also there will be tourney organiser and other things on this path
             # He seems to have a long spawn time
-        elif self.nextpath == 67:
+        elif self.nextpath == 69:
             return self.get_path_with_all_mobs('war horse')
             # white knights on this path
-        elif self.nextpath == 69:
-            return self.FORT_PATH # fort sergeant prefight
         elif self.nextpath == 71:
-            return self.get_path_with_all_mobs('Commander Rilmenson') # hastes
+            return self.FORT_PATH # fort sergeant prefight
         elif self.nextpath == 73:
-            return self.get_path_with_all_mobs('Rimark') # This guy is like a guard, right?
+            return self.get_path_with_all_mobs('Commander Rilmenson') # hastes
         elif self.nextpath == 75:
+            return self.get_path_with_all_mobs('Rimark') # This guy is like a guard, right?
+        elif self.nextpath == 77:
             return self.get_path_with_all_mobs('dwarven blacksmith')
             # barbarian cook
             # shaman's assistant
         # CHARACTER 15 / MOBS 11
-        elif self.nextpath == 77:
-            return self.get_path_with_all_mobs('minstrel')
         elif self.nextpath == 79:
-            return self.get_path_with_all_mobs('Brotain')
+            return self.get_path_with_all_mobs('minstrel')
         elif self.nextpath == 81:
+            return self.get_path_with_all_mobs('Brotain')
+        elif self.nextpath == 83:
             # Pre-fights (sawmill people) can make this harder
             # Maybe do path -1
             return self.get_path_to_previous_node('Gregor')
-        elif self.nextpath == 83:
-            return self.get_path_with_all_mobs('Gregor')
         elif self.nextpath == 85:
-            return self.get_path_with_all_mobs('Bertram Dalram') # Longer respawn?
+            return self.get_path_with_all_mobs('Gregor')
         elif self.nextpath == 87:
+            return self.get_path_with_all_mobs('Bertram Dalram') # Longer respawn?
+        elif self.nextpath == 89:
             return self.get_specific_path_to_and_from_mob('brother', 0) # throwing stars
         # elif self.nextpath == 85:
         #     return self.get_specific_path_to_and_from_mob('brother', 1) # Didn't have a brother waiting there
         # CHARACTER 16 / MOBS 12
-        elif self.nextpath == 89:
-            return self.get_path_with_all_mobs('Horbuk') # easy
+        elif self.nextpath == 91:
+            return self.get_path_with_all_mobs('Horbuk')
         # elif self.nextpath == 89:
         #     return self.get_path_with_all_mobs('Horbuk') 
         #    Do twice in case a mine manager was there... hoping engage controls are high (?)
         #    Actually they got cleared in one pass, on the mine manager path, so never mind this double
-        elif self.nextpath == 91:
+        elif self.nextpath == 93:
             # Remember to check character level restriction
             return self.get_path_with_all_mobs('Tardan') # he got me to 0 mana somehow but didn't potion
             # He also made me run like a chicken at [1 HP 1 MP]... so let's wait for level 16
             # Did he have a +1 war hammer (1250 gold)
-        elif self.nextpath == 93:
+        elif self.nextpath == 95:
             # Prefight some dwarven travellers? Was 5 hp
             return self.get_path_with_all_mobs('Boris Ironfounder')
             # He is also in another path...
             # He does respawn though
-        elif self.nextpath == 95:
-            return self.get_path_to_previous_node('Hurn the Smith') # swordsman
         elif self.nextpath == 97:
-            return self.get_path_with_all_mobs('Hurn the Smith') # 600 exp, 202-290g, easy peasy
+            return self.get_path_to_previous_node('Hurn the Smith') # swordsman
         elif self.nextpath == 99:
+            return self.get_path_with_all_mobs('Hurn the Smith') # 600 exp, 202-290g, easy peasy
+        elif self.nextpath == 101:
             return self.get_path_with_all_mobs('Gorban')
             # Golden potion, but seems hard, could be rng
-        elif self.nextpath == 101:
-            return self.get_path_with_all_mobs('floor manager') # About the same as Tardan
         elif self.nextpath == 103:
+            return self.get_path_with_all_mobs('floor manager') # About the same as Tardan
+        elif self.nextpath == 105:
             return self.get_path_with_all_mobs('Shaldena the Red') # Burstflame might cause some characters problems
         elif self.nextpath == "XXX":
             # Watch out for mob targetting bug (ranch foreman hitting Rancher Plover!)

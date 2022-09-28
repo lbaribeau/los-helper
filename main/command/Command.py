@@ -211,7 +211,8 @@ class Command(SimpleCommand):
                 # self.result = self.please_wait1
                 # self.__class__.timer = time.time() + self.please_wait_time  # Ehrm sometimes this makes it so you can't move
                 # self.__class__.timer = time.time() + min(self.please_wait_time, self.cooldown_after_success, self.cooldown_after_failure) 
-                self.__class__.timer = time.time() + self.please_wait_time
+                # self.__class__.timer = time.time() + self.please_wait_time
+                self.timer = time.time() + self.please_wait_time
                 # We get false positives on this because the waiter flag is not a good indication that Please Wait belongs to us.
                 # If we were careful about when it gets unset (when super().notify() is called,) we could potentially use that trick
                 # Clipping with the cooldowns helps a bit.

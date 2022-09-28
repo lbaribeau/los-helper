@@ -129,7 +129,7 @@ class FakeTelnetSocket(object):
             " |       Dex : 19      |  |     Thrust  : 0  %  |  |     Wind  : 0  %     |\n\r"
             " |       Con : 17      |  |     Blunt   : 80 %  |  |     Fire  : 45 %     |\n\r"
             " |       Int : 5       |  |     Pole    : 0  %  |  |     Water : 0  %     |\n\r"
-            " |       Pty : 6       |  |     Missile : 0  %  |  |    Astral : 0  %     |\n\r"
+            " |       Pty : 6       |  |     Missile : 81 %  |  |    Astral : 0  %     |\n\r"
             " \=====================/  \=====================/  \======================/\n\r"
             "\n\r"
             " /===== Status 1 ======\  /====== Status 2 =====\  /=====  Status 3 ======\\\n\r"
@@ -328,7 +328,8 @@ class FakeTelnetSocket(object):
             self.socket_output.append("You wear the chain mail armour.\n\r")
         elif re.match('wear chain$', command):
             self.socket_output.append("It is broken.\n\r")
-        elif re.match("l maul?( \d)?", command) or re.match("l dwarven", command):
+        # elif re.match("l maul?( \d)?", command) or re.match("l dwarven", command):
+        elif any(re.match(x, command) for x in ['l maul?( \d)?', 'l dwarven', 'l heavy', 'l small?( \d)?']):
             self.socket_output.append("It is in pristine condition.")
 
     def gen_area(self, area):

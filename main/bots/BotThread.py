@@ -101,7 +101,7 @@ class BotThread(threading.Thread):
                 #do_post_go_actions() # This doesn't seem necessary
 
             self.do_after_directions_travelled()
-            magentaprint("BotTHread looping, stopping is {0}".format(self.stopping))
+            magentaprint("BotThread looping, stopping is {0}".format(self.stopping))
 
         magentaprint("BotThread: finished now.")
 

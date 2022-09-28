@@ -1,27 +1,28 @@
 
-#1
-burn       = 'burn'
-hurt       = 'hu'
-rumble     = 'rum'
-blister    = 'blis'
+# Level 1
+burn         = 'burn'
+hurt         = 'hu'
+rumble       = 'rum'
+blister      = 'blis'
 
-#2
-fireball   = 'fireb'
-dustgust   = 'dust'
-crush      = 'crush'
-waterbolt  = 'water'
+# Level 2
+fireball     = 'fireb'
+dustgust     = 'dust'
+crush        = 'crush'
+waterbolt    = 'water'
 
-#3
-shockbolt  = 'shock'
-burstflame = 'burstflame'
+# Level 3
+shockbolt    = 'shock'
+burstflame   = 'burstflame'
+shatterstone = 'shatt'
 
-vigor      = 'v'
-mendwounds = 'm'
-light      = 'l'
-showaura   = 'show'
-protection = 'prot'
+vigor        = 'v'
+mendwounds   = 'm'
+light        = 'l'
+showaura     = 'show'
+protection   = 'prot'
 
-# Parallel arrays used by smartcombat to downrank
+# Parallel arrays used to downrank
 _lvl1 = [
 	burn, 
 	hurt,
@@ -36,5 +37,16 @@ _lvl2 = [
 ]
 _lvl3 = [
 	burstflame,
-	shockbolt
+	shockbolt,
+	shatterstone
 ]
+
+def _get_level_3(level1_spell):
+	index = _lvl1.index(level1_spell)
+	if index < len(_lvl3):
+		return _lvl3[index]
+	else:
+		return _lvl2[index]
+
+def _get_level_2(level1_spell):
+	return _lvl2[_lvl1.index(level1_spell)]

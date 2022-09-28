@@ -1,6 +1,6 @@
 
 import re
-from time import time
+import time
 
 from combat.CombatObject import SimpleCombatObject
 from comm import RegexStore
@@ -49,8 +49,8 @@ class Cast(SimpleCombatObject):
 
     def notify(self, regex, M_obj):
         if regex in RegexStore.aura:
-            self.__class__.aura = Aura(M_obj.group('aura'))
-            self.__class__.aura_timer = time()
+            self.aura = Aura(M_obj.group('aura'))
+            self.aura_timer = time.time()
         elif regex in RegexStore.no_mana:
             self.stop()
         super().notify(regex, M_obj)
@@ -80,7 +80,7 @@ class Cast(SimpleCombatObject):
 
     def set_spell(self, spell):
         magentaprint("Cast setting command to \'" + 'c ' + str(spell) + "\'")
-        self.__class__.command = 'c ' + spell
+        self.command = 'c ' + spell
 
     def start_thread(self, spell, target=None):
         # self.__class__.command = 'c ' + spell
@@ -112,8 +112,9 @@ class Cast(SimpleCombatObject):
             magentaprint("Cast giving up on aura update.")
             return
 
+        self.print_aura_timer()
         # if time() > (self.aura_timer + self.aura_refresh):
-        if time() > self.aura_timer + self.aura_refresh:
+        if time.time() > self.aura_timer + self.aura_refresh:
             self.spam_spell(character, Spells.showaura)
             # self.cast('show')
             # self.wait_for_flag()
@@ -121,9 +122,10 @@ class Cast(SimpleCombatObject):
             #     self.cast('show')
             #     self.wait_for_flag()
             # if self.success:
-            #     self.aura_timer = time()
-        else:
-            magentaprint("Last aura update %d seconds ago." % round(time() - self.aura_timer))
+            #     self.aura_timer = time.time()
+
+    def print_aura_timer(self):
+        magentaprint("Last aura update %d seconds ago. Refresh: %s" % (round(time.time() - self.aura_timer), str(time.time() > self.aura_timer + self.aura_refresh)))
 
     def spam_spell(self, character, spell, target=None):  # Maybe a prompt object would be better than character
         # Spam until success
@@ -139,6 +141,8 @@ class Cast(SimpleCombatObject):
                      self.mend_amount if spell.startswith(Spells.mendwounds) else 3
 
         self.result = RegexStore.cast_failure[0]
+        self.stopping = False
+        magentaprint("cast.spam_spell, spell_cost {}, self.failure {}, self.stopping {}.".format(spell_cost, self.failure, self.stopping))
 
         while self.failure and character.MANA >= spell_cost and not self.stopping:
             # magentaprint("Cast object spamming! Woo!")

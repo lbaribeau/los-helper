@@ -50,7 +50,6 @@ from reactions.prompt      import Prompt
 from comm.analyser         import Analyser
 from command.Info          import Info
 
-
 class CommandHandler(object):
     def init_map_and_bots(self):
         # magentaprint("CommandHandler generating the mapfile....", False)
@@ -416,10 +415,7 @@ class CommandHandler(object):
         elif re.match("hp", user_input):
             magentaprint(str(self.character.HEALTH), False)
         elif re.match("(?i)experience", user_input):
-            exp = self.character.EXPERIENCE
-            expm = str(misc_functions.calculate_vpm(exp))
-            magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
-            #magentaprint(str(exp), False)
+            self.print_experience()
         elif re.match("(?i)gold", user_input):
             #gold = self.character.GOLD  #Calculating GMP would require us to store gold differently
             #gpm = str(misc_functions.calculate_vpm(gold))
@@ -441,8 +437,8 @@ class CommandHandler(object):
         elif re.match("(?i)mobs_joined_in", user_input):
             magentaprint(self.character.MOBS_JOINED_IN, False)
         elif re.match("(?i)aura", user_input):
-            magentaprint(str(self.cast.aura))
-            magentaprint(str(self.character.preferred_aura))
+            magentaprint('cast.aura: ' + str(self.cast.aura.s if self.cast.aura else None))
+            magentaprint('character.preferred_aura: ' + str(self.character.preferred_aura))
         elif re.match("(?i)mobs_attacking", user_input):
             magentaprint(self.character.MOBS_ATTACKING, False)
         elif re.match("(?i)monster_kill_list", user_input):
@@ -491,8 +487,7 @@ class CommandHandler(object):
         elif user_input == 'go_repair':
             self.armour_bot.start_thread()
         elif user_input == 'trackno':
-            magentaprint("command_handler.bot_thread.nextpath is " + str(self.bot_thread.nextpath))
-            self.telnetHandler.write('')
+            magentaprint("Track number (command_handler.bot_thread.nextpath) is " + str(self.bot_thread.nextpath))
         elif user_input == 'mud_events':
             magentaprint("MudReaderThread mud events:\n\t{}".format('\n\t'.join([str(m.regexes) for m in self.mudReaderHandler.mudReaderThread.mud_events.values()])))
         else:
@@ -696,14 +691,16 @@ class CommandHandler(object):
     #     self.telnetHandler.write("second %s\n" % (argv))
 
     def user_flee(self):
-        self.smartCombat.stop()
+        # self.smartCombat.stop() # Don't stop smart combat yet
         self.cast.stop()
         # self.smartCombat.flee()
         now = time.time()
         # time_remaining = max(self.character.MOVE_WAIT - (now - self.character.MOVE_CLK),
         #                      self.kill.wait_time(), self.cast.wait_time())
-        time_remaining = max(self.go.wait_time(), self.kill.wait_time(), self.cast.wait_time())
-        self.cast.stop()
+        time_remaining = max(
+            self.go.wait_time(), 
+            self.kill.wait_time(), 
+            self.cast.wait_time())
         self.smartCombat.stop_casting()
         # self.kill.start_thread(self.smartCombat.target)  # if smartCombat.thread.is_alive()
         magentaprint("Fleeing in %.1f sec ..." % time_remaining)
@@ -716,22 +713,22 @@ class CommandHandler(object):
         self.smartCombat.stop()
         self.kill.stop()
         magentaprint("KillThread is stopped, %.1f until escape." % time_remaining, False)
+        # Note: flee might be in 4.1 seconds
+        # With kill on cooldown, that's still not enough time to attack without delaying
 
         if self.character.weapon1 != '':
-            self.telnetHandler.write("rm " + self.character.weapon1)
+            self.telnetHandler.write("rm " + self.character.weapon1.split(' ')[0]) # Doesn't use 'remove' command, inventory notices anyway
         if self.character.weapon2 != '':
-            self.telnetHandler.write("rm " + self.character.weapon2)
+            self.telnetHandler.write("rm " + self.character.weapon2.split(' ')[0])
 
-        if second_sleep < 0.1:
-            second_sleep = 0.1
-
+        second_sleep = max(second_sleep, 0.1)
         time.sleep(second_sleep)
 
-        now = time.time()
+        # now = time.time()
         # time_remaining = max(self.character.MOVE_WAIT - (now - self.character.MOVE_CLK),
         #                      self.kill.wait_time(), self.cast.wait_time())
-        time_remaining = max(self.go.wait_time(), self.kill.wait_time(), self.cast.wait_time())
-        self.character.MOVE_CLK = now
+        # time_remaining = max(self.go.wait_time(), self.kill.wait_time(), self.cast.wait_time())
+        self.character.MOVE_CLK = time.time()
 
         # Note: in very few rare cases it may be better to flee once.  
         self.telnetHandler.write("fl")
@@ -742,9 +739,14 @@ class CommandHandler(object):
         time.sleep(0.1)  
 
         if self.character.weapon1 != "":
-            self.telnetHandler.write("wie " + self.character.weapon1)
+            # self.telnetHandler.write("wie " + self.character.weapon1.split(' ')[0])
+            # self.telnetHandler.write("wie " + self.inventory.get_reference(self.character.weapon1))
+            self.wield.execute_and_wait(self.inventory.get_last_reference(self.character.weapon1))
         if self.character.weapon2 != "":
-            self.telnetHandler.write("seco " + self.character.weapon2)
+            # self.telnetHandler.write("seco " + self.character.weapon2.split(' ')[0])
+            # self.telnetHandler.write("seco " + self.inventory.get_reference(self.character.weapon2))
+            # self.telnetHandler.write("seco " + self.inventory.get_reference(self.character.weapon2))
+            self.second.execute(self.inventory.get_last_reference(self.character.weapon2))
 
     def get_directions_from_where_we_are_to_area_id(self, to_area_id):
         directions = []
@@ -956,3 +958,16 @@ class CommandHandler(object):
             # self.bot_thread = Thread(target=, args=())
             self.bot_thread = TopDownGrind(self.character, self, self.mudReaderHandler, self.mud_map)
             self.bot_thread.start()
+
+    def print_experience(self):
+        x = self.character.EXPERIENCE # Accumulated this session (initialized to zero, matches "You gain...")
+        t = misc_functions.get_runtime_seconds()
+        magentaprint("Started: " + str(misc_functions.startTime))
+        magentaprint("Uptime: " + misc_functions.get_runtime_string())
+        magentaprint("Experience this session: " + str(x))
+        magentaprint("Exp rate: {} exp/hr; {} exp/min; {} exp/s.".format(round(x/t*3600), round(x/t*60), round(x/t)))
+        # g = self.character.GOLD # Ok this is all the current gold, so it won't give us gold rate
+        # magentaprint("Gold delta: ")
+        # magentaprint("Gold rate: {} gold/hr; {} gold/min; {} gold/s.".format(round(x/t/3600), round(x/t/60), round(x/t)))
+        # magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
+        #magentaprint(str(exp), False)

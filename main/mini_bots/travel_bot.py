@@ -36,6 +36,7 @@ class TravelBot(MiniBot):
 
     def follow_path(self, path, grinding=False):
         magentaprint("--- TRAVEL_BOT.FOLLOW_PATH() ---\n" + str(path))
+        go = self.command_handler.go
         self.stopping = False
 
         for exit in path:
@@ -43,42 +44,49 @@ class TravelBot(MiniBot):
                 return
 
             if grinding:
-                self.clean_out_node()  # Needs to check mob level and player health
+                self.clean_out_node()  # Needs to check mob level and player health (not implemented yet)
 
-            self.command_handler.go.wait_execute_and_wait(exit)
+            go.wait_execute_and_wait(exit)
 
-            if self.command_handler.go.success:
-                pass
+            if go.success:
+                continue
             else:
                 # raise Exception("TravelBot failed go!")
                 # Can we assume that it failed?  Should we redo the whole path?  Let's rule out please_wait
-                if self.command_handler.go.please_wait:
-                    self.command_handler.go.wait_execute_and_wait(exit)  # Trying again should do the trick
-                elif self.command_handler.go.failure:
-                    # We are assuming the path is not the problem. In fact, there is another case for that (go.error)
-                    while self.command_handler.go.blocked:
+                if go.please_wait:
+                    go.wait_execute_and_wait(exit)  # Trying again should do the trick
+                elif go.error:
+                    # Wrong exit name... only thing to try is to rebuild the path
+                    return False
+                elif go.failure:
+                    while go.blocked:
                         # ie. - A mugger the bot didn't want to engage due to HP.
                         #     - Gnoll bandit (rare)
                         # TravelBot needs to be able to engage enemies or trust the caller to do so.
                         # Adding gnoll bandit to kill list won't resolve this, since TravelBot doesn't refer to that.
                         # Looks like we HAVE smartCombat on us.
                         # So the question is, if we are blocked, what do we do - kill the blocker? It should be in the monster kill list...
-                        #if self.command_handler.go.M_obj(0) in self.char.MONSTER_KILL_LIST:
-                        #self.command_handler.smartCombat.start_thread(self.command_handler.go.M_obj(0).split(0))
-                        magentaprint("TravelBot engaging blocking mob!")
-                        #self.command_handler.smartCombat._initialize(self.char.mobs.get_reference(self.command_handler.go.M_obj(0)))
-                        #self.command_handler.smartCombat._initialize(self.char.mobs.list.get_reference(self.char.mobs.read_match(self.command_handler.go.M_obj))
-                        #self.command_handler.smartCombat._initialize(self.char.mobs.get_reference_from_mob_match_object(self.command_handler.go.M_obj))
-                        # self.command_handler.smartCombat._initialize(self.char.mobs.get_reference(self.char.mobs.read_match(self.command_handler.go.M_obj)))
-                        self.command_handler.smartCombat.target = self.char.mobs.get_reference(self.char.mobs.read_match(self.command_handler.go.M_obj))
-                        self.command_handler.smartCombat.set_pot_thread = False
-                        self.command_handler.smartCombat.run()  # Calling run explicitly since we don't want to spawn a thread
-                        magentaprint("TravelBot's smartCombat completed")
-                        self.command_handler.go.wait_execute_and_wait(exit)
-                    return False  # We will try again (redoing the path), it probably won't work, then we'll raise the exception.
-                elif self.command_handler.go.error:
-                    # Wrong exit name... only thing to try is to rebuild the path
-                    return False
+                        #if go.M_obj(0) in self.char.MONSTER_KILL_LIST:
+                        #self.command_handler.smartCombat.start_thread(go.M_obj(0).split(0))
+                        # magentaprint("TravelBot engaging blocking mob!")
+                        #self.command_handler.smartCombat._initialize(self.char.mobs.get_reference(go.M_obj(0)))
+                        #self.command_handler.smartCombat._initialize(self.char.mobs.list.get_reference(self.char.mobs.read_match(go.M_obj))
+                        #self.command_handler.smartCombat._initialize(self.char.mobs.get_reference_from_mob_match_object(go.M_obj))
+                        # self.command_handler.smartCombat._initialize(self.char.mobs.get_reference(self.char.mobs.read_match(go.M_obj)))
+                        # self.command_handler.smartCombat.target = self.char.mobs.get_reference(self.char.mobs.read_match(go.M_obj))
+                        # self.command_handler.smartCombat.set_pot_thread = False
+                        # self.command_handler.smartCombat.run()  # Calling run explicitly since we don't want to spawn a thread
+                        # self.fight(self.char.mobs.get_reference(self.char.mobs.read_match(go.M_obj)))
+                        self.command_handler.smartCombat.fight(self.char.mobs.get_reference(self.char.mobs.read_match(go.M_obj))) # Doesn't spawn a thread
+                        magentaprint("TravelBot's smartCombat completed!")
+                        go.wait_execute_and_wait(exit)
+                    if go.success:
+                        continue
+                    else:
+                        # We will try again (redoing the path), it probably won't work, then we'll raise the exception.
+                        # Ehrm getting mugged on the road, the while loop worked, but we shouldn't have returned after
+                        # (Added check to go.success)
+                        return False # Should rebuild the path?... weapon_bot just assumes travel_bot will get us there though
 
         return True
 
@@ -88,12 +96,13 @@ class TravelBot(MiniBot):
 
     def clean_out_node(self):
         for mob in self.char.mobs.list:
-            if self.should_kill(mob):
-                self.command_handler.smartCombat.start_thread(mob)
+            if str(mob) in self.char.MONSTER_KILL_LIST:
+                # self.command_handler.smartCombat.start_thread(mob) # Shouldn't this be a run() call
+                self.command_handler.smartCombat.fight(self.char.mobs.get_reference(str(mob)))
 
-    def should_kill(self, mob):
-        # We want a should_kill check that relies more on the db... even for just a basic level check (not too high)
-        return str(mob) in self.char.MONSTER_KILL_LIST
+    # def should_kill(self, mob):
+    #     # We want a should_kill check that relies more on the db... even for just a basic level check (not too high)
+    #     return str(mob) in self.char.MONSTER_KILL_LIST
 
     def go_to_area_by_title(self, title_fragment):
         pass

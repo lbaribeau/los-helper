@@ -29,7 +29,11 @@ class Prompt(threading.Event):
         if self.hp_delta() or self.mp_delta():
             if len(self.tick_timelog) < 300:
                 self.tick_timelog.append(datetime.now())
-            magentaprint("Prompt delta: [{0}, {1}], time: {2}".format(self.hp_delta(), self.mp_delta(), self.tick_timelog[-1]-self.tick_timelog[-2]))
+            # magentaprint("Prompt delta: [{}, {}], time: {:.3f}".format(
+            magentaprint("Prompt delta: [{}, {}], time: {}".format(
+                self.hp_delta(), 
+                self.mp_delta(), 
+                self.tick_timelog[-1]-self.tick_timelog[-2]))
 
         # self.prev_hp = self.hp if int(match.group(1)) != self.hp else self.prev_hp
         # self.prev_mp = self.mp if int(match.group(2)) != self.mp else self.prev_mp

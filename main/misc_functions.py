@@ -46,18 +46,25 @@ def get_timestamp():
     # return datetime.now().time().strftime("%H:%M:%S.%f")[:-4]
     return datetime.now().time().strftime("%H:%M:%S.%f")[:-3]
 
-def get_runtime():
+def get_runtime_timedelta():
     global startTime
-    runtime = datetime.now() - startTime #by not including .time() we're creating a timedelta object
-    return runtime
+    return datetime.now() - startTime #by not including .time() we're creating a timedelta object
+
+def get_runtime_seconds():
+    return get_runtime_timedelta().total_seconds()
 
 def get_runtime_in_minutes():
-    seconds = int(get_runtime().total_seconds()) #no millisecond nonsense please
+    seconds = int(get_runtime_seconds()) #no millisecond nonsense please
     magentaprint("Seconds run: " + str(seconds))
     if seconds <= 1:
         seconds = 60
     minutes = seconds / 60 #at least display 1 minute
     return minutes
+
+from math import floor
+
+def get_runtime_string():
+    return str(floor(get_runtime_seconds()/3600)) + ' hr, ' + str(floor(get_runtime_seconds()/60) % 60) + ' min, ' + str(floor(get_runtime_seconds() % 60)) + ' s'
 
 def calculate_vpm(value):
     # (Value per minute)

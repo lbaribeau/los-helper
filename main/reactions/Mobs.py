@@ -67,6 +67,7 @@ class Mobs(BotReactionWithFlag):
         elif (r in R.mob_wandered or r in R.mob_left) and self.read_match(m_obj) in self.list:
             self.list.remove(self.read_match(m_obj))
         elif r in R.mob_joined1 or r in R.mob_joined2:
+            magentaprint("Mobs.notify mob joined in {}".format(r))
             self.attacking.append(self.read_match(m_obj))
         elif r in R.mob_attacked:
             # c = self.attacking.count(m_obj.group('mob').strip())
@@ -85,9 +86,9 @@ class Mobs(BotReactionWithFlag):
                 self.damage.append(int(m_obj.group('d')))
             else:
                 self.damage.append(0)
-        if r in R.you_attack or r in R.mob_aggro:
+        elif r in R.you_attack or r in R.mob_aggro:
             self.damage = []
-
+            magentaprint("Mobs.notify mob aggro {}".format(r))
             self.attacking.append(self.read_match(m_obj))
         if self.attacking:
             magentaprint("mobs.attacking " + str(self.attacking))

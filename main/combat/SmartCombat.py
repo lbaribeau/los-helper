@@ -42,9 +42,9 @@ class SmartCombat(CombatObject):
         self.black_magic = info.pty < 7 or spell_percent >= 5
         # self.favourite_spell = Spells.vigor if not self.black_magic else \
         if spell_percent == 0 and self.black_magic:
-            self.favourite_spell = Spells.rumble if Spells.rumble in info.spells else \
-                                   Spells.hurt if Spells.hurt in info.spells else \
-                                   Spells.burn if Spells.burn in info.spells else \
+            self.favourite_spell = Spells.rumble if Spells.rumble in character.spells else \
+                                   Spells.hurt if Spells.hurt in character.spells else \
+                                   Spells.burn if Spells.burn in character.spells else \
                                    Spells.blister
         else:
             self.favourite_spell = Spells.rumble if spell_percent == info.earth else \
@@ -244,6 +244,17 @@ class SmartCombat(CombatObject):
         # self.mud_reader_completion_event.wait()
         # magentaprint("SmartCombat Why isn't this wait waiting2")
 
+        # Set spell based on mob here
+        # Mob target isn't set in init, it's set after sometimes
+        # Also, start() isn't always called
+        # So we assume that self.target is set
+        # Also self.spell apparently...
+        # Well we have self.target which is a reference
+        # So we get the mob full name back
+        # And set the spell here, if black magic...
+        # Well spell is set in engage_monster with target, that might work better, since 'monster' and target are known there
+        # Mob.get_mob_by_name(self.character.mobs.list.get(self.target)) # So is this a list of strings or mobs... Cartography set this up right...
+
         self.use_any_fast_combat_abilities()  # ie. Touch, Dance
         while not self.stopping and not self.end_combat:
             # if self.broken_weapon:
@@ -278,31 +289,31 @@ class SmartCombat(CombatObject):
                 cast.wait_until_ready()
                 if self.stopping:
                     break
-                elif not self.black_magic and \
-                    C.MANA >= 2 and \
-                    (damage >= C.max_vigor() or (C.MANA >= C.maxMP and damage > C.max_vigor()*0.75)):
-                    if damage >= C.max_mend() + C.hp_tick and C.MANA >= 5:
-                        self.do_cast('m')
-                    else:
-                        self.do_cast('v')
-                     # (C.MANA >= C.maxMP - 1 and damage > C.max_vigor()/1.7 and damage > C.hp_tick):
-                    # TODO: cast vigor if a tick is about to come and we're full mana
-                    # (This doesn't consider healing teammates: cc will turn off smart combat for manual teammate healing)
-                elif self.mob_charmed:
+                elif not self.casting or self.mob_charmed:
                     time.sleep(min(0.2, kill.wait_time()))
                     # time.sleep(min(0.2, kill.wait_time() + 0.05))
-                    # This should check if there are other mobs fighting and target them... that's kind of out of scope of taking down one target though
-                elif self.black_magic and (
-                    (self.spell in Spells._lvl1 and C.MANA >= 3) or 
-                    (self.spell in Spells._lvl2 and C.MANA >= 7) or
-                    (self.spell in Spells._lvl3 and C.MANA >= 10)):  # Todo: add oom check
-                    # Have enough mana for spell
-                    self.do_cast(self.spell, self.target)
-                elif self.black_magic and \
-                    ((self.spell in Spells._lvl2 and C.MANA < 7) or (self.spell in Spells._lvl3 and C.MANA < 10)) and \
-                    C.MANA >= 3:
-                    # Don't have enough mana for spell but do have enough for level 1
-                    self.do_cast(Spells._lvl1[Spells._lvl2.index(self.spell)], self.target)
+                    # mob_charmed should check if there are other mobs fighting and switch to them (bot-level logic)
+                    # So return if mob_charmed to do that
+                    # Here we are just saving the mana mana (same as not casting)
+                elif self.black_magic:
+                    if self.spell in Spells._lvl3 and C.MANA < 10:
+                        self.do_cast(Spells._lvl1[Spells._lvl3.index(self.spell)], self.target)
+                    elif self.spell in Spells._lvl2 and C.MANA < 7:
+                        self.do_cast(Spells._lvl1[Spells._lvl2.index(self.spell)], self.target)
+                    elif C.MANA >= 3:
+                        self.do_cast(self.spell, self.target)
+                    else:
+                        time.sleep(min(0.2, kill.wait_time())) # Checks mana and fleeing but goes into melee if it's up
+                elif C.MANA >= 2:
+                    if C.MANA >= 5 and damage >= C.max_mend() + C.hp_tick:
+                        self.do_cast('m')
+                    elif damage >= C.max_vigor() or (C.MANA >= C.maxMP and damage > C.max_vigor()*0.75):
+                        # (C.MANA >= C.maxMP - 1 and damage > C.max_vigor()/1.7 and damage > C.hp_tick):
+                        self.do_cast('v')
+                    else:
+                        time.sleep(min(0.2, kill.wait_time()))
+                    # TODO: cast vigor if a tick is about to come and we're full mana
+                    # (This doesn't consider healing teammates: cc will turn off smart combat for manual teammate healing)
                 else:
                     time.sleep(min(0.2, kill.wait_time()))
 
@@ -630,9 +641,19 @@ class SmartCombat(CombatObject):
             self.potion_thread_handler.stop()
         self.set_pot_thread = False
 
-    def get_mob_level(self):
+    # def get_mob_level(self):
         # Uses self.target and self.character.mobs.list to ask the DB for mob level
         # To choose spell with (or is that too "smart")
+        # No we wrote Mob.get_mob_level_from_name()
+        # I put spell choice in engage_monster where spell is set
+
+    def fight(self, target):
+        magentaprint("SmartCombat engaging"+target+"!")
+        self.target = target
+        self.set_pot_thread = False
+        self.run()
+        magentaprint("SmartCombat completed!")
+
 
 #  SmartCombat will have to wait for the DB!!!
 # Alternatives: Split WeaponBot into itself and SimpleWeaponBot doesn't work because SmartCombat is supposed to rewield any

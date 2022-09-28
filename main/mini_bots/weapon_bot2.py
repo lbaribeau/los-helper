@@ -676,6 +676,7 @@ class MainhandWeaponBot(MiniBot):
             # self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max('weapon', self.character.weapon_type, self.character.weapon_level)
             # self.possible_weapons = sorted(self.possible_weapons, key = lambda i: i.item.level, reverse=True)
             # Strict about level
+            # The bard needs to use a level 2 weapon... because we don't want to accept using a lower level weapon...
             self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max(
                 'weapon', 
                 self.character.info.weapon_type, 

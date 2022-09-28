@@ -63,3 +63,10 @@ class Mob(NamedModel):
             mobs = []
 
         return mobs
+
+    def get_mob_level_by_name(name):
+        mob = Mob.get_mob_by_name(name)
+        if mob and mob.level:
+            return mob.level
+        else:
+            return None
