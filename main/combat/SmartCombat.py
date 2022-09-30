@@ -49,6 +49,9 @@ class SmartCombat(CombatObject):
         self.favourite_spell = self.get_min_rank_spell()
         self.favourite_nuke = self.get_max_rank_spell()
 
+        # if self.character._class.id == 'Fig': # low mana, frequent misses at t2
+        #     self.favourite_nuke = self.get_min_rank_spell()
+
         self.earth_item = "dusty scroll"
         self.water_item = "blue scroll"
         self.fire_item = None
@@ -106,7 +109,7 @@ class SmartCombat(CombatObject):
             self.activated = False
             # self.check_rings()
         elif regex in R.mob_attacked and self.needs_heal() and not self.character.inventory.has_large_restorative():
-            magentaprint("SmartCombat.fleeing = True")
+            magentaprint("SmartCombat.fleeing = True", False)
             self.fleeing = True
         elif regex in R.weapon_break + R.weapon_shatters:
             magentaprint("SmartCombat weapon break: " + str(match.group('weapon')))
@@ -468,7 +471,7 @@ class SmartCombat(CombatObject):
             self.do_cast(self.spell, self.target)
         elif self.black_magic and self.spell in Spells._lvl2 and self.character.MANA < 7 and self.character.MANA >= 3:
             self.do_cast(Spells._lvl1[Spells._lvl2.index(self.spell)], self.target, False)
-        elif self.black_magic and self.spell in Spells._lvl3 and self.character.MANA < 10 and self.character.MANA >= 3:
+        elif self.black_magic and self.spell in Spells._lvl3 and self.character.MANA < 10 and self.character.MANA >= 7:
             self.do_cast(Spells._lvl2[Spells._lvl3.index(self.spell)], self.target, False)
         else:
             time.sleep(min(0.2, self.kill.wait_time()))

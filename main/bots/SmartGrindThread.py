@@ -33,10 +33,15 @@ class SmartGrindThread(TrackGrindThread):
 
         self.init_level_modifiers()
 
-        if self.is_character_class('Mag') or self.is_character_class('Alc'):
-            self.character.MANA_TO_ENGAGE = self.character.info.maxMP / 2
-            if self.character.MANA_TO_ENGAGE < 24 and self.character.info.maxMP > 24:
-                self.character.MANA_TO_ENGAGE = 24
+        self.character.MAX_MANA = self.character.maxMP
+
+        # if not self.is_character_class('Bar') or self.is_character_class('Alc'):
+        self.character.MANA_TO_ENGAGE = self.character.MAX_MANA / 2
+        if self.character.MANA_TO_ENGAGE < 24 and self.character.MAX_MANA > 24:
+            self.character.MANA_TO_ENGAGE = 24
+        
+        self.HEALTH_TO_HEAL = 0.95 * self.character.maxHP
+
 
         self.min_target_aura = Aura('demonic red')
         self.max_target_aura = Aura('heavenly blue')
