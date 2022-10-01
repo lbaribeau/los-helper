@@ -223,6 +223,9 @@ class Character(object):
         if self.is_headless:
             self.write_info_feed()
 
+    def is_near_max_stats(self):
+        return self.HEALTH > (self.info.maxHP * 0.95) and self.MANA > (self.info.maxMana * 0.95)
+
     def write_info_feed(self):
         feed = {
             'name': self.info.name,

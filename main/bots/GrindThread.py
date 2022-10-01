@@ -436,7 +436,7 @@ class GrindThread(BotThread):
 
         # magentaprint("Stopping rest for health",False)
 
-    def update_aura(self):
+    def update_aura(self, force=False):
         cur_aura = self.character.AURA
         # magentaprint("in update aura {} {} {}".format(self.stopping, self.character.ACTIVELY_MAPPING, self.character.spells), False)
         # if self.stopping or self.character.ACTIVELY_MAPPING or not Spells.showaura in self.character.spells:
@@ -445,7 +445,7 @@ class GrindThread(BotThread):
             magentaprint("GrindThread.update_aura() returning false", False)
             return False
 
-        self.cast.update_aura(self.character)
+        self.cast.update_aura(self.character, force)
 
         if not self.cast.success:  # Probably no mana since spell fail gets spammed
             return False
@@ -756,11 +756,21 @@ class GrindThread(BotThread):
             self.character.mobs.chase_exit = ''
             return mob
 
+
+        # loop through mobs
+        # if mob is in the kill list then
+        # if it's weak fight it
+        # if it's tough then check if we have enough juice to fight it
+        # if not then let's skip it for now
         for mob in m_list:
-            if mob in self.character.MONSTER_KILL_LIST:
+            if self.should_kill_mob(mob):
                 return mob
 
         return ''
+
+
+    def should_kill_mob(self, mob):
+        return mob in self.character.MONSTER_KILL_LIST
 
     def do_buff_skills(self):
         if self.stopping:

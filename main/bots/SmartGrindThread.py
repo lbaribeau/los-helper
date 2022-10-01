@@ -194,6 +194,21 @@ class SmartGrindThread(TrackGrindThread):
 
             return directions
 
+    def should_kill_mob(self, mob):
+        if super().should_kill_mob(mob):
+            mob_target = Mob.get_mob_by_name(mob)
+            if self.is_mob_weak(mob_target, 3) or self.character.info.level < 14:
+                magentaprint("Mob is weak enough for us to fight", False)
+                return True
+            elif self.character.is_near_max_stats() and self.inventory.count_restoratives() > 2 and self.update_aura(True):
+                magentaprint("Advanced check for tougher mob, doublechecking aura and kill list", False)
+                # tough fights require max stats and a few healing pots
+                # with aura updated there may be new targets so we want to check again
+                return super().should_kill_mob(mob)
+            else:
+                magentaprint("Mob is too tough for us to fight right now", False)
+                return False
+    
     def get_grind_path(self):
         directions = []
 

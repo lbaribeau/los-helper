@@ -184,7 +184,7 @@ def add_to_dict(d, item_str, qty):
 class Inventory(SimpleCommand, ReferencingList):
     command = 'i'
     keep_list = [
-        'tree root',
+        'tree root', 'chequered vial', 'misty potion',
         'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand', #'makeup kit', 
         'diamantium cross', 'silver ram staff',
         'copper thieves pass', 'bronze thieves pass', 'steel thieves pass', 'silver thieves pass',# 'stilleto'

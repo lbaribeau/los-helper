@@ -249,6 +249,9 @@ class BotThread(threading.Thread):
             # (Why not have TrackGrind expand it out?)
         return False
 
+    def should_kill_mob(self, mob):
+        pass
+
     def do_reboot_hooks(self):
         pass
 

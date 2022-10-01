@@ -298,7 +298,7 @@ class ArmourBot(MiniBot):
                 #magentaprint("determine_shopping_list() size " + size + ", slot: " + str(slot) + ", level: " + str(level))
                 if slot == 'wielded' or slot == 'seconded':
                     continue
-                if slot == 'face' or slot == 'holding':
+                if slot == 'holding':
                     continue  # no masks in shops, so this hack will probably stay.  We should add 'face' slot to the db.
                 if re.search(r'\d$', slot):
                     slot = slot[:len(slot)-1]  # neck2, finger3, etc.

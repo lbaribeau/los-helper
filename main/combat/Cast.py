@@ -117,14 +117,14 @@ class Cast(SimpleCombatObject):
         self.set_spell(spell, is_item)
         self.persistent_execute(target)
 
-    def update_aura(self, character):
+    def update_aura(self, character, force=False):
         magentaprint("Cast.update_aura()")
         if Spells.showaura not in character.spells:
             magentaprint("Cast giving up on aura update.")
             return
 
         # magentaprint("{} {} {}".format(time(), self.aura_timer + self.aura_refresh, time() > (self.aura_timer + self.aura_refresh)),False)
-        if time() > (self.aura_timer + self.aura_refresh):
+        if time() > (self.aura_timer + self.aura_refresh) or force:
             self.stopping = False
             self.spam_spell(character, Spells.showaura)
             character.AURA = str(self.aura)
