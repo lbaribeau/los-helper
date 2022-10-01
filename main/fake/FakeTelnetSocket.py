@@ -55,8 +55,8 @@ class FakeTelnetSocket(object):
         #     "two small flasks, two small lamps, two small restoratives, six steel bottles, five steel rings, two stilletos, \n\r" \
         #     "two white potions.\n"
         self.inventory = FakeInventory(['awl'] + 6*['small lamp'] + 6*['small knive'] + ['large sack']*2 + \
-            ['silver chalice']*7 + ['small flask']*2 + ['small lamp']*2 + ['small restorative']*2 + \
-            ['steel bottle']*6 + ['steel ring']*6 + ['stilleto']*2 + ['white potion']*2 + ['maul hammer']*3 + \
+            ['silver chalice']*7 + ['small lamp']*2 + \
+            ['steel bottle']*6 + ['steel ring']*6 + ['stilleto']*2 + ['maul hammer']*3 + \
             ['buckler', 'burnt ochre potion', 'hammer', 'large bag', 'large mace', ] + ['long sword']*2 + ['sabre']*2  + ['silver torch', \
              'spectacles', 'title deeds', 'morning star'] + 3*['heavy crossbow'] + ['small mace'] + 60*['blue scroll'])
         self.inventory.unset_usable('morning')
@@ -159,6 +159,9 @@ class FakeTelnetSocket(object):
         return self.socket.fileno()
         # Assumes is
 
+    def write_prompt(self):
+        self.socket_output.append('[%s H %s M]: ' % (str(self.char.hp), str(self.char.mp)))
+
     def write(self, command):
         #re.match("bot ?$|bot [0-9]+$", user_input)
         #M_obj = re.search("[0-9]+", user_input)
@@ -168,9 +171,7 @@ class FakeTelnetSocket(object):
             self.initialize_socket_output(command)
             self.write('genaid 2')
             # self.write('addmob spiv')
-        if command == '':
-            self.socket_output.append('[%s H %s M]: ' % (str(self.char.hp), str(self.char.mp)))
-        elif re.match('whois (.+?)', command):
+        if re.match('whois (.+?)', command):
             self.socket_output.append(self.whois_string)
         elif re.match('spells', command):
             self.socket_output.append(self.spells_string)
@@ -206,6 +207,9 @@ class FakeTelnetSocket(object):
         elif re.match('mobflee .+? .+', command):
             M_obj = re.search('mobflee (.+?) (.+)', command)
             self.mobflee(M_obj.group(1), M_obj.group(2))
+        elif re.match('mobdmg .+? .+', command):
+            M_obj = re.search('mobdmg (.+) (.+?)$', command)
+            self.mobattacks(M_obj.group(1), M_obj.group(2))
         elif re.match('mobleave .+', command):
             M_obj = re.search('mobleave (.+)', command)
             self.mobleave(M_obj.group(1))
@@ -324,6 +328,8 @@ class FakeTelnetSocket(object):
             self.socket_output.append("You wear the chain mail armour.\n\r")
         elif re.match('wear chain$', command):
             self.socket_output.append("It is broken.\n\r")
+        
+        self.write_prompt()
 
     def gen_area(self, area):
         magentaprint("FakeTelnetSocket generate area {0}".format(area))
@@ -398,6 +404,11 @@ class FakeTelnetSocket(object):
         flee_string = 'The ' + mob + ' just wandered away.\n\r'
         self.mob_lost_battle(mob, flee_string)
 
+    def mobattacks(self, mob, dmg=1):
+        mob_attacks_string = "The " + mob + " punches you for " + dmg + " damage."
+        self.char.hp += -int(dmg)
+        self.socket_output.append(mob_attacks_string)
+
     def mobdead(self, mob):
         dead_string = 'Your attack overwhelms the ' + mob + ' and he collapses!\nYour enemy, the ' + mob + ' has been defeated.\nYou gain 11 experience.\n\r'
         self.mob_lost_battle(mob, dead_string)
@@ -418,8 +429,8 @@ class FakeTelnetSocket(object):
             # mob = sorted_mob_list[startswith_boolean_list.index(1)]
             # mob = target
             if spell:
-                # self.socket_output.append('You cast a ' + spell + ' spell on the ' + mob + ' for 12 damage.\n\r')
-                self.socket_output.append('Please wait 1 more second.\n\r')
+                self.socket_output.append('You cast a ' + spell + ' spell on the ' + mob + ' for 12 damage.\n\r')
+                # self.socket_output.append('Please wait 1 more second.\n\r')
             else:
                 self.socket_output.append('You lash out and thump the ' + mob + ' for 8 damage.\n\r')
 
