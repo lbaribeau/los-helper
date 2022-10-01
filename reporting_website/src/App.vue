@@ -93,6 +93,10 @@
     <div class="box"><strong>Equipment...</strong>
         <div class="stat">Wielded: [{{report.weapon1}}]</div>
         <div class="stat" v-if="report.weapon2 != ''">Wielded: {{report.weapon2}}</div>
+        <div :key="index" v-for="(slot,item,index) in equipment">
+          <div class="stat">{{slot}}</div>
+          <div class="stat">{{item}}</div>
+        </div>
     </div>
     <div class="box"><strong>Inventory...</strong>
         <table class="table is-fullwidth">
@@ -129,6 +133,7 @@ return {
     info: {},
     report: {},
     track_report: [],
+    equipment: {"body": "", "arms": "", "legs": "", "neck": "", "neck2": "", "hands": "", "head": "", "feet": "", "face": "", "finger": "", "finger2": "", "finger3": "", "finger4": "", "finger5": "", "finger6": "", "finger7": "", "finger8": "", "shield": "", "wielded": null, "seconded": null, "holding": null},
     pollInterval: '',
     status: '',
     darkMode: true,
@@ -182,6 +187,10 @@ return {
       axios.get('../api/track_report.json?t=' + new Date().getTime())
       .then((response) => {
         this.track_report = response.data;
+      });
+      axios.get('../api/equipment.json?t=' + new Date().getTime())
+      .then((response) => {
+        this.equipment = response.data;
       });
     },
     processExpm: function(track) {

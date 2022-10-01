@@ -121,7 +121,7 @@ class CommandHandler(object):
         self.wear = Wear(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.wear)
         # magentaprint(str(Equipment))
-        self.equipment = Equipment(telnetHandler)
+        self.equipment = Equipment(telnetHandler, character.is_headless)
         # self.eq_bot = EquipmentBot(character, self, self.mudReaderHandler, self.mud_map)
         mudReaderHandler.add_subscriber(self.equipment)
         mudReaderHandler.add_buffer_completion_subscriber(self.equipment)

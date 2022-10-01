@@ -282,7 +282,7 @@ class Wither(SlowCombatAbility):
     # classes = ["Dar"]
     level = 1
 
-class Backstab(FastCombatAbility):
+class Backstab(SlowCombatAbility):
     command = "back"
     cooldown_after_success = 7
     cooldown_after_failure = 7
@@ -303,8 +303,8 @@ class Bash(SlowCombatAbility):
 
 class Circle(SlowCombatAbility):
     command = "ci"
-    cooldown_after_success = 3
-    cooldown_after_failure = 3  # 4 I think
+    cooldown_after_success = 9
+    cooldown_after_failure = 9  # 4 I think
     success_regexes = [RegexStore.circle]
     failure_regexes = [RegexStore.circle_fail]
     error_regexes = [RegexStore.circle_whom, RegexStore.not_here]

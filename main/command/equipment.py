@@ -1,14 +1,14 @@
 
 from itertools import chain
-
+import json
 from command.Command import Command
 from comm import RegexStore as R
-from misc_functions import magentaprint
+from misc_functions import magentaprint, output_api_feed
 from command.Inventory import parse_item_names
 
 class Equipment(Command):
     command = 'eq'
-    def __init__(self, telnetHandler):
+    def __init__(self, telnetHandler, is_headless=False):
         # self.regex_cart = [R.you_arent_wearing_anything,
         #     R.on_body, R.on_arms, R.on_legs, R.on_neck, R.on_face, R.on_hands, R.on_head,
         #     R.on_feet, R.on_finger, R.shield, R.wielded, R.seconded, R.holding
@@ -18,6 +18,7 @@ class Equipment(Command):
             R.one_equip, 
             R.prompt
         ]
+        self.is_headless = is_headless
         # success/fail/error doesn't work so well in this case... do not inherit Command?
         # Add prompt [ bracket to end of regex to ensure full capture?
         # Can I assume that all the text comes in one clump?
@@ -59,6 +60,8 @@ class Equipment(Command):
                 self.dict[slot_name] = self.determine_gear_name(match.group('piece'))
                 self.eq_flag = True  # We need to concoct a flag that determines whether all equipment was matched...
                 # The prompt hack isn't doing it job in that regard
+                if self.is_headless:
+                    output_api_feed('equipment', (self.dict))
             else:
                 magentaprint("match.group('slot').lower() is " + match.group('slot').lower() + " and is not in " + str(self.dict.keys()))
         elif r in R.you_arent_wearing_anything:

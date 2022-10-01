@@ -341,8 +341,11 @@ class TrackGrindThread(GrindThread):
             'west', 'north', 'chapel'
         ]
 
-        self.GNOLL_CAMP = ['think']
-
+        # self.GNOLL_CAMP = ['think']
+        self.GNOLL_CAMP = [
+            'areaid986', 'brush', 'west', 'west', 'south', 'southwest', 'southwest', 'tent', 'out', 'north', 'southeast',
+            'southeast', 'out'
+        ]
         # self.GNOLL_CAMP = ['out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'southeast',
         #  'southeast', 'east', 'east', 'east', 'southeast', 'southeast', 'southeast', 'south', 'south', 'south', 'south',
         #   'south', 'south', 'south', 'south', 'south', 'south', 'south', 'south', 'southwest', 'southwest', 'southwest',
@@ -564,7 +567,7 @@ class TrackGrindThread(GrindThread):
             Track("Combat Master / barbs", self.BARBS, 8, 14, 0),
             Track("Tardan", self.TARDAN, 15, 20, 0),
             Track("Rimark", self.RIMARK, 15, 20, 1),
-            Track("Dojo", self.DOJO, 15, 20, 1),
+            Track("Dojo", self.DOJO, 16, 20, 1),
             Track("Dini", self.DINI, 11, 14, 0),
             Track("Horbuk", self.HORBUK, 12, 20, 1),
             Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,8,20,9),
