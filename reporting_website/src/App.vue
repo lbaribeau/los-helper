@@ -94,8 +94,7 @@
         <div class="stat">Wielded: [{{report.weapon1}}]</div>
         <div class="stat" v-if="report.weapon2 != ''">Wielded: {{report.weapon2}}</div>
         <div :key="index" v-for="(slot,item,index) in equipment">
-          <div class="stat">{{slot}}</div>
-          <div class="stat">{{item}}</div>
+          <div class="stat">{{slot}}: [{{item}}]</div>
         </div>
     </div>
     <div class="box"><strong>Inventory...</strong>
