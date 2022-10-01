@@ -430,13 +430,12 @@ class TrackGrindThread(GrindThread):
         # ]
 
         self.FOUNDRY = ['areaid1231', 'out', 'down', 'east', 'east', 'east', 'south']
-        self.ALCHEMISTS = ['areaid999', 'areaid2967']
         self.EGAN_TRENT = ['areaid1999']
         self.BARBS = ['areaid1421', 'west', 'out','nw','ne','tent','out','east','se','s','sw','w','nw','tent','out']
         self.ORCS = ['areaid747', 'areaid749']
         self.OLMER = ['areaid297']
         self.CHERYN = ['areaid1380']
-        self.ARTIFICERS = ['areaid1350', 'areaid1008']
+        self.ARTIFICERS = ['areaid1350', 'areaid1008', 'areaid999']
         self.SILKEN_ALLEY = ['areaid686', 'areaid706', 'areaid705', 'areaid698', 'areaid699', 'areaid700']
         self.CORELLAN = ['areaid713']
         self.JERREK_TAG = ['areaid977', 'areaid979']
@@ -444,13 +443,19 @@ class TrackGrindThread(GrindThread):
         self.VILADIN_CAL = ['areaid1498', 'areaid247', 'path', 'hut']
         self.DALLA_DOUVAN = ['areaid2449', 'areaid2430']
         self.ALDO_BROTAIN = ['areaid1254', 'areaid1226']
-        self.PLOVERS = ['areaid1564', 'areaid1600']
+        self.HURN = ['areaid220']
+        self.PLOVERS = ['areaid1564', 'areaid1600', 'door', 'east', 'east', 'door']
         self.FLOOR_MANAGER = ['areaid1147']
         self.TARDAN = ['areaid1378']
         self.RIMARK = ['areaid1231']
+        self.SHALDENA = ['areaid1621']
         self.HORBUK = ['areaid1265']
         self.DOJO = ['areaid917']
+        self.HORSEMASTER = ['areaid2340']
         self.DINI = ['areaid629']
+        self.BARDS1 = ['areaid1214'] #sonneteer 8 and minstrel 11
+        self.MONKS1 = ['areaid1311', 'out', 'e', 'w', 'w', 's'] #brother 11, 2x seeker 5
+        self.BLADEMASTER = ['areaid622', 'ne', 'e', 'se', 's', 's'] #warrior 8, 3x veteran 5
         # self.WHITEBLADE_LYRON = ['areaid2110', 'areaid2097']
         # self.LYRON = ['areaid2097', ] -- too much dmg
 
@@ -546,6 +551,7 @@ class TrackGrindThread(GrindThread):
             Track("Kobolds", self.smart_kobold_path, 0, 9, -1), #sentries are suuuper tough
             Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
             Track("Fort", self.smart_fort_path, 9, 20, 0),
+            Track("Veterans", self.BLADEMASTER, 8, 12, 0),
             Track("North Bandits", self.smart_northern_bandits_path, 9, 14, -1),
             # Track("Eastern Zombies", self.ZOMBIES, 6, 20, 0),
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,20,9),
@@ -566,10 +572,13 @@ class TrackGrindThread(GrindThread):
             Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1),
             Track("Combat Master / barbs", self.BARBS, 8, 14, 0),
             Track("Tardan", self.TARDAN, 15, 20, 0),
+            Track("Hurn", self.HURN, 15, 20, 1),
             Track("Rimark", self.RIMARK, 15, 20, 1),
             Track("Dojo", self.DOJO, 16, 20, 1),
+            Track("Horsemaster", self.HORSEMASTER, 16, 20, 1),
             Track("Dini", self.DINI, 11, 14, 0),
             Track("Horbuk", self.HORBUK, 12, 20, 1),
+            Track("Shaldena the Red", self.SHALDENA, 12, 20, 1),
             Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,8,20,9),
             Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0),
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
@@ -577,7 +586,9 @@ class TrackGrindThread(GrindThread):
             Track("Gnomes", self.GNOMES, 10, 12, 1),
             Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 13, 0),
             Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1),
-            # Track("Plovers", self.PLOVERS, 12, 20, 1),
+            Track("Plovers", self.PLOVERS, 15, 20, 1),
+            Track("Bards", self.BARDS1, 11, 16, 1),
+            Track("Brother monk", self.MONKS1, 9, 16, 0),
             Track("Floor Manager", self.FLOOR_MANAGER, 12, 20, -1),
             # Track("Dalla and Douvan", self.DALLA_DOUVAN, 11, 20, 1), # Dalla overheals and is too dangerous
             Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 20, 1),
