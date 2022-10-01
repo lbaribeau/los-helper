@@ -90,13 +90,6 @@
     <div class="box"><strong>Spell damage...</strong>
       <apexchart width="500" type="bar" :options="castOptions" :series="castSeries"></apexchart>
     </div>
-    <div class="box"><strong>Equipment...</strong>
-        <div class="stat">Wielded: [{{report.weapon1}}]</div>
-        <div class="stat" v-if="report.weapon2 != ''">Wielded: {{report.weapon2}}</div>
-        <div :key="index" v-for="(slot,item,index) in equipment">
-          <div class="stat">{{slot}}: [{{item}}]</div>
-        </div>
-    </div>
     <div class="box"><strong>Inventory...</strong>
         <table class="table is-fullwidth">
           <tr>
@@ -111,6 +104,13 @@
     </div>
   </div>
   <div class="column">
+    <div class="box"><strong>Equipment...</strong>
+        <div class="stat">Wielded: [{{report.weapon1}}]</div>
+        <div class="stat" v-if="report.weapon2 != ''">Wielded: {{report.weapon2}}</div>
+        <div :key="index" v-for="(item,slot,index) in equipment">
+          <div class="stat">{{slot}}: [{{item}}]</div>
+        </div>
+    </div>
     <div class="box"><strong>Mobs killed...</strong>
       <div :key="mob" v-for="count, mob in mobs_killed">{{count}} {{mob}}</div>
     </div>
