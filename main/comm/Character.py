@@ -224,7 +224,7 @@ class Character(object):
             self.write_info_feed()
 
     def is_near_max_stats(self):
-        return self.HEALTH > (self.info.maxHP * 0.90) and self.MANA > (self.info.maxMana * 0.90)
+        return self.HEALTH > (self.info.maxHP * 0.90) and self.MANA > (self.info.maxMP * 0.90)
 
     def write_info_feed(self):
         feed = {
