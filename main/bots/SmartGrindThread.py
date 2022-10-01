@@ -26,7 +26,7 @@ class SmartGrindThread(TrackGrindThread):
 
         self.track_start_time = 0
         self.track_end_time = 0
-        # self.potion_bot = PotionBot(character, command_handler, mud_map)
+        self.potion_bot = PotionBot(character, command_handler, mud_map)
 
         # if self.character.AREA_ID != 2:
         #     self.direction_list = self.get_heal_path()
@@ -93,7 +93,8 @@ class SmartGrindThread(TrackGrindThread):
         if not self.on_heal_path and not self.skipped_last_track:
             self.check_weapons()
             self.check_armour()
-        # self.potion_bot.run()
+        
+        self.check_potions()
 
         # if self.has_buff_ability():
         #     if self.use_buff_ability():
@@ -209,6 +210,11 @@ class SmartGrindThread(TrackGrindThread):
                 magentaprint("Mob is too tough for us to fight right now", False)
                 return False
     
+    def check_potions(self):
+        if self.potion_bot.check_potions():
+            magentaprint("Here I go buying potions again", False)
+            self.potion_bot.run()
+
     def get_grind_path(self):
         directions = []
 

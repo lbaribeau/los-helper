@@ -437,14 +437,20 @@ class GrindThread(BotThread):
         # magentaprint("Stopping rest for health",False)
 
     def update_aura(self, force=False):
-        cur_aura = self.character.AURA
-        # magentaprint("in update aura {} {} {}".format(self.stopping, self.character.ACTIVELY_MAPPING, self.character.spells), False)
-        # if self.stopping or self.character.ACTIVELY_MAPPING or not Spells.showaura in self.character.spells:
-        # if self.stopping or self.character.ACTIVELY_MAPPING or not any(s.startswith(Spells.showaura) for s in self.character.spells):
-        if self.stopping or self.character.ACTIVELY_MAPPING or Spells.showaura not in self.character.spells:
+        aura_updated = False
+        if self.stopping or self.character.ACTIVELY_MAPPING:
             magentaprint("GrindThread.update_aura() returning false", False)
-            return False
+            aura_updated = False
+        elif Spells.showaura in self.character.spells:
+            aura_updated = self.update_aura_with_spell(force)
+        elif self.inventory.has_aura_pot():
+            magentaprint("IDK show aura spell", False)
+            aura_updated = self.update_aura_with_pot(force)
+        
+        return aura_updated
 
+    def update_aura_with_spell(self, force=False):
+        cur_aura = self.character.AURA
         self.cast.update_aura(self.character, force)
 
         if not self.cast.success:  # Probably no mana since spell fail gets spammed
@@ -458,25 +464,20 @@ class GrindThread(BotThread):
             
             return True
 
-        # if self.character.level < 3 or not \
-        #         BotThread.can_use_timed_ability(self.character.AURA_LAST_UPDATE, 480):
-        # if not Spells.showaura in self.character.spells:
-            # magentaprint("Last aura update %d seconds ago." % round(time.time() - self.character.AURA_LAST_UPDATE))
-            # return True
+    def update_aura_with_pot(self, force=False):
+        cur_aura = self.character.AURA
+        self.cast.update_aura(self.character, force)
 
-        # self.cast.wait_until_ready()
-        # aura_matched = False
-
-        # while not aura_matched and self.character.MANA > 0 and not self.stopping:
-        #     self.cast.cast('show')
-        #     # aura_matched = self.mudReaderHandler.wait_for_aura_match()
-        #     self.cast.wait_for_flag()
-
-        # if aura_matched:
-        #     self.character.AURA_LAST_UPDATE = time.time()
-        #     return True
-
-        # return False  # Ran out of mana
+        if not self.cast.success:  # Probably no mana since spell fail gets spammed
+            return False
+        else:
+            self.character.AURA = self.cast.aura
+            self.character.aura_check_count += 1
+            updated_aura = self.character.AURA
+            if str(cur_aura) != str(updated_aura):
+                self.aura_updated_hook()
+            
+            return True
 
     def heal_up(self):
         magentaprint("In heal_up.")
@@ -570,6 +571,9 @@ class GrindThread(BotThread):
             # white potion
         else:
             self.character.HAS_RESTORE_ITEMS = False
+
+    def do_checks(self):
+        self.check_weapons()
 
     def check_weapons(self):
         magentaprint('check_weapons()')
@@ -735,6 +739,7 @@ class GrindThread(BotThread):
             if re.search('town guard', mob) or \
                 re.search('town crier', mob) or \
                re.search('clown', mob) or \
+               re.search('Rancher Plover', mob) or \
                re.search('bouncer', mob):
                 return ''
 

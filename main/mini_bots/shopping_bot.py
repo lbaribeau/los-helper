@@ -29,6 +29,8 @@ class ShoppingBot(MiniBot):
         return self.buy_with_ref(asi, self.choose_reference(asi))
 
     def buy_with_ref(self, asi, ref):
+        self.travel_bot.go_to_area(asi.area.id)
+
         self.command_handler.buy.execute_and_wait(ref)
         if self.command_handler.buy.success:
             self.char.inventory.add(asi.item.name) # It's a bit hard for buy to do this part

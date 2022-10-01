@@ -92,9 +92,9 @@ class Use(CommandThatRemovesFromInventory):
     cooldown_after_failure = 0
     command = 'use'
     success_regexes = [
+        R.aura,
         R.potion_drank,
-        R.you_drink,
-        R.disintegrates
+        R.you_drink
     ]  
     # It's tempting to try to make Inventory smart enough to use healing items...
     # Yes lately I belive Inventory should "have" commands that affect it (No!)

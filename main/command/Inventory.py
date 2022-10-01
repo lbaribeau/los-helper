@@ -276,6 +276,9 @@ class Inventory(SimpleCommand, ReferencingList):
         for index, item in enumerate(self.keep_list):
             self.keep_list[index] = MudItem(item)
 
+        self.aura_pot = [
+            'chequered vial', 'misty potion'
+        ]
         self.large_restoratives = [
             'scarlet potion', 'philtre of health' #, 'golden potion'
         ]
@@ -414,6 +417,12 @@ class Inventory(SimpleCommand, ReferencingList):
     #         return True
 
     #     return False
+
+    def has_aura_pot(self):
+        return any([self.has(r) for r in self.aura_pot])
+
+    def count_aura_pots(self):
+        return sum(self.count(r) for r in self.aura_pot)
 
     def has_restorative(self):
         return any([self.has(r) for r in self.restoratives])
