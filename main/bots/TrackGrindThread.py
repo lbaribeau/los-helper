@@ -575,7 +575,7 @@ class TrackGrindThread(GrindThread):
             Track("Hurn", self.HURN, 15, 20, 1),
             Track("Rimark", self.RIMARK, 15, 20, 1),
             Track("Dojo", self.DOJO, 16, 20, 1),
-            Track("Horsemaster", self.HORSEMASTER, 16, 20, 1),
+            # Track("Horsemaster", self.HORSEMASTER, 16, 20, 1), #pathing here sucks, needs to be remapped
             Track("Dini", self.DINI, 11, 14, 0),
             Track("Horbuk", self.HORBUK, 12, 20, 1),
             Track("Shaldena the Red", self.SHALDENA, 12, 20, 1),
