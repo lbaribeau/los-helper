@@ -198,7 +198,7 @@ class SmartGrindThread(TrackGrindThread):
     def should_kill_mob(self, mob):
         if super().should_kill_mob(mob):
             mob_target = Mob.get_mob_by_name(mob)
-            if self.is_mob_weak(mob_target, 3) or self.character.info.level < 14:
+            if self.character.info.level < 14 or self.is_mob_weak(mob_target, 3):
                 magentaprint("Mob is weak enough for us to fight", False)
                 return True
             elif self.character.is_near_max_stats() and self.inventory.count_restoratives() > 2 and self.update_aura(True):
