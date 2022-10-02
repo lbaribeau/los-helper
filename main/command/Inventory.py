@@ -200,8 +200,8 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'spear',
         # 'bolos',
         # 'quarter staff', #'heavy crossbow', 
-        'javelin', #'heavy crossbow', 
-        'throwing stars', 'throwing star',
+        # 'javelin', #'heavy crossbow', 
+        # 'throwing stars', 'throwing star',
         #'crossbow', 'horn bow', 'long bow' # < 70% missile
         # 'broad sword',
         #'adamantine axe', 'rapier', #'adamantine sword', # Master of Ceremonies
