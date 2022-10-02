@@ -344,7 +344,10 @@ class SmartCombat(CombatObject):
         if (not self.is_caster_class()) and \
             self.character.level > 10 and self.mob_target is not None:
             if self.mob_target.level is not None:
-                if self.is_mob_weak() and self.mob_target.level < 10:
+                level = self.mob_target.level
+                if self.mob_target.difficulty_rating is not None and self.mob_target.difficulty_rating != "":
+                    level += self.mob_target.difficulty_rating
+                if self.is_mob_weak() and level < 10:
                     return False
         return True
 
