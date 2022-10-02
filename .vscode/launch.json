@@ -5,11 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "Python: LOSHelper",
             "type": "python",
             "request": "launch",
-            "program": "main/los-helper.py Werp meowmeow",
-            "console": "integratedTerminal"
+            "program": "main/los_helper.py",
+            "console": "integratedTerminal",
+            "args": ["user", "pass", "-grind"]
         }
     ]
 }

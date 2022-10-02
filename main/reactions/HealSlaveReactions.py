@@ -58,7 +58,7 @@ class HealSlaveReactions(BotReaction):
     def should_buff_target(self):
         buff_key = self.target + "_buff"
         mana_requirement = 24        
-        cooldown_in_seconds = 60
+        cooldown_in_seconds = 120
         return self.check_healslave_cooldown(buff_key, mana_requirement, cooldown_in_seconds)
 
     def should_heal_target(self, mana_requirement):
