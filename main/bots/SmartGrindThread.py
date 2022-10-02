@@ -273,7 +273,7 @@ class SmartGrindThread(TrackGrindThread):
         #     return []
         # else:
         try:
-            if self.has_ideal_health():
+            if self.character.is_near_max_health():
                 if from_path == -1:
                     paths = self.mud_map.get_paths_to_restorative_area(self.character.AREA_ID)
                 else:

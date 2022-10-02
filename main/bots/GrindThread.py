@@ -449,7 +449,7 @@ class GrindThread(BotThread):
                 magentaprint("GrindThread.update_aura() returning false", False)
                 aura_updated = False
             elif self.inventory.has_aura_pot():
-                magentaprint("IDK show aura spell", False)
+                magentaprint("I have show aura pots so I'ma use these over mana", False)
                 use_pot = ""
                 for pot in self.inventory.aura_pot:
                     if self.inventory.has(pot):

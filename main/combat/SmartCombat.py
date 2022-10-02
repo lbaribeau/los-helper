@@ -254,8 +254,8 @@ class SmartCombat(CombatObject):
                 spell_percent = max(self.character.spell_proficiencies.values())
                 self.black_magic = self.character.info.pty < 7 or spell_percent >= 5 or self.character.PREFER_BM
                 self.spell = self.determine_favorite_spell_for_target()
-            elif self.character.info.pty > 10:
-                magentaprint("Mob is too weak for me to cast spells on so I'ma heal", False)
+            else:
+                magentaprint("Mob is too weak for me to waste mana on", False)
                 self.black_magic = False
                 self.spell = None
 
@@ -344,7 +344,7 @@ class SmartCombat(CombatObject):
         if (not self.is_caster_class()) and \
             self.character.level > 10 and self.mob_target is not None:
             if self.mob_target.level is not None:
-                if self.is_mob_weak():
+                if self.is_mob_weak() and self.mob_target.level < 10:
                     return False
         return True
 
@@ -454,7 +454,7 @@ class SmartCombat(CombatObject):
         damage = self.character.maxHP - self.character.HEALTH
         if self.stopping:
             return True
-        elif not self.black_magic and ((self.character.MANA >= 2 and damage > self.character.max_vigor()) or \
+        elif not self.black_magic and self.character.info.pty > 10 and ((self.character.MANA >= 2 and damage > self.character.max_vigor()) or \
              (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7)):
              # (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7 and damage > self.character.hptick()):
             # TODO: cast vigor if a tick is about to come and we're full mana
