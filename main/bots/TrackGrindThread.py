@@ -435,7 +435,7 @@ class TrackGrindThread(GrindThread):
         self.ORCS = ['areaid747', 'areaid749']
         self.OLMER = ['areaid297']
         self.CHERYN = ['areaid1380']
-        self.ARTIFICERS = ['areaid1350', 'areaid1008', 'areaid999']
+        self.ARTIFICERS = ['areaid1350', 'areaid1008'] #, 'areaid999'] #Haelyn
         self.SILKEN_ALLEY = ['areaid686', 'areaid706', 'areaid705', 'areaid698', 'areaid699', 'areaid700']
         self.CORELLAN = ['areaid713']
         self.JERREK_TAG = ['areaid977', 'areaid979']

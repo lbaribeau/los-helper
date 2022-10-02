@@ -1,0 +1,43 @@
+You see Haelyn.
+
+02:34:55.89 | Mob is weak enough for us to fight | []
+02:34:55.89 | Mob is ripe for me to use bm on | []
+[109 H 49 M]: You withered Haelyn for 64 damage.
+[109 H 49 M]: You cast a shockbolt spell on Haelyn.
+The spell did 35 damage.
+[109 H 39 M]: 02:34:56.20 | Reporting | []
+Haelyn casts a fireball spell on you for 23 damage.
+[86 H 39 M]: Haelyn grabs you and gouges you for 17 damage.
+[69 H 39 M]: Your evilness increases your damage.
+You slice Haelyn for 11 damage with your fine steel axe.
+[69 H 39 M]: Haelyn blasts your mind with confusion.
+[69 H 39 M]: Please wait 7 more seconds.
+[69 H 39 M]: [69 H 39 M]: Haelyn grabs you and gouges you for 18 damage.
+[51 H 39 M]:
+A light rain falls, shrouding the green hills in a fine mist.
+[51 H 39 M]: Haelyn lashes out and thumps you for 17 damage.
+[34 H 39 M]: Haelyn blasts your mind with confusion.
+[34 H 39 M]: 02:35:07.16 | BotReactionWithFlag Cast timed out!!! Wait() returning now. Also, set the flag for the next wait call. | []
+You hack with your fine steel axe, but your blow swings wide of the mark.
+[34 H 39 M]: Please wait 2 more seconds.
+[34 H 39 M]: Haelyn tries to gouge you, but you shake her off.
+[34 H 39 M]: You cast a shockbolt spell on Haelyn.
+The spell did 35 damage.
+[34 H 29 M]: Haelyn casts a dustgust spell on you for 25 damage.
+[9 H 29 M]: You feel better.
+Potion drank.
+you feel a lot better
+A scarlet potion disintegrates.
+[18 H 29 M]: You hack with your fine steel axe, but your blow swings wide of the mark.
+[18 H 29 M]: Haelyn painfully head-butts you for 16 damage.
+02:35:11.09 | SmartCombat.fleeing = True | []
+[2 H 29 M]: You feel better.
+Potion drank.
+that feels better
+A white potion disintegrates.
+[3 H 29 M]: Your evilness increases your damage.
+You slash at Haelyn and hit for 18 damage.
+[3 H 29 M]: Haelyn grabs you and gouges you for 17 damage.
+You are overwhelmed by Haelyn's attack and you collapse!
+### Kerp was defeated by Haelyn.
+### Kerp's body is teleported away to be healed.
