@@ -13,15 +13,11 @@ class Cast(SimpleCombatObject):
     cooldown_after_success = 4  # Gets rewritten by characterClass...
     cooldown_after_failure = 0
     regexes = []
-
+    aura = None
     # cast = RegexStore.cast
     success_regexes = [RegexStore.cast, RegexStore.aura, RegexStore.mob_aura]
     failure_regexes = [RegexStore.cast_failure, RegexStore.no_mana]
-    error_regexes = [RegexStore.bad_target_or_spell, RegexStore.not_here]
-
-    aura = None
-    aura_timer = 300
-    aura_refresh = 300
+    error_regexes = [RegexStore.bad_target_or_spell, RegexStore.not_here, RegexStore.use_what]
 
     vig_amount = 2
     mend_amount = 5
@@ -31,9 +27,10 @@ class Cast(SimpleCombatObject):
     # lvl2_black_amount = 7
     # prot_amount = 10
 
-    def __init__(self, telnetHandler):
+    def __init__(self, telnetHandler, use):
         super().__init__(telnetHandler)
 
+        self.use = use
         self.end_combat_regexes.append(RegexStore.no_mana)
 
     # Commented... hmmm.. I went with the notify_failure(), I think so I wasn't checking for the regex twice...
@@ -58,7 +55,6 @@ class Cast(SimpleCombatObject):
                 self.stop()
         elif regex in RegexStore.aura:
             self.aura = Aura(M_obj.group('aura'))
-            self.aura_timer = time()
         elif regex in RegexStore.no_mana:
             self.stop()
         super().notify(regex, M_obj)
@@ -117,25 +113,20 @@ class Cast(SimpleCombatObject):
         self.set_spell(spell, is_item)
         self.persistent_execute(target)
 
-    def update_aura(self, character, force=False):
+    def update_aura(self, character, use_item=""):
         magentaprint("Cast.update_aura()")
-        if Spells.showaura not in character.spells:
-            magentaprint("Cast giving up on aura update.")
-            return
-
         # magentaprint("{} {} {}".format(time(), self.aura_timer + self.aura_refresh, time() > (self.aura_timer + self.aura_refresh)),False)
-        if time() > (self.aura_timer + self.aura_refresh) or force:
-            self.stopping = False
+        self.stopping = False
+        if not use_item:
+            if Spells.showaura not in character.spells:
+                magentaprint("Cast giving up on aura update.")
+                return
+ 
             self.spam_spell(character, Spells.showaura)
             character.AURA = str(self.aura)
-            # self.cast('show')
-            # self.wait_for_flag()
-            # while self.result is 'failure':
-            #     self.cast('show')
-            #     self.wait_for_flag()
-            # if self.success:
         else:
-            magentaprint("Last aura update %d seconds ago." % round(time() - self.aura_timer))
+            self.use.execute_and_wait(use_item)
+            character.AURA = str(self.use.aura)
 
     def spam_spell(self, character, spell, target=None):  # Maybe a prompt object would be better than character
         # Spam until success

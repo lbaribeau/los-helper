@@ -247,3 +247,4 @@ python3.2m.exe.stackdump
 reporting_website/node_modules/
 reporting_website/node_modules/*
 reporting_website/dist/api/*
+launch.json

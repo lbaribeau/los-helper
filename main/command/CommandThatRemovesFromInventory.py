@@ -2,8 +2,10 @@
 from command.Command import Command
 from comm import RegexStore as R
 from misc_functions import magentaprint
+from Aura import Aura
 
 class CommandThatRemovesFromInventory(Command):
+    aura = None
     # Don't forget to make sure command handler calls the command object so that inventory gets updated
     def __init__(self, telnetHandler, inventory):
         # Sell needs inventory so we can remove the right item from the inventory
@@ -16,6 +18,8 @@ class CommandThatRemovesFromInventory(Command):
         # magentaprint("CommandThatRemovesFromInventory notify: {0}".format(match.re.pattern))
         # magentaprint("CommandThatRemovesFromInventory {0} notify".format(self.__class__))
         if self.success:
+            if regex in R.aura:
+                self.aura = Aura(match.group('aura'))
             if self._sent_target == 'all':
                 # magentaprint("CommandThatRemovesFromInventory notify: {0}".format(match.re.pattern))
                 self.inventory.remove_many(match.group(1)) # Could be you wear, you get, any success

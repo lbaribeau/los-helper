@@ -13,8 +13,13 @@ from Exceptions import *
 from comm import Spells
 from db.MudItem import MudItem
 from db.AreaStoreItem import AreaStoreItem
+from Aura import Aura
 
 class GrindThread(BotThread):
+    aura = None
+    aura_timer = 300
+    aura_refresh = 300
+
     def __init__(self, character, command_handler, mudReaderHandler, mud_map):
         super().__init__(character, command_handler, mudReaderHandler, mud_map)
         self.loot_threshold = 1  # the amount of loot to collect before selling
@@ -438,20 +443,33 @@ class GrindThread(BotThread):
 
     def update_aura(self, force=False):
         aura_updated = False
-        if self.stopping or self.character.ACTIVELY_MAPPING:
-            magentaprint("GrindThread.update_aura() returning false", False)
-            aura_updated = False
-        elif Spells.showaura in self.character.spells:
-            aura_updated = self.update_aura_with_spell(force)
-        elif self.inventory.has_aura_pot():
-            magentaprint("IDK show aura spell", False)
-            aura_updated = self.update_aura_with_pot(force)
+
+        if force or time.time() > (self.aura_timer + self.aura_refresh):
+            if self.stopping or self.character.ACTIVELY_MAPPING:
+                magentaprint("GrindThread.update_aura() returning false", False)
+                aura_updated = False
+            elif self.inventory.has_aura_pot():
+                magentaprint("IDK show aura spell", False)
+                use_pot = ""
+                for pot in self.inventory.aura_pot:
+                    if self.inventory.has(pot):
+                        use_pot = self.inventory.get_reference(pot)
+                        break
+                aura_updated = self.update_aura_with_pot(use_pot)
+
+            elif Spells.showaura in self.character.spells:
+                aura_updated = self.update_aura_with_spell()
+        else:
+            magentaprint("Last aura update %d seconds ago." % round(time.time() - self.aura_timer))
         
+        if aura_updated:
+            self.aura_timer = time.time()
+
         return aura_updated
 
-    def update_aura_with_spell(self, force=False):
+    def update_aura_with_spell(self):
         cur_aura = self.character.AURA
-        self.cast.update_aura(self.character, force)
+        self.cast.update_aura(self.character)
 
         if not self.cast.success:  # Probably no mana since spell fail gets spammed
             return False
@@ -464,9 +482,9 @@ class GrindThread(BotThread):
             
             return True
 
-    def update_aura_with_pot(self, force=False):
+    def update_aura_with_pot(self, item):
         cur_aura = self.character.AURA
-        self.cast.update_aura(self.character, force)
+        self.cast.update_aura(self.character, item)
 
         if not self.cast.success:  # Probably no mana since spell fail gets spammed
             return False
