@@ -159,17 +159,20 @@ class CombatReactions(object):
             average_phys_damage = (round(self.damage_dealt / self.hits_dealt, 1) if self.hits_dealt > 0 else 0)
             phys_hit_rate = (round((self.hits_dealt / total_phys_attacks) * 100, 1) if total_phys_attacks > 0 else 0)
             phys_crit_rate = round(self.physical_crit / total_phys_attacks * 100, 1)
-            
+        except Exception as e:
+            magentaprint(e, no_print)
+            average_phys_damage = -2
+            phys_hit_rate = -2
+            phys_crit_rate = -2
+
+        try:
             average_spell_damage = (round(self.spell_damage_dealt / spells_hit) if spells_hit > 0 else 0)
             spell_hit_rate = (round((spells_hit / self.spells_cast) * 100, 1) if self.spells_cast > 0 else 0)
             spell_crit_rate = round(self.spells_crit / self.spells_cast * 100, 1)
         except Exception as e:
             magentaprint(e, no_print)
-            average_phys_damage = -2
             average_spell_damage = -2
-            phys_hit_rate = -2
             spell_hit_rate = -2
-            phys_crit_rate = -2
             spell_crit_rate = -2
 
         magentaprint(str(self.hits_dealt) + ",  " + str(total_phys_attacks) + ",  " + str(spells_hit) + ",  " + str(self.spells_cast))
