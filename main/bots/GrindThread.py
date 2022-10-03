@@ -178,30 +178,40 @@ class GrindThread(BotThread):
             else:
                 new_target = ""
 
+    def print_bot_stats(self):
+        self.command_handler.inventory.execute_and_wait()
+        self.command_handler.process('experience')
+        self.command_handler.process('aura')
+        self.command_handler.cast.print_aura_timer()
+        magentaprint("Last target was " + str(self.smartCombat.target))
+        self.command_handler.process('trackno')
+        self.command_handler.process('time')  
+
     def rest_and_check_aura(self):
         # This method is only efficient in a healing area
         magentaprint("BotThread.rest_and_check_aura()")
-        mana_to_wait = self.character.maxMP - 2*(self.character._class.mana_tick + 2)
-            # MANA_TO_WAIT differentiates between hitting 'rest' and just hitting
-            # 'enter' a bunch (waiting vs resting)
+       # self.command_handler.print_experience()
 
-        aura_updated = self.update_aura()  # Most reasonable reason to fail is if we have no mana
+        self.print_bot_stats() # Display while resting
+
+        if self.update_aura():
+            # Most reasonable reason to fail is if we have no mana... fairly rare
+            # Only update aura before resting, save that one mana and the cast cooldown time after resting
+            # Idea: postpone a bit if it would mean another mana tick 
+            # (or better, take a free cast if it wouldn't mean another mana tick)
+            self.aura_updated_hook()
 
         self.chapel_heal_up()
             # TODO: Keep track of when ticks are coming and how big they'll be, and avoid vigging
             # away all the mana for characters with low piety, whose vigors will not do much,
             # and may just be one tick away from good health.
 
-        if self.character.MANA < mana_to_wait:
+        if self.character.MANA < self.character.maxMP - 2*self.character._class.mana_tick + 4:
+            # MANA_TO_WAIT differentiates between hitting 'rest' and just hitting
+            # 'enter' a bunch (waiting vs resting)
             self.rest_until_ready()
         elif self.character.MANA < self.mana_to_go:
             self.wait_for_mana()
-
-        if not aura_updated:
-            aura_updated = self.update_aura()
-
-        if aura_updated:
-            self.aura_updated_hook()
 
         if self.character.level > 3 and self.character.maxMP > 10:
             self.heal_up()
@@ -261,14 +271,7 @@ class GrindThread(BotThread):
         if self.stopping or self.character.HEALTH >= self.health_to_go:
             return
 
-        # self.command_handler.print_experience()
-        self.command_handler.inventory.execute_and_wait() # Just display while resting
-        self.command_handler.process('experience')
-        self.command_handler.process('aura')
-        self.command_handler.cast.print_aura_timer()
-        magentaprint("Last target was " + str(self.smartCombat.target))
-        self.command_handler.process('trackno')
-        self.command_handler.process('time') 
+
 
         self.do_heal_skills()
 
@@ -397,11 +400,7 @@ class GrindThread(BotThread):
             return False
 
         self.cast.update_aura(self.character)
-
-        if not self.cast.success:  # Probably no mana since spell fail gets spammed
-            return False
-        else:
-            return True
+        return self.cast.success # Could be no mana since spell fail gets spammed
 
         # if self.character.level < 3 or not \
         #         BotThread.can_use_timed_ability(self.character.AURA_LAST_UPDATE, 480):

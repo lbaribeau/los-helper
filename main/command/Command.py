@@ -106,8 +106,12 @@ class Command(SimpleCommand):
         #     [RegexStore.please_wait, RegexStore.please_wait2]
         # self.regex_cart.extend(self.success_regexes + self.failure_regexes + self.error_regexes + \
         #     [RegexStore.please_wait, RegexStore.please_wait2])
-        self.regex_cart = self.success_regexes + self.failure_regexes + self.error_regexes + \
-            [RegexStore.please_wait, RegexStore.please_wait2]
+        self.regex_cart = \
+            self.success_regexes + \
+            self.failure_regexes + \
+            self.error_regexes +   \
+            [RegexStore.please_wait, 
+            RegexStore.please_wait2]
         # magentaprint(str(self.__class__) + " init regex_cart: " + str(self.regex_cart))
         # self.result = 'success/failure/error'
         self._executing = False

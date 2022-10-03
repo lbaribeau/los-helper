@@ -188,7 +188,7 @@ class PotionThreadHandler(ThreadingMixin2):
                 # self.prompt_flag = False
                 # self.clear() # threading.Event for prompt
             else:
-                magentaprint("Potion thread ended! No pots left!")
+                magentaprint("Potion thread ended! No pots left!\a")
                 return False # consume didn't have anything
 
         # Make sure SmartCombat gets notified first so that it can stop us when the prompt comes in with HP above threshold

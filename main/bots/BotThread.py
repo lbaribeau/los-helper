@@ -70,10 +70,9 @@ class BotThread(threading.Thread):
         self.do_run_startup()
 
         while not self.stopping:
-            magentaprint("BotThread before direciton list")
             self.do_pre_go_actions()
             self.direction_list = self.decide_where_to_go()
-            magentaprint('decide_where_to_go returned ' + str(self.direction_list))
+            magentaprint('BotThread.run: decide_where_to_go returned ' + str(self.direction_list))
 
             while self.direction_list and not self.stopping:
                 magentaprint("BotThread has direciton list")
@@ -116,17 +115,18 @@ class BotThread(threading.Thread):
         magentaprint("Going " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)), False)
 
         self.character.GO_BLOCKING_MOB = ""
-        self.character.GO_PLEASE_WAIT = False
-        self.character.GO_NO_EXIT = False
-        self.character.GO_TIMEOUT = False
-        self.character.SUCCESSFUL_GO = False
+        self.character.GO_PLEASE_WAIT  = False
+        self.character.GO_NO_EXIT      = False
+        self.character.GO_TIMEOUT      = False
+        self.character.SUCCESSFUL_GO   = False
 
         # A go hook is something other than an exit name in the direction list
         # Custom actions like prepare, sell, and areaN which gets expanded into real directions
         hook_found = self.do_go_hooks(exit_str)
             # ... we need to wait for Cartography before this happens
-
-        if not hook_found:
+        if hook_found:
+            return hook_found
+        else:
             # if re.match("(.*?door)", exit_str):
             #     self.command_handler.process("open " + exit_str)
                 # self.command_handler.process('door')
@@ -140,8 +140,6 @@ class BotThread(threading.Thread):
             # if re.match("(.*?door)", exit_str):
             #     self.command_handler.process("open " + exit_str)
             # return self.go.persistent_execute(exit_str)
-        else:
-            return hook_found  # (True - well, it's not a successful go but it's assumed to be a successful hook)
 
     ''' STATIC METHODS '''
     @staticmethod
@@ -189,7 +187,6 @@ class BotThread(threading.Thread):
             #magentaprint("go hook found with: " + str(self.direction_list), False)
             area_id = int(exit_str.replace("areaid", ""))
             self.direction_list.pop(0)
-
             try:
                 path = self.mud_map.get_path(self.character.AREA_ID, area_id)
                 if len(path) == 0:
@@ -274,9 +271,16 @@ class BotThread(threading.Thread):
     def do_on_go_no_exit(self):
         # This is a tough one.  Hopefully it never happens.  I'm gonna assume it happened
         # because the last go actually worked and was wrongly determined not to.
-        magentaprint("Go no exit on: " + self.direction_list.pop(0), False)
+        magentaprint("Go no exit on: " + self.direction_list.pop(0) + ". Try a look and cross fingers.", False)
         # self.character.MOBS_JOINED_IN = []
         # self.character.MOBS_ATTACKING = []
+        # Ok I have an error case
+        #"go chapel" I don't see that exit (we are in the chapel)
+        # So areaid2 is saying the path is length 1 (saying we are outside)
+        # But we are inside... so let's just add a LOOK here???
+        # (I don't get these hooks)
+        self.command_handler.process('l')
+        self.command_handler.go.wait_for_flag()
 
     def do_post_go_actions(self):
         return

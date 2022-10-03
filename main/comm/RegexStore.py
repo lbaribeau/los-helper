@@ -574,7 +574,7 @@ cant_use = [
     r"How does one use that\?",
     r"You can only use a potion on yourself\."
 ]
-you_drink=[r"You drink the philtre of health's broth\."]
+you_drink=[r"You drink the (philtre of health)'s broth\."]
 cant_do=[r"You can't do that\."]
 # eat
 

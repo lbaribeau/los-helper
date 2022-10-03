@@ -243,12 +243,13 @@ class Inventory(SimpleCommand, ReferencingList):
             R.bought            ,
             R.you_hold          ,
             R.disintegrates     ,
+            R.you_drink         ,
             R.sold              ,
             R.not_a_pawn_shop   ,
             R.wont_buy          ,
             R.wont_buy2         ,
             R.you_wield         ,
-            # R.you_wear          ,
+            # R.you_wear        ,
             R.nothing_to_wear   ,
             R.you_remove        ,
             R.nothing_to_remove ,
@@ -346,7 +347,7 @@ class Inventory(SimpleCommand, ReferencingList):
                 pass # Use drop command object
         elif regex in R.you_give + R.you_put_in_bag + R.disintegrates + R.you_drink:
         # elif regex in R.you_give + R.you_put_in_bag:
-                self.remove_many(match.group(1))
+            self.remove_many(match.group(1))
         # elif regex in R.you_wear + R.you_hold:
         elif regex in R.you_hold:
             self.remove_many(match.group(1))
@@ -757,12 +758,14 @@ class Inventory(SimpleCommand, ReferencingList):
 
     def remove_many(self, item_string):
         item_list = parse_item_names(item_string)
-
-        for s in item_list:
-            # magentaprint("Inventory.remove_many() calling remove_by_ref on " + str(self.get_reference(s)))
-            ref = self.get_reference(s)
-            if ref:  # Happens if inv is not up to date (ie. Bought.)
-                self.remove_by_ref(ref)
+        if item_list:
+            for s in item_list:
+                # magentaprint("Inventory.remove_many() calling remove_by_ref on " + str(self.get_reference(s)))
+                ref = self.get_reference(s)
+                if ref:  # Happens if inv is not up to date (ie. Bought.)
+                    self.remove_by_ref(ref)
+        else:
+            magentaprint("Inventory.remove_many got called for nothing??? {} made {}".format(item_string, item_list))
 
     def equip_item(self, equip_string):
         self.telnetHandler.write(equip_string)

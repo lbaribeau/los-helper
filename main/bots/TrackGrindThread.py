@@ -260,11 +260,13 @@ class TrackGrindThread(GrindThread):
 
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go", False)
+        self.nextpath = (self.nextpath + 1) % (self.__TOTALPATHS + 1)
+        magentaprint("next path = " + str(self.nextpath), False)
 
         if self.character.AREA_ID != 2:
+            magentaprint("CAUTION: decide_where_to_go called when we should be in the chapel! AREA_ID is {}.".format(self.character.AREA_ID))
+            self.command_handler.process("l")
             return ['areaid2']
-
-        magentaprint("next path = " + str(self.nextpath), False)
 
         if self.character.DEAD:
             self.character.DEAD = False
@@ -273,8 +275,6 @@ class TrackGrindThread(GrindThread):
             magentaprint("Died: stopping bot thread.", False)
             self.stop()
             return self.LIMBO_TO_CHAPEL[:]
-
-        self.nextpath = (self.nextpath + 1) % (self.__TOTALPATHS+1)
 
         if self.nextpath % 2 == 0:
             # self.inventory.get_inventory()
@@ -288,6 +288,7 @@ class TrackGrindThread(GrindThread):
                 return self.SHOP_AND_TIP_PATH[:]
             else:
                 magentaprint("Trackgrind skipped pawning/dropping.")
+                return self.PATH_TO_SKIP_WITH[:] # don't call .skip() because we don't want to double increment nextpath
         elif self.nextpath == 1:
             return self.THEATRE_PATH[:]
         elif self.nextpath == 3:
@@ -298,8 +299,7 @@ class TrackGrindThread(GrindThread):
             if not self.cast.aura or (self.cast.aura and self.cast.aura >= Aura('pale blue') and self.cast.aura <= self.character.preferred_aura):
                 if self.character.level in [1,2,3,4,5]:
                     magentaprint("Not going to do kobolds - aura unknown and level too low.")
-                    self.nextpath = self.nextpath + 1  # So that we don't go selling
-                    return self.PATH_TO_SKIP_WITH[:]
+                    return self.skip()
                 elif self.character.level in [6,7]:
                     return self.KOBOLDS1[:]
                 elif self.character.level in [8,9]:
@@ -314,13 +314,11 @@ class TrackGrindThread(GrindThread):
             #     self.cast.aura <= self.character.preferred_aura:
             elif self.cast.aura > self.character.preferred_aura:
                     magentaprint("Not going to do kobolds - too blue right now")
-                    self.nextpath = self.nextpath + 1  # So that we don't go selling
-                    return self.PATH_TO_SKIP_WITH[:]
+                    return self.skip()
             else:
                 # # magentaprint("Not going to do kobolds. Current aura, and preferred, comparison: %s,  %s, %s" %
                 # #              (str(self.cast.aura), str(self.character.preferred_aura), str(self.cast.aura <= self.character.preferred_aura)))
-                # self.nextpath = self.nextpath + 1  # So that we don't go selling
-                # return self.PATH_TO_SKIP_WITH[:]
+                # return self.skip()
                 if self.character.level in [1,2,3,4,5]:
                     return self.KOBOLDS1[:]
                 elif self.character.level in []:
@@ -337,8 +335,8 @@ class TrackGrindThread(GrindThread):
             if self.character.level <= 6:
                 return self.CORAL_ALLEY_PATH[:]
             else:
-                self.nextpath = self.nextpath + 1  # So that we don't go selling
-                return self.PATH_TO_SKIP_WITH[:]
+                magentaprint("Skipping coral alley (level: {})".format(self.character.level))
+                return self.skip()
         elif self.nextpath == 11:
             return self.FORT_PATH[:]
         elif self.nextpath == 13:
@@ -347,8 +345,7 @@ class TrackGrindThread(GrindThread):
                     return self.NORTHERN_BANDITS_PATH[:]
                 else:
                     magentaprint("Not going to do bandits - aura unknown.")
-                    self.nextpath = self.nextpath + 1  # So that we don't go selling
-                    return self.PATH_TO_SKIP_WITH[:]
+                    return self.skip()
             elif (self.character.level >= 8 or self.cast.aura < aura('pale blue')) and \
                 self.cast.aura <= self.character.preferred_aura:
                 # Can handle bandits even if blue if level is high enough
@@ -357,44 +354,38 @@ class TrackGrindThread(GrindThread):
             else:
                 magentaprint("Not going to do northern bandits. (Level %s, current aura %s, and preferred %s.)" %
                              (self.character.level, self.cast.aura, self.character.preferred_aura))
-                self.nextpath = self.nextpath + 1   # So that we don't go selling
-                return self.PATH_TO_SKIP_WITH[:]
+                return self.skip()
         elif self.nextpath == 15:
             if self.character.level >= 5 and (not self.cast.aura or self.cast.aura <= self.character.preferred_aura):
                 return self.MUGGER_PATH[:]
             else:
                 magentaprint("Not going to do muggers. (Level %s, current aura %s, and preferred %s.)" %
                              (self.character.level, self.cast.aura, self.character.preferred_aura))
-                self.nextpath = self.nextpath + 1   # So that we don't go selling
-                return self.PATH_TO_SKIP_WITH[:]
+                return self.skip()
         elif self.nextpath == 17:
             return self.DWARVEN_FIELD_WORKERS_PATH[:]
         elif self.nextpath == 19:
             return self.MILL_WORKERS[:]
         elif self.nextpath == 21:
             if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
-                return self.BANDITS1
+                return self.BANDITS1[:]
             else:
-                self.nextpath = self.nextpath + 1 # So that we don't go selling
-                return self.PATH_TO_SKIP_WITH[:]
+                return self.skip()
         elif self.nextpath == 23:
             if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
-                return self.BANDITS2
+                return self.BANDITS2[:]
             else:
-                self.nextpath = self.nextpath + 1
-                return self.PATH_TO_SKIP_WITH[:]
+                return self.skip()
         elif self.nextpath == 25:
             if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
-                return self.BANDITS3
+                return self.BANDITS3[:]
             else:
-                self.nextpath = self.nextpath + 1
-                return self.PATH_TO_SKIP_WITH[:]
+                return self.skip()
         elif self.nextpath == 27:
             if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
-                return self.BANDITS4
+                return self.BANDITS4[:]
             else:
-                self.nextpath = self.nextpath + 1
-                return self.PATH_TO_SKIP_WITH[:]
+                return self.skip()
         elif self.nextpath == 29:
             return self.RANCHER_SENTRY[:]
         # elif self.nextpath == 23:
@@ -460,7 +451,7 @@ class TrackGrindThread(GrindThread):
             return self.get_path_with_all_mobs('war horse')
             # white knights on this path
         elif self.nextpath == 71:
-            return self.FORT_PATH # fort sergeant prefight
+            return self.FORT_PATH[:] # fort sergeant prefight
         elif self.nextpath == 73:
             return self.get_path_with_all_mobs('Commander Rilmenson') # hastes
         elif self.nextpath == 75:
@@ -533,11 +524,20 @@ class TrackGrindThread(GrindThread):
         # elif self.nextpath == 53:
         #     return self.KNIGHTS[:]
         # Human paladin likes steel collars (oremaster) steel armour (Rimark) steel mask (spiv) rings (bandits, sawmill, minstrel)
-
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.nextpath))
-            return list(self.PATH_TO_SKIP_WITH[:])
-        return list(self.PATH_TO_SKIP_WITH[:])
+        return self.skip()
+
+    def skip(self):
+        self.nextpath = self.nextpath + 1 # So that we don't go selling
+        # I think I'm getting double increments... (infinite loop)... maybe when skipping selling
+        # Ok I spotted it - need to return in that case without calling .skip
+        # .skip adds one to to total adding 2, which works for skipping a grind path but not for skipping selling
+        # since % 2 is true again
+        # Also I have a trackno print in heal_up as well as a trackno print here
+        # So all integers do get printed
+        # Right... return self.skip() 
+        return self.PATH_TO_SKIP_WITH[:]
 
     def get_path_to_previous_node(self, name):
         chapel_aid  = db.Area.Area.get_by_name("The Chapel of Healing").id

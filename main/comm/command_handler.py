@@ -89,8 +89,6 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.kill)
         self.cast = Cast(telnetHandler)
         mudReaderHandler.add_subscriber(self.cast)
-        self.drink = Drink(telnetHandler, self.inventory)
-        mudReaderHandler.add_subscriber(self.drink)
         self.use = Use(telnetHandler, self.inventory)
         mudReaderHandler.add_subscriber(self.use)
         self.drink = Drink(telnetHandler, self.inventory)
@@ -351,7 +349,7 @@ class CommandHandler(object):
         # elif user_input.startswith('eat '):
         #     self.eat.execute(user_input.partition(' ')[2])
         elif user_input == 'pot':
-            # NOTICE THIS COMMAND
+            # NOTICE THIS COMMAND (useful)
             self.smartCombat.potion_thread_handler.consume.healing_potion()
         elif re.match("usec$", user_input):  # 'use c' following my pet syntax: end a command with 'c' to start a thread
             self.smartCombat.potion_thread_handler.spam_pots()
@@ -965,7 +963,7 @@ class CommandHandler(object):
         magentaprint("Started: " + str(misc_functions.startTime))
         magentaprint("Uptime: " + misc_functions.get_runtime_string())
         magentaprint("Experience this session: " + str(x))
-        magentaprint("Exp rate: {} exp/hr; {} exp/min; {} exp/s.".format(round(x/t*3600), round(x/t*60), round(x/t)))
+        magentaprint("Exp rate: {} exp/hr; {} exp/min.".format(round(x/t*3600), round(x/t*60)))
         # g = self.character.GOLD # Ok this is all the current gold, so it won't give us gold rate
         # magentaprint("Gold delta: ")
         # magentaprint("Gold rate: {} gold/hr; {} gold/min; {} gold/s.".format(round(x/t/3600), round(x/t/60), round(x/t)))

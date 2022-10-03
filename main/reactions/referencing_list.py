@@ -280,13 +280,17 @@ class ReferencingList(object):
         # magentaprint("RefList get_last_reference counted " + str(c))
         ref_split = starting_point.split(' ')
         if len(ref_split) > 1:
-            return starting_point.split(' ')[0] + ' ' + str(int(ref_split[1]) + c - 1)
+            return starting_point.split(' ')[0].split("'")[0] + ' ' + str(int(ref_split[1]) + c - 1)
+            # The second number is a digit ie. small 3 (.get_reference handled a collision with another item)
+            # So we add count to it to get the last of the same item
         else:
             if c <= 1:
-                return starting_point.split(' ')[0]  # Had a buggy c as 0 case - and the served targets odd things with n=0
+                return starting_point.split(' ')[0].split("'")[0]  # Had a buggy c as 0 case - and the served targets odd things with n=0
             else:
-                return starting_point.split(' ')[0] + ' ' + str(c)
+                return starting_point.split(' ')[0].split("'")[0] + ' ' + str(c)
         # There would be less code if I didn't treat '1' specially (I prefer 'potion' not 'potion 1' for the 1st potion)
+        # I added splitting off "'" since "repair Dalla's" gets "You don't have that"
+        # I don't want to mess up == comparisons though
 
     def get_all_references(self, item_name, first_or_second_word=1):
         # You have many of an item and want a reference for each

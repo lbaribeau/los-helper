@@ -306,7 +306,7 @@ class ArmourBot(MiniBot):
 
         #magentaprint("Armour bot shopping list " + str(desired_items))
         # magentaprint("Armour bot shopping list: \n" + str([asi.item.name for asi in desired_items]))
-        magentaprint("ARMOUR BOT SHOPPING LIST: \n" + "\n".join("    {} {}".format(asi.item, asi.item.name) for asi in desired_items))
+        magentaprint("ARMOUR BOT SHOPPING LIST: [\n" + "\n".join("    {} {}".format(asi.item, asi.item.name) for asi in desired_items)+']')
         magentaprint("Size: {}; Level: {}".format(self.get_size(self.char.info.race), self.get_armour_level(self.char.info.level)))
         return desired_items
         # TODO: One issue: shields aren't sized - so queries that use any size need to return the shield, whose type may be

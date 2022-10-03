@@ -8,7 +8,7 @@ from fake.FakeInventory    import FakeInventory
 from fake.FakeEquipment    import FakeEquipment
 from command.Go            import Go
 from fake.FakeBuy          import FakeBuy
-from fake.fake_use         import FakeUse
+from fake.fake_consume     import FakeUse,FakeDrink
 from fake.fake_mobs.fake_mobs import *
 from fake.fake_character   import FakeCharacter
 
@@ -81,6 +81,7 @@ class FakeTelnetSocket(object):
         self.char.equipment = FakeEquipment(self.char.name)
         self.buy = FakeBuy(self.inventory, self.socket_output)
         self.use = FakeUse(self.char, self.socket_output)
+        self.drink = FakeDrink(self.char, self.socket_output)
 
         spaces = "                      "[0:22 - len(self.char.name)]
 
@@ -288,8 +289,10 @@ class FakeTelnetSocket(object):
             else:
                 self.socket_output.append("You don't have that.\n\r")
         # elif command.startswith('use ') or command.startswith('drin ') or command.startswith:
-        elif re.match('^(use|drink?) ', command):
+        elif re.match('^use ', command):
             self.use.do(command.partition(' ')[2])
+        elif re.match('^drink? ', command):
+            self.drink.do(command.partition(' ')[2])
         elif command.startswith('buy '):
             self.buy.do(command.partition(' ')[2]) # ie. buy iron 2
         elif command == 'get all':

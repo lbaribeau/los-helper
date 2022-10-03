@@ -68,7 +68,7 @@ class SimpleCombatObject(CombatObject, Command):
         ## self.regex_cart.extend([R.mob_died, R.mob_fled]))
         # magentaprint("SimpleCombatObject end_combat_regexes: " + str(self.end_combat_regexes))
         # self.regex_cart.extend([R.mob_died, R.mob_fled].extend(self.end_combat_regexes))
-        self.end_combat_regexes = [R.mob_died, R.mob_fled]
+        self.end_combat_regexes = [R.mob_died, R.mob_fled, R.you_died]
         self.regex_cart.extend(self.end_combat_regexes)
         self.end_combat_regexes.extend(self.error_regexes)
         # magentaprint("SimepleCombatObject end_combat_regexes: " + str(self.end_combat_regexes))
