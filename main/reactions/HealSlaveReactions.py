@@ -64,7 +64,10 @@ class HealSlaveReactions(BotReaction):
     def should_heal_target(self, mana_requirement):
         buff_key = self.target + "_heal"
         cooldown_in_seconds = 20
-        return self.check_healslave_cooldown(buff_key, mana_requirement, cooldown_in_seconds)
+        should_heal = self.check_healslave_cooldown(buff_key, mana_requirement, cooldown_in_seconds)
+        if should_heal:
+            self.known_targets[self.target + "_needs_heal"] = True
+        return should_heal
     
     def heal_target(self):
         if self.should_heal_target(4):
@@ -82,22 +85,38 @@ class HealSlaveReactions(BotReaction):
         else:
             magentaprint("target already buffed recently so no go", False)
 
+    def do_heal_routine(self, target):
+        self.buff_target()
+        magentaprint("should start healing " + self.target, False)
+        self.heal_target()
+    
+    def check_for_new_target(self):
+        for key in self.known_targets.keys():
+            if "_needs_heal" in key:
+                if self.known_targets[key]:
+                    self.target = self.known_targets[key].replace("_needs_heal", "")
+                    self.do_heal_routine(self.target)
+                    break
+
     def notify(self, regex, M_obj):
         magentaprint(regex, False)
         if regex == self.heal_trigger:
             self.target = M_obj.group(1)
-            self.buff_target()
-            magentaprint("should start healing " + self.target, False)
-            self.heal_target()
+            self.do_heal_routine(self.target)
         elif regex == self.heal_continue:
             self.target = M_obj.group(1)
             magentaprint("should continue healing " + self.target, False)
             if self.character.MANA > 1:
                 self.cast_spell("vigor")
         elif regex == self.heal_stop:
+            self.command_handler.process("pray")
             self.command_handler.process("rest")
+            self.known_targets[self.target + "_needs_heal"] = False
+            self.check_for_new_target()
         elif regex == self.target_not_here:
+            self.known_targets[self.target + "_needs_heal"] = False
             self.target = ""
+            self.check_for_new_target()
         elif regex == self.group_damage:
             self.dmg += int(M_obj.group(1))
 
