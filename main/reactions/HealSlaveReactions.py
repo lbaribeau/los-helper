@@ -102,11 +102,13 @@ class HealSlaveReactions(BotReaction):
         magentaprint(regex, False)
         if regex == self.heal_trigger:
             target = self.slave_state.find_or_add_target(M_obj.group(1))
+            magentaprint("should buff " + str(self.target), False)
             target["needs_buff"] = True
             # self.target = M_obj.group(1)
             # self.do_heal_routine(self.target)
         elif regex == self.heal_continue:
             target = self.slave_state.find_or_add_target(M_obj.group(1))
+            magentaprint("should continue healing " + str(self.target), False)
             target["needs_heal"] = True
             # magentaprint("should continue healing " + self.target, False)
             # if self.character.MANA > 1:

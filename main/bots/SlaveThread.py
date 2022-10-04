@@ -16,7 +16,7 @@ class SlaveThread(BotThread):
         self.slave_state = SlaveState()
         self.heal_slave_reactions = HealSlaveReactions(mud_reader_handler, command_handler, master_name, self.cast, character, self.slave_state)
         self.last_action = get_timeint()
-        self.target = None
+
         self.action_cooldown = 60
         self.heal_cooldown = 20
         self.buff_cooldown = 120
@@ -29,12 +29,13 @@ class SlaveThread(BotThread):
 
     def check_cooldown(self, last_use, seconds):
         should_do_thing = False
-        now = get_timeint()
-        seconds_since_last_buff = (now - last_use).total_seconds()
-        if seconds_since_last_buff > seconds:
-            should_do_thing = True
+        if last_use is not None:
+            now = get_timeint()
+            seconds_since_last_buff = (now - last_use).total_seconds()
+            if seconds_since_last_buff > seconds:
+                should_do_thing = True
         else:
-            should_do_thing = False
+            should_do_thing = True
         
         return should_do_thing
 
@@ -45,7 +46,7 @@ class SlaveThread(BotThread):
             should_do_thing = self.check_cooldown(last_use, seconds)
         
         if should_do_thing:
-            self.target[cooldown_key] = get_timeint()
+            target[cooldown_key] = get_timeint()
             magentaprint("Setting updating target with this key right now:" + cooldown_key, False)
 
         return should_do_thing
@@ -68,22 +69,22 @@ class SlaveThread(BotThread):
     
     def heal_target(self, target, big_heal=True):
         if big_heal and self.should_heal_target(target, 4):
-            self.cast_spell(target.name, "mend")
+            self.cast_spell(target["name"], "mend")
         elif not big_heal and self.character.MANA > 1:
-            self.cast_spell(target.name, "vigor")
+            self.cast_spell(target["name"], "vigor")
         else:
             magentaprint("target already healed or I can't cast recently so no go", False)
 
     def buff_target(self, target):
         if self.should_buff_target(target):
-            self.cast_spell(target.name, "bless")
-            self.cast_spell(target.name, "protection")
+            self.cast_spell(target["name"], "bless")
+            self.cast_spell(target["name"], "protection")
         else:
             magentaprint("target already buffed recently so no go", False)
 
     def do_heal_routine(self, target):
         self.buff_target(target)
-        magentaprint("should start healing " + target.name, False)
+        magentaprint("should start healing " + target["name"], False)
         self.heal_target(target)
 
     def decide_where_to_go(self):
@@ -92,6 +93,7 @@ class SlaveThread(BotThread):
             self.sleep(1)
             if self.check_cooldown(self.last_action, self.action_cooldown):
                 self.command_handler.user_ca("rest")
+                self.last_action = get_timeint()
         return #not implemented
 
     def check_for_new_target(self):
@@ -116,23 +118,24 @@ class SlaveState(object):
     def __init__(self):
         self.targets = []
     
-    def add_target_to_state(self, target):
-        self.targets.append({"name": target, "last_buff": 0, "last_heal": 0, "needs_buff": False, "needs_heal": False})
+    def add_target_to_state(self, target_name):
+        self.targets.append({"name": target_name, "last_buff": None, "last_heal": None, "needs_buff": False, "needs_heal": False})
+        return self.targets[-1]
 
-    def find_or_add_target(self, name):
+    def find_or_add_target(self, target_name):
         for target in self.targets:
-            if name == target.name:
+            if target_name == target["name"]:
                 return target
-        return self.add_target_to_state(target)
+        return self.add_target_to_state(target_name)
 
     # def update_target_buff(self, name, buff_state):
     #     for target in self.targets:
-    #         if name == target.name:
+    #         if name == target["name"]:
     #             target.last_buff = get_timeint()
 
     # def update_target_heal(self, name, heal_state):
     #     for target in self.targets:
-    #         if name == target.name:
+    #         if name == target["name"]:
     #             target.needs_heal = heal_state
     
     # @staticmethod
