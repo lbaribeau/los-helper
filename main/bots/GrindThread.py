@@ -267,7 +267,7 @@ class GrindThread(BotThread):
             # magentaprint("Resting for health", False)
             # Probably not the greatest logic but low level characters will need
             # to gain health other than healing up.
-        if (not self.character.BLACK_MAGIC or self.character.MANA >= mana_to_wait) and is_slow_steady:
+        if (not self.character.BLACK_MAGIC) and is_slow_steady:
             self.heal_up()
         self.rest_for_health()
 
@@ -332,7 +332,7 @@ class GrindThread(BotThread):
             chapel = 2  # additional hp tick amount
             maxHP = self.character.maxHP
             maxMP = self.character.maxMP
-            mana_tick = self.character._class.mana_tick
+            mana_tick = self.character.mana_tick
             # while   (self.health_ticks_needed() > self.mana_ticks_needed() or
             #         self.character.MANA - (maxMP % mana_tick+chapel) % (mana_tick+chapel) >= 2) and (
             while   (self.health_ticks_needed() > self.mana_ticks_needed() and
