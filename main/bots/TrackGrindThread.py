@@ -448,27 +448,16 @@ class TrackGrindThread(GrindThread):
         self.FLOOR_MANAGER = ['areaid1147']
         self.TARDAN = ['areaid1378']
         self.RIMARK = ['areaid1231']
-        self.SHALDENA = ['areaid1621']
+        # self.SHALDENA = ['areaid1621'] #she has really tough nukes
         self.HORBUK = ['areaid1265']
         self.DOJO = ['areaid917']
-        self.HORSEMASTER = ['areaid2340']
+        self.HORSEMASTER = ['areaid2340'] #pathing sucks to/from here
         self.DINI = ['areaid629']
         self.BARDS1 = ['areaid1214'] #sonneteer 8 and minstrel 11
         self.MONKS1 = ['areaid1311', 'out', 'e', 'w', 'w', 's'] #brother 11, 2x seeker 5
         self.BLADEMASTER = ['areaid622', 'ne', 'e', 'se', 's', 's'] #warrior 8, 3x veteran 5
         # self.WHITEBLADE_LYRON = ['areaid2110', 'areaid2097']
-        # self.LYRON = ['areaid2097', ] -- too much dmg
-
-        # Old Man James
-        # Dini Stonehammer
-        # Thereze
-        # Olmer
-        # Goourd
-        # cooper
-        # Farmer Calmor
-        # Kelluran
-        # Rimark ?
-        # Tag
+        # self.LYRON = ['areaid2097', ] # too much dmg
 
         self.GNOMES = ['areaid2113', 'areaid2099', 'areaid2104', 'areaid2106', 'areaid2138', 'areaid2138', 'areaid2093', 'areaid2094', 'areaid2095']
 
@@ -557,9 +546,10 @@ class TrackGrindThread(GrindThread):
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,20,9),
             Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 20, 0),
             Track("Mill Workers", self.smart_mill_path, 7, 20, 0),
-            # Track("Muggers", self.MUGGER_PATH, 9, 15, -1),
-            # Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
-            Track("Gnolls", self.smart_gnoll_cave, 10, 20, -1, 0, 9),
+            Track("Muggers", self.MUGGER_PATH, 9, 15, -1),
+            Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
+            Track("Gnoll Camp", self.GNOLL_CAMP, 12, 20, -1, 0, 9),
+            Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, 0, 9),
             Track("Olmer", self.OLMER, 11, 14, -1),
             Track("Cheryn", self.CHERYN, 11, 20, -1),
             Track("Orcs", self.ORCS, 11, 14, -1),

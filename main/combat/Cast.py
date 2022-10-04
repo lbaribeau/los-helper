@@ -85,17 +85,17 @@ class Cast(SimpleCombatObject):
     def set_spell(self, spell, is_item=False):
         magentaprint("Cast setting command to \'" + 'c ' + str(spell) + "\'")
         if not is_item:
-            self.__class__.command = 'c ' + spell
+            self.command = 'c ' + spell
         else:
-            self.__class__.command = 'use ' + spell
+            self.command = 'use ' + spell
 
     def start_thread(self, spell, target=None):
-        # self.__class__.command = 'c ' + spell
+        # self.command = 'c ' + spell
         self.set_spell(spell)
         super().start_thread(target)
 
     def cast(self, spell, target=None):
-        # self.__class__.command = 'c ' + spell
+        # self.command = 'c ' + spell
         self.set_spell(spell)
         self.execute(target)
         # self.wait_for_flag()

@@ -48,7 +48,7 @@ from mini_bots.weapon_bot2      import MainhandWeaponBot
 from mini_bots.travel_bot       import TravelBot
 from reactions.referencing_list import ReferencingList
 from mini_bots.sell_bot         import SellBot
-from command.CommandThatRemovesFromInventory import Sell, Drop, Drink, Use
+from command.CommandThatRemovesFromInventory import Sell, Drop, Drink, Use, Eat
 from command.potion_thread import PotionThreadHandler, Consume
 from command.Look               import Look
 
@@ -95,6 +95,8 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.use)
         self.drink = Drink(telnetHandler, self.inventory)
         mudReaderHandler.add_subscriber(self.drink)
+        self.eat = Eat(telnetHandler, self.inventory)
+        mudReaderHandler.add_subscriber(self.eat)
         self.cast = Cast(telnetHandler, self.use)
         mudReaderHandler.add_subscriber(self.cast)
         self.wield = Wield(character, telnetHandler, self.inventory)
@@ -102,7 +104,7 @@ class CommandHandler(object):
         self.second = Second(character, telnetHandler, self.inventory)
         mudReaderHandler.add_subscriber(self.second)
         # self.potion_thread_handler = PotionThreadHandler(Consume(self.use, self.drink, self.eat))
-        self.potion_thread_handler = PotionThreadHandler(Consume(self.use, self.drink))
+        self.potion_thread_handler = PotionThreadHandler(Consume(self.use, self.drink, self.eat))
         self.smartCombat = SmartCombat(self.kill,self.cast,self.potion_thread_handler,self.wield,self.telnetHandler,self.character,self.weapon_bot)
         mudReaderHandler.add_subscriber(self.smartCombat)
 
@@ -896,9 +898,10 @@ class CommandHandler(object):
 
     def start_mix(self, user_input):
         if self.bot_check():
-            M_obj = re.search(r"domix (?P<target>[A-Za-z]+) (?P<mix_target>[A-Za-z]+)(?P<qty> \d+)?$", user_input)
+            # magentaprint(user_input, False)
+            M_obj = re.search(r"domix '(?P<target>[A-Z\sa-z]+)' (?P<mix_target>[A-Za-z]+)(?P<qty> \d+)?$", user_input)
             can_mix = True
-            magentaprint(M_obj, False)
+            # magentaprint(M_obj, False)stop
 
             try:
                 target = M_obj.group('target')

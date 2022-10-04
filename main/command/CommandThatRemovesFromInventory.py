@@ -89,6 +89,22 @@ class Drink(CommandThatRemovesFromInventory):
         R.drop_what,
         R.cant_do
     ]
+class Eat(CommandThatRemovesFromInventory):
+    cooldown_after_success = 0.86  # .83 too fast
+    # cooldown_after_failure = 0.86
+    cooldown_after_failure = 0
+    command = 'eat'
+    success_regexes = [
+        R.you_eat
+    ]
+    failure_regexes = [
+    ]
+    error_regexes = [
+        R.dont_have, 
+        R.drop_what,
+        R.cant_do,
+        R.not_mixed_properly
+    ]
 
 class Use(CommandThatRemovesFromInventory):
     cooldown_after_success = 0.86  # .83 too fast

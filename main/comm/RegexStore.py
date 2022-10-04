@@ -613,7 +613,9 @@ cant_use = [
     r"You can only use a potion on yourself\."
 ]
 you_drink=[r"You drink the philtre of health's broth\."]
+you_eat=[r"You eat the (.+?)\."]
 cant_do=[r"You can't do that\."]
+not_mixed_properly=[r"The (.+?) has not been mixed properly.\."]
 # eat
 
 you_wield         = [r"You wield (an?|some) (?P<weapon>[A-Za-z ']+)\."]  # Gets a positive of the off-hand message

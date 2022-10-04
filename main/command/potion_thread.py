@@ -17,11 +17,12 @@ class Consume(threading.Event):
     # It'll use use, drink, or eat
 
     # def __init__(self, use, drink, eat):
-    def __init__(self, use, drink):
+    def __init__(self, use, drink, eat):
         super().__init__() # threading.Event
         self.use = use
         self.drink = drink
-        # self.eat = eat
+        self.eat = eat
+
         self.inventory = self.use.inventory
         self.prefer_big = False
         self.regex_cart = R.prompt # So we can wait() for prompt
@@ -90,6 +91,10 @@ class Consume(threading.Event):
                     self.drink.execute(self.inventory.get_reference('philtre of health'))
                     # self.command = 'use'
                     # So we aren't waiting here for errors...
+                elif pot == 'tree root':
+                    magentaprint("Switch to self.eat for tree root")
+                    # self.execute(self.inventory.get_reference('philtre of health'))
+                    self.eat.execute(self.inventory.get_reference('tree root'))
                 else:
                     self.use.execute(self.inventory.get_reference(pot))
                 # Inventory notices on its own 'a small restorative disintegrates'

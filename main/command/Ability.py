@@ -57,7 +57,7 @@ class BuffAbility(Ability):
             # self.__class__.timer = time.time() + self.__class__.cooldown_after_success - self.lasts
             self.active = False
         elif regex in self.failure_regexes:
-            self.__class__.timer = time.time() + self.__class__.cooldown_after_failure
+            self.timer = time.time() + self.cooldown_after_failure
             self.active = False
         # elif regex is self.already_buffed_regex:
         #     if self.up():

@@ -23,7 +23,7 @@ class MixingReactions(BotReactionWithFlag):
         self.telnetHandler = telnetHandler
         self.__stopping = False
         self.mudReaderHandler.register_reaction(self)
-        self.__class__.good_MUD_timeout = 15.0 #estimate of how long a mix should take
+        self.good_MUD_timeout = 15.0 #estimate of how long a mix should take
         self.fail_count = 0
         self.finished = False
 
@@ -40,7 +40,7 @@ class MixingReactions(BotReactionWithFlag):
     def mix_target_to_target(self, target, mix_target):
         self.telnetHandler.write("hold " + target)
         self.telnetHandler.write("mix "+ mix_target)
-        self.wait_for_flag()
+        self.wait_for_flag(timeout=15.0)
         self.telnetHandler.write("rem " + target)
         return self.mix_succeeded
 

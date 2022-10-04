@@ -95,11 +95,11 @@ class PollingBotReactionWithFlag(BotReaction):
         """ Subclasses should implement notify and also ensure that _waiter_flag
         gets set."""
         # magentaprint("BotReactionWithFlag setting _waiter_flag on " + str(self) + " from " + str(self._waiter_flag))
-        self.__class__._waiter_flag = True
+        self._waiter_flag = True
 
     def wait_for_flag(self):
         # magentaprint("Waiting for flag " + str(self), end="")
-        wait_for_class_flag(self.__class__)
+        wait_for_class_flag(self)
 
         # self._waiter_flag = False
         # start_time = time.time()
@@ -149,7 +149,7 @@ class BotReactionWithFlag(threading.Event, BotReaction):
             # Not sure how to test this
             # Maybe at the grazing fields with the false inventory match
         if timed_out:
-            magentaprint("BotReactionWithFlag {0} timed out!!! Wait() returning now. Also, set the flag for the next wait call.".format(self.__class__.__name__), False)
+            magentaprint("BotReactionWithFlag {0} / {1} timed out!!! Wait() returning now. Also, set the flag for the next wait call.".format(self.__class__.__name__, self.good_MUD_timeout), False)
             self.set()
 
     def set_waiter_flag(self):

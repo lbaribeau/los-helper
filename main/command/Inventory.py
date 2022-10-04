@@ -213,8 +213,8 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'morning star', 'superior dwarven hammer', 'stout cudgel', "horseman's mace",
         # 'war hammer',
         # steel gear
-        'steel sleeves', 'steel gauntlets', 'steel leggings',
-        'mountain boots with crampons', 'leather mask', 'leather collar', 'studded leather collar',
+        'steel sleeves', 'steel gauntlets', 'steel leggings', 'steel helm', 'plate mail helm', 'plate mail gauntlets',
+        # 'mountain boots with crampons', 'leather mask', 'leather collar', 'studded leather collar',
         # 'studded leather sleeves', 'studded leather boots', 'studded leather pants', 'studded leather gloves','studded leather leggings',
         # kobold champion
         # 'plate mail leggings', # Jerrek drops
@@ -280,7 +280,7 @@ class Inventory(SimpleCommand, ReferencingList):
             'chequered vial', 'misty potion'
         ]
         self.large_restoratives = [
-            'scarlet potion', 'philtre of health' #, 'golden potion'
+            'scarlet potion', 'philtre of health'#, 'tree root' #, 'golden potion'
         ]
         self.restoratives = [
             'chicken soup', 'small restorative', 'white potion', 'small flask', 'large restorative'
@@ -434,6 +434,9 @@ class Inventory(SimpleCommand, ReferencingList):
 
     def count_small_restoratives(self):
         return sum(self.count(r) for r in self.restoratives if r not in ['large restorative', 'scarlet potion'])
+
+    def count_large_restoratives(self):
+        return sum(self.count(r) for r in self.restoratives if r in ['large restorative', 'scarlet potion'])
 
     def has_any(self, item_name_list):
         # if item_name_list.__class__ == 'str':

@@ -32,7 +32,7 @@ class TelnetHandler(object):
         self.thread = Thread(target=self.keep_connection_open)
         self.thread.daemon = True
         self.thread.start()
-        self.echoing = False
+        self.echoing = True
 
     def set_timer(self):
         self.timer = time.time() + self.server_timeout
