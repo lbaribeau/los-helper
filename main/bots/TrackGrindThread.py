@@ -548,7 +548,7 @@ class TrackGrindThread(GrindThread):
             Track("Mill Workers", self.smart_mill_path, 7, 20, 0),
             Track("Muggers", self.MUGGER_PATH, 9, 15, -1),
             Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
-            Track("Gnoll Camp", self.GNOLL_CAMP, 12, 20, -1, 0, 9),
+            # Track("Gnoll Camp", self.GNOLL_CAMP, 12, 20, -1, 0, 9),
             Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, 0, 9),
             Track("Olmer", self.OLMER, 11, 14, -1),
             Track("Cheryn", self.CHERYN, 11, 20, -1),

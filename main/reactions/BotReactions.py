@@ -142,14 +142,17 @@ class BotReactionWithFlag(threading.Event, BotReaction):
         self.set()
 
     def wait_for_flag(self, **kwargs):
+        timeout_seconds = 6
         if 'timeout' in kwargs:
+            timeout_seconds = kwargs['timeout']   
             timed_out = not self.wait(**kwargs)
         else:
             timed_out = not self.wait(timeout=6) # This gets used unlike the old class variable
             # Not sure how to test this
             # Maybe at the grazing fields with the false inventory match
         if timed_out:
-            magentaprint("BotReactionWithFlag {0} / {1} timed out!!! Wait() returning now. Also, set the flag for the next wait call.".format(self.__class__.__name__, self.good_MUD_timeout), False)
+            if 'timeout' in kwargs:
+                magentaprint("BotReactionWithFlag {0} / {1} timed out!!! Wait() returning now. Also, set the flag for the next wait call.".format(self.__class__.__name__, timeout_seconds), False)
             self.set()
 
     def set_waiter_flag(self):
