@@ -456,6 +456,7 @@ class TrackGrindThread(GrindThread):
         self.BARDS1 = ['areaid1214'] #sonneteer 8 and minstrel 11
         self.MONKS1 = ['areaid1311', 'out', 'e', 'w', 'w', 's'] #brother 11, 2x seeker 5
         self.BLADEMASTER = ['areaid622', 'ne', 'e', 'se', 's', 's'] #warrior 8, 3x veteran 5
+        self.GARBO = ['areaid2099']
         # self.WHITEBLADE_LYRON = ['areaid2110', 'areaid2097']
         # self.LYRON = ['areaid2097', ] # too much dmg
 
@@ -574,6 +575,7 @@ class TrackGrindThread(GrindThread):
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
             Track("Jerrek and Tag", self.JERREK_TAG, 11, 20, -1),
             Track("Gnomes", self.GNOMES, 10, 12, 1),
+            Track("Garbo", self.GARBO, 13, 20, 1),
             Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 13, 0),
             Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1),
             Track("Plovers", self.PLOVERS, 15, 20, 1),
