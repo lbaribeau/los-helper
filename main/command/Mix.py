@@ -1,8 +1,9 @@
 
 from command.CommandThatRemovesFromInventory import CommandThatRemovesFromInventory
 from comm import RegexStore as R
+from command.Command import Command
 
-class Mix(CommandThatRemovesFromInventory):
+class Mix(Command):
     command = 'mix'
     success_regexes = [
         R.mix_success
@@ -15,9 +16,8 @@ class Mix(CommandThatRemovesFromInventory):
     ]
 
     def __init__(self, telnetHandler, inventory):
-        super().__init__(telnetHandler, inventory)
-        # mixing can take quite a while
-        self.good_MUD_timeout = 15.0
+        super().__init__(telnetHandler)
+        self.inventory = inventory
 
     def notify(self, r, m):
         if r in R.mix_fail:

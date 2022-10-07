@@ -280,7 +280,7 @@ class Inventory(SimpleCommand, ReferencingList):
             'chequered vial', 'misty potion'
         ]
         self.large_restoratives = [
-            'scarlet potion', 'philtre of health'#, 'tree root' #, 'golden potion'
+            'scarlet potion', 'philtre of health', 'tree root' #, 'golden potion'
         ]
         self.restoratives = [
             'chicken soup', 'small restorative', 'white potion', 'small flask', 'large restorative'

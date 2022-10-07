@@ -53,7 +53,8 @@ class Consume(threading.Event):
             'small flask', 
             'large restorative', 
             'scarlet potion',
-            'philtre of health'
+            'philtre of health',
+            'tree root'
         ] # 'golden potion' (leave that manual)
 
         if self.prefer_big:

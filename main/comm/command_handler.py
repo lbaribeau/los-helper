@@ -38,7 +38,10 @@ from command.Get                import Get
 from Aura                       import Aura
 from comm.thread_maker          import ThreadMaker
 from command.Repair             import Repair
+from command.Mix                import Mix
 from command.wear               import Wear
+from command.hold               import Hold
+from command.Remove               import Remove
 from mini_bots.armour_bot       import ArmourBot
 from command.equipment          import Equipment
 from mini_bots.smithy_bot       import SmithyBot
@@ -48,6 +51,7 @@ from mini_bots.weapon_bot2      import MainhandWeaponBot
 from mini_bots.travel_bot       import TravelBot
 from reactions.referencing_list import ReferencingList
 from mini_bots.sell_bot         import SellBot
+from mini_bots.mix_bot         import MixBot
 from command.CommandThatRemovesFromInventory import Sell, Drop, Drink, Use, Eat
 from command.potion_thread import PotionThreadHandler, Consume
 from command.Look               import Look
@@ -119,9 +123,15 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.get)
         self.repair = Repair(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.repair)
+        self.mix = Mix(telnetHandler, character.inventory)
+        mudReaderHandler.add_subscriber(self.mix)
         # self.wear = Wear(telnetHandler)
         self.wear = Wear(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.wear)
+        self.hold = Hold(telnetHandler, character.inventory)
+        mudReaderHandler.add_subscriber(self.hold)
+        self.remove = Remove(telnetHandler)
+        mudReaderHandler.add_subscriber(self.remove)
         # magentaprint(str(Equipment))
         self.equipment = Equipment(telnetHandler, character.is_headless)
         # self.eq_bot = EquipmentBot(character, self, self.mudReaderHandler, self.mud_map)
@@ -132,6 +142,7 @@ class CommandHandler(object):
         self.drop = Drop(telnetHandler, self.inventory)
         mudReaderHandler.add_subscriber(self.drop)
         self.sell_bot = SellBot(self.character.inventory, self.sell, self.drop)
+        self.mix_bot = MixBot(self.character, self.hold, self.mix, self.remove, self.drop)
         # Use will have to keep inventory up to date, right
         # That is if items support usable (small inhaler, white amulet, rods)
         self.look = Look(self.character.inventory, telnetHandler)
@@ -160,6 +171,7 @@ class CommandHandler(object):
             # 'go_pawn' : self.go_to_nearest_pawn_shop,
             'suit_up': self.suit_up,
             'bdrop' : self.bulk_drop,
+            'domix' : self.do_mix,
             'lookup_armour' : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
             'print_reactions' : lambda a : self.mudReaderHandler.print_reactions(),
             'weapon' : lambda a : self.start_weapon_bot()
@@ -394,9 +406,6 @@ class CommandHandler(object):
             self.start_goto(user_input)
         elif re.match("showto -?[0-9]+$", user_input):
             self.start_goto(user_input, True)
-        elif re.match("domix .+?", user_input):
-            #domix 'tree root' berry 50 - first param must be exact match
-            self.start_mix(user_input)
         elif re.match("slave", user_input):
             self.start_slave(user_input)
         elif user_input.startswith('buy '):
@@ -898,16 +907,16 @@ class CommandHandler(object):
             self.botThread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, master, kill)
             self.botThread.start()
 
-    def start_mix(self, user_input):
+    def do_mix(self, user_input):
         if self.bot_check():
             # magentaprint(user_input, False)
-            M_obj = re.search(r"domix '(?P<target>[A-Z\sa-z]+)' (?P<mix_target>[A-Za-z]+)(?P<qty> \d+)?$", user_input)
+            M_obj = re.search(r"(?P<target>[A-Z\sa-z]+) (?P<reageant>[A-Za-z]+)(?P<qty> \d+)?$", user_input)
             can_mix = True
-            # magentaprint(M_obj, False)stop
+            # magentaprint(M_obj, False)
 
             try:
                 target = M_obj.group('target')
-                mix_target = M_obj.group('mix_target')
+                reageant = M_obj.group('reageant')
 
                 try:
                     quantity = int(M_obj.group('qty').strip())
@@ -922,9 +931,7 @@ class CommandHandler(object):
                 can_mix = False
 
             if can_mix:
-                self.bot_thread = MixThread(self.character, self, self.mudReaderHandler, self.mud_map, self.telnetHandler,
-                                           target, mix_target, quantity)
-                self.bot_thread.start()
+                self.mix_bot.run(target, reageant, quantity)
             else:
                 magentaprint("Input not recognized - cannot start the mixer!", False)
 

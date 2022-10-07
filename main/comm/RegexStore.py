@@ -31,7 +31,7 @@ you_get           = [r"^(You weren't able to carry everything\.\n\r)?You get " +
 # We could miss a "You get" this way
 # Eh now we don't match if you don't get everything because of the ^... so we put that in as an optional group, since we need the ^
 you_remove        = [r"You removed? " + __items + r"\."]
-nothing_to_remove = [r"^You aren't wearing anything that can be removed\."]
+nothing_to_remove = [r"^You aren't wearing anything that can be removed\.", r"^You aren't using that\."]
 # you_wield       = [r"You wield (.+?)( in your off hand)?\."]
 you_give          = [r"^You give " + __items + r" to " + __player + r"\."]
 you_put_in_bag    = [r"^You put " + __items + r" in(:?to)? " + __item + r"\."]
@@ -613,7 +613,8 @@ cant_use = [
     r"You can only use a potion on yourself\."
 ]
 you_drink=[r"You drink the philtre of health's broth\."]
-you_eat=[r"You eat the (.+?)\."]
+eat_success=[r"You eat the (.+?)\."]
+eat_fail=[r"The (.+?) has not been mixed properly\."]
 cant_do=[r"You can't do that\."]
 
 mix_success = [r"You finish preparing a (.+?)\."]
@@ -675,6 +676,7 @@ sell_what      = [r"Sell what\?"]
 # fled         = [r"You run like a chicken\."]
 wear_what      = [r"Wear what\?"]
 no_room        = [r"There is no room to wear that\!"]
+already_holding= [r"You're already holding something\."]
 in_combat      = [r"You are fighting\! you can't do that now\!"]
 doesnt_fit     = [__item + r" doesn't fit you\."]
 class_prevents = [r'Your class prevents you from using '+__items+r'\.']

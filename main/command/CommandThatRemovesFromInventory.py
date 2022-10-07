@@ -95,16 +95,22 @@ class Eat(CommandThatRemovesFromInventory):
     cooldown_after_failure = 0
     command = 'eat'
     success_regexes = [
-        R.you_eat
+        R.eat_success
     ]
     failure_regexes = [
+        R.eat_fail
     ]
     error_regexes = [
         R.dont_have, 
         R.drop_what,
-        R.cant_do,
-        R.not_mixed_properly
+        R.cant_do
     ]
+
+    def notify(self, regex, match):
+        if self.failure:
+            item = self.inventory.get(self._sent_target)
+            if item:
+                item.usable = False
 
 class Use(CommandThatRemovesFromInventory):
     cooldown_after_success = 0.86  # .83 too fast

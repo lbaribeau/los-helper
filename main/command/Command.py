@@ -44,9 +44,9 @@ class SimpleCommand(BotReactionWithFlag):
         self.send(self.telnetHandler, target)
         # self.wait_for_flag()  # Just expect caller to call wait.
 
-    def execute_and_wait(self, target=None):
+    def execute_and_wait(self, target=None, timeout=6):
         self.execute(target)
-        self.wait_for_flag()
+        self.wait_for_flag(timeout=timeout)
 
 class Command(SimpleCommand):
     # The main point of this is to write code for the Kill, Cast, Ability, and
@@ -317,8 +317,8 @@ class Command(SimpleCommand):
         self._sent_target = target # Some cases want to know what the target was when the regex comes back (remove from inventory)
         super().execute(target)  # sets the waiter flag and calls send
 
-    def execute_and_wait(self, target=None):
-        super().execute_and_wait(target)
+    def execute_and_wait(self, target=None, timeout=6):
+        super().execute_and_wait(target, timeout=timeout)
         return self.success
 
     def persistent_execute(self, target=None):  # wait until ready?
