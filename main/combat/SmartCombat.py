@@ -773,6 +773,8 @@ class SmartCombat(CombatObject):
         if self.character.weapon2 != '':
             self.telnetHandler.write("rm " + self.character.weapon2)
 
+        self.character.TRYING_TO_MOVE = True
+        self.character.LAST_DIRECTION = None
         self.telnetHandler.write("fl")
         self.telnetHandler.write("fl")
         self.telnetHandler.write("fl")

@@ -777,6 +777,8 @@ class CommandHandler(object):
         time_remaining = max(self.go.wait_time(), self.kill.wait_time(), self.cast.wait_time())
         self.character.MOVE_CLK = now
 
+        self.character.TRYING_TO_MOVE = True
+        self.character.LAST_DIRECTION = None
         # Note: in very few rare cases it may be better to flee once.  
         self.telnetHandler.write("fl")
         self.telnetHandler.write("fl")
