@@ -398,7 +398,7 @@ class ArmourBot(MiniBot):
         return self.char.class_string in ["Mag"]
 
     def ringmail(self):
-        return self.char.class_string in ['Alc', 'Dru']
+        return self.char.class_string in ['Dru']
 
     def leather(self):
         return self.char.class_string in ['Thi', 'Ass'] # can wear ringmail but it messes with dodge, hide, backstab
@@ -408,7 +408,7 @@ class ArmourBot(MiniBot):
 
     def steel(self):
         #magentaprint("ArmourBot.steel() class string is: " + str(self.char.class_string))
-        return self.char.class_string in ['Pal', 'Dar', 'Bar', 'Fig', 'Brd']
+        return self.char.class_string in ['Pal', 'Dar', 'Bar', 'Fig', 'Brd', 'Alc']
 
     def go_to_nearest_smithy(self):
         # self.thread.stop()

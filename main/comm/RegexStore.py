@@ -615,6 +615,9 @@ cant_use = [
 you_drink=[r"You drink the philtre of health's broth\."]
 you_eat=[r"You eat the (.+?)\."]
 cant_do=[r"You can't do that\."]
+
+mix_success = [r"You finish preparing a (.+?)\."]
+mix_fail = [r"Your preparation of a (.+?) fails\."]
 not_mixed_properly=[r"The (.+?) has not been mixed properly.\."]
 # eat
 
