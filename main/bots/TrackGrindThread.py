@@ -405,7 +405,7 @@ class TrackGrindThread(GrindThread):
         self.ZOMBIES += [
         'southeast', 'southeast', 'south', 'gate', 'stile', 'northwest', 'southeast', 'southwest', 'northeast', 'stile', 'south', 'south',
         'north', 'north', 'gate', 'north', 'northwest', 'northwest',
-        'ne', 'ne', 'east', 'east', 'east'
+        'ne', 'ne', 'east', 'east', 'east',
         #Calmor farmstop
         #'southeast', 'south', 'southeast', 'southeast', 'gate', 'southwest', 'sty', 'yard',
         'northeast', 'northeast']
@@ -509,6 +509,9 @@ class TrackGrindThread(GrindThread):
             return True
         elif exit_str == "think":
             return True
+        elif exit_str == "tap":
+            self.sleep(1)
+            return True
         else:
             return super().do_go_hooks(exit_str)
 
@@ -543,7 +546,7 @@ class TrackGrindThread(GrindThread):
             Track("Fort", self.smart_fort_path, 9, 20, 0),
             Track("Veterans", self.BLADEMASTER, 8, 12, 0),
             Track("North Bandits", self.smart_northern_bandits_path, 9, 14, -1),
-            # Track("Eastern Zombies", self.ZOMBIES, 6, 20, 0),
+            Track("Eastern Zombies", self.ZOMBIES, 6, 20, 0),
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,20,9),
             Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 20, 0),
             Track("Mill Workers", self.smart_mill_path, 7, 20, 0),

@@ -210,7 +210,7 @@ class GrindThread(BotThread):
         return success
 
     def is_mob_weak(self, mob_target, level_diff=5):
-        if mob_target.level is None:
+        if mob_target.level is None or mob_target.level == "":
             return False
         
         mob_level = mob_target.level
@@ -900,7 +900,7 @@ class GrindThread(BotThread):
 
                     if len(return_path) > 0:
                         magentaprint("GrindThread.engage_monster adding directions " + str([self.character.mobs.chase_exit] + return_path))
-                        self.direction_list = [self.character.mobs.chase_exit] + return_path + self.direction_list
+                        self.direction_list = [self.character.mobs.chase_exit, "tap"] + return_path + self.direction_list
                         # buffer necessary?
                 except Exception:
                     magentaprint("GrindThread.engage_monster() cannot chase because we would then be lost.")

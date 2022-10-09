@@ -109,7 +109,7 @@ class SmartGrindThread(TrackGrindThread):
         # self.check_armour()
 
         if len(self.character.MONSTER_KILL_LIST) == 0:
-            self.get_targets()
+            self.reset_kill_list()
 
     def do_post_go_actions(self):
         super().do_post_go_actions()
@@ -198,7 +198,8 @@ class SmartGrindThread(TrackGrindThread):
     def should_kill_mob(self, mob):
         if super().should_kill_mob(mob):
             mob_target = Mob.get_mob_by_name(mob)
-            if (self.character.info.level < 14 or self.is_mob_weak(mob_target, 3)) and (mob_target.level is not None and mob_target.level < 12):
+            if (self.character.info.level < 14 or self.is_mob_weak(mob_target, 3)) and \
+                 (mob_target.level is not None and mob_target.level != "" and mob_target.level < 12):
                 magentaprint("Mob is weak enough for us to fight", False)
                 return True
             elif self.character.is_near_max_stats() and self.inventory.count_large_restoratives() > 4 and self.update_aura(True):
@@ -382,8 +383,10 @@ class SmartGrindThread(TrackGrindThread):
             self.min_target_aura = Aura('demonic red')
             self.max_target_aura = Aura('dusty red')
             aura_context = "too evil"
-            if not (self.is_character_class('Mag') or self.is_character_class('Dru') or self.is_character_class('Alc') or self.is_character_class('Cle')):
-                self.set_target_levels(-2, 0)
+            if not self.is_character_class('Mag'):
+                self.set_target_levels(-4, 0)
+            else:
+                self.set_target_levels(-4, -2)
         elif self.character.AURA > self.character.preferred_aura:
             # Too good
             # self.low_level = 2
@@ -391,8 +394,10 @@ class SmartGrindThread(TrackGrindThread):
             self.min_target_aura = Aura('dusty blue')
             self.max_target_aura = Aura('heavenly blue')
             aura_context = "way too good"
-            if not (self.is_character_class('Mag') or self.is_character_class('Dru') or self.is_character_class('Alc') or self.is_character_class('Cle')):
-                self.set_target_levels(-2, 0)
+            if not self.is_character_class('Mag'):
+                self.set_target_levels(-4, 0)
+            else:
+                self.set_target_levels(-4, -2)
         else:
             # self.set_target_levels(-1, 0)
             self.min_target_aura = Aura('demonic red')
@@ -401,7 +406,7 @@ class SmartGrindThread(TrackGrindThread):
 
         magentaprint("My aura is {}".format(aura_context), False)
 
-        self.get_targets()
+        self.reset_kill_list()
 
     def do_rest_hooks(self):
         pass
