@@ -49,6 +49,7 @@ from command.look          import Look
 from reactions.prompt      import Prompt
 from comm.analyser         import Analyser
 from command.Info          import Info
+from db.Database import AreaStoreItem
 
 class CommandHandler(object):
     def init_map_and_bots(self):
@@ -488,6 +489,12 @@ class CommandHandler(object):
             magentaprint("Track number (command_handler.bot_thread.nextpath) is " + str(self.bot_thread.nextpath))
         elif user_input == 'mud_events':
             magentaprint("MudReaderThread mud events:\n\t{}".format('\n\t'.join([str(m.regexes) for m in self.mudReaderHandler.mudReaderThread.mud_events.values()])))
+        elif user_input == 'possible_weapons':
+            magentaprint([asi.item.name for asi in AreaStoreItem.get_by_item_type_and_level_max(
+                'weapon', 
+                self.character.info.weapon_type, 
+                self.character.info.weapon_level
+            )])
         else:
             # Doesn't match any command we are looking for, send it to server
             self.telnetHandler.write(user_input)

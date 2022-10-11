@@ -53,9 +53,14 @@ class AreaStoreItem(BaseModel):
         # print('AreaStoreItem itemtypemodel: ' + str(itemtypemodel))
         # print('AreadStoreItem itemtypemodel: %s, itemtypedata: %s' % (str(itemtypemodel), str(itemtypedata)))
         # items = AreaStoreItem.select().join(Item).where(Item.level == level).join(ItemType).where(ItemType.model == itemtypemodel and ItemType.data == itemtypedata)
-        items = AreaStoreItem.select().join(Item).where(Item.level == level).join(ItemType).where(
-            (ItemType.model == ItemTypeModel.get_by_name(model_name).get().id) & 
-            (ItemType.data  == ItemTypeData.get_by_name(data_name).get().id)
+        items = (AreaStoreItem
+            .select()
+            .join(Item)
+            .where(Item.level == level)
+            .join(ItemType)
+            .where(
+                (ItemType.model == ItemTypeModel.get_by_name(model_name).get().id) & 
+                (ItemType.data  == ItemTypeData.get_by_name(data_name).get().id))
         )
         #print("AreaStoreItem get_by_item_type_and_level returning " + str(items))
         magentaprint("AreaStoreItem get_by_item_type_and_level returning " + str([i.item.name for i in items]))
@@ -64,13 +69,21 @@ class AreaStoreItem(BaseModel):
     def get_by_item_type_and_level_max(model_name, data_name, level_max=1):
         #BaseModel.magentaprint("AreaStoreItem get model_name/data_name: " + model_name + '/' + data_name + ", ids: " + str(itemtypemodel) + "/" + str(itemtypedata) )
         # (Searches general armour and sized armour)
-        items = AreaStoreItem.select().join(Item).where(Item.level <= level_max).join(ItemType).where(
-            (ItemType.model == ItemTypeModel.get_by_name(model_name).get().id) & 
-            (ItemType.data == ItemTypeData.get_by_name(data_name).get().id)
+        items = (AreaStoreItem
+            .select()
+            .join(Item)
+            .where(Item.level <= level_max)
+            .join(ItemType)
+            .where(
+                (ItemType.model == ItemTypeModel.get_by_name(model_name).get().id) & 
+                (ItemType.data == ItemTypeData.get_by_name(data_name).get().id))
+            .order_by(-Item.level)
         )
         # obj = NamedModel.select().where(fn.Lower(NamedModel.name) == fn.Lower(name)).get()
         #print("AreaStoreItem get_by_item_type_and_level_max returning " + str(items))
         # BaseModel.magentaprint("AreaStoreItem get_by_item_type_and_level_max returning " + str([i for i in items]))
+        # Level max means you include all levels below (you supply a maximum)
+        # Ok, so do we sort it? Brocolli is buying a small mace, and Alfredo doesn't have a level 3 thrusting
         return items
 
     def get_buyable_armour(size, location, max_level=1):

@@ -26,13 +26,32 @@ class Cartography(BotReactionWithFlag):
         self.store_item_list = "(?:[\s]*)(?:A |An |Some )?(.+?)(?:[\s]*)(?:(\(.\))?(?:[\s]*))?Cost: ([\d]*)" 
         # (Do a re.findall on the list above to iterate through, don't add this to the array below)
         self.regex_cart = [
-            R.area,             R.too_dark,            R.blocked_path,     R.please_wait,
-            R.cant_go,          R.no_exit,             R.class_prohibited, R.level_too_low,
-            R.not_invited,      R.not_open_during_day, R.not_open_during_night,
-            R.no_items_allowed, R.locked,              R.no_right,         R.not_authorized,
-            R.cannot_force,     R.not_here,            R.loot_blocked,     R.teleported,
-            R.in_tune,          R.you_see_mob,         R.mob_aura,         R.store_list,
-            R.mob_fled,         R.open_first,          R.washroom
+            R.area,             
+            R.too_dark,            
+            R.no_exit,             
+            R.blocked_path,     
+            R.cant_go,          
+            R.please_wait,
+            R.class_prohibited, 
+            R.level_too_low,
+            R.not_invited,      
+            R.not_open_during_day, 
+            R.not_open_during_night,
+            R.no_items_allowed, 
+            R.locked,              
+            R.no_right,         
+            R.not_authorized,
+            R.cannot_force,     
+            R.not_here,            
+            R.loot_blocked,     
+            R.teleported,
+            R.in_tune,          
+            R.you_see_mob,         
+            R.mob_aura,         
+            R.store_list,
+            R.mob_fled,         
+            R.open_first,          
+            R.washroom
         ]
 
         #self.__waiter_flag = False # Now using threading.Event

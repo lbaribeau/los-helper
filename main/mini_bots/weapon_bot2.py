@@ -675,13 +675,26 @@ class MainhandWeaponBot(MiniBot):
         else:
             # self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max('weapon', self.character.weapon_type, self.character.weapon_level)
             # self.possible_weapons = sorted(self.possible_weapons, key = lambda i: i.item.level, reverse=True)
-            # Strict about level
-            # The bard needs to use a level 2 weapon... because we don't want to accept using a lower level weapon...
-            self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max(
+            # (For sorting, peewee can also do it with order_by(-Item.Level))
+            # Strict about level? Broc wants to only accept top level
+            # The bard needs to use a level 2 weapon...
+            specific_level_query = AreaStoreItem.get_by_item_type_and_level(
                 'weapon', 
                 self.character.info.weapon_type, 
                 self.character.info.weapon_level
             )
+
+            if specific_level_query:
+                self.possible_weapons = specific_level_query
+            else:
+                self.possible_weapons = AreaStoreItem.get_by_item_typ_and_level_max(
+                    'weapon', 
+                    self.character.info.weapon_type, 
+                    self.character.info.weapon_level
+                )
+
+            # Do by level, and if that's empty, then do level_max
+            # Since we prefer to only allow top level, but if there's no such areastoreitem, try level_max
             magentaprint("WeaponBot possible weapons: " + str(self.possible_weapons))
             return self.possible_weapons
 
