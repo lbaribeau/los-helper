@@ -360,7 +360,7 @@ class SmartCombat(CombatObject):
         return self.favourite_spell
 
     def is_mob_weak(self, level_diff=5):
-        if self.mob_target.level is None:
+        if self.mob_target.level is None or self.mob_target.level == "":
             return False
         
         mob_level = self.mob_target.level
