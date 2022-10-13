@@ -22,7 +22,7 @@ you_wear          = [r"You wear " + __items + r"\."]
 nothing_to_wear   = [r"^You have nothing you can wear\."]
 # you_get         = [r"(?s)[^ ]You get (.+?)\.(?:\nYou now have (.+?) gold pieces\.)?"]
 # you_get         = [r"[^ ]You get " + __items + r"\."]  # We don't want this to miss because getting can happen in combat - maybe it shouldn't
-you_get           = [r"(You weren't able to carry everything\.\n?\r?)?You get " + __items + r"\."]  
+you_get           = [r"^(You weren't able to carry everything\.\n?\r?)?You get " + __items + r"\."]  
 # False positives on "You get the vague..." ... hard to deal with in regex
 # (\n and \r didn't match at the beginning, but ^ rules out "You get" in descriptions.)
 # "... more than is assuring. You get the distinct feeling (newline) that the rangers are not winning...""
