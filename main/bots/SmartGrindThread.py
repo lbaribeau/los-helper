@@ -51,7 +51,12 @@ class SmartGrindThread(TrackGrindThread):
                 'areaid1679','areaid2'
                 ]
         if self.is_character_class('Mon'):
+            #remove the master's habit
             self.command_handler.process('rem mast')
+            
+        if self.is_character_class('Alc'):
+            #remove the alchemist's ring
+            self.command_handler.process('rem alc')
 
     def init_level_modifiers(self):
         low_level_modifier = 0
@@ -400,8 +405,12 @@ class SmartGrindThread(TrackGrindThread):
                 self.set_target_levels(-4, -2)
         else:
             # self.set_target_levels(-1, 0)
-            self.min_target_aura = Aura('demonic red')
-            self.max_target_aura = Aura('heavenly blue')
+            if self.character.level > 7:
+                self.min_target_aura = Aura('demonic red')
+                self.max_target_aura = Aura('heavenly blue')
+            else:
+                self.min_target_aura = Aura('grey')
+                self.max_target_aura = Aura('grey')
             self.init_level_modifiers()
 
         magentaprint("My aura is {}".format(aura_context), False)

@@ -268,7 +268,8 @@ class SmartCombat(CombatObject):
 
         while not self.stopping and not self.kill.target_dead and not self.cast.target_dead:
             # if we have too many mobs attacking then we should start casting even if they're weak
-            if self.spell is None and len(self.character.mobs.attacking) > 2:
+            if self.spell is None and len(self.character.mobs.attacking) >= 2: #previously > 2, we want it to be >= 2 || > 1 
+                magentaprint("Getting attacked by more mobs so I'ma use magic #" + str(len(self.character.mobs.attacking)), False)
                 self.spell = self.determine_favorite_spell_for_target()
             # if self.broken_weapon:
             #     self.reequip_weapon()  # TODO: This can get spammed... answer on to unset is_usable on weapon objects in inventory

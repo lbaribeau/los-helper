@@ -752,6 +752,7 @@ class GrindThread(BotThread):
     def decide_which_mob_to_kill(self, monster_list):
         m_list = [str(m) for m in monster_list]
 
+
         # guard_count = 0
         for mob in m_list:
             if re.search('town guard', mob) or \
@@ -760,6 +761,10 @@ class GrindThread(BotThread):
                re.search('Rancher Plover', mob) or \
                re.search('bouncer', mob):
                 return ''
+            # low level characters fight market officials - there is an edge case here where they'll end up attacking Alaran and die
+            if self.character.level < 11:
+                if re.search('Alaran the Market Manager', mob):
+                    return ''
 
         # if guard_count > 1:
         #     return ''

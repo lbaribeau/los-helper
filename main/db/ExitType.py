@@ -29,6 +29,17 @@ class ExitType(NamedModel):
     def __repr__(self):
         return self.to_string()
 
+    def get_all_exits():
+        exit_types = []
+
+        try:
+            exit_types = ExitType.select().where((ExitType.name.not_in(['north', 'south', 'east', 'west', 'northwest', 'southwest', 'northeast', 'southeast'])))
+        except ExitType.DoesNotExist:
+            #magentaprint("Could not find exit Type with name: " + name, False)
+            exit_types = []
+
+        return exit_types
+
     '''Static ExitType Functions'''
     def get_exit_type_by_name(name): #this should always be unique
         exit_types = None

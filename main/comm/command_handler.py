@@ -11,6 +11,7 @@ import misc_functions
 from misc_functions import magentaprint
 from db.Database import *
 from db.MudMap import *
+from db.ExitType import *
 import comm.Spells
 from combat.SmartCombat         import SmartCombat
 from command.Go                 import Go
@@ -434,6 +435,12 @@ class CommandHandler(object):
         elif re.match("mkl", user_input): #Monster List
             magentaprint(self.character.MONSTER_KILL_LIST, False)
             # magentaprint(self.SmartGrindThread.get_targets(), False)
+        elif re.match("bfexit", user_input):
+            magentaprint("brute forcing all exits", False)
+            exits = ExitType.get_all_exits()
+            for exit in exits:
+                self.telnetHandler.write("go " + exit.name)
+                time.sleep(0.5)
         elif re.match("m2e (.+)", user_input):
             try:
                 M_obj = re.search("m2e (.+)", user_input)
