@@ -188,7 +188,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand', #'makeup kit', 
         'diamantium cross', 'silver ram staff',
         'copper thieves pass', 'bronze thieves pass', 'steel thieves pass', 'silver thieves pass',# 'stilleto'
-        'druid\'s silver sickle', 'protective robes', 'alchemist\'s ring',
+        'druid\'s silver sickle', 'protective robes', "alchemist's ring",
         'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
         'small flask', 'large restorative', 'scarlet potion', #'tree root', # kobold priest
         'white potion', # 'small restorative', 'chicken soup',
