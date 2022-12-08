@@ -113,6 +113,7 @@ class LosHelper(object):
             self.mud_reader_handler.register_reaction(RingWearingReaction(self.commandHandler.wear, self.character.inventory))
 
     def close(self):
+        magentaprint("In LosHelper.close()")
         self.mudListenerThread.stop()
         self.mudReaderThread.stop()
         magentaprint("Joining mud map thread.")
@@ -156,7 +157,12 @@ class LosHelper(object):
             user_input = user_input.strip()
             # magentaprint("LosHelper user_input: " + str(user_input))
 
-            if not self.mudReaderThread.is_alive():
+            if not self.mudListenerThread.is_alive():
+                # ie. server said "Timed out."" and closed the connection (OSError)
+                magentaprint("\nLos_helper: Server listener thread is dead.\n")
+                stopping = True
+                self.commandHandler.stop_bot()
+            elif not self.mudReaderThread.is_alive():
                 magentaprint("\nRead thread is dead, we're cooked.\n")
                 self.telnetHandler.write("")
                 self.telnetHandler.write("quit")
@@ -188,7 +194,7 @@ class LosHelper(object):
         if len(args) >= 1:
             self.character.name = args[0].title()
         else:
-            self.character.name = input()
+            self.character.name = input() # Did this work?
 
         self.telnetHandler.write(self.character.name)
 
@@ -197,8 +203,8 @@ class LosHelper(object):
         else:
             password = getpass.getpass("")
 
-        self.telnetHandler.write(password)
-        # TODO: Handle wrong user name
+        self.telnetHandler.write(password) 
+        # TODO: Handle wrong user name or password
 
         # if len(args) >= 2:
         #     self.character.name = args[1].title()
@@ -272,5 +278,10 @@ class LosHelper(object):
         # AttributeError: 'Character' object has no attribute 'spell_proficiencies'
 
 L = LosHelper()
-L.main()
+try:
+    L.main()
+except Error as e:
+    print("LosHelper main error: " + str(e) + ", calling .close() to help threads exit, and then raising to show stack trace.")
+    L.close()
+    raise e
 L.close()

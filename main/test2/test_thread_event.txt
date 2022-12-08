@@ -1,0 +1,51 @@
+lauri@DESKTOP-53DEC93 10:28:48 test2> python -i test_thread_event.py
+# First the automated part
+<__main__.MyEvent object at 0x000001D3966CBC10>
+Thread started
+Thread done.
+Thread started
+Thread done.
+Thread started
+Thread done.
+
+# Normal usage of thread event
+>>> a=MyThread(e)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+NameError: name 'e' is not defined
+>>> e=threading.Event()
+>>> a=MyThread(e)
+>>> a.start()
+Thread started
+>>> e.set()
+Thread done.
+>>>
+
+# Can't call a.start() again
+>>> a.start()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+  File "C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.10_3.10.2032.0_x64__qbz5n2kfra8p0\lib\threading.py", line
+930, in start
+    raise RuntimeError("threads can only be started once")
+RuntimeError: threads can only be started once
+>>>
+
+# Make new thread 'a' and see flag is still set
+>>> a=MyThread(e)
+>>> a.start()
+Thread started
+Thread done.
+
+# Use e.clear() and new thread 'a' and see that you have to set it again
+>>> e.clear()
+>>> a=MyThread(e)
+>>> a.start()
+Thread started
+>>> e.set()
+Thread done.
+>>>
+
+# (Seems pretty intuitive)
+# Try checking is_set()
+

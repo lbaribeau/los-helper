@@ -177,7 +177,7 @@ class MainhandWeaponBot(MiniBot):
                 elif wield.result in R.weapon_broken:
                     magentaprint("check_weapons spotted broken weapon.")
                     self.inventory.get(usable_ref).usable = False
-                    self.check_weapons() # Mark it as broken 
+                    self.check_weapons() # Marked it as broken 
                 elif wield.result in R.dont_have:
                     magentaprint("Error case checking weapons, expected {0}, removing.".format(usable_ref))
                     self.inventory.remove_by_ref(usable_ref)
@@ -187,19 +187,29 @@ class MainhandWeaponBot(MiniBot):
                     # Maybe easier to just spam wield on our entire inventory
             elif self.has_broken_weapon_in_inventory():
                 repair = self.command_handler.repair
-                self.travel_bot.go_to_nearest_smithy(grinding=False)
+                self.travel_bot.go_to_nearest_smithy(grinding=False) # Maybe don't do this part for drow saber
                 weapon = self.get_broken_weapon_ref()
                 repair.execute_and_wait(weapon)
                 if repair.success or repair.failure:
                     # Repair is in charge of updating inventory, so we know that's done
                     self.check_weapons() # This will wield it 
+                    # Calling again recursively will handle the secondary substitute (bagged) weapon
+                    # Todo: Gotta handle R.cant_repair (drow saber!)
                 elif repair.result in R.dont_have:
                     magentaprint("Error case checking weapons, expected {0}, removing.".format(usable_ref))
                     self.inventory.remove_by_ref(usable_ref)
                     self.check_weapons() # Error: remove it and go back to square one
                 elif repair.result in R.no_gold:
                     magentaprint("Check weapons saw no gold to repair.")
-                    return
+                    raise
+                elif repair.result in R.cant_repair:
+                    # self.command_handler.drop.execute_and_wait(self.inventory.get('drow sabre'))
+                    self.command_handler.drop.execute_and_wait(weapon) 
+                    # Go to tip first? Always drop drow sabre in tip?
+                    # Don't try to repair drow saber?
+                    # That would require a database field... the easiest way is to react here
+                    # Maybe don't use drow saber?
+                    self.check_weapons() #  has_broken_weapon_in_inventory should be false now
                 else:
                     magentaprint("Check weapons repairing problem")
                     raise
@@ -207,24 +217,31 @@ class MainhandWeaponBot(MiniBot):
                 self.go_buy_default_weapon()
                 self.check_weapons() # Wield, buy secondary
         else:
+            # So we are wealding a weapon here and need to make sure we have one in the bag as well
             if self.has_usable_weapon_in_inventory():
-                return 0
-            elif self.has_broken_weapon_in_inventory():
+                return 0 # Success
+            elif self.has_broken_weapon_in_inventory(): # TODO (optimize): Should be a repairable broken weapon
                 repair = self.command_handler.repair
-                self.travel_bot.go_to_nearest_smithy(grinding=False)
+                self.travel_bot.go_to_nearest_smithy(grinding=False) 
                 weapon = self.get_broken_weapon_ref()
                 repair.execute_and_wait(weapon)
                 if repair.success:
-                    return 0
+                    return 0 # Ok the weapon is ready in the bag
                 elif repair.failure:
+                    # Repair failure is blacksmith breaking it
                     self.check_weapons() # Maybe there's another to try repairing
                 elif repair.result is R.dont_have:
-                    magentaprint("Error case checking weapons, expected {0}, removing.".format(usable_ref))
+                    magentaprint("CAUTION: Error case checking weapons, expected {0}, removing.".format(usable_ref))
                     self.inventory.remove_by_ref(usable_ref)
                     self.check_weapons()
+                    # Hmmmm... how was the inventory wrong
                 elif repair.result is R.no_gold:
-                    magentaprint("Check weapons saw no gold to repair.")
+                    magentaprint("CAUTION: Check weapons saw no gold to repair.")
                     return
+                elif repair.result in R.cant_repair:
+                    self.command_handler.drop.execute_and_wait(weapon) 
+                    self.check_weapons()
+                    # Dropping it should trigger go_buy_default_weapon since has_broken_weapon_in_inventory will be false
                 else:
                     magentaprint("Check weapons repairing problem")
                     raise

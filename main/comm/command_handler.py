@@ -53,10 +53,9 @@ from db.Database import AreaStoreItem
 
 class CommandHandler(object):
     def init_map_and_bots(self):
-        # magentaprint("CommandHandler generating the mapfile....", False)
+        # magentaprint("CommandHandler loading the map (generating the mapfile)....", False)
         self.mud_map = MudMap() # Takes a few seconds
         # Initialize things that NEED the map
-        # (The map takes a few seconds)
         self.armour_bot = ArmourBot(self.character, self, self.mud_map)
         self.mudReaderHandler.add_subscriber(self.armour_bot)
         self.weapon_bot.add_in_map(self.mud_map)
@@ -151,6 +150,7 @@ class CommandHandler(object):
         if self.threaded_map_setup:
             # Threading the db setup causes a locking error if the starting area needs to be saved
             self.mud_map_thread = threading.Thread(target=self.init_map_and_bots)
+            self.mud_map_thread.daemon = True
             self.mud_map_thread.start()  # Don't forget to uncomment .join()
         else:
             # # self.mud_map = MudMap()
@@ -172,6 +172,7 @@ class CommandHandler(object):
 
     def join_mud_map_thread(self):
         if self.threaded_map_setup:
+            magentaprint("Command_handler joining mud_map_thread.")
             self.mud_map_thread.join(20)
             return not self.mud_map_thread.is_alive()
         else:
@@ -872,8 +873,16 @@ class CommandHandler(object):
         if self.bot_thread:
             self.bot_thread.stop()
         self.weapon_bot.stop()
-        self.armour_bot.stop()
-        self.travel_bot.stop()
+        if hasattr(self, 'armour_bot'):
+            self.armour_bot.stop()
+        if hasattr(self, 'travel_bot'):
+            self.travel_bot.stop()
+        # self.mud_map_thread.join() 
+        # Ok safer to just let it finish making the map (worried about leaks/deadlocks? No we're exiting)
+        # Aha we could set it as deamon, right... no can't for active thread
+        # if self.threaded_map_setup and self.mud_map_thread != None:
+        #     self.mud_map_thread.daemon = True
+        # Could do self.join_mud_map_thread()
 
     def bbuy(self, user_input):
         try:
@@ -924,7 +933,9 @@ class CommandHandler(object):
         quit = Quit(self.mudReaderHandler, self.telnetHandler)
         magentaprint("CommandHandler quit returned " + str(quit.success))
         if quit.success:
-            self.stop_bot()
+            self.join_mud_map_thread() 
+            self.stop_bot() # Ehrm suppose another thread is making the map - maybe interrupt it or join it
+            # self.mud_map_thread
         return quit.success
 
     def go_smithy(self, args):

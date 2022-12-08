@@ -14,7 +14,7 @@ class CommandThatRemovesFromInventory(Command):
     def notify(self, regex, match):
         self.result = regex
         # magentaprint("CommandThatRemovesFromInventory notify: {0}".format(match.re.pattern))
-        magentaprint("CommandThatRemovesFromInventory {0} notify".format(self.__class__))
+        magentaprint("Notify for CommandThatRemovesFromInventory {0}.".format(self.__class__.__name__))
         if self.success:
             if self._sent_target == 'all':
                 # magentaprint("CommandThatRemovesFromInventory notify: {0}".format(match.re.pattern))

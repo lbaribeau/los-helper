@@ -16,7 +16,7 @@ class TelnetHandler(object):
                 self.tn = telnetlib.Telnet('mud.landsofstone.org', 4801, 25)
                 connected = True
             except socket.error as e:
-                magentaprint("TelnetHandler connect timeout, retrying.")
+                magentaprint("TelnetHandler connect timeout, looping retry in 5 seconds.")
                 connected = False
                 time.sleep(5)
 

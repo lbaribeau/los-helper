@@ -7,18 +7,23 @@ from misc_functions import do_magentaprint
 from comm.ConsoleHandler import newConsoleHandler
 
 def get_shortest_array(list_of_arrays):
-    shortest_array = []
+    if list_of_arrays == []:
+        # magentaprint
+        return [] # Let's not crash here with ValueError: min() arg is an empty sequence
 
-    for array in list_of_arrays:
-        shortest_array.append(len(array))
-
-    #lengths=[len(a) for a in list_of_arrays]
-    #return list_of_arrays[lengths.index(min(lengths, key=int))]
-    #return min(list_of_arrays, key=len)
+    # lengths = []
+    # for array in list_of_arrays:
+    #     lengths.append(len(array))
+    lengths = [len(a) for a in list_of_arrays]
 
     return list_of_arrays[
-        shortest_array.index(min(shortest_array, key=int))
+        lengths.index(min(lengths, key=int))
     ]
+
+# def get_shortest_array(list_of_arrays):
+#     min(lengths, key=int) # problem if length is empty
+#     #return list_of_arrays[lengths.index(min(lengths, key=int))]
+#     #return min(list_of_arrays, key=len)
 
 class MudMap(object):
     # def magentaprint(self, text):

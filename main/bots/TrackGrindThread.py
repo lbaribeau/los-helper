@@ -346,7 +346,7 @@ class TrackGrindThread(GrindThread):
                 else:
                     magentaprint("Not going to do bandits - aura unknown.")
                     return self.skip()
-            elif (self.character.level >= 8 or self.cast.aura < aura('pale blue')) and \
+            elif (self.character.level >= 8 or self.cast.aura < Aura('pale blue')) and \
                 self.cast.aura <= self.character.preferred_aura:
                 # Can handle bandits even if blue if level is high enough
                 # However, don't do them if aura is bluer than preferred

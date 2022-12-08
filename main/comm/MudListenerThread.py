@@ -26,29 +26,30 @@ class MudListenerThread(threading.Thread):
         return '-fake' in sys.argv
 
     def run(self):
-        # First get the file descriptor (no) of the internal telnet socket object
+        # First get the file descriptor (number) of the internal telnet socket object,
         # so we can watch for input.
         socket_number = self.telnetHandler.get_socket()
-        fragment=""
+        fragment = ""
         # magentaprint("MudListenerThread sys.argv " + str(sys.argv))
         select_timeout = 2.0 if not self.fake_version() else 0.1
         # magentaprint("MudListenerThread select timeout is " + str(select_timeout))
         # So fake just works by timing out the select call
         # Better would be to actually use the socket, but this is working
-
-
         # Loop forever, just do stuff when the socket says its ready.
         while not self.stopping:
             try:
                 select_triple = select.select([socket_number], [], [], select_timeout)  # A 1 second timeout makes quitting fast
-            except ValueError:
-                # TODO:  Hmmm, this can get SPAMMED BIGTIME on exit...  (Do not print here)
+            except ValueError as e:
+                # Hmmm, this can get SPAMMED BIGTIME on exit...  (Do not print here)
                 if not self.airbag:
                     self.airbag = True
-                    magentaprint("MudListenerThread select ValueError:" + str(ValueError))
+                    magentaprint("MudListenerThread select raised ValueError:" + str(e))
+                else:
+                    magentaprint("MudListenerThread seems like infinite loop: sleep(2), error is " + str(e))
+                    sleep(1)
                 continue
 
-            # if select_triple != ([], [], []) or socket_number == 1:
+            # if select_triple != ([], [], []) or socket_number == 1: (old way of doing fake socket - hardcoded socket number as 1)
             if select_triple != ([], [], []) or self.fake_version:
                 try:
                     # magentaprint("MudListenerThread calling read_some().")  # Can print a LOT
@@ -59,10 +60,14 @@ class MudListenerThread(threading.Thread):
                     # This occurs when the computer went to sleep
                     # Also telnet handler read_some() error - existing connection forcibly closed by remote
                     # (Understandable it likely timed out)
-                except (EOFError, OSError) as e:
-                    # I think that the server doesn't send these.
-                    magentaprint("MudListenerThread: Exiting (saw EOF) or Socket is dead:")
-                    magentaprint(str(e))
+                # except (OSError, EOFError) as e:
+                #     magentaprint("MudListenerThread is exiting because of "+e.__class__.__name__+"(could be dead socket), error says: \""+str(e)+"\"")
+                    # break
+                except OSError as e:
+                    magentaprint("MudListenerThread is exiting because of OSError (could be dead socket); error says: \""+str(e)+"\"")
+                    break
+                except EOFError as e:
+                    magentaprint("MudListenerThread is exiting because server sent EOF; error says: \""+str(e)+"\"")
                     break
 
                 #magentaprint("MudListener: got a fragment size %d time %.1f last chars %s." % (len(fragment), round(time.time()-self.Character_inst.START_TIME, 1), fragment[len(fragment)-8:]))
@@ -82,11 +87,10 @@ class MudListenerThread(threading.Thread):
                 self.MUDBuffer.access_flag = False
                 fragment = ""
             else:
-                # Socket timed out.
+                magentaprint("Socket timed out: "+str(select_triple))
                 pass    # just keep waiting.
                         # if stopping was set it will exit the loop
                 # Hmmm..... is there any way to tell if the server's ignoring us... "Timed out."
                 # other than that text.
 
         # los-helper closes the socket
-
