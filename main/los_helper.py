@@ -280,7 +280,7 @@ class LosHelper(object):
 L = LosHelper()
 try:
     L.main()
-except Error as e:
+except Exception as e:
     print("LosHelper main error: " + str(e) + ", calling .close() to help threads exit, and then raising to show stack trace.")
     L.close()
     raise e

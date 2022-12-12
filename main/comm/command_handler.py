@@ -496,6 +496,8 @@ class CommandHandler(object):
                 self.character.info.weapon_type, 
                 self.character.info.weapon_level
             )])
+        elif user_input == 'alarm':
+            print('\a')
         else:
             # Doesn't match any command we are looking for, send it to server
             self.telnetHandler.write(user_input)

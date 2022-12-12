@@ -94,6 +94,7 @@ class SmartCombat(CombatObject):
                 # if self.weapon_bot.broken_weapon or not self.character.inventory.has_restorative():
                 if not hasattr(self.weapon_bot, 'weapon') or not self.character.inventory.has_restorative():
                     self.fleeing = True  # TODO: Do pots interfere with the flee timer?  (Should I use a pot?)
+                    print('\a')
                 self.spam_pots()
             else:
                 self.stop_pots_if_started_by_smart_combat()
@@ -105,6 +106,7 @@ class SmartCombat(CombatObject):
         elif regex in R.mob_attacked and self.needs_heal() and not self.character.inventory.has_large_restorative():
             magentaprint("SmartCombat.fleeing = True")
             self.fleeing = True
+            print('\a')
         elif regex in R.weapon_break + R.weapon_shatters:
             magentaprint("SmartCombat weapon break: " + str(match.group('weapon')))
             # self.broken_weapon = match.group('weapon')
@@ -289,12 +291,12 @@ class SmartCombat(CombatObject):
                 cast.wait_until_ready()
                 if self.stopping:
                     break
-                elif not self.casting or self.mob_charmed:
+                elif not self.casting or (self.mob_charmed and len(C.mobs.attacking) > 1):
                     time.sleep(min(0.2, kill.wait_time()))
                     # time.sleep(min(0.2, kill.wait_time() + 0.05))
                     # mob_charmed should check if there are other mobs fighting and switch to them (bot-level logic)
                     # So return if mob_charmed to do that
-                    # Here we are just saving the mana mana (same as not casting)
+                    # Here we are just saving the mana (same as not casting)
                 elif self.black_magic:
                     if self.spell in Spells._lvl3 and C.MANA < 10:
                         self.do_cast(Spells._lvl1[Spells._lvl3.index(self.spell)], self.target)

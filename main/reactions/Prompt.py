@@ -39,7 +39,7 @@ class Prompt(threading.Event):
         # self.prev_mp = self.mp if int(match.group(2)) != self.mp else self.prev_mp
         # self.hp = int(match.group(1))
         # self.mp = int(match.group(2))
-        self.set()
+        self.set() # Helps other objects to wait for the prompt
 
     def hp_delta(self):
         return self.hp - self.prev_hp

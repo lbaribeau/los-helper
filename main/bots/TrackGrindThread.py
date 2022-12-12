@@ -4,36 +4,8 @@ from misc_functions import magentaprint
 from Aura import Aura
 import db.Area
 
-class TrackGrindThread(GrindThread):
-    def __init__(self, character, command_handler, mudReaderHandler, mud_map, starting_path=None):
-        super().__init__(character, command_handler, mudReaderHandler, mud_map)
-
-        # Set TOTALPATHS.  Setting it lower than the actual number
-        # of paths in decide_where_to_go is a way to truncate paths
-        # you don't want to send low level characters on.
-
-        if self.character.level <= 2:
-            self.__TOTALPATHS = 8 # Kobolds are level 1 safe.
-        elif self.character.level <= 6:
-            self.__TOTALPATHS = 12 # include hookers for level 3
-        elif self.character.level <= 7:
-            self.__TOTALPATHS = 16 # used to do bandits at level 7
-        elif self.character.level <= 10:
-            self.__TOTALPATHS = 22
-        elif self.character.level <= 14:
-            self.__TOTALPATHS = 77 
-        elif self.character.level <= 15:
-            self.__TOTALPATHS = 91
-        elif self.character.level <= 16:
-            self.__TOTALPATHS = 103
-        else:
-            self.__TOTALPATHS = 103
-
-        if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
-            self.nextpath = starting_path
-        else:
-            self.nextpath = 0
-
+class Tracks:
+    def __init__(self):
         self.LIMBO_TO_CHAPEL = [
             'ame','out','w','n','chapel'
         ]
@@ -60,12 +32,19 @@ class TrackGrindThread(GrindThread):
             'w','n','nw','nw','n','e','e','e','s','s','s','s','gate','s','s','se','se','s','s','s','se','s','w','w',
             'w','nw','nw','n','gate','e','n','n','n','w','n','chapel'
         ]
-        # Since kobolds are so far, we won't do what we did with bandits
+        self.to_glowing_portal = [
+            'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','se','se','se','s','s','s','s','s','e','e',
+            'se','e','s','s','s','s']#,#'glowing portal','passage','mines','down','n','n','n','n','ne','n','w','n','n',
+        self.from_glowing_portal = [
+            'n','n','n','n','w','nw','w','w','n','n','n','n','n','nw',
+            'nw', 'nw', 'w', 'w', 'w','nw','nw', 'n', 'gate', 'e', 'n', 'n', 'n','w', 'n', 'chapel']
+        self.CORAL = self.to_glowing_portal + self.from_glowing_portal # This pretrack can help lower levels be safer against kobold guards, which are nice to include
         self.KOBOLDS1 = [
             # For somewhat low level characters (this is pretty safe)
             # Also go fight the children first, we don't want to miss out on them
             'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','se','se','se','s','s','s','s','s','e','e',
-            'se','e','s','s','s','s','glowing portal','passage','mines','down','n','n','n','n','ne','n','w','n','n',
+            'se','e','s','s','s','s','glowing portal',
+            'passage','mines','down','n','n','n','n','ne','n','w','n','n',
             'e','door','w','gully','up','boulder','up','cave 3','ne','ne','n','s','up','e','cave','out', # child large
             'se','cave','out', # large kobolds (danger?)
             #'prepare', 'e', 'ne', 'door', 'door', 'prepare', 'sw','w',
@@ -74,19 +53,22 @@ class TrackGrindThread(GrindThread):
             # 'cave', 'out',  # Comment out insane kobold
             'sw','se',# shaman
             'nw','w','out','down','boulder','down','down','e','door','w','s','s','e','s','sw','s','s','s',
-            's','gully','glowing portal','passage','coral','n','n','n','n','w','nw','w','w','n','n','n','n','n','nw',
+            's','gully','glowing portal','passage','coral',
+            'n','n','n','n','w','nw','w','w','n','n','n','n','n','nw',
             'nw', 'nw', 'w', 'w', 'w','nw','nw', 'n', 'gate', 'e', 'n', 'n', 'n','w', 'n', 'chapel'
         ]
+        # Note option for further low lever aura fixing - try going through the water? To fight more unguarded kobolds
         self.kobold_guards_and_insane = [
             # Take the scenic route so we fight in the safest order (some auras can choose not to fight)
             'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','se','se','se','s','s','s','s','s','e','e',
-            'se','e','s','s','s','s','glowing portal','passage','mines','down','n','n','n','n','ne','n','w','n','n',
+            'se','e','s','s','s','s','glowing portal',
+            'passage','mines','down','n','n','n','n','ne','n','w','n','n',
             'e','door','w','gully','up','boulder','up','cave 3','ne','ne',#'n','s',
             'up','e','se',
             'prepare', 'e', 'ne', # guards
             #'door', 'door', # priests
             'prepare', 'sw','w', 
-            'ladder','sw','w','cave','out', # insane 1st after guards
+            'ladder','sw','w',#'cave','out', # insane 1st after guards (he's risky after the guards, and not necessary enough)
             'sw','se', # shaman
             'nw','ne','e','ne','cave','out', # champion
             'ladder','cave','out', # 2 large
@@ -94,7 +76,8 @@ class TrackGrindThread(GrindThread):
             'w','d','n','s', # family
             'sw','sw','out',
             'down','boulder','down','down','e','door','w','s','s','e','s','sw','s','s','s',
-            's','gully','glowing portal','passage','coral','n','n','n','n','w','nw','w','w','n','n','n','n','n','nw',
+            's','gully','glowing portal','passage','coral',
+            'n','n','n','n','w','nw','w','w','n','n','n','n','n','nw',
             'nw', 'nw', 'w', 'w', 'w','nw','nw', 'n', 'gate', 'e', 'n', 'n', 'n','w', 'n', 'chapel'
         ] 
         self.kobold_priests = self.kobold_guards_and_insane[0:59] + ['door','door'] + self.kobold_guards_and_insane[60:]
@@ -117,7 +100,7 @@ class TrackGrindThread(GrindThread):
             's','s','e','n','e','cave', # unlock trap key; trap; out;
             'out','n','nw','n','n','w','n','w','passage','out','hole',
             'u','u','u','u','out',
-            # First try convoluted (after corridor)
+            # First try convoluted (eastbound pattern after corridor)
             # 'e','e','se','w','w','w','sw','s','w','s','s','se','n','n','n','e',
             # 'e','s','w','s','s','e','e','n','e','s','n','e','cave',# unlock trap key; trap; out
             # 'out','n','nw','n','sw','s','w','s','s','se','n','n','n','e','s','s','s','e','n','n','e','s','s','e','n','e','cave',
@@ -238,6 +221,7 @@ class TrackGrindThread(GrindThread):
         ]
         self.PATH_TO_SKIP_WITH = ['out','chapel']
 
+class TrackGrindThread(GrindThread):
     def do_pre_go_actions(self):
         self.rest_and_check_aura()
         self.check_weapons()
@@ -258,23 +242,54 @@ class TrackGrindThread(GrindThread):
         self.use_extra_bless_item()
         self.use_extra_steel_bottle()
 
+    def __init__(self, character, command_handler, mudReaderHandler, mud_map, starting_path=None):
+        super().__init__(character, command_handler, mudReaderHandler, mud_map)
+        C = self.character
+        # Set TOTALPATHS.  Setting it lower than the actual number
+        # of paths in decide_where_to_go is a way to truncate paths
+        # you don't want to send low level characters on.
+        self.tracks = Tracks()
+
+        if C.level <= 2:
+            self.__TOTALPATHS = 10  # Kobolds are level 1 safe.
+        elif C.level <= 6:
+            self.__TOTALPATHS = 14 # include hookers for level 3
+        elif C.level <= 7:
+            self.__TOTALPATHS = 18 # used to do bandits at level 7
+        elif C.level <= 10:
+            self.__TOTALPATHS = 24
+        elif C.level <= 14:
+            self.__TOTALPATHS = 79 
+        elif C.level <= 15:
+            self.__TOTALPATHS = 93
+        elif C.level <= 16:
+            self.__TOTALPATHS = 105
+        else:
+            self.__TOTALPATHS = 105
+
+        if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
+            self.nextpath = starting_path
+        else:
+            self.nextpath = 0
+
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go", False)
+        C=self.character
         self.nextpath = (self.nextpath + 1) % (self.__TOTALPATHS + 1)
         magentaprint("next path = " + str(self.nextpath), False)
 
-        if self.character.AREA_ID != 2:
-            magentaprint("CAUTION: decide_where_to_go called when we should be in the chapel! AREA_ID is {}.".format(self.character.AREA_ID))
+        if C.AREA_ID != 2:
+            magentaprint("CAUTION: decide_where_to_go called when we should be in the chapel! AREA_ID is {}.".format(C.AREA_ID))
             self.command_handler.process("l")
             return ['areaid2']
 
-        if self.character.DEAD:
-            self.character.DEAD = False
-            self.character.DEATHS += 1
+        if C.DEAD:
+            C.DEAD = False
+            C.DEATHS += 1
             # magentaprint("Died: Pulling up my bootstraps and starting again", False)
             magentaprint("Died: stopping bot thread.", False)
             self.stop()
-            return self.LIMBO_TO_CHAPEL[:]
+            return self.tracks.LIMBO_TO_CHAPEL[:]
 
         if self.nextpath % 2 == 0:
             # self.inventory.get_inventory()
@@ -285,144 +300,150 @@ class TrackGrindThread(GrindThread):
             #
             if len(self.inventory.sellable()) > self.loot_threshold:
                 magentaprint("Trackgrind pawning and dropping.")
-                return self.SHOP_AND_TIP_PATH[:]
+                return self.tracks.SHOP_AND_TIP_PATH[:]
             else:
                 magentaprint("Trackgrind skipped pawning/dropping.")
-                return self.PATH_TO_SKIP_WITH[:] # don't call .skip() because we don't want to double increment nextpath
+                return self.tracks.PATH_TO_SKIP_WITH[:] # don't call .skip() because we don't want to double increment nextpath
         elif self.nextpath == 1:
-            return self.THEATRE_PATH[:]
+            return self.tracks.THEATRE_PATH[:]
         elif self.nextpath == 3:
-            return self.MARKET_PATH[:]
+            return self.tracks.MARKET_PATH[:]
         elif self.nextpath == 5:
-            return self.MILITIA_SOLDIERS_PATH[:]
+            return self.tracks.MILITIA_SOLDIERS_PATH[:]
+        # If level 6-8, do a setup run before kobold guards (also include 1-5) (carpenter, thatcher, street traders)
         elif self.nextpath == 7:
-            if not self.cast.aura or (self.cast.aura and self.cast.aura >= Aura('pale blue') and self.cast.aura <= self.character.preferred_aura):
-                if self.character.level in [1,2,3,4,5]:
+            if C.level in range(1,9):
+                return self.tracks.CORAL[:]
+            else:
+                magentaprint("Skipping easy coral pretrack to glowing portal")
+                return self.skip()
+        elif self.nextpath == 9:
+            if not self.cast.aura or (self.cast.aura and self.cast.aura >= Aura('pale blue') and self.cast.aura <= C.preferred_aura):
+                if C.level in [1,2,3,4,5]:
                     magentaprint("Not going to do kobolds - aura unknown and level too low.")
                     return self.skip()
-                elif self.character.level in [6,7]:
-                    return self.KOBOLDS1[:]
-                elif self.character.level in [8,9]:
-                    return self.kobold_guards_and_insane[:]
-                elif self.character.level in [10,11,12]:
+                elif C.level in [6,7]:
+                    return self.tracks.KOBOLDS1[:]
+                elif C.level in [8,9]:
+                    return self.tracks.kobold_guards_and_insane[:]
+                elif C.level in [10,11,12]:
                     # So this will throw the balance of the track at level 10
-                    return self.kobold_priests[:]
+                    return self.tracks.kobold_priests[:]
                 else:
-                    return self.kobold_massacre[:]
+                    return self.tracks.kobold_massacre[:]
             # Track-based aura fixing (skipping track if aura is too blue)
-            # elif (self.character.level >= 4 or self.cast.aura < Aura('pale blue')) or \
-            #     self.cast.aura <= self.character.preferred_aura:
-            elif self.cast.aura > self.character.preferred_aura:
+            # elif (C.level >= 4 or self.cast.aura < Aura('pale blue')) or \
+            #     self.cast.aura <= C.preferred_aura:
+            elif self.cast.aura > C.preferred_aura:
                     magentaprint("Not going to do kobolds - too blue right now")
+                    # magentaprint("Not going to do kobolds. Current aura, and preferred, comparison: %s,  %s, %s" %
+                    #     (str(self.cast.aura), str(C.preferred_aura), str(self.cast.aura <= C.preferred_aura)))
                     return self.skip()
             else:
-                # # magentaprint("Not going to do kobolds. Current aura, and preferred, comparison: %s,  %s, %s" %
-                # #              (str(self.cast.aura), str(self.character.preferred_aura), str(self.cast.aura <= self.character.preferred_aura)))
-                # return self.skip()
-                if self.character.level in [1,2,3,4,5]:
-                    return self.KOBOLDS1[:]
-                elif self.character.level in []:
-                    return self.kobold_guards_and_insane[:]
-                elif self.character.level in [6,7,8,9,10,11]:
-                    return self.kobold_priests[:]
+                if C.level in [1,2,3,4,5]:
+                    return self.tracks.KOBOLDS1[:]
+                elif C.level in []:
+                    return self.tracks.kobold_guards_and_insane[:]
+                elif C.level in [6,7,8,9,10,11]:
+                    return self.tracks.kobold_priests[:]
                 else:
-                    return self.kobold_massacre[:]
-        elif self.nextpath == 9:
+                    return self.tracks.kobold_massacre[:]
+        elif self.nextpath == 11:
             # hookers ... I would avoid the drunken trouble makers, but I don't
             # quite remember where they are and don't want to go through Amber
             # Also I think it's safe enough in the dark... maybe just lvl 4
             # there are thugs
-            if self.character.level <= 6:
-                return self.CORAL_ALLEY_PATH[:]
+            if C.level <= 6:
+                return self.tracks.CORAL_ALLEY_PATH[:]
             else:
-                magentaprint("Skipping coral alley (level: {})".format(self.character.level))
+                magentaprint("Skipping coral alley (level: {})".format(C.level))
                 return self.skip()
-        elif self.nextpath == 11:
-            return self.FORT_PATH[:]
         elif self.nextpath == 13:
+            return self.tracks.FORT_PATH[:]
+        elif self.nextpath == 15:
             if not self.cast.aura:
-                if self.character.level >= 8:
-                    return self.NORTHERN_BANDITS_PATH[:]
+                if C.level >= 8:
+                    return self.tracks.NORTHERN_BANDITS_PATH[:]
                 else:
                     magentaprint("Not going to do bandits - aura unknown.")
                     return self.skip()
-            elif (self.character.level >= 8 or self.cast.aura < Aura('pale blue')) and \
-                self.cast.aura <= self.character.preferred_aura:
+            elif (C.level >= 8 or self.cast.aura < Aura('pale blue')) and \
+                self.cast.aura <= C.preferred_aura:
                 # Can handle bandits even if blue if level is high enough
                 # However, don't do them if aura is bluer than preferred
-                return self.NORTHERN_BANDITS_PATH[:]
+                return self.tracks.NORTHERN_BANDITS_PATH[:]
             else:
                 magentaprint("Not going to do northern bandits. (Level %s, current aura %s, and preferred %s.)" %
-                             (self.character.level, self.cast.aura, self.character.preferred_aura))
-                return self.skip()
-        elif self.nextpath == 15:
-            if self.character.level >= 5 and (not self.cast.aura or self.cast.aura <= self.character.preferred_aura):
-                return self.MUGGER_PATH[:]
-            else:
-                magentaprint("Not going to do muggers. (Level %s, current aura %s, and preferred %s.)" %
-                             (self.character.level, self.cast.aura, self.character.preferred_aura))
+                             (C.level, self.cast.aura, C.preferred_aura))
                 return self.skip()
         elif self.nextpath == 17:
-            return self.DWARVEN_FIELD_WORKERS_PATH[:]
-        elif self.nextpath == 19:
-            return self.MILL_WORKERS[:]
-        elif self.nextpath == 21:
-            if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
-                return self.BANDITS1[:]
+            if C.level >= 5 and (not self.cast.aura or self.cast.aura <= C.preferred_aura):
+                return self.tracks.MUGGER_PATH[:]
             else:
+                magentaprint("Not going to do muggers. (Level %s, current aura %s, and preferred %s.)" %
+                             (C.level, self.cast.aura, C.preferred_aura))
                 return self.skip()
+        elif self.nextpath == 19:
+            return self.tracks.DWARVEN_FIELD_WORKERS_PATH[:]
+        elif self.nextpath == 21:
+            return self.tracks.MILL_WORKERS[:]
         elif self.nextpath == 23:
-            if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
-                return self.BANDITS2[:]
+            if self.cast.aura and self.cast.aura <= C.preferred_aura:
+                return self.tracks.BANDITS1[:]
             else:
                 return self.skip()
         elif self.nextpath == 25:
-            if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
-                return self.BANDITS3[:]
+            if self.cast.aura and self.cast.aura <= C.preferred_aura:
+                return self.tracks.BANDITS2[:]
             else:
                 return self.skip()
         elif self.nextpath == 27:
-            if self.cast.aura and self.cast.aura <= self.character.preferred_aura:
-                return self.BANDITS4[:]
+            if self.cast.aura and self.cast.aura <= C.preferred_aura:
+                return self.tracks.BANDITS3[:]
             else:
                 return self.skip()
         elif self.nextpath == 29:
-            return self.RANCHER_SENTRY[:]
+            if self.cast.aura and self.cast.aura <= C.preferred_aura:
+                return self.tracks.BANDITS4[:]
+            else:
+                return self.skip()
+        elif self.nextpath == 31:
+            return self.tracks.RANCHER_SENTRY[:]
         # elif self.nextpath == 23:
         #     return self.get_path_with_all_mobs('Olmer') # Doesn't fight - something about the bright wallposter I think...
-        elif self.nextpath == 31:
-            return self.get_path_to_and_from_mob("Brotain")
         elif self.nextpath == 33:
-            return self.get_path_to_and_from_mob("Aldo")
+            return self.get_path_to_and_from_mob("Brotain")
         elif self.nextpath == 35:
+            return self.get_path_to_and_from_mob("Aldo")
+        elif self.nextpath == 37:
             return self.get_path_to_and_from_mob("Jerrek") 
             # He gets fought occasionally but we should fight him before Tag
             # This can spend some time if he's not in the kill list
-        elif self.nextpath == 37:
-            return self.get_path_to_and_from_mob("Tag")
         elif self.nextpath == 39:
-            return self.get_path_to_and_from_mob("Olmer")
+            return self.get_path_to_and_from_mob("Tag")
         elif self.nextpath == 41:
+            return self.get_path_to_and_from_mob("Olmer")
+        elif self.nextpath == 43:
             return self.get_path_with_all_mobs('Dini Stonehammer')
             # Viladin
             # Douvan would be good but isn't on my map
             # Servant of the Night
             # Trent the Merchant
-        elif self.nextpath == 43:
-            return self.get_path_to_and_from_mob("sonneteer")
         elif self.nextpath == 45:
-            return self.get_path_with_all_mobs('Thereze')
+            return self.get_path_to_and_from_mob("sonneteer")
         elif self.nextpath == 47:
-            return self.get_path_with_all_mobs('Rancher Renstone')
+            return self.get_path_with_all_mobs('Thereze')
         elif self.nextpath == 49:
-            return self.get_path_with_all_mobs('artificer')
+            return self.get_path_with_all_mobs('Rancher Renstone')
         elif self.nextpath == 51:
+            return self.get_path_with_all_mobs('artificer')
+        elif self.nextpath == 53:
             return self.get_path_with_all_mobs('enchantress') 
             # Higher level but needs to be done right after artificer
             # Maybe she's too blue though
-        elif self.nextpath == 53:
-            return self.get_path_with_all_mobs("mine manager") # tough path
         elif self.nextpath == 55:
+            return self.get_path_with_all_mobs("mine manager") # tough path
+        elif self.nextpath == 57:
             return self.get_path_with_all_mobs('refinery supervisor')
             # tough path
             # oremaster steel collar (m) and (l), granite rods in keep list right now
@@ -430,81 +451,81 @@ class TrackGrindThread(GrindThread):
             # forge worker
             # steel collar
         # CHARACTER 13 / MOBS 9
-        elif self.nextpath == 57:
-            return self.get_path_with_all_mobs('Elder Barthrodue')
         elif self.nextpath == 59:
-            return self.MUGGER_PATH[:] # Clear the muggers so we don't run out of mana later
+            return self.get_path_with_all_mobs('Elder Barthrodue')
         elif self.nextpath == 61:
+            return self.tracks.MUGGER_PATH[:] # Clear the muggers so we don't run out of mana later
+        elif self.nextpath == 63:
             return self.get_path_with_all_mobs('director')
         # CHARACTER 14 / MOBS 10
-        elif self.nextpath == 63:
+        elif self.nextpath == 65:
             return self.get_path_with_all_mobs('Dame Brethil')
             # makeup kits don't sell well
-        elif self.nextpath == 65:
-            return self.get_path_with_all_mobs('Kelluran')
         elif self.nextpath == 67:
+            return self.get_path_with_all_mobs('Kelluran')
+        elif self.nextpath == 69:
             return self.get_path_with_all_mobs('Master of Ceremonies')
             # Remove silver knight if you don't want to fight him
             # Also there will be tourney organiser and other things on this path
             # He seems to have a long spawn time
-        elif self.nextpath == 69:
+        elif self.nextpath == 71:
             return self.get_path_with_all_mobs('war horse')
             # white knights on this path
-        elif self.nextpath == 71:
-            return self.FORT_PATH[:] # fort sergeant prefight
         elif self.nextpath == 73:
-            return self.get_path_with_all_mobs('Commander Rilmenson') # hastes
+            return self.FORT_PATH[:] # fort sergeant prefight
         elif self.nextpath == 75:
-            return self.get_path_with_all_mobs('Rimark') # This guy is like a guard, right?
+            return self.get_path_with_all_mobs('Commander Rilmenson') # hastes
         elif self.nextpath == 77:
+            return self.get_path_with_all_mobs('Rimark') # This guy is like a guard, right?
+        elif self.nextpath == 79:
             return self.get_path_with_all_mobs('dwarven blacksmith')
             # barbarian cook
             # shaman's assistant
         # CHARACTER 15 / MOBS 11
-        elif self.nextpath == 79:
-            return self.get_path_with_all_mobs('minstrel')
         elif self.nextpath == 81:
-            return self.get_path_with_all_mobs('Brotain')
+            return self.get_path_with_all_mobs('minstrel')
         elif self.nextpath == 83:
+            return self.get_path_with_all_mobs('Brotain')
+        elif self.nextpath == 85:
             # Pre-fights (sawmill people) can make this harder
             # Maybe do path -1
             return self.get_path_to_previous_node('Gregor')
-        elif self.nextpath == 85:
-            return self.get_path_with_all_mobs('Gregor')
         elif self.nextpath == 87:
-            return self.get_path_with_all_mobs('Bertram Dalram') # Longer respawn?
+            return self.get_path_with_all_mobs('Gregor')
         elif self.nextpath == 89:
+            return self.get_path_with_all_mobs('Bertram Dalram') # Longer respawn?
+        elif self.nextpath == 91:
             return self.get_specific_path_to_and_from_mob('brother', 0) # throwing stars
         # elif self.nextpath == 85:
         #     return self.get_specific_path_to_and_from_mob('brother', 1) # Didn't have a brother waiting there
         # CHARACTER 16 / MOBS 12
-        elif self.nextpath == 91:
+        elif self.nextpath == 93:
             return self.get_path_with_all_mobs('Horbuk')
         # elif self.nextpath == 89:
         #     return self.get_path_with_all_mobs('Horbuk') 
         #    Do twice in case a mine manager was there... hoping engage controls are high (?)
         #    Actually they got cleared in one pass, on the mine manager path, so never mind this double
-        elif self.nextpath == 93:
+        elif self.nextpath == 95:
             # Remember to check character level restriction
             return self.get_path_with_all_mobs('Tardan') # he got me to 0 mana somehow but didn't potion
             # He also made me run like a chicken at [1 HP 1 MP]... so let's wait for level 16
             # Did he have a +1 war hammer (1250 gold)
-        elif self.nextpath == 95:
+        elif self.nextpath == 97:
             # Prefight some dwarven travellers? Was 5 hp
             return self.get_path_with_all_mobs('Boris Ironfounder')
             # He is also in another path...
             # He does respawn though
-        elif self.nextpath == 97:
-            return self.get_path_to_previous_node('Hurn the Smith') # swordsman
         elif self.nextpath == 99:
-            return self.get_path_with_all_mobs('Hurn the Smith') # 600 exp, 202-290g, easy peasy
+            return self.get_path_to_previous_node('Hurn the Smith') # swordsman
         elif self.nextpath == 101:
+            return self.get_path_with_all_mobs('Hurn the Smith') # 600 exp, 202-290g, easy peasy
+        elif self.nextpath == 103:
             return self.get_path_with_all_mobs('Gorban')
             # Golden potion, but seems hard, could be rng
-        elif self.nextpath == 103:
-            return self.get_path_with_all_mobs('floor manager') # About the same as Tardan
         elif self.nextpath == 105:
-            return self.get_path_with_all_mobs('Shaldena the Red') # Burstflame might cause some characters problems
+            return self.get_path_with_all_mobs('floor manager') # About the same as Tardan
+        elif self.nextpath == 107:
+            return self.get_path_with_all_mobs('Shaldena the Red') # Burstflame might cause some characters problems, but she runs out of mana pretty fast
         elif self.nextpath == "XXX":
             # Watch out for mob targetting bug (ranch foreman hitting Rancher Plover!)
             return self.get_path_with_all_mobs('ranch foreman')
@@ -537,7 +558,7 @@ class TrackGrindThread(GrindThread):
         # Also I have a trackno print in heal_up as well as a trackno print here
         # So all integers do get printed
         # Right... return self.skip() 
-        return self.PATH_TO_SKIP_WITH[:]
+        return self.tracks.PATH_TO_SKIP_WITH[:]
 
     def get_path_to_previous_node(self, name):
         chapel_aid  = db.Area.Area.get_by_name("The Chapel of Healing").id
@@ -579,6 +600,7 @@ class TrackGrindThread(GrindThread):
         mob_aid = mob_locations[index_min].area.id
         magentaprint("TrackGrindThread get_path_to_and_from_mob chapel_aid {0} mob_aid {1}".format(chapel_aid,mob_aid))
         return self.mud_map.get_path(chapel_aid, mob_aid) + self.mud_map.get_path(mob_aid, chapel_aid)
+
     def get_path_with_all_mobs(self, name):
         chapel_aid = db.Area.Area.get_by_name("The Chapel of Healing").id
         P = self.path_through_areas(

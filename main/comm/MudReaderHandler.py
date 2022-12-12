@@ -75,7 +75,7 @@ class MudReaderHandler(object):
 #            M_obj = self.MUD_output_check("You glow with a (.+?) aura\.")
 #            if(M_obj):
 #                self.character.AURA = M_obj.group(1)
-#                self.character.AURA_SCALE = my_list_search(self.character.AURA_LIST, self.character.AURA)
+#                self.character.AURA_SCALE = my_list_search(self.character.AURA_LIST, self.character.aura)
 #                return True
 #            else:
 #                return False
