@@ -75,6 +75,11 @@ class LosHelper(object):
             self.telnetHandler = FakeTelnetHandler()
             # sys.argv.remove("-fake")
         else:
+            # if name and password are not given, prompt for them and add them to sys.argv
+            if len(sys.argv) < 2:
+                sys.argv.append(input("Enter your character name: "))
+            if len(sys.argv) < 3:
+                sys.argv.append(getpass.getpass("Enter your password: "))
             self.telnetHandler = TelnetHandler()
 
         self.do_login()
