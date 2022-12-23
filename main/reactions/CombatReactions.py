@@ -85,17 +85,17 @@ class CombatReactions(object):
     def report(self):
         C = self.character
         exp = C.TOTAL_EXPERIENCE
-        gold = C.TOTAL_GOLD
+        gold = C.GOLD
 
-        if not hasattr(C,'aura'):
-            magentaprint("CombatReactions.py: Please check aura first")
-            magentaprint("Apparently I broke 'report' when I moved 'aura' off of 'character' onto cast.")
-            magentaprint("Report could subscribe to the aura regex or have access to cast...")
-            magentaprint("[{} H {} M]: ".format(C.HEALTH, C.MANA))
-            return
+        # if not hasattr(C,'aura'):
+        #     magentaprint("CombatReactions.py: Please check aura first")
+        #     magentaprint("Apparently I broke 'report' when I moved 'aura' off of 'character' onto cast.")
+        #     magentaprint("Report could subscribe to the aura regex or have access to cast...")
+        #     magentaprint("[{} H {} M]: ".format(C.HEALTH, C.MANA))
+        #     return
 
-        aura = str(C.aura)
-        magentaprint("Current Aura: " + aura, False)
+        # aura = str(C.aura)
+        # magentaprint("Current Aura: " + aura, False)
         magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), False)
         exp = C.EXPERIENCE
         expm = str(calculate_vpm(exp))

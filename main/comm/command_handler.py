@@ -250,6 +250,7 @@ class CommandHandler(object):
                     magentaprint("CommandHandler executed " + str(ability))
                     ability.execute(arg1)
                 return
+        # TODO: sing d dustman doesn't update DanceOfTheCobra
 
         if user_input == 'ss':
             # Stops threads from abilities
@@ -417,10 +418,7 @@ class CommandHandler(object):
         elif re.match("(?i)experience", user_input):
             self.print_experience()
         elif re.match("(?i)gold", user_input):
-            #gold = self.character.GOLD  #Calculating GMP would require us to store gold differently
-            #gpm = str(misc_functions.calculate_vpm(gold))
-            #magentaprint("Gold this Session: " + str(gold) + " | Gold / MIN: " + gpm, False)
-            magentaprint(str(self.character.GOLD), False)
+            self.print_gold()
         elif re.match("(?i)kills", user_input):
             kills = self.character.MOBS_KILLED
             magentaprint("Kills this Session: " + str(kills), False)
@@ -437,8 +435,9 @@ class CommandHandler(object):
         elif re.match("(?i)mobs_joined_in", user_input):
             magentaprint(self.character.MOBS_JOINED_IN, False)
         elif re.match("(?i)aura", user_input):
-            magentaprint('cast.aura: ' + str(self.cast.aura.s if self.cast.aura else None))
+            magentaprint('cast.aura:                ' + str(self.cast.aura.s if self.cast.aura else None))
             magentaprint('character.preferred_aura: ' + str(self.character.preferred_aura))
+            self.cast.print_aura_timer()
         elif re.match("(?i)mobs_attacking", user_input):
             magentaprint(self.character.MOBS_ATTACKING, False)
         elif re.match("(?i)monster_kill_list", user_input):
@@ -989,3 +988,18 @@ class CommandHandler(object):
         # magentaprint("Gold rate: {} gold/hr; {} gold/min; {} gold/s.".format(round(x/t/3600), round(x/t/60), round(x/t)))
         # magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
         #magentaprint(str(exp), False)
+        gold = self.character.GOLD-self.character.START_GOLD
+        magentaprint("Gold this session: {} ".format(gold))
+        magentaprint("Gold rate: {} g/hr; {} g/min".format(round(gold/t*3600), round(gold/t*60)))
+
+    def print_gold(self):
+        gold = self.inventory.GOLD-self.character.START_GOLD
+        # gpm = str(misc_functions.calculate_vpm(gold))
+        # magentaprint("Gold this Session: " + str(gold) + " | Gold / MIN: " + gpm, False)
+        t = misc_functions.get_runtime_seconds()
+        magentaprint("Gold this session: {} ".format(gold))
+        magentaprint("Gold rate: {} g/hr; {} g/min".format(round(gold/t*3600), round(gold/t*60)))
+        # Report spending? Not so easy. Would need dB queries. 
+        # Would also need to figure out which thing was bought from the command, which isn't implemented.
+        # NOTE: this relies heavily on tip drop (sell and you_get are not happening)
+        # NOTE: There is "You now have XXX gold." (easier to use than you_get) (aha inventory has this)

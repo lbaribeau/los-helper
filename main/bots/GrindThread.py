@@ -61,8 +61,41 @@ class GrindThread(BotThread):
             return True
         elif re.match("dobuy.+?", exit_str):
             return self.buy_and_wield(exit_str)
+        elif exit_str == 'kill_guard':
+            # Since guards have multiple levels, I don't want them in the kill list, so we can do it this way
+            # if self.ready_for_combat() and 'guard' in str(self.character.mobs.list).split("' '"):
+            if self.ready_for_combat() and self.character.mobs.list.get('guard'):
+                self.engage_monster('guard')
+                self.engage_mobs_who_joined_in()
+                self.engage_any_attacking_mobs()
+            else:
+                magentaprint("Go hook: Did not fight guard.")
+            return True
+        elif exit_str == 'buy_potions':
+            return self.potion_shopping()
         else:
-            return super().do_go_hooks(exit_str)
+            return super().do_go_hooks(exit_str) # does areaid[\d] pathfinding
+
+    def potion_shopping(self):
+        buy = self.command_handler.buy
+
+        while self.inventory.count('misty potion') < 2 and not self.stopping:
+            buy.execute_and_wait('misty')
+            if buy.success:
+                self.inventory.add('misty potion')
+            else:
+                magentaprint("Error buying misty potions!")
+                return True
+
+        while self.inventory.count('glowing potion') < 1 and not self.stopping:
+            buy.execute_and_wait('glowing')
+            if buy.success:
+                self.inventory.add('glowing potion')
+            else:
+                magentaprint("Error buying glowing potion!")
+                return True
+
+        return True # Helps the go hook know to pop I think
 
     def buy_and_wield(self, exit_str):
         magentaprint("go hook found with: " + str(self.direction_list), False)
@@ -181,17 +214,16 @@ class GrindThread(BotThread):
     def print_bot_stats(self):
         self.command_handler.inventory.execute_and_wait()
         self.command_handler.process('experience')
-        self.command_handler.process('aura')
-        self.command_handler.cast.print_aura_timer()
+        # self.command_handler.process('aura')
+        # self.command_handler.cast.print_aura_timer()
         magentaprint("Last target was " + str(self.smartCombat.target))
         self.command_handler.process('trackno')
         self.command_handler.process('time')  
 
     def rest_and_check_aura(self):
         # This method is only efficient in a healing area
-        magentaprint("BotThread.rest_and_check_aura()")
+        magentaprint("GrindThread.rest_and_check_aura()")
        # self.command_handler.print_experience()
-
         self.print_bot_stats() # Display while resting
 
         if self.update_aura():
@@ -200,6 +232,11 @@ class GrindThread(BotThread):
             # Idea: postpone a bit if it would mean another mana tick 
             # (or better, take a free cast if it wouldn't mean another mana tick)
             self.aura_updated_hook()
+            # Ok resist the temptation to delay using the misty potion such that setting the timer is delayed
+            # Instead just increase the refresh rate
+            # Because there's no real difference between drinking the misty potion before or after resting
+            # Maybe consider starting the timer after resting though to slightly improve the aura timing system.
+            # ie. resting can take 10 minutes for some characters
 
         self.chapel_heal_up()
             # TODO: Keep track of when ticks are coming and how big they'll be, and avoid vigging
@@ -270,8 +307,6 @@ class GrindThread(BotThread):
 
         if self.stopping or self.character.HEALTH >= self.health_to_go:
             return
-
-
 
         self.do_heal_skills()
 
@@ -395,12 +430,25 @@ class GrindThread(BotThread):
     def update_aura(self):
         # if self.stopping or self.character.ACTIVELY_MAPPING or not Spells.showaura in self.character.spells:
         # if self.stopping or self.character.ACTIVELY_MAPPING or not any(s.startswith(Spells.showaura) for s in self.character.spells):
-        if self.stopping or self.character.ACTIVELY_MAPPING or Spells.showaura not in self.character.spells:
-            magentaprint("GrindThread.update_aura() returning false")
+        self.command_handler.process('aura')
+
+        if self.stopping or self.character.ACTIVELY_MAPPING or not self.cast.check_aura_timer():
             return False
 
-        self.cast.update_aura(self.character)
-        return self.cast.success # Could be no mana since spell fail gets spammed
+        if self.inventory.has('misty potion'):
+            # self.command_handler.use.execute_and_wait(self.inventory.get_first_reference('misty potion'))
+            self.command_handler.use.execute(self.inventory.get_first_reference('misty potion'))
+            self.command_handler.cast.clear()
+            self.command_handler.cast.wait_for_flag() # Prefer to matches the aura text? Should unset cast's flag first
+            return self.command_handler.use.success
+                # Cast will update the timer automatically
+                # return True
+
+        if Spells.showaura in self.character.spells:
+            self.cast.update_aura(self.character)
+            return self.cast.success # Could be no mana since spell fail gets spammed
+
+        return False
 
         # if self.character.level < 3 or not \
         #         BotThread.can_use_timed_ability(self.character.AURA_LAST_UPDATE, 480):

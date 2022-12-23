@@ -291,7 +291,7 @@ class SmartCombat(CombatObject):
                 cast.wait_until_ready()
                 if self.stopping:
                     break
-                elif not self.casting or (self.mob_charmed and len(C.mobs.attacking) > 1):
+                elif not self.casting or (self.mob_charmed and len(C.mobs.attacking) <= 1):
                     time.sleep(min(0.2, kill.wait_time()))
                     # time.sleep(min(0.2, kill.wait_time() + 0.05))
                     # mob_charmed should check if there are other mobs fighting and switch to them (bot-level logic)
@@ -346,6 +346,7 @@ class SmartCombat(CombatObject):
                 # magentaprint("SmartCombat finished using ability.")
                 # So if we hit with Dance of the Cobra, we should save mana...
                 if a.success and isinstance(a, DanceOfTheCobra):
+                    magentaprint("SmartCombat saw mob charmed.")
                     self.mob_charmed = True
                 elif a.error:
                     self.error = True

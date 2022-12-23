@@ -25,7 +25,9 @@ class Mobs(BotReactionWithFlag):
         R.mob_aggro,
         R.mob_died,
         R.mob_defeated,
-        R.mob_fled
+        R.mob_fled,
+        R.blocked_path
+        # TODO: bandit sentry returns to his post... he still shows up in look, but if you don't look, you can't target him for a sec
     ]
 
     def __init__(self):
@@ -42,57 +44,66 @@ class Mobs(BotReactionWithFlag):
         self.chase = ''
         self.chase_exit = ''
 
-    def notify(self, r, m_obj):
+    def notify(self, r, M):
         # We'll let Cartography handle the initialization of monster_list with the area regex.
         #magentaprint("mobs.list " + str(self.list) + "; notification from regex: " + str(r[0:min(10, len(r))]))
         if r in R.mob_arrived:
-            self.list.add_from_list(self.read_mobs(m_obj.group('mobs')))
+            self.list.add_from_list(self.read_mobs(M.group('mobs')))
+            magentaprint("Mobs.list (added): " + str(self.list.list)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
         elif r in R.mob_died:
-            magentaprint("Mobs noticed " + str(self.read_match(m_obj)) + " died, it's in the self.list: " + str(self.read_match(m_obj) in self.list))
-            if self.read_match(m_obj) in self.list:
-                self.list.remove(self.read_match(m_obj))
-            magentaprint("Mobs removed it from the list, now is it in attacking: {0}".format(self.read_match(m_obj) in self.attacking))
-            if self.read_match(m_obj) in self.attacking:
-                self.attacking.remove(self.read_match(m_obj))  
+            mob_name = self.read_match(M)
+            magentaprint("Mobs noticed " + mob_name + " died, it's in the self.list: " + str(mob_name in self.list))
+            if mob_name in self.list:
+                self.list.remove(mob_name)
+            magentaprint("Mobs removed it from the list, now is it in attacking: {0}".format(mob_name in self.attacking))
+            if mob_name in self.attacking:
+                self.attacking.remove(mob_name)  
                 # TODO: if a mob is one-shot, it's not removed because the You attacked notify is after
             magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(round(self.mean(self.damage), 1)) + ', stdev=' + str(round(self.stdev(self.damage), 1)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/max(len(self.damage),1), 2)))
             # m = sum(self.damage) / max(len(self.damage), 1)
             # s = sum(self.damage - [m]*len(self.damage))
             # magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(stats.mean(self.damage)) + ', stdev=' + str(stats.stdev(self.damage)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/len(self.damage), 2)))
         elif r in R.mob_fled:  # Leave mobs.attacking populated. (?)  might help to chase mobs that don't block you (chase currently relies on that.)
-            if self.read_match(m_obj) in self.list:
-                self.list.remove(self.read_match(m_obj))
-            self.chase = self.read_match(m_obj)
-            self.chase_exit = m_obj.group('exit')
-        elif (r in R.mob_wandered or r in R.mob_left) and self.read_match(m_obj) in self.list:
-            self.list.remove(self.read_match(m_obj))
+            if self.read_match(M) in self.list:
+                self.list.remove(self.read_match(M))
+            self.chase = self.read_match(M)
+            self.chase_exit = M.group('exit')
+        elif (r in R.mob_wandered or r in R.mob_left) and self.read_match(M) in self.list:
+            self.list.remove(self.read_match(M))
         elif r in R.mob_joined1 or r in R.mob_joined2:
             magentaprint("Mobs.notify mob joined in {}".format(r))
-            self.attacking.append(self.read_match(m_obj))
+            self.attacking.append(self.read_match(M))
         elif r in R.mob_attacked:
-            # c = self.attacking.count(m_obj.group('mob').strip())
+            # c = self.attacking.count(M.group('mob').strip())
             # if c == 0:
-            #     self.attacking.append(m_obj.group('mob'))
-            # # Commenting incorrect code
+            #     self.attacking.append(M.group('mob'))
             # # else:
-            # #     if m_obj.group('nth'):
-            # #         nth = int(m_obj.group('nth')[0:len(m_obj.group('nth'))-2])
-            # #         self.attacking.extend([m_obj.group('mob')] * max(nth - c, 0))
-            #c = self.attacking.count(self.read_match(m_obj))
-            if self.attacking.count(self.read_match(m_obj)) == 0:
-                self.attacking.append(self.read_match(m_obj))
+            # #     if M.group('nth'):
+            # #         nth = int(M.group('nth')[0:len(M.group('nth'))-2])
+            # #         self.attacking.extend([M.group('mob')] * max(nth - c, 0))
+            #c = self.attacking.count(self.read_match(M))
+            if self.attacking.count(self.read_match(M)) == 0:
+                self.attacking.append(self.read_match(M))
             # TODO: remember if 1st and 2nd mobs are attacking and ensure attacking has length 2 if necessary
-            if 'd' in m_obj.groupdict().keys():
-                self.damage.append(int(m_obj.group('d')))
+            if 'd' in M.groupdict().keys():
+                self.damage.append(int(M.group('d')))
             else:
                 self.damage.append(0)
         elif r in R.you_attack or r in R.mob_aggro:
             self.damage = []
             magentaprint("Mobs.notify mob aggro {}".format(r))
-            self.attacking.append(self.read_match(m_obj))
+            self.attacking.append(self.read_match(M))
+        elif r in R.blocked_path:
+            # magentaprint("Mobs got {}".format(M.group('whole_mob_name')))
+            mob_name = self.read_match(M)
+            # magentaprint("Mobs got {}".format(mob_name))
+            if mob_name not in self.list:
+                self.list.add(mob_name) # Have bandit sentry in the list for when the bandit arrives so target can be calculated properly
+            magentaprint("Mobs list is now {}".format(self.list.list))
+            # TODO: "The 2nd XXX blocks your path." (should ensure to have two XXX in the list then)
         if self.attacking:
-            magentaprint("mobs.attacking " + str(self.attacking))
-        super().notify(r, m_obj)
+            magentaprint("Mobs.notify, mobs.attacking " + str(self.attacking))
+        super().notify(r, M)
 
     def parse_mob_string(self, s):
         # You see (two kobold children, a dustman).

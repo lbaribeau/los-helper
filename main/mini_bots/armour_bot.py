@@ -283,6 +283,7 @@ class ArmourBot(MiniBot):
                 slot = slot.title()
                 # items = AreaStoreItem.get_by_item_type_and_level_max(size, slot, level)
                 items = AreaStoreItem.get_buyable_armour(size, slot, level)
+                magentaprint("Called get_buyable_armour(size={},slot={},level={}), got {}.".format(size, slot, level, len(items)))
                 #magentaprint("determine_shopping_list() items: " + str(items))
                 # if items:
                 #     if len(items) > 0:
@@ -307,7 +308,7 @@ class ArmourBot(MiniBot):
         #magentaprint("Armour bot shopping list " + str(desired_items))
         # magentaprint("Armour bot shopping list: \n" + str([asi.item.name for asi in desired_items]))
         magentaprint("ARMOUR BOT SHOPPING LIST: [\n" + "\n".join("    {} {}".format(asi.item, asi.item.name) for asi in desired_items)+']')
-        magentaprint("Size: {}; Level: {}".format(self.get_size(self.char.info.race), self.get_armour_level(self.char.info.level)))
+        magentaprint("Race: {}; Size: {}; Level: {}".format(self.char.info.race, self.get_size(self.char.info.race), self.get_armour_level(self.char.info.level)))
         return desired_items
         # TODO: One issue: shields aren't sized - so queries that use any size need to return the shield, whose type may be
         # the generic armour type.   SELECT "t1"."id", "t1"."area_id", "t1"."item_id" FROM "areastoreitem" AS t1 INNER JOIN "item"
@@ -348,9 +349,9 @@ class ArmourBot(MiniBot):
             return 1
 
     def get_size(self, race):
-        if race.lower() in ['hobbit','halfling','half-elf','gnome','dark-elf','dwarf']:
+        if race.lower() in ['hobbit','halfling','gnome','dark-elf','dwarf']:
             return 's-armor'
-        elif race.lower() in ['human','half-orc','elf']:
+        elif race.lower() in ['human','half-elf','half-orc','elf']:
             return 'm-armor'
         elif race.lower() in ['half-giant']:
             return 'l-armor'

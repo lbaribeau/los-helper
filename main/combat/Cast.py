@@ -20,7 +20,7 @@ class Cast(SimpleCombatObject):
 
     aura = None
     aura_timer = 0
-    aura_refresh = 300
+    aura_refresh = 480 # 8 minutes
 
     vig_amount = 2
     mend_amount = 5
@@ -114,7 +114,8 @@ class Cast(SimpleCombatObject):
 
         self.print_aura_timer()
         # if time() > (self.aura_timer + self.aura_refresh):
-        if time.time() > self.aura_timer + self.aura_refresh:
+        # if time.time() > self.aura_timer + self.aura_refresh:
+        if self.check_aura_timer():
             self.spam_spell(character, Spells.showaura)
             # self.cast('show')
             # self.wait_for_flag()
@@ -124,8 +125,13 @@ class Cast(SimpleCombatObject):
             # if self.success:
             #     self.aura_timer = time.time()
 
+    def check_aura_timer(self):
+        return time.time() > self.aura_timer + self.aura_refresh
+        # There should be another object for aura stuff
+
     def print_aura_timer(self):
-        magentaprint("Last aura update %d seconds ago. Refresh: %s" % (round(time.time() - self.aura_timer), str(time.time() > self.aura_timer + self.aura_refresh)))
+        # magentaprint("Last aura update %d seconds ago. Refresh: %s" % (round(time.time() - self.aura_timer), str(time.time() > self.aura_timer + self.aura_refresh)))
+        magentaprint("Cast: Intending next aura update in %d seconds." % round(self.aura_timer + self.aura_refresh - time.time()))
 
     def spam_spell(self, character, spell, target=None):  # Maybe a prompt object would be better than character
         # Spam until success

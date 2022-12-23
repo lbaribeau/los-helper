@@ -69,6 +69,10 @@ class MudListenerThread(threading.Thread):
                 except EOFError as e:
                     magentaprint("MudListenerThread is exiting because server sent EOF; error says: \""+str(e)+"\"")
                     break
+                except AttributeError as e:
+                    magentaprint("Lag spikes happen like this (new_bit has no attribute decode)")
+                    print("\a")
+                    raise e
 
                 #magentaprint("MudListener: got a fragment size %d time %.1f last chars %s." % (len(fragment), round(time.time()-self.Character_inst.START_TIME, 1), fragment[len(fragment)-8:]))
 

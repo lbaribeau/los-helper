@@ -17,3 +17,10 @@ class TestMobTargetDeterminator(unittest.TestCase):
         result = mtd.on_mob_departure('s 2', 'shopper', ReferencingList(['spiv']))
         print('new result: ' + str(result))
         self.assertEqual('s', result)
+
+    def test_bandit_arrives_vs_bandit_sentry(self):
+        mtd = MobTargetDeterminator()
+        #                     (self, old_target_reference, arrived_mobs, mob_list)
+        result = mtd.on_mob_arrival('bandit', ['bandit'], ReferencingList(['bandit','bandit sentry']))
+        print('Should hit the bandit sentry: ' + str(result))
+        self.assertTrue(result == 'bandit 2' or result == 'sentry')

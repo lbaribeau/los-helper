@@ -187,7 +187,9 @@ class MainhandWeaponBot(MiniBot):
                     # Maybe easier to just spam wield on our entire inventory
             elif self.has_broken_weapon_in_inventory():
                 repair = self.command_handler.repair
-                self.travel_bot.go_to_nearest_smithy(grinding=False) # Maybe don't do this part for drow saber
+                self.travel_bot.go_to_nearest_smithy(grinding=False) 
+                # Maybe don't do this part for drow saber?
+                # Instead of implementing dB knowledge of can't repair, we'll react to can't repair by going to the tip and dropping (slow tho)
                 weapon = self.get_broken_weapon_ref()
                 repair.execute_and_wait(weapon)
                 if repair.success or repair.failure:
@@ -204,12 +206,16 @@ class MainhandWeaponBot(MiniBot):
                     raise
                 elif repair.result in R.cant_repair:
                     # self.command_handler.drop.execute_and_wait(self.inventory.get('drow sabre'))
+                    # Go to tip without fighting anything? Get the first reference after going there? I think so
+                    # Assume it's the first one at that point (any pickups will be added to the end)
+                    self.travel_bot.go_to_nearest_tip()
                     self.command_handler.drop.execute_and_wait(weapon) 
                     # Go to tip first? Always drop drow sabre in tip?
                     # Don't try to repair drow saber?
                     # That would require a database field... the easiest way is to react here
                     # Maybe don't use drow saber?
-                    self.check_weapons() #  has_broken_weapon_in_inventory should be false now
+                    self.check_weapons()
+                    # Dropping it should trigger go_buy_default_weapon since has_broken_weapon_in_inventory will return false
                 else:
                     magentaprint("Check weapons repairing problem")
                     raise
@@ -239,9 +245,9 @@ class MainhandWeaponBot(MiniBot):
                     magentaprint("CAUTION: Check weapons saw no gold to repair.")
                     return
                 elif repair.result in R.cant_repair:
+                    self.travel_bot.go_to_nearest_tip()
                     self.command_handler.drop.execute_and_wait(weapon) 
                     self.check_weapons()
-                    # Dropping it should trigger go_buy_default_weapon since has_broken_weapon_in_inventory will be false
                 else:
                     magentaprint("Check weapons repairing problem")
                     raise

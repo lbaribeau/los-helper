@@ -34,6 +34,7 @@ class Cartography(BotReactionWithFlag):
             R.please_wait,
             R.class_prohibited, 
             R.level_too_low,
+            R.level_too_high,
             R.not_invited,      
             R.not_open_during_day, 
             R.not_open_during_night,
@@ -82,16 +83,17 @@ class Cartography(BotReactionWithFlag):
             # This one is pretty problematic... as it should never happen.
             # Means we're off course.
             # (Erhm - never say never, this triggers all the time)
+            # I think it triggers in regular play
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
             self.set_area_exit_as_unusable(regex)  # TODO: Seems a little harsh... 
             if self.character.TRYING_TO_MOVE:
                 magentaprint("Cartography: unsuccessful go (can't go that way): " + str(self.character.LAST_DIRECTION))
                 self.character.TRYING_TO_MOVE = False
-        elif regex in R.class_prohibited      + R.level_too_low    + R.in_tune  + \
-                      R.not_open_during_day   + R.no_items_allowed + R.locked   + \
-                      R.not_open_during_night + R.not_authorized   + R.no_right + \
-                      R.cannot_force          + R.not_invited      + R.washroom:
+        elif regex in R.class_prohibited      + R.level_too_low    + R.level_too_high + \
+                      R.not_open_during_day   + R.no_items_allowed + R.locked   +       \
+                      R.not_open_during_night + R.not_authorized   + R.no_right +       \
+                      R.cannot_force          + R.not_invited      + R.washroom + R.in_tune:
             self.set_area_exit_as_unusable(M.group(0))
             self.character.SUCCESSFUL_GO = False
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
@@ -146,7 +148,7 @@ class Cartography(BotReactionWithFlag):
         super().notify(regex, M) # threading.Event
 
     def too_dark(self, regex, M):
-        magentaprint("Cartography - too dark")
+        magentaprint("Cartography receiving too_dark notification")
         C = self.character
         if C.AREA_ID is not None:
             guessed_area = self.guess_location(C.AREA_ID, C.LAST_DIRECTION)

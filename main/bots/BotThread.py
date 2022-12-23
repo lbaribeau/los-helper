@@ -70,9 +70,9 @@ class BotThread(threading.Thread):
         self.do_run_startup()
 
         while not self.stopping:
-            self.do_pre_go_actions()
             self.direction_list = self.decide_where_to_go()
             magentaprint('BotThread.run: decide_where_to_go returned ' + str(self.direction_list))
+            self.do_pre_go_actions()
 
             while self.direction_list and not self.stopping:
                 magentaprint("BotThread has direciton list")
@@ -226,7 +226,8 @@ class BotThread(threading.Thread):
         #     self.check_armour()
 
     def in_chapel(self):
-        magentaprint("BotThread.in_chapel(): MUD_AREA is " + str(self.character.MUD_AREA))
+        # magentaprint("BotThread.in_chapel(): MUD_AREA is " + str(self.character.MUD_AREA))
+        # magentaprint("BotThread.in_chapel(): MUD_AREA.area is " + str(self.character.MUD_AREA.area))
         return self.character.AREA_ID == 2
         # return self.character.MUD_AREA.is_restorative
 

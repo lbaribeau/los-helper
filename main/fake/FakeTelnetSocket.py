@@ -25,6 +25,7 @@ class FakeTelnetSocket(object):
         self.stablehand        = Stablehand(self.char, self.socket_output)
         self.barbarian_warrior = BarbarianWarrior(self.char, self.socket_output)
         self.tardan            = Tardan(self.char, self.socket_output)
+        self.bandit_sentry     = BanditSentry(self.char, self.socket_output)
 
     def initialize_socket_output(self, character_name):
         self.char.name = character_name
@@ -41,7 +42,8 @@ class FakeTelnetSocket(object):
             # 'militia soldier', # potting
             self.stablehand.name,
             self.tabby_cat.name,
-            self.tardan.name
+            self.tardan.name,
+            self.bandit_sentry.name
         ]
         self.current_item_list = [
             'white potion'
@@ -412,7 +414,7 @@ class FakeTelnetSocket(object):
         self.socket_output.append(lost_string)
 
     def mob_combat(self, mob, spell=None):
-        mob = self.get_mob_name(mob)
+        mob = self.get_mob_name(mob) # mob is now mob.name
         if mob:
             # mob = self.current_monster_list.index(startswith_boolean_list)
             # mob = self.current_monster_list[startswith_boolean_list.index(1)]
@@ -511,6 +513,10 @@ class FakeTelnetSocket(object):
                     if self.tardan.name in self.current_monster_list:
                         self.current_monster_list.remove(self.tardan.name)
                         self.current_item_list.append('chain mail armour')
+            elif mob == 'bandit sentry':
+                if self.bandit_sentry.do_combat():
+                    if self.bandit_sentry.name in self.current_monster_list:
+                        self.current_monster_list.remove(self.bandit_sentry.name)
             # self.mobflee(mob, str(self.current_mud_area.area_exits[0].exit_type.name))
             else:
                 self.rng = (self.rng + 1) % 3
@@ -532,6 +538,7 @@ class FakeTelnetSocket(object):
         # list can be a mob list of an exit list for example        
         target_split = target.split(' ')
         target_word = target_split[0]
+        # print("alist is " + str(alist))
 
         if len(target_split) > 1 and re.match('\d+', target_split[1]):
             no = int(target_split[1])
@@ -540,9 +547,10 @@ class FakeTelnetSocket(object):
 
         for full_mob in alist:
             m_split = full_mob.split(' ')
-            if any([w.startswith(target_word) for w in m_split]):
+            if any([w.lower().startswith(target_word.lower()) for w in m_split]):
                 no = no-1
                 if no == 0:
+                    print("FakeTelnetSocket.get_full_name_of_target got " + full_mob)
                     return full_mob
         return None
 

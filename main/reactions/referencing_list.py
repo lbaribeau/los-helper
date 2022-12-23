@@ -5,11 +5,15 @@ from reactions.game_object import GameObject
 # from db.GenericMudObject import GenericMudObject
 
 class ReferencingList(object):
-    # This is a structure that should help with any set of objects the way the mud server deals with them:
-    #  - inventory, mob list, equipment, shop list...
-    # these all have similar "word n" object targeting mechanisms, ie. ring 5.
-
+    # This is for "word n" object targeting mechanisms, ie. "ring 5"
+    # - Inventory (ie. dropping or selling the proper item), mobs to attack, equipment, buying the proper item...
+    # This game has a system of targeting that the mud server expects
+    # This object can be inherited by item or mob structures to implement this targetting
     # We may need MobList and/or ItemList to inherit this to provide specific processes
+    # Note: GameObject is a parent to mobs and items
+    # (Not sure why it's in reactions though)
+    # A "ref" or "reference" is something like "bandit 2" (word number pair)
+    # "bandit sentry" isn't a valid reference because it's two words, and the server would ignore the 2nd word
 
     def __init__(self, initializer=None):
         if not initializer:
@@ -60,12 +64,30 @@ class ReferencingList(object):
         # self.list.append(FakeItem(item))
         # self.list.sort()  # We want to keep broken items sorted properly by inserting manually
         # self.list.append(obj)
+        # Ummm does it get ['bandit','bandit sentry']?
         self.list = sorted(self.list + [obj]) # Ehhh do we really want to sort here
+
+    def append(self, new_entry):
+        self.list = sorted(self.list + [new_entry])
+
+    def add_many(self, name, qty):
+        for i in range(0,qty):
+            self.add(name)
+            # ... the easy way
 
     def add_from_list(self, list):
         # Could be made more efficient by separating sorting from obj/string managing in add()
         for x in list:
             self.add(x)
+
+    # def extend(self, new_entries):
+    #     # new_entries_sorted = sorted(new_entries)
+    #     # for e in new_entries_sorted:
+    #     self.list = sorted(self.list + new_entries)
+
+    def count(self, obj):
+        return self.list.count(obj)
+        # return self.list.count(GenericMudObject(string))
 
     def remove(self, obj):
         magentaprint("ReferencingList remove: " + str(obj) + ", length is " + str(len(self.list)))
@@ -89,6 +111,12 @@ class ReferencingList(object):
         for x in list:
             self.remove(x)
 
+    def remove_all(self, name):
+        self.list = [x for x in self.list if x.name != name]
+
+    def reset(self):
+        self.list = []      
+
     def set_usable(self, ref):
         magentaprint("ReferencingList set_usable on {0} ({1})".format(ref, self.get(ref)))
         self.get(ref).usable = True
@@ -100,6 +128,9 @@ class ReferencingList(object):
     def set_unusable(self, ref):
         self.unset_usable(ref)
 
+    def sort(self):
+        self.list.sort()
+
     def has(self, string):
         for i in self.list:
             # magentaprint("Inventory.has checking i.name (%s) against %s" % (i.name, string))
@@ -110,55 +141,10 @@ class ReferencingList(object):
         # This prints a ton since things have to check for things
         # ie. checking if any potions are in the inventory
         return False
-
-        return any(x.name == string for x in self.list)
-
-    def remove_all(self, name):
-        self.list = [x for x in self.list if x.name != name]
-
-    def add_many(self, name, qty):
-        for i in range(0,qty):
-            self.add(name)
-            # ... the easy way
-
-    def count(self, obj):
-        return self.list.count(obj)
-        # return self.list.count(GenericMudObject(string))
-
-    def __len__(self):
-        return len(self.list)
-
-    def to_string(self):
-        # #return str(self.list)
-        # d=self.to_dict() # key is name, value is count
-        # magentaprint(str(['\t{0} {1}\n'.format(d[n], n) for n in d.keys()]))
-        # magentaprint("Check 1st loop iteration.")
-        # #magentaprint('\t{0} {1}\n'.format(d[0],0))
-        # magentaprint(str(d.keys()))
-        # #magentaprint(str(['\t{0} {1}\n'.format(d[0],0)]))
-        # #magentaprint((sum(['\t{0} {1}\n'.format(d[0],0)]))
-        # # return '{\n'+\
-        # #     sum(['\t{0} {1}\n'.format(d[n], n) for n in d.keys()])+\
-        # # '}'
-        # # (sum isn't concatenating, I think it's converting the strings to ints and summing)
-        # magentaprint('{\n'+''.join(['\t{0} {1}\n'.format(d[n],n) for n in d.keys()])+'}')
-        # return '{\n'+''.join(['\t{0} {1}\n'.format(d[n],n) for n in d.keys()])+'}'
-        # #d[n].count
-        # #lambda 
-        #return '{\n'+''.join(['\t{0} {1}\n'.format(d[n],n) for n in d.keys() for d in [self.to_dict()]])+'}'
-        d=self.to_dict()
-        return '{\n'+''.join(['\t{0} {1}\n'.format(d[name],name) for name in d.keys()])+'}'
-
-    def __str__(self):
-        return self.to_string()
-
-    def __repr__(self):
-        return self.to_string()
-
-    def sort(self):
-        self.list.sort()
+        # return any(x.name == string for x in self.list)
 
     def index(self, ref):
+        """ Locates the object in self.list and gives an integer index """
         # magentaprint("RefList.index() ref: " + ref)
         if not ref:
             magentaprint("Warning: ReferencingList.index called with None.")
@@ -190,7 +176,7 @@ class ReferencingList(object):
         i = self.index(ref)
         # if i: # This would be false for i==0, we want i != None
         if i == None:
-            magentaprint("ReferencingList.get('{}'') found nothing.".format(ref))
+            magentaprint("ReferencingList.get('{}') found nothing.".format(ref))
         else:
             # magentaprint("Inventory list: " + str(self.list))
             # magentaprint("Inventory.get() returning " + str(self.list[i]))
@@ -378,22 +364,36 @@ class ReferencingList(object):
             d[name] = self.count(name)
         return d
 
+    def to_string(self):
+        # #return str(self.list)
+        # d=self.to_dict() # key is name, value is count
+        # magentaprint(str(['\t{0} {1}\n'.format(d[n], n) for n in d.keys()]))
+        # magentaprint("Check 1st loop iteration.")
+        # #magentaprint('\t{0} {1}\n'.format(d[0],0))
+        # magentaprint(str(d.keys()))
+        # #magentaprint(str(['\t{0} {1}\n'.format(d[0],0)]))
+        # #magentaprint((sum(['\t{0} {1}\n'.format(d[0],0)]))
+        # # return '{\n'+\
+        # #     sum(['\t{0} {1}\n'.format(d[n], n) for n in d.keys()])+\
+        # # '}'
+        # # (sum isn't concatenating, I think it's converting the strings to ints and summing)
+        # magentaprint('{\n'+''.join(['\t{0} {1}\n'.format(d[n],n) for n in d.keys()])+'}')
+        # return '{\n'+''.join(['\t{0} {1}\n'.format(d[n],n) for n in d.keys()])+'}'
+        # #d[n].count
+        # #lambda 
+        #return '{\n'+''.join(['\t{0} {1}\n'.format(d[n],n) for n in d.keys() for d in [self.to_dict()]])+'}'
+        d=self.to_dict()
+        return '{\n'+''.join(['\t{0} {1}\n'.format(d[name],name) for name in d.keys()])+'}'
+
+    def __len__(self):
+        return len(self.list)
+    def __str__(self):
+        return self.to_string()
     # def __str__(self):
-    #     return str(self.to_dict)
-
-    # def extend(self, new_entries):
-    #     # new_entries_sorted = sorted(new_entries)
-    #     # for e in new_entries_sorted:
-    #     self.list = sorted(self.list + new_entries)
-
+    #     return str(self.to_dict)   
+    def __repr__(self):
+        return self.to_string()
     def __contains__(self, item):
         return item in self.list
-
-    def append(self, new_entry):
-        self.list = sorted(self.list + [new_entry])
-
-    def reset(self):
-        self.list = []
-
     def __iter__(self):
         return iter(self.list)

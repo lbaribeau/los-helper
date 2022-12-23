@@ -204,7 +204,8 @@ class Command(SimpleCommand):
             #     self.result = 'Please wait ' + str(self.please_wait_time)
             #     self.__class__.timer = time.time() + self.please_wait_time
 
-            magentaprint(str(self) + " Command.notify_please_wait(), please_wait_time is " + str(self.please_wait_time) + ", self.wait_time is " + str(round(self.wait_time(), 1)))
+            # magentaprint(str(self) + " Command.notify_please_wait(), please_wait_time is " + str(self.please_wait_time) + ", self.wait_time is " + str(round(self.wait_time(), 1)))
+            magentaprint("Command {} notify_please_wait() with {}, wait time was {}. ".format(self.__class__.__name__, self.please_wait_time, round(self.wait_time(), 1)))
 
             # if not self.__class__.timer or (self.__class__.timer and abs(self.please_wait_time - self.wait_time()) < 2):
             # if not self.__class__.timer or (self.__class__.timer and abs(self.please_wait_time - self.wait_time()) < 2):
@@ -220,7 +221,7 @@ class Command(SimpleCommand):
                 # We get false positives on this because the waiter flag is not a good indication that Please Wait belongs to us.
                 # If we were careful about when it gets unset (when super().notify() is called,) we could potentially use that trick
                 # Clipping with the cooldowns helps a bit.
-                magentaprint("Set wait time to " + str(self.wait_time()) + ', self: ' + str(self))
+                magentaprint("Command {} set wait time to {}".format(self.__class__.__name__, round(self.wait_time(), 0)))
 
     # @classmethod
     def clear_timer(self):

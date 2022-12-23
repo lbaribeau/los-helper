@@ -132,6 +132,28 @@ class Tardan(FakeMob):
             'You gain 560 experience.\n\r'                                          +\
             'Tardan was carrying: 99 gold coins, some chain mail armour.\n\r')
 
+class BanditSentry(FakeMob):
+    def __init__(self, fake_character, socket):
+        super().__init__(fake_character, socket)
+        self.name = 'bandit sentry'
+    def sub_combat(self, rng):
+        if rng == 1:
+            # self.socket_output.append('I am going to break your armour and then drop some of the same.')
+            self.socket_output.append('[%s H %s M]: %s throws a wild punch at you, but it misses.\n\r' % (str(self.char.hp), str(self.char.mp), str(self.name)))
+        if rng == 2:
+            self.socket_output.append('[%s H %s M]: %s throws a wild punch at you, but it misses.\n\r' % (str(self.char.hp), str(self.char.mp), str(self.name)))
+            self.socket_output.append('[%s H %s M]: ' % (self.char.hp, self.char.mp))
+            self.socket_output.append('A bandit just arrived.\n\rThe bandit attacks you.\n\rThe bandit sentry punches you for 1 damage.\n\r')
+        if rng == 3:
+            self.socket_output.append('[%s H %s M]: %s throws a wild punch at you, but it misses.\n\r' % (str(self.char.hp), str(self.char.mp), str(self.name)))
+    def mobdead(self):
+        self.socket_output.append(''                                                +\
+            'You heave your maul hammer at the bandit sentry, smashing it for 19 damage.\n\r' +\
+            'Your attack overwhelms the bandit sentry and it collapses!\n\r'                   +\
+            'Your enemy, the bandit sentry has been defeated.\n\r'                             +\
+            'You gain 50 experience.\n\r'                                          +\
+            'The bandit sentry was carrying: 20 gold coins, a horn bow.\n\r')
+
 # class Spiv(FakeMob):
 #     def __init__(self, fake_character, socket):
 #         super().__init__(fake_character, socket)

@@ -73,6 +73,7 @@ def parse_item_names(item_string_list):
         # One platinum coin comes in as "platinum coins" 
         # (without a quantifier, so the preceding space got stripped).
         # It's "1 gold coins" so maybe not all the cases are necessary (kobold sentry)
+        # TODO: update character.GOLD - could have it subscribe to you_get
 
         if not any(item.startswith(s) for s in singles + numbers):
             return_list.append(item)  # ie 'maul hammer'
@@ -189,7 +190,8 @@ class Inventory(SimpleCommand, ReferencingList):
     command = 'i'
     keep_list = [
         # 'large bag', # kobolds
-        'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
+        'large sack', 'black bag',
+        'silver chalice', 'steel bottle', 'glowing potion', 'milky potion', 'misty potion',
         'small flask', 'large restorative', 'scarlet potion', #'tree root', # kobold priest
         #'white potion', 'small restorative', 'chicken soup',
         'Elixir of Morinva', 'granite potion', 'philtre of perception', 'philtre of health',
@@ -651,7 +653,8 @@ class Inventory(SimpleCommand, ReferencingList):
         items = parse_item_list(item_string)  # This is overloaded for "hammer" and "a hammer"
         for i in items:
             # magentaprint("Inventory adding %s" % str(i))
-            super().add(i)  # Turn it into a MudItem?
+            super().add(i)  
+            # Note: parse_item_list constructed the items (unexpected because that's not what parse means)
 
     def add_broken(self, item_string):
         items = parse_item_list(item_string)

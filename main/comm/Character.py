@@ -44,7 +44,7 @@ class Character(object):
         self.EXPERIENCE       = 0
         self.GOLD             = 0
         self.TOTAL_EXPERIENCE = 0
-        self.TOTAL_GOLD       = 0
+        # self.TOTAL_GOLD       = 0
 
         self.HAS_BUFF_ITEMS = False # Now there's an Inventory object
         self.HAS_RESTORE_ITEMS = False
@@ -126,6 +126,7 @@ class Character(object):
             self.HEALTH_TO_HEAL = 0.75 * self.info.maxHP  # We can crank this back up when we fight stronger mobs
 
         self.hp_tick = floor((self.info.con-1)/3)  # +3 in chapel
+        self.START_GOLD = self.GOLD = self.info.gold
 
         # self.ARMOR_SLOTS = self._class.ARMOR_SLOTS
         # self.WEAPON_SLOTS = self._class.WEAPON_SLOTS
@@ -283,6 +284,7 @@ class Character(object):
         'Old Man James', 'dwarven traveller', 'Goourd', # large sack
         'tourney organiser', 'Greenbough the Dryad', 
         #'sentry' stand in pairs unfortunately...
+        # weaker amethyst town guards
     ]
     lvl6_red_monsters = [ #1574 for gnoll camp
         'gnoll sentry', 'bandit swordsman', # silver ring
@@ -296,7 +298,8 @@ class Character(object):
         'gnoll chaplain', 'Cheryn', 'orc scout', 'bouncer', 'rancher sentry', 'dwarven shepherd', 'clown', 'war horse',
         'top ranch hand', 'raging bull', 'master miner',  # top ranch hand dusty blue
         'half-elf traveller,' # appears in the silken alleys
-        'old dame' # white potion, Te'Kalns' Walk
+        'old dame', # white potion, Te'Kalns' Walk
+        'sewer troll'
         # 'Cheryn (E)'
         # 'robed priest',
     ]  # There are also lvl 5 rancher sentries... they're a bit blue
@@ -460,6 +463,7 @@ class Character(object):
     # ogrish guard
     # caretaker
     # "sharper" on Cardemom way
+    # 'myrmidon' spawns outside Keldan's Distillations (also brutalizer - try camping this node)
     preferred_lvl_1_2_monsters = [
         'oaf', 'wanderer', 'thug', 'spiv', 'kobold sentry', 'tired hooker', 'waitress',
         'blond hooker', 'angry hooker', 'sultry hooker', 'journeyman', 'housewife', # 'acolyte'
