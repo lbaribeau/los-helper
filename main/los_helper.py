@@ -281,7 +281,8 @@ L = LosHelper()
 try:
     L.main()
 except Exception as e:
-    print("LosHelper main error: " + str(e) + ", calling .close() to help threads exit, and then raising to show stack trace.")
+    magentaprint("LosHelper main error: " + str(e) + ", calling .close() to help threads exit, and then raising to show stack trace.")
+    print("\a")
     L.close()
     raise e
 L.close()

@@ -12,31 +12,31 @@ from combat.Cast import Cast
 class Go(Command):
     command = 'go'
     success_regexes = [
-        R.area, 
+        R.area,
         R.too_dark
     ]
     error_regexes = [
-        R.no_exit, 
+        R.no_exit,
         R.go_where
     ]
     failure_regexes = [
-        R.blocked_path,          
-        R.cant_go,       
+        R.blocked_path,
+        R.cant_go,
         R.open_first,
-        R.class_prohibited,      
-        R.level_too_low, 
+        R.class_prohibited,
+        R.level_too_low,
         R.level_too_high, 
         R.not_invited,
-        R.not_open_during_day,   
-        R.locked,        
+        R.not_open_during_day,
+        R.locked,
         R.no_items_allowed,
-        R.not_open_during_night, 
-        R.no_right,      
+        R.not_open_during_night,
+        R.no_right,
         R.in_tune,
-        R.not_authorized,        
-        R.cannot_force,  
-        R.washroom, 
-        R.cliff, # Why does this timeout?
+        R.not_authorized,
+        R.cannot_force,
+        R.washroom,
+        R.cliff,        # Why does this timeout?
         R.occupied_area # Does cartography need to know this one? Unlikely
     ]
     cooldown_after_success = 0.34
@@ -49,7 +49,7 @@ class Go(Command):
         self.kill = kill
         self.cast = cast
         self.character = character
-        self.regex_cart.append(R.mob_fled)
+        # self.regex_cart.append(R.ze_mob_fled)
 
     def wait_for_flag(self, **kwargs):
         # magentaprint("Go.wait_for_flag()")
@@ -62,7 +62,6 @@ class Go(Command):
         self.cartography.wait_for_flag(**kwargs)
 
     def notify(self, regex, M_obj):
-        magentaprint("Go notified.")
         if regex in R.open_first:
             self.door = True
         # elif regex in chain.from_iterable(self.success_regexes) and not self.__class__._waiter_flag:
@@ -71,6 +70,7 @@ class Go(Command):
         #     # time.sleep(0.8)  # Hacked fix to get_heal_path being called before Cartography updates area_id
         # Maybe also wait for cartography? Our wait function waits for cartography
         super().notify(regex, M_obj)
+        magentaprint("Go notify done.")
 
     def execute(self, target):
         # magentaprint("Go.execute()")
@@ -125,7 +125,7 @@ class Go(Command):
 
     def wait_execute_and_wait(self, exit):
         self.wait_until_ready()
-        self.execute_and_wait(exit)  #super().execute_and_wait(target=None)
+        self.execute_and_wait(exit) #super().execute_and_wait(target=None)
 
 class Open(Command):
     command = 'open'
@@ -136,4 +136,3 @@ class Open(Command):
     def notify(self, r, m):
         magentaprint("Open notified.")
         super().notify(r, m)
-

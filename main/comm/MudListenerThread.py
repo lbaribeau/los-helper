@@ -67,7 +67,7 @@ class MudListenerThread(threading.Thread):
                     magentaprint("MudListenerThread is exiting because of OSError (could be dead socket); error says: \""+str(e)+"\"")
                     break
                 except EOFError as e:
-                    magentaprint("MudListenerThread is exiting because server sent EOF; error says: \""+str(e)+"\"")
+                    magentaprint("MudListenerThread is exiting because server sent EOF; error says: \""+str(e)+"\"") # "Telnet connection closed" (ie. Timed out.)
                     break
                 except AttributeError as e:
                     magentaprint("Lag spikes happen like this (new_bit has no attribute decode)")

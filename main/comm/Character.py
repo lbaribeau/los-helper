@@ -125,7 +125,11 @@ class Character(object):
         else:
             self.HEALTH_TO_HEAL = 0.75 * self.info.maxHP  # We can crank this back up when we fight stronger mobs
 
-        self.hp_tick = floor((self.info.con-1)/3)  # +3 in chapel
+        # self.hp_tick = floor((self.info.con-1)/3)  # This was wrong for my 3 con bard (returned 0)
+        # Chapel bonus is +3
+        # Barbarian bonus is +2 (seems like) (how do we add in the barbarian bonus??)
+        # Rest bonus is 0 to 1
+        # (Unlike mana, hp ticks are inconsistent)
         self.START_GOLD = self.GOLD = self.info.gold
 
         # self.ARMOR_SLOTS = self._class.ARMOR_SLOTS
@@ -213,11 +217,14 @@ class Character(object):
     ]
     lvl2_monsters = [
         'hawker', 'barmaid', 'smelly beggar', 'black crow', 'sheep', 'goose', 'singer', 'musician', 'spiv', 'bidder', 'dairy cow',
-        'scholar', 'juggler', 'shepherd', 'gazelle', 'dancer', 'jongleur', 'clerk', 'stablehand', 'rich kid', 'bladesman',
+        'scholar', 'juggler', 'shepherd', 'gazelle', 'jongleur', 'clerk', 'stablehand', 'rich kid', 'bladesman',
         "cook's assistant", "miner's assistant", 'mare', 'tabby cat', 'plumber', 'old fisherman', 'hungry diner',
         'fletcher', 'baker',
         'retired fisherman', # to confirm
-        # 'acolyte', 'penitent' # for aura (!)
+        'acolyte',  # blue balance
+        'penitent' # for aura (!)
+        #'dancer',  # dancer spawns by the sword swallower and can run north towards the guard, which will join in
+        # A few scholars in amber
     ]
     lvl2_red_monsters = [
         'kobold sentry', 'blond hooker', 'sultry hooker', 'kobold', 'spiv', 'drunken miner', 'kobold miner', 'kobold archer',
@@ -230,13 +237,13 @@ class Character(object):
     lvl3_monsters = [ # 25-35 exp
         'market official', 'street trader', 'field worker', 'harvester', 'horse', 'cow', 'doorman', 'stilt walker',  'messenger',
         'cashier', 'thatcher',  'tax inspector', 'journeyman', 'human miner', 'hobbitish miner', 'hawk', 'stacker', # ring mail gauntlets
-        'mill worker',
+        'mill worker', # chain mail gloves
         'General', # (The)
         'bouncer', 'yard worker', 'town clerk', 'stevedore', 'scared trawlerman', 'cooper','digger', 'pulley operator',
         'ore carrier', # copper ring
-        'furniture maker', 'cabinet maker' # SW part of lumber yards (glue)
-        # 'robed pilgrim'  # aura (!)
-        #"miner's mule"  # mill worker drops chain mail gloves
+        'furniture maker', 'cabinet maker', # SW part of lumber yards (glue)
+        'robed pilgrim'  # blue balance aura (!)
+        #"miner's mule"  # Why not include this guy... hmmm
         # stevedore leather gloves
     ]
     lvl3_red_monsters = [
@@ -244,16 +251,17 @@ class Character(object):
         'goblin skeleton'
     ]
     lvl4_monsters = [ # 45-60 exp
-        'actor', 'grip', 'theatre goer', 'merchant', 'journeyman', 'logger', 'trader', 'butcher', 'acrobat', 'militia soldier',
+        'actor', 'grip', 'theatre goer', 'merchant', 'journeyman', 'trader', 'butcher', 'acrobat', 'militia soldier',
         'carpenter', 'stagehand', 'hungry spider', 'cook', 'joiner', 'ranch hand', 'old rancher', 'tired ranch hand',
-        'drinking ranch hand', 'busy ranch hand', 'sawmill operator', # steel mask!
+        'drinking ranch hand', 'busy ranch hand', 'sawmill operator', # steel mask! (steel rings)
         'vulture', 'auctioneer', 'barbecue cook', 'stable attendant', 'dwarven miner', # first aid
         'gnomish miner', 'determined ranch hand', 'forge worker', # leather gloves
         'steer', 'sage', # Stoneheart Road
         'forge worker', # burnt ochre potion
-        # 'actress', 'young knight' # For blue balance #(!)
-        #'miner'
+        'young knight', # For blue balance #(!)
+        #'miner' # why not this guy
         # enlightened  # "arrives" in the large Kings road dojo (not always there)
+        'actress', # blue balance
         'bandit cook', # leather bracers
         'bandit sentry', 'bandit', 'ghast'
     ]
@@ -268,21 +276,24 @@ class Character(object):
         'dwarven farm hand', 'dwarven barmaid', 'fort sentry', 'fur trader', 'aristocrat',
         'nobleman', 'lyrist', 'logger', 'veteran', # leather gloves
         'bruiser', 'axeman', 'seeker', 'hunter', 'bull', 'aspirant',
-        'shaft manager', 'mine foreman',
-        'adjudicator', 'eagle', 'giant crab' # arrived by the pool by gnolls
-        # 'vicar', 'lay priest', 'protector', 'battered knight', 'orange picker' # makes trackgrind too red? #(!)
+        'mine foreman', 'badger', # woodland trail
+        'adjudicator', 'eagle', 'giant crab', # arrived by the pool by gnolls
+        'vicar', # blue balance
+        'lay priest', 'protector', 'battered knight', 'orange picker' # makes trackgrind too red? #(!)
     ]
+    # level 6 seekers? seeker 100 exp, lyrist 80 exp
+    # Effect of missed comma is that mobs after it don't get added
     lvl5_red_monsters = [
         'large bandit', # silver ring
         'kobold guard', 'mugger', 'large spider', 'mime artist',
         'massive zombie'
     ]
     lvl6_monsters = [  # 100+ exp
-        'dwarven field worker', 'dwarven bartender', 'school teacher', 'lyrist', 'nobleman', 'seeker', 'bull', 'hunter', 'usher',
+        'dwarven field worker', 'dwarven bartender', 'school teacher', 'nobleman', 'bull', 'hunter', 'usher',
         'sword swallower', 'archer', 'yard supervisor', 'sawmill supervisor', # chain mail armour(s)(!)
-        'large spider', 'blacksmith', 'farm foreman',
+        'large spider', 'blacksmith', 'farm foreman','shaft manager', 
         'Old Man James', 'dwarven traveller', 'Goourd', # large sack
-        'tourney organiser', 'Greenbough the Dryad', 
+        'tourney organiser', 'Greenbough the Dryad'
         #'sentry' stand in pairs unfortunately...
         # weaker amethyst town guards
     ]
@@ -299,9 +310,9 @@ class Character(object):
         'top ranch hand', 'raging bull', 'master miner',  # top ranch hand dusty blue
         'half-elf traveller,' # appears in the silken alleys
         'old dame', # white potion, Te'Kalns' Walk
-        'sewer troll'
+        'sewer troll',
+        'robed priest' #blue balance
         # 'Cheryn (E)'
-        # 'robed priest',
     ]  # There are also lvl 5 rancher sentries... they're a bit blue
     lvl8_monsters = [  # There are 2 amethyst guards and 3 amber guards of this level
         'Alaran the Market Manager', # small chain hood
@@ -311,8 +322,9 @@ class Character(object):
         'Olmer', 'Thereze', 'Farmer Viladin', 'Rancher Renstone', 'berzerker', 'dwarven hunter',
         'initiate', 'berserk orc', #'hedge knight', 
         'refinery supervisor', 'owlbear','warrior', #'sentry'
+        'half-elf traveller', # 210 exp, 176 gold
         'elven trader', # elven waybread "It has only a very mild subtle taste, blandly inoffensive."
-        # 'elven trader', 'old knight', 'dusty warrior'
+        # 'old knight', 'dusty warrior'
         # dark warrior  sacrificing priestess
         # forger        weathered barbarian
         # large knight  cutthroat     
@@ -350,6 +362,7 @@ class Character(object):
     ]  # wounded knight -2 difficulty
     # Rilmenson has good damage
     # 'gnoll sub-chief', 'Gnardu'
+    # dwarven harvester spawns near Boris Ironfounder - don't know level
     lvl11_monsters = [
         'Brotain', # heavy crossbow, 490 exp, 226 g, 
         'minstrel', # silver ring, small prism (show aura 1 charge) 400 exp
@@ -363,8 +376,8 @@ class Character(object):
     # The Hermit Cal
     lvl12_monsters = [
         'Tardan', # 560 exp, chain mail leggings(!)(L), steel gauntlets(L)
-        'Boris Ironfounder',  # rare coin, plate mail helm(!)(s), plate mail gauntlets(s), diamantium leggings(s)
-        'Horbuk', # steel collar like oremaster, dwarven axe, 361 gold, 570 exp
+        'Boris Ironfounder',  # rare coin, plate mail helm(!)(s), plate mail gauntlets(s), diamantium leggings(s), plate sleeves (s)
+        'Horbuk', # steel collar like oremaster (m!), dwarven axe, 361 gold, 570 exp
         'Hurn the Smith', # 600xp, 733g
         'Annette Plover', 
         'Gorban', # (dusty blue) golden potion
@@ -464,6 +477,8 @@ class Character(object):
     # caretaker
     # "sharper" on Cardemom way
     # 'myrmidon' spawns outside Keldan's Distillations (also brutalizer - try camping this node)
+    # Trantas
+    # Kin'Tal
     preferred_lvl_1_2_monsters = [
         'oaf', 'wanderer', 'thug', 'spiv', 'kobold sentry', 'tired hooker', 'waitress',
         'blond hooker', 'angry hooker', 'sultry hooker', 'journeyman', 'housewife', # 'acolyte'
@@ -491,7 +506,7 @@ class Character(object):
         if self.level >= 7:
             self.MONSTER_KILL_LIST.extend(self.lvl5_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl5_red_monsters)
-        if self.level >= 9:
+        if self.level >= 8: # was 9... felt like level 8 needed to add something 
             self.MONSTER_KILL_LIST.extend(self.lvl6_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl6_red_monsters)
         if self.level >= 11:
@@ -645,6 +660,24 @@ class Character(object):
         return self.hp == self.info.maxHP
     def mp_maxed(self):
         return self.mp == self.info.maxMP
+    # Ok los-helper gives us _class (CharacterClass) so.... why not just make use of that...
+    def mana_tick(self):
+        if hasattr(self, '_class') and hasattr(self, 'info'):
+            return self._class.mana_tick + (self.info.int > 17) # Adds 1 if int > 17
+        else:
+            magentaprint("CAUTION: Character couldn't calculate mana_tick")
+            raise
+            return 3
+            # I think feeling the benefits of resting adds 1 to mana tick (all the time? I hope so)
+    def hp_tick(self):
+        if hasattr(self, '_class') and hasattr(self, 'info'):
+            if self._class.id == "Bar":
+                return round(0.279*self.info.con-0.2181+2) # used landsofstone.xls to fit data (=1 for 3 con, =6 for 22 con)
+            else:
+                return round(0.279*self.info.con-0.2181) # used landsofstone.xls to fit data (=1 for 3 con, =6 for 22 con)
+        else:
+            raise
+            return 2
 
     # platinum crucifix
     # Farmer Woldis

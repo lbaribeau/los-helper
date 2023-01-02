@@ -19,6 +19,7 @@ from misc_functions import magentaprint
 class CharacterClass(object):
     def __init__(self, telnetHandler, class_string, level):
         self.id = class_string
+
         # self.slow_combat_skills = []
         # self.heal_skills = []
         # self.buff_skills = []
@@ -40,37 +41,38 @@ class CharacterClass(object):
         ]
 
         self.mana_tick = 2
-        # NOTE: 18 Int gives you +1 mana tick, not sure of other thresholds
+        # NOTE: 18 Int gives you +1 mana tick, not sure of other thresholds (use info object for that)
         abilities = []
 
-        if class_string == "Ass":
+        if self.id == "Ass":
             self.lvl1_maxHP = 19
             self.lvl1_maxMP = 2
             abilities = [ Backstab ]
             Cast.cooldown_after_success = 4
-        elif class_string == "Bar":
+        elif self.id == "Bar":
             self.lvl1_maxHP = 24
             self.lvl1_maxMP = 0
             self.mana_tick = 0
             # self.mana_tick_chapel = 0
+            # I think barbarian gets a class hp tick bonus
             abilities = [ Bash, Circle, Berserk ]
-        elif class_string == "Cle":
+        elif self.id == "Cle":
             self.lvl1_maxHP = 16
             self.lvl1_maxMP = 4
             self.mana_tick = 2
             abilities = [ Pray, Turn ]
             Cast.cooldown_after_success = 3
-        elif class_string == "Fig":
+        elif self.id == "Fig":
             self.lvl1_maxHP = 22
             self.lvl1_maxMP = 2
             abilities = [ Bash, Circle ]
             Cast.cooldown_after_success = 5
-        elif class_string == "Brd":
+        elif self.id == "Brd":
             self.lvl1_maxHP = 15
             self.lvl1_maxMP = 3
             abilities = [ AestersTears, DanceOfTheCobra ]
             Cast.cooldown_after_success = 4
-        elif class_string == "Mag":
+        elif self.id == "Mag":
             self.lvl1_maxHP = 14
             self.lvl1_maxMP = 5
             self.mana_tick = 3  # unsure
@@ -78,12 +80,12 @@ class CharacterClass(object):
                           ["door", "out", "out", "w", "n", "e", "e", "e", "n", "cha"]]
             abilities = []
             Cast.cooldown_after_success = 3
-        elif class_string == "Pal":
+        elif self.id == "Pal":
             self.lvl1_maxHP = 19
             self.lvl1_maxMP = 3
             abilities = [ Pray, Turn ]
             Cast.cooldown_after_success = 5
-        elif class_string == "Ran":
+        elif self.id == "Ran":
             self.lvl1_maxHP = 18
             self.lvl1_maxMP = 3
             self.HP_gained_per_level = 6
@@ -95,12 +97,12 @@ class CharacterClass(object):
             self.weapon_slots.append("Second")
             Search.cooldown_after_success = 6
             Search.cooldown_after_failure = 6
-        elif class_string == "Thi":
+        elif self.id == "Thi":
             self.lvl1_maxHP = 18
             self.lvl1_maxMP = 3
             abilities = [ Backstab, Steal ]
             Cast.cooldown_after_success = 4
-        elif class_string == "Mon":
+        elif self.id == "Mon":
             self.lvl1_maxHP = 17
             self.lvl1_maxMP = 3
             self.HP_gained_per_level = 6
@@ -118,16 +120,16 @@ class CharacterClass(object):
             #                             SkillTimer("You failed to harm the .+?\.", 240))])
             self.weapon_slots = []
             self.ARMOR_SLOTS = []
-        elif class_string == "Dru":
+        elif self.id == "Dru":
             self.lvl1_maxHP = 15
             self.lvl1_maxMP = 4
             abilities = [ Barkskin ]
             Cast.cooldown_after_success = 3
-        elif class_string == "Alc":
+        elif self.id == "Alc":
             self.lvl1_maxHP = 15
             lvl1_maxMP = 4
             abilities = []
-        elif class_string == "Dar":
+        elif self.id == "Dar":
             self.lvl1_maxHP = 19
             self.lvl1_maxMP = 4
             abilities = [ Berserk, Wither]
@@ -159,7 +161,14 @@ class CharacterClass(object):
         #     if level >= a.level:
         # magentaprint("CharacterClass abilities before dict comprehension: " + str(self.abilities))
         # self.abilities = {a.command: a for a in self.abilities if level >= a.level}
-        magentaprint("CharacterClass final abilities: " + str(self.abilities))
+        # magentaprint("CharacterClass final abilities: " + str(self.abilities))
+        magentaprint("CharacterClass final abilities: " + dict_to_string_by_classes(self.abilities))
+
+def dict_to_string_by_classes(d):
+    s='{'
+    for key, value in d.items():
+        s+='\n\t'+str(key)+' : '+value.__class__.__name__
+    return s+"\n}"
 
 # OLD IDEAS
 

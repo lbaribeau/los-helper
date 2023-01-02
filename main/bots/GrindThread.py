@@ -11,10 +11,15 @@ from Exceptions import *
 from comm import Spells
 from db.MudItem import MudItem
 from db.Mob import Mob
+from mini_bots.bless_and_prot import BlessTimer, ProtTimer
 
 class GrindThread(BotThread):
     def __init__(self, character, command_handler, mudReaderHandler, mud_map):
         super().__init__(character, command_handler, mudReaderHandler, mud_map)
+        self.bless_timer = BlessTimer(command_handler.use, self.inventory)
+        self.mudReaderHandler.add_subscriber(self.bless_timer)
+        self.prot_timer = ProtTimer(command_handler.use, self.inventory)
+        self.mudReaderHandler.add_subscriber(self.prot_timer)
         self.loot_threshold = 1  # the amount of loot to collect before selling
 
     def do_run_startup(self):
@@ -65,8 +70,7 @@ class GrindThread(BotThread):
             # Since guards have multiple levels, I don't want them in the kill list, so we can do it this way
             # if self.ready_for_combat() and 'guard' in str(self.character.mobs.list).split("' '"):
             if self.ready_for_combat() and self.character.mobs.list.get('guard'):
-                self.engage_monster('guard')
-                self.engage_mobs_who_joined_in()
+                self.engage_monster('guard') # We'll want to wait for kill/cast and maybe switch targets
                 self.engage_any_attacking_mobs()
             else:
                 magentaprint("Go hook: Did not fight guard.")
@@ -79,7 +83,7 @@ class GrindThread(BotThread):
     def potion_shopping(self):
         buy = self.command_handler.buy
 
-        while self.inventory.count('misty potion') < 2 and not self.stopping:
+        while self.inventory.count('misty potion') < 4 and not self.stopping:
             buy.execute_and_wait('misty')
             if buy.success:
                 self.inventory.add('misty potion')
@@ -140,7 +144,6 @@ class GrindThread(BotThread):
     def do_on_blocking_mob(self):
         self.engage_monster(self.character.GO_BLOCKING_MOB)
         self.character.GO_BLOCKING_MOB = ""
-        self.engage_mobs_who_joined_in()
         self.engage_any_attacking_mobs()
         # self.check_weapons()  # TODO: shopping doesn't work everywhere
 
@@ -148,7 +151,8 @@ class GrindThread(BotThread):
             self.heal_up()
 
     def do_on_successful_go(self):
-        super().do_on_successful_go() 
+        super().do_on_successful_go()
+
 
     def do_regular_actions(self):
         # This is regular_actions hook is actually in a funny spot (maybe)
@@ -160,6 +164,10 @@ class GrindThread(BotThread):
         # super() also pops the direction list
         # All this used to be do_regular_actions
 
+        # So in this part we need to do any steps prior to picking the target
+        # We also want to be hitting all the targets we are interested in, and leaving at the appropriate time
+        # This is mainly - do combat for one node
+
         C = self.character
 
         chase_ref = C.mobs.list.get_last_reference(C.mobs.chase)
@@ -169,47 +177,91 @@ class GrindThread(BotThread):
         if chase_ref:
             new_target = chase_ref # This is a reference, but the other clause hasn't made a reference yet
             # new_target = C.mobs.chase 
-        elif self.ready_for_combat():
-            new_target = self.decide_which_mob_to_kill(C.mobs.list)
-        else:
-            new_target = ""
-            # magentaprint("TrackGrindThread.do_post_go_actions() calling do_rest_hooks()") # Out of date print...
-            magentaprint("GrindThread.regular_actions() not ready for combat")
-            return
-            # Commented - I don't understand what do_rest_hooks is supposed to do at all...
-            # self.do_rest_hooks()
-
-        while new_target != "" and not self.stopping:
-            # MudReader maintains MONSTER_LIST pretty well by adding and removing.
-            # It will not remove from MOBS_JOINED_IN nor
-            # MOBS_ATTACKING because the three lists can contain
-            # common mobs.  So before engaging a mob in one of the
-            # latter two lists the bot should check that it is
-            # still in the MONSTER_LIST.  Also be mindful of timing:
-            # MOBS_ATTACKING might not be populated as soon as the
-            # bot enters the room - that's why they are engaged last
-            # (as a cleanup).
-
-            # Now we can reference MONSTER_LIST again.  Note that
-            # MudReader has already removed all of the mobs that we
-            # killed.  (That's in fact how we knew combat was over)
-            # The higher priority mobs were in the other lists 
-            # and will also have been removed from MONSTER_LIST
-
-            magentaprint("GrindThread new_target loop targeting: " + new_target + " then mobs joined in then any attacking.")
             self.engage_monster(new_target) # Need to make sure this gets removed from mobs.list
-            self.engage_mobs_who_joined_in()
+
+        if C.mobs.chase:
+            return # it ran again (prioritize chasing over other attacking mobs I guess)
+            # Keeps the chase list short if possible
+
+        if C.mobs.attacking != [] and not self.ready_for_combat():
+            return
+            # Try leaving if we want to leave - then we'll get into any fights about blocking if necessary
+
+        self.engage_any_attacking_mobs()
+
+        # Now it seems like we are out of combat
+        # If we got blocked... we might not get to this code... 
+        self.maybe_do_heal_skills()
+        if not C.BLACK_MAGIC:
+            self.heal_up() # Hopefully this can handle attackers
+        if self.stopping or C.mobs.chase:
+            # Actually we want to finish our wait setup before chasing, right? No Go will do that
+            return
+
+        # Let's do any waiting we have to do before picking our next target, in case an angry kobold arrives
+        # Hmmm... so we'll fight if it blocks us, but we can try to leave first, but that costs waiting both cooldowns
+        self.smartCombat.wait_for_one_of_kill_and_cast()
+        if self.ready_for_combat():
             self.engage_any_attacking_mobs()
-            # self.check_weapons()  # TODO: shopping doesn't work everywhere
+        if self.stopping or C.mobs.chase:
+            return
+        self.smartCombat.wait_for_both_of_kill_and_cast()
+        if self.ready_for_combat():
+            self.engage_any_attacking_mobs()
+        if self.stopping or C.mobs.chase:
+            return
 
-            if not C.BLACK_MAGIC:
-                self.heal_up()
-
-            if self.ready_for_combat():
-                magentaprint("GrindThread picking a new target since " + new_target + " was defeated")
-                new_target = self.decide_which_mob_to_kill(C.mobs.list)
+        # TODO: Ideally we interrupt if something arrives, for now I just want to attack the right thing
+        fresh_target = self.decide_which_mob_to_kill(C.mobs.list) 
+        if fresh_target:
+            self.engage_monster(fresh_target)
+            # Why not just call do_regular_actions at this point (handles chasing and attackers)
+            # Because it doesn't handle chasing, we need to return for that
+            self.engage_any_attacking_mobs()
+            # I think we fight attackers here, so we don't have to wait for Go, and to catch a breather before chasing, right?
+            # We could lose track if more things run though
+            # We'll have the paths pushed but we'll forget we were fighting... (multiple runners) that's probably fine
+            if C.mobs.chase:
+                # Ack we need to do the combat wait setup before chasing right? No, Go will do that
+                return
             else:
-                new_target = ""
+                self.do_regular_actions() # Does the wait setup and fights another fresh_target
+        # else:
+
+        # while fresh_target != "" and self.ready_for_combat() and not self.stopping and not C.mobs.chase:
+        #     magentaprint("GrindThread fresh_target loop targeting: " + fresh_target + " then mobs joined in then any attacking.")
+        #     # Ok let's do some wait - setup in case something arrives so we can switch targets
+        #     # Always do wait setup before picking a new target - wait setup is waiting for cooldowns, and engaging any attackers
+        #     self.engage_monster(fresh_target) # Need to make sure this gets removed from mobs.list
+        #     self.engage_any_attacking_mobs()
+        #     # self.check_weapons()  # TODO: shopping doesn't work everywhere
+        #     # We could call this recursively actually... instead of while looping
+
+        #     if not C.BLACK_MAGIC:
+        #         self.heal_up()
+
+        #     if self.ready_for_combat() and not C.mobs.chase:
+        #         magentaprint("GrindThread picking a new target since " + fresh_target + " was defeated")
+        #         new_target = self.decide_which_mob_to_kill(C.mobs.list)
+        #     else:
+        #         new_target = ""            
+
+        # Old comments...
+        # MudReader maintains MONSTER_LIST pretty well by adding and removing.
+        # It will not remove from MOBS_JOINED_IN nor
+        # MOBS_ATTACKING because the three lists can contain
+        # common mobs.  So before engaging a mob in one of the
+        # latter two lists the bot should check that it is
+        # still in the MONSTER_LIST.  Also be mindful of timing:
+        # MOBS_ATTACKING might not be populated as soon as the
+        # bot enters the room - that's why they are engaged last
+        # (as a cleanup).
+
+        # Now we can reference MONSTER_LIST again.  Note that
+        # MudReader has already removed all of the mobs that we
+        # killed.  (That's in fact how we knew combat was over)
+        # The higher priority mobs were in the other lists 
+        # and will also have been removed from MONSTER_LIST
 
     def print_bot_stats(self):
         self.command_handler.inventory.execute_and_wait()
@@ -218,7 +270,7 @@ class GrindThread(BotThread):
         # self.command_handler.cast.print_aura_timer()
         magentaprint("Last target was " + str(self.smartCombat.target))
         self.command_handler.process('trackno')
-        self.command_handler.process('time')  
+        self.command_handler.process('time')
 
     def rest_and_check_aura(self):
         # This method is only efficient in a healing area
@@ -238,12 +290,14 @@ class GrindThread(BotThread):
             # Maybe consider starting the timer after resting though to slightly improve the aura timing system.
             # ie. resting can take 10 minutes for some characters
 
+        magentaprint("Health ticks needed: {}, Mana ticks needed: {}.".format(round(self.health_ticks_needed(), 1), round(self.mana_ticks_needed(), 1)))
         self.chapel_heal_up()
             # TODO: Keep track of when ticks are coming and how big they'll be, and avoid vigging
             # away all the mana for characters with low piety, whose vigors will not do much,
             # and may just be one tick away from good health.
 
-        if self.character.MANA < self.character.maxMP - 2*self.character._class.mana_tick + 4:
+        # if self.character.MANA < self.character.maxMP - 2*(self.character.mana_tick() + 2):
+        if self.mana_ticks_needed() > 2.0:
             # MANA_TO_WAIT differentiates between hitting 'rest' and just hitting
             # 'enter' a bunch (waiting vs resting)
             self.rest_until_ready()
@@ -251,7 +305,7 @@ class GrindThread(BotThread):
             self.wait_for_mana()
 
         if self.character.level > 3 and self.character.maxMP > 10:
-            self.heal_up()
+            self.heal_up() # I think that this assumed that we have piety
             self.wait_for_mana()
         else:
             # magentaprint("Resting for health", False)
@@ -304,45 +358,52 @@ class GrindThread(BotThread):
         # ie. 18 int and need only 3 mana
 
         magentaprint("In chapel_heal_up.")
+        C = self.character
 
-        if self.stopping or self.character.HEALTH >= self.health_to_go:
+        if self.stopping or C.HEALTH >= self.health_to_go:
             return
 
         self.do_heal_skills()
+        # Todo: my guy isn't doing the enter trick to wait for one mana tick - he's just hitting rest
 
-        # if self.character.HEALTH >= self.health_to_go or not any(s.startswith(Spells.vigor) for s in self.character.spells):
-        if self.character.HEALTH >= self.health_to_go or Spells.vigor not in self.character.spells:
+        # if C.HEALTH >= self.health_to_go or not any(s.startswith(Spells.vigor) for s in C.spells):
+        if C.HEALTH >= self.health_to_go or Spells.vigor not in C.spells:
             return
 
+        magentaprint("Health ticks needed: {}, Mana ticks needed: {}.".format(round(self.health_ticks_needed(), 1), round(self.mana_ticks_needed(), 1)))
+
         self.cast.wait_until_ready()
-        vig = 2
-        chapel = 2  # additional hp tick amount
-        maxHP = self.character.maxHP
-        maxMP = self.character.maxMP
-        mana_tick = self.character._class.mana_tick
+        vig       = 2
+        # chapel    = 2 # additional hp tick amount
+        # maxHP     = C.maxHP
+        # maxMP     = C.maxMP
+        # mana_tick = C.mana_tick()
         # while   (self.health_ticks_needed() > self.mana_ticks_needed() or
-        #         self.character.MANA - (maxMP % mana_tick+chapel) % (mana_tick+chapel) >= 2) and (
-        while   (self.health_ticks_needed() > self.mana_ticks_needed() and
-                self.character.MANA >= vig and
-                not self.ready_for_combat() and
-                not self.stopping):
-                # self.character.mana_tick+2 % self.character.maxMP - self.character.MANA > 2:
-                # self.character.maxMP - self.character.MANA % self.character.mana_tick+chapel - vig >= 0: #self.character.mana_tick + vig - chapel:
+        #         C.MANA - (maxMP % mana_tick()+chapel) % (mana_tick()+chapel) >= 2) and (
+        while   ceil(self.health_ticks_needed()) > ceil(self.mana_ticks_needed()) and \
+                C.MANA >= vig                                                     and \
+                not self.ready_for_combat()                                       and \
+                not self.stopping:
+                # C.mana_tick()+2 % C.maxMP - C.MANA > 2:
+                # C.maxMP - C.MANA % C.mana_tick()+chapel - vig >= 0: #C.mana_tick() + vig - chapel:
                 # Laurier does math!  (Mathing out whether we should vig or in the chapel)
-            magentaprint("Health ticks needed: " + str(round(self.health_ticks_needed(), 1)) + ", Mana ticks needed: " + str(round(self.mana_ticks_needed(), 1)))
+            # magentaprint("Health ticks needed: " + str(round(self.health_ticks_needed(), 1)) + ", Mana ticks needed: " + str(round(self.mana_ticks_needed(), 1)))
+            magentaprint("Health ticks needed: {}, Mana ticks needed: {}.".format(round(self.health_ticks_needed(), 1), round(self.mana_ticks_needed(), 1)))
+            # Ehrm doesn't ready_for_combat need us to have a weapon...
 
             if self.do_heal_skills():
                 continue
-            elif self.inventory.count_small_restoratives() > 7:
-                self.command_handler.potion_thread_handler.consume.small_healing_potion()
-                self.command_handler.potion_thread_handler.consume.wait()
-                self.command_handler.potion_thread_handler.consume.wait_until_ready()
+            # elif self.inventory.count_small_restoratives() > 5:
+            #     self.command_handler.potion_thread_handler.consume.small_healing_potion_with_wait()
+            elif self.maybe_use_extra_small_restoratives():
+                # Hmmm, I used to save these things more
+                continue
             else:
                 # if self.engage_any_attacking_mobs():
                 #     if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
                 #         self.cast.start_thread('v')
                 self.cast.cast('v')
-                self.cast.wait_for_flag()
+                self.cast.wait_for_flag() # Wait in two segments because it's not guaranteed to have worked
                 self.cast.wait_until_ready()
 
             self.engage_any_attacking_mobs()
@@ -363,14 +424,18 @@ class GrindThread(BotThread):
         # self.cast.stop()
 
     def health_ticks_needed(self):
-        return (self.character.maxHP - self.character.HEALTH) / (self.character.hp_tick + 3)
+        return (self.character.maxHP - self.character.HEALTH) / (self.character.hp_tick() + 3) # Confirmed chapel bonus is 3
 
     def mana_ticks_needed(self):
-        return (self.character.maxMP - self.character.MANA) / (self.character._class.mana_tick + 2)
+        # return (self.character.maxMP - self.character.MANA) / (self.character.mana_tick() + 2) # Chapel bonus is 2
+        # There is a 1 mana bonus when resting not included
+        # Seems like you get ONE OR TWO regular ticks and then the rest have a bonus mana on them
+        # Assume one regular tick to make the math simpler
+        C = self.character
+        return (C.MANA < C.maxMP) + (C.maxMP-(C.MANA+C.mana_tick()+2))/(C.mana_tick()+3) # +3 is 2 from chapel and 1 from resting
 
     def rest_until_ready(self):
-        magentaprint("GrindThread.rest_until_ready()")
-
+        magentaprint("Rest_until_ready(): hp ticks needed: {}, mana ticks needed: {}.".format(round(self.health_ticks_needed(), 1), round(self.mana_ticks_needed(), 1)))
 
         # Rest until one of hp or mp is maxed.  This way we aren't waiting for both.
         # Hopefully things are somewhat balanced.  If things are unbalanced, benefits
@@ -397,14 +462,16 @@ class GrindThread(BotThread):
         return self.character.HEALTH < self.health_to_go or self.character.MANA < self.mana_to_go
 
     def wait_for_mana(self):
-        magentaprint("BotThread.wait_for_mana()")
+        magentaprint("GrindThread.wait_for_mana(): hp ticks needed: {}, mana ticks needed: {}.".format(round(self.health_ticks_needed(), 1), round(self.mana_ticks_needed(), 1)))
         while self.character.MANA < self.mana_to_go and not self.stopping:
             for i in range(0,20):
                 self.sleep(0.25)
                 if self.stopping:
                     return
             self.engage_any_attacking_mobs()
+            self.command_handler.prompt.clear()
             self.command_handler.process('')
+            self.command_handler.prompt.wait()
 
     def rest_for_health(self):
         magentaprint("BotThread.rest_for_health()")
@@ -475,21 +542,25 @@ class GrindThread(BotThread):
         C = self.character
         heal_cost = 2
 
-        if self.stopping:
-            return
-        if self.has_ideal_health():
+        # Ideal means sufficient here
+        if self.has_ideal_health() or self.stopping:
             return
 
         self.do_heal_skills()
 
-        if self.has_ideal_health():
+        if self.has_ideal_health() or self.stopping:
+            return
+
+        self.maybe_use_extra_small_restoratives() # These would probably get tossed and we can rely on scarlets for safety
+
+        if self.has_ideal_health() or self.stopping:
             return
 
         if BotThread.can_cast_spell(C.MANA, heal_cost, C.KNOWS_VIGOR):
             self.cast.cast('v')
             self.cast.wait_for_flag()
 
-            if self.has_ideal_health():
+            if self.has_ideal_health() or self.stopping:
                 return
 
             self.cast.start_thread('v')
@@ -499,15 +570,11 @@ class GrindThread(BotThread):
         while BotThread.should_heal_up(
             C.HEALTH, C.HEALTH_TO_HEAL, C.MANA, heal_cost, C.KNOWS_VIGOR, C.HAS_RESTORE_ITEMS\
             ) and not self.stopping:
-
             self.do_heal_skills()
-
             if self.engage_any_attacking_mobs():
                 if BotThread.can_cast_spell(C.MANA, heal_cost, C.KNOWS_VIGOR):
                     self.cast.start_thread('v')
-
             #self.use_restorative_items() #spam them!!!
-
             self.sleep(0.05)
 
         self.cast.stop()
@@ -536,16 +603,16 @@ class GrindThread(BotThread):
         magentaprint("GrindThread.use_extra_bless_item()")
         if self.inventory.count('milky potion') + self.inventory.count('silver chalice') > 3:
             if self.inventory.has('milky potion'):
-                self.command_handler.use.execute(self.inventory.get_first_reference('milky potion'))
+                self.command_handler.use.execute_and_wait(self.inventory.get_first_reference('milky potion'))
             else:
-                self.command_handler.use.execute(self.inventory.get_first_reference('silver chalice'))
-            self.command_handler.use.wait_for_flag()
+                self.command_handler.use.execute_and_wait(self.inventory.get_first_reference('silver chalice'))
+            # self.command_handler.use.wait_for_flag()
 
     def use_extra_steel_bottle(self):
         magentaprint("GrindThread.use_extra_steel_bottle()")
         if self.inventory.count('steel bottle') > self.character.steel_bottle_keep_amount:
-            self.command_handler.use.execute(self.inventory.get_first_reference('steel bottle'))
-            self.command_handler.use.wait_for_flag()
+            self.command_handler.use.execute_and_wait(self.inventory.get_first_reference('steel bottle'))
+            # self.command_handler.use.wait_for_flag()
 
     def use_restorative_items(self):
         if self.inventory.has("small restorative"):
@@ -702,20 +769,104 @@ class GrindThread(BotThread):
         magentaprint("Bot: Time for sell check was %.1f." % round(time.time()-now, 1))
         return self.character.MUD_RETURN_ITEM_SOLD
 
+    def maybe_use_extra_small_restoratives(self):
+        use=self.command_handler.use
+        # self.command_handler.potion_thread_handler.result=''
+        use.result=''
+        while self.character.HEALTH < self.character.info.maxHP and \
+            ceil(self.health_ticks_needed()) > ceil(self.mana_ticks_needed()) and \
+            not self.stopping and \
+            self.command_handler.potion_thread_handler.consume.small_healing_potion_with_wait():
+            pass
+            # This'll exit if we run out of small potions
+            # Note that these ticks_needed functions are neglecting a bonus 1 mana when resting kicks in
+        return use.success
+        # return self.command_handler.potion_thread_handler.consume.success
+        # We are just trying to use potions that we would otherwise drop
+
+        # while self.character.HEALTH < self.character.info.maxHP:
+        #     for i in ['chicken soup', 'small restorative', 'white potion']:
+        #         if i not in self.inventory.keep_list:
+        #             r = self.inventory.get_first_reference(i)
+        #             if r:
+        #                 self.command_handler.use.execute_and_wait(r)
+        #                 # break # Hmmm... it only used one restorative
+        #                 continue
+        #             # idea - white amulet - 3 second cooldown
+        #     break # Ok I see why... we break out here without checking for more restoratives
+
+        # use = self.command_handler.use
+        # small_restoratives = ['chicken soup', 'small restorative', 'white potion']
+        # while self.character.HEALTH < self.character.info.maxHP and self.inventory.has_any(self.small_restoratives):
+        #     for i in self.small_restoratives:
+        #         while not self.stopping:
+        #             r = self.inventory.get_first_reference(i)
+        #             if r:
+        #                 # use.execute_and_wait(r)
+        #                 # while use.please_wait1 and not self.stopping:
+        #                 #     # Persistent execute?
+        #                 #     use.execute_and_wait(r)
+        #                 use.wait_until_ready() # Persistent is less necessary with this
+        #                 use.persistent_execute(r) # Handles please wait 1 more second if we are spamming small restoratives
+        #                 # (note that use has a cooldown and supports wait_until_ready())
+        #                 if not use.success:
+        #                     print('\a')
+        #                     raise
+        #                 # This may not be optimal - could be over using them when we will be waiting for mana
+        #             else:
+        #                 break
+
+        # Rewrite this again...
+        # Seems like this isn't checking the HP clause enough
+        # while ceil(self.health_ticks_needed()) < ceil(self.mana_ticks_needed()) and self.inventory.has_any(self.small_restoratives) and not self.stopping and self.consume.small_healing_potion_with_wait():
+        #     pass
+
     def drop_items(self):
-        if self.stopping:
-            return
+        self.maybe_use_extra_small_restoratives()
+
         # self.inventory.drop_stuff()
         # This should maybe be a mini bot...
         # self.drop_refs(self.inventory.sellable())
         # self.drop_refs(self.inventory.droppable())
         self.command_handler.sell_bot.drop_stuff()
         # We also have broken rings...
+        # Hmmmm, what if some of it is restoratives?
 
     def drop_refs(self):
         pass
 
     def decide_which_mob_to_kill(self, monster_list):
+        C = self.character
+        if C.mobs.chase:
+            if C.mobs.chase in C.mobs.list:
+                # Issue: Directions get pushed, but the bot tries to hit the juggler again after it's gone.
+                # 1 Push the directions, leave it in mobs.attacking, remove it from mobs.list
+                # 2 Stop killing things and chase
+                # 3 do_regular_actions checks mobs.attacking first
+                # 4 mobs.attacking only gets emptied if the bot engaged and the mobs in it and combat ended
+                # - step 2 only works if nothing else is attacking...  step 2 should be kill everthing in mobs.attacking that hasn't run
+                # hmph.  Quick fix - just don't hit mobs that aren't in mobs.list
+                # This means the chase is low priority.
+                mob = C.mobs.chase
+                C.mobs.chase = ''
+                C.mobs.chase_exit = ''
+                # return mob
+                return C.mobs.list.get_last_reference(mob) # Assume it's the last one
+                # Ummm we want to make sure we follow it then fight it (not a mob with the same name in the current node)
+                # So don't fight the next mob if chase is set
+                # Hmmm maybe this'll work
+                # It's possible the chased mob could be killed
+                # So we gotta unset chase at some point
+                # Well we should be chasing right away
+                # So we can unset it right here on the first call? 
+                # No we have to return '' so we don't fight the next mob - maybe do that at the caller level
+                # (Check chase, if chase is set, don't be deciding what to kill)
+                # Ok there is already more chase code in regular_actions and chase does get unset
+                # We shouldn't get called here if chase is set
+            else:
+                magentaprint("decide_which_mob_to_kill assuming we have something to chase!")
+                return '' # Is it possible we won't find the chased mob? As soon as we get to a new node we have to unset chase
+
         m_list = [str(m) for m in monster_list]
 
         for mob in m_list:
@@ -725,23 +876,14 @@ class GrindThread(BotThread):
                re.search('bouncer', mob):
                 return ''
 
-        if self.character.mobs.chase and self.character.mobs.chase in self.character.mobs.list:
-            # Issue: Directions get pushed, but the bot tries to hit the juggler again after it's gone.
-            # 1 Push the directions, leave it in mobs.attacking, remove it from mobs.list
-            # 2 Stop killing things and chase
-            # 3 do_regular_actions checks mobs.attacking first
-            # 4 mobs.attacking only gets emptied if the bot engaged and the mobs in it and combat ended
-            # - step 2 only works if nothing else is attacking...  step 2 should be kill everthing in mobs.attacking that hasn't run
-            # hmph.  Quick fix - just don't hit mobs that aren't in mobs.list
-            # This means the chase is low priority.
-            mob = self.character.mobs.chase
-            self.character.mobs.chase = ''
-            self.character.mobs.chase_exit = ''
-            return mob
+        blue_mobs = [
+            'acolyte','vicar','robed pilgrim','penitent','young knight','lay priest','protector','battered knight','orange picker','robed priest','priest'
+        ]
 
         for mob in m_list:
-            if mob in self.character.MONSTER_KILL_LIST:
+            if mob in C.MONSTER_KILL_LIST and (mob not in blue_mobs or not self.cast.aura or self.cast.aura >= C.preferred_aura):
                 return mob
+                # We can add in robed pilgrim if we want and other blue things... with this code in place
 
         return ''
 
@@ -767,25 +909,61 @@ class GrindThread(BotThread):
     def do_heal_skills(self):
         for skill in self.character._class.heal_skills:
             if skill.up():
-                skill.execute()
-                skill.wait_for_flag()
+                skill.execute_and_wait()
                 return skill.success
         return False
 
-    def engage_monster(self, monster):
-        self.kill.wait_until_ready()
-        self.cast.wait_until_ready()
+    def maybe_do_heal_skills(self):
+        for skill in self.character._class.heal_skills:
+            if skill.up() and self.character.HEALTH < self.character.maxHP-skill.max_amount-self.character.hp_tick():
+                skill.execute_and_wait()
+                return skill.success
+        return False
 
-        if self.stopping:
-            return
+
+
+    def engage_monster(self, monster):
+        # Here, monster is GIVEN
+        # Anything that can happen to change the target should be done by now
+        # By extension, that means that, we are ready to fight (kill and cast are ready)
+
+        # Idea: if not ready, try using some spare restoratives
 
         C = self.character
         SC = self.smartCombat
 
+        # if C.mobs.attacking == []:
+        #     SC.wait_for_one_of_kill_and_cast()
+        # if C.mobs.attacking == []:
+        #     SC.wait_for_both_of_kill_and_cast() # TODO: Ideally we interrupt if something arrives, for now I just want to attack the right thing
+        
+        if C.mobs.attacking == []:
+            # self.kill.wait_until_ready()
+            # self.cast.wait_until_ready()
+            # Problem: an angry kobold just showed up
+            # So: wait for the first one of kill / cast
+            # Can we switch mobs at this point? Fair enough right?
+            # Maybe do some checks up a level
+            # So, how about we call engage_any_attacking_mobs before engage_monster, and we also do the waits outside of this scope
+            # We could do it here... maybe
+
+            if C.HEALTH == C.maxHP and \
+               C.MANA == C.maxMP and \
+               self.bless_timer.check_timer() and \
+                self.prot_timer.check_timer():
+                self.bless_timer.maybe_bless()
+                self.prot_timer.maybe_prot()
+                # Could do buff ability here
+                # Casts of show aura can cause it not to buff like this
+                # Idea - don't buff if on pawn/tip path or repairing
+
+        if self.stopping:
+            return
+
         magentaprint("GrindThread engage_monster get_first_reference({0})".format(monster))
         new_target = C.mobs.list.get_first_reference(monster)
         # So... suppose someone (Qerp) runs by and kills the nobleman we have chased
-        # Ok a fixed that up a level
+        # Ok, fixed that up a level
         # I think we are assuming here that the target is in the list
 
         if new_target:
@@ -796,26 +974,32 @@ class GrindThread(BotThread):
                 SC.target = str(monster).split(' ')[0]
             else:
                 SC.target = str(monster)
+            # Hmmm what if it wandered away??
+            # Some of this could be moved up to regular actions
+            # What we could do here is, check that the mob is here, wait up, then check again
 
         mob_level = Mob.get_mob_level_by_name(monster)
 
         if mob_level:
-            if mob_level >= 12:
+            if mob_level >= 12 and Spells._get_level_3(SC.favourite_spell) in C.spells:
                 SC.spell = Spells._get_level_3(SC.favourite_spell)
-            elif mob_level >= 8:
+            elif mob_level >= 8 and Spells._get_level_2(SC.favourite_spell) in C.spells:
                 SC.spell = Spells._get_level_2(SC.favourite_spell)
             else:
                 SC.spell = SC.favourite_spell
         else:
             SC.spell = SC.favourite_spell
 
-        SC.run()
+        SC.run() # we recently got rid of waits, maybe that's why SC exits
         # What about flee... can we rest after a flee maybe, or quit...
         # Do lowest risk at this point, right... or do we want to rest
         # If the mob isn't there... better remove it from the lists
         # Ok it might not BE in the list (we chase, we call engage monster on the target we assume is there...)
         # Here is a good place to check smartCombat.fleeing... smartCombat.escape is blocking call with a bit of a sleep
         # Ok this really is the place to add some smarts
+        # Here we are initiating a chase... it'd be nice to prioritize that over starting a new fight
+        # Also need to support... if we get blocked I believe
+        # We could end up with two chases then if we are getting blocked
         if C.mobs.chase != '' and C.mobs.chase_exit != '':
             magentaprint("GrindThread.engage_monster() chasing mob, pushing onto direction list!")
             if C.AREA_ID is not None:
@@ -874,10 +1058,12 @@ class GrindThread(BotThread):
             # C.chase_dir = ""
             # C.chase_mob = ""
         elif SC.error:
-            magentaprint("GrindThread engage_monster caught bad target - remove from mobs.list, which is {0}".format(C.mobs.list))
+            magentaprint("GrindThread engage_monster SC error (bad target) - remove from mobs.list and attacking: {} {}".format(C.mobs.list, C.mobs.attacking))
             if C.mobs.list.get(new_target):
                 C.mobs.list.remove_by_ref(new_target)
-            # (Normally mobs.list will removed stuff from itself by noticing the mob die,
+            if monster in C.mobs.attacking:
+                C.mobs.attacking.remove(monster)
+            # (Normally mobs.list will remove stuff from itself by noticing the mob die,
             # but "Attack What?" (smartCombat.error isn't going to trigger any removal)
 
         # #magentaprint("end of enage dir list: " + str(self.direction_list), False)
@@ -885,14 +1071,27 @@ class GrindThread(BotThread):
         # Commenting: a) Mobs now does it's own removal and b) MOBS_ATTACKING is deprecated
         # if monster in C.MOBS_ATTACKING:
         #     C.MOBS_ATTACKING.remove(monster)
-        magentaprint("engage monster \"" + monster + ",\" in attacking list: " + str(monster in C.mobs.attacking))
+        magentaprint("Ending engage monster \"" + monster + ",\" in attacking list: " + str(monster in C.mobs.attacking))
         if monster in C.mobs.attacking:
-            magentaprint("GrindThread doing cleanup on erroneous mobs.attacking list, removing " + monster)
-            C.mobs.attacking.remove(monster)
+            # magentaprint("GrindThread doing cleanup on erroneous mobs.attacking list, removing " + monster)
+            # C.mobs.attacking.remove(monster)
             # Reason: if Mobs gets notified in the wrong order, smelly beggar gets added after it gets removed,
             # and I got a bad mobs.attacking... order has been fixed.
+            # PROBLEM: Bot removes bandit guard here when it's actually attacking! (TODO)
+            # Ok the only check was if monster in attacking... since it was two bandit guards we got into this case
+            # (Bot falls through into GO code which waits for cast to be ready when it should be attacking)
+            # So.... is there a better way to fix the smelly beggar thing... oyyyyyy
+            # So... the 2nd bandit guard is attacking, the bot removes it here wrongly, then goes into the travel loop,
+            # which WAITS FOR CAST READY, so it messes up the combat against the second bandit guard for 7 seconds
+            # (attack, cast 1.0 seconds later, it dies, then wait for cast ready 3.6 s, then go and get blocked)
+            # So what if we dont' remove from mobs attacking... we might get missed attacks I guess? (start attacking at ghosts?)
+            # Maybe 'Go" needs to take better control of this... ala TRYING_TO_MOVE
+            magentaprint("Grindthread: Is something wrong with the attacking list??")
+            # I guess we have to check somewhere (ie at the top of this function or in smart Combat) whether the target was good
 
-        if not C.mobs.attacking:
+        # if C.mobs.attacking == []:
+        #     self.get_items_if_weapon()
+        if not C.mobs.chase and not SC.error:
             self.get_items_if_weapon()
 
     # def do_flee_hook(self):
@@ -935,6 +1134,7 @@ class GrindThread(BotThread):
                     # ACK small flasks don't always disappear
 
                     return
+                # Could drop/consume smaller restoratives and keep scarlets - not very important though, those get dropped at tip later
             else:
                 # just leave it there
                 return
@@ -948,7 +1148,7 @@ class GrindThread(BotThread):
         while self.character.mobs.attacking and not self.stopping:
             self.engage_monster(self.character.mobs.attacking[0])
             # self.character.mobs.attacking = self.character.mobs.attacking[1:]
-            self.get_items_if_weapon()
+            # self.get_items_if_weapon() # Could get loot blocked
 
     def engage_any_attacking_mobs(self):
         engaged = False
@@ -958,8 +1158,8 @@ class GrindThread(BotThread):
             engaged = True
             self.engage_monster(self.character.mobs.attacking[0])
 
-        if engaged:
-            self.get_items_if_weapon()
+        # if engaged:
+        #     self.get_items_if_weapon()
 
         return engaged
 

@@ -276,10 +276,10 @@ class Inventory(SimpleCommand, ReferencingList):
             self.keep_list[index] = MudItem(item)
 
         self.large_restoratives = [
-            'scarlet potion', 'philtre of health', 'golden potion'
+            'large restorative', 'scarlet potion', 'philtre of health', 'golden potion'
         ]
         self.restoratives = [
-            'chicken soup', 'small restorative', 'white potion', 'small flask', 'large restorative'
+            'chicken soup', 'small restorative', 'white potion', 'small flask'
         ] + self.large_restoratives
         # , 'tree root']
 

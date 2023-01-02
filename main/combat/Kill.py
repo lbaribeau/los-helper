@@ -14,6 +14,7 @@ class Kill(SimpleCombatObject):
     failure_regexes = [R.attack_miss]
     error_regexes   = [R.bad_k_target] 
     # SmartCombat also has to stop on bad target
+    # TODO: recently died, not allowed to attack same target yet
 
     def __init__(self, telnetHandler):
         super().__init__(telnetHandler)

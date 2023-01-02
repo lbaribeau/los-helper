@@ -690,7 +690,7 @@ class MainhandWeaponBot(MiniBot):
 
     def get_possible_weapons(self):
         if self.possible_weapons:
-            magentaprint("WeaponBot possible weapons: " + str([w.item.name for w in self.possible_weapons]))
+            # magentaprint("WeaponBot possible weapons: " + str([w.item.name for w in self.possible_weapons]))
             return self.possible_weapons
         elif not hasattr(self, 'travel_bot'):
             magentaprint("WeaponBot: Warning: get_possible_weapons() was called before init_with_map.")
@@ -710,7 +710,7 @@ class MainhandWeaponBot(MiniBot):
             if specific_level_query:
                 self.possible_weapons = specific_level_query
             else:
-                self.possible_weapons = AreaStoreItem.get_by_item_typ_and_level_max(
+                self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max(
                     'weapon', 
                     self.character.info.weapon_type, 
                     self.character.info.weapon_level
@@ -718,7 +718,7 @@ class MainhandWeaponBot(MiniBot):
 
             # Do by level, and if that's empty, then do level_max
             # Since we prefer to only allow top level, but if there's no such areastoreitem, try level_max
-            magentaprint("WeaponBot possible weapons: " + str(self.possible_weapons))
+            # magentaprint("WeaponBot possible weapons: " + str(self.possible_weapons))
             return self.possible_weapons
 
             # level = self.character.weapon_level

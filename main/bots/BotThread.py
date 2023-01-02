@@ -72,10 +72,10 @@ class BotThread(threading.Thread):
         while not self.stopping:
             self.direction_list = self.decide_where_to_go()
             magentaprint('BotThread.run: decide_where_to_go returned ' + str(self.direction_list))
-            self.do_pre_go_actions()
+            self.do_pre_go_actions() # Can do shopping here, which can insert at the beginning of the direction list
 
             while self.direction_list and not self.stopping:
-                magentaprint("BotThread has direciton list")
+                magentaprint("BotThread has direction list")
                 self.do_regular_actions()
                 if self.go(self.direction_list[0]):
                     self.do_on_succesful_go()
@@ -145,6 +145,7 @@ class BotThread(threading.Thread):
     @staticmethod
     def has_ideal_stat(cur_value, ideal_value):
         return cur_value >= ideal_value
+        # Why not put >= inline?
 
     @staticmethod
     def can_use_timed_ability(last_use, timeout):
@@ -180,6 +181,7 @@ class BotThread(threading.Thread):
 
     def has_ideal_health(self):
         return BotThread.has_ideal_stat(self.character.HEALTH, self.character.HEALTH_TO_HEAL)
+        # Ummm this isn't what ideal means to me :(
 
     def do_go_hooks(self, exit_str):
         # add the path to a given areaid to out current direction_list

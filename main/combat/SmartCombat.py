@@ -239,6 +239,7 @@ class SmartCombat(CombatObject):
         self.casting = self.black_magic or Spells.vigor in self.character.spells
         cast = self.cast
         kill = self.kill
+        self.result='' # makes sure self.end_combat isn't True
 
         # magentaprint("SmartCombat Why isn't this wait waiting1")
         # magentaprint(self.mud_reader_completion_event)
@@ -307,10 +308,10 @@ class SmartCombat(CombatObject):
                     else:
                         time.sleep(min(0.2, kill.wait_time())) # Checks mana and fleeing but goes into melee if it's up
                 elif C.MANA >= 2:
-                    if C.MANA >= 5 and damage >= C.max_mend() + C.hp_tick:
+                    if C.MANA >= 5 and damage >= C.max_mend() + C.hp_tick():
                         self.do_cast('m')
                     elif damage >= C.max_vigor() or (C.MANA >= C.maxMP and damage > C.max_vigor()*0.75):
-                        # (C.MANA >= C.maxMP - 1 and damage > C.max_vigor()/1.7 and damage > C.hp_tick):
+                        # (C.MANA >= C.maxMP - 1 and damage > C.max_vigor()/1.7 and damage > C.hp_tick()):
                         self.do_cast('v')
                     else:
                         time.sleep(min(0.2, kill.wait_time()))
@@ -321,6 +322,17 @@ class SmartCombat(CombatObject):
 
         self.activated = False
         magentaprint(str(self) + " ending run().")
+
+    def wait_for_one_of_kill_and_cast(self):
+        # Grindthread is gonna use these
+        magentaprint("SmartCombat kill and cast wait for one: {}s".format(round(max(min(self.kill.wait_time(), self.cast.wait_time()), 0),3)))
+        time.sleep(max(min(self.kill.wait_time(), self.cast.wait_time()), 0))
+
+    def wait_for_both_of_kill_and_cast(self):
+        # magentaprint("SmartCombat kill and cast wait for both: {}s".format(max(min(self.kill.wait_time(),0), min(self.cast.wait_time(),0))))
+        # time.sleep(max(min(self.kill.wait_time(),0), min(self.cast.wait_time(),0)))
+        magentaprint("SmartCombat kill and cast wait for both: {}s".format(round(max(self.kill.wait_time(), self.cast.wait_time(),0),3)))
+        time.sleep(max(self.kill.wait_time(), self.cast.wait_time(),0))
 
     def do_cast(self, spell, target=None):
         self.prompt.clear()
@@ -656,6 +668,8 @@ class SmartCombat(CombatObject):
         self.set_pot_thread = False
         self.run()
         magentaprint("SmartCombat completed!")
+
+
 
 
 #  SmartCombat will have to wait for the DB!!!

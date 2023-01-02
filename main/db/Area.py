@@ -221,29 +221,25 @@ class Area(NamedModel):
                 exit_id_list += ", " + str(exit_type_list[i].id)
 
             try:
-                query ="""
-select a.*
-from area a
-join areaexit as ae
-on a.id = ae.[area_from_id]
-where a.id in (
-select ae.area_from_id
-from areaexit as ae
-join area as a
-on a.id = ae.area_from_id
-where a.name = "%s"%s and ae.is_hidden = 0
-group by ae.area_from_id
-having count(*) = %s
-) and ae.[exit_type_id] in (%s)
-group by a.id
-having count(*) = %s
-"""
-
-                formatted_query = query % (area_name, description_clause, str(exit_count), exit_id_list, str(exit_count))
-
+                query = (
+                    "select a.* "                                 +
+                    "from area a "                                +
+                    "join areaexit as ae "                        +
+                    "on a.id = ae.[area_from_id] "                +
+                    "where a.id in ( "                            +
+                    "select ae.area_from_id "                     +
+                    "from areaexit as ae "                        +
+                    "join area as a "                             +
+                    "on a.id = ae.area_from_id "                  +
+                    'where a.name = "%s"%s and ae.is_hidden = 0 ' +
+                    "group by ae.area_from_id "                   +
+                    "having count(*) = %s "                       +
+                    ") and ae.[exit_type_id] in (%s) "            +
+                    "group by a.id "                              +
+                    "having count(*) = %s "
+                ) % (area_name, description_clause, str(exit_count), exit_id_list, str(exit_count))
                 # print (formatted_query)
-
-                for derp in Area.raw(formatted_query):
+                for derp in Area.raw(query):
                     areas.append(derp)
 
             except Area.DoesNotExist:

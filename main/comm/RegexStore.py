@@ -90,8 +90,11 @@ __Three_possible_mob_strings = r"(?P<whole_mob_name>((?P<mob1>The( [A-Z][a-z'-]+
 # __three_possible_mob_strings = "(?:the ((?P<mob1>(?P<mob3>(?P<mob2>[a-z '-]+))) ))"
 # __three_possible_mob_strings = "(?:the ((?P<mob1>(?P<mob3>(?P<mob2>.+?))) ))"
 # __three_possible_mob_strings = "(?:the ((?P<mob1>(?P<mob3>(?P<mob2>.+?))) ))"
+# __three_possible_mob_strings = r"((?P<mob1>The( [A-Z][a-z'-]+)+)|(?:the " + __numbers_opt + r"(?P<mob2>[a-z '-]+))|(?P<mob3>[A-Z][A-Za-z '-]+))"
 __three_possible_mob_strings = r"((?P<mob1>The( [A-Z][a-z'-]+)+)|(?:the " + __numbers_opt + r"(?P<mob2>[a-z '-]+))|(?P<mob3>[A-Z][A-Za-z '-]+))"
 # Separating The and the eliminates mob2 from matching 'the' in Alaran/Hef
+# Ok we have mob1 grouped and catching "The"... we don't want 'The' right?? Strip all the "The"s seems good
+# ie. The Mob, the 2nd kobold guard, the vicar
 __Numbers = r"(:?(?P<N>An?|Two|Three|Four|Five|Six|Seven|Eight|Nine|Ten|Eleven|Twelve|Thirteen) )?"
 # __mob_string = "(?P<mob_string>[\w ]+)"  # We don't need this unless there are commas.
 #s_numbered=" ?([\d]*?1st|[\d]*?2nd|[\d]*?3rd|[\d]*th)? ?"
@@ -139,13 +142,13 @@ mob_attacked = [  # TODO: do any mobs wield weapons? (different text)
     __Three_possible_mob_strings + r" casts a [A-Za-z\-]+ spell on you for (?P<d>\d+) damage\."
 ] 
 # mob_died = ["Your attack overwhelms (?:the " + __numbers_opt + ")?(?P<mob>.+?) and (s?he|it) collapses!"]
-mob_died = [r"Your attack overwhelms " + __three_possible_mob_strings + " and (?:s?he|it) collapses!"]
+ze_mob_died = [r"Your attack overwhelms " + __three_possible_mob_strings + " and (?:s?he|it) collapses!"]
 # mob_fled = ["The (" + numbers + " )?(?P<mob_name>.+?) flees to the (.+?)\."]
 # mob_fled = ["(?:The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 
 # mob_fled = ["(?:The " + __numbers_opt + ")?(?P<mob>.+?) flees to the (?P<exit>.+?)\."] 
 # mob_fled = ["The (" + numbers + " )?(?P<mob_name>.+?) flees to the (.+?)\."]
 # mob_fled = ["(?:The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 
-mob_fled = [__Three_possible_mob_strings + r" flees to the (?P<exit>[a-z ]+)\."] 
+ze_mob_fled = [__Three_possible_mob_strings + r" flees to the (?P<exit>[a-z ]+)\."] 
 # mob_defeated = ["Your enemy, (?:the " + __numbers_opt + ")?(?P<mob>.+?) has been defeated\."]
 mob_defeated = [r"Your enemy, " + __three_possible_mob_strings + r" has been defeated\."]
 
@@ -644,4 +647,9 @@ occupied_area         = [r"Someone is blocking the way\."]
 rest = [r"You lean back to take some rest\."] # blue text
 you_feel_the_benefits = [r"You feel the benefits of resting\."]
 may_not_use           = [r'You may not use that\.'] # Haven't needed this one (double print with class_prevents)
+
+bless =   [r"You feel holy\."] # you feel a strengthening spirit guide you
+unbless = [r"You feel less holy\."]
+prot =    [r"You feel watched\."] # you feel that a protective presence watches over you
+unprot =  [r"You feel less protected\."]
 

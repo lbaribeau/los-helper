@@ -25,7 +25,6 @@ class MudReaderHandler(object):
     # The handler's job is to know what flags to set.
 
     def __init__(self, mudReaderThread, character):
-
         self.mudReaderThread = mudReaderThread
         self.character = character
         self.good_MUD_timeout = 8

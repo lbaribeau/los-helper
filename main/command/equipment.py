@@ -27,8 +27,18 @@ class Equipment(Command):
                                        # that doesn't catch all of the equipment
         # self.regex_cart.append(R.prompt)
         self.slot_names = [
-            'body','arms','legs','neck','neck2','hands','head','feet','face','finger','finger2','finger3',
-            'finger4','finger5','finger6','finger7','finger8','shield','wielded','seconded','holding']
+            'body',
+            'arms',
+            'legs',
+            'neck', 'neck2',
+            'hands',
+            'head',
+            'feet',
+            'face','finger','finger2','finger3','finger4','finger5','finger6','finger7','finger8',
+            'shield',
+            'wielded',
+            'seconded',
+            'holding']
         self.reset()
 
     def reset(self):

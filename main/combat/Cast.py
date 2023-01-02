@@ -3,7 +3,7 @@ import re
 import time
 
 from combat.CombatObject import SimpleCombatObject
-from comm import RegexStore
+from comm import RegexStore as R
 from misc_functions import magentaprint
 from comm import Spells
 from Aura import Aura
@@ -14,9 +14,10 @@ class Cast(SimpleCombatObject):
     cooldown_after_failure = 0
     regexes = []
 
-    success_regexes = [RegexStore.cast, RegexStore.aura, RegexStore.mob_aura]
-    failure_regexes = [RegexStore.cast_failure, RegexStore.no_mana]
-    error_regexes = [RegexStore.bad_target_or_spell, RegexStore.not_here]
+    success_regexes = [R.cast, R.aura, R.mob_aura]
+    failure_regexes = [R.cast_failure, R.no_mana]
+    error_regexes = [R.bad_target_or_spell, R.not_here]
+    # TODO: recently died, not allowed to attack same target yet
 
     aura = None
     aura_timer = 0
@@ -32,7 +33,7 @@ class Cast(SimpleCombatObject):
 
     def __init__(self, telnetHandler):
         super().__init__(telnetHandler)
-        self.end_combat_regexes.append(RegexStore.no_mana)
+        self.end_combat_regexes.append(R.no_mana)
 
     # Commented... hmmm.. I went with the notify_failure(), I think so I wasn't checking for the regex twice...
     # Just a logic structure thing.
@@ -48,10 +49,10 @@ class Cast(SimpleCombatObject):
        #     super().notify(regex, M_obj)
 
     def notify(self, regex, M_obj):
-        if regex in RegexStore.aura:
+        if regex in R.aura:
             self.aura = Aura(M_obj.group('aura'))
             self.aura_timer = time.time()
-        elif regex in RegexStore.no_mana:
+        elif regex in R.no_mana:
             self.stop()
         super().notify(regex, M_obj)
 
@@ -146,7 +147,7 @@ class Cast(SimpleCombatObject):
                      10 if spell.startswith(Spells.protection) else \
                      self.mend_amount if spell.startswith(Spells.mendwounds) else 3
 
-        self.result = RegexStore.cast_failure[0]
+        self.result = R.cast_failure[0]
         self.stopping = False
         magentaprint("cast.spam_spell, spell_cost {}, self.failure {}, self.stopping {}.".format(spell_cost, self.failure, self.stopping))
 
