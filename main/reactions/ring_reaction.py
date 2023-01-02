@@ -12,7 +12,7 @@ class RingWearingReaction(object):
         # # self.regexes = [r"(?s)You get [\da-zA-Z]+?an? .+? ring((,.+?\.)|(\.))"]
         # # self.regexes = [r"You get a copper ring\."]
         # self.regexes = R.get_ring + R.armour_break + R.end_combat
-        self.regexes = R.you_get + R.armour_breaks + R.mob_died
+        self.regexes = R.you_get + R.armour_breaks + R.ze_mob_died
         self.wear = wear
         # self.broken_ring
         # self.full_rings = False
@@ -24,7 +24,7 @@ class RingWearingReaction(object):
         # This doesn't mark broken rings though... and for some reason it gets notified many times.
         # if regex in R.get_ring:
         # Do we know if inventory has been notified yet?
-        if regex in R.you_get + R.mob_died and self.rings_worn < 8:
+        if regex in R.you_get + R.ze_mob_died and self.rings_worn < 8:
             self.try_wearing_rings()
             # self.wear.execute('all')
         elif regex in R.armour_breaks:

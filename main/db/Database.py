@@ -43,6 +43,8 @@ where a.id in (
       select distinct(area_from_id)
       from v_areaexits_for_graph);"""
 
+# Add items joined to area store items (we have a view for that)
+
 def create_tables():
     try:
         try_create(db.Log.Log)

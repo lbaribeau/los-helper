@@ -5,7 +5,7 @@ from misc_functions import magentaprint
 from threading import Thread
 
 class TravelBot(MiniBot):
-    # This bot should be able to kill enemies on the way
+    # TODO: This bot should be able to kill enemies on the way (like muggers)
     # Maybe not - maybe it can raise an exception
 
     def __init__(self, char, command_handler, map):

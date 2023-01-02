@@ -12,23 +12,23 @@ class CombatObject(ThreadingMixin):
     # SmartCombat, kill, cast
     def __init__(self, telnetHandler):
         # self.end_combat_regexes = [
-        #     R.mob_died, 
-        #     R.mob_fled, 
+        #     R.ze_mob_died, 
+        #     R.ze_mob_fled, 
         #     R.you_died
         # ]
         self.end_combat_regexes = [
-            R.mob_died,
-            R.mob_fled,
+            R.ze_mob_died,
+            R.ze_mob_fled,
             R.you_died
         ]
         self.telnetHandler = telnetHandler
         # self.regexes.extend(self.end_combat_regexes)
-        # self.regex_cart = [R.mob_died, R.mob_fled]
+        # self.regex_cart = [R.ze_mob_died, R.ze_mob_fled]
         # if hasattr(self, regex_cart):
-        #     self.regex_cart.extend([R.mob_died, R.mob_fled])
+        #     self.regex_cart.extend([R.ze_mob_died, R.ze_mob_fled])
         # else:
-        #     self.regex_cart = [R.mob_died, R.mob_fled]
-        # self.regex_cart.extend([R.mob_died, R.mob_fled])
+        #     self.regex_cart = [R.ze_mob_died, R.ze_mob_fled]
+        # self.regex_cart.extend([R.ze_mob_died, R.ze_mob_fled])
         # self.regexes = self.end_combat_regexes
         self.regex_cart = self.end_combat_regexes[:]
 
@@ -41,15 +41,15 @@ class CombatObject(ThreadingMixin):
 
     @property
     def end_combat(self):
-        # return self.result in R.mob_died or self.result in R.mob_fled or self.result in R.you_died
-        return self.result in R.mob_died + R.mob_fled + R.you_died
+        # return self.result in R.ze_mob_died or self.result in R.ze_mob_fled or self.result in R.you_died
+        return self.result in R.ze_mob_died + R.ze_mob_fled + R.you_died
         #return self.result in self.end_combat_regexes
     @property
     def mob_died(self):
-        return self.result in itertools.chain.from_iterable(R.mob_died)
+        return self.result in itertools.chain.from_iterable(R.ze_mob_died)
     @property
     def mob_fled(self):
-        return self.result in itertools.chain.from_iterable(R.mob_fled)
+        return self.result in itertools.chain.from_iterable(R.ze_mob_fled)
     def in_combat(self):
         magentaprint(str(self) + " in combat returning " + str(hasattr(self, 'thread') and self.thread and self.thread.is_alive()))
         return hasattr(self, 'thread') and self.thread and self.thread.is_alive()
@@ -65,10 +65,10 @@ class SimpleCombatObject(CombatObject, Command):
         ## self.regexes.extend(self.success_regexes)
         ## self.regexes.extend(self.failure_regexes)
         # self.regexes.extend(self.end_combat_regexes)
-        ## self.regex_cart.extend([R.mob_died, R.mob_fled]))
+        ## self.regex_cart.extend([R.ze_mob_died, R.ze_mob_fled]))
         # magentaprint("SimpleCombatObject end_combat_regexes: " + str(self.end_combat_regexes))
-        # self.regex_cart.extend([R.mob_died, R.mob_fled].extend(self.end_combat_regexes))
-        self.end_combat_regexes = [R.mob_died, R.mob_fled, R.you_died]
+        # self.regex_cart.extend([R.ze_mob_died, R.ze_mob_fled].extend(self.end_combat_regexes))
+        self.end_combat_regexes = [R.ze_mob_died, R.ze_mob_fled, R.you_died]
         self.regex_cart.extend(self.end_combat_regexes)
         self.end_combat_regexes.extend(self.error_regexes)
         # magentaprint("SimepleCombatObject end_combat_regexes: " + str(self.end_combat_regexes))

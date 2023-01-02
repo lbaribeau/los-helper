@@ -12,7 +12,7 @@ class Mobs(BotReactionWithFlag):
     # I will give this object MONSTER_LIST because that provides a place for possible extended functionality
     # in the future, such as correcting targets. (Ok we wrote MobTargetDeterminator)
 
-    # The main reason for this object is too further clean up MudReaderThread, which is ALMOST readable/maintainable now.
+    # The main reason for this object is to further clean up MudReaderThread, which is ALMOST readable/maintainable now.
     # Cartography initializes this upon entry of a new area
     regex_cart = [
         R.mob_arrived,
@@ -23,9 +23,9 @@ class Mobs(BotReactionWithFlag):
         R.mob_joined1,
         R.mob_joined2,
         R.mob_aggro,
-        R.mob_died,
+        R.ze_mob_died,
         R.mob_defeated,
-        R.mob_fled,
+        R.ze_mob_fled,
         R.blocked_path
         # TODO: bandit sentry returns to his post... he still shows up in look, but if you don't look, you can't target him for a sec
     ]
@@ -50,26 +50,43 @@ class Mobs(BotReactionWithFlag):
         if r in R.mob_arrived:
             self.list.add_from_list(self.read_mobs(M.group('mobs')))
             magentaprint("Mobs.list (added): " + str(self.list.list)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
-        elif r in R.mob_died:
+        elif r in R.ze_mob_died:
             mob_name = self.read_match(M)
-            magentaprint("Mobs noticed " + mob_name + " died, it's in the self.list: " + str(mob_name in self.list))
+            # magentaprint("Mobs noticed " + mob_name + " died, it's in the self.list: " + str(mob_name in self.list))
+            magentaprint("Mobs noticed " + mob_name + " died, it's in the self.list: {}, self.list is {} (len {}), self.attacking is {} (len {}).".format(mob_name in self.list, self.list, len(self.list), self.attacking, len(self.attacking)))
+            if mob_name in self.list:
+                self.list.remove(mob_name)
+            # magentaprint("Mobs removed it from the list, now is it in attacking: {0}".format(mob_name in self.attacking))
+            if mob_name in self.attacking:
+                # magentaprint("Mobs removed it from the list, now is it in attacking: {0}".format(mob_name in self.attacking))
+                self.attacking.remove(mob_name)  
+                # TODO: if a mob is one-shot, it's not removed because the You attacked notify is after
+                # Are we really going to fix this by putting you_attack alphabetically before your attack overwhelms (mob died)
+                # Unless we put a -1 or something to pre-remove it... how about calling it engage
+            magentaprint("Mobs: likely removed "+mob_name + ": self.list is {} (len {}), self.attacking is {} (len {}).".format(self.list, len(self.list), self.attacking, len(self.attacking)))
+            magentaprint('Mobs: damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(round(self.mean(self.damage), 1)) + ', stdev=' + str(round(self.stdev(self.damage), 1)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/max(len(self.damage),1), 2)))
+            # m = sum(self.damage) / max(len(self.damage), 1)
+            # s = sum(self.damage - [m]*len(self.damage))
+            # magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(stats.mean(self.damage)) + ', stdev=' + str(stats.stdev(self.damage)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/len(self.damage), 2)))
+        elif r in R.ze_mob_fled:  
+            # Leave mobs.attacking populated. (?)  
+            # might help to chase mobs that don't block you (chase currently relies on that.)
+            # Ey well engage_monster ends up thinking that there is still something attacking
+            # Engage monster was actually removing it(!)
+            # Well then use check Mobs.chase for any chase logic
+            mob_name = self.read_match(M)
             if mob_name in self.list:
                 self.list.remove(mob_name)
             magentaprint("Mobs removed it from the list, now is it in attacking: {0}".format(mob_name in self.attacking))
             if mob_name in self.attacking:
                 self.attacking.remove(mob_name)  
-                # TODO: if a mob is one-shot, it's not removed because the You attacked notify is after
-            magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(round(self.mean(self.damage), 1)) + ', stdev=' + str(round(self.stdev(self.damage), 1)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/max(len(self.damage),1), 2)))
-            # m = sum(self.damage) / max(len(self.damage), 1)
-            # s = sum(self.damage - [m]*len(self.damage))
-            # magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(stats.mean(self.damage)) + ', stdev=' + str(stats.stdev(self.damage)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/len(self.damage), 2)))
-        elif r in R.mob_fled:  # Leave mobs.attacking populated. (?)  might help to chase mobs that don't block you (chase currently relies on that.)
-            if self.read_match(M) in self.list:
-                self.list.remove(self.read_match(M))
-            self.chase = self.read_match(M)
+            self.chase = mob_name
             self.chase_exit = M.group('exit')
-        elif (r in R.mob_wandered or r in R.mob_left) and self.read_match(M) in self.list:
-            self.list.remove(self.read_match(M))
+            magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(round(self.mean(self.damage), 1)) + ', stdev=' + str(round(self.stdev(self.damage), 1)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/max(len(self.damage),1), 2)))
+        elif r in R.mob_wandered or r in R.mob_left:
+            mob_name = self.read_match(M)
+            if mob_name in self.list:
+                self.list.remove(mob_name)
         elif r in R.mob_joined1 or r in R.mob_joined2:
             magentaprint("Mobs.notify mob joined in {}".format(r))
             self.attacking.append(self.read_match(M))
@@ -82,17 +99,29 @@ class Mobs(BotReactionWithFlag):
             # #         nth = int(M.group('nth')[0:len(M.group('nth'))-2])
             # #         self.attacking.extend([M.group('mob')] * max(nth - c, 0))
             #c = self.attacking.count(self.read_match(M))
-            if self.attacking.count(self.read_match(M)) == 0:
-                self.attacking.append(self.read_match(M))
+            # if self.attacking.count(self.read_match(M)) == 0:
+            #     self.attacking.append(self.read_match(M)) # Oy I think this is jank (gets added twice?? yes)
+                # So does "You attack" always happen?? (To make sure things always get added...)
+            # Try relying only on "you attack" and "X attacks you" (mob_aggro) because of race conditions (adding twice)
+            # Also, checking.count is an unreliable check (should be redundant)
             # TODO: remember if 1st and 2nd mobs are attacking and ensure attacking has length 2 if necessary
             if 'd' in M.groupdict().keys():
                 self.damage.append(int(M.group('d')))
             else:
                 self.damage.append(0)
-        elif r in R.you_attack or r in R.mob_aggro:
+        elif r in R.mob_aggro:
             self.damage = []
             magentaprint("Mobs.notify mob aggro {}".format(r))
-            self.attacking.append(self.read_match(M))
+            self.attacking.append(self.read_match(M)) # Ehrm this adds the mob even if it got one-shotted (it's dead(!))
+        elif r in R.you_attack:
+            # Ok suppose we one-shot a waitress; You attack the waitress and waitress died are in the same block.
+            # This clause gets called last because you_attack is alphabetically later than mob_died (see mudReaderHandler's dir(RegexStore))
+            # So check if the mob is in the list to reduce jank
+            self.damage = []
+            mob_name = self.read_match(M)
+            magentaprint("Mobs.notify attacked mob {}".format(mob_name)) # Hmmm "The Floor Manager" not in [Floor Manager]
+            if mob_name in self.list: # Make sure it hasn't been killed already
+                self.attacking.append(mob_name) # adds the mob even if it got one-shotted (it's dead(!)) (FIXED with ze_mob_died!)
         elif r in R.blocked_path:
             # magentaprint("Mobs got {}".format(M.group('whole_mob_name')))
             mob_name = self.read_match(M)
@@ -101,9 +130,20 @@ class Mobs(BotReactionWithFlag):
                 self.list.add(mob_name) # Have bandit sentry in the list for when the bandit arrives so target can be calculated properly
             magentaprint("Mobs list is now {}".format(self.list.list))
             # TODO: "The 2nd XXX blocks your path." (should ensure to have two XXX in the list then)
-        if self.attacking:
-            magentaprint("Mobs.notify, mobs.attacking " + str(self.attacking))
+        # if self.attacking:
+        #     magentaprint("Mobs.notify, mobs.attacking " + str(self.attacking))
         super().notify(r, M)
+        # Well it seems good now
+        # The jank was double add
+        # Double add happened because count occurred while mob_aggro was still queued up
+        # Also jank was… remove before add
+        # So the fix is to check if it’s (still) in the list before adding to attacking (in you_attack)
+
+    def get_reference_from_mob_match_object(self, match_object):
+        return self.get_reference(self.read_match(match_object))
+
+    def get_reference(self, target):
+        return self.list.get_reference(target)
 
     def parse_mob_string(self, s):
         # You see (two kobold children, a dustman).
@@ -154,11 +194,30 @@ class Mobs(BotReactionWithFlag):
         # return list(m_dict.keys())
         return m_list
 
-    def get_reference_from_mob_match_object(self, match_object):
-        return self.get_reference(self.read_match(match_object))
-
-    def get_reference(self, target):
-        return self.list.get_reference(target)
+    def read_match(self, m):
+        # You attack The Floor Manager.
+        # So this isn't used for "You see ..." and it's a list
+        # It's used in Mobs.notify for a __three_possible_mob_strings
+        # It seems like parse_mob_string should/could actually call read_match so that they're parsed the same way
+        # You attack The Floor Manager would match mobs1 and we can strip the The to match what happens with mobst list
+        if m.group('mob1'):
+            magentaprint("Mobs mob1: {}".format(m.group('mob1').strip()))
+            # return m.group('mob1').strip() # 'The' should have been removed, right?
+            if m.group('mob1').startswith('The '):
+                # ie. The Floor Manager
+                return m.group('mob1').partition(' ')[2].strip()
+            else:
+                return m.group('mob2').strip()
+        elif m.group('mob2'):
+            magentaprint("Mobs mob2")
+            if m.group('mob2').startswith('The '):
+                # TODO: No, I don't see how this regex could have 'The' in it after numbers like 1st/2nd
+                return m.group('mob2').partition(' ')[2].strip()
+            else:
+                return m.group('mob2').strip()
+        elif m.group('mob3'):
+            magentaprint("Mobs mob3")
+            return m.group('mob3').strip()
 
     def read_mobs(self, arrived_mobs):
         mob_parse  = arrived_mobs.partition(' ')
@@ -176,19 +235,6 @@ class Mobs(BotReactionWithFlag):
             magentaprint("Mobs arrived no article: first_word " + first_word + " mobs: " + arrived_mobs)
             # self.list.append(mob_parse[0])
             return [mob_parse[0]]
-
-    def read_match(self, m):
-        if m.group('mob1'):
-            return m.group('mob1').strip()
-        elif m.group('mob2'):
-            # magentaprint("Mobs mob2")
-            if m.group('mob2').startswith('The '):
-                return m.group('mob2').partition(' ')[2].strip()
-            else:
-                return m.group('mob2').strip()
-        elif m.group('mob3'):
-            # magentaprint("Mobs mob3")
-            return m.group('mob3').strip()
 
     # Todo: Why are these part Mobs? Shouldn'they be misc functions?
     def mean(self, a):

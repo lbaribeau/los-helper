@@ -26,32 +26,32 @@ class Cartography(BotReactionWithFlag):
         self.store_item_list = "(?:[\s]*)(?:A |An |Some )?(.+?)(?:[\s]*)(?:(\(.\))?(?:[\s]*))?Cost: ([\d]*)" 
         # (Do a re.findall on the list above to iterate through, don't add this to the array below)
         self.regex_cart = [
-            R.area,             
-            R.too_dark,            
-            R.no_exit,             
-            R.blocked_path,     
-            R.cant_go,          
+            R.area,
+            R.too_dark,
+            R.no_exit,
+            R.blocked_path,
+            R.cant_go,
             R.please_wait,
-            R.class_prohibited, 
+            R.class_prohibited,
             R.level_too_low,
             R.level_too_high,
-            R.not_invited,      
-            R.not_open_during_day, 
+            R.not_invited,
+            R.not_open_during_day,
             R.not_open_during_night,
-            R.no_items_allowed, 
-            R.locked,              
-            R.no_right,         
+            R.no_items_allowed,
+            R.locked,
+            R.no_right,
             R.not_authorized,
-            R.cannot_force,     
-            R.not_here,            
-            R.loot_blocked,     
+            R.cannot_force,
+            R.not_here,
+            R.loot_blocked,
             R.teleported,
-            R.in_tune,          
-            R.you_see_mob,         
-            R.mob_aura,         
+            R.in_tune,
+            R.you_see_mob,
+            R.mob_aura,
             R.store_list,
-            R.mob_fled,         
-            R.open_first,          
+            # R.ze_mob_fled,
+            R.open_first,
             R.washroom
         ]
 
@@ -118,12 +118,11 @@ class Cartography(BotReactionWithFlag):
             #The following is a set of work arounds to smoothe things out until those bugs are fixed
             if self.character.ACTIVELY_BOTTING:
                 if self.character.CONFUSED:
-                    if (not self.character.CAN_SEE):
+                    if not self.character.CAN_SEE:
                         self.commandHandler.process('c light') #look around to stop the "you don't see that here bug"
 
                     #clear the attacking list
                     self.character.MOBS_ATTACKING = []
-
                     # self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
                 else:
                     self.character.CONFUSED = True
@@ -143,7 +142,7 @@ class Cartography(BotReactionWithFlag):
             self.store_list(regex, M)
         else:
             # This is fine for a shut door - we just want the super().notify in that case.
-            magentaprint("Cartography case missing for regex: " + str(regex)) # (mob_fled)
+            magentaprint("Cartography case missing for regex: " + str(regex)) # (ze_mob_fled)
         magentaprint("Cartography notify done on: " + str(regex[:min(len(regex), 20)]) + '...')
         super().notify(regex, M) # threading.Event
 
@@ -183,7 +182,7 @@ class Cartography(BotReactionWithFlag):
         C.EXIT_REGEX = self.create_exit_regex_for_character(C.EXIT_LIST)
         C.mobs.list  = ReferencingList(self.parse_monster_list(match.group(4)))
         # This calls mobs.parse_monster_list
-        magentaprint("Cartography.area set character.mobs.list: " + str(C.mobs.list))
+        # magentaprint("Cartography.area (id is {}) set character.mobs.list: {}".format(C.))
         # magentaprint("Cartography set character.mobs.list.list: " + str(C.mobs.list.list))
         C.mobs.attacking = [] # TODO: match regex for entering an area where a mob is already attacking you
 
@@ -244,21 +243,36 @@ class Cartography(BotReactionWithFlag):
         self.character.TRYING_TO_MOVE = False
 
     def store_list(self, regex, M):
+        # TODO: This code should make a new item and areastoreitem if there is armour of a different size (or solve armour sizing another way) (I am entering data manually)
         magentaprint(M.group('store_list'))
         # self.store_item_re = r"\s+(?P<item>[A-Za-z']+ )+\s+(\((?P<size>[sml])\)\s+)?Cost: (?P<cost>\d+)\r\n"  
         self.store_item_re = r"\s+(?P<item>([A-Za-z']+ )+)\s+(\((?P<size>[sml])\)\s+)?Cost: (?P<cost>\d+)[\r\n]{2}"  
         # for store_item_match in re.findall(self.store_item_re, M.group('store_list') + '\r\n'):
         for imatch in re.finditer(self.store_item_re, M.group('store_list') + '\r\n'):
-            magentaprint('Parsed item: ' + self.character.inventory.remove_a_an_some(imatch.group('item').strip()) + ', size: ' + str(imatch.group('size')) + ', cost: ' + imatch.group('cost'))
-            area_item = self.catalog_item(self.character.inventory.remove_a_an_some(imatch.group('item').strip()), str(imatch.group('size')), int(imatch.group('cost')))
+            area_item = self.catalog_item(
+                self.character.inventory.remove_a_an_some(imatch.group('item').strip()), 
+                str(imatch.group('size')), 
+                int(imatch.group('cost')))
+            magentaprint(
+                'Parsed item: ' + self.character.inventory.remove_a_an_some(imatch.group('item').strip()) + \
+                ', size: ' + str(imatch.group('size')) + \
+                ', cost: ' + imatch.group('cost') + \
+                '. Got item id: ' + str(area_item.id))
             self.catalog_area_store_item(area_item, self.character.AREA_ID)
             # item_list = re.findall(self.store_item_list, M.group(0))
             # magentaprint("{" + M.group(0) + "}", False)
             # magentaprint("items: " + str(item_list), False)
             # for item in item_list:
             #     item_name = item[0]
-            #     item_size = item[1]
+            #     item_size  = item[1]
             #     item_value = item[2]
+        # Solution is - have the data accurately in the dB
+        # And have the bot decide whether it should buy it
+        # (ie if you don't want to buy something)
+
+        # for imatch in re.finditer(self.store_item_re, M.group('store_list') + '\r\n'):
+        #     # Redo loop for print readability
+        #     magentaprint("Cartography mapped asi area/ item: {}/{}".format(asitem.area.id, asitem.item.id))
 
     #Used if it's dark and / or the current area doesn't appear to be findable
     def guess_location(self, area_from_id, direction_from):
@@ -288,7 +302,6 @@ class Cartography(BotReactionWithFlag):
             try:
                 area_from = self.character.AREA_ID
                 exit_type = self.character.LAST_DIRECTION
-
                 MudArea.set_area_exit_as_unusable(regex, area_from, exit_type)
             except Exception:
                 magentaprint("Tried to make an area exit unusuable but failed")
@@ -340,7 +353,6 @@ class Cartography(BotReactionWithFlag):
         mob = Mob(name=name)
         mob.map()
         mob.aura = Aura.auras.index(aura)
-
         mob.save()
 
     def catalog_path_blocker(self, path_blocker_name):
@@ -364,16 +376,17 @@ class Cartography(BotReactionWithFlag):
     def catalog_item(self, item_name, item_size, item_value):
         item = Item(name=item_name, value=item_value, description=item_size)
         item.map()
-
         return item
 
     def catalog_area_store_item(self, item, area):
         asitem = AreaStoreItem(area=area,item=item)
+        # magentaprint("Mapped asi area, item, model (ie. size/sharp): {},{},{}".format(asitem.area.id, asitem.item.id, asitem.item.itemtype.model)) # itemtype was none
+        # magentaprint("Cartography mapped asi area/ item: {}/{}".format(asitem.area.id, asitem.item.id))
         asitem.map()
 
     def parse_exit_list(self, MUD_exit_str):
         try:
-            if (MUD_exit_str is None):
+            if MUD_exit_str is None:
                 magentaprint("Cartography exit match: " + str(MUD_mob_str))
                 return []
 
@@ -475,11 +488,4 @@ class Cartography(BotReactionWithFlag):
         # #     M_LIST = []
 
         # # return M_LIST
-
-
-
-
-
-
-
 

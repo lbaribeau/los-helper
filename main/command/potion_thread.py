@@ -104,14 +104,25 @@ class Consume(threading.Event):
 
     def small_healing_potion(self):
         pots = ['chicken soup', 'small restorative', 'white potion', 'small flask']
-
+        # This is just like healing_potion()
         for pot in pots:
             if self.inventory.has(pot):
                 self.clear()
-                self.use.execute(self.inventory.get_reference(pot))
-                return True
+                # Here is where we would check if we need to use 'eat' or 'drink'
+                self.use.execute(self.inventory.get_reference(pot)) # What about wait_until_ready - we are just sending it - potion thread handler does waiting
+                return True # So we know that False means that we didn't find a potion
+                # I think use persistent_execute in case of please wait
 
         return False
+
+    def small_healing_potion_with_wait(self):
+        self.use.wait_until_ready()
+        # Note: In GrindThread, I assumed that 'use' would be used
+        if self.small_healing_potion():
+            self.use.wait() # Waits for text to return after sending
+            return True # Means we executed
+        else:
+            return False # Means we didn't have any
 
     # def can_heal(self):
     #     pots = ['chicken soup', 'small restorative', 'small flask', 'white potion', 'scarlet potion', 'large restorative']

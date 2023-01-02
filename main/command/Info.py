@@ -78,11 +78,11 @@ class Info(BotReactionWithFlag):
         }
         self.spell_type = misc_functions.key_with_max_val(self.spell_proficiencies)
         self.spell_proficiency = self.spell_proficiencies[self.spell_type]
-        self.hp_tick = floor((self.con-1)/3)  # +3 in chapel
+        # self.hp_tick = floor((self.con-1)/3) # This is wrong for con==3. Use character.hp_tick()
 
     def notify(self, regex, M_obj):
         # pass in character, or just edit self?
-        magentaprint("Info notify {}: ".format(M_obj.re))
+        # magentaprint("Info notify {}: ".format(M_obj.re))
         if regex is self.header:
             self.name = M_obj.group(1)
             magentaprint("Info got race: {}".format(M_obj.group(2)))

@@ -18,11 +18,11 @@ class Item(NamedModel):
         if item is None:
             super(Item, self).save()
         else:
-            self.id = item.id
-            self.level = item.level
+            self.id          = item.id
+            self.level       = item.level
             self.description = item.description
-            self.itemtype = item.itemtype
-            self.value = item.value
+            self.itemtype    = item.itemtype
+            self.value       = item.value
             #update other fields if you want
 
         return is_new_mapping

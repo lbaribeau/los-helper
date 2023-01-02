@@ -92,6 +92,8 @@ class Drink(Command):
 # class Use(CommandThatRemovesFromInventory):
 class Use(Command):
     # Ehhh because of small flasks it's not simple enough for inheritance
+    # That means we can't trust is_usable on items 
+    # Since disintegrates is early in the alphabet, we can suppose that inventory will be up to day by the time you_use comes in
     cooldown_after_success = 0.86  # .83 too fast
     # cooldown_after_failure = 0.86
     cooldown_after_failure = 0
@@ -124,6 +126,8 @@ class Use(Command):
     def __init__(self, telnetHandler, inventory):
         super().__init__(telnetHandler)
         self.inventory = inventory # not used
+
+    # def use_small_restorative # I put this on Consume
     
     # def notify(self, regex, match):
     #     self.result = regex

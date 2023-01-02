@@ -60,6 +60,8 @@ class BuffAbility(Ability):
         #         # Timer is completely wrong -> Just set it very high and wait for wear_off_regex
         #         magentaprint("BuffAbility timer was way off.")
         super().notify(regex, M_obj)
+        # I could make this a BuffTimer and have silver chalice and steel bottle inherit the timer code
+        # And have the abilities multiple inherit
 
     def execute_until_success(self):
         pass
@@ -201,12 +203,12 @@ class Meditate(HealAbility):
 class AestersTears(HealAbility):
     command = "sin a"
     cooldown_after_success = 140  # Can flee/move/attack immediately
-    max_amount = 16  # guessed
+    max_amount = 23 # guessed 16 at level 4 I believe # 23 at level 8, also saw 16 in the range at level 8... hmmm... how do we edit this for level
     success_regexes = [RegexStore.aesters_tears]  # This seems to overwrite Ability...
     # self.failure_regex = "(?!x)x"  # Regex that never matches - Aester never fails
     failure_regexes = []
     # classes = ["Brd"]
-    level = 4
+    level = 4 # This is the level it is learned
 
 # danceOfTheCobra = FastCombatAbility(telnetHandler):
 class DanceOfTheCobra(FastCombatAbility):
@@ -331,14 +333,6 @@ class Circle(SlowCombatAbility):
 # @property is causing me issues... Like, one ability got a success_regex from another ability,
 # as if success_regex was a static thing for all different instances.  It also wouldn't let me 
 # overwrite self.command.
-
-
-
-
-
-
-
-
 
 
 # Previous attempt

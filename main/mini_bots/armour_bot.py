@@ -255,7 +255,7 @@ class ArmourBot(MiniBot):
         # Should we prefer the item that was just broken?  No need, that's overcomplicating it.  Go to the DB.
 
         # Steel armour: Paladins, dark knights, barbarians, fighters, bards(?) (cast iron shield)
-        # Plate same as Steel maybe (large iron shield)
+        # Plate lower tier steel maybe (not yet adept enough for steel) (large iron shield)
         # Chain: Rangers, assassins, clerics (iron shield)
         # Ring mail: Mages, druids, alchemists, thieves (bone shield)
 
@@ -337,14 +337,17 @@ class ArmourBot(MiniBot):
         # cloth, ring mail, chain, plate, steel (1-5)
         if self.steel():
             if character_lvl > 9:
+                # Bard confirmed can't wear steel gauntlets at level 8 - not adept enough
+                # So the bard can wear plate and is not adept enough to wear steel
+                # Apparently Druid can wear plate but not steel even at level 10 (need to figure that out - is level the important factor?)
                 return 5
             else:
-                return 4
+                return 4 # plate
         elif self.chain():
             if character_lvl > 9:
                 return 3
             else:
-                return 2
+                return 2 # ring mail
         else:
             return 1
 

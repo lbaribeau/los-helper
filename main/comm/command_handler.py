@@ -497,6 +497,20 @@ class CommandHandler(object):
             )])
         elif user_input == 'alarm':
             print('\a')
+        elif user_input == 'bless_timer':
+            self.bot_thread.bless_timer.print_timer()
+        elif user_input == "armour_list":
+            self.join_mud_map_thread()
+            # for slot in self.equipment.slot_names:
+            for slot in [s for s in self.equipment.slot_names if s not in ['neck2', 'face', 'finger2','finger3','finger4','finger5','finger6','finger7','finger8','wielded','seconded','holding']]:
+                for asi in AreaStoreItem.get_buyable_armour(self.armour_bot.get_size(self.character.info.race), slot.title(), self.armour_bot.get_armour_level(self.character.info.level)):
+                    magentaprint("{} : {}".format(slot, asi.item.name))
+                    # magentaprint("Would buy for {}: ".format(slot, asi.item.name))
+        elif user_input == "items":
+            for i in self.inventory.list:
+                magentaprint(i)
+        elif user_input == 'get_possible_weapons':
+            magentaprint(self.weapon_bot.get_possible_weapons())
         else:
             # Doesn't match any command we are looking for, send it to server
             self.telnetHandler.write(user_input)
@@ -1003,3 +1017,4 @@ class CommandHandler(object):
         # Would also need to figure out which thing was bought from the command, which isn't implemented.
         # NOTE: this relies heavily on tip drop (sell and you_get are not happening)
         # NOTE: There is "You now have XXX gold." (easier to use than you_get) (aha inventory has this)
+        # TODO: print total gold

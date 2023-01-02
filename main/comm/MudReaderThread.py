@@ -260,9 +260,9 @@ class MudReaderThread(threading.Thread):
             if M_obj:
                 self.character.TOTAL_EXPERIENCE = M_obj.group(1)
 
-            M_obj = re.search("Gold : (\d+)",text_buffer)
-            if M_obj:
-                self.character.TOTAL_GOLD = M_obj.group(1)
+            # M_obj = re.search("Gold : (\d+)",text_buffer)
+            # if M_obj:
+            #     self.character.TOTAL_GOLD = M_obj.group(1)
 
             #### Set weapon strings ####
             # M_obj = re.search("You wield (.*?)\.", text_buffer)
@@ -408,7 +408,7 @@ class MudReaderThread(threading.Thread):
     def copy_MUDBuffer(self):
         # Routine to copy the buffer shared with MudListenerThread.
         # Wait for access flag to go down for the read.
-        while(self.MUDBuffer.access_flag == True):
+        while self.MUDBuffer.access_flag == True:
             time.sleep(0.05)
 
         self.MUDBuffer.access_flag = True
@@ -446,7 +446,7 @@ class MudReaderThread(threading.Thread):
         elif colour_char == '7' or colour_char == '9':
             self.consoleHander.white()
         else:
-            magentaprint("MudReaderThread saw unrecognized escape sequence.")
+            magentaprint("MudReaderThread saw unrecognized ANSI escape sequence:"+ANSI_escape_sequence)
             pass
 
     def start_recording_mud_text(self):
