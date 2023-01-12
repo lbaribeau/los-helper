@@ -286,3 +286,12 @@ except Exception as e:
     L.close()
     raise e
 L.close()
+
+# Debug strat:
+    # python -i los_helper.py -fake username password
+    # 'quit'
+    # Then you get interactive >>> prompt
+    # And you have LosHelper object L
+    # And can do L.commandHandler.process('')
+
+

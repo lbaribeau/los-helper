@@ -9,7 +9,7 @@ import sys
 import misc_functions
 from misc_functions import magentaprint
 from db.Database import *
-from db.MudMap import *
+from db.MudMap import MudMap
 import comm.Spells
 from combat.SmartCombat         import SmartCombat
 from command.Go                 import Go
@@ -50,6 +50,7 @@ from reactions.prompt      import Prompt
 from comm.analyser         import Analyser
 from command.Info          import Info
 from db.Database import AreaStoreItem
+from plotter import Plotter
 
 class CommandHandler(object):
     def init_map_and_bots(self):
@@ -165,10 +166,17 @@ class CommandHandler(object):
             'bdrop' : self.bulk_drop,
             'lookup_armour' : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
             'print_reactions' : lambda a : self.mudReaderHandler.print_reactions(),
-            'weapon' : lambda a : self.start_weapon_bot()
+            'weapon' : lambda a : self.start_weapon_bot(),
+            'plot_map' : self.plot_map
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
+        # Each action is going to be passed "a" which is string.partition(' ')[2] on the command that came in
+
+    def plot_map(self, args):
+         #(lambda a : Plotter(self.mud_map)
+         self.join_mud_map_thread()
+         Plotter(self.mud_map.los_map).plot_map()
 
     def join_mud_map_thread(self):
         if self.threaded_map_setup:
@@ -511,6 +519,7 @@ class CommandHandler(object):
                 magentaprint(i)
         elif user_input == 'get_possible_weapons':
             magentaprint(self.weapon_bot.get_possible_weapons())
+        # Node: see self.actions before adding more cases (just associate a command with a function pointer)
         else:
             # Doesn't match any command we are looking for, send it to server
             self.telnetHandler.write(user_input)

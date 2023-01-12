@@ -119,7 +119,7 @@ class Tracks:
             's','gully','glowing','passage','coral','n','n','n','n','w','nw','w','w','n','n','n','n','n','nw',
             'nw', 'nw', 'w', 'w', 'w','nw','nw', 'n', 'gate', 'e', 'n', 'n', 'n','w', 'n', 'chapel'
         ]
-        self.kobold_back_door = self.to_glowing_portal + [
+        self.KOBOLD_BACK_DOOR = self.to_glowing_portal + [
             'glowing', 'passage','mines','down','n','n','n','n','nw','e',
             'shaft','d','d','d','d','n','n','n','n','slope','n','d','d','d','d','ne','ne','cleft',
             'd','d','water',
@@ -348,11 +348,11 @@ class TrackGrindThread(GrindThread):
         self.tracks = Tracks()
 
         if C.level <= 2:
-            self.__TOTALPATHS = 10 # Kobolds are level 1 safe. 
+            self.__TOTALPATHS = 10 # Theatre, market, main roads (militia soldiers path), easy coral path, and kobolds are level 1 safe. 
             # Idea: picnic hill for level 1s (if there's a spot safe from guards showing up)
             # Amethyst centre, bidders, animals, theatre goers, actors, auctioneers, acrobats (add window shopper)
         if C.level <= 3:
-            self.__TOTALPATHS = 18 # Coral alley (hookers help aura at level 3), kobold back door, mill worker area
+            self.__TOTALPATHS = 18 # Coral alley (hookers help aura at level 3), kobold back door (lvl 7), mill worker area
             # idea: casino, or look around amber for level 4/5 mobs... not sure if casino is safe tho
         elif C.level <= 6:
             self.__TOTALPATHS = 22 # Fort, mime artist, muggers
@@ -360,7 +360,7 @@ class TrackGrindThread(GrindThread):
         elif C.level <= 7:
             self.__TOTALPATHS = 36 # Southern bandits, weakest guards (safer than other level 6's), seekers
         elif C.level <= 8:
-            self.__TOTALPATHS = 40 # Usher, sword swallower, Northern bandits, dwarven field workers (should have level 6 in kill list since farm hands are just spawns)
+            self.__TOTALPATHS = 40 # Usher, sword swallower, northern bandits, dwarven field workers (should have level 6 in kill list since farm hands are just spawns)
             # Why add dwarf path at level 8 without adding to kill list
         elif C.level <= 9:
             self.__TOTALPATHS = 48 # Lvl 8 guards x4
@@ -475,9 +475,9 @@ class TrackGrindThread(GrindThread):
             # It avoids a few insanes and a few guards though
             # At level 7 my guy is just fighting the shaft manager then is totally spent, and visits the kobolds for no reason after
             if not self.cast.aura or (self.cast.aura and self.cast.aura >= Aura('pale blue') and self.cast.aura <= C.preferred_aura) and C.level in range(7,10):
-                return self.tracks.kobold_back_door[:]
+                return self.tracks.KOBOLD_BACK_DOOR[:]
             elif self.cast.aura <= C.preferred_aura and C.level in range(5,10):
-                return self.tracks.kobold_back_door[:] # Might be risky for lvl 5 because of the water - the track avoids hostiles
+                return self.tracks.KOBOLD_BACK_DOOR[:] # Might be risky for lvl 5 because of the water - the track avoids hostiles
             magentaprint("Skip kobold waterway, aura too blue.")
             return self.skip()
         elif self.nextpath == 15:

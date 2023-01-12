@@ -532,7 +532,7 @@ class Character(object):
 #  Alaran, Aldo, Farmer Calmor for rings (platinum, gold, etc.)
 
     def configure_health_and_mana_variables(self):
-    # Health to heal is now a percentage (see process_info)
+        # Health to heal is now a percentage (see process_info)
         if self.level <= 2:
             # self.HEALTH_TO_HEAL = 19
             self.HEALTH_TO_FLEE = 8

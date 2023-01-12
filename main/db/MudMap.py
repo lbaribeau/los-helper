@@ -33,8 +33,8 @@ class MudMap(object):
 
     def __init__(self):
         # magentaprint("MudMap: initialized.")
-        los_map = None
-        self.ready = False
+        # los_map = None
+        # self.ready = False
         self.re_map()
         # print("MudMap initialized, los_map: " + str(self.los_map))
 
@@ -45,17 +45,19 @@ class MudMap(object):
         self.ready = True
 
     def populate_map(self):
-        areas = Area.raw('select * from v_areas_for_graph')
-        area_exits = AreaExit.raw('select * from v_areaexits_for_graph')
-        # do_magentaprint("MudMap populate_map areas:" + str(areas))
-        # do_magentaprint("MudMap populate_map area_exits:" + str(area_exits))
-
-        for area in areas:
+        # do_magentaprint("MudMap populate_map doing areas...") # str(areas)
+        for area in Area.raw('select * from v_areas_for_graph'):
             self.los_map.add_node(area.id)
 
-        for area_exit in area_exits:
-            name = area_exit.exit_type.name
-            self.los_map.add_edge(area_exit.area_from.id, area_exit.area_to.id, name=name)
+        do_magentaprint("MudMap did the areas now doing area_exits.")
+        for area_exit in AreaExit.raw('select * from v_areaexits_for_graph'):
+            self.los_map.add_edge(
+                area_exit.area_from.id, 
+                area_exit.area_to.id, 
+                name=area_exit.exit_type.name
+            )
+
+        do_magentaprint("MudMap populate_map finished the area_exits).")
 
             # area_to_id = -1 #this is a marker for a null / unexplored area
             # area_is_useable = True
