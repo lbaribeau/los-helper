@@ -25,6 +25,7 @@ from bots.MixThread             import MixThread
 from bots.SlaveThread           import SlaveThread
 from bots.TopDownGrind          import TopDownGrind
 from bots.NoobGrindThread          import NoobGrindThread
+from bots.TalkGrindThread import TalkGrindThread
 from bots.CampGrindThread          import CampGrindThread
 from command.Quit               import Quit
 from command.Command            import Command
@@ -379,6 +380,9 @@ class CommandHandler(object):
             self.character.server.reboot()
         elif re.match("noobgrind", user_input):
             self.start_noob_grind()
+        # start the talk bot
+        elif re.match("talkgrind", user_input):
+            self.start_talk_grind()
         elif re.match("dropkeys", user_input):
             self.telnetHandler.write('drop key yes')
             self.telnetHandler.write('drop key yes')
@@ -847,6 +851,12 @@ class CommandHandler(object):
     def start_noob_grind(self):
         if self.bot_check():
             self.botThread = NoobGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.botThread.start()
+
+    # start talk grind
+    def start_talk_grind(self):
+        if self.bot_check():
+            self.botThread = TalkGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
             self.botThread.start()
 
     def start_campslave(self):
