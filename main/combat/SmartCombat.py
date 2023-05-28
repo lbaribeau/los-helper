@@ -434,9 +434,11 @@ class SmartCombat(CombatObject):
 
     def get_t3_spell(self, character, spell_percent):
         spell = Spells.shockbolt if spell_percent == character.info.wind else \
-                    Spells.burstflame if spell_percent == character.info.fire else self.get_min_rank_spell()
+                Spells.shatterstone if spell_percent == character.info.earth else \
+                Spells.burstflame if spell_percent == character.info.fire \
+                else self.get_t2_spell(character, spell_percent)
         if spell not in character.spells:
-            return self.get_t2_spell(character, spell_percent)
+            return self.get_min_rank_spell(character, spell_percent)
         
         return spell
 

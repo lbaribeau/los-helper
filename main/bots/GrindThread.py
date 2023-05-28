@@ -319,9 +319,11 @@ class GrindThread(BotThread):
 
             if self.stopping or self.character.HEALTH >= self.health_to_go:
                 return
-            
-            if not self.is_character_class('Mon'):
-                self.do_heal_skills()
+
+            # don't use heal abilities in the chapel
+            # only monks and bards have them and it's a waste of the cooldown
+            # if not self.is_character_class('Mon'):
+            #     self.do_heal_skills()
 
             # if self.character.HEALTH >= self.health_to_go or not any(s.startswith(Spells.vigor) for s in self.character.spells):
             if self.character.HEALTH >= self.health_to_go or Spells.vigor not in self.character.spells:
@@ -332,7 +334,11 @@ class GrindThread(BotThread):
             chapel = 2  # additional hp tick amount
             maxHP = self.character.maxHP
             maxMP = self.character.maxMP
-            mana_tick = self.character.mana_tick
+            
+            mana_tick = 2
+            # if mana_tick exists on character then
+            if hasattr(self.character, 'mana_tick'):
+                mana_tick = self.character.mana_tick
             # while   (self.health_ticks_needed() > self.mana_ticks_needed() or
             #         self.character.MANA - (maxMP % mana_tick+chapel) % (mana_tick+chapel) >= 2) and (
             while   (self.health_ticks_needed() > self.mana_ticks_needed() and
@@ -344,19 +350,19 @@ class GrindThread(BotThread):
                     # Laurier does math!  (Mathing out whether we should vig or in the chapel)
                 magentaprint("Health ticks needed: " + str(round(self.health_ticks_needed(), 1)) + ", Mana ticks needed: " + str(round(self.mana_ticks_needed(), 1)))
 
-                if not self.is_character_class('Mon') and self.do_heal_skills():
-                    continue
-                    # elif self.inventory.count_small_restoratives() > 7:
-                #     self.command_handler.use.wait_until_ready()
-                #     self.command_handler.use.small_healing_potion()
-                #     self.command_handler.use.wait_for_flag()
-                else:
-                    # if self.engage_any_attacking_mobs():
-                    #     if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
-                    #         self.cast.start_thread('v')
-                    self.cast.cast('v')
-                    self.cast.wait_for_flag()
-                    self.cast.wait_until_ready()
+                # if not self.is_character_class('Mon') and self.do_heal_skills():
+                #     continue
+                #     # elif self.inventory.count_small_restoratives() > 7:
+                # #     self.command_handler.use.wait_until_ready()
+                # #     self.command_handler.use.small_healing_potion()
+                # #     self.command_handler.use.wait_for_flag()
+                # else:
+                #     # if self.engage_any_attacking_mobs():
+                #     #     if BotThread.can_cast_spell(self.character.MANA, heal_cost, self.character.KNOWS_VIGOR):
+                #     #         self.cast.start_thread('v')
+                self.cast.cast('v')
+                self.cast.wait_for_flag()
+                self.cast.wait_until_ready()
 
                 self.engage_any_attacking_mobs()
 

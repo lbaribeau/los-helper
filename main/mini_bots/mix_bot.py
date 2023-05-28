@@ -29,7 +29,8 @@ class MixBot(MiniBot):
 
         # item will be moved to the end of the list so as long as they're all ok to mix
         # then we can repeat this with no worries
-        for _ in range(quantity):
+        for i in range(quantity):
+            magentaprint("mixing #{}/{}".format(str(i+1), str(quantity)), False)
             self.do_mix(target, reageant)
         self.stop()
     

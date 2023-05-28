@@ -1,26 +1,28 @@
-Werp monk (lvl 17, no habit)
-Derp monk (lvl 14, masters habit)
-Drerp barbarian (lvl 10)
-Qerp mage (lvl 10)
-Serp Alchemist lvl 10
-Cerp cleric lvl 12 (3 12 3 18 18)
-Twerp cleric lvl 6
-Ferp fighter 18 3 4 18 11
-Rerp cleric gnome lvl 7
-Ierp thief dwarf lvl 6
-Trerp druid elf lvl 9 3 12 3 18 18
-Oerp dark knight dwarf 14 15 10 7 8 (15 15 10 7 7)
-Aerp assassin dwarf 16 16 3 16 3
-Kerp dark knight dwarf 16 16 3 16 3
-Herp Thief dwarf 16 16 3 16 3
-Yerp monk 18 3 4 18 11
-Terp thief 18 3 4 18 11
-Eerp fighter dwarf 15 16 3 16 4
-Lerp alc dwarf 15 16 3 16 4
-Nerp druid dwarf 16 16 3 16 3
-
-Dwarp thief (swamp troll)
-Gerp mage (w/ blis + show)
+Aerp,14, assassin dwarf 16 16 3 16 3
+Berp,2, bard elf 15 7 2 16 14
+Cerp,13, cleric (3 12 3 18 18)
+Derp,18, monk (lvl 14, masters habit)
+Drerp,14, barbarian
+Dwarp,1, thief (swamp troll)
+Eerp,17, fighter dwarf 15 16 3 16 4
+Ferp,13, fighter 18 3 4 18 11
 Flerp anti-paladin
+Gerp mage (w/ blis + show)
+Herp,14, Thief dwarf 16 16 3 16 3
+Ierp,6, thief dwarf lvl 6
+Jerp,1, Alchemist 10 10 9 13 13
+Kerp,18, dark knight dwarf 16 16 3 16 3
+Lerp,11, alc dwarf 15 16 3 16 4
 Merp thief (swamp troll)
+Nerp druid dwarf 16 16 3 16 3
+Oerp dark knight dwarf 14 15 10 7 8 (15 15 10 7 7)
+Qerp,11, mage (lvl 10)
+Rerp,7, cleric gnome lvl 7
+Serp,15, Alchemist
+Twerp cleric lvl 6
+Trerp,13, druid elf lvl 9 3 12 3 18 18
+Terp thief 18 3 4 18 11
 Uerp druid 10 8 12 12 12
+Werp,17, monk (lvl 17, no habit)
+Yerp,14, monk 18 3 4 18 11
+

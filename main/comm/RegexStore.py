@@ -275,6 +275,11 @@ backstab_fail = [r"You failed\."]
 backstab_error = [r"Backstab requires sharp or thrusting weapons.", r"You don't see that here.", r"You need to be hidden or undetected to backstab!"]
 
 no_see = [r"You don't see that here\."]
+i_no_see = [r"I don't see that here\."]
+
+# ask command
+ask_success = ['(?:The)?(.+?) says to you, "(?P<statement>(?:.+?\n?\r?)+?)"']
+ask_fail = ["(?:The)?(.+?) doesn't respond to you\."]
 
 # Kill command
 bad_k_target = [

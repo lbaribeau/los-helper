@@ -211,6 +211,7 @@ class AestersTears(HealAbility):
     max_amount = 16  # guessed
     success_regexes = [RegexStore.aesters_tears]  # This seems to overwrite Ability...
     # self.failure_regex = "(?!x)x"  # Regex that never matches - Aester never fails
+    wear_off_regex =  None
     failure_regexes = []
     # classes = ["Brd"]
     level = 4

@@ -54,11 +54,13 @@ class CharacterClass(object):
         elif class_string == "Fig":
             self.lvl1_maxHP = 22
             self.lvl1_maxMP = 2
+            self.mana_tick = 2
             abilities = [ Bash, Circle ]
             Cast.cooldown_after_success = 5
         elif class_string == "Brd":
             self.lvl1_maxHP = 15
             self.lvl1_maxMP = 3
+            self.mana_tick = 2
             abilities = [ AestersTears, DanceOfTheCobra ]
             Cast.cooldown_after_success = 4
         elif class_string == "Mag":

@@ -31,9 +31,9 @@ class MobMessage(BaseModel):
     def __repr__(self):
         return self.to_string()
 
-    def get_message_by_keyword(mob, keyword):
+    def get_message_by_mob_and_keyword(mob, keyword):
         try:
-            mobMessage = MobMessage.select().where((MobMessage.mob.id == mob.id) & (MobMessage.keyword == keyword)).get()
+            mobMessage = MobMessage.select().where((MobMessage.mob_id == mob.id) & (MobMessage.keyword == keyword)).get()
         except MobMessage.DoesNotExist:
             mobMessage = None
 
