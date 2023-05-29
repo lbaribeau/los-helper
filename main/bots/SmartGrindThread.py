@@ -36,7 +36,7 @@ class SmartGrindThread(TrackGrindThread):
         self.character.MAX_MANA = self.character.maxMP
 
         # if not self.is_character_class('Bar') or self.is_character_class('Alc'):
-        self.character.MANA_TO_ENGAGE = self.character.MAX_MANA / 2
+        self.character.MANA_TO_ENGAGE = self.character.MAX_MANA * 0.6
         if self.character.MANA_TO_ENGAGE < 24 and self.character.MAX_MANA > 24:
             self.character.MANA_TO_ENGAGE = 24
         
