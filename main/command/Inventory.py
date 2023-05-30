@@ -192,7 +192,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
         'small flask', 'large restorative', 'scarlet potion', #'tree root', # kobold priest
         'white potion', # 'small restorative', 'chicken soup',
-        'Elixir of Morinva', 'granite potion', 'philtre of perception', 'philtre of health',
+        'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',
         'golden potion', #'platinum crucifix', # Helps disease? Worth a lot of money?
         # 'granite rod', # oremaster, kobold chieftain
         # 'heathen amulet', # kobold chieftain
@@ -227,7 +227,7 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'chain mail gloves', # mill worker
         'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring', 
         'greenwood jerkin',"paladins's plate armour", "master's habit", 
-        'lucky pebble',"blue ioun stone",
+        'lucky pebble',"blue ioun stone","mithril war hammer","dragon scale armour"
         # 'maul hammer' # This we need to keep ONE (later)
         # 'iron shield'
         # 'platinum ring', 'gold ring', 'steel ring', 'silver ring'
