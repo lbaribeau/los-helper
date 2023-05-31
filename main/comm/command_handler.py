@@ -361,7 +361,7 @@ class CommandHandler(object):
             self.stop_bot()
             self.user_flee()
         elif user_input == 'p':
-            self.smartCombat.use.healing_potion()
+            self.smartCombat.potion_thread_handler.consume.healing_potion()
         elif user_input.startswith('use '):
             self.use.execute(user_input.partition(' ')[2])
         elif re.match('drink? ', user_input):

@@ -461,6 +461,7 @@ class TrackGrindThread(GrindThread):
         # self.LYRON = ['areaid2097', ] # too much dmg
 
         self.GNOMES = ['areaid2113', 'areaid2099', 'areaid2104', 'areaid2106', 'areaid2138', 'areaid2138', 'areaid2093', 'areaid2094', 'areaid2095']
+        self.FORGE_THIEVES = ['areaid1240', 'conveyor', 'east', 'plank', 'east', 'west', 'out', 'west', 'door']
 
         self.PATH_TO_SKIP_WITH = ['think']
 
@@ -588,7 +589,9 @@ class TrackGrindThread(GrindThread):
             Track("Floor Manager", self.FLOOR_MANAGER, 12, 20, -1),
             # Track("Dalla and Douvan", self.DALLA_DOUVAN, 11, 20, 1), # Dalla overheals and is too dangerous
             Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 20, 1),
-            Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9)
+            Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9),
+            # Track("Halwyn Bugbears",) # has a pit which could cause issues
+            Track("Forge / weapon thieves",self.FORGE_THIEVES,12,15,-1),
         ]
     
     def decide_where_to_go(self):
