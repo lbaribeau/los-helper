@@ -209,7 +209,7 @@ class GrindThread(BotThread):
         self.character.HIDDEN = success
         return success
 
-    def is_mob_weak(self, mob_target, level_diff=5):
+    def is_mob_weak(self, mob_target, level_diff=3):
         if mob_target.level is None or mob_target.level == "":
             return False
         
@@ -427,7 +427,7 @@ class GrindThread(BotThread):
     def rest_for_health(self):
         magentaprint("BotThread.rest_for_health()")
 
-        if self.has_ideal_health():
+        if self.character.HEALTH >= self.character.maxHP * 0.95:
             return
 
         if not self.character.info.pty < 12:

@@ -207,7 +207,9 @@ class SmartGrindThread(TrackGrindThread):
                  (mob_target.level is not None and mob_target.level != "" and mob_target.level < 12):
                 magentaprint("Mob is weak enough for us to fight", False)
                 return True
-            elif self.character.is_near_max_stats() and self.inventory.count_large_restoratives() > 4 and self.update_aura(True):
+            elif self.character.is_ready_for_tough_fight() and \
+                self.inventory.count_large_restoratives() > 4 and \
+                self.update_aura(True):
                 magentaprint("Advanced check for tougher mob, doublechecking aura and kill list", False)
                 # tough fights require max stats and a few healing pots
                 # with aura updated there may be new targets so we want to check again

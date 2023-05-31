@@ -174,7 +174,7 @@ class Character(object):
         elif self._class == 'Mag':
             self.HEALTH_TO_HEAL = 0.95 * self.info.maxHP
         else:
-            self.HEALTH_TO_HEAL = 0.75 * self.info.maxHP  # We can crank this back up when we fight stronger mobs
+            self.HEALTH_TO_HEAL = 0.90 * self.info.maxHP  # We can crank this back up when we fight stronger mobs
 
         self.hp_tick = floor((self.info.con-1)/3)  # +3 in chapel
 
@@ -223,11 +223,34 @@ class Character(object):
         if self.is_headless:
             self.write_info_feed()
 
+    def check_cooldowns(self, cooldowns):
+        cooldowns_ready = True
+        for cooldown in cooldowns:
+            if cooldown.up():
+                return True
+        
+        return cooldowns_ready
+
+    def is_ready_for_tough_fight(self):
+        is_ready = self.is_near_max_stats()
+        
+        heal_abilities        = self._class.heal_skills
+        buff_abilities        = self._class.buff_skills
+        slow_combat_abilities = self._class.slow_combat_skills
+        fast_combat_abilities = self._class.fast_combat_skills
+        cooldowns = [heal_abilities, buff_abilities, slow_combat_abilities, fast_combat_abilities]
+        for cooldown in cooldowns:
+            is_ready = self.check_cooldowns(cooldown)
+            if not is_ready:
+                break
+
+        return is_ready
+
     def is_near_max_stats(self):
-        return self.HEALTH > (self.info.maxHP * 0.90) and self.MANA > (self.info.maxMP * 0.90)
+        return self.HEALTH >= (self.info.maxHP * 0.90) and self.MANA >= (self.info.maxMP * 0.90)
 
     def is_near_max_health(self):
-        return self.HEALTH > (self.info.maxHP * 0.90)
+        return self.HEALTH >= (self.info.maxHP * 0.90)
 
     def write_info_feed(self):
         feed = {

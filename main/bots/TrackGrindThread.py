@@ -462,6 +462,7 @@ class TrackGrindThread(GrindThread):
 
         self.GNOMES = ['areaid2113', 'areaid2099', 'areaid2104', 'areaid2106', 'areaid2138', 'areaid2138', 'areaid2093', 'areaid2094', 'areaid2095']
         self.FORGE_THIEVES = ['areaid1240', 'conveyor', 'east', 'plank', 'east', 'west', 'out', 'west', 'door']
+        self.MASSIVE_SWAMP_TROLL = ["areaid2157"]
 
         self.PATH_TO_SKIP_WITH = ['think']
 
@@ -563,7 +564,7 @@ class TrackGrindThread(GrindThread):
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1),
             Track("Knights", self.smart_knights_path, 7, 20, 1, 7, 18),
-            # Track("Cathedral", self.CATHEDRAL, 10, 16, 1), # lay priest damage rolls too high
+            Track("Cathedral", self.CATHEDRAL, 10, 20, 1), # lay priest damage rolls too high
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1),
             Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1),
             Track("Combat Master / barbs", self.BARBS, 8, 14, 0),
@@ -592,6 +593,8 @@ class TrackGrindThread(GrindThread):
             Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9),
             # Track("Halwyn Bugbears",) # has a pit which could cause issues
             Track("Forge / weapon thieves",self.FORGE_THIEVES,12,15,-1),
+            # Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 12, 20, -1), # too aggressive and multiple spawn
+            Track("Massive swamp troll", self.MASSIVE_SWAMP_TROLL, 15, 20, -1),
         ]
     
     def decide_where_to_go(self):
