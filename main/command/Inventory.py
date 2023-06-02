@@ -213,7 +213,7 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'morning star', 'superior dwarven hammer', 'stout cudgel', "horseman's mace",
         # 'war hammer',
         # steel gear
-        'steel sleeves', 'steel gauntlets', 'steel leggings', 'steel helm', 'plate mail helm', 'plate mail gauntlets',
+        # 'steel sleeves', 'steel gauntlets', 'steel leggings', 'steel helm', 'plate mail helm', 'plate mail gauntlets',
         # 'mountain boots with crampons', 'leather mask', 'leather collar', 'studded leather collar',
         # 'studded leather sleeves', 'studded leather boots', 'studded leather pants', 'studded leather gloves','studded leather leggings',
         # kobold champion

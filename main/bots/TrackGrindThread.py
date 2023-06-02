@@ -79,11 +79,11 @@ class TrackGrindThread(GrindThread):
             'cave 3','ne','ne','n','s','up','e','se','cave','out']
 
         # if self.character.level >= 9 and not self.is_character_class('Mag'):
-        #     self.KOBOLD_PATH += ['slow_prepare', 'e', 'ne', 'door',
-        #     # 'statue', 'down', 'down', 'down', 'down', 'hole', 'corridor', 'east', 'east', 'southeast', 'south', 'south'
-        #     # 'south', 'south', 'east', 'cave', 'out', 'west', 'west', 'west', 'west', 'west', 'north', 'north', 'north',
-        #     # 'north', 'north', 'east', 'passage', 'out', 'hole', 'up', 'up', 'up', 'up', 'out',
-        #     'door', 'slow_prepare', 'sw','w']
+        self.KOBOLD_PATH += ['slow_prepare', 'e', 'ne', 'door',
+        'statue', 'down', 'down', 'down', 'down', 'hole', 'corridor', 'east', 'east', 'southeast', 'south', 'south'
+        'south', 'south', 'east', 'cave', 'out', 'west', 'west', 'west', 'west', 'west', 'north', 'north', 'north',
+        'north', 'north', 'east', 'passage', 'out', 'hole', 'up', 'up', 'up', 'up', 'out',
+        'door', 'slow_prepare', 'sw','w']
         #     # Note: You can remove the following line of code to remove the kobold guards and priests fights.
         #     # Priests turn you very blue.  These fights may be difficult.
         #     # Also useful to test mobs who join in.
@@ -143,6 +143,7 @@ class TrackGrindThread(GrindThread):
             # high enough,) and go in if all's good.  Even fight the priests - because the more 'good' we can get the
             # more chalices we can farm.
         self.kobold_massacre = [
+            'areaid2',
             # Brocolli wants to get ALL the kobolds in one shot... even the chief? Yeahh.
             # This route is optimal traval and isn't picky about order
             'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','se','se','se','s','s','s','s','s','e','e',
@@ -156,10 +157,10 @@ class TrackGrindThread(GrindThread):
             'out','n','nw','n','n','w','n','w','passage','out','hole',
             'u','u','u','u','out',
             # First try convoluted (after corridor)
-            # 'e','e','se','w','w','w','sw','s','w','s','s','se','n','n','n','e',
-            # 'e','s','w','s','s','e','e','n','e','s','n','e','cave',# unlock trap key; trap; out
-            # 'out','n','nw','n','sw','s','w','s','s','se','n','n','n','e','s','s','s','e','n','n','e','s','s','e','n','e','cave',
-            # 'out'
+            'e','e','se','w','w','w','sw','s','w','s','s','se','n','n','n','e',
+            'e','s','w','s','s','e','e','n','e','s','n','e','cave',# unlock trap key; trap; out
+            'out','n','nw','n','sw','s','w','s','s','se','n','n','n','e','s','s','s','e','n','n','e','s','s','e','n','e','cave',
+            'out'
             'door', 'prepare', 'sw','w',
             'ladder','cave','out', # champion
             'sw','w',
@@ -544,12 +545,12 @@ class TrackGrindThread(GrindThread):
             Track("Theatre", self.smart_theatre_path, 0, 20, 0),
             Track("Market", self.smart_market_path, 0, 14, 0),
             Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0),
-            Track("Kobolds", self.smart_kobold_path, 0, 9, -1), #sentries are suuuper tough
-            Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
+            Track("Kobolds", self.KOBOLD_PATH, 0, 9, -1), #sentries are suuuper tough
+            #Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
             Track("Fort", self.smart_fort_path, 9, 20, 0),
             Track("Veterans", self.BLADEMASTER, 8, 12, 0),
             Track("North Bandits", self.smart_northern_bandits_path, 9, 14, -1),
-            #Track("Eastern Zombies", self.ZOMBIES, 6, 20, 0),
+            Track("Eastern Zombies", self.ZOMBIES, 6, 20, 0),
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,20,9),
             Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 20, 0),
             Track("Mill Workers", self.smart_mill_path, 7, 20, 0),
@@ -560,10 +561,10 @@ class TrackGrindThread(GrindThread):
             Track("Olmer", self.OLMER, 11, 14, -1),
             Track("Cheryn", self.CHERYN, 11, 20, -1),
             Track("Orcs", self.ORCS, 11, 14, -1),
-            Track("Artificers", self.ARTIFICERS, 11, 20, -1),
+            Track("Artificers", self.ARTIFICERS, 11, 14, -1),
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1),
-            Track("Knights", self.smart_knights_path, 7, 20, 1, 7, 18),
+            # Track("Knights", self.smart_knights_path, 7, 20, 1, 7, 18),
             Track("Cathedral", self.CATHEDRAL, 10, 20, 1), # lay priest damage rolls too high
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1),
             Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1),
@@ -676,6 +677,7 @@ class TrackGrindThread(GrindThread):
         self.track_start_time = get_timeint()
         self.character.start_track(track)
         self.last_track = track
+        self.last_track_kills = getattr(track, "kills")
         self.on_track = True
 
     def end_track(self):
@@ -684,9 +686,12 @@ class TrackGrindThread(GrindThread):
         self.character.TRACK_TIME += track_time
         self.character.add_to_track_param('completes', 1)
         self.character.add_to_track_param('duration', track_time)
+        net_kills = getattr(self.last_track, "kills") - self.last_track_kills
         self.character.end_track()
         self.on_track = False
-        magentaprint("ending track", False)
+        magentaprint("ending track with {} kills".format(net_kills), False)
+
+        # if track net kills is 0 and track type is cooldown then don't run the track again for an hour
 
     def stop(self):
         super().stop()
@@ -731,6 +736,7 @@ class TrackGrindThread(GrindThread):
         mob_aid = mob_locations[index_min].area.id
         magentaprint("TrackGrindThread get_path_to_and_from_mob chapel_aid {0} mob_aid {1}".format(chapel_aid,mob_aid))
         return self.mud_map.get_path(chapel_aid, mob_aid) + self.mud_map.get_path(mob_aid, chapel_aid)
+    
     def get_path_with_all_mobs(self, name):
         chapel_aid = db.Area.Area.get_by_name("The Chapel of Healing").id
         P = self.path_through_areas(
