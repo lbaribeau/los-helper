@@ -208,12 +208,13 @@ class SmartGrindThread(TrackGrindThread):
                 magentaprint("Mob is weak enough for us to fight", False)
                 return True
             elif self.character.is_ready_for_tough_fight() and \
-                self.inventory.count_large_restoratives() > 4 and \
                 self.update_aura(True):
                 magentaprint("Advanced check for tougher mob, doublechecking aura and kill list", False)
                 # tough fights require max stats and a few healing pots
                 # with aura updated there may be new targets so we want to check again
-                return True
+                
+                # is the mob is still in our kill list after the aura update then fight it                
+                return mob in self.character.MONSTER_KILL_LIST
             else:
                 magentaprint("Mob is too tough for us to fight right now", False)
                 return False
