@@ -326,7 +326,7 @@ class GrindThread(BotThread):
             #     self.do_heal_skills()
 
             # if self.character.HEALTH >= self.health_to_go or not any(s.startswith(Spells.vigor) for s in self.character.spells):
-            if self.character.HEALTH >= self.health_to_go or Spells.vigor not in self.character.spells:
+            if True and (self.character.HEALTH >= self.health_to_go or Spells.vigor not in self.character.spells):
                 return
 
             self.cast.wait_until_ready()

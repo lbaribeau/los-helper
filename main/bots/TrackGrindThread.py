@@ -565,7 +565,7 @@ class TrackGrindThread(GrindThread):
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1,False),
             Track("Knights", self.smart_knights_path, 7, 20, 1,False, 7, 18),
-            Track("Cathedral", self.CATHEDRAL, 10, 20, 1), # lay priest damage rolls too high
+            Track("Cathedral", self.CATHEDRAL, 10, 20, 1, 7, 18),
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1,False),
             Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1),
             Track("Combat Master / barbs", self.BARBS, 8, 14, 0),

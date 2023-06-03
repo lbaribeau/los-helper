@@ -41,9 +41,10 @@ class TalkGrindThread(BotThread):
                   # "Vas'Polu the HawkMaster","Byr'Ula the Smith","Ha'Chans the Shaman",
                   # "Th'kit the HorseMaster",
                   # "Forest Master", "Douvan", "Queen Dalla", "Broad Leaf", "Red Crown",
-                  "Cal the Hermit", "Esrhae", "Ringmaster",
-                  "Corien", "Farside","Lord Arduis","Lady Arielle","Lady Jenlira", 
-                   "Robar Greybeard"
+                  # "Cal the Hermit", "Esrhae", "Ringmaster",
+                  # "Corien", "Farside","Lord Arduis","Lady Arielle","Lady Jenlira", 
+                  #  "Robar Greybeard"
+                  "Greenbough the Dryad"
             ]
 
             self.index = 0
@@ -105,6 +106,10 @@ class TalkGrindThread(BotThread):
                   "chameleon",
                   "bugbear",
                   # things
+                  "glade",
+                  "portal",
+                  "artifact",
+                  "flute",
                   "mithril",
                   "adamantine",
                   "key",
@@ -185,10 +190,6 @@ class TalkGrindThread(BotThread):
                   "bard",
                   "alchemist",
                   "druid"
-            ]
-            self.talk_topics = [
-                  "flute",
-                  "silver"
             ]
 
       def get_path_to_target_mob(self, mob):
