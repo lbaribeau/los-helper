@@ -16,9 +16,11 @@ class TalkGrindThread(BotThread):
             self.talking = False
             self.target_mobs = [#"Madame Zara", "Farmer Malbon",
                   #"Druid Tutor", #buggy
-                  #"Bertram Dalrum",
-                  #"Farmer Calmor",
-                  # "Dame Brethil", "Grand Master Yang-Shi", "Sensei", "Dojo Administrator", "Jerrek", "Tag", "Haelyn", "Chief Alchemist", "Caethrodyn",
+                  # "Bertram Dalrum",
+                  # "Farmer Calmor",
+                  # "Dame Brethil",
+                  # "Grand Master Yang-Shi", "Sensei", "Dojo Administrator",
+                  # "Jerrek", "Tag", "Haelyn", "Chief Alchemist", "Caethrodyn",
                   # "Master of Ceremonies", 
                   # "Lord Tamaran", "Tario", "Lady Denlise", "Boris Ironfounder", "Tendrurn",
                   # "Floor Manager",
@@ -26,16 +28,16 @@ class TalkGrindThread(BotThread):
                   # "Brotain","Rimark","Aldo","Horbuk","Master Monk","Volman the Inhumer","Master Artificer",
                   # "Kin'Tal","Archbishop","Tardan","Cheryn","Trantas","Gregor",
                   # "Manic Soothsayer","Elder Barthrodue","Farmer Viladin","Rancher Renstone",
-                  # "Rancher Plover","Annette Plover","Shaldena the Red","White Mage",
-                  # "Barding Lord",
-                  # "Farmer McDermott","Knight Errant",
+                  # "Rancher Plover","Annette Plover",#"White Mage",
+                  #"Barding Lord",
+                  # "Farmer McDermott","Knight Errant", "Vickie",
                   #  "Matriarch Sara",
-                  # "Goourd","Vickie",
-                  # "Lyron the Elder","Garbo the Hobbit","Whiteblade the Barbarian",
+                  # "Goourd",
+                  # "Lyron the Elder","Shaldena the Red","Garbo the Hobbit","Whiteblade the Barbarian",
                   # "Great Druid",
                   # "Teamleader Egan","Trent the Merchant",
                   # "Al'Sik the Carver",
-                  "Zi'Cab the Chieftan",
+                  # "Zi'Cab the Chieftan",
                   # "Vas'Polu the HawkMaster","Byr'Ula the Smith","Ha'Chans the Shaman",
                   # "Th'kit the HorseMaster",
                   # "Forest Master", "Douvan", "Queen Dalla", "Broad Leaf", "Red Crown",
@@ -183,6 +185,10 @@ class TalkGrindThread(BotThread):
                   "bard",
                   "alchemist",
                   "druid"
+            ]
+            self.talk_topics = [
+                  "flute",
+                  "silver"
             ]
 
       def get_path_to_target_mob(self, mob):

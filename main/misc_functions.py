@@ -64,6 +64,9 @@ def safe_divide(x,y):
 def get_timeint():
     return datetime.now()
 
+def get_timeint_from_int(time):
+    return datetime.fromtimestamp(time)
+
 def get_timestamp():
     return datetime.now().time().strftime("%H:%M:%S.%f")[:-4]
 

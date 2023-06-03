@@ -44,7 +44,8 @@ class Ask(Command):
         super().notify(regex, match)
         # if regex in R.bought:
 
-        params = self._sent_target.split(' ', 1)
+        magentaprint(self._sent_target, False)
+        params = self._sent_target.split(' ')
         request = ""
         if len(params) > 1:
             request = params[1]

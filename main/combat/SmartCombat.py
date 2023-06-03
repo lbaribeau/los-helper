@@ -437,8 +437,8 @@ class SmartCombat(CombatObject):
                 Spells.shatterstone if spell_percent == character.info.earth else \
                 Spells.burstflame if spell_percent == character.info.fire \
                 else self.get_t2_spell(character, spell_percent)
-        # if spell not in character.spells:
-        #     return self.get_min_rank_spell()
+        if spell not in character.spells:
+            return self.get_t2_spell(character, spell_percent)
         
         return spell
 

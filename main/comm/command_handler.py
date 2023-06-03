@@ -386,6 +386,8 @@ class CommandHandler(object):
         # start the talk bot
         elif re.match("talkgrind", user_input):
             self.start_talk_grind()
+        elif re.match("gg", user_input):
+            self.telnetHandler.write('drink granite')
         elif re.match("dropkeys", user_input):
             self.telnetHandler.write('drop key yes')
             self.telnetHandler.write('drop key yes')

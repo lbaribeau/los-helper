@@ -834,6 +834,18 @@ class Character(object):
     def end_track(self):
         self.current_track = None
 
+    def get_track_cooldown(self, track_name):
+        if track_name in self.tracks.keys():
+            return self.tracks[track_name].get_cooldown()
+        else:
+            return 0
+
+    def set_track_param(self, param, value):
+        if self.tracks is not None and self.current_track is not None:
+            current_track = self.tracks[self.current_track]
+            if current_track is not None:
+                setattr(current_track, param, value)
+
     def add_to_track_param(self, param, value, output=True):
         if self.tracks is not None and self.current_track is not None:
             current_track = self.tracks[self.current_track]
