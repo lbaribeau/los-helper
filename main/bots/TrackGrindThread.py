@@ -541,32 +541,32 @@ class TrackGrindThread(GrindThread):
 
     def setup_tracks(self):
         self.tracks = [
-            Track("Shop and Tip 0",self.SHOP_AND_TIP_PATH,0,20,9,False),
-            Track("Theatre", self.smart_theatre_path, 0, 20, 0,False),
-            Track("Market", self.smart_market_path, 0, 14, 0,False),
-            Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0,False),
-            Track("Kobolds", self.smart_kobold_path, 0, 9, -1,False), #sentries are suuuper tough
+            Track("Shop and Tip 0",self.SHOP_AND_TIP_PATH,0,20,9, False),
+            Track("Theatre", self.smart_theatre_path, 0, 20, 0, False),
+            Track("Market", self.smart_market_path, 0, 14, 0, False),
+            Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0, False),
+            Track("Kobolds", self.smart_kobold_path, 0, 9, -1, False), #sentries are suuuper tough
             #Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
-            Track("Fort", self.smart_fort_path, 9, 20, 0,False),
-            Track("Veterans", self.BLADEMASTER, 8, 12, 0,False),
-            Track("North Bandits", self.smart_northern_bandits_path, 9, 14, -1,False),
-            Track("Eastern Zombies", self.ZOMBIES, 6, 20, 0,False),
+            Track("Fort", self.smart_fort_path, 9, 20, 0, False),
+            Track("Veterans", self.BLADEMASTER, 8, 12, 0, False),
+            Track("North Bandits", self.smart_northern_bandits_path, 9, 14, -1, False),
+            Track("Eastern Zombies", self.ZOMBIES, 6, 20, 0, False),
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,20,9),
-            Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 20, 0,False),
-            Track("Mill Workers", self.smart_mill_path, 7, 20, 0,False),
-            Track("Muggers", self.MUGGER_PATH, 9, 15, -1,False),
+            Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 20, 0, False),
+            Track("Mill Workers", self.smart_mill_path, 7, 20, 0, False),
+            Track("Muggers", self.MUGGER_PATH, 9, 15, -1, False),
             Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
             # Track("Gnoll Camp", self.GNOLL_CAMP, 12, 20, -1, 0, 9),
-            Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1,False, 0, 9),
+            Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9),
             Track("Olmer", self.OLMER, 11, 14, -1),
             Track("Cheryn", self.CHERYN, 11, 20, -1),
             Track("Orcs", self.ORCS, 11, 14, -1),
             Track("Artificers", self.ARTIFICERS, 11, 14, -1),
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
-            Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1,False),
-            Track("Knights", self.smart_knights_path, 7, 20, 1,False, 7, 18),
-            Track("Cathedral", self.CATHEDRAL, 10, 20, 1, 7, 18),
-            Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1,False),
+            Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1, False),
+            Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18),
+            Track("Cathedral", self.CATHEDRAL, 10, 20, 1, True, 7, 18),
+            Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1, False),
             Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1),
             Track("Combat Master / barbs", self.BARBS, 8, 14, 0),
             Track("Tardan", self.TARDAN, 15, 20, 0),
@@ -577,11 +577,11 @@ class TrackGrindThread(GrindThread):
             Track("Dini", self.DINI, 11, 14, 0),
             Track("Horbuk", self.HORBUK, 12, 20, 1),
             # Track("Shaldena the Red", self.SHALDENA, 12, 20, 1),
-            Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,8,20,9,False),
+            Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,8,20,9, False),
             Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0),
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
             Track("Jerrek and Tag", self.JERREK_TAG, 11, 20, -1),
-            Track("Gnomes", self.GNOMES, 10, 12, 1,False),
+            Track("Gnomes", self.GNOMES, 10, 12, 1, False),
             Track("Garbo", self.GARBO, 13, 20, 1),
             Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 13, 0),
             Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1),
@@ -648,12 +648,12 @@ class TrackGrindThread(GrindThread):
                 self.skipped_last_track = True
                 return self.PATH_TO_SKIP_WITH[:]
 
-        # if the track has a cooldown and the last run was less than 30 minutes ago, skip it
+        # if the track has a cooldown and the last run was less than 15 minutes ago, skip it
         # if track.last_run != 0:
         current_time = get_timeint()
         # seconds_since_last_run = (current_time - current_time).total_seconds()
         seconds_since_last_run = (current_time - get_timeint_from_int(track.last_run)).total_seconds()
-        if track.has_cooldown and seconds_since_last_run < 1800:
+        if not self.abandoned_last_track and track.has_cooldown and seconds_since_last_run < 900:
             magentaprint("{0} isn't acceptable to us due to cooldown".format(track.name), False)
             return self.PATH_TO_SKIP_WITH[:]
         else:

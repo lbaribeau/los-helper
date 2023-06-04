@@ -43,8 +43,11 @@ class TalkGrindThread(BotThread):
                   # "Forest Master", "Douvan", "Queen Dalla", "Broad Leaf", "Red Crown",
                   # "Cal the Hermit", "Esrhae", "Ringmaster",
                   # "Corien", "Farside","Lord Arduis","Lady Arielle","Lady Jenlira", 
-                  #  "Robar Greybeard"
-                  "Greenbough the Dryad"
+                  #  "Robar Greybeard",
+                  # "Greenbough the Dryad",
+                  # "Oakheart",
+                  # "Winter's Watcher",
+                  "Agguedian's Simulcrum",
             ]
 
             self.index = 0

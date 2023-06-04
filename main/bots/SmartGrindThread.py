@@ -213,6 +213,9 @@ class SmartGrindThread(TrackGrindThread):
                 # tough fights require max stats and a few healing pots
                 # with aura updated there may be new targets so we want to check again
                 
+                if self.character.AURA != self.character.preferred_aura:
+                    return False
+
                 # is the mob is still in our kill list after the aura update then fight it                
                 return mob in self.character.MONSTER_KILL_LIST
             else:
