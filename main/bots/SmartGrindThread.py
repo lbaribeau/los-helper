@@ -59,7 +59,7 @@ class SmartGrindThread(TrackGrindThread):
             self.command_handler.process('rem alc')
 
     def init_level_modifiers(self):
-        low_level_modifier = -1
+        low_level_modifier = 0
         high_level_modifier = 0#1 #risky business
         character_level = self.character.info.level
 

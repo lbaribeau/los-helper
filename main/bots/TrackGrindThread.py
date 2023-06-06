@@ -577,7 +577,7 @@ class TrackGrindThread(GrindThread):
             # Track("Horsemaster", self.HORSEMASTER, 16, 20, 1), #pathing here sucks, needs to be remapped
             Track("Dini", self.DINI, 11, 14, 0),
             Track("Horbuk", self.HORBUK, 12, 20, 1),
-            # Track("Shaldena the Red", self.SHALDENA, 12, 20, 1),
+            # Track("Shaldena the Red", self.SHALDENA, 15, 20, 1),
             Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,8,20,9, False),
             Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0),
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
@@ -597,7 +597,7 @@ class TrackGrindThread(GrindThread):
             Track("Forge / weapon thieves",self.FORGE_THIEVES,12,15,-1),
             # Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 12, 20, -1), # too aggressive and multiple spawn
             Track("Massive swamp troll", self.MASSIVE_SWAMP_TROLL, 15, 20, -1),
-            Track("Barbarian shaman", self.BARBARIN_SHAMAN, 15, 20, 0),
+            # Track("Barbarian shaman", self.BARBARIN_SHAMAN, 15, 20, 0), # some pretty big nuke spells, maybe not worth it
         ]
     
     def decide_where_to_go(self):

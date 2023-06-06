@@ -32,7 +32,7 @@ class Cartography(BotReactionWithFlag):
             R.no_items_allowed, R.locked,              R.no_right,         R.not_authorized,
             R.cannot_force,     R.not_here,            R.loot_blocked,     R.teleported,
             R.in_tune,          R.you_see_mob,         R.mob_aura,         R.store_list,
-            R.mob_fled,         R.open_first,          R.washroom
+            R.mob_fled,         R.open_first,          R.washroom,         R.cliff,
         ]
 
         #self.__waiter_flag = False # Now using threading.Event
@@ -59,6 +59,14 @@ class Cartography(BotReactionWithFlag):
         elif regex in R.please_wait:
             if self.character.TRYING_TO_MOVE:
                 self.go_please_wait(regex, M)
+        elif regex in R.cliff:
+            self.character.SUCCESSFUL_GO = False
+            self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
+            if self.character.ACTIVELY_BOTTING:
+                self.commandHandler.process('prepare')
+            if self.character.TRYING_TO_MOVE:
+                magentaprint("Cartography: unsuccessful go (fell down): " + str(self.character.LAST_DIRECTION))
+                self.character.TRYING_TO_MOVE = False
         elif regex in R.cant_go:
             # This one is pretty problematic... as it should never happen.
             # Means we're off course.
