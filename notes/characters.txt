@@ -24,6 +24,6 @@ Trerp,13, druid elf lvl 9 3 12 3 18 18
 Terp thief 18 3 4 18 11
 Uerp druid 10 8 12 12 12
 Werp,17, monk (lvl 17, no habit)
-Xerp,6, fighter 15 14 3 6 16
+Xerp,7, fighter 15 14 3 6 16
 Yerp,14, monk 18 3 4 18 11
 

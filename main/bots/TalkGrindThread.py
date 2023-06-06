@@ -45,10 +45,11 @@ class TalkGrindThread(BotThread):
                   # "Corien", "Farside","Lord Arduis","Lady Arielle","Lady Jenlira", 
                   #  "Robar Greybeard",
                   # "Greenbough the Dryad",
-                  # "Oakheart",
+                  "Oakheart",
                   # "Winter's Watcher",
                   # "Agguedian's Simulcrum",
-                  "barbarian shaman",
+                  # "barbarian shaman",
+                  # "shadow lich", #doesn't respond to anything afaik
             ]
 
             self.index = 0
