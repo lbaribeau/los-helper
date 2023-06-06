@@ -15,7 +15,7 @@ class Cast(SimpleCombatObject):
     regexes = []
     aura = None
     # cast = RegexStore.cast
-    success_regexes = [RegexStore.cast, RegexStore.aura, RegexStore.mob_aura]
+    success_regexes = [RegexStore.cast, RegexStore.bind_cast, RegexStore.aura, RegexStore.mob_aura]
     failure_regexes = [RegexStore.cast_failure, RegexStore.no_mana]
     error_regexes = [RegexStore.bad_target_or_spell, RegexStore.not_here, RegexStore.use_what]
 

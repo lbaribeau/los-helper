@@ -264,11 +264,15 @@ class SmartCombat(CombatObject):
                 self.spell = None
 
         self.kill.wait_until_ready()
-        if self.is_caster_class():
-            self.cast.wait_until_ready()
 
         if use_combat_ability:
             self.use_any_fast_combat_abilities()  # ie. Touch, Dance
+
+        if self.is_caster_class():
+            self.cast.wait_until_ready()
+            # if we have the bind spell use it on the target
+            if self.character.spells and Spells.bind in self.character.spells:
+                self.do_cast(Spells.bind, self.target)
 
         while not self.stopping and not self.kill.target_dead and not self.cast.target_dead:
             # if we have too many mobs attacking then we should start casting even if they're weak

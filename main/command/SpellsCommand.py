@@ -100,7 +100,7 @@ class SpellsCommand(SimpleCommand):
 
         # if all(self.regex_checker):
         if sum(self.regex_checker) >= 1:
-            magentaprint("Spells: %s" % str(self.spells))
+            magentaprint("Spells: %s" % str(self.spells), False)
             self.character.spells = self.spells
             self.init()
             super().notify(regex, M_obj)

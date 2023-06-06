@@ -375,6 +375,11 @@ cast = [
     r"(.+?) spell cast\." + __mob_overwhelmed,
     r"You cast a (.+?) spell\." + __mob_overwhelmed
 ]
+
+bind_cast = [
+    r"Bind cast on (.+?)\."
+]
+
 spell_damage = [
     r"The spell did (?P<d>\d+) damage."
 ]
@@ -423,7 +428,7 @@ spells = [(
     # r"(?P<misc>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
     r"\|(?P<misc>.+?)\|\s+"
     r"(?:\|(?P<misc2>.+?)\|\s+)?"
-    # r"(?:\|(?P<misc3>.+?)\|\s+)?"
+    r"(?:\|(?P<misc3>.+?)\|\s+)?"
     r"/===================================================== Running Spells ===\\\s+"
     # r"(?P<buffs>(?:\|\s+.+?\s+\|\s*?\n\r)+)"
     r"\|(?P<buffs>.+?)\|\s+"
