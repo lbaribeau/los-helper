@@ -47,7 +47,8 @@ class TalkGrindThread(BotThread):
                   # "Greenbough the Dryad",
                   # "Oakheart",
                   # "Winter's Watcher",
-                  "Agguedian's Simulcrum",
+                  # "Agguedian's Simulcrum",
+                  "barbarian shaman",
             ]
 
             self.index = 0
@@ -109,6 +110,7 @@ class TalkGrindThread(BotThread):
                   "chameleon",
                   "bugbear",
                   # things
+                  "item",
                   "glade",
                   "portal",
                   "artifact",
@@ -171,6 +173,7 @@ class TalkGrindThread(BotThread):
                   "Blackstar",
                   "Halwyn",
                   "Rook",
+                  "astral",
                   #races
                   "dwarf",
                   "elf",

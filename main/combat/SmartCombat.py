@@ -147,10 +147,11 @@ class SmartCombat(CombatObject):
         self.potion_thread_handler.stop
 
     def should_use_heal_ability(self):
-        return \
-            len(self.heal_abilities) > 0 and \
+        should_use = len(self.heal_abilities) > 0 and \
             self.heal_ability_is_up and \
             self.character.HEALTH <= self.character.maxHP - 0.9*self.heal_abilities[0].max_amount
+
+        return should_use
 
     def needs_big_heal(self):
         return self.potion_threshold() - self.character.HEALTH > 6
@@ -249,6 +250,9 @@ class SmartCombat(CombatObject):
         if self.target_fullref is not None and self.character.ACTIVELY_BOTTING:
             self.mob_target = Mob.get_mob_by_name(self.target_fullref)
             use_combat_ability = self.should_use_combat_ability()
+
+            magentaprint("Use combat ability: " + str(use_combat_ability), False)
+
             if self.should_use_spells():
                 magentaprint("Mob is ripe for me to use bm on", False)
                 spell_percent = max(self.character.spell_proficiencies.values())
@@ -335,7 +339,7 @@ class SmartCombat(CombatObject):
                 if self.is_mob_weak():
                     return False
 
-        if self.character.weapon1 is not None and self.character._class.id == 'Mon':
+        if self.character.weapon1 != '' and self.character._class.id == 'Mon':
             return False
         else:
             return True
@@ -361,14 +365,17 @@ class SmartCombat(CombatObject):
         return self.favourite_spell
 
     def is_mob_weak(self, level_diff=5):
+        mob_is_weak = False
         if self.mob_target.level is None or self.mob_target.level == "":
-            return False
+            return mob_is_weak
         
         mob_level = self.mob_target.level
         if self.mob_target.difficulty_rating is not None and self.mob_target.difficulty_rating != "":
             mob_level += self.mob_target.difficulty_rating
 
-        return mob_level < (self.character.level - level_diff)
+        mob_is_weak = mob_level < (self.character.level - level_diff)
+
+        return mob_is_weak
 
     def is_caster_class(self):
         return self.character._class.id == 'Mag' or self.character._class.id == 'Alc' # or \

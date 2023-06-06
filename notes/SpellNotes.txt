@@ -15,3 +15,4 @@ Level 5 spells are not really in the game
   to the Chief Alchemist for an iodide scroll which is slow-disease
 - Shatterstone is a brown scroll guarded by a stone golem in the tower north of Lyron,
   you can reach him by "invoking" a tiger eye gem that you get from Lyron by trading him Choorga's head
+- Bind can be received from the barbarian shaman in exchange for a hippogriff hind-claw or a rare coin

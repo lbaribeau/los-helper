@@ -464,6 +464,7 @@ class TrackGrindThread(GrindThread):
         self.GNOMES = ['areaid2113', 'areaid2099', 'areaid2104', 'areaid2106', 'areaid2138', 'areaid2138', 'areaid2093', 'areaid2094', 'areaid2095']
         self.FORGE_THIEVES = ['areaid1240', 'conveyor', 'east', 'plank', 'east', 'west', 'out', 'west', 'door']
         self.MASSIVE_SWAMP_TROLL = ["areaid2157"]
+        self.BARBARIN_SHAMAN = ["areaid450"]
 
         self.PATH_TO_SKIP_WITH = ['think']
 
@@ -596,6 +597,7 @@ class TrackGrindThread(GrindThread):
             Track("Forge / weapon thieves",self.FORGE_THIEVES,12,15,-1),
             # Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 12, 20, -1), # too aggressive and multiple spawn
             Track("Massive swamp troll", self.MASSIVE_SWAMP_TROLL, 15, 20, -1),
+            Track("Barbarian shaman", self.BARBARIN_SHAMAN, 15, 20, 0),
         ]
     
     def decide_where_to_go(self):

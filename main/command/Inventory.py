@@ -186,7 +186,7 @@ class Inventory(SimpleCommand, ReferencingList):
     keep_list = [
         'tree root', 'chequered vial', 'misty potion',
         'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand', #'makeup kit', 
-        'diamantium cross', 'silver ram staff',
+        'diamantium cross', 'silver ram staff', 'rare coin',
         'copper thieves pass', 'bronze thieves pass', 'steel thieves pass', 'silver thieves pass',# 'stilleto'
         'druid\'s silver sickle', 'protective robes', "alchemist's ring",
         'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
