@@ -3,6 +3,8 @@ from bots.TrackGrindThread import TrackGrindThread
 from misc_functions import *
 
 class NoobGrindThread(TrackGrindThread):
+    keys = ['fragile white key', 'wooden key', 'light grey key']
+
     def __init__(self, character=None, command_handler=None, mud_reader_handler=None,
                 mud_map=None):
         super().__init__(character, command_handler, mud_reader_handler, mud_map, 0)
@@ -33,7 +35,7 @@ class NoobGrindThread(TrackGrindThread):
       if self.character.inventory.has('wooden key'):
         return self.skellington_track[:]
       
-      return self.track[:]
+      return self.setup_track[:]
 
     def do_pre_go_actions(self):
       if self.character.inventory.has_broken("stout cudgel") or self.probably_repair:
@@ -70,11 +72,17 @@ class NoobGrindThread(TrackGrindThread):
         self.engage_monster('skeleton')
         return True
       elif exit_str == "drop_keys":
-        self.command_handler.process("drop key yes")
-        time.sleep(0.2)
+        for _ in range(self.count_keys()):
+          self.command_handler.process("drop key yes")
+          time.sleep(0.2)
+        self.command_handler.process("i")
+        time.sleep(1)
         return True
       else:
         return super().do_go_hooks(exit_str)
+
+    def count_keys(self):
+      return sum(self.character.inventory.count(r) for r in self.keys)
 
     def update_aura(self):
       return True
