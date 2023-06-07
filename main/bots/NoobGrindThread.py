@@ -58,6 +58,9 @@ class NoobGrindThread(TrackGrindThread):
         return True
       elif exit_str == "trade_book":
         self.command_handler.process("trade lar lib")
+        self.sleep(2)
+        self.command_handler.process("i")
+        self.sleep(2)
         return True
       elif exit_str == "asis_light":
         self.command_handler.process("ask guide light")
