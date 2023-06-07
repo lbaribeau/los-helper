@@ -217,10 +217,14 @@ return {
   computed: {
     adjustedTimestamp: function() {
       let output = ''
+      //"timestamp": "19:11:57.36"
       if (this.report.timestamp) {
         // subtract six hours from the timestamp
-        output = new Date(this.report.timestamp)
-        output.setHours(output.getHours() - 6)
+        output = new Date()
+        let time = this.report.timestamp.split(':')
+        output.setHours(time[0] - 6)
+        output.setMinutes(time[1])
+        output.setSeconds(time[2])
         output = output.toLocaleString()
       }
       return output
