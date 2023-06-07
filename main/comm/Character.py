@@ -130,6 +130,7 @@ class Character(object):
         self.CAN_SEE = True
         self.ACTIVELY_MAPPING = False
         self.ACTIVELY_BOTTING = False
+        self.CAN_FLEE = True
 
         self.MUD_AREA = None
         self.AREA_TITLE=""

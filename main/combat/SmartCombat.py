@@ -285,7 +285,7 @@ class SmartCombat(CombatObject):
             # if self.weapon_bot.broken_weapon:
             #     self.weapon_bot.combat_rewield()
             # Why not call rewield on reaction
-            if self.fleeing and not self.cast.wait_time() - self.kill.wait_time() > self.kill.cooldown_after_success:
+            if self.character.CAN_FLEE and self.fleeing and not self.cast.wait_time() - self.kill.wait_time() > self.kill.cooldown_after_success:
                 self.escape()
             else:
                 if (not self.is_caster_class()):

@@ -18,16 +18,18 @@ class NoobGrindThread(TrackGrindThread):
         self.training_area = ['areaid86']
         self.probably_repair = False
 
-        if self.character.inventory.has('stout cudgel'):
-          self.probably_repair = False
-          self.command_handler.process('wield cudgel')
+        # if self.character.inventory.has('stout cudgel'):
+        #   self.probably_repair = False
+        #   self.command_handler.process('wield cudgel')
 
-        if self.character.inventory.has('fragile white key'):
-          self.directions = ['drop_keys', 'areaid86']
+        # if self.character.inventory.has('fragile white key'):
+        #   self.directions = ['drop_keys', 'areaid86']
 
         self.character.MONSTER_KILL_LIST = ['skeleton']
+        self.character.CAN_FLEE = False
 
     def stop(self):
+        self.character.CAN_FLEE = True
         super().stop()
 
     def decide_where_to_go(self):
@@ -38,8 +40,8 @@ class NoobGrindThread(TrackGrindThread):
     def do_pre_go_actions(self):
       if self.character.inventory.has_broken("stout cudgel") or self.probably_repair:
         magentaprint("Need to fix my stout cudgel", False)
-        self.command_handler.weapon_bot.smithy_bot.go_repair("stout cudgel")        
-        self.command_handler.process('wield cudgel')
+        # self.command_handler.weapon_bot.smithy_bot.go_repair("stout cudgel")        
+        # self.command_handler.process('wield cudgel')
         self.directions = self.training_area[:]
 
       self.buff_up()
