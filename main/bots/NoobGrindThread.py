@@ -6,16 +6,10 @@ class NoobGrindThread(TrackGrindThread):
     def __init__(self, character=None, command_handler=None, mud_reader_handler=None,
                 mud_map=None):
         super().__init__(character, command_handler, mud_reader_handler, mud_map, 0)
-        self.track = ['purchase_key', 'unlock_south', 'south', 'get_book', 'trade_book', 'north', 'buff',
-        'unlock_east', 'east', 'engage_skelington', 'west',
-        'unlock_east', 'east', 'engage_skelington', 'west',
-        'unlock_east', 'east', 'engage_skelington', 'west',
-        'unlock_east', 'east', 'engage_skelington', 'west',
-        'unlock_east', 'east', 'engage_skelington', 'west',
-        'unlock_east', 'east', 'engage_skelington', 'west',
-        'drop_keys'
-        ]
-        self.training_area = ['areaid86']
+        self.setup_track = ['purchase_key', 'unlock_south', 'south', 'get_book', 'trade_book', 'north']
+
+        self.skellington_track = ['unlock_east', 'east', 'engage_skelington', 'west']
+        self.training_area = ['dropkeys', 'areaid86']
         self.probably_repair = False
 
         # if self.character.inventory.has('stout cudgel'):
@@ -35,6 +29,10 @@ class NoobGrindThread(TrackGrindThread):
     def decide_where_to_go(self):
       if self.character.AREA_ID != 86:
         return self.training_area[:]
+
+      if self.character.inventory.has('wooden key'):
+        return self.skellington_track[:]
+      
       return self.track[:]
 
     def do_pre_go_actions(self):
@@ -73,13 +71,7 @@ class NoobGrindThread(TrackGrindThread):
         return True
       elif exit_str == "drop_keys":
         self.command_handler.process("drop key yes")
-        self.command_handler.process("drop key yes")
-        self.command_handler.process("drop key yes")
-        self.command_handler.process("drop key yes")
-        self.command_handler.process("drop key yes")
-        self.command_handler.process("drop key yes")
-        self.command_handler.process("drop key yes")
-        self.command_handler.process("drop key yes")
+        time.sleep(0.2)
         return True
       else:
         return super().do_go_hooks(exit_str)

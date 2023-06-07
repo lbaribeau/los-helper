@@ -449,10 +449,31 @@ class CommandHandler(object):
             # magentaprint(self.SmartGrindThread.get_targets(), False)
         elif re.match("bfexit", user_input):
             magentaprint("brute forcing all exits", False)
-            exits = ExitType.get_all_exits()
+            exits = ExitType.get_hidden_exits()
+            exit_objs = {}
             for exit in exits:
-                self.telnetHandler.write("go " + exit.name)
-                time.sleep(0.5)
+                first_word = exit.name.split(' ')[0]
+                exit_objs[first_word] = first_word
+            
+            for unique_exit in exit_objs:
+                self.telnetHandler.write("look " + unique_exit)
+                time.sleep(0.2)
+        elif re.match("bfdesc", user_input):
+            area = self.character.MUD_AREA.area
+            if area:
+                description = area.description.replace('.,?!', ' ')
+                words = description.split(' ')
+                unique_words = {}
+                for word in words:
+                    # if word is not a filler word then look at it
+                    # remove punctuation from word
+                    if len(word) < 4:
+                        continue
+                    unique_words[word.lower()] = word.lower()
+                
+                for unique_word in unique_words:
+                    self.telnetHandler.write("look " + unique_word)
+                    time.sleep(0.2)
         elif re.match("m2e (.+)", user_input):
             try:
                 M_obj = re.search("m2e (.+)", user_input)

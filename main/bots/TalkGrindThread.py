@@ -163,6 +163,7 @@ class TalkGrindThread(BotThread):
                   "silence",
                   "transport",
                   "word-of-recall",
+                  "sealing",
                   # places
                   "mine",
                   "cave",

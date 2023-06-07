@@ -2,6 +2,7 @@ from peewee import *
 from db.BaseModel import *
 from db.NamedModel import NamedModel
 from misc_functions import *
+from db.AreaExit import *
 
 class ExitType(NamedModel):
 
@@ -38,6 +39,18 @@ class ExitType(NamedModel):
             #magentaprint("Could not find exit Type with name: " + name, False)
             exit_types = []
 
+        return exit_types
+
+    def get_hidden_exits():
+        exit_types = []
+
+        try:
+            for exit in ExitType.raw("SELECT * FROM exittype WHERE id IN (SELECT exit_type_id FROM areaexit WHERE is_hidden = 1)"):
+                exit_types.append(exit)
+        except ExitType.DoesNotExist:
+            #magentaprint("Could not find exit Type with name: " + name, False)
+            exit_types = []
+        
         return exit_types
 
     '''Static ExitType Functions'''
