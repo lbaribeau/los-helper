@@ -89,17 +89,20 @@ class SellBot(MiniBot):
         # self.get_inventory()  # Unnecessary if inventory is well tracked
           # also - sellable does this
 
-        for item_ref in self.sellable():
-            if self.stopping:
-                break
-            else:
-                command_object.execute_and_wait(item_ref)
+        self.execute_command_on_items(command_object, self.sellable())
+        self.execute_command_on_items(command_object, self.inventory.broken_junk())
 
-        for item_ref in self.inventory.broken_junk():
+    def execute_command_on_items(self, command_object, item_list):
+        for item_ref in item_list:
+            safe_item_ref = item_ref
+
+            if "'" in item_ref:
+                safe_item_ref = item_ref.split("'")[0]
+            
             if self.stopping:
                 break
             else:
-                command_object.execute_and_wait(item_ref)
+                command_object.execute_and_wait(safe_item_ref)
 
     def bulk_drop(self, unique_word, qty='all'):
         self.bulk_drop_or_sell(self.drop, unique_word, qty)

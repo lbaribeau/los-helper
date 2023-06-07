@@ -65,7 +65,7 @@ def parse_item_names(item_string_list):
                 'gold coins', 
                 'platinum coins', 
                 'silver coins', 
-                'rare coin',  # Boris Ironfounder
+                #'rare coin',  # Boris Ironfounder
                 'white chip', # Floor Manager
                 'black chip', # Floor Manager
                 'silver chest', 
@@ -186,7 +186,7 @@ class Inventory(SimpleCommand, ReferencingList):
     keep_list = [
         'tree root', 'chequered vial', 'misty potion',
         'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand', #'makeup kit', 
-        'diamantium cross', 'silver ram staff', 'rare coin',
+        'diamantium cross', 'silver ram staff', 'rare coin', 'silver flute',
         'copper thieves pass', 'bronze thieves pass', 'steel thieves pass', 'silver thieves pass',# 'stilleto'
         'druid\'s silver sickle', 'protective robes', "alchemist's ring",
         'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',

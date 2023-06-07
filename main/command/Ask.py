@@ -45,18 +45,22 @@ class Ask(Command):
         # if regex in R.bought:
 
         magentaprint(self._sent_target, False)
-        params = self._sent_target.split(' ')
-        request = ""
-        if len(params) > 1:
-            request = params[1]
 
         if self.success:
+            params = self._sent_target.split(' ')
+            request = ""
+            if len(params) > 1:
+                request = params[1]
             mob_name = match.group(1)
             statement = match.group('statement')
             # request = self._sent_target.split(' ', 1)[1]
             magentaprint("" + mob_name + " responds to " + request, False)
             self.log_result(mob_name, request, statement)
         elif self.failure:
+            params = self._sent_target.split(' ')
+            request = ""
+            if len(params) > 1:
+                request = params[1]
             statement = ""
             mob_name = match.group(1)
             magentaprint("" + mob_name + " doesn't respond to " + request, False)

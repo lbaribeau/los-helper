@@ -251,6 +251,7 @@ class ReferencingList(object):
             if word in list_name.split(' '):
                 if name == list_name:
                     ref = word if i ==1 else word + ' ' + str(i)
+
                     # magentaprint("ReferencingList.get_first_reference() returning " + ref)
                     return ref
                 else:

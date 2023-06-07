@@ -14,10 +14,11 @@ class TalkGrindThread(BotThread):
 
             # self.travel_bot = TravelBot(self.char, self.command_handler, mud_map)
             self.talking = False
-            self.target_mobs = [#"Madame Zara", "Farmer Malbon",
+            self.target_mobs = [#"Madame Zara",
+                  # "Farmer Malbon",
                   #"Druid Tutor", #buggy
                   # "Bertram Dalrum",
-                  # "Farmer Calmor",
+                  "Farmer Calmor",
                   # "Dame Brethil",
                   # "Grand Master Yang-Shi", "Sensei", "Dojo Administrator",
                   # "Jerrek", "Tag", "Haelyn", "Chief Alchemist", "Caethrodyn",
@@ -42,7 +43,7 @@ class TalkGrindThread(BotThread):
                   # "Th'kit the HorseMaster",
                   # "Forest Master", "Douvan", "Queen Dalla", "Broad Leaf", "Red Crown",
                   # "Cal the Hermit",
-                  "Esrhae",
+                  # "Esrhae",
                   # "Ringmaster",
                   # "Corien", "Farside","Lord Arduis","Lady Arielle","Lady Jenlira", 
                   #  "Robar Greybeard",

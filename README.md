@@ -71,7 +71,7 @@ python3
 
 ## Running headlessly
 This will run the bot headlessly so you can watch on the remote server - output goes to the nohup.out file so you can cat/grep as needed for debug info
-`nohup python3 main/los-helper username password -grind -headless &`
+`nohup python3 main/los_helper.py username password -grind -headless &`
 
 This will run the bot headlessly so you can watch on the remote server - output goes to the nohup.out file so you can cat/grep as needed for debug info
 `nohup sudo python3 -m http.server 8080 &`

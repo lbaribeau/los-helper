@@ -255,6 +255,8 @@ class GrindThread(BotThread):
         if self.character.MANA < mana_to_wait:
             self.rest_until_ready()
         elif self.character.MANA < self.mana_to_go and self.character.NEEDS_MAGIC:
+            # trigger any heal bots in the room
+            self.command_handler.process("rest")
             self.wait_for_mana()
 
         if not aura_updated:
@@ -314,7 +316,7 @@ class GrindThread(BotThread):
         # After vigging and resting a full mana pool, hp may still not be very high,
         # and in that case, keep resting since benefits should be active.
         # *requires strong enemy for black magic users
-        if not self.character.info.pty < 12:
+        if self.character.info.pty >= 12:
             magentaprint("In chapel_heal_up.")
 
             if self.stopping or self.character.HEALTH >= self.health_to_go:
@@ -450,7 +452,7 @@ class GrindThread(BotThread):
     def update_aura(self, force=False):
         aura_updated = False
 
-        if force or time.time() > (self.aura_timer + self.aura_refresh):
+        if (force and time.time() > (self.aura_timer + 30)) or time.time() > (self.aura_timer + self.aura_refresh):
             if self.stopping or self.character.ACTIVELY_MAPPING:
                 magentaprint("GrindThread.update_aura() returning false", False)
                 aura_updated = False

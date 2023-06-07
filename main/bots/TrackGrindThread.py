@@ -465,6 +465,10 @@ class TrackGrindThread(GrindThread):
         self.FORGE_THIEVES = ['areaid1240', 'conveyor', 'east', 'plank', 'east', 'west', 'out', 'west', 'door']
         self.MASSIVE_SWAMP_TROLL = ["areaid2157"]
         self.BARBARIN_SHAMAN = ["areaid450"]
+        self.KNIGHTS_TENT_CAMP = ["areaid1068", "camp", "camp", "camp"]
+        self.HOLY_SISTER_CAMP = ["areaid1363", "camp", "camp", "camp"]
+        self.GNOLL_SUB_CHIEF_CAMP = ["areaid2363", "camp", "camp", "camp"]
+        self.GNOLL_CHAPLAIN_CAMP = ["areaid1737", "camp", "camp", "camp"]
 
         self.PATH_TO_SKIP_WITH = ['think']
 
@@ -511,6 +515,21 @@ class TrackGrindThread(GrindThread):
                 magentaprint("failed to go through the gate probably", False)
                 self.direction_list = ['oops','s','w','w','w','n','chapel']
             return True
+        elif exit_str == "camp":
+            # camp for 40 seconds
+            camp_start_time = get_timeint()
+            seconds_since_camp_start = (get_timeint() - camp_start_time).total_seconds()
+
+            magentaprint("camping for 20 seconds", False)
+            self.command_handler.process("rest")
+            while seconds_since_camp_start < 20:
+                for i in range(0,20):
+                    self.sleep(0.25)
+                    if self.stopping:
+                        return
+                self.engage_any_attacking_mobs()
+                seconds_since_camp_start = (get_timeint() - camp_start_time).total_seconds()
+            return True
         elif exit_str == "think":
             return True
         elif exit_str == "tap":
@@ -542,62 +561,68 @@ class TrackGrindThread(GrindThread):
 
     def setup_tracks(self):
         self.tracks = [
-            Track("Shop and Tip 0",self.SHOP_AND_TIP_PATH,0,20,9, False),
-            Track("Theatre", self.smart_theatre_path, 0, 20, 0, False),
-            Track("Market", self.smart_market_path, 0, 14, 0, False),
-            Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0, False),
-            Track("Kobolds", self.smart_kobold_path, 0, 9, -1, False), #sentries are suuuper tough
+            Track("Shop and Tip 0",self.SHOP_AND_TIP_PATH,0,20,9, has_cooldown=False),
+            Track("Theatre Farm", self.smart_theatre_path, 0, 17, 0, has_cooldown=False),
+            Track("Theatre Bertram", self.smart_theatre_path, 18, 20, 0, requires_ready=True),
+            Track("Market", self.smart_market_path, 0, 14, 0, has_cooldown=False),
+            Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0, has_cooldown=False),
+            Track("Kobolds", self.smart_kobold_path, 0, 9, -1, has_cooldown=False), #sentries are suuuper tough
             #Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
-            Track("Fort", self.smart_fort_path, 9, 20, 0, False),
-            Track("Veterans", self.BLADEMASTER, 8, 12, 0, False),
-            Track("North Bandits", self.smart_northern_bandits_path, 9, 14, -1, False),
-            Track("Eastern Zombies", self.ZOMBIES, 6, 20, 0, False),
-            Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH,0,20,9),
-            Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 20, 0, False),
-            Track("Mill Workers", self.smart_mill_path, 7, 20, 0, False),
-            Track("Muggers", self.MUGGER_PATH, 9, 15, -1, False),
-            Track("Old Man James", self.OLD_MAN_JAMES, 9, 20, 0),
-            # Track("Gnoll Camp", self.GNOLL_CAMP, 12, 20, -1, 0, 9),
+            Track("Fort Farm", self.smart_fort_path, 9, 14, 0, has_cooldown=False, requires_ready=False),
+            Track("Fort Commander", self.smart_fort_path, 15, 20, 0, requires_ready=True),
+            Track("Veterans", self.BLADEMASTER, 8, 12, 0, has_cooldown=False),
+            Track("North Bandits", self.smart_northern_bandits_path, 9, 14, -1, has_cooldown=False),
+            Track("Eastern Zombies Farm", self.ZOMBIES, 6, 12, 0, has_cooldown=False),
+            Track("Eastern Farmers", self.ZOMBIES, 13, 20, 0, requires_ready=True),
+            Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH, 0, 20, 9),
+            Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 20, 0, has_cooldown=False),
+            Track("Mill Workers", self.smart_mill_path, 7, 14, 0, has_cooldown=False),
+            Track("Muggers", self.MUGGER_PATH, 9, 15, -1, has_cooldown=False),
+            Track("Old Man James", self.OLD_MAN_JAMES, 9, 12, 0),
+            Track("Gnoll Camp", self.GNOLL_CAMP, 15, 20, -1, False, 0, 9),
             Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9),
             Track("Olmer", self.OLMER, 11, 14, -1),
-            Track("Cheryn", self.CHERYN, 11, 20, -1),
+            Track("Cheryn", self.CHERYN, 11, 20, -1, requires_ready=False),
             Track("Orcs", self.ORCS, 11, 14, -1),
             Track("Artificers", self.ARTIFICERS, 11, 14, -1),
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
-            Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1, False),
+            Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1, has_cooldown=False),
             Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18),
             Track("Cathedral", self.CATHEDRAL, 10, 20, 1, True, 7, 18),
-            Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1, False),
-            Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1),
+            Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1, has_cooldown=False),
+            Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1, requires_ready=True),
             Track("Combat Master / barbs", self.BARBS, 8, 14, 0),
-            Track("Tardan", self.TARDAN, 15, 20, 0),
-            Track("Hurn", self.HURN, 15, 20, 1),
-            Track("Rimark", self.RIMARK, 15, 20, 1),
-            Track("Dojo", self.DOJO, 16, 20, 1),
+            Track("Tardan", self.TARDAN, 15, 20, 0, requires_ready=True),
+            Track("Hurn", self.HURN, 15, 20, 1, requires_ready=True),
+            Track("Rimark", self.RIMARK, 15, 20, 1, requires_ready=True),
+            Track("Dojo", self.DOJO, 16, 20, 1, requires_ready=True),
             # Track("Horsemaster", self.HORSEMASTER, 16, 20, 1), #pathing here sucks, needs to be remapped
             Track("Dini", self.DINI, 11, 14, 0),
-            Track("Horbuk", self.HORBUK, 12, 20, 1),
+            Track("Horbuk", self.HORBUK, 12, 20, 1, requires_ready=True),
             # Track("Shaldena the Red", self.SHALDENA, 15, 20, 1),
-            Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,8,20,9, False),
-            Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0),
+            Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,8,20,9, has_cooldown=False),
+            Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0, requires_ready=True),
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
-            Track("Jerrek and Tag", self.JERREK_TAG, 11, 20, -1),
-            Track("Gnomes", self.GNOMES, 10, 12, 1, False),
+            Track("Jerrek and Tag", self.JERREK_TAG, 11, 20, -1, requires_ready=True),
+            Track("Gnomes", self.GNOMES, 10, 12, 1, has_cooldown=False),
             Track("Garbo", self.GARBO, 13, 20, 1),
-            Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 13, 0),
-            Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1),
-            Track("Plovers", self.PLOVERS, 15, 20, 1),
-            Track("Bards", self.BARDS1, 11, 16, 1),
-            Track("Brother monk", self.MONKS1, 9, 16, 0),
-            Track("Floor Manager", self.FLOOR_MANAGER, 12, 20, -1),
+            Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 20, 0, requires_ready=True),
+            Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1, requires_ready=True),
+            Track("Plovers", self.PLOVERS, 15, 20, 1, requires_ready=True),
+            Track("Bards", self.BARDS1, 11, 16, 1, requires_ready=True),
+            Track("Brother monk", self.MONKS1, 9, 16, 0, requires_ready=True),
+            Track("Floor Manager", self.FLOOR_MANAGER, 12, 20, -1, requires_ready=True),
             # Track("Dalla and Douvan", self.DALLA_DOUVAN, 11, 20, 1), # Dalla overheals and is too dangerous
-            Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 20, 1),
-            Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9),
+            Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 20, 1, requires_ready=True),
+            # Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9),
             # Track("Halwyn Bugbears",) # has a pit which could cause issues
             Track("Forge / weapon thieves",self.FORGE_THIEVES,12,15,-1),
             # Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 12, 20, -1), # too aggressive and multiple spawn
-            Track("Massive swamp troll", self.MASSIVE_SWAMP_TROLL, 15, 20, -1),
+            Track("Massive swamp troll", self.MASSIVE_SWAMP_TROLL, 15, 20, -1, requires_ready=True),
             # Track("Barbarian shaman", self.BARBARIN_SHAMAN, 15, 20, 0), # some pretty big nuke spells, maybe not worth it
+            Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 15, 20, 2, False, 7, 18),
+            Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 2, False, 7, 18),
+            Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9),
         ]
     
     def decide_where_to_go(self):
@@ -643,6 +668,11 @@ class TrackGrindThread(GrindThread):
         character_aura = Aura(self.character.AURA)
         aura_acceptable = character_aura == self.character.preferred_aura
 
+        if track.requires_ready and (not self.character.is_ready_for_tough_fight() or not aura_acceptable):
+            magentaprint("{0} isn't acceptable to us due to aura".format(track.name), False)
+            self.skipped_last_track = True
+            return self.PATH_TO_SKIP_WITH[:]
+
         if track.track_aura == 9:
             if self.character.level in level_range:
                 return track.track[:]
@@ -669,8 +699,10 @@ class TrackGrindThread(GrindThread):
         #too good shouldn't fight evil (-1)
         # if (not aura_acceptable and track.track_aura == 0) or \
         if (character_aura < self.character.preferred_aura and track.track_aura == 1) or \
-           (character_aura > self.character.preferred_aura and track.track_aura == -1):
-            magentaprint("{0} isn't acceptable to us due to aura".format(track.name), False)
+           (character_aura <= self.character.preferred_aura and track.track_aura == 2) or \
+           (character_aura > self.character.preferred_aura and track.track_aura == -1) or \
+           (character_aura >= self.character.preferred_aura and track.track_aura == -2):
+            magentaprint("{0} unacceptable due to aura".format(track.name), False)
             self.skipped_last_track = True
             return self.PATH_TO_SKIP_WITH[:]
 
@@ -763,7 +795,7 @@ class TrackGrindThread(GrindThread):
         return path
 
 class Track():
-    def __init__(self, name, track, min_level, max_level, track_aura, has_cooldown=True, min_aura=0, max_aura=18):
+    def __init__(self, name, track, min_level, max_level, track_aura, has_cooldown=True, min_aura=0, max_aura=18, requires_ready=False):
         self.name = name
         # setup the track with a buffer at the end so that last node mobs don't get misattributed to the next track
         track.append("think")
@@ -781,6 +813,7 @@ class Track():
         self.min_aura = min_aura
         self.max_aura = max_aura
         self.has_cooldown = has_cooldown
+        self.requires_ready = requires_ready
     
     def start(self):
         self.last_run = int(round(get_timeint().timestamp()))
