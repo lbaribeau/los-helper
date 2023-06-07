@@ -306,6 +306,9 @@ class Inventory(SimpleCommand, ReferencingList):
             # magentaprint(str(self.list))
             #magentaprint(str(self.to_dict()))
             #magentaprint(self)
+        elif regex in R.no_inventory:
+            magentaprint("Inventory no_inventory", False)
+            self.items = []
         elif regex in R.sold:
             self.gold = self.gold + int(match.group(1))
             # Do nothing on "wont_buy" except set the wait flag (super)

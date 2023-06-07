@@ -165,7 +165,11 @@ class ReferencingList(object):
             return None
 
         if len(ref.split(' ')) >= 2:
-            refw, n = ref.split(' ')[0], int(ref.split(' ')[1])
+            refw, n = ref.split(' ')[0], ref.split(' ')[1]
+            if n.lower() == 'yes':
+                n = 1
+            else:
+                n = int(n)
         else:
             refw, n = ref, 1
 
