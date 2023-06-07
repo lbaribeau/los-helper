@@ -29,7 +29,9 @@ class NoobGrindThread(TrackGrindThread):
         super().stop()
 
     def decide_where_to_go(self):
-      if self.character.AREA_ID != 86:
+      magentaprint("Deciding where to go", False)
+      magentaprint("Area ID: " + str(self.character.AREA_ID), False)
+      if self.character.AREA_ID != 2524 and self.character.AREA_ID != 86:
         return self.training_area[:]
 
       if self.character.inventory.has('wooden key'):
@@ -70,13 +72,16 @@ class NoobGrindThread(TrackGrindThread):
         return True
       elif exit_str == "unlock_east":
         self.command_handler.process("unlock east wood")
+        self.sleep(0.2)
+        self.command_handler.process("open east")
+        self.sleep(0.2)
         return True
       elif exit_str == "engage_skelington":
         self.engage_monster('skeleton')
         return True
       elif exit_str == "drop_keys":
         for _ in range(self.count_keys()):
-          self.command_handler.process("drop key yes")
+          self.command_handler.process("drop key 1 yes")
           time.sleep(0.2)
         self.command_handler.process("i")
         time.sleep(1)
