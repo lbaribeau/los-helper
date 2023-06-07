@@ -9,7 +9,7 @@ class NoobGrindThread(TrackGrindThread):
         self.setup_track = ['purchase_key', 'unlock_south', 'south', 'get_book', 'trade_book', 'north']
 
         self.skellington_track = ['unlock_east', 'east', 'engage_skelington', 'west']
-        self.training_area = ['dropkeys', 'areaid86']
+        self.training_area = ['drop_keys', 'areaid86']
         self.probably_repair = False
 
         # if self.character.inventory.has('stout cudgel'):
