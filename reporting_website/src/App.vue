@@ -8,7 +8,7 @@
     </div>
     <div class="box">
       <strong>Recent State</strong>
-      <div class="stat">As of {{report.timestamp}}</div>
+      <div class="stat">As of {{adjustedTimestamp}}</div>
       <div class="stat">Fighting {{report.mobs}}</div>
       <div class="stat">Area {{report.area}}</div>
       <div class="stat">Total runtime {{report.runtime}}</div>
@@ -215,6 +215,16 @@ return {
     // }
   },
   computed: {
+    adjustedTimestamp: function() {
+      let output = ''
+      if (this.report.timestamp) {
+        // subtract six hours from the timestamp
+        output = new Date(this.report.timestamp)
+        output.setHours(output.getHours() - 6)
+        output = output.toLocaleString()
+      }
+      return output
+    },
     attackOptions: function () {
       let output = this.attackOptionsTemp
       if (this.report !== {} && this.report.attacks) {
