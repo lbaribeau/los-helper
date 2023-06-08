@@ -192,6 +192,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
         'small flask', 'large restorative', 'scarlet potion', #'tree root', # kobold priest
         # 'white potion', # 'small restorative', 'chicken soup',
+        'Rod of Ruin',
         'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',
         'golden potion', #'platinum crucifix', # Helps disease? Worth a lot of money?
         # 'granite rod', # oremaster, kobold chieftain
