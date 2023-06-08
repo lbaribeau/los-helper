@@ -169,7 +169,12 @@ class ReferencingList(object):
             if n.lower() == 'yes':
                 n = 1
             else:
-                n = int(n)
+                # try to convert to int
+                try:
+                    n = int(n)
+                except ValueError:
+                    n = 1
+   
         else:
             refw, n = ref, 1
 

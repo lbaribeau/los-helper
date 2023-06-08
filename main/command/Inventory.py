@@ -184,13 +184,15 @@ def add_to_dict(d, item_str, qty):
 class Inventory(SimpleCommand, ReferencingList):
     command = 'i'
     keep_list = [
-        'tree root', 'chequered vial', 'misty potion',
+        'chequered vial', 'misty potion',
         'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand', #'makeup kit', 
         'diamantium cross', 'silver ram staff', 'rare coin', 'silver flute',
         'copper thieves pass', 'bronze thieves pass', 'steel thieves pass', 'silver thieves pass',# 'stilleto'
         'druid\'s silver sickle', 'protective robes', "alchemist's ring",
         'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
-        'small flask', 'large restorative', 'scarlet potion', #'tree root', # kobold priest
+        'small flask', 'large restorative', 'scarlet potion',
+        'stone medal', 'basilisk scale', 'basilisk head', 'occultate stone', 'jade block', 'rock wolf fang',
+          #'tree root', # kobold priest
         # 'white potion', # 'small restorative', 'chicken soup',
         'Rod of Ruin',
         'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',

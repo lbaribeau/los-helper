@@ -5,6 +5,8 @@ from bots.BotThread import *
 from db.Database import *
 from db.MudMap import *
 from mini_bots.travel_bot import TravelBot
+from db.MobMessage import *
+from db.Mob import *
 
 # bot that finds named mobs and talks to them
 class TalkGrindThread(BotThread):
@@ -14,44 +16,71 @@ class TalkGrindThread(BotThread):
 
             # self.travel_bot = TravelBot(self.char, self.command_handler, mud_map)
             self.talking = False
-            self.target_mobs = [#"Madame Zara",
-                  # "Farmer Malbon",
-                  #"Druid Tutor", #buggy
-                  # "Bertram Dalrum",
+            self.current_topics = []
+            self.target_mobs = [
+                  "Madame Zara",
+                  "Farmer Malbon",
                   "Farmer Calmor",
-                  # "Dame Brethil",
-                  # "Grand Master Yang-Shi", "Sensei", "Dojo Administrator",
-                  # "Jerrek", "Tag", "Haelyn", "Chief Alchemist", "Caethrodyn",
+                  "Farmer McDermott",
+                  # # "Druid Tutor", #buggy
+                  "Bertram Dalrum",
+                  "Dame Brethil",
+                  "Grand Master Yang-Shi",
+                  # # "Sensei",
+                  # "The Dojo Administrator",
+                  "Jerrek", "Tag", "Rag",
+                  "Haelyn",
+                  "Caethrodyn",
                   # "Master of Ceremonies", 
-                  # "Lord Tamaran", "Tario", "Lady Denlise", "Boris Ironfounder", "Tendrurn",
-                  # "Floor Manager",
-                  # "Saga Teacher",
-                  # "Brotain","Rimark","Aldo","Horbuk","Master Monk","Volman the Inhumer","Master Artificer",
-                  # "Kin'Tal","Archbishop","Tardan","Cheryn","Trantas","Gregor",
-                  # "Manic Soothsayer","Elder Barthrodue","Farmer Viladin","Rancher Renstone",
-                  # "Rancher Plover","Annette Plover",#"White Mage",
-                  #"Barding Lord",
-                  # "Farmer McDermott","Knight Errant", "Vickie",
-                  #  "Matriarch Sara",
-                  # "Goourd",
-                  # "Lyron the Elder","Shaldena the Red","Garbo the Hobbit","Whiteblade the Barbarian",
+                  "Lord Tamaran", "Tario", "Lady Denlise", "Boris Ironfounder", "Tendrurn",
+                  "Brotain","Rimark","Aldo","Horbuk",
+                  "Volman the Inhumer",
+                  # "The Master Artificer",
+                  "Kin'Tal",
+                  # "The Archbishop",
+                  "Tardan",
+                  # "Trantas", #hardcore arena NPC
+                  "Gregor",
+                  # "Manic Soothsayer",
+                  "Elder Barthrodue",
+                  "Farmer Viladin",
+                  "Cal the Hermit",
+                  "Rancher Renstone",
+                  "Rancher Plover","Annette Plover",
+                  #"White Mage",
+                  # "The Barding Lord",
+                  # "Knight Errant",
+                  "Vickie",
+                  "Matriarch Sara",
+                  "Goourd",
+                  "Lyron the Elder","Shaldena the Red","Garbo the Hobbit","Whiteblade the Barbarian",
                   # "Great Druid",
-                  # "Teamleader Egan","Trent the Merchant",
-                  # "Al'Sik the Carver",
-                  # "Zi'Cab the Chieftan",
-                  # "Vas'Polu the HawkMaster","Byr'Ula the Smith","Ha'Chans the Shaman",
-                  # "Th'kit the HorseMaster",
-                  # "Forest Master", "Douvan", "Queen Dalla", "Broad Leaf", "Red Crown",
-                  # "Cal the Hermit",
-                  # "Esrhae",
-                  # "Ringmaster",
-                  # "Corien", "Farside","Lord Arduis","Lady Arielle","Lady Jenlira", 
-                  #  "Robar Greybeard",
-                  # "Greenbough the Dryad",
-                  # "Oakheart",
-                  # "Winter's Watcher",
-                  # "Agguedian's Simulcrum",
+                  "Teamleader Egan",
+                  # "Trent the Merchant",
+                  "Al'Sik the Carver",
+                  "Zi'Cab the Chieftan",
+                  "Vas'Polu the HawkMaster","Byr'Ula the Smith","Ha'Chans the Shaman",
+                  "Th'kit the HorseMaster",
+                  # "Forest Master",
+                  "Douvan", "Queen Dalla", "Broad Leaf", "Red Crown",
+                  "Esrhae",
+                  # "The Ringmaster",
+                  "Corien", "Farside","Lord Arduis","Lady Arielle","Lady Jenlira", 
+                  "Robar Greybeard",
+                  "Greenbough the Dryad",
+                  "Oakheart",
+                  "Winter's Watcher",
+                  "Agguedian's Simulcrum",
                   # "barbarian shaman",
+                  "Cheryn",
+                  "Commander Rilmenson",
+                  "Thereze",
+                  "Qimoth",
+                  "Gorban",
+                  "Pansy",
+                  "Kelluran",
+                  "Ordaran the White",
+                  "Corellan",
                   # "shadow lich", #doesn't respond to anything afaik
             ]
 
@@ -74,28 +103,18 @@ class TalkGrindThread(BotThread):
                   "battle",
                   "fear",
                   "danger",
+                  "trade",
+                  "barter",
+                  # "haggle",
+                  "buy",
+                  "sell",
+                  "purchase",
+                  "exchange",
+                  "offer",
+                  "conjunction",
+                  "invoke",
                   # leveling
                   "train",
-                  "one",
-                  "two",
-                  "three",
-                  "four",
-                  "five",
-                  "six",
-                  "seven",
-                  "eight",
-                  "nine",
-                  "ten",
-                  "eleven",
-                  "twelve",
-                  "thirteen",
-                  "fourteen",
-                  "fifteen",
-                  "sixteen",
-                  "seventeen",
-                  "eighteen",
-                  "nineteen",
-                  "twenty",
                   # mobs
                   "griffon",
                   "ogre",
@@ -113,6 +132,7 @@ class TalkGrindThread(BotThread):
                   "bandit",
                   "chameleon",
                   "bugbear",
+                  "efreet",
                   # things
                   "item",
                   "glade",
@@ -142,6 +162,11 @@ class TalkGrindThread(BotThread):
                   "evil",
                   "dark",
                   "light",
+                  "rod",
+                  "ruin",
+                  "song",
+                  "potion",
+                  "ingredient",
                   # spells
                   "blind",
                   "clairvoyance",
@@ -153,7 +178,6 @@ class TalkGrindThread(BotThread):
                   "disease",
                   "curse",
                   "bless",
-                  "heal",
                   "cure",
                   "protect",
                   "scroll",
@@ -179,6 +203,7 @@ class TalkGrindThread(BotThread):
                   "station",
                   "inn",
                   "tavern",
+                  "guild",
                   "chapel",
                   "shop",
                   "farm",
@@ -194,6 +219,9 @@ class TalkGrindThread(BotThread):
                   "Halwyn",
                   "Rook",
                   "astral",
+                  "elemental",
+                  "plane",
+                  "entrance",
                   #races
                   "dwarf",
                   "elf",
@@ -248,9 +276,34 @@ class TalkGrindThread(BotThread):
             if self.index >= len(self.target_mobs):
                   self.stop()
                   return []
-            
-            self.target_mob = self.target_mobs[self.index]
+
             if not self.talking:
+                  self.target_mob = self.target_mobs[self.index]
+                  mob = Mob.get_mob_by_name(self.target_mob)
+
+                  if mob is None:
+                        magentaprint("Mob not found, skipping: {}".format(self.target_mob), False)
+                        self.index += 1
+                        return []
+
+                  mobMessages = MobMessage.get_all_messages_by_mob(mob)
+
+                  self.current_topics = []
+                  for topic in self.talk_topics:
+                        foundKeyword = False
+                        for mobMessage in mobMessages:
+                              if mobMessage.keyword == topic:
+                                    foundKeyword = True
+                                    break
+                        if not foundKeyword:
+                              self.current_topics.append(topic)
+
+                  magentaprint("Found talking points: {} for {}".format(len(self.current_topics), self.target_mob), False)
+                  if len(self.current_topics) == 0:
+                        magentaprint("No talking points found, skipping: {}".format(self.target_mob), False)
+                        self.index += 1
+                        return []
+
                   magentaprint("Looking {} for mob: {}".format(self.index, self.target_mob), False)
                   # get the path to the mob
                   try:
@@ -262,16 +315,17 @@ class TalkGrindThread(BotThread):
                         path = []
 
                   # if we found a path then return the path
-                  if path is not None:
+                  if len(path) > 0:
+                        self.talking = True
                         return path
             else:
                   magentaprint("Talking to mob: {}".format(self.target_mob), False)
                   # talk to the mob about all the topics in our list
-                  for topic in self.talk_topics:
+                  for topic in self.current_topics:                        
                         self.talk_to_mob(self.target_mob, topic)
                         time.sleep(0.5)
                   self.talking = False
-                  self.index += 1              
+                  self.index += 1  
             
             return []
       

@@ -36,6 +36,7 @@ class Ask(Command):
 
         mobMessage = MobMessage(mob=mob, keyword=request, message=statement)
         mobMessage.map()
+        # magentaprint("Mapped mob message: " + str(mobMessage), False)
 
 
     def notify(self, regex, match):
@@ -51,7 +52,7 @@ class Ask(Command):
             request = ""
             if len(params) > 1:
                 request = params[1]
-            mob_name = match.group(1)
+            mob_name = match.group(1).strip()
             statement = match.group('statement')
             # request = self._sent_target.split(' ', 1)[1]
             magentaprint("" + mob_name + " responds to " + request, False)
