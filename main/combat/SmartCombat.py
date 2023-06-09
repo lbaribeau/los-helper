@@ -268,7 +268,7 @@ class SmartCombat(CombatObject):
         if use_combat_ability:
             self.use_any_fast_combat_abilities()  # ie. Touch, Dance
 
-        if self.is_caster_class():
+        if self.is_caster_class() and not self.is_mob_weak(2):
             self.cast.wait_until_ready()
             # if we have the bind spell use it on the target
             if self.character.spells and Spells.bind in self.character.spells:

@@ -61,11 +61,11 @@ class SmartGrindThread(TrackGrindThread):
     def init_level_modifiers(self):
         low_level_modifier = 0
         high_level_modifier = 0#1 #risky business
-        character_level = self.character.info.level
+        # character_level = self.character.info.level
 
-        if self.is_character_class('Mag') and character_level > 13:
-            high_level_modifier = -2
-            low_level_modifier = -2
+        # if self.is_character_class('Mag') and character_level > 13:
+        #     high_level_modifier = -2
+        #     low_level_modifier = -2
 
         self.set_target_levels(low_level_modifier, high_level_modifier)
 
