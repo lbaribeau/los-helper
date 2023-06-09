@@ -18,16 +18,21 @@ class TalkGrindThread(BotThread):
             self.talking = False
             self.current_topics = []
             self.target_mobs = [
+                  "GuildMaster Cuvelas",
+                  "Chiaru Maradiu",
                   "Madame Zara",
+                  "Ringmaster",
                   "Farmer Malbon",
+                  "Priestly Ghost",
                   "Farmer Calmor",
                   "Farmer McDermott",
+                  "Farmer Grangers Ghost",
                   # # "Druid Tutor", #buggy
                   "Bertram Dalrum",
                   "Dame Brethil",
                   "Grand Master Yang-Shi",
                   # # "Sensei",
-                  # "The Dojo Administrator",
+                  "Dojo Administrator",
                   "Jerrek", "Tag", "Rag",
                   "Haelyn",
                   "Caethrodyn",
@@ -41,7 +46,7 @@ class TalkGrindThread(BotThread):
                   "Tardan",
                   # "Trantas", #hardcore arena NPC
                   "Gregor",
-                  # "Manic Soothsayer",
+                  "Manic Soothsayer",
                   "Elder Barthrodue",
                   "Farmer Viladin",
                   "Cal the Hermit",
@@ -56,7 +61,7 @@ class TalkGrindThread(BotThread):
                   "Lyron the Elder","Shaldena the Red","Garbo the Hobbit","Whiteblade the Barbarian",
                   # "Great Druid",
                   "Teamleader Egan",
-                  # "Trent the Merchant",
+                  "Trent the Merchant",
                   "Al'Sik the Carver",
                   "Zi'Cab the Chieftan",
                   "Vas'Polu the HawkMaster","Byr'Ula the Smith","Ha'Chans the Shaman",
@@ -64,7 +69,6 @@ class TalkGrindThread(BotThread):
                   # "Forest Master",
                   "Douvan", "Queen Dalla", "Broad Leaf", "Red Crown",
                   "Esrhae",
-                  # "The Ringmaster",
                   "Corien", "Farside","Lord Arduis","Lady Arielle","Lady Jenlira", 
                   "Robar Greybeard",
                   "Greenbough the Dryad",
@@ -81,7 +85,7 @@ class TalkGrindThread(BotThread):
                   "Kelluran",
                   "Ordaran the White",
                   "Corellan",
-                  # "shadow lich", #doesn't respond to anything afaik
+                  "shadow lich", #doesn't respond to anything afaik
             ]
 
             self.index = 0
@@ -133,6 +137,9 @@ class TalkGrindThread(BotThread):
                   "chameleon",
                   "bugbear",
                   "efreet",
+                  "demon",
+                  "demons",
+                  "jaguar",
                   # things
                   "item",
                   "glade",
@@ -167,6 +174,8 @@ class TalkGrindThread(BotThread):
                   "song",
                   "potion",
                   "ingredient",
+                  "rune",
+                  "sigil",
                   # spells
                   "blind",
                   "clairvoyance",
@@ -222,6 +231,7 @@ class TalkGrindThread(BotThread):
                   "elemental",
                   "plane",
                   "entrance",
+                  "ahinma",
                   #races
                   "dwarf",
                   "elf",

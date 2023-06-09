@@ -469,6 +469,7 @@ class TrackGrindThread(GrindThread):
         self.HOLY_SISTER_CAMP = ["areaid1363", "camp", "camp", "camp"]
         self.GNOLL_SUB_CHIEF_CAMP = ["areaid2363", "camp", "camp", "camp"]
         self.GNOLL_CHAPLAIN_CAMP = ["areaid1737", "camp", "camp", "camp"]
+        self.CHIARU = ["areaid3096"]
 
         self.PATH_TO_SKIP_WITH = ['think']
 
@@ -605,7 +606,7 @@ class TrackGrindThread(GrindThread):
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
             Track("Jerrek and Tag", self.JERREK_TAG, 11, 20, -1, requires_ready=True),
             Track("Gnomes", self.GNOMES, 10, 12, 1, has_cooldown=False),
-            Track("Garbo", self.GARBO, 13, 20, 1),
+            Track("Garbo", self.GARBO, 13, 15, 1),
             Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 20, 0, requires_ready=True),
             Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1, requires_ready=True),
             Track("Plovers", self.PLOVERS, 15, 20, 1, requires_ready=True),
@@ -623,6 +624,7 @@ class TrackGrindThread(GrindThread):
             Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 15, 20, 2, False, 7, 18),
             Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 2, False, 7, 18),
             Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9),
+            Track("CHIARU", self.CHIARU, 18, 20, 1, requires_ready=True),
         ]
     
     def decide_where_to_go(self):
