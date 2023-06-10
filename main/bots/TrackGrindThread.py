@@ -465,10 +465,10 @@ class TrackGrindThread(GrindThread):
         self.FORGE_THIEVES = ['areaid1240', 'conveyor', 'east', 'plank', 'east', 'west', 'out', 'west', 'door']
         self.MASSIVE_SWAMP_TROLL = ["areaid2157"]
         self.BARBARIN_SHAMAN = ["areaid450"]
-        self.KNIGHTS_TENT_CAMP = ["areaid1068", "camp", "camp", "camp"]
-        self.HOLY_SISTER_CAMP = ["areaid1363", "camp", "camp", "camp"]
-        self.GNOLL_SUB_CHIEF_CAMP = ["areaid2363", "camp", "camp", "camp"]
-        self.GNOLL_CHAPLAIN_CAMP = ["areaid1737", "camp", "camp", "camp"]
+        self.KNIGHTS_TENT_CAMP = ["areaid1068", "glamp", "glamp", "glamp"]
+        self.HOLY_SISTER_CAMP = ["areaid1363", "glamp", "glamp", "glamp"]
+        self.GNOLL_SUB_CHIEF_CAMP = ["areaid2363", "glamp", "glamp", "glamp"]
+        self.GNOLL_CHAPLAIN_CAMP = ["areaid1737", "glamp", "glamp", "glamp"]
         self.CHIARU = ["areaid3096"]
 
         self.PATH_TO_SKIP_WITH = ['think']
@@ -516,8 +516,8 @@ class TrackGrindThread(GrindThread):
                 magentaprint("failed to go through the gate probably", False)
                 self.direction_list = ['oops','s','w','w','w','n','chapel']
             return True
-        elif exit_str == "camp":
-            # camp for 40 seconds
+        elif exit_str == "glamp":
+            # camp for 20 seconds
             camp_start_time = get_timeint()
             seconds_since_camp_start = (get_timeint() - camp_start_time).total_seconds()
 
