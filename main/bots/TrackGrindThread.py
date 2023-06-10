@@ -617,7 +617,7 @@ class TrackGrindThread(GrindThread):
             Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 20, 1, requires_ready=True),
             # Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9),
             # Track("Halwyn Bugbears",) # has a pit which could cause issues
-            Track("Forge / weapon thieves",self.FORGE_THIEVES,12,15,-1),
+            Track("Forge / weapon thieves",self.FORGE_THIEVES,14,16,-1),
             # Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 12, 20, -1), # too aggressive and multiple spawn
             Track("Massive swamp troll", self.MASSIVE_SWAMP_TROLL, 15, 20, -1, requires_ready=True),
             # Track("Barbarian shaman", self.BARBARIN_SHAMAN, 15, 20, 0), # some pretty big nuke spells, maybe not worth it
