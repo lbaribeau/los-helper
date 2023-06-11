@@ -171,16 +171,16 @@ class Cartography(BotReactionWithFlag):
         C.EXIT_LIST  = self.parse_exit_list(match.group(3))
         C.EXIT_REGEX = self.create_exit_regex_for_character(C.EXIT_LIST)
 
-        area_has_players = False
+        C.area_has_players = False
 
         # check for C.players to see if any appear in match.group(4)
         if match.group(4) is not None:
             for player in C.players:
                 if player in match.group(4):
-                    area_has_players = True
+                    C.area_has_players = True
                     break
 
-        if match.group(4) is not None and not area_has_players:
+        if match.group(4) is not None and not C.area_has_players:
             C.mobs.list  = ReferencingList(self.parse_monster_list(match.group(4)))
         else:
             C.mobs.list  = ReferencingList(self.parse_monster_list(match.group(5)))
