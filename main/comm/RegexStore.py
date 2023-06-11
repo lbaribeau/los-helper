@@ -8,6 +8,12 @@ prompt            = [r"\[(\d+) H (\d+) M\]: (You feel the benefits of resting\.)
 __item            = r"(?P<item>[A-Za-z0-9\-'\s\(\)\+]+)"
 __items           = r"(?P<items>[A-Za-z0-9\-'\s,\(\)\+]+)"
 __player          = r"(?P<player>[A-Za-z]+)"
+
+# regex to parse the output of 'who'
+who_success       = [r"(?:Player.+?State.+?[\n\r][\n\r]?-+[\n\r][\n\r]?)(?:((?:(\w+)\s+(?:\w+)\s+(?:[\w]+(?: \w+)?)\s+(?:\w+)\s+?[\n\r][\n\r]?)+))"]
+player_entered    = [r"### (.+?) .+?entered.+?."]
+player_left       = [r"### (.+?)\s.+?left.+?\."]
+
 you_have          = [r"You have: " + __items + r"\."]
 wont_buy          = [r'The shopkeep says, "I won\'t buy that rubbish from you\."'] # Could get the prompt with the regex, so ^ might not match
 wont_buy2         = [r"The shopkeep won't buy that from you\."]
@@ -157,8 +163,8 @@ loot_blocked = [__Three_possible_mob_strings + r" won't let you take anything\."
 nothing_here = [r"There's nothing here\."]
 
 # Go and Cartography
-#           .=\n\r   EAT JUNK DATA (death,loginprompts,hptick)              Title           Description               Exit list             Players / Mobs / Signs / Items (optional)
-area                  = ["(?:You run like a chicken\.\n\r\n\r)?(?s)(?:(?:.+?Stone\.\n\r|.+?healed\.\n\r|.+?\]:\s+?)\n\r)?([A-Za-z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(?:You see (?:Cer.+?)\n?\r?)?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"]
+#           .=\n\r   EAT JUNK DATA (death,loginprompts,hptick)                                                             Title           Description       Exit list                   Players / Mobs / Signs / Items (optional)
+area                  = ["(?:You run like a chicken\.\n\r\n\r)?(?s)(?:(?:.+?Stone\.\n\r|.+?healed\.\n\r|.+?\]:\s+?)\n\r)?([A-Za-z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"]
 obvious_exits         = [r"(?s)Obvious exits: ([A-Za-z\s,]+)\.\n\r"]
 go_where              = [r"Go where\?"]
 cant_go               = [r"You can't go that way\."]

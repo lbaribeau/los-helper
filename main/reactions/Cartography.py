@@ -170,7 +170,20 @@ class Cartography(BotReactionWithFlag):
         C.AREA_TITLE = match.group(1).strip()
         C.EXIT_LIST  = self.parse_exit_list(match.group(3))
         C.EXIT_REGEX = self.create_exit_regex_for_character(C.EXIT_LIST)
-        C.mobs.list  = ReferencingList(self.parse_monster_list(match.group(4)))
+
+        area_has_players = False
+
+        # check for C.players to see if any appear in match.group(4)
+        if match.group(4) is not None:
+            for player in C.players:
+                if player in match.group(4):
+                    area_has_players = True
+                    break
+
+        if match.group(4) is not None and not area_has_players:
+            C.mobs.list  = ReferencingList(self.parse_monster_list(match.group(4)))
+        else:
+            C.mobs.list  = ReferencingList(self.parse_monster_list(match.group(5)))
         # This calls mobs.parse_monster_list
         magentaprint("Cartography.area set character.mobs.list: " + str(C.mobs.list))
         # magentaprint("Cartography set character.mobs.list.list: " + str(C.mobs.list.list))

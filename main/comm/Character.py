@@ -33,6 +33,7 @@ class Character(object):
 
     def __init__(self):
         self.mobs = Mobs()
+        self.players = []
         self.prompt = None
         self.server = None
 

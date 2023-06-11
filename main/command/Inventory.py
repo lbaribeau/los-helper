@@ -186,12 +186,13 @@ class Inventory(SimpleCommand, ReferencingList):
     keep_list = [
         'chequered vial', 'misty potion',
         'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand', #'makeup kit', 
-        'diamantium cross', 'silver ram staff', 'rare coin', 'silver flute',
+        'diamantium cross', 'rare coin', 'silver flute',
         'copper thieves pass', 'bronze thieves pass', 'steel thieves pass', 'silver thieves pass',# 'stilleto'
         'druid\'s silver sickle', 'protective robes', "alchemist's ring",
         'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
         'small flask', 'large restorative', 'scarlet potion',
         'stone medal', 'basilisk scale', 'basilisk head', 'occultate stone', 'jade block', 'rock wolf fang',
+        'orange potion', # levitate
           #'tree root', # kobold priest
         # 'white potion', # 'small restorative', 'chicken soup',
         'Rod of Ruin',
@@ -230,7 +231,10 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'chain mail gloves', # mill worker
         'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring', 
         'greenwood jerkin',"paladins's plate armour", "master's habit", 
-        'lucky pebble',"blue ioun stone","mithril war hammer","dragon scale armour"
+        'lucky pebble',"blue ioun stone",
+        # super rare weapons/armor
+        'dwarven rune hammer', 'silver ram staff', 'true blade', 'composite bow', 'mithril war hammer',
+        "dragon scale armour",
         # 'maul hammer' # This we need to keep ONE (later)
         # 'iron shield'
         # 'platinum ring', 'gold ring', 'steel ring', 'silver ring'

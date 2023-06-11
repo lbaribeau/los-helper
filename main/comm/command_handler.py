@@ -30,6 +30,7 @@ from bots.CampGrindThread          import CampGrindThread
 from command.Quit               import Quit
 from command.Command            import Command
 from reactions.CombatReactions  import CombatReactions
+from command.Who                import Who
 from combat.Kill                import Kill
 from combat.Cast                import Cast
 from command.Wield              import Wield
@@ -88,6 +89,10 @@ class CommandHandler(object):
         # self.smartCombat = SmartCombat(self.telnetHandler, self.character, Kill(telnetHandler), Cast(telnetHandler), Prompt(character))
         self.combat_reactions = CombatReactions(self.character)
         mudReaderHandler.add_subscriber(self.combat_reactions)
+
+        self.who = Who(self.telnetHandler, self.character)
+        mudReaderHandler.add_subscriber(self.who)
+        self.who.execute()
         # self.simple_weapon_bot = SimpleWeaponBot(self.telnetHandler, self.character)
         # mudReaderHandler.add_subscriber(self.simple_weapon_bot)
         # self.weapon_bot = WeaponBot(self.character, self) # This guy takes the map after it's available... seems like his functions should be made thread safe
