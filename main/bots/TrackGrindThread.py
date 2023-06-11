@@ -626,7 +626,6 @@ class TrackGrindThread(GrindThread):
             Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9),
             Track("CHIARU", self.CHIARU, 18, 20, 1, requires_ready=True),
         ]
-        self.tracks = [Track("Floor Manager", self.FLOOR_MANAGER, 12, 20, -1, requires_ready=True)]
     
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go", False)
