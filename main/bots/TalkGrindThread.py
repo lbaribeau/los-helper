@@ -18,6 +18,12 @@ class TalkGrindThread(BotThread):
             self.talking = False
             self.current_topics = []
             self.target_mobs = [
+                  # "Dr'Tel's Ghost",
+                  # "Gerdevarashimora",
+                  # "Farside",
+                  # "Dwar",
+                  # "Maco Bail", # Behind locked door
+                  "Mayor Demlin",
                   "GuildMaster Cuvelas",
                   "Chiaru Maradiu",
                   "Madame Zara",
@@ -34,8 +40,6 @@ class TalkGrindThread(BotThread):
                   # # "Sensei",
                   "Dojo Administrator",
                   "Jerrek", "Tag", "Rag",
-                  "Haelyn",
-                  "Caethrodyn",
                   # "Master of Ceremonies", 
                   "Lord Tamaran", "Tario", "Lady Denlise", "Boris Ironfounder", "Tendrurn",
                   "Brotain","Rimark","Aldo","Horbuk",
@@ -48,6 +52,7 @@ class TalkGrindThread(BotThread):
                   "Gregor",
                   "Manic Soothsayer",
                   "Elder Barthrodue",
+                  "Goourd",
                   "Farmer Viladin",
                   "Cal the Hermit",
                   "Rancher Renstone",
@@ -57,8 +62,7 @@ class TalkGrindThread(BotThread):
                   # "Knight Errant",
                   "Vickie",
                   "Matriarch Sara",
-                  "Goourd",
-                  "Lyron the Elder","Shaldena the Red","Garbo the Hobbit","Whiteblade the Barbarian",
+                  "Corien", "Lyron the Elder","Shaldena the Red","Garbo the Hobbit","Whiteblade the Barbarian",
                   # "Great Druid",
                   "Teamleader Egan",
                   "Trent the Merchant",
@@ -69,9 +73,12 @@ class TalkGrindThread(BotThread):
                   # "Forest Master",
                   "Douvan", "Queen Dalla", "Broad Leaf", "Red Crown",
                   "Esrhae",
-                  "Corien", "Farside","Lord Arduis","Lady Arielle","Lady Jenlira", 
+                  "Haelyn",
+                  "Caethrodyn",
+                  "Lord Arduis","Lady Arielle","Lady Jenlira", 
                   "Robar Greybeard",
                   "Greenbough the Dryad",
+                  # "Deep Root",
                   "Oakheart",
                   "Winter's Watcher",
                   "Agguedian's Simulcrum",
@@ -85,7 +92,6 @@ class TalkGrindThread(BotThread):
                   "Kelluran",
                   "Ordaran the White",
                   "Corellan",
-                  "shadow lich", #doesn't respond to anything afaik
             ]
 
             self.index = 0
@@ -190,6 +196,7 @@ class TalkGrindThread(BotThread):
                   "cure",
                   "protect",
                   "scroll",
+                  "wand",
                   "resist",
                   "restore",
                   "reveal",
@@ -232,6 +239,9 @@ class TalkGrindThread(BotThread):
                   "plane",
                   "entrance",
                   "ahinma",
+                  "ulwyne",
+                  "blood",
+                  "ranch",
                   #races
                   "dwarf",
                   "elf",
@@ -240,6 +250,8 @@ class TalkGrindThread(BotThread):
                   "hobbit",
                   "gnome",
                   "half",
+                  "ent",
+                  "dryad",
                   # classes
                   "fighter",
                   "warrior",
@@ -253,7 +265,11 @@ class TalkGrindThread(BotThread):
                   "dark-knight",
                   "bard",
                   "alchemist",
-                  "druid"
+                  "druid",
+                  # characters
+                  "deldan",
+                  "lord",
+                  "lady"
             ]
 
       def get_path_to_target_mob(self, mob):

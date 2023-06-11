@@ -12,3 +12,4 @@ aaashaal's gift - air protection
 glowing potion - light
 gold potion - strong healing
 amber vial - poison subsides (doesn't stop it though)
+hot rum toddy - Resist-Cold
