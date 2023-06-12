@@ -175,6 +175,7 @@ class CommandHandler(object):
             # # self.bot_ready = self.mud_map.ready  # True
             # self.mud_map_thread = threading.Thread(target=magentaprint, args=("setting up mud map in main thread",))
             self.init_map_and_bots()
+        self.quick_directions = ['q']
 
         self.actions = {
             'go_smithy' : self.go_smithy,
@@ -452,6 +453,19 @@ class CommandHandler(object):
         elif re.match("mkl", user_input): #Monster List
             magentaprint(self.character.MONSTER_KILL_LIST, False)
             # magentaprint(self.SmartGrindThread.get_targets(), False)
+        elif re.match("q ((\w+)\s?)+", user_input): #quick search
+            self.quick_directions = user_input.split(' ')
+            # for each word in the user input send a search command to the telnet handler
+
+            for i in self.quick_directions:
+                if self.quick_directions.index(i) == 0:
+                    continue
+                self.telnetHandler.write("look " + i)
+        elif re.match("q", user_input): #quick search
+            for i in self.quick_directions:
+                if self.quick_directions.index(i) == 0:
+                    continue
+                self.telnetHandler.write("look " + i)
         elif re.match("bfexit", user_input):
             magentaprint("brute forcing all exits", False)
             exits = ExitType.get_hidden_exits()

@@ -37,7 +37,7 @@ class TrackGrindThread(GrindThread):
         self.SHOP_AND_TIP_PATH = ["areaid2",
             "out", "north", "south", "south", "west", 'west', 'west', 'south', 'south', "shop",
             "sell_items","out", "southeast", 'east', 'east', 'east', 'east', "northeast", "tip",
-            "drop_items","out", 'north', 'north', 'west', 'west', 'west', 'north', "chapel"
+            "drop_items","out", 'north', 'north', 'west', 'west', 'west', 'north', "chapel", "check_aura"
         ]
         self.smart_theatre_path = ['areaid14', "theatre", "stairs","cubby", "out", "box", "out", "box 2",
             "out", "down", "swing", "seat", "out", "down", "seat", "out", "door", "office", "out",
@@ -205,6 +205,7 @@ class TrackGrindThread(GrindThread):
             'out', 'hall', 'out', 'east', 'east', 'forge', 'out', 'southeast', 'field', 'road', 'field 2', 'road', 'southeast',
             'southeast', 'field', 'road', 'southeast', 'field', 'stile', 'stile', 'road',
             'southeast', 'field', 'road', 'southeast', 'station']
+        self.BORIS_IRONFOUNDER = ['areaid1087']
         self.DWARVEN_FIELD_WORKERS_PATH = ["areaid2",'out', 'south', 'east', 'south', 'south',
             'south', 'east', 'west', 'west', 'gate', 'south', 'southeast', 'southeast',
             'east', 'east', 'east', 'pathway', 'northwest', 'north', 'north',
@@ -436,7 +437,8 @@ class TrackGrindThread(GrindThread):
         self.ORCS = ['areaid747', 'areaid749']
         self.OLMER = ['areaid297']
         self.CHERYN = ['areaid1380']
-        self.ARTIFICERS = ['areaid1350', 'areaid1008', 'areaid999'] #Haelyn
+        self.ARTIFICERS = ['areaid1350', 'areaid1008']
+        self.HAELYN = ['areaid999'] #Haelyn
         self.SILKEN_ALLEY = ['areaid686', 'areaid706', 'areaid705', 'areaid698', 'areaid699', 'areaid700']
         self.CORELLAN = ['areaid713']
         self.JERREK_TAG = ['areaid977', 'areaid979', 'areaid3857']
@@ -469,7 +471,11 @@ class TrackGrindThread(GrindThread):
         self.HOLY_SISTER_CAMP = ["areaid1363", "glamp", "glamp", "glamp"]
         self.GNOLL_SUB_CHIEF_CAMP = ["areaid2363", "glamp", "glamp", "glamp"]
         self.GNOLL_CHAPLAIN_CAMP = ["areaid1737", "glamp", "glamp", "glamp"]
+        self.WAY_STATION_GLAMP = ["areaid1107", "glamp", "glamp", "glamp"]
         self.CHIARU = ["areaid3096"]
+        self.WHITEBLADE = ["areaid2109"]
+        self.MAYOR_DEMLIN = ["areaid19"]
+        self.THOMAS_IRONHEART = ["areaid189"]
 
         self.PATH_TO_SKIP_WITH = ['think']
 
@@ -515,6 +521,11 @@ class TrackGrindThread(GrindThread):
             if (curArea == int(self.character.AREA_ID)):
                 magentaprint("failed to go through the gate probably", False)
                 self.direction_list = ['oops','s','w','w','w','n','chapel']
+            return True
+        elif exit_str == "check_aura":
+            # check kills since last aura check - if <5 then don't bother
+            if self.run_kills > self.last_aura_refresh_kills:
+                self.update_aura(force=True)
             return True
         elif exit_str == "glamp":
             # camp for 20 seconds
@@ -576,7 +587,8 @@ class TrackGrindThread(GrindThread):
             Track("Eastern Zombies Farm", self.ZOMBIES, 6, 12, 0, has_cooldown=False),
             Track("Eastern Farmers", self.ZOMBIES, 13, 20, 0, requires_ready=True),
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH, 0, 20, 9),
-            Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 20, 0, has_cooldown=False),
+            Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 14, 0, has_cooldown=False),
+            Track("Boris Ironfounder", self.BORIS_IRONFOUNDER, 15, 20, 0, requires_ready=True),
             Track("Mill Workers", self.smart_mill_path, 7, 14, 0, has_cooldown=False),
             Track("Muggers", self.MUGGER_PATH, 9, 15, -1, has_cooldown=False),
             Track("Old Man James", self.OLD_MAN_JAMES, 9, 12, 0),
@@ -586,6 +598,7 @@ class TrackGrindThread(GrindThread):
             Track("Cheryn", self.CHERYN, 11, 20, -1, requires_ready=False),
             Track("Orcs", self.ORCS, 11, 14, -1),
             Track("Artificers", self.ARTIFICERS, 11, 14, -1),
+            Track("Haelyn", self.HAELYN, 16, 20, -1, requires_ready=True), 
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1, has_cooldown=False),
             Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18),
@@ -597,14 +610,15 @@ class TrackGrindThread(GrindThread):
             Track("Hurn", self.HURN, 15, 20, 1, requires_ready=True),
             Track("Rimark", self.RIMARK, 15, 20, 1, requires_ready=True),
             Track("Dojo", self.DOJO, 16, 20, 1, requires_ready=True),
-            # Track("Horsemaster", self.HORSEMASTER, 16, 20, 1), #pathing here sucks, needs to be remapped
+            Track("HORSEMASTER", self.HORSEMASTER, 17, 20, 1, requires_ready=True),
             Track("Dini", self.DINI, 11, 14, 0),
             Track("Horbuk", self.HORBUK, 12, 20, 1, requires_ready=True),
             # Track("Shaldena the Red", self.SHALDENA, 15, 20, 1),
             Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,8,20,9, has_cooldown=False),
             Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0, requires_ready=True),
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
-            Track("Jerrek and Tag", self.JERREK_TAG, 11, 20, -1, requires_ready=True),
+            Track("Jerrek and Tag", self.JERREK_TAG, 11, 15, -1, requires_ready=True),
+            Track("Jerrek and Tag", self.JERREK_TAG, 16, 20, -1),
             Track("Gnomes", self.GNOMES, 10, 12, 1, has_cooldown=False),
             Track("Garbo", self.GARBO, 13, 15, 1),
             Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 20, 0, requires_ready=True),
@@ -615,16 +629,20 @@ class TrackGrindThread(GrindThread):
             Track("Floor Manager", self.FLOOR_MANAGER, 12, 20, -1, requires_ready=True),
             # Track("Dalla and Douvan", self.DALLA_DOUVAN, 11, 20, 1), # Dalla overheals and is too dangerous
             Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 20, 1, requires_ready=True),
-            # Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9),
             # Track("Halwyn Bugbears",) # has a pit which could cause issues
             Track("Forge / weapon thieves",self.FORGE_THIEVES,14,20,-1),
             # Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 12, 20, -1), # too aggressive and multiple spawn
             Track("Massive swamp troll", self.MASSIVE_SWAMP_TROLL, 15, 20, -1, requires_ready=True),
+            Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9,has_cooldown=False),
             # Track("Barbarian shaman", self.BARBARIN_SHAMAN, 15, 20, 0), # some pretty big nuke spells, maybe not worth it
-            Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 15, 20, 2, False, 7, 18),
-            Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 2, False, 7, 18),
-            Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9),
+            Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True),
+            Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True),
+            Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9, is_glamping=True),
+            Track("WAY_STATION_GLAMP", self.WAY_STATION_GLAMP, 10, 14, 0, False, is_glamping=True),
             Track("CHIARU", self.CHIARU, 18, 20, 1, requires_ready=True),
+            Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 1, requires_ready=True),
+            Track("MAYOR_DEMLIN", self.MAYOR_DEMLIN, 18, 20, 1, requires_ready=True),
+            Track("THOMAS_IRONHEART", self.THOMAS_IRONHEART, 18, 20, 0, requires_ready=True),
         ]
     
     def decide_where_to_go(self):
@@ -687,8 +705,11 @@ class TrackGrindThread(GrindThread):
         current_time = get_timeint()
         # seconds_since_last_run = (current_time - current_time).total_seconds()
         seconds_since_last_run = (current_time - get_timeint_from_int(track.last_run)).total_seconds()
-        if not self.abandoned_last_track and track.has_cooldown and seconds_since_last_run < 900:
+        if not track.is_glamping and not self.abandoned_last_track and track.has_cooldown and seconds_since_last_run < 900:
             magentaprint("{0} isn't acceptable to us due to cooldown".format(track.name), False)
+            return self.PATH_TO_SKIP_WITH[:]
+        elif track.is_glamping and self.abandoned_last_track:
+            magentaprint("{0} is a camping track so we won't re-run".format(track.name), False)
             return self.PATH_TO_SKIP_WITH[:]
         else:
             magentaprint("{0} is acceptable to us due to cooldown > {1} and has_cooldown {2}".format(track.name, seconds_since_last_run, track.has_cooldown), False)
@@ -738,6 +759,9 @@ class TrackGrindThread(GrindThread):
             self.character.end_track()
             self.on_track = False
             magentaprint("ending track [{}] with {} kills".format(getattr(self.last_track, "name"), net_kills), False)
+            self.run_kills += net_kills
+
+            # if our net_kills > 0 then maybe unset track abandon?
 
     def stop(self):
         self.last_track = None
@@ -799,7 +823,7 @@ class TrackGrindThread(GrindThread):
         return path
 
 class Track():
-    def __init__(self, name, track, min_level, max_level, track_aura, has_cooldown=True, min_aura=0, max_aura=18, requires_ready=False):
+    def __init__(self, name, track, min_level, max_level, track_aura, has_cooldown=True, min_aura=0, max_aura=18, requires_ready=False, is_glamping=False):
         self.name = name
         # setup the track with a buffer at the end so that last node mobs don't get misattributed to the next track
         track.append("think")
@@ -818,6 +842,7 @@ class Track():
         self.max_aura = max_aura
         self.has_cooldown = has_cooldown
         self.requires_ready = requires_ready
+        self.is_glamping = is_glamping
     
     def start(self):
         self.last_run = int(round(get_timeint().timestamp()))

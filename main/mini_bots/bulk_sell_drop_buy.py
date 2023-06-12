@@ -51,8 +51,8 @@ class BulkGive(MiniBot):
 	def give(self, item_string):
 		return self.i.give_and_wait(item_string)
 	def bulk_give(self, item_string, quantity):
-    	for i in range(0, quantity):
-    		self.i.give_and_wait(item_string)
+		for i in range(0, quantity):
+			self.i.give_and_wait(item_string)
 
 class BulkDrop(MiniBot):
 	def __init__(self, drop_command):
@@ -64,29 +64,29 @@ class BulkDrop(MiniBot):
 	def drop(self, item_string):
 		return self.drop_and_wait(item_string)
 	def bulk_drop(self, item_string, quantity):
-    	for i in range(0, quantity):
-    		self.drop_and_wait(item_string)
+		for i in range(0, quantity):
+			self.drop_and_wait(item_string)
 
 class BulkBuy(MiniBot):
 	def __init__(self, buy_command):
 		self.buy_command=buy_command
 
-    def buy_dont_wait(self, item_string):
+	def buy_dont_wait(self, item_string):
         # self.telnetHandler.write("buy " + item_string)
         # self.wait_for_flag()
         # self.add(item_string)
-        self.buy_command.execute(item_string)
+		self.buy_command.execute(item_string)
 
 	def buy_and_wait(self, item_string):
-        return self.buy_command.execute_and_wait(item_string)
-    def buy(self, item_string):
-    	return self.buy_and_wait(item_string)
+		return self.buy_command.execute_and_wait(item_string)
+	def buy(self, item_string):
+		return self.buy_and_wait(item_string)
 
-    def bulk_buy(self, item_string, quantity):
-        self.is_bulk_vendoring = True
-    	for i in range(0, quantity):
-    		self.buy_and_wait(item_string)
-        self.is_bulk_vendoring = False
+	def bulk_buy(self, item_string, quantity):
+		self.is_bulk_vendoring = True
+		for i in range(0, quantity):
+			self.buy_and_wait(item_string)
+		self.is_bulk_vendoring = False
 
     # def sell_fast(self):
 

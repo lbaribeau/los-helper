@@ -15,11 +15,12 @@ player_entered    = [r"### (.+?) .+?entered.+?."]
 player_left       = [r"### (.+?)\s.+?left.+?\."]
 
 you_have          = [r"You have: " + __items + r"\."]
-wont_buy          = [r'The shopkeep says, "I won\'t buy that rubbish from you\."'] # Could get the prompt with the regex, so ^ might not match
+wont_buy          = [r'The shopkeep says, "I won\'t buy that rubbish from you\."', r'The a (.+?) needs confirmation to sell!'] # Could get the prompt with the regex, so ^ might not match
 wont_buy2         = [r"The shopkeep won't buy that from you\."]
 sold              = [r"The shopkeep gives you (\d+) gold for " + __item + r'\.']
 you_drop          = [r"You drop " + __items + r"\.", r"A " + __items + r" is destroyed as it hits the ground\."]
 disintegrates     = [r"(?:A|Some) " + __item + r" disintegrates\."]
+cant_drop         = [r"A (.+?) is special and can only be dropped in a recycling area (.+?)\n?\r?(.+?)!"]
 gold_from_tip     = [r"You have (\d+) gold\."]
 not_a_pawn_shop   = [r"^This is not a pawn shoppe\."]
 you_now_have      = [r"^You now have (\d+) gold pieces\."]

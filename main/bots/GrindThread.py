@@ -23,6 +23,8 @@ class GrindThread(BotThread):
     def __init__(self, character, command_handler, mudReaderHandler, mud_map):
         super().__init__(character, command_handler, mudReaderHandler, mud_map)
         self.loot_threshold = 1  # the amount of loot to collect before selling
+        self.run_kills = 0
+        self.last_aura_refresh_kills = 0
 
     def do_run_startup(self):
         pass

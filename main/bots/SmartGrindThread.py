@@ -386,6 +386,7 @@ class SmartGrindThread(TrackGrindThread):
         magentaprint("Current Aura Scale: " + str(Aura.auras))
         magentaprint("Preferred Aura Scale: " + str(self.character.preferred_aura))
         aura_context = "fine"
+        self.last_aura_refresh_kills = self.run_kills
 
         if self.character.AURA < self.character.preferred_aura:
             # Too evil

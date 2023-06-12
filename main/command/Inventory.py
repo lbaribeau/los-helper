@@ -184,61 +184,31 @@ def add_to_dict(d, item_str, qty):
 class Inventory(SimpleCommand, ReferencingList):
     command = 'i'
     keep_list = [
-        'chequered vial', 'misty potion',
+        # Quest/Trade Items
+        'Rod of Ruin', 'bank bond',
         'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand', #'makeup kit', 
         'diamantium cross', 'rare coin', 'silver flute',
         'copper thieves pass', 'bronze thieves pass', 'steel thieves pass', 'silver thieves pass',# 'stilleto'
         'druid\'s silver sickle', 'protective robes', "alchemist's ring",
-        'large sack', 'black bag','silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
-        'small flask', 'large restorative', 'scarlet potion',
         'stone medal', 'basilisk scale', 'basilisk head', 'occultate stone', 'jade block', 'rock wolf fang',
-        'orange potion', # levitate
-          #'tree root', # kobold priest
-        # 'white potion', # 'small restorative', 'chicken soup',
-        'Rod of Ruin',
-        'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',
-        'golden potion', #'platinum crucifix', # Helps disease? Worth a lot of money?
-        # 'granite rod', # oremaster, kobold chieftain
-        # 'heathen amulet', # kobold chieftain
-        # 'burnt ochre potion',
-        # 'spear',
-        # 'bolos',
-        # 'quarter staff', #'heavy crossbow', 
-        # 'javelin', #'heavy crossbow', 
-        # 'throwing stars', 'throwing star',
-        #'crossbow', 'horn bow', 'long bow' # < 70% missile
-        # 'broad sword',
-        #'adamantine axe', 'rapier', #'adamantine sword', # Master of Ceremonies
-        #'claymore', 'spider leg', #'large orcish sword',
-        #'drow sabre',
-        # 'silver dagger', 'long sword',  #these pile up
-        # 'bastard sword',  # bandits
-        # 'small mace',
-        # 'morning star', 'superior dwarven hammer', 'stout cudgel', "horseman's mace",
-        # 'war hammer',
-        # steel gear
-        # 'steel sleeves', 'steel gauntlets', 'steel leggings', 'steel helm', 'plate mail helm', 'plate mail gauntlets',
-        # 'mountain boots with crampons', 'leather mask', 'leather collar', 'studded leather collar',
-        # 'studded leather sleeves', 'studded leather boots', 'studded leather pants', 'studded leather gloves','studded leather leggings',
-        # kobold champion
-        # 'plate mail leggings', # Jerrek drops
-        #'plate mail armor',
-        # 'ring mail armour', 'ring mail sleeves', 'ring mail leggings', #'ring mail hood',
-        # 'ring mail gauntlets',
-        # 'chain mail armour',  # sawmill
-        # 'chain mail sleeves', 'chain mail leggings',
-        #'chain mail hood', # These pile up (Alaran)
-        # 'chain mail gloves', # mill worker
         'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring', 
         'greenwood jerkin',"paladins's plate armour", "master's habit", 
         'lucky pebble',"blue ioun stone",
+        
+        # important potions
+        'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',
+        'burnt ochre potion', 'chequered vial', 'misty potion',
+        'orange potion', # levitate
+        'golden potion', #'platinum crucifix', # Helps disease? Worth a lot of money?
+        'small flask', 'large restorative', 'scarlet potion',
+        'silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
+
+        # containers
+        'large sack', 'black bag',
+
         # super rare weapons/armor
         'dwarven rune hammer', 'silver ram staff', 'true blade', 'composite bow', 'mithril war hammer',
         "dragon scale armour",
-        # 'maul hammer' # This we need to keep ONE (later)
-        # 'iron shield'
-        # 'platinum ring', 'gold ring', 'steel ring', 'silver ring'
-        #'steel mask' # spiv, sawmill
     ]
     def __init__(self, telnetHandler, character):
         # I am now thinking that inventory is only concerned about the backpack, not what is equipped.
@@ -285,6 +255,9 @@ class Inventory(SimpleCommand, ReferencingList):
 
         self.aura_pot = [
             'chequered vial', 'misty potion'
+        ]
+        self.granite_pot = [
+            'granite potion'
         ]
         self.large_restoratives = [
             'scarlet potion', 'philtre of health', 'tree root' #, 'golden potion'
@@ -433,6 +406,9 @@ class Inventory(SimpleCommand, ReferencingList):
 
     def count_aura_pots(self):
         return sum(self.count(r) for r in self.aura_pot)
+
+    def count_granite_pots(self):
+        return sum(self.count(r) for r in self.granite_pot)
 
     def has_restorative(self):
         return any([self.has(r) for r in self.restoratives])

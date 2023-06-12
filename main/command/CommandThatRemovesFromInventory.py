@@ -63,6 +63,7 @@ class Drop(CommandThatRemovesFromInventory):
         R.you_drop
     ]
     failure_regexes = [
+        R.cant_drop
         # Quest item? "Don't drop that?"
         # There is also putting (dropping) into a sack, which you can't do with a quest item
     ]

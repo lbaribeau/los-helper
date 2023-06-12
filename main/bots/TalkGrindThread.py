@@ -53,7 +53,8 @@ class TalkGrindThread(BotThread):
                   "Farmer Viladin",
                   "Cal the Hermit",
                   "Rancher Renstone",
-                  "Rancher Plover","Annette Plover",
+                  "Rancher Plover",
+                  "Annette Plover",
                   #"White Mage",
                   # "The Barding Lord",
                   # "Knight Errant",
@@ -251,6 +252,13 @@ class TalkGrindThread(BotThread):
                   "ulwyne",
                   "blood",
                   "ranch",
+                  "monolith",
+                  "shrine",
+                  "divide",
+                  "great",
+                  "plains",
+                  "fens",
+                  "desert",
                   #races
                   "dwarf",
                   "elf",
@@ -286,6 +294,10 @@ class TalkGrindThread(BotThread):
                   "aaashaaal",
                   "prem",
                   "feleessa",
+                  "phoenix",
+                  "granger",
+                  "renstone",
+                  "plover",
             ]
 
       def get_path_to_target_mob(self, mob):

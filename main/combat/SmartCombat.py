@@ -9,6 +9,7 @@ import comm.Spells as Spells
 from comm import RegexStore as R
 from combat.mob_target_determinator import MobTargetDeterminator
 from db.Mob import Mob
+from db.Area import Area
 from command.potion_thread import PotionThreadHandler
 
 class SmartCombat(CombatObject):
@@ -86,6 +87,20 @@ class SmartCombat(CombatObject):
         # That'll do...
         self.full_rings = False
 
+    def handle_granite_use(self):
+        if self.potion_thread_handler.use_granite():
+            timeless_area = Area.get_area_by_id(306)
+
+            # hopefully this works for pathing
+            self.character.MUD_AREA = timeless_area
+            self.character.AREA_TITLE = timeless_area.name
+
+            self.stop()
+            self.cast.stop()
+            self.kill.stop()
+            return True
+        return False
+
     def notify(self, regex, match):
         # Notifications are used for healing
         # So SmartCombat needs to be registered/unregistered... or have a boolean for whether we're in combat.
@@ -100,7 +115,11 @@ class SmartCombat(CombatObject):
                     # if self.weapon_bot.broken_weapon or not self.character.inventory.has_restorative():
                     if not hasattr(self.weapon_bot, 'weapon') or not self.character.inventory.has_restorative():
                         self.fleeing = True  # TODO: Do pots interfere with the flee timer?  (Should I use a pot?)
-                    self.spam_pots()
+                        self.handle_granite_use()
+                    
+                    # if we used a granite pot then this will be false
+                    if self.activated:
+                        self.spam_pots()
                 else:
                     self.stop_pots_if_started_by_smart_combat()
         # elif regex in itertools.chain(self.end_combat_regexes) and self.activated:
@@ -519,14 +538,14 @@ class SmartCombat(CombatObject):
                 a.execute(self.target)
                 self.character.HIDDEN = False
                 #todo optionally ignore this for moves like touch
-                a.wait_for_flag()
+                # a.wait_for_flag()
                 # magentaprint("SmartCombat finished using ability.")
                 # So if we hit with Dance of the Cobra, we should save mana...
                 if a.success and isinstance(a, DanceOfTheCobra):
                     self.mob_charmed = True
                 elif a.error:
                     self.error = True
-                    self.stop()
+                    # self.stop()
                 # if self.stopping:
                 #     return
                 break
@@ -775,32 +794,31 @@ class SmartCombat(CombatObject):
 
     def escape(self):
         self.stop()
-        self.cast.stop()
-        self.kill.stop()
-        self.cast.wait_until_ready()
-        self.kill.wait_until_ready()
 
-        #todo if full force mode and has granite pot then use it
-
-        if self.character.weapon1 != '':
-            self.telnetHandler.write("rm " + self.character.weapon1)
-        if self.character.weapon2 != '':
-            self.telnetHandler.write("rm " + self.character.weapon2)
-
-        self.character.TRYING_TO_MOVE = True
-        self.character.LAST_DIRECTION = None
-        self.telnetHandler.write("fl")
-        self.telnetHandler.write("fl")
-        self.telnetHandler.write("fl")
-
-        time.sleep(0.1)
         self.stop_pots_if_started_by_smart_combat()
         self.potion_thread_handler.stop()
 
-        if self.character.weapon1 != "":
-            self.wield.execute(self.character.inventory.get_last_reference(self.character.weapon1))
-        if self.character.weapon2 != "":
-            self.wield.second.execute(self.character.inventory.get_last_reference(self.character.weapon2))
+        if not self.handle_granite_use():
+            self.cast.stop()
+            self.kill.stop()
+            self.cast.wait_until_ready()
+            self.kill.wait_until_ready()
+
+            if self.character.weapon1 != '':
+                self.telnetHandler.write("rm " + self.character.weapon1)
+            if self.character.weapon2 != '':
+                self.telnetHandler.write("rm " + self.character.weapon2)
+
+            self.character.TRYING_TO_MOVE = True
+            self.character.LAST_DIRECTION = None
+            self.telnetHandler.write("fl")
+            self.telnetHandler.write("fl")
+            self.telnetHandler.write("fl")
+
+            if self.character.weapon1 != "":
+                self.wield.execute(self.character.inventory.get_last_reference(self.character.weapon1))
+            if self.character.weapon2 != "":
+                self.wield.second.execute(self.character.inventory.get_last_reference(self.character.weapon2))
 
     def check_rings(self):
         # magentaprint("SmartCombat check_rings()")

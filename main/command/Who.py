@@ -48,6 +48,7 @@ class Who(Command):
             regex = r"(\w+) .+?\n"
             player_matches = re.findall(regex, player_list)
 
+            self.character.players = []
             for match in player_matches:
                 if match == "Player":
                     continue

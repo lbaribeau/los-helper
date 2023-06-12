@@ -43,6 +43,12 @@ class Consume(threading.Event):
     #         self.command='eat'
         # Do we really want to do it this way... no... use the command objects that have the right regexes on them
 
+    def granite_potion(self):
+        if self.inventory.has('granite potion'):
+            self.drink.execute(self.inventory.get_reference('granite potion'))
+            return True
+        return False
+
     def healing_potion(self):
         # big_pots = ['large restorative', 'scarlet potion']
         # small_pots = ['chicken soup', 'small restorative', 'small flask', 'white potion']
@@ -147,6 +153,7 @@ class Consume(threading.Event):
         #     return success
         # else:
         #     return False
+
     @property
     def error(self):
         return self.use.error | self.drink.error # | self.eat.error
@@ -210,6 +217,10 @@ class PotionThreadHandler(ThreadingMixin2):
         # self.drink.wait_until_ready()
         self.consume.wait_until_ready()
         # Asuume shared cooldown on drinking, using, eating?
+
+    def use_granite(self):
+        self.wait_until_ready()
+        return self.consume.granite_potion()
 
     def spam_pots(self, prefer_big=False):
         self.stopping = False
