@@ -256,6 +256,7 @@ class TalkGrindThread(BotThread):
                   "shrine",
                   "divide",
                   "great",
+                  "blasted",
                   "plains",
                   "fens",
                   "desert",

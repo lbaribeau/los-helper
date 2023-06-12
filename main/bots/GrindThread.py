@@ -248,8 +248,8 @@ class GrindThread(BotThread):
 
         aura_updated = self.update_aura()  # Most reasonable reason to fail is if we have no mana
 
-        if is_slow_steady:
-            self.chapel_heal_up()
+        # if is_slow_steady:
+        #     self.chapel_heal_up()
             # TODO: Keep track of when ticks are coming and how big they'll be, and avoid vigging
             # away all the mana for characters with low piety, whose vigors will not do much,
             # and may just be one tick away from good health.
