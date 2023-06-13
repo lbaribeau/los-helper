@@ -18,6 +18,14 @@ class Mob(NamedModel):
     should_farm = BooleanField(default=False)
     # health = IntegerField(default=0)
     # approximate_health = IntegerField(default=0)
+    uses_black_magic = BooleanField(default=False)
+    uses_white_magic = BooleanField(default=False)
+    uses_grey_magic = BooleanField(default=False)
+    uses_ability = BooleanField(default=False)
+    is_magical = BooleanField(default=False)
+    is_undead = BooleanField(default=False)
+    deflects_attacks = BooleanField(default=False)
+    note = CharField(null=True)
 
     '''Private Mob Functions'''
     def map(self):
