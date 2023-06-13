@@ -848,6 +848,10 @@ class GrindThread(BotThread):
 
         C = self.character
 
+        # if the monster name starts with "the" then it has been parsed incorrectly and that needs ot be stripped
+        if monster.lower().startswith('the '):
+            monster = monster[4:]
+
         # self.smartCombat.target = monster
         magentaprint("GrindThread engage_monster get_first_reference({0})".format(monster))
         new_target = self.character.mobs.list.get_first_reference(monster)
