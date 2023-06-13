@@ -10,7 +10,7 @@ __items           = r"(?P<items>[A-Za-z0-9\-'\s,\(\)\+]+)"
 __player          = r"(?P<player>[A-Za-z]+)"
 
 # regex to parse the output of 'who'
-who_success       = [r"(?:Player.+?State.+?[\n\r][\n\r]?-+[\n\r][\n\r]?)(?:((?:(\w+)\s+(?:\w+)\s+(?:[\w]+(?: \w+)?)\s+(?:\w+)\s+?[\n\r][\n\r]?)+))"]
+who_success       = [r"(?:Player.+?State.+?[\n\r][\n\r]?-+[\n\r][\n\r]?)(?:((?:(\w+)\s+(?:\w+)\s+(?:[\w]+(?: \w+)?)\s+(?:[\w-]+)\s+?[\n\r][\n\r]?)+))"]
 player_entered    = [r"### (.+?) .+?entered.+?."]
 player_left       = [r"### (.+?)\s.+?left.+?\."]
 
