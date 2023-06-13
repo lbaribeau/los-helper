@@ -18,13 +18,16 @@ class Mob(NamedModel):
     should_farm = BooleanField(default=False)
     # health = IntegerField(default=0)
     # approximate_health = IntegerField(default=0)
-    uses_black_magic = BooleanField(default=False)
-    uses_white_magic = BooleanField(default=False)
-    uses_grey_magic = BooleanField(default=False)
-    uses_ability = BooleanField(default=False)
-    is_magical = BooleanField(default=False)
-    is_undead = BooleanField(default=False)
-    deflects_attacks = BooleanField(default=False)
+    uses_black_magic = BooleanField(default=False) # uses damage spells
+    uses_white_magic = BooleanField(default=False) # heals itself
+    uses_grey_magic = BooleanField(default=False) # uses things like stun/confuse/blind
+    uses_ability = BooleanField(default=False) # uses an ability that isn't a particular spell (typically AOE effect)
+    is_magical = BooleanField(default=False) # can only be hit with magical weapons
+    is_undead = BooleanField(default=False) # can't be hit with certain abilities, can be turned
+    deflects_attacks = BooleanField(default=False) # reduces damage from physical attacks by a lot
+    joins_in = BooleanField(default=False) # joins in on fights
+    flees = BooleanField(default=False) # flees from fights
+    element = IntegerField(default=0) # tbd future column
     note = CharField(null=True)
 
     '''Private Mob Functions'''
