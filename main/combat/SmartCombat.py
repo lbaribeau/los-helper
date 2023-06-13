@@ -95,8 +95,8 @@ class SmartCombat(CombatObject):
             area_exits = ['amethyst']
 
             # hopefully this works for pathing
-            self.character.MUD_AREA = MudArea(timeless_area, area_exits)
-            self.character.EXIT_LIST = area_exits
+            self.character.MUD_AREA = MudArea(timeless_area)
+            self.character.EXIT_LIST = self.character.MUD_AREA.area_exits # retrieve exits from db
             self.character.AREA_TITLE = timeless_area.name
 
             self.stop()
