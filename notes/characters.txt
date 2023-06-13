@@ -16,6 +16,7 @@ Lerp,11, alc dwarf 15 16 3 16 4
 Merp thief (swamp troll)
 Nerp druid dwarf 16 16 3 16 3
 Oerp dark knight dwarf 14 15 10 7 8 (15 15 10 7 7)
+Perp ranger elf (16 14 2 8 14)
 Qerp,11, mage (lvl 10)
 Rerp,7, cleric gnome lvl 7
 Serp,15, Alchemist

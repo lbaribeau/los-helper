@@ -10,6 +10,8 @@ from comm import RegexStore as R
 from combat.mob_target_determinator import MobTargetDeterminator
 from db.Mob import Mob
 from db.Area import Area
+from db.AreaExit import AreaExit
+from db.MudArea import *
 from command.potion_thread import PotionThreadHandler
 
 class SmartCombat(CombatObject):
@@ -90,9 +92,11 @@ class SmartCombat(CombatObject):
     def handle_granite_use(self):
         if self.potion_thread_handler.use_granite():
             timeless_area = Area.get_area_by_id(306)
+            area_exits = ['amethyst']
 
             # hopefully this works for pathing
-            self.character.MUD_AREA = timeless_area
+            self.character.MUD_AREA = MudArea(timeless_area, area_exits)
+            self.character.EXIT_LIST = area_exits
             self.character.AREA_TITLE = timeless_area.name
 
             self.stop()
@@ -286,12 +290,13 @@ class SmartCombat(CombatObject):
 
         if use_combat_ability:
             self.use_any_fast_combat_abilities()  # ie. Touch, Dance
-
-        if self.is_caster_class() and not self.is_mob_weak(4):
-            self.cast.wait_until_ready()
-            # if we have the bind spell use it on the target
-            if self.character.spells and Spells.bind in self.character.spells:
-                self.do_cast(Spells.bind, self.target)
+        
+        if self.is_caster_class() and self.character.MANA > 39:
+            if self.get_mob_level() > 7:
+                self.cast.wait_until_ready()
+                # if we have the bind spell use it on the target
+                if self.character.spells and Spells.bind in self.character.spells:
+                    self.do_cast(Spells.bind, self.target)
 
         while not self.stopping and not self.kill.target_dead and not self.cast.target_dead:
             # if we have too many mobs attacking then we should start casting even if they're weak
@@ -381,21 +386,28 @@ class SmartCombat(CombatObject):
 
     def determine_favorite_spell_for_target(self):
         if self.mob_target is not None:
-            if self.is_mob_weak():
+            if self.get_mob_level() < 5:
+                return self.get_min_rank_spell(True)
+            elif self.is_mob_weak():
                 return self.favourite_spell
             else:
                 return self.favourite_nuke
         return self.favourite_spell
 
-    def is_mob_weak(self, level_diff=5):
-        mob_is_weak = False
+    def get_mob_level(self):
+        mob_level = 99
         if self.mob_target is None or self.mob_target.level is None or self.mob_target.level == "":
-            return mob_is_weak
-        
+            return mob_level
+
         mob_level = self.mob_target.level
         if self.mob_target.difficulty_rating is not None and self.mob_target.difficulty_rating != "":
             mob_level += self.mob_target.difficulty_rating
+        
+        return mob_level
 
+    def is_mob_weak(self, level_diff=5):
+        mob_is_weak = False
+        mob_level = self.get_mob_level()
         mob_is_weak = mob_level < (self.character.level - level_diff)
 
         return mob_is_weak
@@ -418,11 +430,11 @@ class SmartCombat(CombatObject):
             return combat_item
         return None
 
-    def get_min_rank_spell(self):
+    def get_min_rank_spell(self, force_t1=False):
         character = self.character
         spell_percent = max(character.spell_proficiencies.values())
         spell = self.get_t1_spell(character, spell_percent)
-        if spell_percent > 50 and self.is_caster_class():
+        if spell_percent > 50 and self.is_caster_class() and not force_t1:
             spell = self.get_t2_spell(character, spell_percent)
         return spell
 
@@ -433,8 +445,8 @@ class SmartCombat(CombatObject):
 
         if spell_percent < 50:
             spell = self.get_t1_spell(character, spell_percent)
-        elif spell_percent > 74 and self.character.info.int > 18 and self.character.MANA > 29:
-            spell = self.get_t3_spell(character, spell_percent)
+        # elif spell_percent > 74 and self.character.info.int > 18 and self.character.M:
+        #     spell = self.get_t3_spell(character, spell_percent)
         else:
             spell = self.get_t2_spell(character, spell_percent)
 

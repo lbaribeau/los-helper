@@ -578,7 +578,7 @@ class TrackGrindThread(GrindThread):
             Track("Theatre Bertram", self.smart_theatre_path, 18, 20, 0, requires_ready=True),
             Track("Market", self.smart_market_path, 0, 14, 0, has_cooldown=False),
             Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0, has_cooldown=False),
-            Track("Kobolds", self.smart_kobold_path, 0, 9, -1, has_cooldown=False), #sentries are suuuper tough
+            Track("Kobolds", self.smart_kobold_path, 0, 12, -1, has_cooldown=False), #sentries are suuuper tough
             #Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
             Track("Fort Farm", self.smart_fort_path, 9, 14, 0, has_cooldown=False, requires_ready=False),
             Track("Fort Commander", self.smart_fort_path, 15, 20, 0, requires_ready=True),

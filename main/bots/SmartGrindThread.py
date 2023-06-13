@@ -29,7 +29,7 @@ class SmartGrindThread(TrackGrindThread):
         self.potion_bot = PotionBot(character, command_handler, mud_map)
 
         # if self.character.AREA_ID != 2:
-        #     self.direction_list = self.get_heal_path()
+    #     self.direction_list = self.get_heal_path()
 
         self.init_level_modifiers()
 
@@ -37,8 +37,11 @@ class SmartGrindThread(TrackGrindThread):
 
         # if not self.is_character_class('Bar') or self.is_character_class('Alc'):
         self.character.MANA_TO_ENGAGE = self.character.MAX_MANA * 0.6
+
         if self.character.MANA_TO_ENGAGE < 24 and self.character.MAX_MANA > 24:
             self.character.MANA_TO_ENGAGE = 24
+        
+
         
         self.HEALTH_TO_HEAL = 0.95 * self.character.maxHP
 
@@ -203,6 +206,11 @@ class SmartGrindThread(TrackGrindThread):
     def should_kill_mob(self, mob):
         if super().should_kill_mob(mob):
             mob_target = Mob.get_mob_by_name(mob)
+
+            # vicars are too common and not worth the time unless we need to rebalance our aura
+            if mob_target.name == "vicar" and self.character.AURA <= self.character.preferred_aura:
+                return False
+
             if (self.character.info.level < 14 or self.is_mob_weak(mob_target, 3)) and \
                  (mob_target.level is not None and mob_target.level != "" and mob_target.level < 12):
                 magentaprint("Mob is weak enough for us to fight", False)
