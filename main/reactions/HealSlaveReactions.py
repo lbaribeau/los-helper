@@ -7,6 +7,7 @@ class HealSlaveReactions(BotReaction):
         #[Group] Twerp took 4 combat damage
         self.group_damage = "\[Group\] {0} took ([\d]*) combat damage".format(master)
         self.heal_trigger = "^(.+?) decides to take a rest."
+        self.detect_invis_trigger = "^(.+?) wants to see with eyes unclouded by hate."
         self.heal_continue = "You gain (?:\d+?) experience.\n?\r?.+? spell cast on (.+?)\."
         self.heal_stop = "^.+? spell cast on (.+?).\n?\r?It appears to have no effect!"
         self.target_not_here = "They are not here\."
@@ -14,7 +15,13 @@ class HealSlaveReactions(BotReaction):
         magentaprint("slave started for <" + master + ">", False)
         if master == "camp":
             magentaprint("camp mode started", False)
-            self.regexes = [self.heal_trigger, self.heal_continue, self.heal_stop, self.target_not_here]
+            self.regexes = [
+                self.heal_trigger,
+                self.heal_continue,
+                self.heal_stop,
+                self.target_not_here,
+                self.detect_invis_trigger
+                ]
         else:
             self.regexes = [self.group_damage]
 
@@ -51,8 +58,10 @@ class HealSlaveReactions(BotReaction):
 
         return should_do_thing
 
-    def cast_spell(self, spell):
-        self.cast.cast(spell, self.target)
+    def cast_spell(self, spell, target=None):
+        if target is None:
+            target = self.target
+        self.cast.cast(spell, target)
         time.sleep(4)
 
     def should_buff_target(self):
@@ -110,6 +119,10 @@ class HealSlaveReactions(BotReaction):
             target = self.slave_state.find_or_add_target(M_obj.group(1))
             magentaprint("should continue healing " + str(self.target), False)
             target["needs_heal"] = True
+
+        elif regex == self.detect_invis_trigger:
+            target = M_obj.group(1)
+            self.cast_spell("d-i", target)
             # magentaprint("should continue healing " + self.target, False)
             # if self.character.MANA > 1:
             #     self.cast_spell("vigor")

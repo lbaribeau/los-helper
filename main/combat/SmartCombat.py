@@ -92,7 +92,6 @@ class SmartCombat(CombatObject):
     def handle_granite_use(self):
         if self.potion_thread_handler.use_granite():
             timeless_area = Area.get_area_by_id(306)
-            area_exits = ['amethyst']
 
             # hopefully this works for pathing
             self.character.MUD_AREA = MudArea(timeless_area)
