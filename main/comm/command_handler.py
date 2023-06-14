@@ -466,6 +466,9 @@ class CommandHandler(object):
                 if self.quick_directions.index(i) == 0:
                     continue
                 self.telnetHandler.write("look " + i)
+        elif re.match("hsdi", user_input):
+            #quickly ask the heal slave to cast detect-invis on us
+            self.telnetHandler.write("em wants to see with eyes unclouded by hate")
         elif re.match("bfexit", user_input):
             magentaprint("brute forcing all exits", False)
             exits = ExitType.get_hidden_exits()
