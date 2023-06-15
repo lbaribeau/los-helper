@@ -3,12 +3,27 @@ from misc_functions import *
 
 class Aura(object):
 
-    auras = ['demonic red', 'ominous red', 'ghastly red', 'blood red', 'murky red',
-              'red', 'rusty', 'dusty red', 'grey',
-              'dusty blue', 'pale blue', 'blue',
-              'deep blue', 'bright blue', 'shimmering blue', 'blazing blue',
-              'blazing blue', 'heavenly blue', 'fake aura']
-             # 0-7 red, 8 grey, 9-17 blue
+    auras = [
+        'demonic red',      #0
+        'ominous red',      #1
+        'ghastly red',      #2
+        'blood red',        #3
+        'murky red',        #4
+        'red',              #5
+        'rusty',            #6
+        'dusty red',        #7
+        'grey',             #8
+        'dusty blue',       #9
+        'pale blue',        #10
+        'blue',             #11
+        'deep blue',        #12
+        'bright blue',      #13
+        'shimmering blue',  #14
+        'blazing blue',     #15
+        'blazing blue',     #16
+        'heavenly blue',    #17
+        'fake aura'         #18
+    ]
 
     def __init__(self, s):
         if s in self.auras:

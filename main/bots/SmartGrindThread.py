@@ -406,7 +406,7 @@ class SmartGrindThread(TrackGrindThread):
             if not self.is_character_class('Mag'):
                 self.set_target_levels(-4, 0)
             else:
-                self.set_target_levels(-4, -2)
+                self.set_target_levels(-4, 0)
         elif self.character.AURA > self.character.preferred_aura:
             # Too good
             # self.low_level = 2
@@ -417,7 +417,7 @@ class SmartGrindThread(TrackGrindThread):
             if not self.is_character_class('Mag'):
                 self.set_target_levels(-4, 0)
             else:
-                self.set_target_levels(-4, -2)
+                self.set_target_levels(-4, 0)
         else:
             # self.set_target_levels(-1, 0)
             if self.character.level > 7:

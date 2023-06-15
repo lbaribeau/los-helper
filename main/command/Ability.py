@@ -293,9 +293,9 @@ class Backstab(SlowCombatAbility):
     level = 1
 
 class Bash(SlowCombatAbility):
-    command = "bas"
-    cooldown_after_success = 3
-    cooldown_after_failure = 3
+    command = "bash"
+    cooldown_after_success = 30
+    cooldown_after_failure = 30 # 4 probably like circle but it's better to go slower
     success_regexes = [RegexStore.bash]
     failure_regexes = [RegexStore.bash_fail]
     error_regexes = [RegexStore.bash_whom, RegexStore.not_here]
@@ -303,7 +303,7 @@ class Bash(SlowCombatAbility):
     level = 1
 
 class Circle(SlowCombatAbility):
-    command = "ci"
+    command = "circl"
     cooldown_after_success = 9
     cooldown_after_failure = 9  # 4 I think
     success_regexes = [RegexStore.circle]

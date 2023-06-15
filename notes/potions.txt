@@ -1,4 +1,5 @@
 elixir of morinva, cyan potion - invisibility
+orange potion - levitation
 smoky potion - blindness
 ??? - silence
 dark chalice - fear
@@ -11,5 +12,5 @@ burnt ochre - fire protection
 aaashaal's gift - air protection
 glowing potion - light
 gold potion - strong healing
-amber vial - poison subsides (doesn't stop it though)
-hot rum toddy - Resist-Cold
+amber vial - poison subsides (doesn't stop it though, slow-poison maybe?)
+hot rum toddy - Resist-Cold (resist-air?)

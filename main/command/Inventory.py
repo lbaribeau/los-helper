@@ -193,7 +193,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'stone medal', 'basilisk scale', 'basilisk head', 'occultate stone', 'jade block', 'rock wolf fang',
         'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring', 
         'greenwood jerkin',"paladins's plate armour", "master's habit", 
-        'lucky pebble',"blue ioun stone",
+        'lucky pebble',"blue ioun stone","stolen contract",
         
         # important potions
         'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',
@@ -208,7 +208,7 @@ class Inventory(SimpleCommand, ReferencingList):
 
         # super rare weapons/armor
         'dwarven rune hammer', 'silver ram staff', 'true blade', 'composite bow', 'mithril war hammer',
-        "dragon scale armour",
+        "dragon scale armour", 'monk hammer',
     ]
     def __init__(self, telnetHandler, character):
         # I am now thinking that inventory is only concerned about the backpack, not what is equipped.

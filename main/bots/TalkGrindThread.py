@@ -214,6 +214,8 @@ class TalkGrindThread(BotThread):
                   "transport",
                   "word-of-recall",
                   "sealing",
+                  "breathe-water",
+                  "breathe",
                   # places
                   "mine",
                   "cave",
@@ -299,6 +301,15 @@ class TalkGrindThread(BotThread):
                   "granger",
                   "renstone",
                   "plover",
+                  "morag",
+                  "flame",
+                  "night",
+                  "gem",
+                  "granite",
+                  "warder",
+                  "mora",
+                  "di'Chao",
+                  "tipshy",
             ]
 
       def get_path_to_target_mob(self, mob):
