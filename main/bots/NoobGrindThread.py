@@ -11,7 +11,7 @@ class NoobGrindThread(TrackGrindThread):
 
         self.reset = ['drop_keys', 'areaid86']
         self.setup_track = ['purchase_key', 'unlock_south', 'south', 'get_book', 'trade_book', 'north']
-        self.skellington_track = ['unlock_east', 'east', 'engage_skelington', 'west']
+        self.skellington_track = ['buff', 'unlock_east', 'east', 'engage_skelington', 'west']
         self.probably_repair = False
 
         # if self.character.inventory.has('stout cudgel'):
@@ -75,7 +75,7 @@ class NoobGrindThread(TrackGrindThread):
         self.command_handler.process("ask guide light")
         self.sleep(5)
       elif exit_str == "buff":
-        self.buff_up()
+        self.do_buff_skills()
         return True
       elif exit_str == "unlock_east":
         self.command_handler.process("unlock east wood")

@@ -201,12 +201,15 @@ class Character(object):
         self.weapon_type = key_with_max_val(self.weapon_proficiencies)
         self.weapon_proficiency = self.weapon_proficiencies[self.weapon_type]
 
-        if self.weapon_proficiency >= 60:
-            self.weapon_level = 3
-        elif self.weapon_proficiency >= 40:
-            self.weapon_level = 2
-        else:
+        if self._class == 'Mag':
             self.weapon_level = 1
+        else:
+            if self.weapon_proficiency >= 60:
+                self.weapon_level = 3
+            elif self.weapon_proficiency >= 40:
+                self.weapon_level = 2
+            else:
+                self.weapon_level = 1
         
         magentaprint(self.weapon_type + " " + str(self.weapon_proficiency) + " " + str(self.weapon_level), False)
 
