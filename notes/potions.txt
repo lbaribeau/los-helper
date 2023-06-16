@@ -1,6 +1,6 @@
 elixir of morinva, cyan potion - invisibility
 orange potion - levitation
-smoky potion - blindness
+smoky potion = blindness
 ??? - silence
 dark chalice - fear
 milky potion, silver chalice - bless

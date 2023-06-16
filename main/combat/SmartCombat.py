@@ -414,7 +414,7 @@ class SmartCombat(CombatObject):
     def is_caster_class(self):
         return self.character._class.id == 'Mag' or self.character._class.id == 'Alc' # or \
             # self.character._class.id == 'Dru' or self.character._class.id == 'Cle'
-        # or self.character._class == 'Cle'
+        # or self.character._class.id == 'Cle'
 
     def get_favourite_combat_item(self):
         character = self.character

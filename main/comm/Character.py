@@ -173,8 +173,6 @@ class Character(object):
 
         if self.level <= 3:
             self.HEALTH_TO_HEAL = 0.85 * self.info.maxHP
-        elif self._class == 'Mag':
-            self.HEALTH_TO_HEAL = 0.95 * self.info.maxHP
         else:
             self.HEALTH_TO_HEAL = 0.90 * self.info.maxHP  # We can crank this back up when we fight stronger mobs
 
@@ -201,7 +199,8 @@ class Character(object):
         self.weapon_type = key_with_max_val(self.weapon_proficiencies)
         self.weapon_proficiency = self.weapon_proficiencies[self.weapon_type]
 
-        if self._class == 'Mag':
+        if self._class.id == 'Mag':
+            self.weapon_proficiency = 39 # max it out so that we don't go for t2 weapons on mage
             self.weapon_level = 1
         else:
             if self.weapon_proficiency >= 60:
