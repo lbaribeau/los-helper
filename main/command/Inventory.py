@@ -207,7 +207,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'large sack', 'black bag',
 
         # super rare weapons/armor
-        'dwarven rune hammer', 'silver ram staff', 'true blade', 'composite bow', 'mithril war hammer',
+        'dwarven rune hammer', 'silver ram staff', 'true blade', 'mithril war hammer',
         "dragon scale armour", 'monk hammer', 'gauntlets of dexterity',
     ]
     def __init__(self, telnetHandler, character):

@@ -270,10 +270,10 @@ wither                  = [r"You withered " + __three_possible_mob_strings  + r"
 
 wither_fail             = [r"Your withering touch did not hurt " + __three_possible_mob_strings + r"\."]
 wither_whom             = [r"Wither whom\?"]
-bash                    = [r"You bash the (.+?), confusing them\."]
+bash                    = [r"You bash " + __three_possible_mob_strings + ", confusing them\."]
 bash_fail               = [r"You failed to bash it\."]
 bash_whom               = [r"Bash whom\?"]
-circle                  = [r"You circle the (.+?)\."]
+circle                  = [r"You circle " + __three_possible_mob_strings + "\."]
 circle_fail             = [r"You failed to circle it\."]
 circle_whom             = [r"Circle whom\?"]
 

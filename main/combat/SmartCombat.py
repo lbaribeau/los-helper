@@ -16,20 +16,27 @@ from command.potion_thread import PotionThreadHandler
 
 class SmartCombat(CombatObject):
     black_magic = True
+    casts = 0
+    attacks = 0
+    thread = None
+    target = None
+    mob_target = None
+    mob_target_uses_black_magic = False
+    mob_target_is_undead = False
+    mob_target_is_magical = False
+    target_fullref = None
+    stopping = None
+    broken_weapon = ''
+    activated = False
+    used_ability = False
 
     def __init__(self, kill, cast, potion_thread_handler, wield, telnetHandler, character, weapon_bot):
         super().__init__(telnetHandler)
-        self.thread = None
-        self.target = None
-        self.mob_target = None
-        self.target_fullref = None
-        self.stopping = None
-        self.broken_weapon = ''
-        self.activated = False
         self.kill  = kill
         self.cast  = cast
         self.wield = wield
         self.potion_thread_handler = potion_thread_handler
+
         #self.wear = Wear(character, telnetHandler)
         self.abilities = character._class.abilities.values()
 
@@ -256,21 +263,31 @@ class SmartCombat(CombatObject):
     def run(self):
         self.stopping    = False
         self.mob_charmed = False
-        self.circled     = False
+
         self.activated   = True
         self.fleeing     = False
         self.error       = False
+        self.used_ability = False
+
+        self.casts = 0
+        self.attacks = 0
+
         self.casting = self.black_magic or Spells.vigor in self.character.spells
         self.favourite_combat_item = self.get_favourite_combat_item()
         is_combat_ready = True
         is_cast_ready = True
         use_combat_ability = True
         mob_target = None
+        self.mob_target_uses_black_magic = False
+        self.mob_target_is_undead = False
+        self.mob_target_is_magical = False
+        
         self.kill.target_dead = False
         self.cast.target_dead = False
 
         if self.target_fullref is not None and self.character.ACTIVELY_BOTTING:
             self.mob_target = Mob.get_mob_by_name(self.target_fullref)
+            self.set_mob_target_props()
             use_combat_ability = self.should_use_combat_ability()
 
             magentaprint("Use combat ability: " + str(use_combat_ability), False)
@@ -289,13 +306,6 @@ class SmartCombat(CombatObject):
 
         if use_combat_ability:
             self.use_any_fast_combat_abilities()  # ie. Touch, Dance
-        
-        if self.is_caster_class() and self.character.MANA > 39:
-            if self.get_mob_level() > 7:
-                self.cast.wait_until_ready()
-                # if we have the bind spell use it on the target
-                if self.character.spells and Spells.bind in self.character.spells:
-                    self.do_cast(Spells.bind, self.target)
 
         while not self.stopping and not self.kill.target_dead and not self.cast.target_dead:
             # if we have too many mobs attacking then we should start casting even if they're weak
@@ -311,6 +321,7 @@ class SmartCombat(CombatObject):
             if self.character.CAN_FLEE and self.fleeing and not self.cast.wait_time() - self.kill.wait_time() > self.kill.cooldown_after_success:
                 self.escape()
             else:
+                # Non casters should attack then cast - except fighters who will bash or circle which will reset their cast cooldown
                 if (not self.is_caster_class()):
                     if self.kill.up() or self.kill.wait_time() <= self.cast.wait_time() or not self.casting:
                         if self.do_phys_attack(use_combat_ability):
@@ -357,7 +368,11 @@ class SmartCombat(CombatObject):
         magentaprint(str(self) + " ending run.")
 
     def should_use_combat_ability(self):
+        # backstab, circle and bash are free so whyyyy not
         if self.character.HIDDEN and (self.character._class.id == 'Thi' or self.character._class.id == 'Ass'):
+            return True
+
+        if self.character._class.id == 'Fig' or self.character._class.id == 'Bar':
             return True
 
         if self.mob_target is not None:
@@ -392,6 +407,13 @@ class SmartCombat(CombatObject):
             else:
                 return self.favourite_nuke
         return self.favourite_spell
+
+    def set_mob_target_props(self):
+        if self.mob_target is not None:
+            self.mob_target_uses_black_magic = self.mob_target.uses_black_magic == 1
+            self.mob_target_is_undead = self.mob_target.is_undead == 1
+            self.mob_target_is_magical = self.mob_target.is_magical == 1
+            self.mob_target_level = self.get_mob_level()
 
     def get_mob_level(self):
         mob_level = 99
@@ -490,6 +512,7 @@ class SmartCombat(CombatObject):
             return True
 
         self.use_slow_combat_ability_or_attack(use_combat_ability)
+        self.attacks += 1
         # magentaprint("SmartCombat finished attack, stopping: " + str(self.stopping))
         # time.sleep(0.1)
         return False
@@ -498,9 +521,16 @@ class SmartCombat(CombatObject):
         self.cast.wait_until_ready()
 
         # magentaprint("{} item {} has them".format(self.favourite_combat_item, self.character.inventory.has(self.favourite_combat_item)), False)
+        mob_level = self.get_mob_level()
         damage = self.character.maxHP - self.character.HEALTH
         if self.stopping:
             return True
+        elif self.is_caster_class() and self.character.MANA > 39 and self.casts % 3 == 0 and mob_level > 7 and self.can_stun():
+            # if we have the bind spell use it on the target
+            if not self.mob_target_uses_black_magic:
+                self.do_cast(Spells.bind, self.target)
+            else: 
+                self.do_cast(Spells.confusion, self.target)
         elif not self.black_magic and self.character.info.pty > 10 and ((self.character.MANA >= 2 and damage > self.character.max_vigor()) or \
              (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7)):
              # (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7 and damage > self.character.hptick()):
@@ -525,8 +555,13 @@ class SmartCombat(CombatObject):
 
         return False
 
+    def can_stun(self):
+        return self.character.spells and Spells.bind in self.character.spells and \
+            self.character.spells and Spells.confusion in self.character.spells
+
     def do_cast(self, spell, target=None, is_item=False):
         self.cast.persistent_cast(spell, target, is_item)
+        self.casts += 1
         if self.cast.error:
             self.error = True
             self.stop()
@@ -536,7 +571,7 @@ class SmartCombat(CombatObject):
             # magentaprint("SmartCombat cycling abilities: " + str(a))
             if a.up():
                 if isinstance(a, Turn):
-                    if self.target not in a.valid_targets:
+                    if self.target not in a.valid_targets or not self.mob_target_is_undead:
                         continue
                     else:
                         magentaprint("SmartCombat " + str(self.target) + " in turn targets " + str(a.valid_targets))
@@ -565,10 +600,12 @@ class SmartCombat(CombatObject):
         if use_combat_ability:
             for a in self.slow_combat_abilities:
                 if a.up():
-                    if isinstance(a, Bash):
+                    # Don't use both Bash and Circle on the same mob since it's a waste of DPS time
+                    # Don't use either more than once per fight
+                    if isinstance(a, Bash) and (not self.mob_target_uses_black_magic or self.used_ability):
                         continue  # For now, don't bash
 
-                    if isinstance(a, Circle):
+                    if isinstance(a, Circle) and (self.mob_target_uses_black_magic or self.used_ability):
                         continue
 
                     if isinstance(a, Backstab):
@@ -579,6 +616,7 @@ class SmartCombat(CombatObject):
 
                     # magentaprint("SmartCombat executing " + str(a), False)
                     a.execute(self.target)
+                    self.used_ability = True
                     self.kill.start_timer()
                     # let's also do our magic attack ASAP
                     if self.cast.up() or self.cast.wait_time() <= self.kill.wait_time() or self.casting:

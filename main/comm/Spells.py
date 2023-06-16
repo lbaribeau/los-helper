@@ -16,6 +16,7 @@ mendwounds = 'm'
 light      = 'l'
 showaura   = 'show'
 bind       = 'bind'
+confusion       = 'confusion'
 protection = 'prot'
 
 _lvl1 = [burn, rumble, blister, hurt]
