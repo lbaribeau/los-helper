@@ -630,7 +630,7 @@ class TrackGrindThread(GrindThread):
             # Track("Dalla and Douvan", self.DALLA_DOUVAN, 11, 20, 1), # Dalla overheals and is too dangerous
             Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 20, 1, requires_ready=True),
             # Track("Halwyn Bugbears",) # has a pit which could cause issues
-            Track("Forge / weapon thieves",self.FORGE_THIEVES,14,20,-1),
+            # Track("Forge / weapon thieves",self.FORGE_THIEVES,14,20,-1),
             # Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 12, 20, -1), # too aggressive and multiple spawn
             Track("Massive swamp troll", self.MASSIVE_SWAMP_TROLL, 15, 20, -1, requires_ready=True),
             Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9,has_cooldown=False),
