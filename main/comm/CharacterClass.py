@@ -87,6 +87,7 @@ class CharacterClass(object):
             abilities = [ Haste ]
             Cast.cooldown_after_success = 5
             self.weapon_slots.append("Second")
+            # cooldown is faster after lvl 10
             Search.cooldown_after_success = 6
             Search.cooldown_after_failure = 6
         elif class_string == "Thi":

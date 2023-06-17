@@ -18,6 +18,7 @@ class SmartCombat(CombatObject):
     black_magic = True
     casts = 0
     attacks = 0
+    stuns = 0
     thread = None
     target = None
     mob_target = None
@@ -29,6 +30,7 @@ class SmartCombat(CombatObject):
     broken_weapon = ''
     activated = False
     used_ability = False
+    stun_lock_mode = False
 
     def __init__(self, kill, cast, potion_thread_handler, wield, telnetHandler, character, weapon_bot):
         super().__init__(telnetHandler)
@@ -222,8 +224,9 @@ class SmartCombat(CombatObject):
         self.set_target(target)
         super().keep_going()
 
-    def start_thread(self, target, spell=None):
+    def start_thread(self, target, spell=None, stun_lock_mode=False):
         # Doesn't ThreadingMixin do this?
+        self.stun_lock_mode = stun_lock_mode
         self.set_target(target)
         self.spell = spell if spell else self.favourite_spell
         magentaprint("SmartCombat spell set to " + str(self.spell))
@@ -271,6 +274,7 @@ class SmartCombat(CombatObject):
 
         self.casts = 0
         self.attacks = 0
+        self.stuns = 0
 
         self.casting = self.black_magic or Spells.vigor in self.character.spells
         self.favourite_combat_item = self.get_favourite_combat_item()
@@ -602,10 +606,10 @@ class SmartCombat(CombatObject):
                 if a.up():
                     # Don't use both Bash and Circle on the same mob since it's a waste of DPS time
                     # Don't use either more than once per fight
-                    if isinstance(a, Bash) and (not self.mob_target_uses_black_magic or self.used_ability):
+                    if isinstance(a, Bash) and not self.should_spell_stun(self.stuns):
                         continue  # For now, don't bash
 
-                    if isinstance(a, Circle) and (self.mob_target_uses_black_magic or self.used_ability):
+                    if isinstance(a, Circle) and not self.should_phys_stun(self.stuns):
                         continue
 
                     if isinstance(a, Backstab):
@@ -643,6 +647,35 @@ class SmartCombat(CombatObject):
             self.stop()
         # self.character.ATTACK_CLK = time.time()  # TODO: Kill should be smart enough to keep the clock set
                                                  # Kill should actually own the clock...
+    def should_phys_stun(self, counter, phys_mode=True):
+        should_stun = False
+        if not self.mob_target_uses_black_magic or self.stun_lock_mode:
+            if self.stun_lock_mode:
+                should_stun = True
+            elif not self.used_ability:
+                should_stun = True
+        elif self.mob_target_uses_black_magic and self.stun_lock_mode and counter % 2 == 1:
+            should_stun = True
+
+        if should_stun:
+            self.stuns += 1
+
+        return should_stun
+
+    def should_spell_stun(self, counter):
+        should_stun = False
+        if self.mob_target_uses_black_magic or self.stun_lock_mode:
+            if self.stun_lock_mode and counter % 2 == 0:
+                should_stun = True
+            elif not self.used_ability:
+                should_stun = True
+        elif self.mob_target_uses_black_magic and self.stun_lock_mode and counter % 2 == 1:
+            should_stun = True
+
+        if should_stun:
+            self.stuns += 1
+
+        return should_stun
 
     @property
     def heal_ability_is_up(self):
