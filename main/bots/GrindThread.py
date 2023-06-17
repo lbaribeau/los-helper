@@ -223,7 +223,9 @@ class GrindThread(BotThread):
 
     def pre_combat_actions(self, target):
         mob_target = Mob.get_mob_by_name(target)
-        if not self.is_mob_weak(mob_target):
+        if self.character.level >= 14 and not self.is_mob_weak(mob_target):
+            self.use_buff_ability()
+        elif self.character.level < 14 and not self.is_mob_weak(mob_target, 5):
             self.use_buff_ability()
 
 

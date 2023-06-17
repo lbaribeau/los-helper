@@ -61,6 +61,10 @@ class SmartGrindThread(TrackGrindThread):
             #remove the alchemist's ring
             self.command_handler.process('rem alc')
 
+        if self.is_character_class('Ran'):
+            #remove the alchemist's ring
+            self.command_handler.process('rem jerk')
+
     def init_level_modifiers(self):
         low_level_modifier = 0
         high_level_modifier = 0#1 #risky business
