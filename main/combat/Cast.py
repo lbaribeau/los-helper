@@ -32,6 +32,7 @@ class Cast(SimpleCombatObject):
 
         self.use = use
         self.end_combat_regexes.append(RegexStore.no_mana)
+        self.regex_cart.append(RegexStore.hit_with_confusion)
 
     # Commented... hmmm.. I went with the notify_failure(), I think so I wasn't checking for the regex twice...
     # Just a logic structure thing.
@@ -53,6 +54,9 @@ class Cast(SimpleCombatObject):
                 # magentaprint("Mob killed - stopping cast thread", False)
                 self.target_dead = True
                 self.stop()
+        elif regex in RegexStore.hit_with_confusion:
+            magentaprint("I'ma confused oh my!!", False)
+            self.start_timer() # restart the timer
         elif regex in RegexStore.aura:
             self.aura = Aura(M_obj.group('aura'))
         elif regex in RegexStore.no_mana:

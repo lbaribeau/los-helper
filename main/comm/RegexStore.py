@@ -391,6 +391,10 @@ confusion_cast = [
     r"(.+?) reels under the confusion spell."
 ]
 
+hit_with_confusion = [
+    r"(.+?) blasts your mind with confusion."
+]
+
 spell_damage = [
     r"The spell did (?P<d>\d+) damage."
 ]
