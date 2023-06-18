@@ -133,6 +133,8 @@ class Character(object):
         self.ACTIVELY_BOTTING = False
         self.CAN_FLEE = True
 
+        self.ESCAPES = 0
+
         self.MUD_AREA = None
         self.AREA_TITLE=""
         self.EXIT_LIST=[]

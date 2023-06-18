@@ -106,6 +106,7 @@ class SmartCombat(CombatObject):
             self.character.MUD_AREA = MudArea(timeless_area)
             self.character.EXIT_LIST = self.character.MUD_AREA.area_exits # retrieve exits from db
             self.character.AREA_TITLE = timeless_area.name
+            self.character.ESCAPES += 1
 
             self.stop()
             self.cast.stop()
@@ -470,7 +471,7 @@ class SmartCombat(CombatObject):
 
         if spell_percent < 50:
             spell = self.get_t1_spell(character, spell_percent)
-        # elif spell_percent > 74 and self.character.info.int > 18 and self.character.M:
+        # elif spell_percent > 74 and self.character.info.int > 20 and self.character.MANA > 60:
         #     spell = self.get_t3_spell(character, spell_percent)
         else:
             spell = self.get_t2_spell(character, spell_percent)

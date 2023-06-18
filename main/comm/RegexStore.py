@@ -387,6 +387,10 @@ bind_cast = [
     r"Bind cast on (.+?)\."
 ]
 
+confusion_cast = [
+    r"(.+?) reels under the confusion spell."
+]
+
 spell_damage = [
     r"The spell did (?P<d>\d+) damage."
 ]

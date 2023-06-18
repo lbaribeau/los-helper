@@ -61,6 +61,10 @@ class SmartGrindThread(TrackGrindThread):
             #remove the alchemist's ring
             self.command_handler.process('rem alc')
 
+        if self.is_character_class('Mag'):
+            #remove the magus robe
+            self.command_handler.process('rem magus')
+
         if self.is_character_class('Ran'):
             #remove the alchemist's ring
             self.command_handler.process('rem jerk')
