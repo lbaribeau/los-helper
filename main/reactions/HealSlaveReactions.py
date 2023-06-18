@@ -21,7 +21,8 @@ class HealSlaveReactions(BotReaction):
                 self.heal_continue,
                 self.heal_stop,
                 self.target_not_here,
-                self.detect_invis_trigger
+                self.detect_invis_trigger,
+                self.fly_trigger,
                 ]
         else:
             self.regexes = [self.group_damage]
