@@ -127,6 +127,7 @@ class HealSlaveReactions(BotReaction):
 
         elif regex == self.fly_trigger:
             target = M_obj.group(1)
+            magentaprint("<{0}> wants to fly!!".format(target), False)
             self.cast_spell("fly", target)
             # magentaprint("should continue healing " + self.target, False)
             # if self.character.MANA > 1:
