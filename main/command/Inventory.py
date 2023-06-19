@@ -194,6 +194,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring', 
         'greenwood jerkin',"paladins's plate armour", "master's habit", "magus robe",
         'silver druidic robe','lucky pebble',"blue ioun stone","stolen contract",
+        "Ha'Chans' Blessing",
         
         # important potions
         'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',
