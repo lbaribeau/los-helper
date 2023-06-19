@@ -15,7 +15,7 @@ class HealSlaveReactions(BotReaction):
         self.heal_continue = "You gain (?:\d+?) experience.\n?\r?.+? spell cast on (.+?)\."
         self.heal_stop = "^.+? spell cast on (.+?).\n?\r?It appears to have no effect!"
         self.target_not_here = "They are not here\."
-        self.ban_target = "^(?:[A-Z]erp) hates (.+?)."
+        self.ban_target = "^(?:[A-Z]erp) hates (.+?)\."
 
         magentaprint("slave started for <" + master + ">", False)
         if master == "camp":
