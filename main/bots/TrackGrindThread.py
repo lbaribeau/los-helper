@@ -765,7 +765,7 @@ class TrackGrindThread(GrindThread):
             magentaprint("ending track [{}] with {} kills".format(getattr(self.last_track, "name"), net_kills), False)
             self.run_kills += net_kills
 
-            if net_kills > self.last_track.target_kills:
+            if net_kills >= self.last_track.target_kills:
                 magentaprint("We done good so no need to go back", False)
                 self.abandoned_last_track = False
 

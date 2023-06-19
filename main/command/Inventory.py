@@ -196,6 +196,9 @@ class Inventory(SimpleCommand, ReferencingList):
         'silver druidic robe','lucky pebble',"blue ioun stone","stolen contract",
         "Ha'Chans' Blessing",
         
+        # temporary items
+        'small iron key',
+
         # important potions
         'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',
         'burnt ochre potion', 'chequered vial', 'misty potion',
