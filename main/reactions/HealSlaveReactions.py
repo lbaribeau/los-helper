@@ -3,6 +3,8 @@ from reactions.BotReactions import BotReaction
 from misc_functions import *
 
 class HealSlaveReactions(BotReaction):
+    banned_targets = []
+
     def __init__(self, mudReaderHandler, command_handler, master, cast, character, slave_state):
         #[Group] Twerp took 4 combat damage
         self.group_damage = "\[Group\] {0} took ([\d]*) combat damage".format(master)
@@ -13,6 +15,7 @@ class HealSlaveReactions(BotReaction):
         self.heal_continue = "You gain (?:\d+?) experience.\n?\r?.+? spell cast on (.+?)\."
         self.heal_stop = "^.+? spell cast on (.+?).\n?\r?It appears to have no effect!"
         self.target_not_here = "They are not here\."
+        self.ban_target = "^(?:[A-Z]erp) hates (.+?)."
 
         magentaprint("slave started for <" + master + ">", False)
         if master == "camp":
@@ -24,6 +27,8 @@ class HealSlaveReactions(BotReaction):
                 self.target_not_here,
                 self.detect_invis_trigger,
                 self.fly_trigger,
+                self.show_aura_trigger,
+                self.ban_target
                 ]
         else:
             self.regexes = [self.group_damage]
@@ -98,11 +103,22 @@ class HealSlaveReactions(BotReaction):
             magentaprint("target already buffed recently so no go", False)
 
     def do_heal_routine(self, target):
+        if self.is_target_banned():
+            return
+
         self.buff_target()
         magentaprint("should start healing " + self.target, False)
         self.heal_target()
     
+    def is_target_banned(self, target):
+        if target in self.banned_targets:
+            return True
+        return False
+
     def check_for_new_target(self):
+        if key in self.banned_targets:
+            return
+
         for key in self.known_targets.keys():
             if "_needs_heal" in key:
                 if self.known_targets[key]:
@@ -114,28 +130,40 @@ class HealSlaveReactions(BotReaction):
         magentaprint(regex, False)
         if regex == self.heal_trigger:
             target = self.slave_state.find_or_add_target(M_obj.group(1))
-            magentaprint("should buff " + str(self.target), False)
-            target["needs_buff"] = True
+            if not self.is_target_banned(target):
+                magentaprint("should buff " + str(self.target), False)
+                target["needs_buff"] = True
             # self.target = M_obj.group(1)
             # self.do_heal_routine(self.target)
         elif regex == self.heal_continue:
-            target = self.slave_state.find_or_add_target(M_obj.group(1))
-            magentaprint("should continue healing " + str(self.target), False)
-            target["needs_heal"] = True
+            target = M_obj.group(1)
+            if not self.is_target_banned(target):
+                target = self.slave_state.find_or_add_target(target)
+                magentaprint("should continue healing " + str(self.target), False)
+                target["needs_heal"] = True
 
         elif regex == self.detect_invis_trigger:
             target = M_obj.group(1)
-            self.cast_spell("d-i", target)
+            if not self.is_target_banned(target):
+                self.cast_spell("d-i", target)
 
         elif regex == self.fly_trigger:
             target = M_obj.group(1)
-            magentaprint("<{0}> wants to fly!!".format(target), False)
-            self.cast_spell("fly", target)
+            if not self.is_target_banned(target):
+                magentaprint("<{0}> wants to fly!!".format(target), False)
+                self.cast_spell("fly", target)
 
         elif regex == self.show_aura_trigger:
             target = M_obj.group(1)
-            magentaprint("<{0}> wonders about their purpose in life!!".format(target), False)
-            self.cast_spell("show", target)
+            if not self.is_target_banned(target):
+                self.cast_spell("d-i", target)
+                magentaprint("<{0}> wonders about their purpose in life!!".format(target), False)
+                self.cast_spell("show", target)
+        
+        elif regex == self.ban_target:
+            target = M_obj.group(1)
+            magentaprint("<{0}> is banned!!".format(target), False)
+            self.banned_targets.append(target)
             # magentaprint("should continue healing " + self.target, False)
             # if self.character.MANA > 1:
             #     self.cast_spell("vigor")
