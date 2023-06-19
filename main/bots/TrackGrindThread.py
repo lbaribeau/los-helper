@@ -631,7 +631,7 @@ class TrackGrindThread(GrindThread):
             Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 20, 0, requires_ready=True, target_kills=1),
             Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1, requires_ready=True, target_kills=1),
             Track("Plovers", self.PLOVERS, 15, 20, 1, requires_ready=True, target_kills=1),
-            Track("Bards", self.BARDS1, 11, 16, 1, requires_ready=True),
+            # Track("Bards", self.BARDS1, 11, 16, 1, requires_ready=True), #minstrels are a hazard
             Track("Brother monk", self.MONKS1, 9, 16, 0, requires_ready=True),
             Track("Floor Manager", self.FLOOR_MANAGER, 12, 20, -1, requires_ready=True, target_kills=1),
             # Track("Dalla and Douvan", self.DALLA_DOUVAN, 11, 20, 1), # Dalla overheals and is too dangerous
