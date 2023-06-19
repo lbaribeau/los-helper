@@ -7,6 +7,7 @@ class HealSlaveReactions(BotReaction):
         #[Group] Twerp took 4 combat damage
         self.group_damage = "\[Group\] {0} took ([\d]*) combat damage".format(master)
         self.heal_trigger = "^(.+?) decides to take a rest."
+        self.show_aura_trigger = "^(.+?) thinks carefully."
         self.detect_invis_trigger = "^(.+?) eyes you suspiciously."
         self.fly_trigger = "^(.+?) jumps for joy."
         self.heal_continue = "You gain (?:\d+?) experience.\n?\r?.+? spell cast on (.+?)\."
@@ -130,6 +131,11 @@ class HealSlaveReactions(BotReaction):
             target = M_obj.group(1)
             magentaprint("<{0}> wants to fly!!".format(target), False)
             self.cast_spell("fly", target)
+
+        elif regex == self.show_aura_trigger:
+            target = M_obj.group(1)
+            magentaprint("<{0}> wonders about their purpose in life!!".format(target), False)
+            self.cast_spell("show", target)
             # magentaprint("should continue healing " + self.target, False)
             # if self.character.MANA > 1:
             #     self.cast_spell("vigor")
