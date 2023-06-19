@@ -25,7 +25,7 @@ Level 5 spells are not really in the game
 
 
 Wands/Items spell cast on use
-- white amulet/small flask == small heal
+- white amulet/small flask/stick salve == small heal
 - Adamantine rod/zinc/bronze == Burn
 - Silver Rod == Waterbolt
 - Fiery Rod == t2 fire

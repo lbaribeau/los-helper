@@ -60,8 +60,15 @@ If you don't want to use venv and want to install onto your global python then:
 python
 `sudo python -m SimpleHTTPServer 80`
 python3
+
+#### Runs the server in the terminal
 `sudo python3 -m http.server 8080`
+
+#### Runs the server in the terminal nohup.out will be populated with data on requests
 `nohup sudo python3 -m http.server 8080 &`
+
+#### Runs the server in the terminal no output file
+`nohup sudo python3 -m http.server 8080 >/dev/null 2>&1 &`
 
 ## Startup Parameters
 * -grind: starts SmartGrind immediately after the map loads

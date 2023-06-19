@@ -203,7 +203,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'golden potion', #'platinum crucifix', # Helps disease? Worth a lot of money?
         'small flask', 'large restorative', 'scarlet potion',
         'silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
-        'white sparkling drink',
+        # 'white sparkling drink',
 
         # containers
         'large sack', 'black bag',
