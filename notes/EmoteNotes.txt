@@ -1,0 +1,28 @@
+Emotes.txt
+
+accuse      ack         applaud     awe         beam        bird
+blank       bleed       blush       bounce      bow         burp
+cackle      chant       cheer       choose      chuckle     clap
+comfort     confused    copulate    cough       cringe      cross
+cry         curse       curtsey     damn        dawdle      defecate
+deny        drool       elbow       expose      eye         faint
+fart        flex        flip        fret        frown       fume
+gasp        giggle      glare       gloat       goose       grab
+grimace     grin        grind       groan       grumble     grunt
+gulp        hate        hiccup      high5       hiss        howl
+hug         hum         jump        kick        kiss        knee
+laugh       loom        lurch       masturbate  moon        mope
+mug         mutter      nervous     nod         notice      nut
+ogle        pat         pester      plead       point       poke
+ponder      pounce      pout        puke        purr        rage
+raise       rant        reject      relax       remember    respect
+roll        root        salute      samba       satisfied   scold
+scowl       scratch     scream      shake       shove       shrug
+shudder     sigh        sing        sit         skip        slap
+sleep       smile       smirk       smoke       snap        snicker
+sniff       snigger     snoop       spit        stand       stare
+steel       stomp       stretch     strut       suck        sulk
+support     tap         target      taunt       think       threaten
+tickle      twiddle     wallow      watch       wave        whimper
+whine       whistle     wipe        wince       wink        withdraw
+wring       worship     yawn
