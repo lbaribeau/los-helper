@@ -176,6 +176,7 @@ class TalkGrindThread(BotThread):
                   "spell",
                   "armor",
                   "treasure",
+                  "chest",
                   "gem",
                   "fire",
                   "water",
@@ -332,6 +333,8 @@ class TalkGrindThread(BotThread):
                   "di'Chao",
                   "tipshy",
                   "flametongue",
+                  "thad",
+                  "thadden",
             ]
 
       def get_path_to_target_mob(self, mob):

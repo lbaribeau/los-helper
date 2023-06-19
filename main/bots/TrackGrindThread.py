@@ -575,6 +575,15 @@ class TrackGrindThread(GrindThread):
     def setup_tracks(self):
         self.tracks = [
             Track("Shop and Tip 0",self.SHOP_AND_TIP_PATH,0,20,9, has_cooldown=False),
+            # Aura intensive stuff all up front
+            Track("Gnoll Camp", self.GNOLL_CAMP, 15, 20, -1, False, 0, 9),
+            Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9),
+            Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True),
+            Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9, is_glamping=True),
+            Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18),
+            Track("Cathedral", self.CATHEDRAL, 10, 20, 1, True, 7, 18),
+            Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True),
+            # grey and minor aura tracks
             Track("Theatre Farm", self.smart_theatre_path, 0, 17, 0, has_cooldown=False),
             Track("Theatre Bertram", self.smart_theatre_path, 18, 20, 0, requires_ready=True),
             Track("Market", self.smart_market_path, 0, 14, 0, has_cooldown=False),
@@ -594,17 +603,13 @@ class TrackGrindThread(GrindThread):
             Track("Mill Workers", self.smart_mill_path, 7, 14, 0, has_cooldown=False),
             Track("Muggers", self.MUGGER_PATH, 9, 15, -1, has_cooldown=False),
             Track("Old Man James", self.OLD_MAN_JAMES, 9, 12, 0),
-            Track("Gnoll Camp", self.GNOLL_CAMP, 15, 20, -1, False, 0, 9),
-            Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9),
             Track("Olmer", self.OLMER, 11, 14, -1),
             Track("Cheryn", self.CHERYN, 11, 20, -1, requires_ready=False),
             Track("Orcs", self.ORCS, 11, 14, -1),
             Track("Artificers", self.ARTIFICERS, 11, 14, -1),
-            Track("Haelyn", self.HAELYN, 16, 20, -1, requires_ready=True), 
+            Track("Haelyn", self.HAELYN, 17, 20, -1, requires_ready=True), 
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1, has_cooldown=False),
-            Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18),
-            Track("Cathedral", self.CATHEDRAL, 10, 20, 1, True, 7, 18),
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1, has_cooldown=False),
             Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1, requires_ready=True),
             Track("Combat Master / barbs", self.BARBS, 8, 14, 0),
@@ -637,9 +642,6 @@ class TrackGrindThread(GrindThread):
             Track("Massive swamp troll", self.MASSIVE_SWAMP_TROLL, 15, 20, -1, requires_ready=True),
             Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9,has_cooldown=False),
             # Track("Barbarian shaman", self.BARBARIN_SHAMAN, 15, 20, 0), # some pretty big nuke spells, maybe not worth it
-            Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True),
-            Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True),
-            Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9, is_glamping=True),
             Track("WAY_STATION_GLAMP", self.WAY_STATION_GLAMP, 10, 14, 0, False, is_glamping=True),
             Track("CHIARU", self.CHIARU, 18, 20, 1, requires_ready=True),
             Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 1, requires_ready=True),

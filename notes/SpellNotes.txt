@@ -24,6 +24,11 @@ Level 5 spells are not really in the game
 - Resist-cold can be found in the werewolf cave in the hidden passage when pressing the face, then to the east of the cave pressing the cushion (fighting the guarding wolf and bronze golem)
 
 
-Wands/Items
+Wands/Items spell cast on use
+- white amulet/small flask == small heal
+- Adamantine rod/zinc/bronze == Burn
 - Silver Rod == Waterbolt
 - Fiery Rod == t2 fire
+- Grey rod == dustgust
+- Light Brown Crystal == engulf (t4 earth)
+- Ruby Amulet == Unknown spell on players???

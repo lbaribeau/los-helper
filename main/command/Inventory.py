@@ -193,7 +193,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'stone medal', 'basilisk scale', 'basilisk head', 'occultate stone', 'jade block', 'rock wolf fang',
         'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring', 
         'greenwood jerkin',"paladins's plate armour", "master's habit", "magus robe",
-        'lucky pebble',"blue ioun stone","stolen contract",
+        'silver druidic robe','lucky pebble',"blue ioun stone","stolen contract",
         
         # important potions
         'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',
