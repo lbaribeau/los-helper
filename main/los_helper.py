@@ -149,10 +149,57 @@ class LosHelper(object):
             self.character.MANA_TO_ENGAGE = 0
             self.character.NEEDS_MAGIC = False
             self.character.PREFER_BM = True
+
+        # force to a lower level
+        if '-level' in sys.argv:
+            # get index of -level in sys.argv and then get the property in +1 position to set the level
+            level_index = sys.argv.index('-level')
+            level_to_set = sys.argv[level_index+1]
+            if level_to_set.isdigit() and int(level_to_set) < self.character.info.level:
+                self.character.info.level = int(level_to_set)
+                self.character.level = int(level_to_set)
+                magentaprint("Level rewrite set to " + str(level_to_set), False)
+            else:
+                magentaprint("Level rewrite not configured properly, ignoring arg", False)
+
+        if '-weapon' in sys.argv:
+            weapon_index = sys.argv.index('-weapon')
+            weapon_type_to_set = sys.argv[weapon_index+1]
+            
+            # we expect weapon to be an index of 1 through 5 corresponding to the weapon type in info
+            self.set_preferred_weapon_proficiency(weapon_type_to_set)
+
         
         if self.character._class.id != "Mon":
             # self.mud_reader_handler.register_reaction(RingWearingReaction(self.character.inventory, self.commandHandler))
             self.mud_reader_handler.register_reaction(RingWearingReaction(self.command_handler.wear, self.character.inventory))
+
+    def set_preferred_weapon_proficiency(self, profficiency):
+        try:
+            # get info class property matching profficiency string
+            preferred_proficiency_rank = self.character.weapon_proficiencies[profficiency]
+
+            if preferred_proficiency_rank == 0:
+                preferred_proficiency_rank = 1
+
+            self.character.weapon_proficiencies = {
+                'Sharp'   : 0, 
+                'Thrust'  : 0, 
+                'Blunt'   : 0,
+                'Pole'    : 0, 
+                'Missile' : 0
+            }
+            self.character.info.sharp = 0
+            self.character.info.thrust = 0
+            self.character.info.blunt = 0
+            self.character.info.pole = 0
+            self.character.info.missile = 0
+
+            self.character.weapon_proficiencies[profficiency] = preferred_proficiency_rank
+            setattr(self.character.info, profficiency.lower(), preferred_proficiency_rank)
+        except Exception as e:
+            magentaprint("LosHelper: Invalid weapon proficiency: " + profficiency, False)
+            return
 
     def close(self):
         self.mudListenerThread.stop()
