@@ -102,23 +102,15 @@ class HealSlaveReactions(BotReaction):
         else:
             magentaprint("target already buffed recently so no go", False)
 
-    def do_heal_routine(self, target):
-        if self.is_target_banned():
-            return
-
+    def do_heal_routine(self):
         self.buff_target()
         magentaprint("should start healing " + self.target, False)
         self.heal_target()
     
     def is_target_banned(self, target):
-        if target in self.banned_targets:
-            return True
-        return False
+        return target in self.banned_targets
 
     def check_for_new_target(self):
-        if key in self.banned_targets:
-            return
-
         for key in self.known_targets.keys():
             if "_needs_heal" in key:
                 if self.known_targets[key]:
@@ -156,14 +148,16 @@ class HealSlaveReactions(BotReaction):
         elif regex == self.show_aura_trigger:
             target = M_obj.group(1)
             if not self.is_target_banned(target):
-                self.cast_spell("d-i", target)
                 magentaprint("<{0}> wonders about their purpose in life!!".format(target), False)
                 self.cast_spell("show", target)
         
         elif regex == self.ban_target:
             target = M_obj.group(1)
-            magentaprint("<{0}> is banned!!".format(target), False)
-            self.banned_targets.append(target)
+            if not self.is_target_banned(target):
+                magentaprint("<{0}> is banned!!".format(target), False)
+                self.banned_targets.append(target)
+            else:
+                magentaprint("<{0}> is already banned!!".format(target), False)
             # magentaprint("should continue healing " + self.target, False)
             # if self.character.MANA > 1:
             #     self.cast_spell("vigor")
