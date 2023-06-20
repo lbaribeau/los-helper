@@ -9,6 +9,7 @@ class Item(NamedModel):
     level       = IntegerField(null=True)
     itemtype    = ForeignKeyField(ItemType, null=True)
     value       = IntegerField(null=True)
+    note        = CharField(null=True)
 
     '''Private Item Functions'''
     def map(self):
@@ -24,6 +25,7 @@ class Item(NamedModel):
             self.description = item.description
             self.itemtype = item.itemtype
             self.value = item.value
+            self.note = item.note
             #update other fields if you want
 
         return is_new_mapping
