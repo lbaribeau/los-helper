@@ -3,7 +3,7 @@ from reactions.BotReactions import BotReaction
 from misc_functions import *
 
 class HealSlaveReactions(BotReaction):
-    banned_targets = ["Rofl"]
+    banned_targets = []
 
     def __init__(self, mudReaderHandler, command_handler, master, cast, character, slave_state):
         #[Group] Twerp took 4 combat damage
@@ -108,7 +108,9 @@ class HealSlaveReactions(BotReaction):
         self.heal_target()
     
     def is_target_banned(self, target):
-        return target in self.banned_targets
+        is_banned = target in self.banned_targets
+        magentaprint("is <{0}> banned? {1}".format(target, is_banned), False)
+        return is_banned
 
     def check_for_new_target(self):
         for key in self.known_targets.keys():
@@ -121,8 +123,9 @@ class HealSlaveReactions(BotReaction):
     def notify(self, regex, M_obj):
         magentaprint(regex, False)
         if regex == self.heal_trigger:
-            target = self.slave_state.find_or_add_target(M_obj.group(1))
+            target = M_obj.group(1)
             if not self.is_target_banned(target):
+                target = self.slave_state.find_or_add_target(target)
                 magentaprint("should buff " + str(self.target), False)
                 target["needs_buff"] = True
             # self.target = M_obj.group(1)
@@ -158,23 +161,3 @@ class HealSlaveReactions(BotReaction):
                 self.banned_targets.append(target)
             else:
                 magentaprint("<{0}> is already banned!!".format(target), False)
-            # magentaprint("should continue healing " + self.target, False)
-            # if self.character.MANA > 1:
-            #     self.cast_spell("vigor")
-        # elif regex == self.heal_stop:
-        #     self.command_handler.process("pray")
-        #     self.command_handler.process("rest")
-        #     self.known_targets[self.target + "_needs_heal"] = False
-        #     self.check_for_new_target()
-        # elif regex == self.target_not_here:
-        #     self.known_targets[self.target + "_needs_heal"] = False
-        #     self.target = ""
-        #     self.check_for_new_target()
-        # elif regex == self.group_damage:
-        #     self.dmg += int(M_obj.group(1))
-
-        #     magentaprint("{0} {1}".format(self.dmg, self.master), False)
-        #     if (self.dmg >= 10):
-        #         self.dmg = 0
-        #         magentaprint("Notified <" + self.master + ">", False)
-        #         self.cast.process('c vig ' + self.master)
