@@ -110,6 +110,10 @@ class MainhandWeaponBot(MiniBot):
             # Assume main hand (this bot is not supporting dual wield)
             del self.weapon
 
+    def weapon_removed(self):
+        if hasattr(self, 'weapon'):
+            del self.weapon
+
     def run(self):
         self.stopping = False
         self.check_weapons()

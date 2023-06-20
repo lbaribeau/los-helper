@@ -23,6 +23,7 @@ class SmartGrindThread(TrackGrindThread):
         self.cur_target = None
         self.cur_area_id = self.character.AREA_ID
         self.on_heal_path = False
+        self.should_reset_gear = True
 
         self.track_start_time = 0
         self.track_end_time = 0
@@ -41,8 +42,6 @@ class SmartGrindThread(TrackGrindThread):
         if self.character.MANA_TO_ENGAGE < 24 and self.character.MAX_MANA > 24:
             self.character.MANA_TO_ENGAGE = 24
         
-
-        
         self.HEALTH_TO_HEAL = 0.95 * self.character.maxHP
 
 
@@ -53,6 +52,9 @@ class SmartGrindThread(TrackGrindThread):
             self.KOBOLD_PATH = [
                 'areaid1679','areaid2'
                 ]
+        self.remove_class_gear()
+
+    def remove_class_gear(self):
         if self.is_character_class('Mon'):
             #remove the master's habit
             self.command_handler.process('rem mast')
@@ -105,6 +107,7 @@ class SmartGrindThread(TrackGrindThread):
             if not self.ready_for_combat(): #in healing area
                 rest_start = get_timeint()
                 self.rest_and_check_aura()
+                self.reset_gear()
                 rest_end = get_timeint()
                 self.character.REST_TIME += (rest_end - rest_start).total_seconds()
         else:
@@ -130,6 +133,17 @@ class SmartGrindThread(TrackGrindThread):
 
         if len(self.character.MONSTER_KILL_LIST) == 0:
             self.reset_kill_list()
+
+    def reset_gear(self):
+        if self.should_reset_gear:
+            self.command_handler.process('rem all') # remove all equipment
+            self.command_handler.process('wear all') # wear all equipment
+            self.remove_class_gear()
+            self.command_handler.weapon_bot.weapon_removed()
+            self.command_handler.equipment.execute_and_wait()
+            self.inventory.get_inventory()
+            self.check_armour()
+            self.should_reset_gear = False
 
     def do_post_go_actions(self):
         super().do_post_go_actions()
@@ -226,6 +240,7 @@ class SmartGrindThread(TrackGrindThread):
             if (self.character.info.level < 14 or self.is_mob_weak(mob_target, 3)) and \
                  (mob_target.level is not None and mob_target.level != "" and mob_target.level < 12):
                 magentaprint("Mob is weak enough for us to fight", False)
+                self.should_reset_gear = True
                 return True
             elif self.character.is_ready_for_tough_fight() and \
                 self.update_aura(True):
@@ -236,8 +251,11 @@ class SmartGrindThread(TrackGrindThread):
                 if self.character.AURA != self.character.preferred_aura:
                     return False
 
-                # is the mob is still in our kill list after the aura update then fight it                
-                return mob in self.character.MONSTER_KILL_LIST
+                # is the mob is still in our kill list after the aura update then fight it
+                mob_in_kill_list = mob in self.character.MONSTER_KILL_LIST
+                if mob_in_kill_list:
+                    self.should_reset_gear = True               
+                return mob_in_kill_list
             else:
                 magentaprint("Mob is too tough for us to fight right now", False)
                 return False

@@ -32,3 +32,4 @@ Wands/Items spell cast on use
 - Grey rod == dustgust
 - Light Brown Crystal == engulf (t4 earth)
 - Ruby Amulet == Unknown spell on players???
+- Heathen Amulet == slow poison

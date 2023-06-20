@@ -70,7 +70,8 @@ def parse_item_names(item_string_list):
                 'black chip', # Floor Manager
                 'silver chest', 
                 'small jade fragment', 
-                'amethyst gem']):
+                'amethyst gem',
+                'large gem']):
             continue
         #if item.endswith(" platinum coins"):  
         # (Misses "The auctioneer was carrying: 13 gold coins, a gavel, platinum coins.")
@@ -197,7 +198,7 @@ class Inventory(SimpleCommand, ReferencingList):
         "Ha'Chans' Blessing",
         
         # temporary items
-        'small iron key',
+        # 'small iron key',
 
         # important potions
         'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',
@@ -876,6 +877,10 @@ class Inventory(SimpleCommand, ReferencingList):
 
     def output_inventory(self):
         magentaprint(str(self.list), False)
+
+    def debug(self):
+        for item in self.equipped_items:
+            magentaprint(item.obj, False)
 
     # usable = ["small retorative", "large restorative", "chicken soup", "scarlet potion",
     #           "steel bottle", "silver chalice", "milky potion",

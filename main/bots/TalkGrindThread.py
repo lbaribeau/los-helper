@@ -213,6 +213,10 @@ class TalkGrindThread(BotThread):
                   "instrument",
                   "venom",
                   "juices",
+                  "arrow",
+                  "eye",
+                  "amulet",
+                  "medallion",
                   # spells
                   "blind",
                   "clairvoyance",
@@ -335,6 +339,11 @@ class TalkGrindThread(BotThread):
                   "flametongue",
                   "thad",
                   "thadden",
+                  "arrum",
+                  "giantstone",
+                  "hrootim",
+                  "starfire",
+                  "blackstar",
             ]
 
       def get_path_to_target_mob(self, mob):

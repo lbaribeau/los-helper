@@ -619,7 +619,7 @@ class TrackGrindThread(GrindThread):
             Track("Dojo", self.DOJO, 16, 20, 1, requires_ready=True),
             Track("HORSEMASTER", self.HORSEMASTER, 17, 20, 1, requires_ready=True, target_kills=1),
             Track("Dini", self.DINI, 11, 15, 0, target_kills=1),
-            Track("Horbuk", self.HORBUK, 12, 20, 1, requires_ready=True, target_kills=1),
+            Track("Horbuk", self.HORBUK, 15, 20, 1, requires_ready=True, target_kills=1),
             # Track("Shaldena the Red", self.SHALDENA, 15, 20, 1),
             Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,8,20,9, has_cooldown=False),
             Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0, requires_ready=True),

@@ -275,6 +275,9 @@ class CommandHandler(object):
             for a in self.character._class.abilities.values():
                 a.stop()
             self.telnetHandler.write('')
+        elif user_input == 'invdebug':
+            # self.inventory.output_inventory()
+            self.inventory.debug()
         elif re.match('^ki? |^kill?', user_input):
             self.kill.execute(arg1)
         elif user_input.startswith('kk '):
