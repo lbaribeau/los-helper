@@ -3,7 +3,7 @@ from reactions.BotReactions import BotReaction
 from misc_functions import *
 
 class HealSlaveReactions(BotReaction):
-    banned_targets = []
+    banned_targets = ["Rofl"]
 
     def __init__(self, mudReaderHandler, command_handler, master, cast, character, slave_state):
         #[Group] Twerp took 4 combat damage
