@@ -142,7 +142,6 @@ class SmartGrindThread(TrackGrindThread):
             self.command_handler.weapon_bot.weapon_removed()
             self.command_handler.equipment.execute_and_wait()
             self.inventory.get_inventory()
-            self.check_armour()
             self.should_reset_gear = False
 
     def do_post_go_actions(self):
