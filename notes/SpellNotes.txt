@@ -28,7 +28,9 @@ Wands/Items spell cast on use
 - white amulet/small flask/sticky salve == small heal
 - Adamantine rod/zinc/bronze == Burn
 - Silver Rod == Waterbolt
-- Fiery Rod == t2 fire
+- Metallic Rod == Steamblast
+- Fiery Rod == Burstflame
+- Granite Rod == Crush
 - Grey rod == dustgust
 - Light Brown Crystal == engulf (t4 earth)
 - Ruby Amulet == Unknown spell on players???

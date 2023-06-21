@@ -214,7 +214,7 @@ class Inventory(SimpleCommand, ReferencingList):
 
         # super rare weapons/armor
         'dwarven rune hammer', 'silver ram staff', 'true blade', 'mithril war hammer',
-        "dragon scale armour", 'monk hammer', 'gauntlets of dexterity',
+        "dragon scale armour", 'gauntlets of dexterity',
     ]
     def __init__(self, telnetHandler, character):
         # I am now thinking that inventory is only concerned about the backpack, not what is equipped.

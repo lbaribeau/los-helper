@@ -6,6 +6,7 @@ dark chalice - fear
 milky potion, silver chalice - bless
 green, steel bottle - protection
 lady's tears, indigo potion - detect invis
+aegis tears == skill is beyond you (lvl 14 mage)
 ??? - detect magic
 granite - teleport to safety
 burnt ochre - fire protection

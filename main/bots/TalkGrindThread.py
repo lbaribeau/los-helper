@@ -288,6 +288,7 @@ class TalkGrindThread(BotThread):
                   "plains",
                   "fens",
                   "desert",
+                  "grove",
                   #races
                   "dwarf",
                   "elf",

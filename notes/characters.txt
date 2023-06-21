@@ -16,8 +16,8 @@ Lerp,11, alc dwarf 15 16 3 16 4
 Merp thief (swamp troll)
 Nerp,13, druid dwarf 16 16 3 16 3
 Oerp,7, dark knight dwarf 14 15 10 7 8 (15 15 10 7 7)
-Perp,11, ranger elf (16 14 2 8 14)
-Qerp,11, mage (lvl 10)
+Perp,12, ranger elf (16 14 2 8 14)
+Qerp,10, mage (lvl 10)
 Rerp,7, cleric, gnome
 Serp,14, Alchemist
 Twerp,6, cleric, human
@@ -27,4 +27,3 @@ Uerp,1, druid 10 8 12 12 12
 Werp,17, monk (lvl 17, no habit)
 Xerp,16, fighter 15 14 3 6 16
 Yerp,14, monk 18 3 4 18 11 (bad dex)
-
