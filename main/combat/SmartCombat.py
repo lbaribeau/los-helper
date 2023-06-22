@@ -631,7 +631,7 @@ class SmartCombat(CombatObject):
                         a.wait_for_flag()
                     
                     if a.error:
-                        # magentaprint("Didn't receive flag", False)
+                        magentaprint("Didn't receive flag for ability", False)
                         self.stop()
 
                     return

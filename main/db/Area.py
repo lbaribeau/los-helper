@@ -12,6 +12,7 @@ class Area(NamedModel):
     is_smithy        = peewee.BooleanField(default=False)
     is_pawn_shop     = peewee.BooleanField(default=False)
     is_tip           = peewee.BooleanField(default=False)
+    note             = peewee.CharField(null=True)
     #does_damage_on_entry = BooleanField(default=False)
     # harmful_to_good
     # harmful_to_evil
@@ -87,6 +88,7 @@ class Area(NamedModel):
                 self.is_smithy        = area.is_smithy
                 self.is_pawn_shop     = area.is_pawn_shop
                 self.is_tip           = area.is_tip
+                self.note             = area.note
                 break
 
         #print ("matching areas: " + str(matching_areas) + " is new mapping: " + str(is_new_mapping))

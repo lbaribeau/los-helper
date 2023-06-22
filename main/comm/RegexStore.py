@@ -165,7 +165,7 @@ nothing_here = [r"There's nothing here\."]
 
 # Go and Cartography
 #           .=\n\r   EAT JUNK DATA (death,loginprompts,hptick)                                                             Title           Description       Exit list                   Players / Mobs / Signs / Items (optional)
-area                  = ["(?:You run like a chicken\.\n\r\n\r)?(?s)(?:(?:.+?Stone\.\n\r|.+?healed\.\n\r|.+?\]:\s+?)\n\r)?([A-Za-z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"]
+area                  = ["(?:(?:You run like a chicken|You fell and hurt yourself for .+? damage|You stop resting)\.\n\r\n\r)?(?s)(?:(?:.+?Stone\.\n\r|.+?healed\.\n\r|.+?\]:\s+?)\n\r)?([A-Za-z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"]
 obvious_exits         = [r"(?s)Obvious exits: ([A-Za-z\s,]+)\.\n\r"]
 go_where              = [r"Go where\?"]
 cant_go               = [r"You can't go that way\."]
@@ -255,20 +255,20 @@ aesters_tears           = ["Your music rejuvenates everyone in the room\."]
 dance_of_the_cobra      = [r"he Dance of the Snake ends"]
 dance_of_the_cobra_fail = [r"he Dance of the Snake has"]
 dance_whom              = [r"Sing the Dance to whom\?"]
-turn                    = [r"You turned the (.+?) for (.+?) damage\."]
-turn_fail               = [r"You failed to turn the (.+?)\."]
+turn                    = [r"You turned " + __three_possible_mob_strings + r" for (.+?) damage\."]
+turn_fail               = [r"You failed to turn " + __three_possible_mob_strings + r"\."]
 turn_living_target      = [r"You may only turn the unliving."]
 turn_whom               = [r"Turn whom\?"]
-slow = [r"Your touch slows down the (.+?)\."]
-slow_fail = [r"You failed to slow the (.+?)\."]
+slow = [r"Your touch slows down " + __three_possible_mob_strings + r"\."]
+slow_fail = [r"You failed to slow " + __three_possible_mob_strings + r"\."]
 slow_whom = [r"Slow whom\?"]
-touch                   = [r"You touched the (.+?) for (.+?) damage\."]
-touch_fail              = [r"You failed to harm the (.+?)\."]
+touch                   = [r"You touched " + __three_possible_mob_strings + r" for (.+?) damage\."]
+touch_fail              = [r"You failed to harm " + __three_possible_mob_strings + r"\."]
 touch_whom              = [r"Touch whom\?"]
 wither                  = [r"You withered " + __three_possible_mob_strings  + r" for (?P<d>\d+) damage\."]
 #You withered Farmer Woldis for 64 damage.
 
-wither_fail             = [r"Your withering touch did not hurt " + __three_possible_mob_strings + r"\."]
+wither_fail             = [r"Your withering touch did not hurt " + __three_possible_mob_strings + "\."]
 wither_whom             = [r"Wither whom\?"]
 bash                    = [r"You bash " + __three_possible_mob_strings + ", confusing them\."]
 bash_fail               = [r"You failed to bash it\."]
@@ -277,7 +277,7 @@ circle                  = [r"You circle " + __three_possible_mob_strings + "\."]
 circle_fail             = [r"You failed to circle it\."]
 circle_whom             = [r"Circle whom\?"]
 
-backstab = [r"You backstab the (.+?)."]
+backstab = [r"You backstab " + __three_possible_mob_strings + r"."]
 backstab_fail = [r"You failed\."]
 backstab_error = [r"Backstab requires sharp or thrusting weapons.", r"You don't see that here.", r"You need to be hidden or undetected to backstab!"]
 
@@ -342,7 +342,7 @@ attack_hit = [
     "Your missile slams into (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\." + __mob_overwhelmed,
     "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\." + __mob_overwhelmed,
     "You use your .+? to strike (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\." + __mob_overwhelmed,
-    r"(?P<over>Your touch completely overwhelms the (.+?)!)"
+    r"(?P<over>Your touch completely overwhelms " + __three_possible_mob_strings + r"!)"
 ]
 attack_miss = [
     "Your blow did no damage.",
