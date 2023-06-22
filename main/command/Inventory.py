@@ -199,6 +199,7 @@ class Inventory(SimpleCommand, ReferencingList):
         
         # temporary items
         # 'small iron key',
+        'dwarven rum',
 
         # important potions
         'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',

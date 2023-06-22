@@ -168,6 +168,7 @@ class LosHelper(object):
             
             # we expect weapon to be an index of 1 through 5 corresponding to the weapon type in info
             self.set_preferred_weapon_proficiency(weapon_type_to_set)
+            self.character.process_info()
 
         
         if self.character._class.id != "Mon":
@@ -197,6 +198,9 @@ class LosHelper(object):
 
             self.character.weapon_proficiencies[profficiency] = preferred_proficiency_rank
             setattr(self.character.info, profficiency.lower(), preferred_proficiency_rank)
+            magentaprint("LosHelper: Set preferred weapon proficiency to " + profficiency, False)
+            magentaprint("LosHelper: Weapon proficiencies: " + str(self.character.weapon_proficiencies), False)
+            magentaprint("LosHelper: Info: " + str(self.character.info), False)
         except Exception as e:
             magentaprint("LosHelper: Invalid weapon proficiency: " + profficiency, False)
             return

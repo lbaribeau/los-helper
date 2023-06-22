@@ -26,6 +26,7 @@ Level 5 spells are not really in the game
 
 Wands/Items spell cast on use
 - white amulet/small flask/sticky salve == small heal
+- silver crucifix == bless
 - Adamantine rod/zinc/bronze == Burn
 - Silver Rod == Waterbolt
 - Metallic Rod == Steamblast
@@ -37,3 +38,4 @@ Wands/Items spell cast on use
 - Heathen Amulet == slow poison
 - Black Feather == ???
 - Gold Feather == fly
+- Magic Carpet == levitate

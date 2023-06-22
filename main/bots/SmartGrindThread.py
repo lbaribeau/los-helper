@@ -236,6 +236,11 @@ class SmartGrindThread(TrackGrindThread):
             if mob_target.name == "vicar" and self.character.AURA <= self.character.preferred_aura:
                 return False
 
+            if self.character._class.id == 'Mag' and \
+               mob_target.uses_black_magic and \
+               mob_target.level >= 10:
+                return False
+
             if (self.character.info.level < 14 or self.is_mob_weak(mob_target, 3)) and \
                  (mob_target.level is not None and mob_target.level != "" and mob_target.level < 12):
                 magentaprint("Mob is weak enough for us to fight", False)

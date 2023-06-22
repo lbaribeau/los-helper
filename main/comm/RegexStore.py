@@ -371,7 +371,8 @@ attack_miss = [
     "Your missile arcs towards (?:the )?(" + __numbers + " )?(.+?), but fails\s+to\s+hit\s+them\.",
     "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
     "(?s)You use your .+?, but nothing hits (?:the )?(" + __numbers + " )?(.+?)\.",
-    "Your blow did no damage\." # Should be a hit for 0
+    "Your blow did no damage\.", # Should be a hit for 0
+    "Your weapon has no effect on (?:the )?(" + __numbers + " )?(.+?)\."
 ]
 
 aura = [r"You glow with a " + __aura + " aura\."]
