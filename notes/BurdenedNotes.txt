@@ -1,0 +1,97 @@
+The following is an 8 combination puzzle of buttons that need to be pressed - they are red, yellow, green, blue and brown. The following combinations have been tried without success:
+
+Here are the clues that led to the above suggested clues - can you summarize the rules from the below and suggest a suitable combination that could result in the correct answer?
+
+The container on the back of the statue has five coloured stones in it, one red, one yellow, one green, another blue and the last brown. The surface of each is smeared as if touched many times. There is a slight charring at the edge of the container as if violent energies have been released in the past.
+
+Earthrot Chamber
+
+Algorn Hammerfist died here.
+'I tried to pass the burdened, this was my fate, no one told me that after the eighth press it could be fatal. Be sure you know what to do, ignorance might kill you as it has done me.'
+Hacked into the stone is a brief message. I feel certain there is at least two solutions. I have tested almost every combination there is... At least I proved that after the green I should then press blue, but which green. Oh my head!
+
+Dennan of the Marshes lies at rest here.
+'The disease can not be fought and the sores are truly virulent with the yellow stage preceding the green phase.'
+These words from my physician were the last I heard as I looked down at the green sores covering my body before keeling over dead.
+
+---
+
+Blood Red Chamber
+
+The plaque is badly stained red, but you can make a single phrase
+'be sure that brown precedes red else disaster will befall.'
+the phrase seems to have been all there has ever been on the plaque.
+
+The bench, though scarred and battered is still whole.
+The scarring, you realise is actually a few words scratched into its surface. The redness of the bench makes it hard to read but by tracing the markings with your fingers you can make out the words
+'green by green'
+A curious thing to record so difficultly
+
+----
+
+SoulBane Chamber
+
+The panel appears to have a small treatise printed on it.
+"The shadows follow the light which is expected as 'evil' appeared when 'good' needed contrast. Thus it is with the spells too, the aura spell has the red following the blue, something you always see in nature."
+The point of this is a little uncertain as it seems to be merely that of a viewpoint, one which could easily be reversed.
+
+In small angular runes at the base of the lamp you make out some words
+'Remember: Green before Yellow else you will be cooked.'
+The word 'cooked' has been etched deeper than the rest.
+
+---
+
+Blue Vein Chamber 
+
+The crystal appears to be hollow and a faint wisp of some gaseous substance can be seen floating around inside it. Occasionally the gas settles to the bottom of the crystal revealing a phrase etched there. Most times it doesn't quite manage to reveal the phrase properly until one time you see it quite clearly.
+'Green Follows Red'
+It has some purpose but it seems overly obscure.
+
+The parchment is frozen and the ice above it refracts the light making
+it very difficult to read but with a little perseverance you make out
+the following text ....
+
+The combination is dangerous to anyone who fails to get it correct so
+you must always take care. When learning it some forget the mnemonics
+and the part they always get wrong appears to be related to the fact
+that the first occurs but once, the last twice. Why this should be I
+have no idea but if the fools keep forgetting it, then they will fry
+themselves. Make sure you don't do the same.
+
+***********************
+
+Interpretation of the rules:
+
+- Algorn rule - red then immediately blue or green
+- Dennan rule - yellow appears immediately before a green
+- Small treatise rule - blue before red or red before blue but either after the other
+- Crystal rule - green after red
+- Red plaque rule - brown before red
+- Red Bench rule - green by green
+- Angular rune: green before any yellow
+- Parchment rule: the first button is pressed only once, last pressed is only pressed twice
+
+***********************
+
+Combinbations tried and failed:
+Brown - Red - Blue - Green - Red - Green - Yellow - Green
+Brown - Blue - Red - Green - Yellow - Red - Green - Green
+Brown - Red - Blue - Green - Green - Red - Green - Yellow
+Brown - Blue - Red - Green - Green - Yellow - Red - Green
+Brown - Red - Green - Yellow - Green - Blue - Red - Green
+
+** Potential **
+Brown - Red - Green - Yellow - Green - Green - Blue - Red <?>
+
+Algorn rule:
+- 8 button presses, green before blue
+Dennan rule:
+- Green appears after yellow
+Small treatise rule:
+- Red then blue
+Crystal rule:
+- Green after red. The combination has Green after Red, satisfying this rule.
+Red plaque rule: Brown should precede red, else disaster will befall. The combination has Brown before Red, satisfying this rule.
+Red Bench rule: "Green by green." The combination does not involve any consecutive Green presses, so it does not directly satisfy this rule.
+Angular rune: Green should come before Yellow, else you will be cooked. The combination has Green before Yellow, satisfying this rule.
+Parchment rule: The first button is pressed only once, and the last button is pressed twice. The combination has Brown pressed once and Red pressed twice, satisfying this rule.
