@@ -694,6 +694,7 @@ class TrackGrindThread(GrindThread):
 
         if track.requires_ready and (not self.character.is_ready_for_tough_fight() or not aura_acceptable):
             magentaprint("{0} isn't acceptable to us due to aura".format(track.name), False)
+            self.abandoned_last_track = False
             self.skipped_last_track = True
             return self.PATH_TO_SKIP_WITH[:]
 
@@ -701,6 +702,7 @@ class TrackGrindThread(GrindThread):
             if self.character.level in level_range:
                 return track.track[:]
             else:
+                self.abandoned_last_track = False
                 self.skipped_last_track = True
                 return self.PATH_TO_SKIP_WITH[:]
 
