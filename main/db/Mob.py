@@ -29,6 +29,7 @@ class Mob(NamedModel):
     flees = BooleanField(default=False) # flees from fights
     element = IntegerField(default=0) # tbd future column
     note = CharField(null=True)
+    resists_bind = BooleanField(default=False)
 
     '''Private Mob Functions'''
     def map(self):
@@ -44,7 +45,22 @@ class Mob(NamedModel):
             self.blocks_exit       = mob.blocks_exit
             self.level             = mob.level
             self.approximate_level = mob.approximate_level
-            self.aura = mob.aura
+            self.aura              = mob.aura
+            self.is_hostile        = mob.is_hostile
+            self.is_named          = mob.is_named
+            self.should_farm       = mob.should_farm
+            self.uses_black_magic  = mob.uses_black_magic
+            self.uses_white_magic  = mob.uses_white_magic
+            self.uses_grey_magic   = mob.uses_grey_magic
+            self.uses_ability      = mob.uses_ability
+            self.is_magical        = mob.is_magical
+            self.is_undead         = mob.is_undead
+            self.deflects_attacks  = mob.deflects_attacks
+            self.joins_in          = mob.joins_in
+            self.flees             = mob.flees
+            self.element           = mob.element
+            self.note              = mob.note
+            self.resists_bind      = mob.resists_bind
             # self.health = mob.health
             # self.approximate_health = mob.approximate_health
 

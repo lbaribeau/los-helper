@@ -471,8 +471,8 @@ class SmartCombat(CombatObject):
 
         if spell_percent < 50:
             spell = self.get_t1_spell(character, spell_percent)
-        # elif spell_percent > 74 and self.character.info.int > 20 and self.character.MANA > 60:
-        #     spell = self.get_t3_spell(character, spell_percent)
+        elif self.get_mob_level() > 10 and spell_percent > 74 and self.character.info.int > 20 and self.character.MANA > 60:
+            spell = self.get_t3_spell(character, spell_percent)
         else:
             spell = self.get_t2_spell(character, spell_percent)
 

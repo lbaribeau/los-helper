@@ -1,7 +1,8 @@
 elixir of morinva, cyan potion - invisibility
 orange potion - levitation
-smoky potion = blindness
-??? - silence
+smoky potion - blindness
+beige potion - you feel dizzy and cannot focus (no effect?) 
+thick liquid - silence
 dark chalice - fear
 milky potion, silver chalice - bless
 green potion, steel bottle - protection

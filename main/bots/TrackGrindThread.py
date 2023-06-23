@@ -325,7 +325,7 @@ class TrackGrindThread(GrindThread):
 
         #The following areas repeat a bit because the spawns are fast
         self.smart_knights_path = ['areaid1053', 'south',
-            'southeast', 'east', 'east', 'northeast', 'north', 'red tent', 'out', 's', 'w', 'w', 'w', 'e', 'e', 'e',
+            'southeast', 'east', 'east', 'northeast', 'north', 'red tent', 'out', 'w','w','w','e','e','e', 's', 'w', 'w', 'w', 'e', 'e', 'e',
             'sw', 'w', 'w', 'nw', 'n', 'n', 'ne', 'stands', 'stand', 'out', 'stand 2', 'out', #'stand 3', 'out' #Tario
             'e', 'se', 'w', 'w', 'w', 'e', 'e', 'e', 's', 'red tent']
         self.KNIGHTS = ["areaid2",
@@ -598,14 +598,14 @@ class TrackGrindThread(GrindThread):
             # Track("Eastern Farmers", self.ZOMBIES, 13, 16, 0, requires_ready=True),
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH, 0, 20, 9),
             Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 15, 0, has_cooldown=False),
-            Track("Miners", self.MINERS, 10, 15, 0, has_cooldown=False),
+            Track("Miners", self.MINERS, 10, 16, 0, has_cooldown=False),
             Track("Boris Ironfounder", self.BORIS_IRONFOUNDER, 15, 20, 0, requires_ready=True, target_kills=1),
             Track("Mill Workers", self.smart_mill_path, 7, 14, 0, has_cooldown=False),
             Track("Muggers", self.MUGGER_PATH, 9, 15, -1, has_cooldown=False),
             Track("Old Man James", self.OLD_MAN_JAMES, 9, 12, 0, target_kills=1),
             Track("Olmer", self.OLMER, 11, 14, -1),
             Track("Cheryn", self.CHERYN, 11, 20, -1, requires_ready=False, target_kills=1),
-            Track("Orcs", self.ORCS, 11, 14, -1),
+            Track("Orcs", self.ORCS, 11, 16, -1),
             Track("Artificers", self.ARTIFICERS, 11, 14, -1),
             Track("Haelyn", self.HAELYN, 16, 20, -1, requires_ready=True, target_kills=1), 
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
@@ -730,6 +730,7 @@ class TrackGrindThread(GrindThread):
            (character_aura > self.character.preferred_aura and track.track_aura == -1) or \
            (character_aura >= self.character.preferred_aura and track.track_aura == -2):
             magentaprint("{0} unacceptable due to aura".format(track.name), False)
+            self.abandoned_last_track = False
             self.skipped_last_track = True
             return self.PATH_TO_SKIP_WITH[:]
 
