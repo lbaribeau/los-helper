@@ -25,6 +25,7 @@ class Consume(threading.Event):
 
         self.inventory = self.use.inventory
         self.prefer_big = False
+        self.use_golden = False
         self.regex_cart = R.prompt # So we can wait() for prompt
         # self.prompt_flag = False
 
@@ -57,11 +58,14 @@ class Consume(threading.Event):
             'small restorative', 
             'white potion', 
             'small flask', 
-            'large restorative', 
-            'scarlet potion',
             'philtre of health',
+            'scarlet potion',
+            'large restorative', 
             'tree root'
         ] # 'golden potion' (leave that manual)
+
+        if self.use_golden:
+            pots.append('golden potion')
 
         if self.prefer_big:
             # I think self.prefer_big needs to be an argument to healing_potion()
@@ -222,9 +226,10 @@ class PotionThreadHandler(ThreadingMixin2):
         self.wait_until_ready()
         return self.consume.granite_potion()
 
-    def spam_pots(self, prefer_big=False):
+    def spam_pots(self, prefer_big=False, use_golden=False):
         self.stopping = False
         self.consume.prefer_big = prefer_big
+        self.consume.use_golden = use_golden
         if not self.thread or not self.thread.is_alive():
             # not is_alive() means it won't look at stopping anymore so we're good.
             self.thread = threading.Thread(target=self.run, args=())

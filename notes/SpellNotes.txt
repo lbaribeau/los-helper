@@ -21,6 +21,7 @@ Level 5 spells are not really in the game
 - Thomas Ironheart will trade the cure poison scroll for a silver flute
 - Bind can be received from the barbarian shaman in exchange for a hippogriff hind-claw or confusion for a rare coin (Boris Ironfounder)
 - Fly can be acquired in the barbarian camp via talon behind a locked hut door, the Spirit of the Hawk drops a cyan feather which can unlock that door
+- charcoal scroll - teaches fireball, found in Seven Claws room and dropped by the fire imp king
 - Resist-cold can be found in the werewolf cave in the hidden passage when pressing the face, then to the east of the cave pressing the cushion (fighting the guarding wolf and bronze golem)
 
 
@@ -30,6 +31,7 @@ Wands/Items spell cast on use
 - Adamantine rod/zinc/bronze == Burn
 - Silver Rod == Waterbolt
 - Metallic Rod == Steamblast
+- Red Rod == Fireball
 - Fiery Rod == Burstflame
 - Granite Rod == Crush
 - Grey rod == dustgust
@@ -39,3 +41,5 @@ Wands/Items spell cast on use
 - Black Feather == ???
 - Gold Feather == fly
 - Magic Carpet == levitate
+- Platinum Compass == detect magic
+- Glass Compass == track

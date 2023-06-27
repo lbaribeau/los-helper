@@ -206,6 +206,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'burnt ochre potion', 'chequered vial', 'misty potion',
         'orange potion', # levitate
         'golden potion', #'platinum crucifix', # Helps disease? Worth a lot of money?
+        # 'white potion', 'small restorative',
         'small flask', 'large restorative', 'scarlet potion',
         'silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
         # 'white sparkling drink',

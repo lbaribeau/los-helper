@@ -278,6 +278,13 @@ class CommandHandler(object):
         elif user_input == 'invdebug':
             # self.inventory.output_inventory()
             self.inventory.debug()
+        elif re.match('chain (.+?;.+?)', user_input):
+            # chain a series of commands together with a semicolon
+            M_obj = re.search('^chain (.+?;.+?)$', user_input)
+            commands = M_obj.group(1).split(';')
+            for command in commands:
+                self.process(command)
+
         elif re.match('^ki? |^kill?', user_input):
             self.kill.execute(arg1)
         elif user_input.startswith('kk '):
@@ -302,6 +309,8 @@ class CommandHandler(object):
             self.user_kkc(user_input.partition(' ')[2].strip())
         elif user_input.startswith('kks '):
             self.user_kk2(user_input.partition(' ')[2].strip(), stunlock=True)
+        elif user_input.startswith('kkn '):
+            self.user_kk2(user_input.partition(' ')[2].strip(), nervousmode=True)
         elif user_input.startswith('kk2 '):
             self.user_kk2(user_input.partition(' ')[2].strip())
         elif re.match('^(dro?|drop) ', user_input):
@@ -753,7 +762,7 @@ class CommandHandler(object):
             self.CastThread = CastThread(self.character, self.mudReaderHandler, self.telnetHandler, spell, target)
             self.CastThread.start()      
 
-    def user_kkc(self, argv, stunlock=False):
+    def user_kkc(self, argv, stunlock=False, nervousmode=False):
         theSplit = argv.split(" ")
         n = len(theSplit)
 
@@ -776,13 +785,13 @@ class CommandHandler(object):
             target = theSplit[1] + " " + " ".join(theSplit[2:])
 
         magentaprint("Command handler kkc with target " + target)
-        self.smartCombat.start_thread(target, spell, stunlock)
+        self.smartCombat.start_thread(target, spell, stunlock, nervousmode)
 
-    def user_kk2(self, argv, stunlock=False):
+    def user_kk2(self, argv, stunlock=False, nervousmode=False):
         # Usage: "kk2 target"
         # Uses smart combat with level 2 spell
         teh_split = argv.split(" ")
-        self.user_kkc(" ".join(teh_split), stunlock)
+        self.user_kkc(" ".join(teh_split), stunlock, nervousmode)
         if self.smartCombat.favourite_spell is comm.Spells.burn:
             teh_split.insert(0, comm.Spells.fireball)
         elif self.smartCombat.favourite_spell is comm.Spells.hurt:
@@ -791,11 +800,11 @@ class CommandHandler(object):
             teh_split.insert(0, comm.Spells.waterbolt)
         elif self.smartCombat.favourite_spell is comm.Spells.rumble:
             teh_split.insert(0, comm.Spells.crush)
-        self.user_kkc(" ".join(teh_split), stunlock)
+        self.user_kkc(" ".join(teh_split), stunlock, nervousmode)
 
-    def user_kk3(self, argv, stunlock=False):
+    def user_kk3(self, argv, stunlock=False, nervousmode=False):
         teh_split = argv.split(" ")
-        self.user_kkc(" ".join(teh_split), stunlock)
+        self.user_kkc(" ".join(teh_split), stunlock, nervousmode)
         if self.smartCombat.favourite_spell is comm.Spells.burn:
             teh_split.insert(0, comm.Spells.burstflame)
         elif self.smartCombat.favourite_spell is comm.Spells.hurt:
@@ -804,7 +813,7 @@ class CommandHandler(object):
             teh_split.insert(0, comm.Spells.waterbolt)
         elif self.smartCombat.favourite_spell is comm.Spells.rumble:
             teh_split.insert(0, comm.Spells.crush)
-        self.user_kkc(" ".join(teh_split), stunlock)
+        self.user_kkc(" ".join(teh_split), stunlock, nervousmode)
 
     def user_sc(self):
         self.cast.stop()

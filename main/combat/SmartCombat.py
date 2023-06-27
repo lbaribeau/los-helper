@@ -31,6 +31,7 @@ class SmartCombat(CombatObject):
     activated = False
     used_ability = False
     stun_lock_mode = False
+    nervous_mode = False # mode for liberally using potions
 
     def __init__(self, kill, cast, potion_thread_handler, wield, telnetHandler, character, weapon_bot):
         super().__init__(telnetHandler)
@@ -122,9 +123,7 @@ class SmartCombat(CombatObject):
         super().notify(regex, match)
         if regex in R.prompt:
             if self.activated:
-                if self.should_use_heal_ability():
-                    self.heal_abilities[0].execute()
-                elif self.needs_heal():
+                if self.needs_heal():
                     # if self.weapon_bot.broken_weapon or not self.character.inventory.has_restorative():
                     if not hasattr(self.weapon_bot, 'weapon') or not self.character.inventory.has_restorative():
                         self.fleeing = True  # TODO: Do pots interfere with the flee timer?  (Should I use a pot?)
@@ -132,6 +131,14 @@ class SmartCombat(CombatObject):
                     
                     # if we used a granite pot then this will be false
                     if self.activated:
+                        self.spam_pots()
+                elif self.should_top_up_health():
+                    # magentaprint("Should top up health", False)
+                    if self.should_use_heal_ability():
+                        # magentaprint("Using heal ability", False)
+                        self.heal_abilities[0].execute()
+                    elif self.nervous_mode:
+                        # magentaprint("Nervous mode using pots", False)
                         self.spam_pots()
                 else:
                     self.stop_pots_if_started_by_smart_combat()
@@ -180,10 +187,12 @@ class SmartCombat(CombatObject):
 
     def should_use_heal_ability(self):
         should_use = len(self.heal_abilities) > 0 and \
-            self.heal_ability_is_up and \
-            self.character.HEALTH <= self.character.maxHP - 0.9*self.heal_abilities[0].max_amount
+            self.heal_ability_is_up
 
         return should_use
+
+    def should_top_up_health(self):
+        return self.character.HEALTH <= (self.character.maxHP - 15)
 
     def needs_big_heal(self):
         return self.potion_threshold() - self.character.HEALTH > 6
@@ -210,6 +219,8 @@ class SmartCombat(CombatObject):
     def potion_threshold(self):
         if self.character.mobs.damage:
             return 1.3*max(self.character.mobs.damage)
+        elif self.mob_target_uses_black_magic:
+            return 0.50 * self.character.maxHP
         else:
             return 0.20 * self.character.maxHP
 
@@ -225,9 +236,10 @@ class SmartCombat(CombatObject):
         self.set_target(target)
         super().keep_going()
 
-    def start_thread(self, target, spell=None, stun_lock_mode=False):
+    def start_thread(self, target, spell=None, stun_lock_mode=False, nervousmode=False):
         # Doesn't ThreadingMixin do this?
         self.stun_lock_mode = stun_lock_mode
+        self.nervous_mode = nervousmode
         self.set_target(target)
         self.spell = spell if spell else self.favourite_spell
         magentaprint("SmartCombat spell set to " + str(self.spell))
@@ -272,6 +284,7 @@ class SmartCombat(CombatObject):
         self.fleeing     = False
         self.error       = False
         self.used_ability = False
+        self.nervous_mode = False
 
         self.casts = 0
         self.attacks = 0
@@ -471,8 +484,8 @@ class SmartCombat(CombatObject):
 
         if spell_percent < 50:
             spell = self.get_t1_spell(character, spell_percent)
-        elif self.get_mob_level() > 10 and spell_percent > 74 and self.character.info.int > 20 and self.character.MANA > 60:
-            spell = self.get_t3_spell(character, spell_percent)
+        # elif self.get_mob_level() > 12 and spell_percent > 74 and self.character.info.int > 20 and self.character.MANA > 60:
+        #     spell = self.get_t3_spell(character, spell_percent)
         else:
             spell = self.get_t2_spell(character, spell_percent)
 
@@ -925,9 +938,9 @@ class SmartCombat(CombatObject):
     def spam_pots(self):
         self.set_pot_thread = True
         if self.needs_big_heal():
-            self.potion_thread_handler.spam_pots(prefer_big=True)
+            self.potion_thread_handler.spam_pots(prefer_big=True, use_golden=self.nervous_mode)
         else:
-            self.potion_thread_handler.spam_pots()
+            self.potion_thread_handler.spam_pots(use_golden=self.nervous_mode)
 
     def stop_pots_if_started_by_smart_combat(self):
         if self.set_pot_thread:

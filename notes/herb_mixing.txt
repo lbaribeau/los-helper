@@ -23,6 +23,8 @@ berry + aleanas = paste item (3hp)
 berry + fungal hand = paste item (2hp)
 berry + yellow = paste item (1hp)
 
+leaf + mould = cream = causes harm / 5dmg
+leaf + berry = cream = causes harm / 2dmg
 leaf + aleanas = cream = will cause harm
 leaf + blackened fungus = cream = will cause harm
 leaf + fungal hand = cream = will cause harm

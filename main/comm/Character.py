@@ -201,7 +201,7 @@ class Character(object):
         self.weapon_type = key_with_max_val(self.weapon_proficiencies)
         self.weapon_proficiency = self.weapon_proficiencies[self.weapon_type]
 
-        if self._class.id == 'Mag':
+        if self._class.id == 'Mag' and self.weapon_type != 'Pole':
             self.weapon_proficiency = 39 # max it out so that we don't go for t2 weapons on mage
             self.weapon_level = 1
         else:

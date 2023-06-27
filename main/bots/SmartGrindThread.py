@@ -228,12 +228,12 @@ class SmartGrindThread(TrackGrindThread):
 
             return directions
 
-    def is_mob_is_too_tough_for_caster(self, mob_target):
+    def is_mob_too_tough_for_caster(self, mob_target):
         return self.character._class.id == 'Mag' and \
                (mob_target.uses_black_magic or mob_target.resists_bind) and \
                mob_target.level >= 10
 
-    def is_mob_tough_for_phys(self, mob_target):
+    def is_mob_too_tough_for_phys(self, mob_target):
         return self.character._class.id != 'Mag' and mob_target.deflects_attacks
 
     def should_kill_mob(self, mob):
@@ -244,10 +244,10 @@ class SmartGrindThread(TrackGrindThread):
             if mob_target.name == "vicar" and self.character.AURA <= self.character.preferred_aura:
                 return False
 
-            if self.is_mob_is_too_tough_for_caster(mob_target):
+            if self.is_mob_too_tough_for_caster(mob_target):
                 return False
 
-            if self.is_mob_tough_for_phys(mob_target):
+            if self.is_mob_too_tough_for_phys(mob_target):
                 return False
 
             if (self.character.info.level < 14 or self.is_mob_weak(mob_target, 3)) and \

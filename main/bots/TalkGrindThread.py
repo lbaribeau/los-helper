@@ -18,10 +18,10 @@ class TalkGrindThread(BotThread):
             self.talking = False
             self.current_topics = []
             self.target_mobs = [
-                  # "Dr'Tel's Ghost",
+                  "Dr'Tel's Ghost",
                   # "Gerdevarashimora",
-                  # "Farside",
-                  # "Dwar",
+                  "Farside",
+                  "Dwar",
                   "Maco Bail", # Behind locked door
                   "Mayor Demlin",
                   "Commander Rilmenson",
@@ -33,13 +33,13 @@ class TalkGrindThread(BotThread):
                   "Farmer McDermott",
                   "Farmer Grangers Ghost",
                   # # "Druid Tutor", #buggy
-                  # "Bertram Dalrum",
-                  # "Dame Brethil",
-                  # "Douvan", "Queen Dalla", 
-                  # "Jerrek", "Tag", "Rag",
-                  # "Thomas Ironheart",
-                  # "Olarma",
-                  # "Master of Ceremonies", 
+                  "Bertram Dalrum",
+                  "Dame Brethil",
+                  "Douvan", "Queen Dalla", 
+                  "Jerrek", "Tag", "Rag",
+                  "Thomas Ironheart",
+                  "Olarma",
+                  "Master of Ceremonies", 
                   "Boris Ironfounder", "Tendrurn",
                   "Brotain","Rimark",
                   "Aldo","Horbuk",
@@ -98,7 +98,8 @@ class TalkGrindThread(BotThread):
                   "Pansy",
                   "Kelluran",
                   "Ordaran the White",
-                  "Corellan"
+                  "Corellan",
+                  # "Picharos Silvermane",
             ]
 
             self.index = 0
@@ -124,6 +125,8 @@ class TalkGrindThread(BotThread):
                   "barter",
                   "rumour",
                   "gossip",
+                  "mix",
+                  "brew",
                   # "haggle",
                   "buy",
                   "sell",
@@ -157,6 +160,7 @@ class TalkGrindThread(BotThread):
                   "jaguar",
                   "frog",
                   "sprite",
+                  "scarecrow",
                   # things
                   "item",
                   "glade",
@@ -217,6 +221,13 @@ class TalkGrindThread(BotThread):
                   "eye",
                   "amulet",
                   "medallion",
+                  "snuff",
+                  "mushroom",
+                  "fungal",
+                  "fungus",
+                  "king",
+                  "statue",
+                  "moth",
                   # spells
                   "blind",
                   "clairvoyance",
@@ -243,6 +254,7 @@ class TalkGrindThread(BotThread):
                   "breathe-water",
                   "breathe",
                   # places
+                  "cloud",
                   "mine",
                   "cave",
                   "deep",
@@ -341,11 +353,18 @@ class TalkGrindThread(BotThread):
                   "flametongue",
                   "thad",
                   "thadden",
+                  "destroyer",
                   "arrum",
                   "giantstone",
                   "hrootim",
                   "starfire",
                   "blackstar",
+                  "eilya", # dark knight
+                  "mort", # dark knight
+                  "vaun", # dark knight
+                  "kervack", # dark knight
+                  "aldoram", # paladin turned dark knight
+                  "jagg", # greatest fighter in all the land
             ]
 
       def get_path_to_target_mob(self, mob):
