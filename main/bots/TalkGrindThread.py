@@ -11,7 +11,7 @@ from db.Mob import *
 # bot that finds named mobs and talks to them
 class TalkGrindThread(BotThread):
       def __init__(self, character=None, command_handler=None, mud_reader_handler=None,
-            mud_map=None):
+            mud_map=None, target=None):
             super().__init__(character, command_handler, mud_reader_handler, mud_map)
 
             # self.travel_bot = TravelBot(self.char, self.command_handler, mud_map)
@@ -113,6 +113,9 @@ class TalkGrindThread(BotThread):
                   # "Picharos Silvermane",
             ]
 
+            if target is not None:
+                  self.target_mobs = [target]
+
             self.index = 0
 
             self.talk_topics = [
@@ -138,6 +141,27 @@ class TalkGrindThread(BotThread):
                   "gossip",
                   "mix",
                   "brew",
+                  # leveling
+                  "train",
+                  "level",
+                  "one",
+                  "two",
+                  "three",
+                  "four",
+                  "five",
+                  "six",
+                  "seven",
+                  "eight",
+                  "nine",
+                  "ten",
+                  "eleven",
+                  "twelve",
+                  "thirteen",
+                  "fourteen",
+                  "fifteen",
+                  "sixteen",
+                  "seventeen",
+                  "eighteen",
                   # "haggle",
                   "buy",
                   "sell",

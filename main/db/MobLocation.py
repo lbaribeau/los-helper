@@ -41,7 +41,7 @@ class MobLocation(BaseModel):
     '''Static Mob Functions'''
     def is_mob_in_area(mob_id, area_id):
         try:
-            mob_locations = MobLocation.select().where((MobLocation.area == area_id) & (MobLocation.mob == mob_id)).get()
+            mob_locations = MobLocation.select().where((MobLocation.area == area_id) & (MobLocation.mob == mob_id)).order_by(MobLocation.sightings.desc()).get()
         except MobLocation.DoesNotExist:
             mob_locations = None
         return mob_locations
@@ -50,7 +50,7 @@ class MobLocation(BaseModel):
         mob_locations = []
         mob_name = "*" + mob_name_part + "*"
         try:
-            mob_locations = MobLocation.select().join(Mob).where(Mob.name % mob_name).order_by(Mob.id.desc())
+            mob_locations = MobLocation.select().join(Mob).where(Mob.name % mob_name).order_by(MobLocation.sightings.desc())
         except MobLocation.DoesNotExist:
             mob_locations = []
         return mob_locations
@@ -58,7 +58,7 @@ class MobLocation(BaseModel):
     def get_locations_by_exact_mob_name(mob_name):
         mob_locations = []
         try:
-            mob_locations = MobLocation.select().join(Mob).where(Mob.name == mob_name).order_by(Mob.id.desc())
+            mob_locations = MobLocation.select().join(Mob).where(Mob.name == mob_name).order_by(MobLocation.sightings.desc())
         except MobLocation.DoesNotExist:
             mob_locations = []
         return mob_locations
@@ -66,7 +66,7 @@ class MobLocation(BaseModel):
     def get_locations_by_mob_id(id):
         mob_locations = []
         try:
-            mob_locations = MobLocation.select().join(Mob).where(Mob.id == id).order_by(Mob.id.desc())
+            mob_locations = MobLocation.select().join(Mob).where(Mob.id == id).order_by(MobLocation.sightings.desc())
         except MobLocation.DoesNotExist:
             mob_locations = []
         return mob_locations
