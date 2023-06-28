@@ -1,13 +1,13 @@
 Aerp,14, assassin dwarf 16 16 3 16 3
 Berp,12, bard elf 15 7 2 16 14
-Cerp,14, cleric (3 12 3 18 18)
+Cerp,15, cleric (3 12 3 18 18)
 Derp,18, monk (lvl 14, masters habit)
 Drerp,18, barbarian
 Dwarp,1, thief (swamp troll)
 Eerp,17, fighter dwarf 15 16 3 16 4
 Ferp,13, fighter 18 3 4 18 11
 Flerp,2, anti-paladin, half-orc
-Gerp mage (w/ blis + show)
+Gerp,15,mage,elf,12,3,3,18,18
 Herp,14, Thief dwarf 16 16 3 16 3
 Ierp,5, thief dwarf lvl 6
 Jerp,1, Alchemist 10 10 9 13 13
@@ -16,7 +16,7 @@ Lerp,11, alc dwarf 15 16 3 16 4
 Merp thief (swamp troll)
 Nerp,13, druid dwarf 16 16 3 16 3
 Oerp,7, dark knight dwarf 14 15 10 7 8 (15 15 10 7 7)
-Perp,12, ranger elf (16 14 2 8 14)
+Perp,15, ranger elf (16 14 2 8 14)
 Qerp,10, mage (lvl 10)
 Rerp,7, cleric, gnome
 Serp,14, Alchemist
@@ -25,5 +25,5 @@ Trerp,13, druid elf lvl 9 3 12 3 18 18
 Terp,9, thief 18 3 4 18 11 (bad dex)
 Uerp,1, druid 10 8 12 12 12
 Werp,17, monk (lvl 17, no habit)
-Xerp,16, fighter 15 14 3 6 16
+Xerp,18, fighter 15 14 3 6 16
 Yerp,14, monk 18 3 4 18 11 (bad dex)

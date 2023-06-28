@@ -35,7 +35,7 @@ class MobMessage(BaseModel):
         mobMessages = []
 
         try:
-            for mobMessage in MobMessage.raw("SELECT * FROM mobmessage WHERE mob_id = " + str(mob.id)):
+            for mobMessage in MobMessage.raw("SELECT id, mob_id, lower(keyword) keyword, message FROM mobmessage WHERE mob_id = " + str(mob.id)):
                 mobMessages.append(mobMessage)
         except MobMessage.DoesNotExist:
             mobMessages = []

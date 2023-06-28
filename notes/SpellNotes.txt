@@ -43,3 +43,5 @@ Wands/Items spell cast on use
 - Magic Carpet == levitate
 - Platinum Compass == detect magic
 - Glass Compass == track
+- hollow reed == ??? (Thomas Ironheart trade for hippogriff egg)
+- shadowy glass == ??? (dropped by the McDermott shade)

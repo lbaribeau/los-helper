@@ -18,87 +18,98 @@ class TalkGrindThread(BotThread):
             self.talking = False
             self.current_topics = []
             self.target_mobs = [
-                  "Dr'Tel's Ghost",
-                  # "Gerdevarashimora",
-                  "Farside",
-                  "Dwar",
-                  "Maco Bail", # Behind locked door
-                  "Mayor Demlin",
-                  "Commander Rilmenson",
-                  "Madame Zara",
-                  "Ringmaster",
-                  "Farmer Malbon",
-                  "Priestly Ghost",
-                  "Farmer Calmor",
-                  "Farmer McDermott",
-                  "Farmer Grangers Ghost",
-                  # # "Druid Tutor", #buggy
-                  "Bertram Dalrum",
-                  "Dame Brethil",
-                  "Douvan", "Queen Dalla", 
-                  "Jerrek", "Tag", "Rag",
-                  "Thomas Ironheart",
-                  "Olarma",
-                  "Master of Ceremonies", 
-                  "Boris Ironfounder", "Tendrurn",
-                  "Brotain","Rimark",
-                  "Aldo","Horbuk",
-                  # "Volman the Inhumer",
-                  # "The Master Artificer",
+                  # # # "Dr'Tel's Ghost",
+                  # # # "Gerdevarashimora",
+                  # "Farside",
+                  # "Dwar",
+                  # # "Mayor Demlin",
+                  # "Commander Rilmenson",
+                  # # "Madame Zara",
+                  # # "Ringmaster",
+                  # "Farmer Grangers Ghost",
+                  # "Farmer Malbon",
+                  # "Priestly Ghost",
+                  # "Farmer Calmor",
+                  # "Farmer McDermott",
+                  # # # "Druid Tutor", #buggy
+                  # "Bertram Dalrum",
+                  # "Dame Brethil",
+                  # # "Douvan", "Queen Dalla", 
+                  # # "Jerrek", "Tag", "Rag",
+                  # "Thomas Ironheart",
+                  # "Olarma",
+                  # # "Master of Ceremonies", 
+                  # "Boris Ironfounder",
+                  # "Tendrurn",
+                  # "Brotain",
+                  "Rimark",
+                  # "Aldo",
+                  # "Horbuk",
+                  # # "Volman the Inhumer",
+                  # # "The Master Artificer",
                   # "Kin'Tal",
                   # "The Archbishop",
-                  "Tardan",
-                  # "Trantas", #hardcore arena NPC
-                  "Gregor",
-                  "Farmer Viladin",
-                  "Cal the Hermit",
-                  "Rancher Renstone",
-                  "Rancher Plover",
-                  "Annette Plover",
-                  #"White Mage",
-                  # "The Barding Lord",
-                  # "Knight Errant",
-                  "Lord Tamaran", "Tario", "Lady Denlise", 
-                  "Vickie",
-                  "Matriarch Sara",
-                  "Lord Arduis","Lady Arielle","Lady Jenlira", 
-                  "Corien", "Lyron the Elder","Shaldena the Red","Garbo the Hobbit","Whiteblade the Barbarian",
-                  # "Great Druid",
+                  # "Tardan",
+                  # # "Trantas", #hardcore arena NPC
+                  # "Gregor",
+                  # "Farmer Viladin",
+                  # "Cal the Hermit",
+                  # "Rancher Renstone",
+                  # "Rancher Plover",
+                  # "Annette Plover",
+                  # #"White Mage",
+                  # # "The Barding Lord",
+                  # # "Knight Errant",
+                  # "Lord Tamaran", "Tario", "Lady Denlise", 
+                  # "Vickie",
+                  # "Matriarch Sara",
+                  # "Lord Arduis",
+                  # "Bhezkam",
+                  # "Lady Jenlira", 
+                  # "Lady Arielle",
+                  # "Corien",
+                  # "Lyron the Elder","Shaldena the Red","Garbo the Hobbit","Whiteblade the Barbarian",
+                  # # "Great Druid",
                   # "Teamleader Egan",
                   # "Trent the Merchant",
-                  "Grand Master Yang-Shi",
-                  # # "Sensei",
-                  "Dojo Administrator",
-                  "Al'Sik the Carver",
-                  "Zi'Cab the Chieftan",
-                  "Vas'Polu the HawkMaster","Byr'Ula the Smith","Ha'Chans the Shaman",
-                  "Th'kit the HorseMaster",
+                  # "Grand Master Yang-Shi",
+                  # # # "Sensei",
+                  # "Dojo Administrator",
+                  # "Al'Sik the Carver",
+                  # "Zi'Cab the Chieftan",
+                  # "Vas'Polu the HawkMaster","Byr'Ula the Smith","Ha'Chans the Shaman",
+                  # "Th'kit the HorseMaster",
+                  # "Druid Galm",
                   # "Forest Master",
                   # "Broad Leaf", "Red Crown",
-                  "Esrhae",
-                  "Haelyn",
-                  "Caethrodyn",
-                  "Robar Greybeard",
+                  # "Esrhae",
+                  # "Haelyn",
+                  # "Caethrodyn",
+                  # "Robar Greybeard",
                   # "Greenbough the Dryad",
                   # "Deep Root",
                   # "Oakheart",
                   # "Winter's Watcher",
                   # "Agguedian's Simulcrum",
+                  # # "rough-hewn golem",
                   # "barbarian shaman",
-                  # "Cheryn",
+                  # # "Cheryn",
+                  # "Maco Bail", # Behind locked door
                   "Manic Soothsayer",
                   "Elder Barthrodue",
                   "Goourd",
-                  # "GuildMaster Cuvelas",
+                  "Old Man James",
+                  # 'Haram',
+                  # # "GuildMaster Cuvelas",
                   "Chiaru Maradiu",
-                  "Thereze",
-                  "Qimoth",
-                  "Joffi the Mystic",
-                  "Gorban",
-                  "Pansy",
-                  "Kelluran",
-                  "Ordaran the White",
-                  "Corellan",
+                  # # "Thereze",
+                  # # "Qimoth",
+                  # # "Joffi the Mystic",
+                  # # "Gorban",
+                  # # "Pansy",
+                  # # "Kelluran",
+                  # # "Ordaran the White",
+                  # "Corellan",
                   # "Picharos Silvermane",
             ]
 
@@ -160,8 +171,11 @@ class TalkGrindThread(BotThread):
                   "jaguar",
                   "frog",
                   "sprite",
+                  "aqueous",
                   "scarecrow",
+                  "skeletal",
                   # things
+                  "secret",
                   "item",
                   "glade",
                   "portal",
@@ -228,6 +242,9 @@ class TalkGrindThread(BotThread):
                   "king",
                   "statue",
                   "moth",
+                  "jade",
+                  "raw",
+                  "block",
                   # spells
                   "blind",
                   "clairvoyance",
@@ -291,6 +308,7 @@ class TalkGrindThread(BotThread):
                   "ahinma",
                   "ulwyne",
                   "blood",
+                  "rock",
                   "ranch",
                   "monolith",
                   "shrine",
@@ -302,6 +320,10 @@ class TalkGrindThread(BotThread):
                   "desert",
                   "grove",
                   "echuske",
+                  "green",
+                  "mound",
+                  "lake",
+                  "fleet",
                   #races
                   "dwarf",
                   "elf",
@@ -348,7 +370,7 @@ class TalkGrindThread(BotThread):
                   "granite",
                   "warder",
                   "mora",
-                  "di'Chao",
+                  "chao",
                   "tipshy",
                   "flametongue",
                   "thad",
@@ -359,12 +381,15 @@ class TalkGrindThread(BotThread):
                   "hrootim",
                   "starfire",
                   "blackstar",
+                  "sage",
                   "eilya", # dark knight
                   "mort", # dark knight
                   "vaun", # dark knight
                   "kervack", # dark knight
                   "aldoram", # paladin turned dark knight
                   "jagg", # greatest fighter in all the land
+                  "daray", # "She is powerful and knows many secrets,many dark things. I consider that special
+                  "fisherman",
             ]
 
       def get_path_to_target_mob(self, mob):
@@ -393,6 +418,9 @@ class TalkGrindThread(BotThread):
             self.command_handler.process(talk_command)
 
       def decide_where_to_go(self):
+            if self.stopping:
+                  self.stop()
+                  return []
             # for mob in self.target_mobs:
             if self.index >= len(self.target_mobs):
                   self.stop()
@@ -409,17 +437,10 @@ class TalkGrindThread(BotThread):
 
                   mobMessages = MobMessage.get_all_messages_by_mob(mob)
 
-                  self.current_topics = []
-                  for topic in self.talk_topics:
-                        foundKeyword = False
-                        for mobMessage in mobMessages:
-                              if mobMessage.keyword == topic:
-                                    foundKeyword = True
-                                    break
-                        if not foundKeyword:
-                              self.current_topics.append(topic)
+                  self.smart_get_topics(mobMessages)
 
                   magentaprint("Found talking points: {} for {}".format(len(self.current_topics), self.target_mob), False)
+                  magentaprint("Topics: {}".format(self.current_topics), False)
                   if len(self.current_topics) == 0:
                         magentaprint("No talking points found, skipping: {}".format(self.target_mob), False)
                         self.index += 1
@@ -440,16 +461,86 @@ class TalkGrindThread(BotThread):
                         self.talking = True
                         return path
             else:
-                  magentaprint("Talking to mob: {}".format(self.target_mob), False)
-                  # talk to the mob about all the topics in our list
-                  for topic in self.current_topics:                        
-                        self.talk_to_mob(self.target_mob, topic)
-                        time.sleep(0.5)
-                  self.talking = False
-                  self.index += 1  
+                  # is the mob in the area?
+                  foundMob = False
+                  for mob in [str(m) for m in self.character.mobs.list]:
+                        if self.target_mob == mob:
+                              foundMob = True
+                              break
+                  if foundMob:
+                        magentaprint("Talking to mob: {}".format(self.target_mob), False)
+                        # talk to the mob about all the topics in our list
+                        while len(self.current_topics) > 0:
+                              for topic in self.current_topics:                        
+                                    self.talk_to_mob(self.target_mob, topic)
+                                    time.sleep(0.5)
+                              mob = Mob.get_mob_by_name(self.target_mob)
+                              mobMessages = MobMessage.get_all_messages_by_mob(mob)
+                              self.smart_get_topics(mobMessages, use_area=True)
+                        self.talking = False
+                        self.index += 1
+                  else:
+                        self.talking = False
+                        self.index += 1
+                        magentaprint("Mob not found, skipping: {}".format(self.target_mob), False)
             
             return []
-      
+
+      def get_topics(self, mobMessages):
+            self.current_topics = []
+            for topic in self.talk_topics:
+                  foundKeyword = False
+                  for mobMessage in mobMessages:
+                        if mobMessage.keyword.lower() == topic.lower():
+                              foundKeyword = True
+                              break
+                  if not foundKeyword:
+                        self.current_topics.append(topic)
+
+      def get_topics_from_string(self, content, strip_s=False):
+            messages = re.sub(r'[!\.\?,\'\"]',' ',content)
+
+            temp_topics = []
+            for word in messages.split(' '):
+                  if len(word) > 3 and word not in temp_topics:
+                        if strip_s:
+                              word = re.sub(r's$','',word)
+                        temp_topics.append(word.lower())
+            return temp_topics
+
+      def smart_get_topics(self, mobMessages, use_area=False):
+            messages = ""
+            self.current_topics = []
+            for mobMessage in mobMessages:
+                  if mobMessage.message is not None:
+                        messages += " " + mobMessage.message
+            
+            # regex replace all punctuation in messages with spaces
+            # for each word greater than 3 letters in the messages list
+            # if the word is not in the current topics or mobMessage keywords then add it to current topcis
+            temp_topics = self.get_topics_from_string(messages)
+            
+            for talk_topic in self.talk_topics:
+                  if talk_topic.lower() not in temp_topics:
+                        temp_topics.append(talk_topic.lower())
+
+            if use_area:
+                  area = self.character.MUD_AREA.area
+                  area_topics = self.get_topics_from_string(area.description)
+
+                  for area_topic in area_topics:
+                        if area_topic.lower() not in temp_topics:
+                              temp_topics.append(area_topic.lower())
+
+            for temp_topic in temp_topics:
+                  foundKeyword = False
+                  for mobMessage in mobMessages:
+                        if mobMessage.keyword.lower() == temp_topic.lower():
+                              foundKeyword = True
+                              break
+                  if not foundKeyword:
+                        self.current_topics.append(temp_topic.lower())
+
       # do go hooks for talking to a mob
       def do_go_hooks(self, exit_str):
             # if we are going to talk to a mob then set the talking flag to true

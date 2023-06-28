@@ -497,7 +497,7 @@ class CommandHandler(object):
         elif re.match("bfdesc", user_input):
             area = self.character.MUD_AREA.area
             if area:
-                description = area.description.replace('.,?!', ' ')
+                description = re.sub(r'[!\.\?,\'\"]',' ',area.description)
                 words = description.split(' ')
                 unique_words = {}
                 for word in words:
@@ -505,6 +505,7 @@ class CommandHandler(object):
                     # remove punctuation from word
                     if len(word) < 4:
                         continue
+                    word = re.sub(r's$','',word.lower())
                     unique_words[word.lower()] = word.lower()
                 
                 for unique_word in unique_words:

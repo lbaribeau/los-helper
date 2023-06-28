@@ -170,7 +170,9 @@ class GrindThread(BotThread):
             # then have smart combat backstab
 
             self.pre_combat_actions(new_target)
-            if self.is_character_class('Thi') or self.is_character_class('Ass'):
+            mob_target = Mob.get_mob_by_name(new_target)
+            
+            if mob_target is not None and not mob_target.is_hostile and (self.is_character_class('Thi') or self.is_character_class('Ass')):
                 hide_attempt = 0
                 first = True
                 while not self.character.HIDDEN and hide_attempt < 2:
@@ -256,9 +258,9 @@ class GrindThread(BotThread):
             # away all the mana for characters with low piety, whose vigors will not do much,
             # and may just be one tick away from good health.
 
-        if self.character.MANA < mana_to_wait:
+        if self.character.MANA < mana_to_wait or self.character.MANA:
             self.rest_until_ready()
-        elif self.character.MANA < self.mana_to_go and self.character.NEEDS_MAGIC:
+        elif (self.character.MANA < self.mana_to_go or self.character.MANA) and self.character.NEEDS_MAGIC:
             # trigger any heal bots in the room
             self.command_handler.process("rest")
             self.wait_for_mana()
@@ -418,7 +420,7 @@ class GrindThread(BotThread):
 
     @property
     def one_is_too_low(self):
-        return self.character.HEALTH < self.health_to_go or self.character.MANA < self.mana_to_go
+        return self.character.HEALTH < self.health_to_go or self.character.MANA < self.mana_to_go or self.character.MANA < self.character.MANA_TO_ENGAGE
 
     def wait_for_mana(self):
         magentaprint("BotThread.wait_for_mana()")
