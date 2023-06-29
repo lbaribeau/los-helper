@@ -714,9 +714,10 @@ class TrackGrindThread(GrindThread):
         if not track.is_glamping and not self.abandoned_last_track and track.has_cooldown and seconds_since_last_run < 900:
             magentaprint("{0} isn't acceptable to us due to cooldown".format(track.name), False)
             return self.PATH_TO_SKIP_WITH[:]
-        elif track.is_glamping and self.abandoned_last_track:
-            magentaprint("{0} is a camping track so we won't re-run".format(track.name), False)
-            return self.PATH_TO_SKIP_WITH[:]
+        # aura correction here is maybe more valuable than short term efficiency - seeing a lot of bots dangling near their incorrect aura
+        # elif track.is_glamping and self.abandoned_last_track:
+        #     magentaprint("{0} is a camping track so we won't re-run".format(track.name), False)
+        #     return self.PATH_TO_SKIP_WITH[:]
         else:
             magentaprint("{0} is acceptable to us due to cooldown > {1} and has_cooldown {2}".format(track.name, seconds_since_last_run, track.has_cooldown), False)
 

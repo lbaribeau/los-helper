@@ -1,6 +1,3 @@
-Spell notes as per Twaek:
-- Immolate (lvl4 spell) is dropped by the mountain witch - this is the only found level 4 spell
-
 Level 5 spells are not really in the game
 
 - Blue scroll dropped by muggers teaches blister
@@ -23,6 +20,7 @@ Level 5 spells are not really in the game
 - Fly can be acquired in the barbarian camp via talon behind a locked hut door, the Spirit of the Hawk drops a cyan feather which can unlock that door
 - charcoal scroll - teaches fireball, found in Seven Claws room and dropped by the fire imp king
 - Resist-cold can be found in the werewolf cave in the hidden passage when pressing the face, then to the east of the cave pressing the cushion (fighting the guarding wolf and bronze golem)
+- Sigil of Fire - Immolate (lvl4 spell) is dropped by the Lich of Bloodrock
 
 
 Wands/Items spell cast on use

@@ -922,7 +922,9 @@ class CommandHandler(object):
     # start talk grind
     def start_talk_grind(self, user_input):
         M_obj = re.search("talkgrind (.+)", user_input)
-        target = M_obj.group(1)
+        target = None
+        if M_obj:
+            target = M_obj.group(1)
 
         if self.bot_check():
             self.botThread = TalkGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, target)
