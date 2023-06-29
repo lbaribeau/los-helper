@@ -434,6 +434,8 @@ class SmartCombat(CombatObject):
             self.mob_target_level = self.get_mob_level()
 
     def get_mob_level(self):
+        if self.mob_target is None:
+            return 99
         return self.mob_target.get_effective_level()
 
     def is_mob_weak(self, level_diff=5):
