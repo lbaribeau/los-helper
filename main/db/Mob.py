@@ -66,6 +66,17 @@ class Mob(NamedModel):
 
         return is_new_mapping
 
+    def get_effective_level(self):
+        mob_level = 99
+        if self is None or self.level is None or self.level == "":
+            return mob_level
+
+        mob_level = self.level
+        if self.difficulty_rating is not None and self.difficulty_rating != "":
+            mob_level += self.difficulty_rating
+        
+        return mob_level
+
     def to_string(self):
         #return 'ID: '+str(self.id) + ", " + str(self.name) + ", " + str(self.level) + ", " + str(self.aura)
         return 'ID: {0}\nName: {1}\nLevel: {2}\nAura: {3}\n'.format(self.id, self.name, self.level, self.aura)

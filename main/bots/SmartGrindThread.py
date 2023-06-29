@@ -230,8 +230,8 @@ class SmartGrindThread(TrackGrindThread):
 
     def is_mob_too_tough_for_caster(self, mob_target):
         return self.character._class.id == 'Mag' and \
-               (mob_target.uses_black_magic or mob_target.resists_bind) and \
-               mob_target.level >= 10
+               (mob_target.uses_black_magic or mob_target.resists_bind or mob_target.uses_grey_magic) and \
+               mob_target.get_effective_level() >= 10
 
     def is_mob_too_tough_for_phys(self, mob_target):
         return self.character._class.id != 'Mag' and mob_target.deflects_attacks
