@@ -204,6 +204,9 @@ class Character(object):
         if self._class.id == 'Mag' and self.weapon_type != 'Pole':
             self.weapon_proficiency = 39 # max it out so that we don't go for t2 weapons on mage
             self.weapon_level = 1
+        elif self._class.id == 'Mag' and self.weapon_type == 'Pole' and self.weapon_proficiency >= 60:
+            self.weapon_proficiency = 59
+            self.weapon_level = 2
         else:
             if self.weapon_proficiency >= 60:
                 self.weapon_level = 3
