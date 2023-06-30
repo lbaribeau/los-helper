@@ -241,6 +241,12 @@ class SmartCombat(CombatObject):
         self.stun_lock_mode = stun_lock_mode
         self.nervous_mode = nervousmode
         self.set_target(target)
+
+        for mob in [str(m) for m in self.character.mobs.list]:
+            if target in mob:
+                self.target_fullref = mob
+                break
+        
         self.spell = spell if spell else self.favourite_spell
         magentaprint("SmartCombat spell set to " + str(self.spell))
         self.set_pot_thread = False
@@ -319,6 +325,12 @@ class SmartCombat(CombatObject):
                 magentaprint("Mob is too weak for me to waste mana on", False)
                 self.black_magic = False
                 self.spell = None
+        elif self.target_fullref is not None:
+            self.mob_target = None
+            self.mob_target = Mob.get_mob_by_name(self.target_fullref)
+            self.set_mob_target_props()
+            use_combat_ability = self.should_use_combat_ability()
+            magentaprint("Use combat ability: " + str(use_combat_ability), False)
 
         self.kill.wait_until_ready()
 
@@ -391,7 +403,7 @@ class SmartCombat(CombatObject):
             return True
 
         if self.character._class.id == 'Fig' or self.character._class.id == 'Bar':
-            return True
+            return False # turn off circle and bash
 
         if self.mob_target is not None:
             if self.mob_target.level is not None:
@@ -412,7 +424,7 @@ class SmartCombat(CombatObject):
                 level = self.mob_target.level
                 if self.mob_target.difficulty_rating is not None and self.mob_target.difficulty_rating != "":
                     level += self.mob_target.difficulty_rating
-                if self.is_mob_weak() and level < 10:
+                if self.is_mob_weak() and self.is_phys_class() and level < 10:
                     return False
         return True
 
@@ -445,8 +457,11 @@ class SmartCombat(CombatObject):
 
         return mob_is_weak
 
+    def is_phys_class(self):
+        return self.character._class.is_phys()
+
     def is_caster_class(self):
-        return self.character._class.id == 'Mag' or self.character._class.id == 'Alc' # or \
+        return self.character._class.is_caster()# or \
             # self.character._class.id == 'Dru' or self.character._class.id == 'Cle'
         # or self.character._class.id == 'Cle'
 

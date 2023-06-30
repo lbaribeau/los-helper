@@ -30,21 +30,22 @@ class NoobGrindThread(TrackGrindThread):
         super().stop()
 
     def decide_where_to_go(self):
-      magentaprint("Deciding where to go", False)
-      magentaprint("Area ID: " + str(self.character.AREA_ID), False)
-      if (self.character.AREA_ID != 2524 and\
-         self.character.AREA_ID != 86) or\
-         self.track_runs > 10:
-        self.track_runs = 0
-        return self.reset[:]
+      if not self.stopping:
+        magentaprint("Deciding where to go", False)
+        magentaprint("Area ID: " + str(self.character.AREA_ID), False)
+        if (self.character.AREA_ID != 2524 and\
+          self.character.AREA_ID != 86) or\
+          self.track_runs > 10:
+          self.track_runs = 0
+          return self.reset[:]
 
-      if self.character.inventory.has('wooden key') and\
-         self.track_runs != 0:
+        if self.character.inventory.has('wooden key') and\
+          self.track_runs != 0:
+          self.track_runs += 1
+          return self.skellington_track[:]
+        
         self.track_runs += 1
-        return self.skellington_track[:]
-      
-      self.track_runs += 1
-      return self.setup_track[:]
+        return self.setup_track[:]
 
     def do_pre_go_actions(self):
       if self.character.inventory.has_broken("stout cudgel") or self.probably_repair:
@@ -101,3 +102,10 @@ class NoobGrindThread(TrackGrindThread):
 
     def update_aura(self):
       return True
+
+    # skip weapon and armour checks
+    def check_weapons(self):
+      return
+    
+    def check_armour(self):
+      return

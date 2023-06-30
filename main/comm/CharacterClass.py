@@ -158,6 +158,15 @@ class CharacterClass(object):
         # self.abilities = {a.command: a for a in self.abilities if level >= a.level}
         magentaprint("CharacterClass final abilities: " + str(self.abilities))
 
+    # characters that primarily rely on magic for their damage
+    def is_caster(self):
+        return self.id in ["Mag", "Alc"]
+
+    # characters that primarily rely on physical attacks for their damage and have innate weapon skill
+    # while dark knigth and paladin don't have innate weapon skill they get aura damage buffs
+    def is_phys(self):
+        return self.id in ["Mon", "Bar", "Dar", "Ran", "Fig", "Pal"]
+
     def __str__(self):
         return self.id
 

@@ -9,21 +9,23 @@ Ferp,13, fighter 18 3 4 18 11
 Flerp,2, anti-paladin, half-orc
 Gerp,15,mage,elf,12,3,3,18,18
 Herp,14, Thief dwarf 16 16 3 16 3
-Ierp,5, thief dwarf lvl 6
-Jerp,1, Alchemist 10 10 9 13 13
+Replace ~~Ierp,5, thief dwarf lvl 6
+Replace ~~Jerp,1, Alchemist 10 10 9 13 13
 Kerp,16, dark knight dwarf 16 16 3 16 3
-Lerp,11, alc dwarf 15 16 3 16 4
-Merp thief (swamp troll)
-Nerp,13, druid dwarf 16 16 3 16 3
-Oerp,7, dark knight dwarf 14 15 10 7 8 (15 15 10 7 7)
+Replace ~~Lerp,11, alc dwarf 15 16 3 16 4
+Merp,2, monk, elf (18 18 3 5 10)
+Nerp,14, druid dwarf 16 16 3 16 3
+Replace ~~Oerp,7, dark knight dwarf 14 15 10 7 8 (15 15 10 7 7)
 Perp,15, ranger elf (16 14 2 8 14)
 Qerp,10, mage (lvl 10)
-Rerp,7, cleric, gnome
+Replace ~~Rerp,7, cleric, gnome
 Serp,14, Alchemist
-Twerp,6, cleric, human
+Replace ~~Twerp,6, cleric, human
 Trerp,13, druid elf lvl 9 3 12 3 18 18
-Terp,9, thief 18 3 4 18 11 (bad dex)
-Uerp,1, druid 10 8 12 12 12
-Werp,17, monk (lvl 17, no habit)
+Replace ~~Terp,9, thief 18 3 4 18 11 (bad dex)
+Replace ~~Uerp,1, druid 10 8 12 12 12
+TBD Verp ???
+Werp,18, monk (lvl 17, no habit)
 Xerp,18, fighter 15 14 3 6 16
 Yerp,14, monk 18 3 4 18 11 (bad dex)
+TBD Zerp, 1, alc, dark-elf (12 3 3 18 18)

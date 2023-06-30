@@ -64,7 +64,7 @@ class TalkGrindThread(BotThread):
                   "Vickie",
                   # "Matriarch Sara",
                   # "Lord Arduis",
-                  # "Bhezkam",
+                  "Bhezkam",
                   # "Lady Jenlira", 
                   # "Lady Arielle",
                   "Corien",
@@ -272,6 +272,8 @@ class TalkGrindThread(BotThread):
                   "jade",
                   "raw",
                   "block",
+                  "stone",
+                  "ascoula", # stone that Jerrek is looking for
                   # spells
                   "blind",
                   "clairvoyance",
