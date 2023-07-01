@@ -420,6 +420,8 @@ class TalkGrindThread(BotThread):
                   "daray", # "She is powerful and knows many secrets,many dark things. I consider that special
                   "fisherman",
                   "helyana",
+                  "antitheus",
+                  "elnor",
             ]
 
       def get_path_to_target_mob(self, mob):
