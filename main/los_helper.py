@@ -196,10 +196,16 @@ class LosHelper(object):
             self.character.info.pole = 0
             self.character.info.missile = 0
 
+            if profficiency == "Pole" and self.character._class.id == "Mon":
+                # monks can't use t2 pole weapons so let's pretend our proficiency is 39
+                magentaprint("LosHelper: Monk can't use t2 pole weapons, setting preferred weapon proficiency to 39", False)
+                preferred_proficiency_rank = 39
+
             self.character.weapon_proficiencies[profficiency] = preferred_proficiency_rank
             setattr(self.character.info, profficiency.lower(), preferred_proficiency_rank)
             magentaprint("LosHelper: Set preferred weapon proficiency to " + profficiency, False)
             magentaprint("LosHelper: Weapon proficiencies: " + str(self.character.weapon_proficiencies), False)
+
             magentaprint("LosHelper: Info: " + str(self.character.info), False)
         except Exception as e:
             magentaprint("LosHelper: Invalid weapon proficiency: " + profficiency, False)

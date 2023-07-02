@@ -69,8 +69,9 @@ class TrackGrindThread(GrindThread):
         self.smart_kobold_path = ['areaid1165','glowing portal','mines',
             'down','n','n','n','n','ne','n','w','n','n','e','door','w','gully','up','boulder','up',
             'cave 3','ne','ne','n','s','up','e','se','cave','out','ladder','cave','out','sw','w',
-            'sw','se','nw','w','out','down','boulder','down','down','e','door','w','s','s','e','s','sw','s','s','s',
-            's','gully','glowing portal']
+            'sw','se','nw','w','out','down','boulder']
+            # ,'down','down','e','door','w','s','s','e','s','sw','s','s','s',
+            # 's','gully','glowing portal']
         self.KOBOLD_PATH = ["areaid2",
             'out','south','east','south','south','south','west','gate','south','southeast','southeast','east',
             'east','east','southeast','southeast','southeast','south','south','south','south','south','east',
