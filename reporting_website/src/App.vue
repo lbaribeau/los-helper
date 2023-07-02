@@ -16,6 +16,7 @@
       <div class="stat">Minutes To Level: {{minutesToLevel}}</div>
       <div class="stat">Hours To Level: {{hoursToLevel}}hrs</div>
       <div class="stat">Gold: {{info.gold}}</div>
+      <div class="stat">Gold Earned: {{goldEarned}}</div>
     </div>
     <div class="box">
       <strong>Recent State</strong>
@@ -220,6 +221,14 @@ return {
     // }
   },
   computed: {
+    goldEarned: function() {
+      // get the difference between info.gold and report.gold
+      var gold = 0
+      if (this.info.gold && this.report.gold) {
+        gold = parseInt(this.report.gold) - parseInt(this.info.gold)
+      }
+      return gold
+    },
     trackExp: function() {
       // sum the exp from all tracks
       var exp = 0
@@ -369,7 +378,7 @@ return {
       return mkl_copy.sort();
     },
     experience: function() {
-      return this.report.exp + parseInt(this.info.total_exp);
+      return parseInt(this.report.exp) + parseInt(this.info.total_exp);
     },
     exph: function() {
       var output = 0

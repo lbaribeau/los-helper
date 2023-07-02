@@ -141,11 +141,12 @@ class CombatReactions(object):
             self.attacks[attack.name][str(attack.dmg)] = 1
 
     def report(self, no_print=True):
-        exp = self.character.TOTAL_EXPERIENCE
+        total_exp = self.character.TOTAL_EXPERIENCE
         gold = self.character.TOTAL_GOLD
         aura = self.character.AURA
         magentaprint("Current Aura: " + str(aura), no_print)
-        magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), no_print)
+        magentaprint("Total EXP: " + str(total_exp) + " | Total Gold: " + str(gold), no_print)
+        exp = self.character.EXPERIENCE
         expm = str(calculate_vpm(self.character.EXPERIENCE))
         gpm = 0
         magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, no_print)
