@@ -6,6 +6,17 @@
       <div class="stat">HP {{report.hp}} / {{info.hp}}</div>
       <div class="stat">MP {{report.mp}} / {{info.mp}}</div>
     </div>
+    <div class="box"><strong>Juicy Reporting...</strong>
+      <div class="stat">EXP/Min: {{report.expm}} ({{this.exph}}/hr)</div>
+      <div class="stat">Exp Gained: {{report.exp}}</div>
+      <div class="stat">Track Exp: {{trackExp}}</div>
+      <div class="stat">Exp: {{experience}}</div>
+      <div class="stat">Exp To Level: {{info.exp_to_level}}</div>
+      <div class="stat">Exp Remaining: {{info.exp_to_level - experience}}</div>
+      <div class="stat">Minutes To Level: {{minutesToLevel}}</div>
+      <div class="stat">Hours To Level: {{hoursToLevel}}hrs</div>
+      <div class="stat">Gold: {{info.gold}}</div>
+    </div>
     <div class="box">
       <strong>Recent State</strong>
       <div class="stat">As of {{adjustedTimestamp}}</div>
@@ -16,10 +27,9 @@
       <div class="stat">Tracking {{report.percent_track}}% of the time</div>
       <div class="stat">Fighting {{report.percent_combat}}% of the time</div>
     </div>
-    <div class="box"><strong>Juicy reporting...</strong>
+    <div class="box"><strong>Stats...</strong>
+      <div class="stat">Preferred Aura: {{info.preferred_aura}}</div>
       <div class="stat">Current Aura: {{report.aura}}</div>
-      <div class="stat">EXP/Min: {{report.expm}} ({{this.exph}}/hr)</div>
-      <div class="stat">Exp Gained: {{report.exp}}</div>
       <div class="stat">Hit Rate (Phys): {{report.phys_hit_rate}}%</div>
       <div class="stat">Avg Dmg (Phys): {{report.average_phys_damage}} ({{effective_phys}})</div>
       <div class="stat">Crit Rate (attack): {{crit_to_attack}}%</div>
@@ -33,11 +43,6 @@
       <div class="stat">Total KILLS: {{total_kills}}</div>
       <div class="stat">KPM: {{this.kpm}}</div>
       <div class="stat">DEATHS {{report.deaths}}</div>
-    </div>
-    <div class="box"><strong>Paper doll...</strong>
-      <div class="stat">Preferred Aura: {{info.preferred_aura}}</div>
-      <div class="stat">Exp: {{experience}}</div>
-      <div class="stat">Exp To Level: {{info.exp_to_level}}</div>
     </div>
     <div class="box"><strong>Stats...</strong>
       <apexchart width="250" type="radar" :options="statOptions" :series="statSeries"></apexchart>
@@ -215,6 +220,28 @@ return {
     // }
   },
   computed: {
+    trackExp: function() {
+      // sum the exp from all tracks
+      var exp = 0
+      for (var i = this.track_report.length - 1; i >= 0; i--) {
+        exp += this.track_report[i].exp
+      }
+      return exp 
+    },
+    minutesToLevel: function() {
+      var output = 0
+      if (this.report !== {} && this.report.expm > 0) {
+        output = Math.round(((this.info.exp_to_level - this.experience)/(this.report.expm)*100))/100
+      }
+      return output
+    },
+    hoursToLevel: function() {
+      var output = 0
+      if (this.report !== {} && this.report.expm > 0) {
+        output = Math.round(((this.info.exp_to_level - this.experience)/(this.report.expm)/60*100))/100
+      }
+      return output
+    },
     adjustedTimestamp: function() {
       let output = ''
       //"timestamp": "19:11:57.36"

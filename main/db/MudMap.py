@@ -215,3 +215,5 @@ class MudMap(object):
         # item.map()
         return Item.lookup_armour_type(armour_name)
 
+    def get_json(self):
+        return networkx.cytoscape_data(self.los_map)
