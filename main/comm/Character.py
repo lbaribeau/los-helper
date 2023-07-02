@@ -272,6 +272,7 @@ class Character(object):
             'preferred_aura': self.info.preferred_alignment,
             'exp_to_level': self.info.exp_to_level,
             'total_exp': self.info.exp,
+            'gold': self.info.gold,
             'start_time': self.START_TIME,
             'hp': self.info.maxHP,
             'mp': self.info.maxMP,

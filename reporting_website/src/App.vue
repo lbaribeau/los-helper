@@ -12,7 +12,7 @@
       <div class="stat">Track Exp: {{trackExp}}</div>
       <div class="stat">Exp: {{experience}}</div>
       <div class="stat">Exp To Level: {{info.exp_to_level}}</div>
-      <div class="stat">Exp Remaining: {{info.exp_to_level - experience}}</div>
+      <div class="stat">Exp Remaining: {{expRemaining}}</div>
       <div class="stat">Minutes To Level: {{minutesToLevel}}</div>
       <div class="stat">Hours To Level: {{hoursToLevel}}hrs</div>
       <div class="stat">Gold: {{info.gold}}</div>
@@ -228,17 +228,20 @@ return {
       }
       return exp 
     },
+    expRemaining: function() {
+      return parseInt(this.info.exp_to_level) - this.experience
+    },
     minutesToLevel: function() {
       var output = 0
       if (this.report !== {} && this.report.expm > 0) {
-        output = Math.round(((this.info.exp_to_level - this.experience)/(this.report.expm)*100))/100
+        output = Math.round(((parseInt(this.info.exp_to_level) - this.experience)/parseInt(this.report.expm)*100))/100
       }
       return output
     },
     hoursToLevel: function() {
       var output = 0
       if (this.report !== {} && this.report.expm > 0) {
-        output = Math.round(((this.info.exp_to_level - this.experience)/(this.report.expm)/60*100))/100
+        output = Math.round(((parseInt(this.info.exp_to_level) - this.experience)/(parseInt(this.report.expm)*60)*100))/100
       }
       return output
     },
