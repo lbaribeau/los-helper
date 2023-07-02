@@ -187,9 +187,9 @@ class Inventory(SimpleCommand, ReferencingList):
     keep_list = [
         # Quest/Trade Items
         'Rod of Ruin', 'bank bond',
-        'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand', #'makeup kit', 
-        'diamantium cross', 'rare coin', 'silver flute',
-        'copper thieves pass', 'bronze thieves pass', 'steel thieves pass', 'silver thieves pass',# 'stilleto'
+        'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand',  
+        'diamantium cross', 'rare coin',
+        'copper thieves pass', 'bronze thieves pass', 'steel thieves pass', 'silver thieves pass',
         'druid\'s silver sickle', 'protective robes', "alchemist's ring",
         'stone medal', 'basilisk scale', 'basilisk head', 'occultate stone', 'jade block', 'rock wolf fang',
         'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring', 
@@ -200,10 +200,14 @@ class Inventory(SimpleCommand, ReferencingList):
         # temporary items
         # 'small iron key',
         'dwarven rum',
+        # 'burnt ochre potion',
+        'makeup kit',
+        'Aaashaaal\'s gift',
+        'silver flute',
 
         # important potions
         'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',
-        'burnt ochre potion', 'chequered vial', 'misty potion',
+        'chequered vial', 'misty potion',
         'orange potion', # levitate
         'golden potion', #'platinum crucifix', # Helps disease? Worth a lot of money?
         # 'white potion', 'small restorative',

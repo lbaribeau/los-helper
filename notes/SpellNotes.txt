@@ -21,6 +21,7 @@ Level 5 spells are not really in the game
 - charcoal scroll - teaches fireball, found in Seven Claws room and dropped by the fire imp king
 - Resist-cold can be found in the werewolf cave in the hidden passage when pressing the face, then to the east of the cave pressing the cushion (fighting the guarding wolf and bronze golem)
 - Sigil of Fire - Immolate (lvl4 spell) is dropped by the Lich of Bloodrock
+- Robar Greybeard - will trade dragon scroll (fire protect?) for some special gauntlets
 
 
 Wands/Items spell cast on use

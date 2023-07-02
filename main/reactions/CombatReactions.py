@@ -89,7 +89,7 @@ class CombatReactions(object):
 
         elif regex in RegexStore.mob_defeated:
             # number = M_obj.group(1)
-            mob = self.character.mobs.read_match(M_obj).lower()
+            mob = self.character.mobs.read_match(M_obj)
 
             count = 1
             if mob in self.mobs_killed:

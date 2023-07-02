@@ -272,11 +272,12 @@ class SmartGrindThread(TrackGrindThread):
             else:
                 magentaprint("Mob is too tough for us to fight right now", False)
                 return False
-    
+
     def check_potions(self):
-        if self.potion_bot.check_potions():
-            magentaprint("Here I go buying potions again", False)
-            self.potion_bot.run()
+        if self.can_find_path():
+            if self.potion_bot.check_potions():
+                magentaprint("Here I go buying potions again", False)
+                self.potion_bot.run()
 
     def get_grind_path(self):
         directions = []

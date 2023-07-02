@@ -220,6 +220,9 @@ class TalkGrindThread(BotThread):
                   "weapon",
                   "spell",
                   "armor",
+                  "armour",
+                  "gauntlet",
+                  "claw",
                   "treasure",
                   "chest",
                   "gem",
@@ -422,6 +425,8 @@ class TalkGrindThread(BotThread):
                   "helyana",
                   "antitheus",
                   "elnor",
+                  "Garin", # blade who never stood by
+                  ""
             ]
 
       def get_path_to_target_mob(self, mob):
@@ -503,6 +508,9 @@ class TalkGrindThread(BotThread):
                         magentaprint("Talking to mob: {}".format(self.target_mob), False)
                         # talk to the mob about all the topics in our list
                         while len(self.current_topics) > 0:
+                              if self.stopping:
+                                    self.stop()
+                                    return []
                               for topic in self.current_topics:                        
                                     self.talk_to_mob(self.target_mob, topic)
                                     time.sleep(0.5)

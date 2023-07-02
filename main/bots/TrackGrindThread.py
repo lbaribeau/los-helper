@@ -477,6 +477,7 @@ class TrackGrindThread(GrindThread):
         self.MAYOR_DEMLIN = ["areaid19"]
         self.THOMAS_IRONHEART = ["areaid189"]
         self.MINERS = ['areaid1265', 'areaid1273', 'areaid1280', 'areaid1182', 'areaid1291', 'areaid1289']
+        self.GOBLINS = ['areaid1615', 'north', 'camp', 'south']
 
         self.PATH_TO_SKIP_WITH = ['think']
 
@@ -580,6 +581,7 @@ class TrackGrindThread(GrindThread):
             Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9),
             Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True),
             Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9, is_glamping=True),
+            # Track("Goblins", self.GOBLINS, 16, 20, -2, False, 0, 9, has_cooldown=False, requires_ready=False, allows_caster=False),
             Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18),
             Track("Cathedral", self.CATHEDRAL, 10, 20, 1, True, 7, 18),
             Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True),
@@ -599,7 +601,7 @@ class TrackGrindThread(GrindThread):
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH, 0, 20, 9),
             Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 15, 0, has_cooldown=False),
             Track("Miners", self.MINERS, 10, 16, 0, has_cooldown=False),
-            Track("Boris Ironfounder", self.BORIS_IRONFOUNDER, 15, 20, 0, requires_ready=True, target_kills=1),
+            Track("Boris Ironfounder", self.BORIS_IRONFOUNDER, 15, 20, 0, requires_ready=True, target_kills=1, allows_caster=False),
             Track("Mill Workers", self.smart_mill_path, 7, 14, 0, has_cooldown=False),
             Track("Muggers", self.MUGGER_PATH, 9, 15, -1, has_cooldown=False),
             Track("Old Man James", self.OLD_MAN_JAMES, 9, 12, 0, target_kills=1),
@@ -607,7 +609,7 @@ class TrackGrindThread(GrindThread):
             Track("Cheryn", self.CHERYN, 11, 20, -1, requires_ready=False, target_kills=1),
             Track("Orcs", self.ORCS, 11, 16, -1),
             Track("Artificers", self.ARTIFICERS, 11, 14, -1),
-            Track("Haelyn", self.HAELYN, 16, 20, -1, requires_ready=True, target_kills=1), 
+            Track("Haelyn", self.HAELYN, 16, 20, -1, requires_ready=True, target_kills=1, allows_caster=False), 
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1, has_cooldown=False),
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1, has_cooldown=False),
@@ -835,7 +837,7 @@ class TrackGrindThread(GrindThread):
         return path
 
 class Track():
-    def __init__(self, name, track, min_level, max_level, track_aura, has_cooldown=True, min_aura=0, max_aura=18, requires_ready=False, is_glamping=False, target_kills=99):
+    def __init__(self, name, track, min_level, max_level, track_aura, has_cooldown=True, min_aura=0, max_aura=18, requires_ready=False, is_glamping=False, target_kills=99, allows_caster=True):
         self.name = name
         # setup the track with a buffer at the end so that last node mobs don't get misattributed to the next track
         track.append("think")
@@ -856,6 +858,7 @@ class Track():
         self.requires_ready = requires_ready
         self.is_glamping = is_glamping
         self.target_kills = target_kills
+        self.allows_caster = allows_caster
     
     def start(self):
         self.last_run = int(round(get_timeint().timestamp()))

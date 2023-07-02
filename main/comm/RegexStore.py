@@ -285,8 +285,8 @@ no_see = [r"You don't see that here\."]
 i_no_see = [r"I don't see that here\."]
 
 # ask command
-ask_success = ['^(?:The )?(.+?) says to you, "(?P<statement>(?:.+?\n?\r?)+?)"']
-ask_fail = ["^(?:The )?(.+?) doesn't respond to you\."]
+ask_success = ['^\s?(?:The )?(.+?) says to you, "(?P<statement>(?:.+?\n?\r?)+?)"']
+ask_fail = ["^\s?(?:The )?(.+?) doesn't respond to you\."]
 
 # Kill command
 bad_k_target = [

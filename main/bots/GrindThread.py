@@ -607,6 +607,15 @@ class GrindThread(BotThread):
     def do_checks(self):
         self.check_weapons()
 
+    def can_find_path(self):
+        # if we can find the way to Chapel areaid2 then we should be able to path anywhere
+        # so we'll just check that we're not in the Chapel and that we can find the way to it
+        if self.character.AREA_ID == 2:
+            return True
+        
+        directions = self.mud_map.get_path(self.character.AREA_ID, 2)
+        return directions != []
+
     def check_weapons(self):
         magentaprint('check_weapons()')
         # w = WeaponBot(self.char, self.command_handler, self.mrh, self.map)
@@ -618,7 +627,9 @@ class GrindThread(BotThread):
     def check_armour(self):
         if self.stopping or self.is_character_class('Mon') or self.is_character_class('Mag'):
             return
-        self.command_handler.armour_bot.suit_up()
+        
+        if self.can_find_path():
+            self.command_handler.armour_bot.suit_up()
 
         # if not self.smartCombat.broken_weapon:
         #     return True

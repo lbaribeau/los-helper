@@ -3,7 +3,7 @@ import networkx
 
 from db.Database import *
 # from misc_functions import *
-from misc_functions import do_magentaprint
+from misc_functions import magentaprint
 from comm.ConsoleHandler import newConsoleHandler
 
 def get_shortest_array(list_of_arrays):
@@ -81,11 +81,12 @@ class MudMap(object):
 
         # self.magentaprint("MudMap.get_path self.los_map: " + str(self.los_map), False)
         # self.magentaprint("MudMap.get_path start/end: " + str(start_area_id) + "/" + str(end_area_id) + '.', False)
+        node_path = []
         try:
             node_path = networkx.shortest_path(self.los_map, source=start_area_id, target=end_area_id)
         except Exception as e:
-            do_magentaprint("MudMap: " + str(e))
-            raise e
+            magentaprint(f"Unable to path between nodes {start_area_id} -> {end_area_id}", False)
+            # raise e
 
         edge_path = []
         area_ids = []

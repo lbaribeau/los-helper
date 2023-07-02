@@ -451,6 +451,8 @@ class CommandHandler(object):
             self.equipment.execute()
         elif re.match("stop$", user_input):
             self.stop_bot()
+        elif re.match("^q!$", user_input):
+            raise Exception("Hard Quit!")
         elif re.match("aura (\d)", user_input):
             M_obj = re.search("aura (\d)", user_input)
             magentaprint(Aura.auras[int(M_obj.group(1))], False)

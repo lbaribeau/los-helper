@@ -44,7 +44,7 @@ class ShoppingBot(MiniBot):
             self.travel_bot.go_to_area(asi.area.id)
             self.command_handler.buy.execute_and_wait(ref)
             if not self.command_handler.buy.success:
-                self.sell_bot.bulk_drop('scarlet')
+                # self.sell_bot.bulk_drop('scarlet')
                 self.sell_bot.bulk_drop('flask')
                 if self.char.inventory.has('steel bottle'):
                     # self.command_handler.telnetHandler.write('drin ' + self.char.inventory.get_reference('steel bottle'))
