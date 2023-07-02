@@ -146,7 +146,7 @@ class CombatReactions(object):
 
     def report(self, no_print=True):
         total_exp = self.character.TOTAL_EXPERIENCE
-        gold = self.character.TOTAL_GOLD
+        gold = self.character.GOLD
         aura = self.character.AURA
         magentaprint("Current Aura: " + str(aura), no_print)
         magentaprint("Total EXP: " + str(total_exp) + " | Total Gold: " + str(gold), no_print)
