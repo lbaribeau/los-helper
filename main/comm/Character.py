@@ -152,6 +152,9 @@ class Character(object):
         self.START_TIME = time.time()
 
         self.steel_bottle_keep_amount = 1
+        
+        output_api_feed('mkl', [])
+        output_api_feed('track_report', [])
 
     # def __init__(self):
     #     self.set_level_health_mana_variables()

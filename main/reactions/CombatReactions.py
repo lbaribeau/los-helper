@@ -58,7 +58,7 @@ class CombatReactions(object):
         self.in_combat = False
 
         self.regex_cart = [RegexStore.attack_hit, RegexStore.attack_miss, RegexStore.mob_attacked, RegexStore.cast_failure, RegexStore.mob_defeated,
-        RegexStore.spell_damage, RegexStore.loot_dropped, RegexStore.crit, RegexStore.spell_crit, RegexStore.you_gain_experience]
+        RegexStore.spell_damage, RegexStore.loot_dropped, RegexStore.crit, RegexStore.spell_crit]
     
         if self.character.is_headless:
             magentaprint("CombatReactions initialized", False)
@@ -90,11 +90,6 @@ class CombatReactions(object):
             for mud_item in items:
                 mob_loot = MobLoot(mob=mob, item=mud_item.obj)
                 mob_loot.map()
-        elif regex in RegexStore.you_gain_experience:
-            self.character.EXPERIENCE = self.character.EXPERIENCE + int(M_obj.group(1))
-            self.character.add_to_track_param("kills", 1, False)
-            self.character.add_to_track_param("exp", int(M_obj.group(1)))
-            self.in_combat = False
         elif regex in RegexStore.mob_defeated:
             # number = M_obj.group(1)
             mob = self.character.mobs.read_match(M_obj)
@@ -105,7 +100,12 @@ class CombatReactions(object):
                 del self.mobs_killed[mob]
 
             self.mobs_killed[mob] = count
-            
+
+            exp = int(M_obj.group('exp'))
+            self.character.EXPERIENCE = self.character.EXPERIENCE + exp
+            self.character.add_to_track_param("kills", 1, False)
+            self.character.add_to_track_param("exp", exp)
+
             # self.character.area_id, monster - map both into a MobLocation
             # add a rank to the MobLocation
             self.in_combat = False
