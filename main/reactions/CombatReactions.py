@@ -146,8 +146,8 @@ class CombatReactions(object):
         aura = self.character.AURA
         magentaprint("Current Aura: " + str(aura), no_print)
         magentaprint("Total EXP: " + str(exp) + " | Total Gold: " + str(gold), no_print)
-        expm = str(calculate_vpm(exp))
-        gpm = str(calculate_vpm(gold))
+        expm = str(calculate_vpm(self.character.EXPERIENCE))
+        gpm = 0
         magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, no_print)
         kills = len(self.mobs_killed)
         kpm = str(calculate_vpm(kills))
