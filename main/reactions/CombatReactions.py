@@ -130,7 +130,7 @@ class CombatReactions(object):
             self.spells_cast += 1
             self.spells_failed += 1
 
-        if self.character.is_headless and combat_state != self.in_combat:
+        if self.character.is_headless:
             magentaprint("Reporting", False)
             output_api_feed('report', self.report())
 
