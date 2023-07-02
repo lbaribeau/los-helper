@@ -59,6 +59,10 @@ class CombatReactions(object):
 
         self.regex_cart = [RegexStore.attack_hit, RegexStore.attack_miss, RegexStore.mob_attacked, RegexStore.cast_failure, RegexStore.mob_defeated,
         RegexStore.spell_damage, RegexStore.loot_dropped, RegexStore.crit, RegexStore.spell_crit]
+    
+        if self.character.is_headless:
+            magentaprint("CombatReactions initialized", False)
+            output_api_feed('report', self.report())
 
     def notify(self, regex, M_obj):
         combat_state = self.in_combat
