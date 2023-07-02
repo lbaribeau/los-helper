@@ -4,6 +4,7 @@ from misc_functions import *
 
 class HealSlaveReactions(BotReaction):
     banned_targets = []
+    low_vision_targets = []
 
     def __init__(self, mudReaderHandler, command_handler, master, cast, character, slave_state):
         #[Group] Twerp took 4 combat damage
@@ -16,6 +17,8 @@ class HealSlaveReactions(BotReaction):
         self.heal_stop = "^.+? spell cast on (.+?).\n?\r?It appears to have no effect!"
         self.target_not_here = "They are not here\."
         self.ban_target = "^(?:[A-Z]erp) hates (.+?)\."
+        self.cast_light_on_target = "^(?:.+?) thinks (.+?) has trouble seeing\."
+        self.remove_from_light_list = "^(?:.+?) thinks (.+?) can see fine\."
 
         magentaprint("slave started for <" + master + ">", False)
         if master == "camp":
@@ -28,7 +31,9 @@ class HealSlaveReactions(BotReaction):
                 self.detect_invis_trigger,
                 self.fly_trigger,
                 self.show_aura_trigger,
-                self.ban_target
+                self.ban_target,
+                self.cast_light_on_target,
+                self.remove_from_light_list
                 ]
         else:
             self.regexes = [self.group_damage]
@@ -47,6 +52,9 @@ class HealSlaveReactions(BotReaction):
         self.__waiter_flag = False
         self.__stopping = False
         self.mudReaderHandler.register_reaction(self)
+
+    def check_low_vision_targets(self, target):
+        return target in self.low_vision_targets
 
     def check_healslave_cooldown(self, buff_key, req_mana, seconds):
         should_do_thing = False
@@ -98,6 +106,12 @@ class HealSlaveReactions(BotReaction):
         if self.should_buff_target():
             self.cast_spell("bless")
             self.cast_spell("protection")
+
+            magentaprint("checking for low vision" + str(self.low_vision_targets), False)
+            if self.target in self.low_vision_targets:
+                magentaprint("target has low vision so casting light", False)
+                self.cast_spell("light")
+                # self.low_vision_targets.remove(self.target)
             # self.cast_spell("light")
         else:
             magentaprint("target already buffed recently so no go", False)
@@ -161,3 +175,19 @@ class HealSlaveReactions(BotReaction):
                 self.banned_targets.append(target)
             else:
                 magentaprint("<{0}> is already banned!!".format(target), False)
+        
+        elif regex == self.cast_light_on_target:
+            target = M_obj.group(1)
+            if not target in self.low_vision_targets:
+                magentaprint("<{0}> has low vision!!".format(target), False)
+                self.low_vision_targets.append(target)
+            else:
+                magentaprint("<{0}> already has low vision!!".format(target), False)
+
+        elif regex == self.remove_from_light_list:
+            target = M_obj.group(1)
+            if target in self.low_vision_targets:
+                magentaprint("<{0}> can see fine!!".format(target), False)
+                self.low_vision_targets.remove(target)
+            else:
+                magentaprint("<{0}> wasn't in our list!!".format(target), False)

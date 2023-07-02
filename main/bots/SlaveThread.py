@@ -79,6 +79,10 @@ class SlaveThread(BotThread):
         if self.should_buff_target(target):
             self.cast_spell(target["name"], "bless")
             self.cast_spell(target["name"], "protection")
+
+            if self.heal_slave_reactions.check_low_vision_targets(target["name"]):
+                magentaprint("target has low vision so casting light", False)
+                self.cast_spell(target["name"], "light")
         else:
             magentaprint("target already buffed recently so no go", False)
 
