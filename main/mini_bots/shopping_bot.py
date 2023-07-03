@@ -39,20 +39,20 @@ class ShoppingBot(MiniBot):
             # Ok go sell stuff then
             self.travel_bot.go_to_nearest_pawn_shop()
             self.sell_bot.sell_stuff()
-            self.travel_bot.go_to_nearest_tip()
-            self.sell_bot.drop_stuff()
+            # self.travel_bot.go_to_nearest_tip()
+            # self.sell_bot.drop_stuff()
             self.travel_bot.go_to_area(asi.area.id)
             self.command_handler.buy.execute_and_wait(ref)
             if not self.command_handler.buy.success:
                 # self.sell_bot.bulk_drop('scarlet')
-                self.sell_bot.bulk_drop('flask')
-                if self.char.inventory.has('steel bottle'):
+                # self.sell_bot.bulk_drop('flask')
+                # if self.char.inventory.has('steel bottle'):
                     # self.command_handler.telnetHandler.write('drin ' + self.char.inventory.get_reference('steel bottle'))
                     # self.command_handler.use.command = 'drin'
                     # self.command_handler.use.execute_and_wait(self.char.inventory.get_reference('steel bottle'))
                     # self.command_handler.use.command = 'use'
-                    self.command_handler.drink.execute_and_wait(self.char.inventory.get_reference('steel bottle'))
-                self.sell_bot.bulk_drop('steel bottle')
+                    # self.command_handler.drink.execute_and_wait(self.char.inventory.get_reference('steel bottle'))
+                # self.sell_bot.bulk_drop('steel bottle')
                 self.command_handler.buy.execute_and_wait(ref)
                 # We might have too many weapons, that can happen right now
                 if self.command_handler.buy.success:
