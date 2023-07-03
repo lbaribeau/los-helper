@@ -101,14 +101,14 @@ class CombatReactions(object):
 
             self.mobs_killed[mob] = count
 
-            try:
-                exp = int(M_obj.group('exp'))
-                if exp is not None:
-                    self.character.EXPERIENCE = self.character.EXPERIENCE + exp
-                    self.character.add_to_track_param("kills", 1, False)
-                    self.character.add_to_track_param("exp", exp)
-            except Exception as e:
-                magentaprint("Couldn't convert exp regex to int", False)
+            # try:
+            #     exp = int(M_obj.group('exp'))
+            #     if exp is not None:
+            #         self.character.EXPERIENCE = self.character.EXPERIENCE + exp
+            #         self.character.add_to_track_param("kills", 1, False)
+            #         self.character.add_to_track_param("exp", exp)
+            # except Exception as e:
+            #     magentaprint("Couldn't convert exp regex to int", False)
 
             # self.character.area_id, monster - map both into a MobLocation
             # add a rank to the MobLocation
