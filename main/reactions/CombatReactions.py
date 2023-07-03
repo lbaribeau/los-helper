@@ -101,28 +101,32 @@ class CombatReactions(object):
 
             self.mobs_killed[mob] = count
 
-            # try:
-            #     exp = int(M_obj.group('exp'))
-            #     if exp is not None:
-            #         self.character.EXPERIENCE = self.character.EXPERIENCE + exp
-            #         self.character.add_to_track_param("kills", 1, False)
-            #         self.character.add_to_track_param("exp", exp)
-            # except Exception as e:
-            #     magentaprint("Couldn't convert exp regex to int", False)
+            if self.in_combat:
+                # try:
+                #     exp = int(M_obj.group('exp'))
+                #     if exp is not None:
+                #         self.character.EXPERIENCE = self.character.EXPERIENCE + exp
+                #         self.character.add_to_track_param("kills", 1, False)
+                #         self.character.add_to_track_param("exp", exp)
+                # except Exception as e:
+                #     magentaprint("Couldn't convert exp regex to int", False)
 
-            # self.character.area_id, monster - map both into a MobLocation
-            # add a rank to the MobLocation
-            self.in_combat = False
+                # self.character.area_id, monster - map both into a MobLocation
+                # add a rank to the MobLocation
+                self.in_combat = False
         elif regex in RegexStore.you_gain_exp:
-            try:
-                exp = int(M_obj.group('exp'))
-                if exp is not None:
-                    self.character.EXPERIENCE = self.character.EXPERIENCE + exp
-                    self.character.add_to_track_param("kills", 1, False)
-                    self.character.add_to_track_param("exp", exp)
-            except Exception as e:
-                magentaprint("Couldn't convert exp regex to int", False)
+            if self.in_combat:
+                # try:
+                #     exp = int(M_obj.group('exp'))
+                #     if exp is not None:
+                #         self.character.EXPERIENCE = self.character.EXPERIENCE + exp
+                #         self.character.add_to_track_param("kills", 1, False)
+                #         self.character.add_to_track_param("exp", exp)
+                # except Exception as e:
+                #     magentaprint("Couldn't convert exp regex to int", False)
+                self.in_combat = False
         elif regex in RegexStore.attack_miss:
+            self.in_combat = True
             self.hits_missed += 1
             # self.add_to_attacks(Attack("p", "n", 0, 0))
         elif regex in RegexStore.spell_crit:
