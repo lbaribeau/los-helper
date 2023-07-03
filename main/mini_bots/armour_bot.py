@@ -295,8 +295,10 @@ class ArmourBot(MiniBot):
                 # level = ArmourLevelDeterminator().determine(self.char.class_string)
                 size = self.get_size(self.char.race)
                 level = self.get_armour_level(self.char.level)  # checks class and level (low level paladin can't wear steel yet)
-                #magentaprint("determine_shopping_list() size " + size + ", slot: " + str(slot) + ", level: " + str(level))
+                # magentaprint("determine_shopping_list() size " + size + ", slot: " + str(slot) + ", level: " + str(level), False)
                 if slot == 'wielded' or slot == 'seconded':
+                    continue
+                if slot == 'finger8' and self.char._class.id == "Alc": # Alchemists have quest rings we won't wanna mess with
                     continue
                 if slot == 'holding':
                     continue  # no masks in shops, so this hack will probably stay.  We should add 'face' slot to the db.
