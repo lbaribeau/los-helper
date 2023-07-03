@@ -248,3 +248,5 @@ reporting_website/node_modules/
 reporting_website/node_modules/*
 reporting_website/dist/api/*.json
 launch.json
+reporting_website/dist/api/track_report.json
+reporting_website/dist/api/mkl.json

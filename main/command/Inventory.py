@@ -21,10 +21,13 @@ def clip_in_your_off_hand(wield_string):
 def clip_from_a_container(get_string):
     # Example get_string: some chicken soup from a sack
     get_string = get_string.replace('\n\r', ' ')
+    get_string = get_string.replace(' (M)', '')
     M = re.search("(.+?) from (.+?)", get_string)
     if M:
         return M.group(1)
     else:
+        # remove ' (M)' from items
+         
         return get_string
 
 def construct_items(string_list):
@@ -313,6 +316,7 @@ class Inventory(SimpleCommand, ReferencingList):
             # Put Sell object in charge of this removal
         elif regex in R.you_now_have + R.gold_from_tip:
             self.gold = int(match.group(1))
+            self.character.GOLD = self.gold
         elif regex in R.you_wield and not match.group('weapon').endswith('in your off hand'):
             self.equipped_items['Wielded'] = [MudItem(match.group('weapon'))]
             magentaprint('Inventory just put object into equipment: ' + str(self.equipped_items['Wielded'][0].obj.name))

@@ -559,7 +559,9 @@ class CommandHandler(object):
             #gold = self.character.GOLD  #Calculating GMP would require us to store gold differently
             #gpm = str(misc_functions.calculate_vpm(gold))
             #magentaprint("Gold this Session: " + str(gold) + " | Gold / MIN: " + gpm, False)
-            magentaprint(str(self.character.GOLD), False)
+            magentaprint("Starting gold: " + str(self.character.STARTING_GOLD), False)
+            magentaprint("Current gold: " + str(self.character.GOLD), False)
+            magentaprint("Profit: " + str(self.character.GOLD-self.character.STARTING_GOLD), False)
         elif re.match("(?i)kills", user_input):
             kills = self.character.MOBS_KILLED
             magentaprint("Kills this Session: " + str(kills), False)

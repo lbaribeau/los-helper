@@ -54,6 +54,7 @@ class TalkGrindThread(BotThread):
                   "Gregor",
                   "Farmer Viladin",
                   "Cal the Hermit",
+                  "Farmer Woldis",
                   "Rancher Renstone",
                   "Rancher Plover",
                   "Annette Plover",
@@ -104,9 +105,9 @@ class TalkGrindThread(BotThread):
                   "Chiaru Maradiu",
                   # # "Thereze",
                   # # "Qimoth",
-                  # # "Joffi the Mystic",
+                  "Joffi the Mystic",
                   # # "Gorban",
-                  # # "Pansy",
+                  "Pansy",
                   # # "Kelluran",
                   # # "Ordaran the White",
                   # "Corellan",
@@ -277,6 +278,7 @@ class TalkGrindThread(BotThread):
                   "block",
                   "stone",
                   "ascoula", # stone that Jerrek is looking for
+                  "anvil",
                   # spells
                   "blind",
                   "clairvoyance",
@@ -425,8 +427,11 @@ class TalkGrindThread(BotThread):
                   "helyana",
                   "antitheus",
                   "elnor",
-                  "Garin", # blade who never stood by
-                  ""
+                  "garin", # blade who never stood by
+                  "grindig",
+                  "bloody",
+                  "grumdug",
+                  "elder",
             ]
 
       def get_path_to_target_mob(self, mob):

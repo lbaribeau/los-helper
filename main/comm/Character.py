@@ -87,6 +87,7 @@ class Character(object):
         self.EXPERIENCE       = 0
         self.GOLD             = 0
         self.TOTAL_EXPERIENCE = 0
+        self.STARTING_GOLD    = 0
         self.TOTAL_GOLD       = 0
 
         self.HAS_BUFF_ITEMS = False # Now there's an Inventory object
@@ -152,9 +153,6 @@ class Character(object):
         self.START_TIME = time.time()
 
         self.steel_bottle_keep_amount = 1
-        
-        output_api_feed('mkl', [])
-        output_api_feed('track_report', [])
 
     # def __init__(self):
     #     self.set_level_health_mana_variables()
@@ -232,8 +230,13 @@ class Character(object):
             self.armor_level = 1  # ring mail wearable immediately
 
         self.weapon_to_buy = self.pick_weapon()
+        self.TOTAL_GOLD    = self.info.gold
+        self.STARTING_GOLD = self.info.gold
+        self.GOLD          = self.info.gold
         if self.is_headless:
             self.write_info_feed()
+            output_api_feed('mkl', [])
+            output_api_feed('track_report', [])
 
     def check_cooldowns(self, cooldowns):
         cooldowns_ready = True
