@@ -159,6 +159,7 @@ mob_died = [r"Your attack overwhelms " + __three_possible_mob_strings + " and (?
 # mob_fled = ["(?:The ?(" + __numbers + " )?)?(?P<mob_name>.+?) flees to the (?P<exit>.+?)\."] 
 mob_fled = [__Three_possible_mob_strings + r" flees to the (?P<exit>[a-z ]+)\."] 
 mob_defeated = [r"Your enemy, " + __three_possible_mob_strings + r" has been defeated\.\n?\r?(?:You gain (?P<exp>.+?) experience\.)?"]
+you_gain_exp = [r"You gain (?P<exp>.+?) experience\."]
 you_died = [r"You are overwhelmed by " + __three_possible_mob_strings + r"'s attack and you collapse!"]
 loot_blocked = [__Three_possible_mob_strings + r" won't let you take anything\."]
 nothing_here = [r"There's nothing here\."]

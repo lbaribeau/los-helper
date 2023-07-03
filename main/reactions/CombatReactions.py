@@ -58,7 +58,7 @@ class CombatReactions(object):
         self.in_combat = False
 
         self.regex_cart = [RegexStore.attack_hit, RegexStore.attack_miss, RegexStore.mob_attacked, RegexStore.cast_failure, RegexStore.mob_defeated,
-        RegexStore.spell_damage, RegexStore.loot_dropped, RegexStore.crit, RegexStore.spell_crit]
+        RegexStore.spell_damage, RegexStore.loot_dropped, RegexStore.crit, RegexStore.spell_crit, RegexStore.you_gain_exp]
     
         if self.character.is_headless:
             magentaprint("CombatReactions initialized", False)
@@ -101,14 +101,27 @@ class CombatReactions(object):
 
             self.mobs_killed[mob] = count
 
-            exp = int(M_obj.group('exp'))
-            self.character.EXPERIENCE = self.character.EXPERIENCE + exp
-            self.character.add_to_track_param("kills", 1, False)
-            self.character.add_to_track_param("exp", exp)
+            try:
+                exp = int(M_obj.group('exp'))
+                if exp is not None:
+                    self.character.EXPERIENCE = self.character.EXPERIENCE + exp
+                    self.character.add_to_track_param("kills", 1, False)
+                    self.character.add_to_track_param("exp", exp)
+            except Exception as e:
+                magentaprint("Couldn't convert exp regex to int", False)
 
             # self.character.area_id, monster - map both into a MobLocation
             # add a rank to the MobLocation
             self.in_combat = False
+        elif regex in RegexStore.you_gain_exp:
+            try:
+                exp = int(M_obj.group('exp'))
+                if exp is not None:
+                    self.character.EXPERIENCE = self.character.EXPERIENCE + exp
+                    self.character.add_to_track_param("kills", 1, False)
+                    self.character.add_to_track_param("exp", exp)
+            except Exception as e:
+                magentaprint("Couldn't convert exp regex to int", False)
         elif regex in RegexStore.attack_miss:
             self.hits_missed += 1
             # self.add_to_attacks(Attack("p", "n", 0, 0))
