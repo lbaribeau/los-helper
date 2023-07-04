@@ -43,7 +43,8 @@ class FakeTelnetSocket(object):
             # self.stablehand.name,
             # self.tabby_cat.name,
             # 'two ghouls'
-            "old knight"
+            # "old knight"
+            "Bludnug the Mighty"
         ]
         self.fso = FakeSocketOutput()
         self.rng = 0
@@ -228,6 +229,8 @@ class FakeTelnetSocket(object):
                 self.socket_output.append('Touch whom?')
         elif command.startswith('has'):
             self.socket_output.append('You feel yourself moving faster.\n\r')
+        elif command.startswith('l grumplin'):
+            self.socket_output.append('You see Bludnug the Mighty.\n\rHe looks surly and unkempt\n\rShe is in general good health.\n\rYou could kill him with a needle.\n\r')
         elif command.startswith('pra'):
             self.socket_output.append('You feel extremely pious.\n\r')
         elif command == 'rest':

@@ -21,7 +21,7 @@ def clip_in_your_off_hand(wield_string):
 def clip_from_a_container(get_string):
     # Example get_string: some chicken soup from a sack
     get_string = get_string.replace('\n\r', ' ')
-    get_string = get_string.replace(' (M)', '')
+    get_string = re.sub(r'\n?\r?\s?\(M\)', '', get_string)
     M = re.search("(.+?) from (.+?)", get_string)
     if M:
         return M.group(1)
@@ -49,6 +49,11 @@ def parse_item_names(item_string_list):
 
     return_list = []
     item_string_list = item_string_list.replace("\n\r", ' ')
+
+    # if item_string list contains (M) then magenta print the list
+    if "(M)" in item_string_list:
+        item_string_list = item_string_list.replace(" (M)", '')
+
     inv_list = item_string_list.split(',')
     inv_list = [item.strip(' \t\n\r') for item in inv_list]
     singles = ['a ', 'an ', 'some ']
@@ -62,7 +67,7 @@ def parse_item_names(item_string_list):
             item.endswith(' gold coins') or 
             item.endswith(' platinum coins') or 
             item.endswith(' silver coins') or
-            item.endswith(' rare coins') or 
+            # item.endswith(' rare coins') or 
             item.endswith(' white chips') or
             item.lower() in [
                 'gold coins', 
@@ -93,9 +98,6 @@ def parse_item_names(item_string_list):
             number = numbers[n]
             if item.startswith(number):
                 item = item[len(number):]
-
-                if (item.endswith(' (M)')):
-                    item = item.replace(' (M)', '')
 
                 if item.startswith("sets of"):
                     item = item.replace("sets of ", "")

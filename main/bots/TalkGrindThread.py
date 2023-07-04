@@ -432,6 +432,7 @@ class TalkGrindThread(BotThread):
                   "bloody",
                   "grumdug",
                   "elder",
+                  "bludnug"
             ]
 
       def get_path_to_target_mob(self, mob):
