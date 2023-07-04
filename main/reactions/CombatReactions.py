@@ -92,7 +92,7 @@ class CombatReactions(object):
                 mob_loot.map()
         elif regex in RegexStore.mob_defeated:
             # number = M_obj.group(1)
-            mob = self.character.mobs.read_match(M_obj)
+            mob = self.character.mobs.read_match(M_obj).replace("the ", "")
 
             count = 1
             if mob in self.mobs_killed:

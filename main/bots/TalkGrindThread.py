@@ -182,6 +182,7 @@ class TalkGrindThread(BotThread):
                   "troll",
                   "orc",
                   "dragon",
+                  "dracae",
                   "wyvern",
                   "zombie",
                   "undead",
