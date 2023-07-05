@@ -4,7 +4,7 @@ Cerp,15, cleric (3 12 3 18 18)
 Derp,18, monk (lvl 14, masters habit)
 Drerp,18, barbarian
 Dwarp,1, thief (swamp troll)
-Eerp,17, fighter dwarf 15 16 3 16 4
+Eerp,18, fighter dwarf 15 16 3 16 4
 Ferp,13, fighter 18 3 4 18 11
 Flerp,2, anti-paladin, half-orc
 Gerp,15,mage,elf,12,3,3,18,18
@@ -16,16 +16,16 @@ Replace ~~Lerp,11, alc dwarf 15 16 3 16 4
 Merp,2, monk, elf (18 18 3 5 10)
 Nerp,14, druid dwarf 16 16 3 16 3
 Replace ~~Oerp,7, dark knight dwarf 14 15 10 7 8 (15 15 10 7 7)
-Perp,15, ranger elf (16 14 2 8 14)
+Perp,17, ranger elf (16 14 2 8 14)
 Qerp,10, mage
-Replace ~~Rerp,7, cleric, gnome
+Replace ~~Rerp,7, cleric, gnome (15+16+3+3+17/15+15+3+6+15 elf) cleric?
 Serp, 14, alc,
 Replace ~~Twerp,6, cleric, human
 Trerp,13, druid elf lvl 9 3 12 3 18 18
 Replace ~~Terp,9, thief 18 3 4 18 11 (bad dex)
 Replace ~~Uerp,1, druid 10 8 12 12 12
-TBD Verp ???
-Werp,18, monk (lvl 17, no habit)
+TBD Verp ??? (15+16+3+3+17 dwarf/15+15+3+6+15 elf) Paladin
+Werp,17, monk (lvl 17, no habit)
 Xerp,18, fighter 15 14 3 6 16
 Yerp,14, monk 18 3 4 18 11 (bad dex)
-Zerp, 2, alc, dark-elf, 12 3 3 18 18
+Zerp,10, alc, elf, 12 3 3 18 18

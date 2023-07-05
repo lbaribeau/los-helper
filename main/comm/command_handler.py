@@ -496,6 +496,17 @@ class CommandHandler(object):
             for unique_exit in exit_objs:
                 self.telnetHandler.write("look " + unique_exit)
                 time.sleep(0.2)
+        elif re.match("bfall", user_input):
+            magentaprint("brute forcing all exits", False)
+            exits = ExitType.get_all_exits()
+            exit_objs = {}
+            for exit in exits:
+                first_word = exit.name.split(' ')[0]
+                exit_objs[first_word] = first_word
+            
+            for unique_exit in exit_objs:
+                self.telnetHandler.write("look " + unique_exit)
+                time.sleep(0.2)
         elif re.match("bfdesc", user_input):
             area = self.character.MUD_AREA.area
             if area:

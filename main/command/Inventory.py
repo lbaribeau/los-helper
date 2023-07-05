@@ -212,6 +212,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'makeup kit', 'Dalla\'s Blessing',
         'Aaashaaal\'s gift',
         'silver flute',
+        'ash wood key',
 
         # important potions
         'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',

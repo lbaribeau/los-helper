@@ -11,6 +11,7 @@ from mini_bots.smithy_bot           import SmithyBot
 from mini_bots.shopping_bot         import ShoppingBot
 from mini_bots.mini_bot             import MiniBot
 from db.Database                    import AreaStoreItem
+from db.MudItem                     import MudItem
 
 class ArmourBot(MiniBot):
     def __init__(self, char, command_handler, map):
@@ -63,7 +64,10 @@ class ArmourBot(MiniBot):
         if len(match.group('item').split()) == 2 and match.group('item').split()[1] == 'ring':
             return
         else:
-            self.broken_armour.append(match.group('item'))
+            mud_item = MudItem(match.group('item'))
+            mud_item.map()
+            if mud_item.is_repairable():
+                self.broken_armour.append(mud_item)
 
     def react_to_repair(self, match):
         if match.group(1) in self.broken_armour:
@@ -125,10 +129,10 @@ class ArmourBot(MiniBot):
     def do_for_each_broken_piece(self, function):
         list_copy = self.broken_armour[:]
 
-        for a in self.broken_armour:
-            if a:
-                if function(a):
-                    list_copy.remove(a)
+        for item in self.broken_armour:
+            if item:
+                if function(item):
+                    list_copy.remove(item)
 
         self.broken_armour = list_copy
 

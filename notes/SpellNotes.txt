@@ -45,3 +45,4 @@ Wands/Items spell cast on use
 - Glass Compass == track
 - hollow reed == ??? (Thomas Ironheart trade for hippogriff egg)
 - shadowy glass == detect-invisible
+- crystal talisman == ???

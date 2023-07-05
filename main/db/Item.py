@@ -10,6 +10,7 @@ class Item(NamedModel):
     itemtype    = ForeignKeyField(ItemType, null=True)
     value       = IntegerField(null=True)
     note        = CharField(null=True)
+    repairable  = BooleanField(null=True)
 
     '''Private Item Functions'''
     def map(self):
@@ -26,6 +27,7 @@ class Item(NamedModel):
             self.itemtype = item.itemtype
             self.value = item.value
             self.note = item.note
+            self.repairable = item.repairable
             #update other fields if you want
 
         return is_new_mapping

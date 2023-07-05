@@ -17,6 +17,10 @@ class MudItem(GenericMudObject):
     def map(self):
         self.obj.map()
 
+    def is_repairable(self):
+        # this can be null (unknown so we try) or True - otherwise we know it can't so don't bother!
+        return self.obj.repairable is None or self.obj.repairable
+
     def is_of_type(self, model_name, data_name, level=-1):
         is_of_type = False
 

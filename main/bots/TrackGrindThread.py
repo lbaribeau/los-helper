@@ -479,6 +479,7 @@ class TrackGrindThread(GrindThread):
         self.THOMAS_IRONHEART = ["areaid189"]
         self.MINERS = ['areaid1265', 'areaid1273', 'areaid1280', 'areaid1182', 'areaid1291', 'areaid1289']
         self.GOBLINS = ['areaid1615', 'north', 'camp', 'south']
+        self.HEF = ['areaid533', 'trail', 'areaid1678'] #'areaid2170', 'unlock panel', 'panel', 'get all'
 
         self.PATH_TO_SKIP_WITH = ['think']
 
@@ -650,6 +651,7 @@ class TrackGrindThread(GrindThread):
             Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 1, requires_ready=True, target_kills=1),
             Track("MAYOR_DEMLIN", self.MAYOR_DEMLIN, 18, 20, 1, requires_ready=True, target_kills=1),
             Track("THOMAS_IRONHEART", self.THOMAS_IRONHEART, 18, 20, 0, requires_ready=True, target_kills=1),
+            Track("Hef the Bandit Chief", self.HEF, 12, 13, -1, allows_caster=False),
         ]
     
     def decide_where_to_go(self):
@@ -697,17 +699,13 @@ class TrackGrindThread(GrindThread):
 
         if track.requires_ready and (not self.character.is_ready_for_tough_fight() or not aura_acceptable):
             magentaprint("{0} isn't acceptable to us due to aura".format(track.name), False)
-            self.abandoned_last_track = False
-            self.skipped_last_track = True
-            return self.PATH_TO_SKIP_WITH[:]
+            return self.skip_track()
 
         if track.track_aura == 9:
             if self.character.level in level_range:
                 return track.track[:]
             else:
-                self.abandoned_last_track = False
-                self.skipped_last_track = True
-                return self.PATH_TO_SKIP_WITH[:]
+                return self.skip_track()
 
         # if the track has a cooldown and the last run was less than 15 minutes ago, skip it
         # if track.last_run != 0:
@@ -716,7 +714,7 @@ class TrackGrindThread(GrindThread):
         seconds_since_last_run = (current_time - get_timeint_from_int(track.last_run)).total_seconds()
         if not track.is_glamping and not self.abandoned_last_track and track.has_cooldown and seconds_since_last_run < 900:
             magentaprint("{0} isn't acceptable to us due to cooldown".format(track.name), False)
-            return self.PATH_TO_SKIP_WITH[:]
+            return self.skip_track()
         # aura correction here is maybe more valuable than short term efficiency - seeing a lot of bots dangling near their incorrect aura
         # elif track.is_glamping and self.abandoned_last_track:
         #     magentaprint("{0} is a camping track so we won't re-run".format(track.name), False)
@@ -726,7 +724,7 @@ class TrackGrindThread(GrindThread):
 
         if character_aura < track.min_aura or character_aura > track.max_aura:
             magentaprint("Character too good or evil for this track", False)
-            return self.PATH_TO_SKIP_WITH[:]
+            return self.skip_track()
 
         #too evil shouldn't fight good (+1)
         #too good shouldn't fight evil (-1)
@@ -736,9 +734,7 @@ class TrackGrindThread(GrindThread):
            (character_aura > self.character.preferred_aura and track.track_aura == -1) or \
            (character_aura >= self.character.preferred_aura and track.track_aura == -2):
             magentaprint("{0} unacceptable due to aura".format(track.name), False)
-            self.abandoned_last_track = False
-            self.skipped_last_track = True
-            return self.PATH_TO_SKIP_WITH[:]
+            return self.skip_track()
 
         if self.character.level in level_range:
             magentaprint("{0} is our chosen track".format(track.name), False)
@@ -750,7 +746,13 @@ class TrackGrindThread(GrindThread):
         else:
             magentaprint("{0} isn't acceptable to us due to level".format(track.name), False)
             # self.__nextpath = self.__nextpath + 1 #skips the next path
-            return self.PATH_TO_SKIP_WITH[:]
+            return self.skip_track()
+
+    def skip_track(self):
+        self.abandoned_last_track = False
+        self.skipped_last_track = True
+        self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
+        return self.PATH_TO_SKIP_WITH[:]
 
     def start_track(self, track):
         self.track_start_time = get_timeint()
