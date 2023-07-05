@@ -35,6 +35,7 @@ Wands/Items spell cast on use
 - Granite Rod == Crush
 - Grey rod == dustgust
 - Light Brown Crystal == engulf (t4 earth)
+- Glass Rod == invisibility
 - Ruby Amulet == Unknown spell on players???
 - Heathen Amulet == slow poison
 - Black Feather == ???

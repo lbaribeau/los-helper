@@ -44,10 +44,12 @@ class PotionBot(MiniBot):
         needs_to_shop = False
         self.granite_pots_count = self.inventory.count_granite_pots()
         if self.granite_pots_count <= 0:
-            needs_to_shop = True        
-            magentaprint("Needs to shop for granite pots: {} {}<=0".format(needs_to_shop, self.granite_pots_count), False)
-            magentaprint("Character inventory: {}".format(self.inventory), False)
-            raise "breaking here"
+            needs_to_shop = True
+
+            if self.character.GOLD < 20000:
+                magentaprint("Needs to shop for granite pots: {} {}<=0".format(needs_to_shop, self.granite_pots_count), False)
+                magentaprint("Character inventory: {}".format(self.inventory), False)
+                raise "breaking here not enough gold"
 
         return needs_to_shop
 
