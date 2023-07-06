@@ -67,7 +67,7 @@ class ArmourBot(MiniBot):
             mud_item = MudItem(match.group('item'))
             mud_item.map()
             if mud_item.is_repairable():
-                self.broken_armour.append(mud_item)
+                self.broken_armour.append(match.group('item'))
 
     def react_to_repair(self, match):
         if match.group(1) in self.broken_armour:
