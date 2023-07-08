@@ -941,7 +941,7 @@ class GrindThread(BotThread):
                     self.character.mobs.chase = ''
                     self.character.mobs.chase_exit = ''
             else:
-                magentaprint("BotThread.engage_monster() area id is none, so go to chapel after chasing.")
+                magentaprint("BotThread.engage_monster() area id is none, so go to chapel after chasing.", False)
                 go_hook = "areaid2"
                 self.direction_list.insert(0, go_hook)
 
