@@ -284,6 +284,11 @@ class SmartCombat(CombatObject):
         else:
             self.target = None
 
+    def get_next_target(self):
+        if self.character.mobs.attacking and len(self.character.mobs.attacking) > 0:
+            return self.character.mobs.attacking[0]
+        return None
+
     def run(self):
         self.stopping    = False
         self.mob_charmed = False

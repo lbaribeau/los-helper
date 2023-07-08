@@ -5,7 +5,7 @@ http://peewee.readthedocs.org/en/latest/peewee/installation.html
 '''
 
 import peewee
-import sys
+import sys, os, shutil
 
 db = peewee.Proxy()
 
@@ -124,12 +124,20 @@ def try_drop(cls):
         # print("Database.py ignoring exception in try_drop(): "+str(e))
         pass
 
-if "-nodb" in sys.argv:
-    db.initialize(peewee.SqliteDatabase("no.db", check_same_thread=False))
-else:
-    db.initialize(peewee.SqliteDatabase("maplos.db", check_same_thread=False))
+db_name = "maplos.db"
+# check if the config.env file exists
+if '-nodb' in sys.argv:
+    db_name = "no.db"
+elif not os.path.isfile('dev-config.env'):    
+    # the prescence of this file indicates that we are running in dev mode    
+    # copy the maplos-latest.db file overtop of the maplos.db file
+    # this will ensure that we are always running with the latest db schema
 
-database = SqliteDatabase("maplos.db", check_same_thread=False)
+    if os.path.isfile('maplos-latest.db'):
+        # copy the maplos-latest.db file overtop of the maplos.db file
+        shutil.copyfile('maplos-latest.db', 'maplos.db')
+
+database = SqliteDatabase(db_name, check_same_thread=False)
 db.initialize(database)
 
 

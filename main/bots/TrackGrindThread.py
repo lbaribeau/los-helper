@@ -598,7 +598,7 @@ class TrackGrindThread(GrindThread):
             Track("Fort Commander", self.smart_fort_path, 14, 20, 0, requires_ready=True, target_kills=1),
             Track("Veterans", self.BLADEMASTER, 8, 12, 0, has_cooldown=False),
             Track("North Bandits", self.smart_northern_bandits_path, 9, 14, -1, has_cooldown=False),
-            Track("Eastern Zombies Farm", self.ZOMBIES, 6, 12, 0, has_cooldown=False),
+            # Track("Eastern Zombies Farm", self.ZOMBIES, 6, 12, 0, has_cooldown=False),
             # Track("Eastern Farmers", self.ZOMBIES, 13, 16, 0, requires_ready=True),
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH, 0, 20, 9),
             Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 15, 0, has_cooldown=False),

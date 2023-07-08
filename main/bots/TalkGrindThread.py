@@ -18,14 +18,14 @@ class TalkGrindThread(BotThread):
             self.talking = False
             self.current_topics = []
             self.target_mobs = [
-                  # # # "Dr'Tel's Ghost",
-                  # # # "Gerdevarashimora",
+                  "Dr'Tel's Ghost",
+                  "Gerdevarashimora",
                   "Farside",
                   "Dwar",
                   "Mayor Demlin",
                   "Commander Rilmenson",
-                  # "Madame Zara",
-                  # "Ringmaster",
+                  "Madame Zara",
+                  "Ringmaster",
                   "Farmer Grangers Ghost",
                   "Farmer Malbon",
                   "Priestly Ghost",
@@ -45,7 +45,7 @@ class TalkGrindThread(BotThread):
                   "Rimark",
                   "Aldo",
                   "Horbuk",
-                  # "Volman the Inhumer",
+                  "Volman the Inhumer",
                   # "The Master Artificer",
                   "Kin'Tal",
                   "The Archbishop",
@@ -63,11 +63,11 @@ class TalkGrindThread(BotThread):
                   # "Knight Errant",
                   "Lord Tamaran", "Tario", "Lady Denlise", 
                   "Vickie",
-                  # "Matriarch Sara",
-                  # "Lord Arduis",
+                  "Matriarch Sara",
+                  "Lord Arduis",
                   "Bhezkam",
-                  # "Lady Jenlira", 
-                  # "Lady Arielle",
+                  "Lady Jenlira", 
+                  "Lady Arielle",
                   "Corien",
                   "Lyron the Elder","Shaldena the Red","Garbo the Hobbit","Whiteblade the Barbarian",
                   # "Great Druid",
@@ -76,9 +76,9 @@ class TalkGrindThread(BotThread):
                   "Grand Master Yang-Shi",
                   # # "Sensei",
                   "Dojo Administrator",
-                  # "Al'Sik the Carver",
-                  # "Zi'Cab the Chieftan",
-                  # "Vas'Polu the HawkMaster","Byr'Ula the Smith","Ha'Chans the Shaman",
+                  "Al'Sik the Carver",
+                  "Zi'Cab the Chieftan",
+                  "Vas'Polu the HawkMaster","Byr'Ula the Smith","Ha'Chans the Shaman",
                   "Th'kit the HorseMaster",
                   "Druid Galm",
                   # "Forest Master",
@@ -90,28 +90,28 @@ class TalkGrindThread(BotThread):
                   "Greenbough the Dryad",
                   "Deep Root",
                   "Oakheart",
-                  # "Winter's Watcher",
-                  # "Agguedian's Simulcrum",
-                  # "rough-hewn golem",
+                  "Winter's Watcher",
+                  "Agguedian's Simulcrum",
+                  "rough-hewn golem",
                   "barbarian shaman",
-                  # "Cheryn",
+                  "Cheryn",
                   "Maco Bail", # Behind locked door
                   "Manic Soothsayer",
                   "Elder Barthrodue",
                   "Goourd",
                   "Old Man James",
                   'Haram',
-                  # # "GuildMaster Cuvelas",
+                  "GuildMaster Cuvelas",
                   "Chiaru Maradiu",
-                  # # "Thereze",
-                  # # "Qimoth",
+                  "Thereze",
+                  "Qimoth",
                   "Joffi the Mystic",
-                  # # "Gorban",
+                  "Gorban",
                   "Pansy",
-                  # # "Kelluran",
-                  # # "Ordaran the White",
-                  # "Corellan",
-                  # "Picharos Silvermane",
+                  "Kelluran",
+                  "Ordaran the White",
+                  "Corellan",
+                  "Picharos Silvermane",
             ]
 
             if target is not None:
@@ -142,6 +142,9 @@ class TalkGrindThread(BotThread):
                   "gossip",
                   "mix",
                   "brew",
+                  "forget",
+                  "remember",
+                  "memory",
                   # leveling
                   # "train",
                   # "level",
@@ -215,6 +218,7 @@ class TalkGrindThread(BotThread):
                   "key",
                   "ore",
                   "gold",
+                  "golden",
                   "silver",
                   "copper",
                   "iron",
@@ -232,6 +236,7 @@ class TalkGrindThread(BotThread):
                   "gem",
                   "fire",
                   "water",
+                  "mnemosyne",
                   "earth",
                   "air",
                   "wind",
@@ -287,6 +292,9 @@ class TalkGrindThread(BotThread):
                   "hide",
                   "skin",
                   "carpet",
+                  "tear",
+                  "teardrop",
+                  "body",
                   # spells
                   "blind",
                   "clairvoyance",
@@ -573,6 +581,10 @@ class TalkGrindThread(BotThread):
                   if mobMessage.message is not None:
                         messages += " " + mobMessage.message
             
+            # join together all the mob names into a string list and lowercase it all
+            mob_names = ' '.join(self.target_mobs).lower()
+            messages += " " + mob_names
+
             # regex replace all punctuation in messages with spaces
             # for each word greater than 3 letters in the messages list
             # if the word is not in the current topics or mobMessage keywords then add it to current topcis

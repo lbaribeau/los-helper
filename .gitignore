@@ -223,6 +223,7 @@ pip-log.txt
 main/__pycache__/*
 main/*.db
 maplos.db
+dev-config.env
 /reporting_website/static/reports/*
 
 *.plist
