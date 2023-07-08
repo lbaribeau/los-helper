@@ -479,7 +479,7 @@ class TrackGrindThread(GrindThread):
         self.THOMAS_IRONHEART = ["areaid189"]
         self.MINERS = ['areaid1265', 'areaid1273', 'areaid1280', 'areaid1182', 'areaid1291', 'areaid1289']
         self.GOBLINS = ['areaid1615', 'north', 'camp', 'south']
-        self.HEF = ['areaid533', 'trail', 'areaid1678'] #'areaid2170', 'unlock panel', 'panel', 'get all'
+        self.HEF = ['areaid533', 'trail', 'areaid1678', 'door'] #'areaid2170', 'unlock panel key', 'panel', 'get all'
 
         self.PATH_TO_SKIP_WITH = ['think']
 

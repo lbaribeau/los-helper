@@ -38,11 +38,10 @@ Wands/Items spell cast on use
 - Glass Rod == invisibility
 - Ruby Amulet == Unknown spell on players???
 - Heathen Amulet == slow poison
-- Black Feather == ???
-- Gold Feather == fly
+- Gold Hippogriff Feather == fly
 - Magic Carpet == levitate
 - Platinum Compass == detect magic
-- Glass Compass == track
+- Glass Compass == track (teleport to the given player)
 - hollow reed == ??? (Thomas Ironheart trade for hippogriff egg)
 - shadowy glass == detect-invisible
-- crystal talisman == ???
+- crystal talisman == ??? (maybe summon? trades to Farside for crystal ring)

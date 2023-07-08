@@ -258,6 +258,7 @@ class Character(object):
             for cooldown in cooldowns:
                 is_ready = self.check_cooldowns(cooldown)
                 if not is_ready:
+                    is_ready = False
                     break
 
         return is_ready

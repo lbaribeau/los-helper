@@ -496,6 +496,9 @@ class CommandHandler(object):
             for unique_exit in exit_objs:
                 self.telnetHandler.write("look " + unique_exit)
                 time.sleep(0.2)
+        elif re.match("ready?", user_input):
+            is_ready = self.character.is_ready_for_tough_fight()
+            magentaprint(str(is_ready), False)
         elif re.match("bfall", user_input):
             magentaprint("brute forcing all exits", False)
             exits = ExitType.get_all_exits()
@@ -800,7 +803,7 @@ class CommandHandler(object):
             spell = theSplit[0]
             target = theSplit[1] + " " + " ".join(theSplit[2:])
 
-        magentaprint("Command handler kkc with target " + target)
+        # magentaprint("Command handler kkc with target " + target)
         self.smartCombat.start_thread(target, spell, stunlock, nervousmode)
 
     def user_kk2(self, argv, stunlock=False, nervousmode=False):

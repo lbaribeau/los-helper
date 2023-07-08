@@ -136,7 +136,7 @@ class SmartGrindThread(TrackGrindThread):
             self.reset_kill_list()
 
     def reset_gear(self):
-        if self.should_reset_gear and not (self.is_character_class('Mag') or self.is_character_class('Thi')):# or self.is_character_class('Ass')):
+        if self.should_reset_gear and not (self.is_character_class('Mag') or self.is_character_class('Thi') or self.is_character_class('Mon')):# or self.is_character_class('Ass')):
             self.command_handler.process('rem all') # remove all equipment
             self.command_handler.process('wear all') # wear all equipment
             self.remove_class_gear()
@@ -242,7 +242,7 @@ class SmartGrindThread(TrackGrindThread):
             mob_target = Mob.get_mob_by_name(mob)
 
             # vicars are too common and not worth the time unless we need to rebalance our aura
-            if mob_target.name == "vicar" and self.character.AURA <= self.character.preferred_aura:
+            if mob_target.name == "vicar" and self.character.AURA >= self.character.preferred_aura:
                 return False
 
             if self.is_mob_too_tough_for_caster(mob_target):

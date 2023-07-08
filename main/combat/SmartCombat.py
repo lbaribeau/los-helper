@@ -32,6 +32,7 @@ class SmartCombat(CombatObject):
     used_ability = False
     stun_lock_mode = False
     nervous_mode = False # mode for liberally using potions
+    continue_mode = False
 
     def __init__(self, kill, cast, potion_thread_handler, wield, telnetHandler, character, weapon_bot):
         super().__init__(telnetHandler)
@@ -236,10 +237,11 @@ class SmartCombat(CombatObject):
         self.set_target(target)
         super().keep_going()
 
-    def start_thread(self, target, spell=None, stun_lock_mode=False, nervousmode=False):
+    def start_thread(self, target, spell=None, stun_lock_mode=False, nervousmode=False, continuemode=False):
         # Doesn't ThreadingMixin do this?
         self.stun_lock_mode = stun_lock_mode
         self.nervous_mode = nervousmode
+        self.continue_mode = continuemode
         self.set_target(target)
 
         for mob in [str(m) for m in self.character.mobs.list]:
