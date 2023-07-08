@@ -76,6 +76,9 @@ python3
 * -headless: pushes data to the report.json file in /reporting_website/api
 * -campslave: sits in the chapel then buffs and heals anyone who rests (w/ cooldowns)
 
+## Development vs Production mode
+The helper will always overwrite maplos.db with maplos-latest.db unless you have a dev-config.env file in your main directory. This prevents fragmented databases and makes productionizing changes easier.
+
 ## Running headlessly
 This will run the bot headlessly so you can watch on the remote server - output goes to the nohup.out file so you can cat/grep as needed for debug info
 `nohup python3 main/los_helper.py username password -grind -headless &`
