@@ -18,8 +18,6 @@ class TalkGrindThread(BotThread):
             self.talking = False
             self.current_topics = []
             self.target_mobs = [
-                  "Dr'Tel's Ghost",
-                  "Gerdevarashimora",
                   "Farside",
                   "Dwar",
                   "Mayor Demlin",
@@ -45,6 +43,7 @@ class TalkGrindThread(BotThread):
                   "Rimark",
                   "Aldo",
                   "Horbuk",
+                  "Gerdevarashimora",
                   "Volman the Inhumer",
                   # "The Master Artificer",
                   "Kin'Tal",
@@ -76,6 +75,7 @@ class TalkGrindThread(BotThread):
                   "Grand Master Yang-Shi",
                   # # "Sensei",
                   "Dojo Administrator",
+                  "Dr'Tel's Ghost",
                   "Al'Sik the Carver",
                   "Zi'Cab the Chieftan",
                   "Vas'Polu the HawkMaster","Byr'Ula the Smith","Ha'Chans the Shaman",
@@ -284,6 +284,8 @@ class TalkGrindThread(BotThread):
                   "moth",
                   "jade",
                   "raw",
+                  "nugget",
+                  "immadhun",
                   "block",
                   "stone",
                   "ascoula", # stone that Jerrek is looking for
@@ -451,7 +453,12 @@ class TalkGrindThread(BotThread):
                   "bloody",
                   "grumdug",
                   "elder",
-                  "bludnug"
+                  "bludnug",
+                  # "jagg", #players the criers speak about
+                  # "crow", #players the criers speak about
+                  # "stahn", #players the criers speak about
+                  # "bruno", #players the criers speak about
+                  # "valiant", #players the criers speak about
             ]
 
       def get_path_to_target_mob(self, mob):

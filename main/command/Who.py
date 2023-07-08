@@ -46,6 +46,7 @@ class Who(Command):
             # the first word on each line is a player name
             # regex extract all the first words
             regex = r"(\w+) .+?\n"
+            # regex = r"(\w+) +(?:.....) (?:.+?)  +(.+?)  +\n"
             player_matches = re.findall(regex, player_list)
 
             self.character.players = []

@@ -9,6 +9,14 @@ __item            = r"(?P<item>[A-Za-z0-9\-'\s\(\)\+]+)"
 __items           = r"(?P<items>[A-Za-z0-9\-'\s,\(\)\+]+)"
 __player          = r"(?P<player>[A-Za-z]+)"
 
+# Player          State Title                               Race          
+# -------------------------------------------------------------------------
+# Werp            _____ Ascended One                        Dwarf         
+# Dwarp           _____ Pickpocket                          Dwarf         
+# Zerp            _____ Enchanter                           Elf           
+# Mustangy        _____ Enlightened Brother                 Half-giant    
+# Cerp            _____ Abbess                              Elf    
+
 # regex to parse the output of 'who'
 who_success       = [r"(?:Player.+?State.+?[\n\r][\n\r]?-+[\n\r][\n\r]?)(?:((?:(\w+)\s+(?:\w+)\s+(?:[\w]+(?: \w+)?)\s+(?:[\w-]+)\s+?[\n\r][\n\r]?)+))"]
 player_entered    = [r"### (.+?) .+?entered.+?."]

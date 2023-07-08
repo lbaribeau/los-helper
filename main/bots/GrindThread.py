@@ -223,12 +223,26 @@ class GrindThread(BotThread):
 
         return mob_level < (self.character.level - level_diff)
 
+    def persistently_try_to_buff(self):
+        buff_attempt = 0
+        first = True
+        while not self.character.is_buffed() and buff_attempt < 4:
+            if self.character.mobs.chase != '' or \
+                self.character.mobs.attacking != []:
+                break
+
+            if not first and not self.character.is_buffed():
+                self.sleep(6)
+            self.use_buff_ability()
+            buff_attempt += 1
+            first = False
+
     def pre_combat_actions(self, target):
         mob_target = Mob.get_mob_by_name(target)
         if self.character.level >= 14 and not self.is_mob_weak(mob_target):
-            self.use_buff_ability()
+            self.persistently_try_to_buff()
         elif self.character.level < 14 and not self.is_mob_weak(mob_target, 5):
-            self.use_buff_ability()
+            self.persistently_try_to_buff()
 
 
     def set_up_automatic_ring_wearing(self):
@@ -985,10 +999,10 @@ class GrindThread(BotThread):
             self.command_handler.get.failed_to_get_items = False
 
     def get_items_if_weapon(self):        
-        if hasattr(self.smartCombat.weapon_bot, 'weapon') or self.is_character_class('Mon'):
+        if not self.character.NEEDS_TO_SELL or hasattr(self.smartCombat.weapon_bot, 'weapon') or self.is_character_class('Mon'):
             self.get_items()
         else:
-            magentaprint("GrindThread leaving items behind since weapon is broken.")
+            magentaprint("GrindThread leaving items behind since weapon is broken.", False)
             # This is an easy fix for "You can't carry any more." stopping the bot completely
             # (Weapon shatters - bot picks up a heavy stick - bot has trouble shopping)
             # The better fix that will come in with TopDownGrind is to go and sell/drop when it fails to buy something.

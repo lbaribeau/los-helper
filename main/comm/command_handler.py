@@ -37,7 +37,8 @@ from command.Wield              import Wield
 from command.Wield              import Second
 from command.Buy                import Buy
 from command.Ask                import Ask
-# from command.Drop               import Drop
+# from command.Talk               import Talk
+#from command.Drop               import Drop
 from command.Get                import Get
 from Aura                       import Aura
 from comm.thread_maker          import ThreadMaker
@@ -127,6 +128,8 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.buy)
         self.ask = Ask(telnetHandler)
         mudReaderHandler.add_subscriber(self.ask)
+        # self.talk = Talk(telnetHandler)
+        # mudReaderHandler.add_subscriber(self.talk)
         # self.drop = Drop(telnetHandler)
         # mudReaderHandler.add_subscriber(self.drop)
         self.get = Get(telnetHandler, character.inventory)
@@ -440,8 +443,8 @@ class CommandHandler(object):
             self.start_slave(user_input)
         elif user_input.startswith('buy '):
             self.buy.execute(user_input.partition(' ')[2])
-        elif user_input.startswith('ask '):
-            M_obj = re.search("ask (.+)", user_input)
+        elif re.match("^(ask|talk)(.+?)?", user_input):
+            M_obj = re.search("(?:ask|talk) (.+)", user_input)
             self.ask.execute(M_obj.group(1))
         elif re.match("bbuy (.+?)", user_input):
             self.bbuy(user_input)

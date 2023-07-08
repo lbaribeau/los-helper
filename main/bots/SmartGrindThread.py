@@ -173,7 +173,7 @@ class SmartGrindThread(TrackGrindThread):
     def do_go_hooks(self, exit_str):
         if self.go_rest_if_not_ready() and self.character.mobs.chase != "" and not self.on_heal_path:
         # if self.go_rest_if_not_ready() and not self.on_heal_path:
-            magentaprint("going to rest and not on heal path", False)
+            # magentaprint("going to rest and not on heal path", False)
             magentaprint(self.direction_list, False)
             return True
 
