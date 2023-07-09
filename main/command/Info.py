@@ -5,7 +5,7 @@ from Aura import Aura
 from misc_functions import magentaprint
 
 class Info(BotReactionWithFlag):
-    header = "     (\S+) the (.+?), an? (.+?) of the (1st|2nd|3rd|\d\d?th) level    "
+    header = "(\S+) the (.+?), an? (.+?) of the (1st|2nd|3rd|\d\d?th) level"
     your_preferred = "Your preferred alignment is (.+?)     "
 
     first = (
