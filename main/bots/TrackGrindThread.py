@@ -651,7 +651,7 @@ class TrackGrindThread(GrindThread):
             Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 1, requires_ready=True, target_kills=1),
             Track("MAYOR_DEMLIN", self.MAYOR_DEMLIN, 18, 20, 1, requires_ready=True, target_kills=1),
             Track("THOMAS_IRONHEART", self.THOMAS_IRONHEART, 18, 20, 0, requires_ready=True, target_kills=1),
-            Track("Hef the Bandit Chief", self.HEF, 12, 13, -1, allows_caster=False),
+            # Track("Hef the Bandit Chief", self.HEF, 12, 13, -1, allows_caster=False),
         ]
     
     def decide_where_to_go(self):
@@ -696,6 +696,12 @@ class TrackGrindThread(GrindThread):
 
         character_aura = Aura(self.character.AURA)
         aura_acceptable = character_aura == self.character.preferred_aura
+
+        # caster classes can run out of mana and then have a bad time since their main source of DPS is gone
+        # alternatively these paths could have a lot of loot that casters cannot carry and that will leave items on the ground
+        if not track.allows_caster and self.character._class.is_caster():
+            magentaprint("{0} isn't acceptable to us due to caster class restriction".format(track.name), False)
+            return self.skip_track()
 
         if track.requires_ready and (not self.character.is_ready_for_tough_fight() or not aura_acceptable):
             magentaprint("{0} isn't acceptable to us due to aura".format(track.name), False)

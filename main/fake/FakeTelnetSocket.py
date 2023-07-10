@@ -85,7 +85,7 @@ class FakeTelnetSocket(object):
             # "Derp                  Mon  M  [12]Brother                    16    Human\n")
             # self.char.name + spaces + "Mon  M  [12]Brother                    16    Human\n"
             # self.char.name + spaces + "Ran  M  [08]Keeper                    16    Human\n"
-            self.char.name + spaces + "Mon  M  [13]Keeper                    16    Human\n"
+            self.char.name + spaces + "Mon  M  [13]Keeper                    16    Half-giant\n"
         )
         self.spells_string = (
             "\n\r"
@@ -111,8 +111,8 @@ class FakeTelnetSocket(object):
         self.time_string = '                      Meditate   *READY*\n                         Touch   3:25 minutes remaining\n\r'
 
         self.info_string = (
-            "/============================== Overview ==================================\\\n\r"
-            "|         " + self.char.name + " the Human, an Enlightened Brother of the 15th level      |\n\r"
+            "\n\r/============================== Overview ==================================\\\n\r"
+            "|   " + self.char.name + " the Half-giant, an Enlightened Brother of the 13th level     |\n\r"
             "|                  Your preferred alignment is dusty red                   |\n\r"
             "\==========================================================================/\n\r"
             "\n\r"

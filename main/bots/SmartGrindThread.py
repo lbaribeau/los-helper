@@ -344,7 +344,7 @@ class SmartGrindThread(TrackGrindThread):
                 else:
                     paths = self.mud_map.get_paths_to_restorative_area(from_path)
             else:
-                magentaprint("get_heal_path returning areaid2", False)
+                # magentaprint("get_heal_path returning areaid2", False)
                 return ["areaid2"]
         except Exception as e:
             #not a good situation - we can't find a way to the chapel from wherever we are
