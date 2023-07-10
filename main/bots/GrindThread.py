@@ -980,12 +980,12 @@ class GrindThread(BotThread):
             self.character.mobs.attacking.remove(monster)
             # Reason: if Mobs gets notified in the wrong order, smelly beggar gets added after it gets removed,
             # and I got a bad mobs.attacking... order has been fixed.
-
-        if not self.character.mobs.attacking:
-            self.get_items_if_weapon()
         
         end_combat = get_timeint()
         self.character.COMBAT_TIME += (end_combat - start_combat).total_seconds()
+
+        if not self.character.mobs.attacking:
+            self.get_items_if_weapon()
 
     # def do_flee_hook(self):
     #     self.stop()

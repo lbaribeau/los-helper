@@ -202,15 +202,17 @@ class Inventory(SimpleCommand, ReferencingList):
         'stone medal', 'basilisk scale', 'basilisk head', 'occultate stone', 'jade block', 'rock wolf fang',
         'enchanted indigo cloak', 'fine elven cloak', 'light elven cloak', 'lion charm', 'poison ring', 
         'greenwood jerkin',"paladins's plate armour", "master's habit", "magus robe",
-        'silver druidic robe','lucky pebble',"blue ioun stone","stolen contract",
+        'silver druidic robe','lucky pebble',"blue ioun stone",
         "Ha'Chans' Blessing",
-        
+        # "stolen contract", # air resistance trade
+        # "nesting flax", # water resistance trade
+
         # temporary items
         # 'small iron key',
         'dwarven rum',
         # 'burnt ochre potion',
         'makeup kit', 'Dalla\'s Blessing',
-        'Aaashaaal\'s gift',
+        # 'Aaashaaal\'s gift',
         'silver flute',
         'ash wood key',
 
