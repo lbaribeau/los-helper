@@ -209,7 +209,7 @@ class Inventory(SimpleCommand, ReferencingList):
 
         # temporary items
         # 'small iron key',
-        'dwarven rum',
+        # 'dwarven rum',
         # 'burnt ochre potion',
         'makeup kit', 'Dalla\'s Blessing',
         # 'Aaashaaal\'s gift',

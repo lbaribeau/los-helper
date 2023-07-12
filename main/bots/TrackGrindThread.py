@@ -679,7 +679,7 @@ class TrackGrindThread(GrindThread):
         #     magentaprint("Character doesn't need to sell", False)
 
         nextpath = None
-        if self.last_track is not None and self.abandoned_last_track:
+        if self.last_track is not None and self.abandoned_last_track and not self.last_track.is_glamping:
             magentaprint("abandoned last track so we're re-running it", False)
             nextpath = self.evaluate_track(self.last_track)
         else:

@@ -19,6 +19,7 @@ class SmartCombat(CombatObject):
     casts = 0
     attacks = 0
     stuns = 0
+    fleeing = False
     thread = None
     target = None
     mob_target = None
@@ -179,13 +180,6 @@ class SmartCombat(CombatObject):
             pass
         # magentaprint("SmartCombat notify done " + match.re.pattern)
 
-    def stop(self):
-        super().stop()
-        self.activated = False
-        # Eh should we stop the potion thread?
-        # sure
-        self.potion_thread_handler.stop
-
     def should_use_heal_ability(self):
         should_use = len(self.heal_abilities) > 0 and \
             self.heal_ability_is_up
@@ -226,9 +220,12 @@ class SmartCombat(CombatObject):
             return 0.20 * self.character.maxHP
 
     def stop(self):
-        self.potion_thread_handler.stop()
-        #self.stopping = True
         super().stop() #.stopping
+        self.potion_thread_handler.stop()
+
+        # if self.continue_mode and not self.fleeing and len(self.character.mobs.list) > 0:
+        #     self.keep_going(self.character.mobs.list.list[0].name)
+        #     self.run()
 
     def keep_going(self, target=None):
         # self.stopping = False
@@ -297,7 +294,7 @@ class SmartCombat(CombatObject):
         self.fleeing     = False
         self.error       = False
         self.used_ability = False
-        self.nervous_mode = False
+        # self.nervous_mode = False
 
         self.casts = 0
         self.attacks = 0

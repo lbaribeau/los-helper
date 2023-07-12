@@ -311,9 +311,11 @@ class CommandHandler(object):
         elif user_input.startswith('kkc '):
             self.user_kkc(user_input.partition(' ')[2].strip())
         elif user_input.startswith('kks '):
-            self.user_kk2(user_input.partition(' ')[2].strip(), stunlock=True)
+            self.user_kk2(user_input.partition(' ')[2].strip(), stunlockmode=True)
         elif user_input.startswith('kkn '):
             self.user_kk2(user_input.partition(' ')[2].strip(), nervousmode=True)
+        elif user_input.startswith('kl '):
+            self.user_kk2(user_input.partition(' ')[2].strip(), continuemode=True)
         elif user_input.startswith('kk2 '):
             self.user_kk2(user_input.partition(' ')[2].strip())
         elif re.match('^(dro?|drop) ', user_input):
@@ -784,7 +786,7 @@ class CommandHandler(object):
             self.CastThread = CastThread(self.character, self.mudReaderHandler, self.telnetHandler, spell, target)
             self.CastThread.start()      
 
-    def user_kkc(self, argv, stunlock=False, nervousmode=False):
+    def user_kkc(self, argv, stunlockmode=False, nervousmode=False, continuemode=False):
         theSplit = argv.split(" ")
         n = len(theSplit)
 
@@ -807,13 +809,14 @@ class CommandHandler(object):
             target = theSplit[1] + " " + " ".join(theSplit[2:])
 
         # magentaprint("Command handler kkc with target " + target)
-        self.smartCombat.start_thread(target, spell, stunlock, nervousmode)
+        self.smartCombat.start_thread(target, spell, stunlockmode, nervousmode, continuemode)
+            
 
-    def user_kk2(self, argv, stunlock=False, nervousmode=False):
+    def user_kk2(self, argv, stunlockmode=False, nervousmode=False, continuemode=False):
         # Usage: "kk2 target"
         # Uses smart combat with level 2 spell
         teh_split = argv.split(" ")
-        self.user_kkc(" ".join(teh_split), stunlock, nervousmode)
+        self.user_kkc(" ".join(teh_split), stunlockmode, nervousmode)
         if self.smartCombat.favourite_spell is comm.Spells.burn:
             teh_split.insert(0, comm.Spells.fireball)
         elif self.smartCombat.favourite_spell is comm.Spells.hurt:
@@ -822,11 +825,11 @@ class CommandHandler(object):
             teh_split.insert(0, comm.Spells.waterbolt)
         elif self.smartCombat.favourite_spell is comm.Spells.rumble:
             teh_split.insert(0, comm.Spells.crush)
-        self.user_kkc(" ".join(teh_split), stunlock, nervousmode)
+        self.user_kkc(" ".join(teh_split), stunlockmode, nervousmode, continuemode)
 
-    def user_kk3(self, argv, stunlock=False, nervousmode=False):
+    def user_kk3(self, argv, stunlockmode=False, nervousmode=False):
         teh_split = argv.split(" ")
-        self.user_kkc(" ".join(teh_split), stunlock, nervousmode)
+        self.user_kkc(" ".join(teh_split), stunlockmode, nervousmode)
         if self.smartCombat.favourite_spell is comm.Spells.burn:
             teh_split.insert(0, comm.Spells.burstflame)
         elif self.smartCombat.favourite_spell is comm.Spells.hurt:
@@ -835,7 +838,7 @@ class CommandHandler(object):
             teh_split.insert(0, comm.Spells.waterbolt)
         elif self.smartCombat.favourite_spell is comm.Spells.rumble:
             teh_split.insert(0, comm.Spells.crush)
-        self.user_kkc(" ".join(teh_split), stunlock, nervousmode)
+        self.user_kkc(" ".join(teh_split), stunlockmode, nervousmode)
 
     def user_sc(self):
         self.cast.stop()
@@ -937,8 +940,8 @@ class CommandHandler(object):
 
     def start_noob_grind(self):
         if self.bot_check():
-            self.botThread = NoobGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
-            self.botThread.start()
+            self.bot_thread = NoobGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.bot_thread.start()
 
     # start talk grind
     def start_talk_grind(self, user_input):
@@ -948,18 +951,18 @@ class CommandHandler(object):
             target = M_obj.group(1)
 
         if self.bot_check():
-            self.botThread = TalkGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, target)
-            self.botThread.start()
+            self.bot_thread = TalkGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, target)
+            self.bot_thread.start()
 
     def start_campslave(self):
         if self.bot_check():
-            self.botThread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, "camp", False)
-            self.botThread.start()
+            self.bot_thread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, "camp", False)
+            self.bot_thread.start()
 
     def start_camp_grind(self):
         if self.bot_check():
-            self.botThread = CampGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
-            self.botThread.start()
+            self.bot_thread = CampGrindThread(self.character, self, self.mudReaderHandler, self.mud_map)
+            self.bot_thread.start()
 
     def start_track_grind(self, user_input):
         magentaprint("CommandHandler start_track_grind()")
@@ -1013,8 +1016,8 @@ class CommandHandler(object):
             kill = True
 
         if self.bot_check():
-            self.botThread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, master, kill)
-            self.botThread.start()
+            self.bot_thread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, master, kill)
+            self.bot_thread.start()
 
     def do_mix(self, user_input):
         if self.bot_check():
@@ -1052,9 +1055,11 @@ class CommandHandler(object):
         # if self.bot_thread and self.bot_thread.is_alive():
         if self.bot_thread:
             self.bot_thread.stop()
+        
         self.weapon_bot.stop()
         self.armour_bot.stop()
         self.travel_bot.stop()
+        self.mix_bot.stop()
 
     def bbuy(self, user_input):
         try:

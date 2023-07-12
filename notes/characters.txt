@@ -20,6 +20,7 @@ Perp,17, ranger elf (16 14 2 8 14)
 Qerp,10, mage
 Replace ~~Rerp,7, cleric, gnome (15+16+3+3+17/15+15+3+6+15 elf) cleric?
 Serp, 14, alc,
+Replace ~~Terp,9, thief, dwarf (18,3,3,18,12?)
 Replace ~~Twerp,6, cleric, human
 Trerp,13, druid elf lvl 9 3 12 3 18 18
 Replace ~~Terp,9, thief 18 3 4 18 11 (bad dex)
