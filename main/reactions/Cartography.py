@@ -282,6 +282,7 @@ class Cartography(BotReactionWithFlag):
     def guess_location(self, area_from_id, direction_from):
         guessed_area = None
 
+        magentaprint("MudArea: " + str(self.character.MUD_AREA), False)
         if self.character.MUD_AREA is not None:
             exit_type = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
 

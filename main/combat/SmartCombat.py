@@ -670,6 +670,7 @@ class SmartCombat(CombatObject):
         # magentaprint("Debugging smart combat should catch kill.error: {0}".format(self.kill.error))
         if self.kill.error:
             magentaprint("kill error - stopping", False)
+            self.character.mobs.attacking = [] # clear out the attacking list, this should get reset if they block us or attack us
             self.error = True
             self.stop()
         # self.character.ATTACK_CLK = time.time()  # TODO: Kill should be smart enough to keep the clock set

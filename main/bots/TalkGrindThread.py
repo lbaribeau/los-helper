@@ -303,6 +303,7 @@ class TalkGrindThread(BotThread):
                   "mechanism",
                   "machine",
                   "heart",
+                  "cerulindial",
                   # spells
                   "blind",
                   "clairvoyance",

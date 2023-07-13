@@ -73,8 +73,8 @@ class Go(Command):
         super().notify(regex, M_obj)
 
     def execute(self, target):
-        # magentaprint("Go.execute()")
         self.door = False
+        self.character.LAST_DIRECTION = target
         # while self.character.TRYING_TO_MOVE is True:
         #     # Hack - wait for Cartography
         #     time.sleep(0.05)
