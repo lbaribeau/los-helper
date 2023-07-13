@@ -141,6 +141,9 @@ class Cartography(BotReactionWithFlag):
         C = self.character
         if C.AREA_ID is not None:
             guessed_area = self.guess_location(C.AREA_ID, C.LAST_DIRECTION)
+            magentaprint(f"Cartography - too dark - character area: {str(C.AREA_ID)}", False)
+            magentaprint(f"Cartography - too dark - character direction: {str(C.LAST_DIRECTION)}", False)
+            magentaprint(f"Cartography - too dark - guessed area: {str(guessed_area)}", False)
 
             if guessed_area is not None:
                 C.AREA_ID    = guessed_area.area.id
