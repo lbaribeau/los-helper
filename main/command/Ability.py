@@ -53,12 +53,15 @@ class BuffAbility(Ability):
     def notify(self, regex, M_obj):
         if regex in self.success_regexes:
             self.active = True
+            magentaprint("Buff ability is now active", False)
         elif regex is self.wear_off_regex:
             # self.__class__.timer = time.time() + self.__class__.cooldown_after_success - self.lasts
             self.active = False
+            magentaprint("Buff wears off", False)
         elif regex in self.failure_regexes:
             self.timer = time.time() + self.cooldown_after_failure
             self.active = False
+            magentaprint("Buff attempt failed", False)
         # elif regex is self.already_buffed_regex:
         #     if self.up():
         #         # Timer is completely wrong -> Just set it very high and wait for wear_off_regex
@@ -161,6 +164,7 @@ class Berserk(BuffAbility):
     already_buffed_regex = RegexStore.already_berserk
     wear_off_regex =  RegexStore.red_mist_fades
     lasts = 60
+    # The red mist fades from your sight.
     # classes = ["Bar", "Dar"]
     level = 1
 

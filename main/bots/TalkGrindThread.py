@@ -43,11 +43,11 @@ class TalkGrindThread(BotThread):
                   "Rimark",
                   "Aldo",
                   "Horbuk",
-                  "Gerdevarashimora",
-                  "Volman the Inhumer",
+                  # "Gerdevarashimora",
+                  # "Volman the Inhumer",
                   # "The Master Artificer",
                   "Kin'Tal",
-                  "The Archbishop",
+                  # "The Archbishop",
                   "Tardan",
                   # "Trantas", #hardcore arena NPC
                   "Gregor",
@@ -199,6 +199,7 @@ class TalkGrindThread(BotThread):
                   "demons",
                   "jaguar",
                   "frog",
+                  "spawning",
                   "sprite",
                   "aqueous",
                   "scarecrow",
@@ -257,6 +258,7 @@ class TalkGrindThread(BotThread):
                   "handle",
                   "hilt",
                   "blade",
+                  "blades",
                   "axe",
                   "staff",
                   "dagger",
@@ -297,6 +299,10 @@ class TalkGrindThread(BotThread):
                   "tear",
                   "teardrop",
                   "body",
+                  "strange",
+                  "mechanism",
+                  "machine",
+                  "heart",
                   # spells
                   "blind",
                   "clairvoyance",
@@ -379,6 +385,9 @@ class TalkGrindThread(BotThread):
                   "mound",
                   "lake",
                   "fleet",
+                  "village",
+                  "tertinantageal",
+                  "gallenduraleal",
                   #races
                   "dwarf",
                   "elf",
@@ -442,10 +451,11 @@ class TalkGrindThread(BotThread):
                   "vaun", # dark knight
                   "kervack", # dark knight
                   "aldoram", # paladin turned dark knight
-                  "jagg", # greatest fighter in all the land
+                  # "jagg", # greatest fighter in all the land
                   "daray", # "She is powerful and knows many secrets,many dark things. I consider that special
                   "fisherman",
                   "helyana",
+                  "dalough",
                   "antitheus",
                   "elnor",
                   "garin", # blade who never stood by

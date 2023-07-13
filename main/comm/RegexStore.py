@@ -677,7 +677,7 @@ already_seconding = [r"You already have something in your off hand\."]
 not_skilled       = [r'You are not yet skilled enough to use this!']
 not_ranger        = [r'The skill is currently beyond you\.']
 
-bought       = [r"^Bought\."]
+bought       = [r"^\n?\r?Bought\."]
 # bought       = [r"Bought\."]
 buy_what     = [r"Buy what\?"]
 not_a_shop   = [r"This is not a shoppe\."]

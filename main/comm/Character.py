@@ -240,9 +240,12 @@ class Character(object):
 
     def check_cooldowns(self, cooldowns):
         cooldowns_ready = True
-        for cooldown in cooldowns:
-            if cooldown.up():
-                return True
+
+        if len(cooldowns) > 0:
+            cooldowns_ready = False
+            for cooldown in cooldowns:
+                if cooldown.up():
+                    return True
         
         return cooldowns_ready
 
@@ -257,6 +260,14 @@ class Character(object):
                     return True
         return is_buffed
 
+    def buff_ability_up(self):
+        buff_abilities = self._class.buff_skills
+        if len(buff_abilities) > 0:
+            for buff in buff_abilities:
+                if buff.up():
+                    return True
+        return False
+
     def is_ready_for_tough_fight(self):
         is_ready = self.is_near_max_stats() and self.inventory.count_large_restoratives() > 4
 
@@ -265,7 +276,7 @@ class Character(object):
             buff_abilities        = self._class.buff_skills
             slow_combat_abilities = self._class.slow_combat_skills
             fast_combat_abilities = self._class.fast_combat_skills
-            cooldowns = [heal_abilities, slow_combat_abilities, fast_combat_abilities]
+            cooldowns = [heal_abilities, slow_combat_abilities, buff_abilities, fast_combat_abilities]
 
             for cooldown in cooldowns:
                 is_ready = self.check_cooldowns(cooldown)
@@ -273,11 +284,8 @@ class Character(object):
                     is_ready = False
                     break
             
-            if is_ready:
-                for buff in buff_abilities:
-                    if not buff.up() and not buff.active:
-                        is_ready = False
-                        break
+            # if is_ready and len(buff_abilities) > 0:
+            #     is_ready = self.is_buffed() or self.check_cooldowns(buff_abilities)
 
         return is_ready
 

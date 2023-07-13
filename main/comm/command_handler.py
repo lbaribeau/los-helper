@@ -1056,10 +1056,17 @@ class CommandHandler(object):
         if self.bot_thread:
             self.bot_thread.stop()
         
-        self.weapon_bot.stop()
-        self.armour_bot.stop()
-        self.travel_bot.stop()
-        self.mix_bot.stop()
+        if self.weapon_bot:
+            self.weapon_bot.stop()
+
+        if self.armour_bot:
+            self.armour_bot.stop()
+        
+        if self.travel_bot:
+            self.travel_bot.stop()
+        
+        if self.mix_bot:
+            self.mix_bot.stop()
 
     def bbuy(self, user_input):
         try:

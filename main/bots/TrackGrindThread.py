@@ -679,8 +679,8 @@ class TrackGrindThread(GrindThread):
         #     magentaprint("Character doesn't need to sell", False)
 
         nextpath = None
-        if self.last_track is not None and self.abandoned_last_track and not self.last_track.is_glamping:
-            magentaprint("abandoned last track so we're re-running it", False)
+        if self.last_track is not None and not self.skipped_last_track and self.abandoned_last_track and not self.last_track.is_glamping:
+            magentaprint(f"abandoned last track ({str(self.abandoned_last_track)}) so we're re-running it", False)
             nextpath = self.evaluate_track(self.last_track)
         else:
             self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
@@ -692,7 +692,7 @@ class TrackGrindThread(GrindThread):
 
     def evaluate_track(self, track):
         self.skipped_last_track = False
-        level_range = range(track.min_level, track.max_level)        
+        level_range = range(track.min_level, track.max_level)
 
         character_aura = Aura(self.character.AURA)
         aura_acceptable = character_aura == self.character.preferred_aura

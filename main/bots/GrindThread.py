@@ -225,23 +225,24 @@ class GrindThread(BotThread):
 
     def persistently_try_to_buff(self):
         buff_attempt = 0
-        first = True
-        while not self.character.is_buffed() and buff_attempt < 4:
+        buff_success = False
+        while not buff_success and not self.character.is_buffed() and buff_attempt < 4:
+            buff_success = self.use_buff_ability()
             if self.character.mobs.chase != '' or \
                 self.character.mobs.attacking != []:
                 break
 
-            if not first and not self.character.is_buffed():
+            if not buff_success:
                 self.sleep(6)
-            self.use_buff_ability()
+
             buff_attempt += 1
             first = False
 
     def pre_combat_actions(self, target):
         mob_target = Mob.get_mob_by_name(target)
-        if self.character.level >= 14 and not self.is_mob_weak(mob_target):
-            self.persistently_try_to_buff()
-        elif self.character.level < 14 and not self.is_mob_weak(mob_target, 5):
+        if (not self.is_mob_weak(mob_target, 5) or \
+        (self.inventory.count_large_restoratives() < 5 and not self.is_mob_weak(mob_target, 7))) and\
+            self.character.buff_ability_up():
             self.persistently_try_to_buff()
 
 

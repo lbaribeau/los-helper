@@ -512,6 +512,7 @@ class SmartGrindThread(TrackGrindThread):
         if not self.ready_for_combat():
             if not self.abandoned_last_track:
                 self.abandoned_last_track = True
+                magentaprint("Going to rest because we're not ready for combat abandon = True", False)
                 self.character.add_to_track_param("abandons", 1)
             self.direction_list = self.get_heal_path()
             self.on_heal_path = True
