@@ -304,6 +304,7 @@ class TalkGrindThread(BotThread):
                   "machine",
                   "heart",
                   "cerulindial",
+                  "hitlist",
                   # spells
                   "blind",
                   "clairvoyance",
@@ -524,6 +525,16 @@ class TalkGrindThread(BotThread):
                   if len(self.current_topics) == 0:
                         magentaprint("No talking points found, skipping: {}".format(self.target_mob), False)
                         self.index += 1
+                        return []
+
+                  foundMob = False
+                  for mob in [str(m) for m in self.character.mobs.list]:
+                        if self.target_mob == mob:
+                              foundMob = True
+                              break
+                  
+                  if foundMob:
+                        self.talking = True
                         return []
 
                   magentaprint("Looking {} for mob: {}".format(self.index, self.target_mob), False)

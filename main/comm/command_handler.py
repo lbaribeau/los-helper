@@ -64,16 +64,14 @@ from command.Look               import Look
 class CommandHandler(object):
     def init_map_and_bots(self):
         # magentaprint("CommandHandler generating the mapfile....", False)
-        self.mud_map = MudMap() # Takes a few seconds
         # Initialize things that NEED the map
         # (The map takes a few seconds)
         self.armour_bot = ArmourBot(self.character, self, self.mud_map)
         self.mudReaderHandler.add_subscriber(self.armour_bot)
         self.weapon_bot.add_in_map(self.mud_map)
         self.travel_bot = TravelBot(self.character, self, self.mud_map)
-        magentaprint("CommandHandler: Mapfile completed.", False)
 
-    def __init__(self, character, mudReaderHandler, telnetHandler):
+    def __init__(self, character, mudReaderHandler, telnetHandler, mud_map):
         # It's ok to have a "dependency injection container" that instantirates everything in one spot
         # Also, lately I'm ok with something like SmartCombat needing a long list of arguments
         # They are good arguments... it's a list of the commands it needs... it makes sense
@@ -167,7 +165,7 @@ class CommandHandler(object):
             Go.cooldown_after_success = 0.2
 
         self.bot_thread = None
-        self.mud_map = None
+        self.mud_map = mud_map
         self.mud_map_thread = None
         if self.threaded_map_setup:
             # Threading the db setup causes a locking error if the starting area needs to be saved

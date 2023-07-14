@@ -63,7 +63,9 @@ from reactions.ring_reaction import RingWearingReaction
 class LosHelper(object):
     def __init__(self):
         magentaprint("LosHelper instantiation...", False)
-
+        magentaprint("Loading map", False)
+        self.mud_map = MudMap() # Takes a few seconds
+        magentaprint("Map loaded", False)
         # self.initializer = Initializer()
         self.character = Character()
         self.character.prompt = Prompt()
@@ -126,7 +128,7 @@ class LosHelper(object):
 
         self.check_info()
 
-        self.command_handler = CommandHandler(self.character, self.mud_reader_handler, self.telnetHandler)
+        self.command_handler = CommandHandler(self.character, self.mud_reader_handler, self.telnetHandler, self.mud_map)
         self.cartography = Cartography(self.mud_reader_handler, self.command_handler, self.character)
         self.command_handler.go.cartography = self.cartography
             # Cartography shouldn't need command_handler to fix dependencies
@@ -371,8 +373,16 @@ def do_startup():
         L = LosHelper()
         L.main()
         L.close()
-    except Reboot:
-        do_startup()
+    except Exception as e:
+        magentaprint("Shutting down client", False)
+        L.close()
+        threads = threading.enumerate()
+        for thread in threads:
+            # if thread is alive then join it
+            if thread.is_alive() and thread.name != "MainThread":
+                magentaprint("Joining thread: " + str(thread), False)
+                L.join_thread(thread)
+        sys.exit()
     return L
 
 L = do_startup()

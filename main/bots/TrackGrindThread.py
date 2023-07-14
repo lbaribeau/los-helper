@@ -192,9 +192,9 @@ class TrackGrindThread(GrindThread):
         # self.GOOURD = [
         #     'areaid1899'
         # ]
-        self.MUGGER_PATH = ["areaid2",
-            'ou','s','w','w','w','s','alley','w','alley','e','e','e','e','e','n','w','n','chap'
-        ]
+        # self.MUGGER_PATH = ["areaid2",
+        #     'ou','s','w','w','w','s','alley','w','alley','e','e','e','e','e','n','w','n','chap'
+        # ]
         self.smart_northern_bandits_path = ['areaid421','south','s','s','n','n','n']
         self.NORTHERN_BANDITS_PATH = ["areaid2", 
             'out','n','n', 'w','gate','n','n','n','n','n','gate',
@@ -250,8 +250,8 @@ class TrackGrindThread(GrindThread):
             'gate', 'north', 'east', 'east', 'south', 'east', 'north', 'south',
             'west', 'west', 'west']
         
-        self.MUGGER_PATH = [
-            'ou','s','w','w','w','s','alley','w','alley','e','e','e','e','e','n','w','n','chap'
+        self.SMART_MUGGER_PATH = [
+            'areaid14','alley','w','alley','e','e'
         ]
         self.DWARVEN_FIELD_WORKERS_PATH = [
             'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','pathway','nw','n','n','n','se','e','e',
@@ -477,7 +477,7 @@ class TrackGrindThread(GrindThread):
         self.WHITEBLADE = ["areaid2109"]
         self.MAYOR_DEMLIN = ["areaid19"]
         self.THOMAS_IRONHEART = ["areaid189"]
-        self.MINERS = ['areaid1265', 'areaid1273', 'areaid1280', 'areaid1182', 'areaid1291', 'areaid1289']
+        self.MINERS = ['areaid1265', 'areaid1273', 'areaid1280', 'areaid1182', 'areaid1291', 'areaid1289', 'ne']
         self.GOBLINS = ['areaid1615', 'north', 'camp', 'south']
         self.HEF = ['areaid533', 'trail', 'areaid1678', 'door'] #'areaid2170', 'unlock panel key', 'panel', 'get all'
 
@@ -605,7 +605,7 @@ class TrackGrindThread(GrindThread):
             Track("Miners", self.MINERS, 10, 16, 0, has_cooldown=False),
             Track("Boris Ironfounder", self.BORIS_IRONFOUNDER, 15, 20, 0, requires_ready=True, target_kills=1, allows_caster=False),
             Track("Mill Workers", self.smart_mill_path, 7, 14, 0, has_cooldown=False),
-            Track("Muggers", self.MUGGER_PATH, 9, 15, -1, has_cooldown=False),
+            Track("Muggers", self.SMART_MUGGER_PATH, 9, 15, -1, has_cooldown=False),
             Track("Old Man James", self.OLD_MAN_JAMES, 9, 12, 0, target_kills=1),
             Track("Olmer", self.OLMER, 11, 14, -1),
             Track("Cheryn", self.CHERYN, 11, 20, -1, requires_ready=False, target_kills=1),
