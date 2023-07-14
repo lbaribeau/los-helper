@@ -477,7 +477,7 @@ class TrackGrindThread(GrindThread):
         self.WHITEBLADE = ["areaid2109"]
         self.MAYOR_DEMLIN = ["areaid19"]
         self.THOMAS_IRONHEART = ["areaid189"]
-        self.MINERS = ['areaid1265', 'areaid1273', 'areaid1280', 'areaid1182', 'areaid1291', 'areaid1289', 'ne']
+        self.MINERS = ['areaid1265', 'areaid1273', 'areaid1280', 'areaid1182', 'areaid1291', 'areaid1289', 'areaid1265']
         self.GOBLINS = ['areaid1615', 'north', 'camp', 'south']
         self.HEF = ['areaid533', 'trail', 'areaid1678', 'door'] #'areaid2170', 'unlock panel key', 'panel', 'get all'
 
@@ -602,7 +602,7 @@ class TrackGrindThread(GrindThread):
             # Track("Eastern Farmers", self.ZOMBIES, 13, 16, 0, requires_ready=True),
             Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH, 0, 20, 9),
             Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 15, 0, has_cooldown=False),
-            # Track("Miners", self.MINERS, 10, 16, 0, has_cooldown=False),
+            Track("Miners", self.MINERS, 10, 16, 0, has_cooldown=False),
             Track("Boris Ironfounder", self.BORIS_IRONFOUNDER, 15, 20, 0, requires_ready=True, target_kills=1, allows_caster=False),
             Track("Mill Workers", self.smart_mill_path, 7, 14, 0, has_cooldown=False),
             Track("Muggers", self.SMART_MUGGER_PATH, 9, 15, -1, has_cooldown=False),
