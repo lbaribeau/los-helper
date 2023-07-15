@@ -250,7 +250,7 @@ class LosHelper(object):
         while not stopping:
             try:
                 user_input = input()
-            except (EOFError, KeyboardInterrupt) as e:
+            except Exception as e:
                 magentaprint("LosHelper: " + str(e))
                 user_input = ""
 
