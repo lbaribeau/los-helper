@@ -252,7 +252,7 @@ class LosHelper(object):
                 user_input = input()
             except Exception as e:
                 magentaprint("LosHelper: " + str(e))
-                user_input = ""
+                user_input = "-1"
 
             user_input = user_input.strip()
             # magentaprint("LosHelper user_input: " + str(user_input))
@@ -280,19 +280,22 @@ class LosHelper(object):
                 magentaprint("LosHelper calling command_handler.quit.")
                 stopping = self.command_handler.quit()
             else:
-                try:
-                    self.command_handler.process(user_input)
-                except socket.error as e:
-                    # if hasattr(e, 'errno') and e.errno is 32: # Broken pipe
-                    magentaprint("LosHelper caught telnet error and quitting: " + str(e))
-                    stopping = True
-                    if hasattr(e, 'errno'): # Broken pipe
-                        magentaprint("Errno: " + str(e.errno))
-                    # else:
-                    #     raise e
-                except:
-                    self.stopping = True
-                    raise
+                if user_input != '-1': # Empty string
+                    try:
+                        self.command_handler.process(user_input)
+                    except socket.error as e:
+                        # if hasattr(e, 'errno') and e.errno is 32: # Broken pipe
+                        magentaprint("LosHelper caught telnet error and quitting: " + str(e))
+                        stopping = True
+                        if hasattr(e, 'errno'): # Broken pipe
+                            magentaprint("Errno: " + str(e.errno))
+                        # else:
+                        #     raise e
+                    except:
+                        self.stopping = True
+                        raise
+                else:
+                    time.sleep(0.1)
 
     def write_username_and_pass(self):
         args = [s for s in sys.argv[1:] if not s.startswith('-') and s != '']
