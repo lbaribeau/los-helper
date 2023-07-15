@@ -273,7 +273,8 @@ class Character(object):
     def is_ready_for_tough_fight(self):
         is_ready = self.is_near_max_stats() and self.inventory.count_large_restoratives() > 4
 
-        if is_ready:
+        # we don't care about Alchemist slow combat ability "slow"
+        if is_ready and not self._class.id == 'Alc':
             heal_abilities        = self._class.heal_skills
             buff_abilities        = self._class.buff_skills
             slow_combat_abilities = self._class.slow_combat_skills
