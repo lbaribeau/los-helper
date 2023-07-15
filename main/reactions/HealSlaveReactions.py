@@ -173,7 +173,7 @@ class HealSlaveReactions(BotReaction):
                 magentaprint("<{0}> wonders about their purpose in life!!".format(target), False)
                 self.cast_spell("show", target)
 
-        elif regex == self.show_aura_trigger:
+        elif regex == self.detect_magic_trigger:
             target = M_obj.group(1)
             if not self.is_target_banned(target):
                 magentaprint("<{0}> wants to see some magic!!".format(target), False)
