@@ -11,6 +11,7 @@ class AreaExit(BaseModel):
     is_useable = BooleanField(default=True) #if the link is broken or potentially harzardous we don't want to use it
     is_hidden = BooleanField(default=False) #these will be manually set for now
     note = CharField(default="")
+    weight = DecimalField(default=0.1) #this is the weight of the exit, 1 is default, 0 is impassable, 10 is a shortcut, 100 is a teleport, etc
 
     '''Private Area Functions'''
     def map(self, area_from=None, exit_from=None):

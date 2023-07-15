@@ -306,6 +306,7 @@ class TalkGrindThread(BotThread):
                   "cerulindial",
                   "hitlist",
                   "master",
+                  "remedy",
                   "lime",
                   # spells
                   "blind",

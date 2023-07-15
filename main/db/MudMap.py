@@ -50,7 +50,10 @@ class MudMap(object):
 
         for area_exit in area_exits:
             name = area_exit.exit_type.name
-            self.los_map.add_edge(area_exit.area_from.id, area_exit.area_to.id, name=name)
+            # if area_exit.area_from.id == 938:
+            #     self.los_map.add_edge(area_exit.area_from.id, area_exit.area_to.id, name=name, weight=1000)
+            # else:
+            self.los_map.add_edge(area_exit.area_from.id, area_exit.area_to.id, name=name, weight=area_exit.weight)
 
             # area_to_id = -1 #this is a marker for a null / unexplored area
             # area_is_useable = True
@@ -83,7 +86,7 @@ class MudMap(object):
         # self.magentaprint("MudMap.get_path start/end: " + str(start_area_id) + "/" + str(end_area_id) + '.', False)
         node_path = []
         try:
-            node_path = networkx.shortest_path(self.los_map, source=start_area_id, target=end_area_id)
+            node_path = networkx.shortest_path(self.los_map, source=start_area_id, target=end_area_id, weight="weight")
         except Exception as e:
             magentaprint(f"Unable to path between nodes {start_area_id} -> {end_area_id}", False)
             # raise e
