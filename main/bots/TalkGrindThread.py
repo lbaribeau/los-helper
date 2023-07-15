@@ -305,6 +305,8 @@ class TalkGrindThread(BotThread):
                   "heart",
                   "cerulindial",
                   "hitlist",
+                  "master",
+                  "lime",
                   # spells
                   "blind",
                   "clairvoyance",
@@ -384,6 +386,9 @@ class TalkGrindThread(BotThread):
                   "grove",
                   "echuske",
                   "green",
+                  "red",
+                  "blue",
+                  "yellow",
                   "mound",
                   "lake",
                   "fleet",
@@ -466,6 +471,7 @@ class TalkGrindThread(BotThread):
                   "grumdug",
                   "elder",
                   "bludnug",
+                  "snarus",
                   # "jagg", #players the criers speak about
                   # "crow", #players the criers speak about
                   # "stahn", #players the criers speak about

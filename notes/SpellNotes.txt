@@ -47,3 +47,4 @@ Wands/Items spell cast on use
 - shadowy glass == detect-invisible
 - crystal talisman == ??? (maybe summon? trades to Farside for crystal ring)
 - granite poition / crystal vial == teleport to timeless halls (safety)
+- light brown crystal == ???

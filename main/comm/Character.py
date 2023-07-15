@@ -176,6 +176,8 @@ class Character(object):
 
         if self.level <= 3:
             self.HEALTH_TO_HEAL = 0.85 * self.info.maxHP
+        elif '-level' in sys.argv:
+            self.HEALTH_TO_HEAL = 0.70 * self.info.maxHP
         else:
             self.HEALTH_TO_HEAL = 0.90 * self.info.maxHP  # We can crank this back up when we fight stronger mobs
 

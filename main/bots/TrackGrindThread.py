@@ -575,6 +575,20 @@ class TrackGrindThread(GrindThread):
         self.use_extra_bless_item()
         self.use_extra_steel_bottle()
 
+    def aura_updated_hook(self):
+        # too evil
+        if self.character.AURA < self.character.preferred_aura:
+            self.tracks.sort(key=lambda x: x.track_aura)
+        # too good
+        elif self.character.AURA > self.character.preferred_aura:
+            self.tracks.sort(key=lambda x: x.track_aura, reverse=True)
+        # just right
+        else:
+            self.tracks.sort(key=lambda x: abs(x.track_aura))
+        
+        # restart the paths
+        self.__nextpath = 0
+
     def setup_tracks(self):
         self.tracks = [
             Track("Shop and Tip 0",self.SHOP_AND_TIP_PATH,0,20,9, has_cooldown=False),
@@ -653,6 +667,11 @@ class TrackGrindThread(GrindThread):
             Track("THOMAS_IRONHEART", self.THOMAS_IRONHEART, 18, 20, 0, requires_ready=True, target_kills=1),
             # Track("Hef the Bandit Chief", self.HEF, 12, 13, -1, allows_caster=False),
         ]
+
+        # sort the list of tracks by track_aura
+        # track 0 is preferred so these should be first followed by -1 or 1 respectively
+        self.tracks.sort(key=lambda x: abs(x.track_aura))
+        
     
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go", False)

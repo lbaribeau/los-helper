@@ -436,6 +436,7 @@ class SmartGrindThread(TrackGrindThread):
         magentaprint("Picking new target: " + next_target.to_string(), True)
 
     def aura_updated_hook(self):
+        super().aura_updated_hook()
         # self.low_level = int(math.ceil(self.character.level / 2)) - 2
         magentaprint("Current Aura Scale: " + str(Aura.auras))
         magentaprint("Preferred Aura Scale: " + str(self.character.preferred_aura))
