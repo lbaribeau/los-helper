@@ -19,6 +19,7 @@ class HealSlaveReactions(BotReaction):
         self.ban_target = "^(?:[A-Z]erp) hates (.+?)\."
         self.cast_light_on_target = "^(?:.+?) thinks (.+?) has trouble seeing\."
         self.remove_from_light_list = "^(?:.+?) thinks (.+?) can see fine\."
+        self.detect_magic_trigger = "^(.+?) ogles you salaciously\."
 
         magentaprint("slave started for <" + master + ">", False)
         if master == "camp":
@@ -33,7 +34,8 @@ class HealSlaveReactions(BotReaction):
                 self.show_aura_trigger,
                 self.ban_target,
                 self.cast_light_on_target,
-                self.remove_from_light_list
+                self.remove_from_light_list,
+                self.detect_magic_trigger
                 ]
         else:
             self.regexes = [self.group_damage]
@@ -134,6 +136,9 @@ class HealSlaveReactions(BotReaction):
                     self.do_heal_routine(self.target)
                     break
 
+    def emote(self, emote):
+        self.command_handler.telnetHandler.write(emote)
+
     def notify(self, regex, M_obj):
         magentaprint(regex, False)
         if regex == self.heal_trigger:
@@ -167,11 +172,19 @@ class HealSlaveReactions(BotReaction):
             if not self.is_target_banned(target):
                 magentaprint("<{0}> wonders about their purpose in life!!".format(target), False)
                 self.cast_spell("show", target)
+
+        elif regex == self.show_aura_trigger:
+            target = M_obj.group(1)
+            if not self.is_target_banned(target):
+                magentaprint("<{0}> wants to see some magic!!".format(target), False)
+                self.cast_spell("detect-magic", target)
         
         elif regex == self.ban_target:
             target = M_obj.group(1)
             if not self.is_target_banned(target):
                 magentaprint("<{0}> is banned!!".format(target), False)
+                # let em know what we think of them
+                self.emote("spit")
                 self.banned_targets.append(target)
             else:
                 magentaprint("<{0}> is already banned!!".format(target), False)
@@ -180,6 +193,8 @@ class HealSlaveReactions(BotReaction):
             target = M_obj.group(1)
             if not target in self.low_vision_targets:
                 magentaprint("<{0}> has low vision!!".format(target), False)
+                # let em know what we think of them
+                self.emote("nod")
                 self.low_vision_targets.append(target)
             else:
                 magentaprint("<{0}> already has low vision!!".format(target), False)
@@ -188,6 +203,8 @@ class HealSlaveReactions(BotReaction):
             target = M_obj.group(1)
             if target in self.low_vision_targets:
                 magentaprint("<{0}> can see fine!!".format(target), False)
+                # let em know what we think of them
+                self.emote("wipe")
                 self.low_vision_targets.remove(target)
             else:
                 magentaprint("<{0}> wasn't in our list!!".format(target), False)

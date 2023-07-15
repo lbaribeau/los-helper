@@ -22,6 +22,7 @@ Level 5 spells are not really in the game
 - Resist-cold can be found in the werewolf cave in the hidden passage when pressing the face, then to the east of the cave pressing the cushion (fighting the guarding wolf and bronze golem)
 - Sigil of Fire - Immolate (lvl4 spell) is dropped by the Lich of Bloodrock
 - Robar Greybeard - will trade dragon scroll (fire protect?) for some special gauntlets
+- Madame Zara drops a green scroll (detect-magic)
 
 
 Wands/Items spell cast on use
@@ -45,3 +46,4 @@ Wands/Items spell cast on use
 - hollow reed == ??? (Thomas Ironheart trade for hippogriff egg)
 - shadowy glass == detect-invisible
 - crystal talisman == ??? (maybe summon? trades to Farside for crystal ring)
+- granite poition / crystal vial == teleport to timeless halls (safety)
