@@ -40,7 +40,10 @@ class MudMap(object):
         self.ready = True
 
     def populate_map(self):
+        # area_select_statement = 'v_areas_for_graph where name not like "%fell and hurt%" and name not like "%]%" and name not like "% to take a rest%" and name not like "%chicken%" and name not like "%stop resting%" and name not like "%just arrived%" and name not like "%went to the%"'
+        # areas = Area.raw('select * from ' + area_select_statement)
         areas = Area.raw('select * from v_areas_for_graph')
+        # area_exits = AreaExit.raw('select * from v_areaexits_for_graph where area_from_id in (select id from '+area_select_statement+')')
         area_exits = AreaExit.raw('select * from v_areaexits_for_graph')
         # do_magentaprint("MudMap populate_map areas:" + str(areas))
         # do_magentaprint("MudMap populate_map area_exits:" + str(area_exits))

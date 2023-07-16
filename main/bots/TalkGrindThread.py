@@ -145,6 +145,8 @@ class TalkGrindThread(BotThread):
                   "forget",
                   "remember",
                   "memory",
+                  "conquer",
+                  "bloodlust",
                   # leveling
                   # "train",
                   # "level",
@@ -207,6 +209,7 @@ class TalkGrindThread(BotThread):
                   "lich",
                   "spirit",
                   "spectre",
+                  "ooze",
                   # things
                   "secret",
                   "item",
@@ -336,6 +339,7 @@ class TalkGrindThread(BotThread):
                   "stun",
                   "bind",
                   "confusion",
+                  "enchant",
                   # places
                   "cloud",
                   "mine",
@@ -473,6 +477,8 @@ class TalkGrindThread(BotThread):
                   "elder",
                   "bludnug",
                   "snarus",
+                  "winter",
+                  "watcher"
                   # "jagg", #players the criers speak about
                   # "crow", #players the criers speak about
                   # "stahn", #players the criers speak about

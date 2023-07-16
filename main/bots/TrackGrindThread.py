@@ -543,6 +543,7 @@ class TrackGrindThread(GrindThread):
                     self.sleep(0.25)
                     if self.stopping:
                         return
+                    self.do_regular_actions()
                 self.engage_any_attacking_mobs()
                 seconds_since_camp_start = (get_timeint() - camp_start_time).total_seconds()
             return True

@@ -13,9 +13,9 @@ class Area(NamedModel):
     is_pawn_shop     = peewee.BooleanField(default=False)
     is_tip           = peewee.BooleanField(default=False)
     note             = peewee.CharField(null=True)
-    x                = peewee.IntegerField(null=False,default=0)
-    y                = peewee.IntegerField(null=False,default=0)
-    z                = peewee.IntegerField(null=False,default=0)
+    x                = peewee.FloatField(null=False,default=0)
+    y                = peewee.FloatField(null=False,default=0)
+    # z                = peewee.IntegerField(null=False,default=0)
     #does_damage_on_entry = BooleanField(default=False)
     # harmful_to_good
     # harmful_to_evil
