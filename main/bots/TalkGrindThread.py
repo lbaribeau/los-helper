@@ -30,18 +30,21 @@ class TalkGrindThread(BotThread):
                   "Farmer Calmor",
                   "Farmer McDermott",
                   # # "Druid Tutor", #buggy
-                  "Bertram Dalrum",
-                  "Dame Brethil",
-                  "Douvan", "Queen Dalla", 
-                  "Jerrek", "Tag", "Rag",
-                  "Thomas Ironheart",
+                  # "Bertram Dalrum",  # doesn't respond to anything
+                  # "Dame Brethil",  # doesn't respond to anything
+                  # "Earl Mardley",  # doesn't respond to anything
+                  # "Alaran the Market Manager",  # doesn't respond to anything
+                  # "Douvan", "Queen Dalla", # completed dialogue
+                  # "Jerrek", # completed dialogue
+                  # "Tag", "Rag", # completed dialogue
+                  # "Thomas Ironheart", # completed dialogue
                   "Olarma",
                   "Master of Ceremonies", 
                   "Boris Ironfounder",
                   "Tendrurn",
-                  "Brotain",
-                  "Rimark",
-                  "Aldo",
+                  # "Brotain", # completed dialogue
+                  # "Rimark", # completed dialogue
+                  # "Aldo", # completed dialogue
                   "Horbuk",
                   # "Gerdevarashimora",
                   # "Volman the Inhumer",
@@ -60,18 +63,12 @@ class TalkGrindThread(BotThread):
                   #"White Mage",
                   # "The Barding Lord",
                   # "Knight Errant",
-                  "Lord Tamaran", "Tario", "Lady Denlise", 
-                  "Vickie",
-                  "Matriarch Sara",
-                  "Lord Arduis",
-                  "Bhezkam",
-                  "Lady Jenlira", 
-                  "Lady Arielle",
+                  "barbarian shaman",
                   "Corien",
-                  "Lyron the Elder","Shaldena the Red","Garbo the Hobbit","Whiteblade the Barbarian",
+                  # "Lyron the Elder","Shaldena the Red","Garbo the Hobbit","Whiteblade the Barbarian", # completed dialogue
                   # "Great Druid",
-                  "Teamleader Egan",
-                  "Trent the Merchant",
+                  # "Teamleader Egan", # doesn't respond to anything
+                  # "Trent the Merchant", # doesn't respond to anything
                   "Grand Master Yang-Shi",
                   # # "Sensei",
                   "Dojo Administrator",
@@ -83,35 +80,41 @@ class TalkGrindThread(BotThread):
                   "Druid Galm",
                   # "Forest Master",
                   "Broad Leaf", "Red Crown",
+                  "Lord Tamaran", "Tario", "Lady Denlise", 
+                  # "Vickie", # completed dialogue
+                  "Matriarch Sara",
+                  "Lord Arduis",
+                  "Bhezkam",
+                  "Lady Jenlira", 
+                  "Lady Arielle",
                   "Esrhae",
-                  "Haelyn",
-                  "Caethrodyn",
+                  # "Haelyn", # doesn't respond to anything
+                  # "Caethrodyn", # doesn't respond to anything
                   "Robar Greybeard",
                   "Greenbough the Dryad",
                   "Deep Root",
                   "Oakheart",
                   "Winter's Watcher",
                   "Agguedian's Simulcrum",
-                  "rough-hewn golem",
-                  "barbarian shaman",
-                  "Cheryn",
+                  # "rough-hewn golem", # completed dialogue
+                  # "Cheryn", # completed dialogue
                   "Maco Bail", # Behind locked door
                   "Manic Soothsayer",
                   "Elder Barthrodue",
-                  "Goourd",
-                  "Old Man James",
-                  'Haram',
-                  "GuildMaster Cuvelas",
+                  # "Goourd", # completed dialogue
+                  # "Old Man James", # completed dialogue
+                  'Haram', # completed dialogue
+                  "GuildMaster Cuvelas", # trainer
                   "Chiaru Maradiu",
-                  "Thereze",
+                  "Thereze", # completed dialogue
                   "Qimoth",
                   "Joffi the Mystic",
-                  "Gorban",
+                  "Gorban", # completed dialogue
                   "Pansy",
-                  "Kelluran",
-                  "Ordaran the White",
-                  "Corellan",
-                  "Picharos Silvermane",
+                  "Kelluran", # completed dialogue
+                  "Ordaran the White", # completed dialogue
+                  "Corellan", # completed dialogue
+                  "Picharos Silvermane", # completed dialogue
             ]
 
             if target is not None:
@@ -486,6 +489,9 @@ class TalkGrindThread(BotThread):
                   # "valiant", #players the criers speak about
             ]
 
+            brute_forced_responses  = MobMessage.get_messages_with_responses()
+            self.talk_topics = self.get_unique_keywords(brute_forced_responses)
+
       def get_path_to_target_mob(self, mob):
             # find a mob to talk to
             mob_location = MudMap.get_mob_locations_by_name(mob)
@@ -652,6 +658,14 @@ class TalkGrindThread(BotThread):
                               break
                   if not foundKeyword:
                         self.current_topics.append(temp_topic.lower())
+
+      def get_unique_keywords(self, mobMessages):
+            keywords = []
+            for mobMessage in mobMessages:
+                  topic = mobMessage.keyword.lower()
+                  if topic not in keywords:
+                        keywords.append(topic)
+            return keywords
 
       # do go hooks for talking to a mob
       def do_go_hooks(self, exit_str):

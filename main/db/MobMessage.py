@@ -50,6 +50,17 @@ class MobMessage(BaseModel):
 
         return mobMessage
 
+    def get_messages_with_responses():
+        mobMessages = []
+
+        try:
+            for mobMessage in MobMessage.raw("SELECT id, mob_id, lower(keyword) keyword, message FROM mobmessage WHERE message <> ''"):
+                mobMessages.append(mobMessage)
+        except MobMessage.DoesNotExist:
+            mobMessages = []
+
+        return mobMessages
+
     def get_message_by_partial_mobname_and_keyword(mob_first, keyword):
         mobMessage = None
 
