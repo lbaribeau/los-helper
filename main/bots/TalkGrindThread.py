@@ -19,16 +19,17 @@ class TalkGrindThread(BotThread):
             self.current_topics = []
             self.target_mobs = [
                   "Farside",
-                  "Dwar",
-                  "Mayor Demlin",
-                  "Commander Rilmenson",
-                  "Madame Zara",
-                  "Ringmaster",
-                  "Farmer Grangers Ghost",
-                  "Farmer Malbon",
+                  # "Dwar", # completed dialogue
+                  # "Mayor Demlin", # completed dialogue
+                  # "Commander Rilmenson", # completed dialogue
+                  # "General", # completed dialoguestop
+                  # "Madame Zara", # completed dialogue
+                  # "Ringmaster", # doesn't respond to anything
+                  # "Farmer Grangers Ghost", # completed dialogue
+                  # "Farmer Malbon", # completed dialogue
                   "Priestly Ghost",
-                  "Farmer Calmor",
-                  "Farmer McDermott",
+                  # "Farmer Calmor", # completed dialogue
+                  # "Farmer McDermott", # completed dialogue
                   # # "Druid Tutor", #buggy
                   # "Bertram Dalrum",  # doesn't respond to anything
                   # "Dame Brethil",  # doesn't respond to anything
@@ -38,83 +39,87 @@ class TalkGrindThread(BotThread):
                   # "Jerrek", # completed dialogue
                   # "Tag", "Rag", # completed dialogue
                   # "Thomas Ironheart", # completed dialogue
-                  "Olarma",
-                  "Master of Ceremonies", 
-                  "Boris Ironfounder",
-                  "Tendrurn",
+                  # "Olarma", # completed dialogue
+                  # "Master of Ceremonies",  # completed dialogue
+                  # "Boris Ironfounder", # completed dialogue
+                  # "Tendrurn", # completed dialogue
                   # "Brotain", # completed dialogue
                   # "Rimark", # completed dialogue
                   # "Aldo", # completed dialogue
-                  "Horbuk",
+                  # "Horbuk", # completed dialogue
                   # "Gerdevarashimora",
                   # "Volman the Inhumer",
                   # "The Master Artificer",
-                  "Kin'Tal",
-                  # "The Archbishop",
-                  "Tardan",
+                  # "Kin'Tal", # completed dialogue
+                  # "The Archbishop", # trainer
+                  # "Tardan", # completed dialogue
                   # "Trantas", #hardcore arena NPC
-                  "Gregor",
-                  "Farmer Viladin",
-                  "Cal the Hermit",
-                  "Farmer Woldis",
-                  "Rancher Renstone",
-                  "Rancher Plover",
-                  "Annette Plover",
-                  #"White Mage",
-                  # "The Barding Lord",
-                  # "Knight Errant",
+                  # "Gregor", # completed dialogue
+                  # "Farmer Viladin", # completed dialogue
+                  # "Cal the Hermit", # completed dialogue
+                  # "Farmer Woldis", # completed dialogue
+                  # "Rancher Renstone", # completed dialogue
+                  # "Rancher Plover", # completed dialogue
+                  # "Annette Plover", # completed dialogue
+                  # "White Mage", # trainer
+                  # "The Barding Lord", # trainer
+                  # "Knight Errant", # trainer
                   "barbarian shaman",
                   "Corien",
                   # "Lyron the Elder","Shaldena the Red","Garbo the Hobbit","Whiteblade the Barbarian", # completed dialogue
                   # "Great Druid",
                   # "Teamleader Egan", # doesn't respond to anything
                   # "Trent the Merchant", # doesn't respond to anything
-                  "Grand Master Yang-Shi",
-                  # # "Sensei",
-                  "Dojo Administrator",
-                  "Dr'Tel's Ghost",
-                  "Al'Sik the Carver",
-                  "Zi'Cab the Chieftan",
-                  "Vas'Polu the HawkMaster","Byr'Ula the Smith","Ha'Chans the Shaman",
-                  "Th'kit the HorseMaster",
-                  "Druid Galm",
+                  # "Grand Master Yang-Shi", # completed dialogue
+                  # # "Sensei", # trainer
+                  # "Dojo Administrator", # completed dialogue
+                  # "Dr'Tel's Ghost", # completed dialogue
+                  # "Al'Sik the Carver", # completed dialogue
+                  # "Zi'Cab the Chieftan", # doesn't respond to anything
+                  # "Vas'Polu the HawkMaster","Byr'Ula the Smith","Ha'Chans the Shaman", # completed dialogue
+                  # "Th'kit the HorseMaster", # completed dialogue
+                  # "Druid Galm", # completed dialogue
                   # "Forest Master",
-                  "Broad Leaf", "Red Crown",
-                  "Lord Tamaran", "Tario", "Lady Denlise", 
+                  "Broad Leaf",
+                  "Red Crown",
+                  "Lord Tamaran",
+                  # "Tario", # completed dialogue
+                  # "Lady Denlise",  # completed dialogue 
                   # "Vickie", # completed dialogue
-                  "Matriarch Sara",
+                  # "Matriarch Sara",
+                  # "Lady Arielle",
                   "Lord Arduis",
-                  "Bhezkam",
-                  "Lady Jenlira", 
-                  "Lady Arielle",
-                  "Esrhae",
+                  "Lady Jenlira", # completed dialogue
+                  # "Bhezkam",
+                  "Ironbark", # not found but mentioned by Jenlira!!!
+                  # "Esrhae", # completed dialoguel
                   # "Haelyn", # doesn't respond to anything
                   # "Caethrodyn", # doesn't respond to anything
-                  "Robar Greybeard",
+                  # "Robar Greybeard", # completed dialogue
                   "Greenbough the Dryad",
-                  "Deep Root",
+                  "Deep Root", # completed dialogue
                   "Oakheart",
-                  "Winter's Watcher",
-                  "Agguedian's Simulcrum",
+                  "Winter's Watcher", # completed dialogue
+                  # "Agguedian's Simulcrum", # not pathable
                   # "rough-hewn golem", # completed dialogue
                   # "Cheryn", # completed dialogue
-                  "Maco Bail", # Behind locked door
+                  # "Maco Bail", # Behind locked door
                   "Manic Soothsayer",
-                  "Elder Barthrodue",
+                  # "Elder Barthrodue", # completed dialogue
                   # "Goourd", # completed dialogue
                   # "Old Man James", # completed dialogue
-                  'Haram', # completed dialogue
-                  "GuildMaster Cuvelas", # trainer
+                  # 'Haram', # completed dialogue
+                  # "GuildMaster Cuvelas", # trainer
                   "Chiaru Maradiu",
-                  "Thereze", # completed dialogue
-                  "Qimoth",
-                  "Joffi the Mystic",
-                  "Gorban", # completed dialogue
-                  "Pansy",
-                  "Kelluran", # completed dialogue
-                  "Ordaran the White", # completed dialogue
-                  "Corellan", # completed dialogue
-                  "Picharos Silvermane", # completed dialogue
+                  # "Thereze", # completed dialogue
+                  # "Qimoth", # completed dialogue
+                  # "Joffi the Mystic", # completed dialogue
+                  # "Gorban", # completed dialogue
+                  # "Pansy", # completed dialogue
+                  # "Kelluran", # completed dialogue
+                  # "Ordaran the White", # completed dialogue
+                  # "Corellan", # completed dialogue
+                  # "Picharos Silvermane", # completed dialogue
             ]
 
             if target is not None:
