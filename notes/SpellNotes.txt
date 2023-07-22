@@ -46,4 +46,3 @@ Wands/Items spell cast on use
 - hollow reed == ??? (Thomas Ironheart trade for hippogriff egg)
 - shadowy glass == detect-invisible
 - crystal talisman == ??? (maybe summon? trades to Farside for crystal ring)
-- light brown crystal == ???

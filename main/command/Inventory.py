@@ -212,7 +212,7 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'small iron key',
         # 'dwarven rum',
         # 'burnt ochre potion',
-        'makeup kit', 'Dalla\'s Blessing',
+        'makeup kit', 'Dalla\'s blessing',
         # 'Aaashaaal\'s gift',
         'silver flute',
         'ash wood key',
