@@ -597,9 +597,10 @@ class TrackGrindThread(GrindThread):
         self.tracks = [
             Track("Shop and Tip 0",self.SHOP_AND_TIP_PATH,0,20,9, has_cooldown=False),
             # Aura intensive stuff all up front
+            Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0),
             Track("Gnoll Camp", self.GNOLL_CAMP, 15, 20, -1, False, 0, 9),
             Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9),
-            Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True),
+            Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 1, False, 7, 18, is_glamping=True),
             Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9, is_glamping=True),
             # Track("Goblins", self.GOBLINS, 16, 20, -2, False, 0, 9, has_cooldown=False, requires_ready=False, allows_caster=False),
             Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18),
@@ -644,7 +645,6 @@ class TrackGrindThread(GrindThread):
             Track("Horbuk", self.HORBUK, 15, 20, 1, requires_ready=True, target_kills=1),
             # Track("Shaldena the Red", self.SHALDENA, 15, 20, 1),
             Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,8,20,9, has_cooldown=False),
-            Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0, requires_ready=True),
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
             Track("Jerrek and Tag", self.JERREK_TAG, 11, 16, -1, requires_ready=True, target_kills=1),
             Track("Jerrek and Tag", self.JERREK_TAG, 16, 20, -1, target_kills=1),
@@ -729,13 +729,13 @@ class TrackGrindThread(GrindThread):
             magentaprint("{0} isn't acceptable to us due to caster class restriction".format(track.name), False)
             return self.skip_track()
 
-        if track.requires_ready and not self.character.is_ready_for_tough_fight():
-            magentaprint("{0} isn't acceptable due to tough fight function".format(track.name), False)
-            return self.skip_track()
+        # if track.requires_ready and not self.character.is_ready_for_tough_fight():
+        #     magentaprint("{0} isn't acceptable due to tough fight function".format(track.name), False)
+        #     return self.skip_track()
         
-        if track.requires_ready and not aura_acceptable:
-            magentaprint("{0} isn't acceptable to us due to aura".format(track.name), False)
-            return self.skip_track()
+        # if track.requires_ready and not aura_acceptable:
+        #     magentaprint("{0} isn't acceptable to us due to aura".format(track.name), False)
+        #     return self.skip_track()
 
         if track.track_aura == 9:
             if self.character.level in level_range:
