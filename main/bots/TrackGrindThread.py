@@ -597,7 +597,7 @@ class TrackGrindThread(GrindThread):
         self.tracks = [
             Track("Shop and Tip 0",self.SHOP_AND_TIP_PATH,0,20,9, has_cooldown=False),
             # Aura intensive stuff all up front
-            Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0),
+            Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0, has_cooldown=False),
             Track("Gnoll Camp", self.GNOLL_CAMP, 15, 20, -1, False, 0, 9),
             Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9),
             Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 1, False, 7, 18, is_glamping=True),
