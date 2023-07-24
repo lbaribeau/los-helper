@@ -488,7 +488,7 @@ class TrackGrindThread(GrindThread):
         if isinstance(self.starting_path, int) and self.starting_path < len(self.tracks):
             self.__nextpath = self.starting_path
         else:
-            self.__nextpath = random.randrange(0, len(self.tracks))
+            self.__nextpath = 0#random.randrange(0, len(self.tracks))
 
     def create_zombies_path(self):
         path = ['out', 'south', 'east','east','east','north', 'try_gate',
@@ -587,6 +587,9 @@ class TrackGrindThread(GrindThread):
         else:
             self.tracks.sort(key=lambda x: abs(x.track_aura))
         
+        magentaprint("aura updated hook", False)
+        magentaprint("tracks: " + str(self.tracks), False)
+
         # restart the paths
         self.__nextpath = 0
 
@@ -604,7 +607,7 @@ class TrackGrindThread(GrindThread):
             Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True),
             # grey and minor aura tracks
             Track("Theatre Farm", self.smart_theatre_path, 0, 17, 0, has_cooldown=False),
-            Track("Theatre Bertram", self.smart_theatre_path, 18, 20, 0, requires_ready=True, target_kills=1),
+            Track("Theatre Bertram", self.smart_theatre_path, 18, 20, 0, target_kills=1),
             Track("Market", self.smart_market_path, 0, 15, 0, has_cooldown=False),
             Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0, has_cooldown=False),
             Track("Kobolds", self.smart_kobold_path, 0, 9, -1, has_cooldown=False), #sentries are suuuper tough
@@ -626,7 +629,7 @@ class TrackGrindThread(GrindThread):
             Track("Cheryn", self.CHERYN, 11, 20, -1, requires_ready=False, target_kills=1),
             Track("Orcs", self.ORCS, 11, 16, -1),
             Track("Artificers", self.ARTIFICERS, 11, 14, -1),
-            Track("Haelyn", self.HAELYN, 16, 20, -1, requires_ready=True, target_kills=1, allows_caster=False), 
+            Track("Haelyn", self.HAELYN, 16, 20, -1, requires_ready=True, target_kills=1, allows_caster=False),
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1, has_cooldown=False),
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1, has_cooldown=False),
@@ -669,11 +672,14 @@ class TrackGrindThread(GrindThread):
             # Track("Hef the Bandit Chief", self.HEF, 12, 13, -1, allows_caster=False),
         ]
 
+        self.tracks = [x for x in self.tracks if self.character.level >= x.min_level and self.character.level < x.max_level]
         # sort the list of tracks by track_aura
         # track 0 is preferred so these should be first followed by -1 or 1 respectively
         self.tracks.sort(key=lambda x: abs(x.track_aura))
         
-    
+    def remove_tracks_outside_of_level_range(self):
+        self.tracks = [x for x in self.tracks if self.character.level >= x.min_level and self.character.level < x.max_level]
+
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go", False)
 
@@ -703,7 +709,7 @@ class TrackGrindThread(GrindThread):
             magentaprint(f"abandoned last track ({str(self.abandoned_last_track)}) so we're re-running it", False)
             nextpath = self.evaluate_track(self.last_track)
         else:
-            self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
+            # self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
             nextpath = self.evaluate_track(self.tracks[self.__nextpath])
     
         self.abandoned_last_track = False
@@ -723,12 +729,17 @@ class TrackGrindThread(GrindThread):
             magentaprint("{0} isn't acceptable to us due to caster class restriction".format(track.name), False)
             return self.skip_track()
 
-        if track.requires_ready and (not self.character.is_ready_for_tough_fight() or not aura_acceptable):
+        if track.requires_ready and not self.character.is_ready_for_tough_fight():
+            magentaprint("{0} isn't acceptable due to tough fight function".format(track.name), False)
+            return self.skip_track()
+        
+        if track.requires_ready and not aura_acceptable:
             magentaprint("{0} isn't acceptable to us due to aura".format(track.name), False)
             return self.skip_track()
 
         if track.track_aura == 9:
             if self.character.level in level_range:
+                self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
                 return track.track[:]
             else:
                 return self.skip_track()
@@ -745,8 +756,8 @@ class TrackGrindThread(GrindThread):
         # elif track.is_glamping and self.abandoned_last_track:
         #     magentaprint("{0} is a camping track so we won't re-run".format(track.name), False)
         #     return self.PATH_TO_SKIP_WITH[:]
-        else:
-            magentaprint("{0} is acceptable to us due to cooldown > {1} and has_cooldown {2}".format(track.name, seconds_since_last_run, track.has_cooldown), False)
+        # else:
+        #     magentaprint("{0} is acceptable to us due to cooldown > {1} and has_cooldown {2}".format(track.name, seconds_since_last_run, track.has_cooldown), False)
 
         if character_aura < track.min_aura or character_aura > track.max_aura:
             magentaprint("Character too good or evil for this track", False)
@@ -763,11 +774,11 @@ class TrackGrindThread(GrindThread):
             return self.skip_track()
 
         if self.character.level in level_range:
-            magentaprint("{0} is our chosen track".format(track.name), False)
             if self.character.current_track is not None:
                 self.end_track()
+            magentaprint("{0} is our chosen track".format(track.name), False)
             self.start_track(track)
-            
+            self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
             return track.track[:]
         else:
             magentaprint("{0} isn't acceptable to us due to level".format(track.name), False)
@@ -906,6 +917,15 @@ class Track():
             "exp": self.exp,
             "duration": self.duration
         }
+
+    def to_string(self):
+        return self.name + ", " + str(self.min_level) + " -> " + str(self.max_level) + ", " + str(self.track_aura) + ";"
+
+    def __str__(self):
+        return self.to_string()
+
+    def __repr__(self):
+        return self.to_string()
 
 # Just thinking about changing top level...
 

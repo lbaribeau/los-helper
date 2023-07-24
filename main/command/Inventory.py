@@ -217,6 +217,9 @@ class Inventory(SimpleCommand, ReferencingList):
         'silver flute',
         'ash wood key',
         'black lacquered key',
+        'Black Lacquered Key',
+        'Black Lacquered key',
+        'Black lacquered key',
 
         # important potions
         'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',

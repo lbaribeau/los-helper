@@ -434,7 +434,7 @@ class SmartCombat(CombatObject):
 
     def determine_favorite_spell_for_target(self):
         if self.mob_target is not None:
-            if self.get_mob_level() < 5:
+            if self.get_mob_level() < 5 or self.character.info.int < 9:
                 return self.get_min_rank_spell(True)
             elif self.is_mob_weak():
                 return self.favourite_spell

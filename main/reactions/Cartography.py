@@ -274,7 +274,7 @@ class Cartography(BotReactionWithFlag):
             message = M_obj.group(3)
 
             mobMessage = MobMessage(mob=mob, keyword=keyword, message=message)
-            MobMessage.map()
+            mobMessage.map()
 
         return
 
@@ -322,6 +322,10 @@ class Cartography(BotReactionWithFlag):
                 #     if (mob.approximate_level == None):
                 #         magentaprint("looking at monster for level info " + str(monster), False)
                 #         self.commandHandler.process('l ' + str(monster))
+                    # greeting_message = MobMessage.get_message_by_mob_and_keyword(mob, 'hello')
+                    # if greeting_message is None:
+                    #     self.commandHandler.process('ask ' + mob.name.split(' ')[0] + ' hello')
+                    #     time.sleep(0.5)
 
                 # magentaprint(str(mob))
 

@@ -175,7 +175,7 @@ class GrindThread(BotThread):
             if mob_target is not None and not mob_target.is_hostile and (self.is_character_class('Thi') or self.is_character_class('Ass')):
                 hide_attempt = 0
                 first = True
-                while not self.character.HIDDEN and hide_attempt < 2:
+                while not self.character.HIDDEN and hide_attempt < 5:
                     if self.character.mobs.chase != '' or \
                      self.character.mobs.attacking != []:
                      break
