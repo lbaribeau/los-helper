@@ -10,12 +10,12 @@ Flerp,2, anti-paladin, half-orc
 Gerp,15,mage,elf,12,3,3,18,18
 Herp,14, Thief dwarf 16 16 3 16 3
     Replace ~~Ierp,5, thief dwarf lvl 6
-    Replace ~~Jerp,1, alc, 10 10 9 13 13
+Jerp,1, cleric, 15+15+3+6+15 elf
 Kerp,16, dark knight dwarf 16 16 3 16 3
 Replace ~~Lerp,11, alc dwarf 15 16 3 16 4
 Merp,2, monk, elf (18 18 3 5 10)
 Nerp,14, druid dwarf 16 16 3 16 3
-    Replace ~~Oerp,7, dark knight dwarf 14 15 10 7 8 (15 15 10 7 7) => assassin, elf 17+16+3+6+12 (?) - red/thrust/sharp/wind (assassin dagger is thrust and seems nice)
+Oerp,7, assassin, elf 17+16+3+6+12 (?) - red/thrust/sharp/wind (assassin dagger is thrust and seems nice)
 Perp,17, ranger elf (16 14 2 8 14)
 Qerp,10, mage
     Replace ~~Rerp,7, cleric, gnome (15+16+3+3+17/15+15+3+6+15 elf) cleric?
