@@ -729,13 +729,13 @@ class TrackGrindThread(GrindThread):
             magentaprint("{0} isn't acceptable to us due to caster class restriction".format(track.name), False)
             return self.skip_track()
 
-        # if track.requires_ready and not self.character.is_ready_for_tough_fight():
-        #     magentaprint("{0} isn't acceptable due to tough fight function".format(track.name), False)
-        #     return self.skip_track()
+        if track.requires_ready and not self.character.is_ready_for_tough_fight():
+            magentaprint("{0} isn't acceptable due to tough fight function".format(track.name), False)
+            return self.skip_track()
         
-        # if track.requires_ready and not aura_acceptable:
-        #     magentaprint("{0} isn't acceptable to us due to aura".format(track.name), False)
-        #     return self.skip_track()
+        if track.requires_ready and not aura_acceptable:
+            magentaprint("{0} isn't acceptable to us due to aura".format(track.name), False)
+            return self.skip_track()
 
         if track.track_aura == 9:
             if self.character.level in level_range:
