@@ -328,7 +328,7 @@ class TrackGrindThread(GrindThread):
         self.smart_knights_path = ['areaid1053', 'south',
             'southeast', 'east', 'east', 'northeast', 'north', 'red tent', 'out', 'w','w','w','e','e','e', 's', 'w', 'w', 'w', 'e', 'e', 'e',
             'sw', 'w', 'w', 'nw', 'n', 'n', 'ne', 'stands', 'stand', 'out', 'stand 2', 'out', #'stand 3', 'out' #Tario
-            'e', 'se', 'w', 'w', 'w', 'e', 'e', 'e', 's', 'red tent']
+            'e', 'se', 'w', 'w', 'w', 'e', 'e', 'e', 's', 'red tent', "glamp", "glamp", "glamp"]
         self.KNIGHTS = ["areaid2",
             'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south', 'southwest', 'southwest',
             'southwest', 'southwest', 'south', 'south', 'south', 'southwest', 'southeast', 'south', 'south', 'south',
@@ -441,6 +441,8 @@ class TrackGrindThread(GrindThread):
         self.ARTIFICERS = ['areaid1350', 'areaid1008']
         self.HAELYN = ['areaid999'] #Haelyn
         self.SILKEN_ALLEY = ['areaid686', 'areaid706', 'areaid705', 'areaid698', 'areaid699', 'areaid700']
+        self.QIMOTH = ['areaid686']
+        self.GORBAN = ['areaid699']
         self.CORELLAN = ['areaid713']
         self.JERREK_TAG = ['areaid977', 'areaid979', 'areaid3857']
         self.MANIC_ELDER = ['areaid1899', 'areaid1465', 'areaid1491']
@@ -597,10 +599,12 @@ class TrackGrindThread(GrindThread):
         self.tracks = [
             Track("Shop and Tip 0",self.SHOP_AND_TIP_PATH,0,20,9, has_cooldown=False),
             # Aura intensive stuff all up front
-            Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0, has_cooldown=False),
+            Track("Gorban", self.GORBAN, 15, 20, 0, requires_ready=True),
+            Track("Qimoth", self.QIMOTH, 17, 20, 0, requires_ready=True),
+            Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0, requires_ready=True),
             Track("Gnoll Camp", self.GNOLL_CAMP, 15, 20, -1, False, 0, 9),
             Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9),
-            Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 1, False, 7, 18, is_glamping=True),
+            Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True),
             Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9, is_glamping=True),
             # Track("Goblins", self.GOBLINS, 16, 20, -2, False, 0, 9, has_cooldown=False, requires_ready=False, allows_caster=False),
             Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18),
