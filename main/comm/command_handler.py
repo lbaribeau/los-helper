@@ -497,8 +497,9 @@ class CommandHandler(object):
                 exit_objs[first_word] = first_word
             
             for unique_exit in exit_objs:
-                self.telnetHandler.write("look " + unique_exit)
-                time.sleep(0.2)
+                if not unique_exit in self.character.EXIT_LIST:
+                    self.telnetHandler.write("look " + unique_exit)
+                    time.sleep(0.2)
         elif re.match("ready?", user_input):
             is_ready = self.character.is_ready_for_tough_fight()
             magentaprint(str(is_ready), False)
@@ -511,8 +512,9 @@ class CommandHandler(object):
                 exit_objs[first_word] = first_word
             
             for unique_exit in exit_objs:
-                self.telnetHandler.write("look " + unique_exit)
-                time.sleep(0.2)
+                if not unique_exit in self.character.EXIT_LIST:
+                    self.telnetHandler.write("look " + unique_exit)
+                    time.sleep(0.2)
         elif re.match("bfdesc", user_input):
             area = self.character.MUD_AREA.area
             if area:
