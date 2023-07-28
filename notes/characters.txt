@@ -1,5 +1,5 @@
 Aerp,14, assassin dwarf 16 16 3 16 3
-Berp,12, bard elf 15 7 2 16 14
+Berp,18, bard elf 15 7 2 16 14
 Cerp,15, cleric (3 12 3 18 18)
 Derp,18, monk (lvl 14, masters habit)
 Drerp,18, barbarian
@@ -9,7 +9,7 @@ Ferp,13, fighter 18 3 4 18 11
 Flerp,2, anti-paladin, half-orc
 Gerp,15,mage,elf,12,3,3,18,18
 Herp,14, Thief dwarf 16 16 3 16 3
-    Replace ~~Ierp,5, thief dwarf lvl 6
+    Replace ~~Ierp,5, thief dwarf
 Jerp,1, cleric, 15+15+3+6+15 elf
 Kerp,16, dark knight dwarf 16 16 3 16 3
 Replace ~~Lerp,11, alc dwarf 15 16 3 16 4
@@ -23,7 +23,7 @@ Serp, 14, alc,
     Replace ~~Terp,9, thief, dwarf (18,3,3,18,12?) => thief, elf 17+16+3+6+12 (?) - grey/thrust/sharp/wind (assassin dagger is thrust and seems nice)
     Replace ~~Twerp,6, cleric, human
 Trerp,13, druid elf lvl 9 3 12 3 18 18
-    Replace ~~Uerp,1, druid 10 8 12 12 12 => druid, elf 17+16+3+6+12 (?) grey/blunt/wind
+Uerp,2,druid, elf 18+18+3+5+10 grey/blunt/wind
     TBD Verp ??? (15+16+3+3+17 dwarf/15+15+3+6+15 elf) Paladin
 Werp,17, monk (lvl 17, no habit)
 Xerp,18, fighter 15 14 3 6 16

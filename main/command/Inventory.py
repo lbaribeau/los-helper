@@ -196,7 +196,6 @@ class Inventory(SimpleCommand, ReferencingList):
         # Quest/Trade Items
         'Rod of Ruin', 'bank bond',
         'wrapped scroll', 'wyvern\'s sting', 'gold block', 'gold wand',  
-        'diamantium cross', 'rare coin',
         'copper thieves pass', 'bronze thieves pass', 'steel thieves pass', 'silver thieves pass',
         'druid\'s silver sickle', 'protective robes', "alchemist's ring",
         'stone medal', 'basilisk scale', 'basilisk head', 'occultate stone', 'jade block', 'rock wolf fang',
@@ -213,13 +212,12 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'dwarven rum',
         # 'burnt ochre potion',
         'makeup kit', 'Dalla\'s blessing',
+        'diamantium cross', 'rare coin',
         # 'Aaashaaal\'s gift',
         'silver flute',
         'ash wood key',
         'black lacquered key',
-        'Black Lacquered Key',
-        'Black Lacquered key',
-        'Black lacquered key',
+        'rusty key',
 
         # important potions
         'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',
