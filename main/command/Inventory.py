@@ -73,7 +73,6 @@ def parse_item_names(item_string_list):
                 'gold coins', 
                 'platinum coins', 
                 'silver coins', 
-                #'rare coin',  # Boris Ironfounder
                 'white chip', # Floor Manager
                 'black chip', # Floor Manager
                 'silver chest', 
@@ -216,7 +215,7 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'Aaashaaal\'s gift',
         'silver flute',
         'ash wood key',
-        'black lacquered key',
+        # 'black lacquered key',
         'rusty key',
 
         # important potions

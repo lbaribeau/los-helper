@@ -37,7 +37,8 @@ Wands/Items spell cast on use
 - Grey rod == dustgust
 - Light Brown Crystal == engulf (t4 earth)
 - Glass Rod == invisibility
-- Ruby Amulet == Unknown spell on players???
+- wand of elemental wind - thunderbolt spell (low dmg)
+- Ruby Amulet == Word of recall (teleport to timeless halls)
 - Heathen Amulet == slow poison
 - Gold Hippogriff Feather == fly
 - Magic Carpet == levitate
