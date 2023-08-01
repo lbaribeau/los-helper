@@ -175,18 +175,21 @@ class GrindThread(BotThread):
             if mob_target is not None and not mob_target.is_hostile and (self.is_character_class('Thi') or self.is_character_class('Ass')):
                 hide_attempt = 0
                 first = True
-                while not self.character.HIDDEN and hide_attempt < 5:
+                while not self.character.HIDDEN and hide_attempt < 2:
                     if self.character.mobs.chase != '' or \
                      self.character.mobs.attacking != []:
                      break
 
                     if not first and not self.character.HIDDEN:
                         self.sleep(6)
-                    self.backstab_prep()
+                    hidden = self.backstab_prep()
                     hide_attempt += 1
                     first = False
-                    if self.character.HIDDEN:
+                    if hidden:
+                        magentaprint("we're hidden so sleeping for a bit", False)
                         time.sleep(3)
+                    else:
+                        magentaprint("failed to hide", False)
 
             self.engage_monster(new_target)
             self.engage_mobs_who_joined_in()

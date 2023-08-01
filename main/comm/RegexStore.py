@@ -71,7 +71,7 @@ __exit           = r"(?P<exit>[A-Za-z ]+)"
 found_exit       = [r"You found an exit: " + __exit + r"\."]
 search_fail      = [r"You didn't find anything\."]
 hide             = [r"You slip into the shadows unnoticed\.", r"You are already hiding\."]
-hide_fail        = [r"You attempt to hide in the shadows\.$"]  # This occurs on success as well
+hide_fail        = [r"^You attempt to hide in the shadows\.\n?\r?(?!You slip into the shadows unnoticed\.)\n?\r?$"]  # This occurs on success as well so we use a negative lookahead
 prepare          = [r"You prepare yourself for traps\."]
 already_prepared = [r"You've already prepared\."]
 

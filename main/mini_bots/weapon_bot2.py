@@ -225,7 +225,9 @@ class MainhandWeaponBot(MiniBot):
                     magentaprint("Check weapons saw no gold to repair.")
                     return
                 else:
-                    magentaprint("Check weapons repairing problem")
+                    magentaprint("Check weapons repairing problem - shouldn't have repaired here", False)
+                    magentaprint("Area ID: " + self.character.AREA_ID, False)
+                    self.check_weapons()
                     raise
             else:
                 self.go_buy_default_weapon()
@@ -250,8 +252,10 @@ class MainhandWeaponBot(MiniBot):
                     magentaprint("Check weapons saw no gold to repair.")
                     return
                 else:
-                    magentaprint("Check weapons repairing problem")
-                    raise
+                    magentaprint("Check weapons repairing problem - shouldn't have repaired here", False)
+                    magentaprint("Area ID: " + self.character.AREA_ID, False)
+                    self.check_weapons()
+                    # raise
                     # This could be a db error
             else:
                 return self.go_buy_default_weapon()

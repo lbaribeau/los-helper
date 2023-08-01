@@ -242,7 +242,7 @@ class SmartGrindThread(TrackGrindThread):
             mob_target = Mob.get_mob_by_name(mob)
 
             # # vicars are too common and not worth the time unless we need to rebalance our aura
-            if mob_target.name == "vicar" and self.character.level < 12: # and self.character.AURA >= self.character.preferred_aura:
+            if mob_target.name == "vicar" and self.character.AURA <= self.character.preferred_aura:
                 return False
 
             if self.is_mob_too_tough_for_caster(mob_target):

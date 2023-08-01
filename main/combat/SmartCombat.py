@@ -649,13 +649,15 @@ class SmartCombat(CombatObject):
                     a.execute(self.target)
                     self.used_ability = True
                     self.kill.start_timer()
-                    # let's also do our magic attack ASAP
-                    if self.cast.up() or self.cast.wait_time() <= self.kill.wait_time() or self.casting:
+
+
+                    # let's also do our magic attack ASAP except for backstab which is a one hit kill
+                    # and we don't want to start a second fight with a similarly named mob
+                    if not isinstance(a, Backstab) and not self.cast.up() or self.cast.wait_time() <= self.kill.wait_time() or self.casting:
                         self.do_magic_attack()
-                    
-                    if not isinstance(a, Backstab):
-                        a.wait_for_flag()
-                    
+
+                    a.wait_for_flag()
+
                     if a.error:
                         magentaprint("Didn't receive flag for ability", False)
                         self.stop()

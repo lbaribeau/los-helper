@@ -199,6 +199,9 @@ class Hide(PreCombatAbility):
     failure_regexes = [RegexStore.hide_fail]
     level = 1
 
+    def wait_for_flag(self, **kwargs):
+        return super().wait_for_flag(**kwargs, timeout=1)
+
 class Meditate(HealAbility):
     command = "medi"
     cooldown_after_success = 95
