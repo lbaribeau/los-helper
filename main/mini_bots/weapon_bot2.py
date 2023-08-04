@@ -253,7 +253,7 @@ class MainhandWeaponBot(MiniBot):
                     return
                 else:
                     magentaprint("Check weapons repairing problem - shouldn't have repaired here", False)
-                    magentaprint("Area ID: " + self.character.AREA_ID, False)
+                    magentaprint("Area ID: " + str(self.character.AREA_ID), False)
                     self.check_weapons()
                     # raise
                     # This could be a db error
