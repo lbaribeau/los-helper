@@ -172,16 +172,20 @@ class GrindThread(BotThread):
             self.pre_combat_actions(new_target)
             mob_target = Mob.get_mob_by_name(new_target)
             
+            max_attempts = 1
+            if not self.is_mob_weak(mob_target):
+                max_attempts = 2
+
             if mob_target is not None and not mob_target.is_hostile and (self.is_character_class('Thi') or self.is_character_class('Ass')):
                 hide_attempt = 0
                 first = True
-                while not self.character.HIDDEN and hide_attempt < 2:
+                while not self.character.HIDDEN and hide_attempt < max_attempts:
                     if self.character.mobs.chase != '' or \
                      self.character.mobs.attacking != []:
                      break
 
                     if not first and not self.character.HIDDEN:
-                        self.sleep(6)
+                        self.sleep(11)
                     hidden = self.backstab_prep()
                     hide_attempt += 1
                     first = False
