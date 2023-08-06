@@ -7,7 +7,7 @@ Dwarp,1, thief (swamp troll)
 Eerp,18, fighter dwarf 15 16 3 16 4
 Ferp,13, fighter 18 3 4 18 11
 Flerp,2, anti-paladin, half-orc
-Gerp,15,mage,elf,12,3,3,18,18
+Gerp,18,mage,elf,12,3,3,18,18
 Herp,14, Thief dwarf 16 16 3 16 3
     Replace ~~Ierp,5, thief dwarf
 Jerp,1, cleric, 15+15+3+6+15 elf
@@ -16,7 +16,7 @@ Replace ~~Lerp,11, alc dwarf 15 16 3 16 4
 Merp,2, monk, elf (18 18 3 5 10)
 Nerp,14, druid dwarf 16 16 3 16 3
 Oerp,7, assassin, elf 17+16+3+6+12 (?) - red/thrust/sharp/wind (assassin dagger is thrust and seems nice)
-Perp,17, ranger elf (16 14 2 8 14)
+Perp,18, ranger elf (16 14 2 8 14)
 Qerp,10, mage
     Replace ~~Rerp,7, cleric, gnome (15+16+3+3+17/15+15+3+6+15 elf) cleric?
 Serp, 14, alc,
@@ -25,7 +25,7 @@ Serp, 14, alc,
 Trerp,13, druid elf lvl 9 3 12 3 18 18
 Uerp,2,druid, elf 18+18+3+5+10 grey/blunt/wind
     TBD Verp ??? (15+16+3+3+17 dwarf/15+15+3+6+15 elf) Paladin
-Werp,17, monk (lvl 17, no habit)
-Xerp,18, fighter 15 14 3 6 16
+Werp,18, monk (lvl 17, no habit)
+Xerp,17, fighter 15 14 3 6 16
 Yerp,14, monk 18 3 4 18 11 (bad dex)
-Zerp,10, alc, elf, 12 3 3 18 18
+Zerp,18, alc, elf, 12 3 3 18 18
