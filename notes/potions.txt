@@ -8,13 +8,15 @@ milky potion, silver chalice - bless
 green potion, steel bottle - protection
 lady's tears, indigo potion - detect invis
 aegis tears == skill is beyond you (lvl 14 mage)
-??? - detect magic
+philtre of perception - detect magic
 granite potion, crystal vial - teleport to safety
 burnt ochre - fire protection
 aaashaal's gift - air protection
 glowing potion - light
+silver potion - ???
 gold potion - strong healing
 amber vial - poison subsides (doesn't stop it though, slow-poison maybe?)
 hot rum toddy - Resist-Cold (resist-air?)
 dwarven rum - Earth-Shield
 green lime potion - Poison protect
+master remdedy - restore (small heal and big mana regen)
