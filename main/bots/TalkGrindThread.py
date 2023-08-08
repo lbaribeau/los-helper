@@ -496,8 +496,8 @@ class TalkGrindThread(BotThread):
                   # "valiant", #players the criers speak about
             ]
 
-            # brute_forced_responses  = MobMessage.get_messages_with_responses()
-            # self.talk_topics = self.get_unique_keywords(brute_forced_responses)
+            brute_forced_responses  = MobMessage.get_messages_with_responses()
+            self.talk_topics = self.get_unique_keywords(brute_forced_responses)
 
       def get_path_to_target_mob(self, mob):
             # find a mob to talk to
