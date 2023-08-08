@@ -44,7 +44,7 @@ class FakeTelnetSocket(object):
             # self.tabby_cat.name,
             # 'two ghouls'
             # "old knight"
-            "Bludnug the Mighty"
+            "Snarus"
         ]
         self.fso = FakeSocketOutput()
         self.rng = 0

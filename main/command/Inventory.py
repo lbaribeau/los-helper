@@ -219,7 +219,7 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'black lacquered key',
         'rusty key',
 
-        # important potions
+        # important potions / consumable items
         'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',
         'chequered vial', 'misty potion',
         'orange potion', # levitate
@@ -228,6 +228,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'small flask', 'large restorative', 'scarlet potion',
         'silver chalice', 'steel bottle', 'glowing potion', 'milky potion',
         # 'white sparkling drink',
+        'glass compass',
 
         # containers
         'large sack', 'black bag',

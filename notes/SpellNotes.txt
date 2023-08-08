@@ -48,3 +48,4 @@ Wands/Items spell cast on use
 - shadowy glass == detect-invisible
 - crystal talisman == ??? (maybe summon? trades to Farside for crystal ring)
 - diamantium crucifix == restore
+- bag of dirt == ??? (warm loamy smell)

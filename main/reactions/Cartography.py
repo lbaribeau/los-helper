@@ -405,7 +405,8 @@ class Cartography(BotReactionWithFlag):
                 return []
 
             MUD_exit_str = MUD_exit_str.strip()
-            my_exit_regex = r"(?s)Obvious exits: (.+?)\." #added clause if the exits break onto two lines - likely this will ahve to happen for mobs too
+            # remove the crystal portal from the exits
+            my_exit_regex = r"(?s)Obvious exits: (.+?)(?:, crystal portal)?\." #added clause if the exits break onto two lines - likely this will ahve to happen for mobs too
             match_exits = re.match(my_exit_regex, MUD_exit_str)
             E_LIST = [x.strip() for x in match_exits.group(1).split(',')]
             #technique above is referred to as list comprehension see:

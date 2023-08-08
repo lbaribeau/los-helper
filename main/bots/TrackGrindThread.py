@@ -673,7 +673,7 @@ class TrackGrindThread(GrindThread):
             Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 1, requires_ready=True, target_kills=1),
             Track("MAYOR_DEMLIN", self.MAYOR_DEMLIN, 18, 20, 1, requires_ready=True, target_kills=1),
             # Track("THOMAS_IRONHEART", self.THOMAS_IRONHEART, 18, 20, 0, requires_ready=True, target_kills=1), # causes granite usage
-            # Track("Hef the Bandit Chief", self.HEF, 12, 13, -1, allows_caster=False),
+            Track("Hef the Bandit Chief", self.HEF, 12, 13, -1, allows_caster=False),
         ]
 
         self.tracks = [x for x in self.tracks if self.character.level >= x.min_level and self.character.level < x.max_level]

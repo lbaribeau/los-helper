@@ -412,7 +412,9 @@ class SmartCombat(CombatObject):
         if self.mob_target is not None:
             if self.mob_target.level is not None:
                 # magentaprint("ml {} < cl {} - 4 = {}".format(self.mob_target.level, self.character.level, self.mob_target.level < (self.character.level - 4)),False)
-                if self.is_mob_weak():
+                # don't use the ability if the mob is really low level or higher than our level - in either case it's a waste of the ability
+                # weak mobs aren't worth using it on and higher level mobs it will likely fail on
+                if self.is_mob_weak() or self.mob_target.level > self.character.level:
                     return False
 
         if self.character.weapon1 != '' and self.character._class.id == 'Mon':

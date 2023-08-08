@@ -13,16 +13,16 @@ Herp,14, Thief dwarf 16 16 3 16 3
 Jerp,1, cleric, 15+15+3+6+15 elf
 Kerp,16, dark knight dwarf 16 16 3 16 3
 Replace ~~Lerp,11, alc dwarf 15 16 3 16 4
-Merp,2, monk, elf (18 18 3 5 10)
+Merp,12, monk, elf (18 18 3 5 10)
 Nerp,14, druid dwarf 16 16 3 16 3
-Oerp,7, assassin, elf 17+16+3+6+12 (?) - red/thrust/sharp/wind (assassin dagger is thrust and seems nice)
+Oerp,14, assassin, elf 17+16+3+6+12 (?) - red/thrust/sharp/wind (assassin dagger is thrust and seems nice)
 Perp,18, ranger elf (16 14 2 8 14)
 Qerp,10, mage
     Replace ~~Rerp,7, cleric, gnome (15+16+3+3+17/15+15+3+6+15 elf) cleric?
 Serp, 14, alc,
     Replace ~~Terp,9, thief, dwarf (18,3,3,18,12?) => thief, elf 17+16+3+6+12 (?) - grey/thrust/sharp/wind (assassin dagger is thrust and seems nice)
     Replace ~~Twerp,6, cleric, human
-Trerp,13, druid elf lvl 9 3 12 3 18 18
+Trerp,9, druid elf lvl 9 3 12 3 18 18 (Parked behind Ungbad)
 Uerp,2,druid, elf 18+18+3+5+10 grey/blunt/wind
     TBD Verp ??? (15+16+3+3+17 dwarf/15+15+3+6+15 elf) Paladin
 Werp,18, monk (lvl 17, no habit)

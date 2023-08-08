@@ -107,6 +107,7 @@ class TravelBot(MiniBot):
             self.command_handler.go.wait_until_ready()
             self.command_handler.go.persistent_execute(path.pop(0))
             if not self.command_handler.go.success:
+                magentaprint("TravelBot failed to go to area " + str(aid) + " from " + str(self.char.AREA_ID), False)
                 raise Exception("TravelBot aborting due to errors!")
                 # Could be that AREA_ID is wrong - try doing a look.
 
@@ -116,7 +117,7 @@ class TravelBot(MiniBot):
         except Exception as e:
             #not a good situation - we can't find a way to the chapel from wherever we are
             #therefore we should just sit and wait here until we can go on the warpath again
-            magentaprint("Exception getting pawn path.")
+            magentaprint("Exception getting pawn path.", False)
             magentaprint(e, False)
             raise e
 
