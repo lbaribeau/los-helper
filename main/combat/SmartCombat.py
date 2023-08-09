@@ -139,10 +139,20 @@ class SmartCombat(CombatObject):
                     if self.should_use_heal_ability():
                         # magentaprint("Using heal ability", False)
                         self.heal_abilities[0].execute()
+                    # if we're a cleric or paladin then we should use a heal spell - set black_magic to false
+                    # let's also check to make sure our PTY is higher than 14
+                    elif self.is_healer_class() and self.black_magic and self.character.info.pty > 14:
+                        magentaprint("Should top up so I'ma turn off BM", False)
+                        self.black_magic = False
+                        # the character will cast a heal spell if they can on the next cast
                     elif self.nervous_mode:
                         # magentaprint("Nervous mode using pots", False)
                         self.spam_pots()
                 else:
+                    # if we're a cleric or paladin we don't need a heal spell anymore then let's go back to black magic
+                    if self.is_healer_class() and not self.black_magic:
+                        magentaprint("I'ma turn on BM back on", False)
+                        self.black_magic = self.should_use_black_magic()
                     self.stop_pots_if_started_by_smart_combat()
         # elif regex in itertools.chain(self.end_combat_regexes) and self.activated:
         elif self.end_combat and self.activated:  # requires super() to be called
@@ -322,8 +332,7 @@ class SmartCombat(CombatObject):
 
             if self.should_use_spells():
                 magentaprint("Mob is ripe for me to use bm on", False)
-                spell_percent = max(self.character.spell_proficiencies.values())
-                self.black_magic = self.character.info.pty < 7 or spell_percent >= 5 or self.character.PREFER_BM
+                self.black_magic = self.should_use_black_magic()
                 self.spell = self.determine_favorite_spell_for_target()
             else:
                 magentaprint("Mob is too weak for me to waste mana on", False)
@@ -401,6 +410,10 @@ class SmartCombat(CombatObject):
         self.activated = False
         magentaprint(str(self) + " ending run.")
 
+    def should_use_black_magic(self):
+        spell_percent = max(self.character.spell_proficiencies.values())
+        return self.character.info.pty < 7 or spell_percent >= 5 or self.character.PREFER_BM
+
     def should_use_combat_ability(self):
         # backstab, circle and bash are free so whyyyy not
         if self.character.HIDDEN and (self.character._class.id == 'Thi' or self.character._class.id == 'Ass'):
@@ -470,6 +483,9 @@ class SmartCombat(CombatObject):
         return self.character._class.is_caster()# or \
             # self.character._class.id == 'Dru' or self.character._class.id == 'Cle'
         # or self.character._class.id == 'Cle'
+
+    def is_healer_class(self):
+        return self.character._class.is_healer()
 
     def get_favourite_combat_item(self):
         character = self.character

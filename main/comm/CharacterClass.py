@@ -162,6 +162,9 @@ class CharacterClass(object):
     def is_caster(self):
         return self.id in ["Mag", "Alc"]
 
+    def is_healer(self):
+        return self.id in ["Cle", "Pal"] # maybe druid too?
+
     # characters that primarily rely on physical attacks for their damage and have innate weapon skill
     # while dark knigth and paladin don't have innate weapon skill they get aura damage buffs
     def is_phys(self):
