@@ -19,6 +19,7 @@ class GrindThread(BotThread):
     aura = None
     aura_timer = 300
     aura_refresh = 300
+    healing_area = "areaid2"
 
     def __init__(self, character, command_handler, mudReaderHandler, mud_map):
         super().__init__(character, command_handler, mudReaderHandler, mud_map)
@@ -630,7 +631,7 @@ class GrindThread(BotThread):
         self.check_weapons()
 
     def can_find_path(self):
-        # if we can find the way to Chapel areaid2 then we should be able to path anywhere
+        # if we can find the way to Chapel self.healing_area then we should be able to path anywhere
         # so we'll just check that we're not in the Chapel and that we can find the way to it
         if self.character.AREA_ID == 2:
             return True
@@ -701,7 +702,7 @@ class GrindThread(BotThread):
     def go_purchase_item(self, item):
         magentaprint("GrindThread.go_purchase_item() got location id: " + str(item.get_purchase_location_id()))
         if item.get_purchase_location_id():
-            self.direction_list = ["areaid%s" % item.get_purchase_location_id(), "dobuy%s" % item.to_string(), "areaid2"]
+            self.direction_list = ["areaid%s" % item.get_purchase_location_id(), "dobuy%s" % item.to_string(), self.healing_area]
             return True
         else:
             return False
@@ -710,7 +711,7 @@ class GrindThread(BotThread):
         places = AreaStoreItem.get_by_name(name)
         magentaprint("GrindThread going to buy " + str(places))
 
-        self.direction_list = ["areaid%s" % places.values()[0] , "dobuy%s" % name, "areaid2"]  # Something like Thatt
+        self.direction_list = ["areaid%s" % places.values()[0] , "dobuy%s" % name, self.healing_area]  # Something like Thatt
 
     def go_purchase_item_by_type(self, model, data, level):
         # Model is main item type (weapon, s-armor, consumable), Data is sub-type (Blunt, Body, etc)
@@ -964,7 +965,7 @@ class GrindThread(BotThread):
                     self.character.mobs.chase_exit = ''
             else:
                 magentaprint("BotThread.engage_monster() area id is none, so go to chapel after chasing.", False)
-                go_hook = "areaid2"
+                go_hook = self.healing_area
                 self.direction_list.insert(0, go_hook)
 
             # self.go(self.character.chase_dir)

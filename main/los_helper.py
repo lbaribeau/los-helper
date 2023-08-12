@@ -145,7 +145,10 @@ class LosHelper(object):
             self.command_handler.start_noob_grind()
 
         if '-campslave' in sys.argv:
-            self.command_handler.start_campslave()
+            self.command_handler.start_campslave(do_buffs=True)
+
+        if '-healslave' in sys.argv:
+            self.command_handler.start_campslave(do_buffs=False)
 
         if '-fast' in sys.argv:
             self.character.MANA_TO_ENGAGE = 0

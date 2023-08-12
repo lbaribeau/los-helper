@@ -50,7 +50,7 @@ class SmartGrindThread(TrackGrindThread):
 
         if self.is_character_class('Cle'):
             self.KOBOLD_PATH = [
-                'areaid1679','areaid2'
+                'areaid1679',self.healing_area
                 ]
         self.remove_class_gear()
 
@@ -167,7 +167,7 @@ class SmartGrindThread(TrackGrindThread):
     def do_reboot_hooks(self):
         if self.character.is_sleepy == False:
             magentaprint("Here I go rebooting again!", False)
-            self.direction_list = ['areaid2', 'shutdown']
+            self.direction_list = [self.healing_area, 'shutdown']
             self.character.is_sleepy = True
 
     def do_go_hooks(self, exit_str):
@@ -207,7 +207,7 @@ class SmartGrindThread(TrackGrindThread):
         if self.is_actually_dumb:
             # if not self.in_chapel():
             #     self.direction_list = self.get_heal_path()
-                # self.direction_list = ["areaid2"]
+                # self.direction_list = [self.healing_area]
 
             return super().decide_where_to_go()
         else:
@@ -333,7 +333,7 @@ class SmartGrindThread(TrackGrindThread):
     def get_heal_path(self, from_path=-1):
         # magentaprint("SmartGrindThread.get_heal_path() from_path is " + str(from_path) + ", character.AREA_ID is " + str(self.character.AREA_ID) + ".", False)
         # if self.is_actually_dumb and self.character.AREA_ID != 2:
-        #     return ["areaid2"]
+        #     return [self.healing_area]
         # elif self.character.AREA_ID == 2:
         #     return []
         # else:
@@ -344,8 +344,8 @@ class SmartGrindThread(TrackGrindThread):
                 else:
                     paths = self.mud_map.get_paths_to_restorative_area(from_path)
             else:
-                # magentaprint("get_heal_path returning areaid2", False)
-                return ["areaid2"]
+                # magentaprint("get_heal_path returning self.healing_area", False)
+                return [self.healing_area]
         except Exception as e:
             #not a good situation - we can't find a way to the chapel from wherever we are
             #therefore we should just sit and wait here until we can go on the warpath again

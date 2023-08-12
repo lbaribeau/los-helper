@@ -163,7 +163,11 @@ class CharacterClass(object):
         return self.id in ["Mag", "Alc"]
 
     def is_healer(self):
-        return self.id in ["Cle", "Pal"] # maybe druid too?
+        # druid doesn't get bonus piety but seems to have decent heal scaling
+        # cleric and paladin get bonus piety and have good heal scaling
+        # druid and cleric have faster cast speeds so they can heal more often
+        # this is a bit of a hack to help scale weapon proficiencies too
+        return self.id in ["Cle", "Pal", "Dru"]
 
     # characters that primarily rely on physical attacks for their damage and have innate weapon skill
     # while dark knigth and paladin don't have innate weapon skill they get aura damage buffs

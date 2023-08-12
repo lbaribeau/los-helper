@@ -380,6 +380,8 @@ class CommandHandler(object):
             self.repair.execute(user_input.partition(' ')[2])
         elif re.match("(lo?|look?) ", user_input):
             self.look.execute(user_input.partition(' ')[2])
+        elif re.match("ff$", user_input):
+            self.telnetHandler.write('flee')
         elif re.match("fle?$|flee$", user_input):
             self.stop_bot()
             self.user_flee()
@@ -954,9 +956,9 @@ class CommandHandler(object):
             self.bot_thread = TalkGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, target)
             self.bot_thread.start()
 
-    def start_campslave(self):
+    def start_campslave(self, do_buffs=True):
         if self.bot_check():
-            self.bot_thread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, "camp", False)
+            self.bot_thread = SlaveThread(self.character, self, self.mudReaderHandler, self.mud_map, "camp", False, do_buffs)
             self.bot_thread.start()
 
     def start_camp_grind(self):

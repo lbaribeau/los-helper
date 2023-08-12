@@ -10,7 +10,7 @@ from reactions.KillSlaveReactions import KillSlaveReactions
 
 class SlaveThread(BotThread):
     def __init__(self, character=None, command_handler=None, mud_reader_handler=None,
-                mud_map=None, master_name="", kill=False):
+                mud_map=None, master_name="", kill=False, do_buffs=True):
         super().__init__(character, command_handler, mud_reader_handler, mud_map)
 
         self.slave_state = SlaveState()
@@ -20,6 +20,7 @@ class SlaveThread(BotThread):
         self.action_cooldown = 60
         self.heal_cooldown = 20
         self.buff_cooldown = 120
+        self.do_buffs = do_buffs
 
         # if kill:
         #     self.kill_slave_reactions = KillSlaveReactions(mud_reader_handler, command_handler, master_name)
@@ -59,7 +60,7 @@ class SlaveThread(BotThread):
     def should_buff_target(self, target):
         last_use_key = "last_buff"
         mana_requirement = 24        
-        return self.check_healslave_cooldown(target, last_use_key, mana_requirement, self.buff_cooldown)
+        return self.do_buffs and self.check_healslave_cooldown(target, last_use_key, mana_requirement, self.buff_cooldown)
 
     def should_heal_target(self, target, mana_requirement):
         last_use_key = "last_heal"

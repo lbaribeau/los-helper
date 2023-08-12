@@ -553,7 +553,7 @@ class MainhandWeaponBot(MiniBot):
         # if self.go_purchase_item(possible_weapons[0]):
         # magentaprint("GrindThread.go_purchase_item() got location id: " + str(item.get_purchase_location_id()))
         # if item.get_purchase_location_id():
-        #     self.direction_list = ["areaid%s" % item.get_purchase_location_id(), "dobuy%s" % item.to_string(), "areaid2"]
+        #     self.direction_list = ["areaid%s" % item.get_purchase_location_id(), "dobuy%s" % item.to_string(), self.healing_area]
         #     return True
         # else:
         #     return False
