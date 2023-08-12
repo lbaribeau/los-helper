@@ -202,7 +202,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'greenwood jerkin',"paladins's plate armour", "master's habit", "magus robe",
         'silver druidic robe','lucky pebble',"blue ioun stone",
         "Ha'Chans' Blessing",
-        "crumpled parchment",
+        # "crumpled parchment",
         # "stolen contract", # air resistance trade
         # "nesting flax", # water resistance trade
 

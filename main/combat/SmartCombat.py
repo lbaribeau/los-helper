@@ -132,7 +132,7 @@ class SmartCombat(CombatObject):
                         self.handle_granite_use()
                     
                     # if we used a granite pot then this will be false
-                    if self.activated:
+                    if self.activated and not self.fleeing:
                         self.spam_pots()
                 elif self.should_top_up_health():
                     # magentaprint("Should top up health", False)
@@ -145,7 +145,7 @@ class SmartCombat(CombatObject):
                         magentaprint("Should top up so I'ma turn off BM", False)
                         self.black_magic = False
                         # the character will cast a heal spell if they can on the next cast
-                    elif self.nervous_mode:
+                    elif self.nervous_mode and not self.fleeing:
                         # magentaprint("Nervous mode using pots", False)
                         self.spam_pots()
                 else:
