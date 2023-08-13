@@ -222,7 +222,7 @@ class GrindThread(BotThread):
         return success
 
     def is_mob_weak(self, mob_target, level_diff=3):
-        if mob_target.level is None or mob_target.level == "":
+        if mob_target is None or mob_target.level is None or mob_target.level == "":
             return False
         
         mob_level = mob_target.level
@@ -803,11 +803,14 @@ class GrindThread(BotThread):
 
         # guard_count = 0
         for mob in m_list:
-            if re.search('town guard', mob) or \
+            if re.search('town guards', mob) or \
                 re.search('town crier', mob) or \
                re.search('clown', mob) or \
                re.search('Rancher Plover', mob) or \
                re.search('bouncer', mob):
+                return ''
+            
+            if re.search('town guard', mob) and self.character.level < 14:
                 return ''
             # low level characters fight market officials - there is an edge case here where they'll end up attacking Alaran and die
             if self.character.level < 11:
@@ -1029,17 +1032,17 @@ class GrindThread(BotThread):
                 # TODO: make an Ability for steel bottle (protection spell)
                 self.command_handler.use.by_name('steel bottle')
                 self.command_handler.use.wait_for_flag()
-            elif self.inventory.count_restoratives() > 6:
-                # self.command_handler.potion_thread_handler.consume.healing_potion()
-                # self.command_handler.potion_thread_handler.consume.wait_for_flag()
-                self.command_handler.potion_thread_handler.consume.execute_and_wait()
-                # if self.command_handler.use.error:
-                if self.command_handler.potion_thread_handler.consume.error:
-                    # What is this inventory bug
-                    # What about drink error
-                    # Ooookkkk we put in consume.error so we don't loop infinitely
-                    # We also made sure that drink removes from inventory, also so we won't loop infinitely
-                    return
+            # elif self.inventory.count_restoratives() > 6:
+            #     # self.command_handler.potion_thread_handler.consume.healing_potion()
+            #     # self.command_handler.potion_thread_handler.consume.wait_for_flag()
+            #     self.command_handler.potion_thread_handler.consume.execute_and_wait()
+            #     # if self.command_handler.use.error:
+            #     if self.command_handler.potion_thread_handler.consume.error:
+            #         # What is this inventory bug
+            #         # What about drink error
+            #         # Ooookkkk we put in consume.error so we don't loop infinitely
+            #         # We also made sure that drink removes from inventory, also so we won't loop infinitely
+            #         return
             else:
                 # just leave it there
                 return

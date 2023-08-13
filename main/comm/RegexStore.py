@@ -294,7 +294,7 @@ no_see = [r"You don't see that here\."]
 i_no_see = [r"I don't see that here\."]
 
 # ask command
-ask_success = ['^\s?(?:The )?(.+?) says to you, "(?P<statement>(?:.+?\n?\r?)+?)\.?"\.?\n?\r?\[(?:\d+) H (?:\d+) M\]: (?:You feel the benefits of resting\.)?$']
+ask_success = ['^\s?(?:The )?(.+?) says to you, "(?P<statement>(?:.+?\n?\r?)+?)\.?"\.?']
 ask_fail = ["^\s?(?:The )?(.+?) doesn't respond to you\."]
 
 # Kill command

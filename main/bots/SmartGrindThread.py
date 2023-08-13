@@ -252,7 +252,7 @@ class SmartGrindThread(TrackGrindThread):
                 return False
 
             if (self.character.info.level < 14 or self.is_mob_weak(mob_target, 3)) and \
-                 (mob_target.level is not None and mob_target.level != "" and mob_target.level < 12):
+                 (mob_target.level is not None and mob_target.level != "" and self.is_mob_weak(mob_target, 4)):
                 magentaprint("Mob is weak enough for us to fight", False)
                 self.should_reset_gear = True
                 return True

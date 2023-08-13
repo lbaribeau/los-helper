@@ -6,7 +6,7 @@ thick liquid - silence
 dark chalice - fear
 milky potion, silver chalice - bless
 green potion, steel bottle - protection
-lady's tears, indigo potion - detect invis
+lady's tears, indigo potion, mushroom potion - detect invis
 aegis tears == skill is beyond you
 dull grey potion - This skill is currently beyond you
 philtre of perception - detect magic
@@ -19,5 +19,9 @@ gold potion - strong healing
 amber vial - poison subsides (doesn't stop it though, slow-poison maybe?)
 hot rum toddy - Resist-Cold (resist-air?)
 dwarven rum - Earth-Shield
+dwarven hangover remedy - ??? It tastes truly awful, but at least you are fully alert now.
 green lime potion - Poison protect
 master remdedy - restore (small heal and big mana regen)
+heavy water - teleport
+dark-green potion - ???
+mauve potion - ??? cool relief sweeps across your body

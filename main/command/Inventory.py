@@ -392,14 +392,17 @@ class Inventory(SimpleCommand, ReferencingList):
             # Todo: Delete this, since it triggers when looking at another player
             # (it works for 'l self' but not for 'eq')
             character_name = match.group(1)
-            equipment_list = re.findall(R.wearing[0], match.group(2))
 
-            if character_name == self.character.name:
-                for slot in equipment_list:
-                    if slot[0] not in self.equipped_items:
-                        self.equipped_items[slot[0]] = []
+            # if we haven't detected them online then there is an issue here...
+            if character_name in self.character.players:
+                equipment_list = re.findall(R.wearing[0], match.group(2))
 
-                    self.equipped_items[slot[0]].append(MudItem(slot[1]))
+                if character_name == self.character.name:
+                    for slot in equipment_list:
+                        if slot[0] not in self.equipped_items:
+                            self.equipped_items[slot[0]] = []
+
+                        self.equipped_items[slot[0]].append(MudItem(slot[1]))
             # magentaprint(self.equipped_items,False)
         # magentaprint(self.list, False)
         super().notify(regex, match)
