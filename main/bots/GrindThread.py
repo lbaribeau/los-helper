@@ -19,7 +19,7 @@ class GrindThread(BotThread):
     aura = None
     aura_timer = 300
     aura_refresh = 300
-    healing_area = "areaid2"
+    healing_area = "areaid1068"
 
     def __init__(self, character, command_handler, mudReaderHandler, mud_map):
         super().__init__(character, command_handler, mudReaderHandler, mud_map)

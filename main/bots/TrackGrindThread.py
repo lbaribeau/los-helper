@@ -481,7 +481,7 @@ class TrackGrindThread(GrindThread):
         self.MAYOR_DEMLIN = ["areaid19"]
         self.THOMAS_IRONHEART = ["areaid189"]
         self.MINERS = ['areaid1265', 'areaid1273', 'areaid1280', 'areaid1182', 'areaid1291', 'areaid1289', 'areaid1265']
-        self.GOBLINS = ['areaid250', 'slow_prepare', 'areaid1615', 'north', 'camp', 'south', 'areaid1610', 'slow_prepare', 'up']
+        self.GOBLINS = ['areaid250', 'slow_prepare', 'areaid1615', 'north', 'camp', 'south', 'areaid2381', 'slow_prepare', 'up']
         self.HEF = ['areaid533', 'trail', 'areaid1678', 'door'] #'areaid2170', 'unlock panel key', 'panel', 'get all'
         self.AMBER_GUARDS = ['areaid575', 'areaid590', 'areaid552', 'areaid563', 'areaid585', 'areaid1338', 'areaid1359']
 
@@ -613,7 +613,7 @@ class TrackGrindThread(GrindThread):
             Track("Amber Guards", self.AMBER_GUARDS, 15, 20, 1, has_cooldown=False),
             Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18),
             Track("Cathedral", self.CATHEDRAL, 10, 20, 1, True, 7, 18),
-            Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True),
+            Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 12, 20, 2, False, 7, 18, is_glamping=True),
             # grey and minor aura tracks
             Track("Theatre Farm", self.smart_theatre_path, 0, 17, 0, has_cooldown=False),
             Track("Theatre Bertram", self.smart_theatre_path, 18, 20, 0, target_kills=1),
