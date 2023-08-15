@@ -35,14 +35,14 @@ class TrackGrindThread(GrindThread):
 
         self.LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
-        self.SHOP_AND_TIP_PATH = [self.healing_area,
+        self.SHOP_AND_TIP_PATH = ["areaid2",
             "sell_items"
         ]
         self.smart_theatre_path = ['areaid14', "theatre", "stairs","cubby", "out", "box", "out", "box 2",
             "out", "down", "swing", "seat", "out", "down", "seat", "out", "door", "office", "out",
             "stage","side 2","backstage", "door", "out", "door 2", "out", "curtain", "stage",
             "side", "door","up", "out", "out"]
-        self.THEATRE_PATH = [self.healing_area,
+        self.THEATRE_PATH = ["areaid2",
             "out", "s", "w", "w", "w", "s", "theat", "stairs","cubby", "out", "box", "out", "box 2",
             "out", "down", "swing", "seat", "out", "down", "seat", "out", "door", "office", "out",
             "stage","side 2","backstage", "door", "out", "door 2", "out", "curtain", "stage",
@@ -50,14 +50,14 @@ class TrackGrindThread(GrindThread):
         ]
         self.smart_market_path = ['areaid113','w', 'w', 'office', 'out', 'n', 'n','s', 'w', 'e', 's', 'w', 's', 'n', 'w', 'e', 'n',
             's', 'e', 'e', "out"]
-        self.MARKET_PATH = [self.healing_area, 
+        self.MARKET_PATH = ["areaid2", 
             "out", 's', 'e', 'e', 'e', 'n', 'w', 'w', 'office', 'out', 'n', 'n','s', 'w', 'e', 's', 'w', 's', 'n', 'w', 'e', 'n',
             's', 'e', 'e', "out", 's', 'w', 'w', 'w', 'n',"chapel"
         ]
         self.smart_militia_path = ['areaid524','s','s','s','s','s','s','w','doo','stor','ou','ou','w','w','w','n','n','s','s','e','e','e','e','n','n','e',
             'e','e','e','e','e','e','e','e','ne','e','ne','ne','ne','ne','ne','ne','n','n','w','s','sw','ne','n','e',
             'n','n','n','n','n','n','n','n','n','n','nw','nw','nw','path','nw','n','n','n','nw','nw','n','n']
-        self.MILITIA_SOLDIERS_PATH = [self.healing_area, 
+        self.MILITIA_SOLDIERS_PATH = ["areaid2", 
             'out','s','e','s','s','s','w','gate','s','s','sw','sw','sw','sw','s','s','s','sw','southeast','s','s','s','s',
             's','s','s','s','s','w','doo','stor','ou','ou','w','w','w','n','n','s','s','e','e','e','e','n','n','e',
             'e','e','e','e','e','e','e','e','ne','e','ne','ne','ne','ne','ne','ne','n','n','w','s','sw','ne','n','e',
@@ -71,7 +71,7 @@ class TrackGrindThread(GrindThread):
             'sw','se','nw','w','out','down','boulder']
             # ,'down','down','e','door','w','s','s','e','s','sw','s','s','s',
             # 's','gully','glowing portal']
-        self.KOBOLD_PATH = [self.healing_area,
+        self.KOBOLD_PATH = ["areaid2",
             'out','south','east','south','south','south','west','gate','south','southeast','southeast','east',
             'east','east','southeast','southeast','southeast','south','south','south','south','south','east',
             'east','southeast','east','south','south','south','south','glowing portal','passage','mines',
@@ -143,7 +143,7 @@ class TrackGrindThread(GrindThread):
             # high enough,) and go in if all's good.  Even fight the priests - because the more 'good' we can get the
             # more chalices we can farm.
         self.kobold_massacre = [
-            self.healing_area,
+            "areaid2",
             # Brocolli wants to get ALL the kobolds in one shot... even the chief? Yeahh.
             # This route is optimal traval and isn't picky about order
             'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','se','se','se','s','s','s','s','s','e','e',
@@ -170,7 +170,7 @@ class TrackGrindThread(GrindThread):
             's','gully','glowing portal','passage','coral','n','n','n','n','w','nw','w','w','n','n','n','n','n','nw',
             'nw', 'nw', 'w', 'w', 'w','nw','nw', 'n', 'gate', 'e', 'n', 'n', 'n','w', 'n', 'chapel'
         ]
-        self.CORAL_ALLEY_PATH = [self.healing_area,
+        self.CORAL_ALLEY_PATH = ["areaid2",
             'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','se','se','se','s','s','s','s','w','alley',
             's','s','door','stairs', #angry hooker should be avoided unless lvl 5.
             #'do 3', 'ou',
@@ -191,11 +191,11 @@ class TrackGrindThread(GrindThread):
         # self.GOOURD = [
         #     'areaid1899'
         # ]
-        # self.MUGGER_PATH = [self.healing_area,
+        # self.MUGGER_PATH = ["areaid2",
         #     'ou','s','w','w','w','s','alley','w','alley','e','e','e','e','e','n','w','n','chap'
         # ]
         self.smart_northern_bandits_path = ['areaid421','south','s','s','n','n','n']
-        self.NORTHERN_BANDITS_PATH = [self.healing_area, 
+        self.NORTHERN_BANDITS_PATH = ["areaid2", 
             'out','n','n', 'w','gate','n','n','n','n','n','gate',
             'n','n','w','s','s','e','e','n','n','w','s','s','gate',
             's','s','s','s','s','gate','w','sw','s','s','s','e','e','e','e','n','w','n','chap'
@@ -206,7 +206,7 @@ class TrackGrindThread(GrindThread):
             'southeast', 'field', 'road', 'southeast', 'field', 'stile', 'stile', 'road',
             'southeast', 'field', 'road', 'southeast', 'station']
         self.BORIS_IRONFOUNDER = ['areaid1087']
-        self.DWARVEN_FIELD_WORKERS_PATH = [self.healing_area,'out', 'south', 'east', 'south', 'south',
+        self.DWARVEN_FIELD_WORKERS_PATH = ["areaid2",'out', 'south', 'east', 'south', 'south',
             'south', 'east', 'west', 'west', 'gate', 'south', 'southeast', 'southeast',
             'east', 'east', 'east', 'pathway', 'northwest', 'north', 'north',
             'north', 'southeast', 'east', 'east', 'gate', 'east', 'building', 'kitchen', 'out',
@@ -219,7 +219,7 @@ class TrackGrindThread(GrindThread):
             'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel'
         ]
         #both gates close at night unforunately...
-        self.FIELD_WORKERS_PATH = [self.healing_area,
+        self.FIELD_WORKERS_PATH = ["areaid2",
             'out', 'south', 'east', 'south', 'south', 'south', 'east', 'west', 'west',
             'gate', 'south', 'southeast', 'southeast', 'east', 'east',
             'east', 'pathway', 'northwest', 'north', 'north', 'north',
@@ -233,7 +233,7 @@ class TrackGrindThread(GrindThread):
         ]
         self.smart_mill_path = ['areaid515', 'areaid518', 'areaid1450', 'areaid541', 'areaid1452']
         #Contains lvl 2&3 mobs (stacker, furniture maker, sawmill operator, mill worker) and lvl 6 mobs (sawmill / mill supervisors)
-        self.MILL_WORKERS = [self.healing_area,
+        self.MILL_WORKERS = ["areaid2",
             'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate',
             'south', 'south', 'south', 'south', 'south', 'southwest', 'south',
             'southeast', 'southwest', 'south', 'south', 'southeast', 'south',
@@ -328,7 +328,7 @@ class TrackGrindThread(GrindThread):
             'southeast', 'east', 'east', 'northeast', 'north', 'red tent', 'out', 'w','w','w','e','e','e', 's', 'w', 'w', 'w', 'e', 'e', 'e',
             'sw', 'w', 'w', 'nw', 'n', 'n', 'ne', 'stands', 'stand', 'out', 'stand 2', 'out', #'stand 3', 'out' #Tario
             'e', 'se', 'w', 'w', 'w', 'e', 'e', 'e', 's', 'red tent']
-        self.KNIGHTS = [self.healing_area,
+        self.KNIGHTS = ["areaid2",
             'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south', 'southwest', 'southwest',
             'southwest', 'southwest', 'south', 'south', 'south', 'southwest', 'southeast', 'south', 'south', 'south',
             'south', 'south', 'east', 'east', 'east', 'southeast', 'south', 'east', 'east', 'east', 'east', 'east',
@@ -362,7 +362,7 @@ class TrackGrindThread(GrindThread):
         'shaft', 'door 2', 'south', 'out', 'south', 'east', 'door', 'out', 'door 2', 'out', 'east', 'west', 'west', 'north', 'north', 'out',
         #gnoll sub chiefs
         'west', 'opening', 'southwest', 'southwest', 'bridge', 'north', 'passage', 'northeast']
-        self.GNOLL_CAVE = [self.healing_area,'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'southeast', 'southeast',
+        self.GNOLL_CAVE = ["areaid2",'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'southeast', 'southeast',
         'east', 'east', 'east', 'southeast', 'southeast', 'southeast', 'south', 'south', 'south', 'south', 'south', 'south', 'south',
         'south', 'south', 'south', 'south', 'south', 'southwest', 'southwest', 'southwest', 'southwest', 'brush', 'south',
         'southeast', 'east', 'trail', 'up', 'north', 'east', 'fissure', 'cleft', 'west', 'down', 'west',  'west',
@@ -387,7 +387,7 @@ class TrackGrindThread(GrindThread):
         'north', 'north', 'north', 'north', 'north', 'north', 'northwest', 'northwest', 'northwest', 'west', 'west', 'west',
         'northwest', 'northwest', 'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel']
 
-        self.CATHEDRAL = [self.healing_area,'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south',
+        self.CATHEDRAL = ["areaid2",'out', 'south', 'east', 'south', 'south', 'south', 'west', 'gate', 'south', 'south',
          'southwest', 'southwest', 'southwest', 'southwest', 'south', 'south', 'south', 'southwest', 'southeast',
          'south', 'south', 'south', 'south', 'south', 'south', 'south', 'south', 'south', 'south', 'cathedral',
          'doors', 'east', 'east', 'south', 'north', 'east', 'door', 'door', 'west', 'west', 'west', 'out',
@@ -520,8 +520,8 @@ class TrackGrindThread(GrindThread):
             magentaprint("prearing to move to trapped area", False)
             self.sleep(2)
             self.command_handler.process("prepare")
-            magentaprint("waiting after prepare to take a breath", False)
             self.sleep(2)
+            magentaprint("waiting after prepare to take a breath", False)
             return True
         elif exit_str == "try_gate":
             curArea = int(self.character.AREA_ID)
@@ -638,6 +638,7 @@ class TrackGrindThread(GrindThread):
             Track("Market", self.smart_market_path, 0, 15, 0, has_cooldown=False),
             Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0, has_cooldown=False),
             Track("Kobolds", self.smart_kobold_path, 0, 9, -1, has_cooldown=False), #sentries are suuuper tough
+            Track("Kobolds", self.kobold_massacre, 10, 17, -2, has_cooldown=False), #sentries are suuuper tough
             #Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
             Track("Fort Farm", self.smart_fort_path, 9, 14, 0, has_cooldown=False, requires_ready=False),
             Track("Fort Commander", self.smart_fort_path, 14, 20, 0, requires_ready=True, target_kills=1, mob_name="Commander Rilmenson"),
@@ -710,7 +711,7 @@ class TrackGrindThread(GrindThread):
         magentaprint("Inside decide_where_to_go", False)
 
         # if self.character.AREA_ID != 2:
-        #     return [self.healing_area]
+        #     return ["areaid2"]
 
         magentaprint("next path = " + str(self.__nextpath), False)
 
