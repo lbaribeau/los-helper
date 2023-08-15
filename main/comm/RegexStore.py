@@ -322,7 +322,8 @@ crit = [
 spell_crit = [
     r"Your wind magic buffets " + __three_possible_mob_strings + r"\.",
     r"Your earth magic slams hard into " + __three_possible_mob_strings + r"\.",
-    r"Your fire magic explodes into " + __three_possible_mob_strings + r"\."
+    r"Your fire magic explodes into " + __three_possible_mob_strings + r"\.",
+    r"Your water magic washes over " + __three_possible_mob_strings + r"\."
 ]
 __mob_overwhelmed = r"(?P<over>\n?\r?.+?\n?\r?Your attack overwhelms)?"
 attack_hit = [

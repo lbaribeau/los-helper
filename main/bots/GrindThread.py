@@ -63,6 +63,7 @@ class GrindThread(BotThread):
             self.command_handler.process(exit_str)
             return True
         elif exit_str == "sell_items":
+            # if we're in the pawn shop then sell stuff
             self.sell_items()
             return True
         elif exit_str == "drop_items":

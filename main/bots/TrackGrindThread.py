@@ -36,9 +36,7 @@ class TrackGrindThread(GrindThread):
         self.LIMBO_TO_CHAPEL = ["ame", "out", "w", "n", "chapel"]
 
         self.SHOP_AND_TIP_PATH = [self.healing_area,
-            "out", "north", "south", "south", "west", 'west', 'west', 'south', 'south', "shop",
-            "sell_items","out", "southeast", 'east', 'east', 'east', 'east', "northeast", "tip",
-            "drop_items","out", 'north', 'north', 'west', 'west', 'west', 'north', "chapel", "check_aura"
+            "sell_items"
         ]
         self.smart_theatre_path = ['areaid14', "theatre", "stairs","cubby", "out", "box", "out", "box 2",
             "out", "down", "swing", "seat", "out", "down", "seat", "out", "door", "office", "out",
@@ -481,7 +479,7 @@ class TrackGrindThread(GrindThread):
         self.MAYOR_DEMLIN = ["areaid19"]
         self.THOMAS_IRONHEART = ["areaid189"]
         self.MINERS = ['areaid1265', 'areaid1273', 'areaid1280', 'areaid1182', 'areaid1291', 'areaid1289', 'areaid1265']
-        self.GOBLINS = ['areaid250', 'slow_prepare', 'areaid1615', 'north', 'camp', 'south', 'areaid2381', 'slow_prepare', 'up']
+        self.GOBLINS = ['areaid250', 'slow_prepare', 'areaid1615', 'north', 'camp', 'west', 'east', 'south', 'areaid2381', 'slow_prepare', 'up']
         self.HEF = ['areaid533', 'trail', 'areaid1678', 'door'] #'areaid2170', 'unlock panel key', 'panel', 'get all'
         self.AMBER_GUARDS = ['areaid575', 'areaid590', 'areaid552', 'areaid563', 'areaid585', 'areaid1338', 'areaid1359']
 
@@ -519,8 +517,10 @@ class TrackGrindThread(GrindThread):
     def do_go_hooks(self, exit_str):
         # magentaprint(str(self.character.AREA_ID) + ", " + exit_str, False)
         if exit_str == "slow_prepare":
+            magentaprint("prearing to move to trapped area", False)
             self.sleep(2)
             self.command_handler.process("prepare")
+            magentaprint("waiting after prepare to take a breath", False)
             self.sleep(2)
             return True
         elif exit_str == "try_gate":
@@ -557,6 +557,24 @@ class TrackGrindThread(GrindThread):
         elif exit_str == "tap":
             magentaprint("pausing for a few seconds", False)
             self.sleep(3)
+            return True
+        elif exit_str == "sell_items":
+            # if we're in the pawn shop then sell stuff
+            # check the current area - is it a pawn shop? If not then path to the pawn shop
+
+            if self.character.MUD_AREA.area.is_pawn_shop:
+                self.sell_items()
+            else:
+                self.direction_list = ["think", "areaid130", "sell_items", "areaid266", "drop_items"] # pawn shop
+
+            return True
+        elif exit_str == "drop_items":
+
+            if self.character.MUD_AREA.area.is_tip:
+                self.drop_items()
+            else:
+                self.direction_list = ["think", "areaid266", "drop_items"] # tip
+
             return True
         else:
             return super().do_go_hooks(exit_str)

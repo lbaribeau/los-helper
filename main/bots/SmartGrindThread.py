@@ -39,8 +39,12 @@ class SmartGrindThread(TrackGrindThread):
         # if not self.is_character_class('Bar') or self.is_character_class('Alc'):
         self.character.MANA_TO_ENGAGE = self.character.MAX_MANA * 0.6
 
-        if self.character.MANA_TO_ENGAGE < 24 and self.character.MAX_MANA > 24:
+        # we want 4 casts of a spell - if <10 int then this means 3*4 vs >10 int we should be using t2 spells and need 24 mana
+        if self.character.info.int < 10:
+            self.character.MANA_TO_ENGAGE = 12
+        elif self.character.MANA_TO_ENGAGE < 24 and self.character.MAX_MANA > 24:
             self.character.MANA_TO_ENGAGE = 24
+        
         
         self.HEALTH_TO_HEAL = 0.95 * self.character.maxHP
 
