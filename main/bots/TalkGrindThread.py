@@ -110,7 +110,7 @@ class TalkGrindThread(BotThread):
                   # "Old Man James", # completed dialogue
                   # 'Haram', # completed dialogue
                   # "GuildMaster Cuvelas", # trainer
-                  "Chiaru Maradiu",
+                  # "Chiaru Maradiu",
                   # "Thereze", # completed dialogue
                   # "Qimoth", # completed dialogue
                   # "Joffi the Mystic", # completed dialogue

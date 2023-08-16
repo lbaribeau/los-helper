@@ -64,6 +64,7 @@ class MainhandWeaponBot(MiniBot):
         self.command_handler = command_handler
         self.weapon_check_cooldown = 10
         self.last_weapon_check_time = None
+        self.broken_weapon = None
         # self.simple_weapon_bot = simple_weapon_bot
 
         self.actions = {
@@ -312,7 +313,10 @@ class MainhandWeaponBot(MiniBot):
         else:
             # Try weapon bot 1?
             # Try one of the functions below from weapon bot 1?
-            if not self.try_exact_replacement_from_inventory():
+            # if self.broken_weapon doesn't exist or is empty or if we can't find an exact replacement
+
+            # check if self has attribute "broken_weapon"
+            if not self.broken_weapon or not self.try_exact_replacement_from_inventory():
                 self.try_other_possible_weapons_in_inventory()
 
     ###--- I don't think I use anything below (from weapon bot 1) ---###

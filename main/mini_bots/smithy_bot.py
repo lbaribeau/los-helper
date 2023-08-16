@@ -50,6 +50,11 @@ class SmithyBot(MiniBot):
         smithy_path = self.get_smithy_path()
         magentaprint("SmithyBot.get_smithy_path(): " + str(smithy_path))
         self.travel_bot.follow_path(smithy_path)
+
+        if not self.char.MUD_AREA.area.is_smithy:
+            magentaprint("SmithyBot.go_to_nearest_smithy() error... we are not at a smithy - trying again", False)
+            self.go_to_nearest_smithy(grinding)
+
         return True
 
     def get_smithy_path(self):

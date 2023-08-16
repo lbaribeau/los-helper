@@ -23,7 +23,7 @@ Serp, 14, alc,
     Replace ~~Terp,9, thief, dwarf (18,3,3,18,12?) => thief, elf 17+16+3+6+12 (?) - grey/thrust/sharp/wind (assassin dagger is thrust and seems nice)
     Replace ~~Twerp,6, cleric, human
 Trerp,9, druid elf lvl 9 3 12 3 18 18 (Parked behind Ungbad)
-Uerp,2,druid, elf 18+18+3+5+10 grey/blunt/wind
+Uerp,12,druid, elf 18+18+3+5+10 grey/blunt/wind
     TBD Verp ??? (15+16+3+3+17 dwarf/15+15+3+6+15 elf) Paladin
 Werp,18, monk (lvl 17, no habit)
 Xerp,17, fighter 15 14 3 6 16
