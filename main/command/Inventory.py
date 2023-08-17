@@ -231,7 +231,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'glass compass',
 
         # containers
-        'large sack', 'black bag',
+        'large sack', 'black bag', 'diamantium chest', 'questbag',
 
         # super rare weapons/armor
         'dwarven rune hammer', 'silver ram staff', 'true blade', 'mithril war hammer',

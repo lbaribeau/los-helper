@@ -1,6 +1,6 @@
 Aerp,14, assassin dwarf 16 16 3 16 3
 Berp,18, bard elf 15 7 2 16 14
-Cerp,15, cleric (3 12 3 18 18)
+Cerp,16, cleric (3 12 3 18 18)
 Derp,18, monk (lvl 14, masters habit)
 Drerp,18, barbarian
 Dwarp,1, thief (swamp troll)
@@ -10,7 +10,7 @@ Flerp,2, anti-paladin, half-orc
 Gerp,18,mage,elf,12,3,3,18,18
 Herp,14, Thief dwarf 16 16 3 16 3
     Replace ~~Ierp,5, thief dwarf
-Jerp,14, cleric, 15+15+3+6+15 elf
+Jerp,17, cleric, 15+15+3+6+15 elf
 Kerp,16, dark knight dwarf 16 16 3 16 3
 Replace ~~Lerp,11, alc dwarf 15 16 3 16 4
 Merp,12, monk, elf (18 18 3 5 10)

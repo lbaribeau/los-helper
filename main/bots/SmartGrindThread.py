@@ -52,10 +52,6 @@ class SmartGrindThread(TrackGrindThread):
         self.min_target_aura = Aura('demonic red')
         self.max_target_aura = Aura('heavenly blue')
 
-        if self.is_character_class('Cle'):
-            self.KOBOLD_PATH = [
-                'areaid1679',self.healing_area
-                ]
         self.remove_class_gear()
 
     def remove_class_gear(self):

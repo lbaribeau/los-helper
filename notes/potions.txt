@@ -25,3 +25,4 @@ master remdedy - restore (small heal and big mana regen)
 heavy water - teleport
 dark-green potion - ???
 mauve potion - ??? cool relief sweeps across your body
+vial of sap - ??? The syrupy sap tastes extremely sour but refreshing. (ent-draught)
