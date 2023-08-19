@@ -620,21 +620,23 @@ class TrackGrindThread(GrindThread):
         self.tracks = [
             Track("Shop and Tip 0",self.SHOP_AND_TIP_PATH,0,20,9, has_cooldown=False),
             # Aura intensive stuff all up front
-            Track("Gorban", self.GORBAN, 15, 20, 0, requires_ready=True, mob_name="Gorban"),
-            Track("Qimoth", self.QIMOTH, 17, 20, 0, requires_ready=True, mob_name="Qimoth"),
+            Track("Gorban", self.GORBAN, 18, 20, 0, requires_ready=True, mob_name="Gorban"),
+            Track("Qimoth", self.QIMOTH, 18, 20, 0, requires_ready=True, mob_name="Qimoth"),
             Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0, requires_ready=True),
             Track("Gnoll Camp", self.GNOLL_CAMP, 15, 20, -1, False, 0, 9),
             Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9),
             Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True),
             Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9, is_glamping=True),
-            Track("Goblins", self.GOBLINS, 16, 20, -2, False, 0, 9, requires_ready=False, allows_caster=False),
+            # Track("Goblins", self.GOBLINS, 16, 20, -2, False, 0, 9, requires_ready=False, allows_caster=False),
             Track("Amber Guards", self.AMBER_GUARDS, 15, 20, 1, has_cooldown=False),
             Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18),
+            Track("Lady Denlise", self.smart_knights_path, 18, 20, 1, True, 7, 18, mob_name="Lady Denlise"),
+            Track("Lord Tamaran", self.smart_knights_path, 18, 20, 1, True, 7, 18, True, mob_name="Lord Tamaran"),
             Track("Cathedral", self.CATHEDRAL, 10, 20, 1, True, 7, 18),
             Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 12, 20, 2, False, 7, 18, is_glamping=True),
             # grey and minor aura tracks
-            Track("Theatre Farm", self.smart_theatre_path, 0, 17, 0, has_cooldown=False),
-            Track("Theatre Bertram", self.smart_theatre_path, 18, 20, 0, target_kills=1),
+            Track("Theatre Farm", self.smart_theatre_path, 0, 14, 0, has_cooldown=False),
+            Track("Theatre Bertram", self.smart_theatre_path, 14, 20, 0, target_kills=1),
             Track("Market", self.smart_market_path, 0, 15, 0, has_cooldown=False),
             Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0, has_cooldown=False),
             Track("Kobolds", self.smart_kobold_path, 0, 9, -1, has_cooldown=False), #sentries are suuuper tough
@@ -661,7 +663,8 @@ class TrackGrindThread(GrindThread):
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1, has_cooldown=False),
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1, has_cooldown=False),
-            Track("Egan and Trent", self.EGAN_TRENT, 12, 20, -1, requires_ready=True, target_kills=1, mob_name="Trent the Merchant"),
+            Track("Trent", self.EGAN_TRENT, 12, 20, -1, requires_ready=False, target_kills=1, mob_name="Trent the Merchant"),
+            Track("Egan", self.EGAN_TRENT, 18, 20, -1, requires_ready=True, target_kills=1, mob_name="Teamleader Egan"),
             Track("Combat Master / barbs", self.BARBS, 8, 14, 0),
             Track("Tardan", self.TARDAN, 15, 20, 0, requires_ready=True, target_kills=1, mob_name="Tardan"),
             Track("Hurn", self.HURN, 15, 20, 1, requires_ready=True, target_kills=1, mob_name="Hurn the Smith"),
@@ -677,7 +680,8 @@ class TrackGrindThread(GrindThread):
             Track("Jerrek and Tag", self.JERREK_TAG, 16, 20, -1, target_kills=1),
             Track("Gnomes", self.GNOMES, 10, 12, 1, has_cooldown=False),
             Track("Garbo", self.GARBO, 13, 15, 1, target_kills=1),
-            Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 20, 0, requires_ready=True, target_kills=1, mob_name="Manic Soothsayer"),
+            Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 20, 0, requires_ready=False, target_kills=1, mob_name="Manic Soothsayer"),
+            Track("Goourd, Manic and Elder", self.MANIC_ELDER, 17, 20, 0, requires_ready=True, target_kills=1, mob_name="Manic Soothsayer"),
             Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1, requires_ready=True, target_kills=1, mob_name="Cal the Hermit"),
             Track("Plovers", self.PLOVERS, 15, 20, 1, requires_ready=True, target_kills=1, mob_name="Annette Plover"),
             # Track("Bards", self.BARDS1, 11, 16, 1, requires_ready=True), #minstrels are a hazard
@@ -807,6 +811,10 @@ class TrackGrindThread(GrindThread):
             magentaprint("{0} is our chosen track".format(track.name), False)
             self.start_track(track)
             self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
+            if track.mob_target is not None:
+                # set mob_target as the main kill list mob if we would kill it normally
+                if track.mob_target.name in self.character.MONSTER_KILL_LIST:            
+                    self.character.MONSTER_KILL_LIST = [track.mob_target.name]
             return track.track[:]
         else:
             magentaprint("{0} isn't acceptable to us due to level".format(track.name), False)
@@ -826,7 +834,11 @@ class TrackGrindThread(GrindThread):
         self.last_track_kills = getattr(track, "kills")
         self.on_track = True
 
+    def reset_kiil_list(self):
+        pass
+
     def end_track(self):
+        self.reset_kiil_list()
         if self.last_track is not None:
             self.track_end_time = get_timeint()
             track_time = (self.track_end_time - self.track_start_time).total_seconds()

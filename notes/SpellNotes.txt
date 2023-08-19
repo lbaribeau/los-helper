@@ -16,7 +16,9 @@ Level 5 spells are not really in the game
 - Shatterstone is a brown scroll guarded by a stone golem in the tower north of Lyron,
   you can reach him by "invoking" a tiger eye gem that you get from Lyron by trading him Choorga's head
 - Thomas Ironheart will trade the cure poison scroll for a silver flute
-- Bind can be received from the barbarian shaman in exchange for a hippogriff hind-claw or confusion for a rare coin (Boris Ironfounder)
+    - Shaldena the red will trade a silver flute for oldurian wine (Qimoth responds to this - maybe it's dropped by the black ooze?)
+- Bind can be received from the barbarian shaman in exchange for a hippogriff hind-claw (lvl 12 locked hippogriff or first upper cave w/ nesting flax)
+- Confusion can be received from the barbarian shaman in exchange for a rare coin (Boris Ironfounder)
 - Fly can be acquired in the barbarian camp via talon behind a locked hut door, the Spirit of the Hawk drops a cyan feather which can unlock that door
 - charcoal scroll - teaches fireball, found in Seven Claws room and dropped by the fire imp king
 - Resist-cold can be found in the werewolf cave in the hidden passage when pressing the face, then to the east of the cave pressing the cushion (fighting the guarding wolf and bronze golem)
