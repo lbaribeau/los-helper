@@ -52,6 +52,4 @@ Wands/Items spell cast on use
 - diamantium crucifix == restore
 - bag of dirt == ??? (warm loamy smell)
 - electrum rod == ??? (rich brown aura)
-
-Held Items
-- quest bag == sold by heather sellers
+- clear blue crystal == ???

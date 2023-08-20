@@ -19,8 +19,8 @@ class TalkGrindThread(BotThread):
             self.current_topics = []
             self.target_mobs = [
                   "Farside",
-                  # "Dwar", # completed dialogue
-                  # "Mayor Demlin", # completed dialogue
+                  "Dwar", # completed dialogue
+                  "Mayor Demlin", # completed dialogue
                   # "Commander Rilmenson", # completed dialogue
                   # "General", # completed dialoguestop
                   # "Madame Zara", # completed dialogue
@@ -35,26 +35,26 @@ class TalkGrindThread(BotThread):
                   # "Dame Brethil",  # doesn't respond to anything
                   # "Earl Mardley",  # doesn't respond to anything
                   # "Alaran the Market Manager",  # doesn't respond to anything
-                  # "Douvan", "Queen Dalla", # completed dialogue
-                  # "Jerrek", # completed dialogue
+                  "Douvan", "Queen Dalla", # completed dialogue
+                  "Jerrek", # completed dialogue
                   # "Tag", "Rag", # completed dialogue
-                  # "Thomas Ironheart", # completed dialogue
-                  # "Olarma", # completed dialogue
+                  "Thomas Ironheart", # completed dialogue
+                  "Olarma", # completed dialogue
                   # "Master of Ceremonies",  # completed dialogue
                   # "Boris Ironfounder", # completed dialogue
-                  # "Tendrurn", # completed dialogue
-                  # "Brotain", # completed dialogue
-                  # "Rimark", # completed dialogue
-                  # "Aldo", # completed dialogue
-                  # "Horbuk", # completed dialogue
+                  "Tendrurn", # completed dialogue
+                  "Brotain", # completed dialogue
+                  "Rimark", # completed dialogue
+                  "Aldo", # completed dialogue
+                  "Horbuk", # completed dialogue
                   # "Gerdevarashimora",
-                  # "Volman the Inhumer",
+                  "Volman the Inhumer",
                   # "The Master Artificer",
-                  # "Kin'Tal", # completed dialogue
+                  "Kin'Tal", # completed dialogue
                   # "The Archbishop", # trainer
-                  # "Tardan", # completed dialogue
+                  "Tardan", # completed dialogue
                   # "Trantas", #hardcore arena NPC
-                  # "Gregor", # completed dialogue
+                  "Gregor", # completed dialogue
                   # "Farmer Viladin", # completed dialogue
                   # "Cal the Hermit", # completed dialogue
                   # "Farmer Woldis", # completed dialogue
@@ -66,18 +66,18 @@ class TalkGrindThread(BotThread):
                   # "Knight Errant", # trainer
                   "barbarian shaman",
                   "Corien",
-                  # "Lyron the Elder","Shaldena the Red","Garbo the Hobbit","Whiteblade the Barbarian", # completed dialogue
+                  "Lyron the Elder","Shaldena the Red","Garbo the Hobbit","Whiteblade the Barbarian", # completed dialogue
                   # "Great Druid",
                   # "Teamleader Egan", # doesn't respond to anything
                   # "Trent the Merchant", # doesn't respond to anything
-                  # "Grand Master Yang-Shi", # completed dialogue
+                  "Grand Master Yang-Shi", # completed dialogue
                   # # "Sensei", # trainer
-                  # "Dojo Administrator", # completed dialogue
+                  "Dojo Administrator", # completed dialogue
                   # "Dr'Tel's Ghost", # completed dialogue
-                  # "Al'Sik the Carver", # completed dialogue
-                  # "Zi'Cab the Chieftan", # doesn't respond to anything
-                  # "Vas'Polu the HawkMaster","Byr'Ula the Smith","Ha'Chans the Shaman", # completed dialogue
-                  # "Th'kit the HorseMaster", # completed dialogue
+                  "Al'Sik the Carver", # completed dialogue
+                  "Zi'Cab the Chieftan", # doesn't respond to anything
+                  "Vas'Polu the HawkMaster","Byr'Ula the Smith","Ha'Chans the Shaman", # completed dialogue
+                  "Th'kit the HorseMaster", # completed dialogue
                   # "Druid Galm", # completed dialogue
                   # "Forest Master",
                   "Broad Leaf",
@@ -86,11 +86,11 @@ class TalkGrindThread(BotThread):
                   # "Tario", # completed dialogue
                   # "Lady Denlise",  # completed dialogue 
                   # "Vickie", # completed dialogue
-                  # "Matriarch Sara",
-                  # "Lady Arielle",
+                  "Matriarch Sara",
+                  "Lady Arielle",
                   "Lord Arduis",
                   "Lady Jenlira", # completed dialogue
-                  # "Bhezkam",
+                  "Bhezkam",
                   "Ironbark", # not found but mentioned by Jenlira!!!
                   # "Esrhae", # completed dialoguel
                   # "Haelyn", # doesn't respond to anything
@@ -99,7 +99,7 @@ class TalkGrindThread(BotThread):
                   "Greenbough the Dryad",
                   "Deep Root", # completed dialogue
                   "Oakheart",
-                  "Winter's Watcher", # completed dialogue
+                  # "Winter's Watcher", # completed dialogue
                   # "Agguedian's Simulcrum", # not pathable
                   # "rough-hewn golem", # completed dialogue
                   # "Cheryn", # completed dialogue
@@ -108,9 +108,9 @@ class TalkGrindThread(BotThread):
                   # "Elder Barthrodue", # completed dialogue
                   # "Goourd", # completed dialogue
                   # "Old Man James", # completed dialogue
-                  # 'Haram', # completed dialogue
+                  'Haram', # completed dialogue
                   # "GuildMaster Cuvelas", # trainer
-                  # "Chiaru Maradiu",
+                  "Chiaru Maradiu",
                   # "Thereze", # completed dialogue
                   # "Qimoth", # completed dialogue
                   # "Joffi the Mystic", # completed dialogue
@@ -277,6 +277,7 @@ class TalkGrindThread(BotThread):
                   "hammer",
                   "mace",
                   "bow",
+                  "vorpal",
                   "heartseeker", # magic bow at the green mound
                   "spear",
                   "arrow",

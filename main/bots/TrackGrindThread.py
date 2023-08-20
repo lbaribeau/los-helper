@@ -765,7 +765,8 @@ class TrackGrindThread(GrindThread):
                 magentaprint("{0} isn't acceptable to us due to aura".format(track.name), False)
                 return self.skip_track()
 
-            if (track.mob_target is None or not self.is_mob_weak(track.mob_target, 4)) and not self.character.is_ready_for_tough_fight():
+            # if (track.mob_target is None or not self.is_mob_weak(track.mob_target, 4)) and 
+            if not self.character.is_ready_for_tough_fight():
                 magentaprint("{0} isn't acceptable due to tough fight function".format(track.name), False)
                 return self.skip_track()
 
@@ -811,10 +812,10 @@ class TrackGrindThread(GrindThread):
             magentaprint("{0} is our chosen track".format(track.name), False)
             self.start_track(track)
             self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
-            if track.mob_target is not None:
+            # if track.mob_target is not None:
                 # set mob_target as the main kill list mob if we would kill it normally
-                if track.mob_target.name in self.character.MONSTER_KILL_LIST:            
-                    self.character.MONSTER_KILL_LIST = [track.mob_target.name]
+                # if track.mob_target.name in self.character.MONSTER_KILL_LIST:            
+                #     self.character.MONSTER_KILL_LIST = [track.mob_target.name]
             return track.track[:]
         else:
             magentaprint("{0} isn't acceptable to us due to level".format(track.name), False)
@@ -838,7 +839,7 @@ class TrackGrindThread(GrindThread):
         pass
 
     def end_track(self):
-        self.reset_kiil_list()
+        # self.reset_kiil_list()
         if self.last_track is not None:
             self.track_end_time = get_timeint()
             track_time = (self.track_end_time - self.track_start_time).total_seconds()
