@@ -21,7 +21,7 @@ class TalkGrindThread(BotThread):
                   "Farside",
                   "Dwar", # completed dialogue
                   "Mayor Demlin", # completed dialogue
-                  # "Commander Rilmenson", # completed dialogue
+                  "Commander Rilmenson", # completed dialogue
                   # "General", # completed dialoguestop
                   # "Madame Zara", # completed dialogue
                   # "Ringmaster", # doesn't respond to anything
@@ -31,9 +31,9 @@ class TalkGrindThread(BotThread):
                   # "Farmer Calmor", # completed dialogue
                   # "Farmer McDermott", # completed dialogue
                   # # "Druid Tutor", #buggy
-                  # "Bertram Dalrum",  # doesn't respond to anything
-                  # "Dame Brethil",  # doesn't respond to anything
-                  # "Earl Mardley",  # doesn't respond to anything
+                  "Bertram Dalrum", # doesn't respond to anything
+                  "Dame Brethil",  # doesn't respond to anything
+                  "Earl Mardley",  # doesn't respond to anything
                   # "Alaran the Market Manager",  # doesn't respond to anything
                   "Douvan", "Queen Dalla", # completed dialogue
                   "Jerrek", # completed dialogue
@@ -41,7 +41,7 @@ class TalkGrindThread(BotThread):
                   "Thomas Ironheart", # completed dialogue
                   "Olarma", # completed dialogue
                   # "Master of Ceremonies",  # completed dialogue
-                  # "Boris Ironfounder", # completed dialogue
+                  "Boris Ironfounder", # completed dialogue
                   "Tendrurn", # completed dialogue
                   "Brotain", # completed dialogue
                   "Rimark", # completed dialogue
@@ -58,9 +58,9 @@ class TalkGrindThread(BotThread):
                   # "Farmer Viladin", # completed dialogue
                   # "Cal the Hermit", # completed dialogue
                   # "Farmer Woldis", # completed dialogue
-                  # "Rancher Renstone", # completed dialogue
-                  # "Rancher Plover", # completed dialogue
-                  # "Annette Plover", # completed dialogue
+                  "Rancher Renstone", # completed dialogue
+                  "Rancher Plover", # completed dialogue
+                  "Annette Plover", # completed dialogue
                   # "White Mage", # trainer
                   # "The Barding Lord", # trainer
                   # "Knight Errant", # trainer
@@ -92,10 +92,10 @@ class TalkGrindThread(BotThread):
                   "Lady Jenlira", # completed dialogue
                   "Bhezkam",
                   "Ironbark", # not found but mentioned by Jenlira!!!
-                  # "Esrhae", # completed dialoguel
-                  # "Haelyn", # doesn't respond to anything
-                  # "Caethrodyn", # doesn't respond to anything
-                  # "Robar Greybeard", # completed dialogue
+                  "Esrhae", # completed dialoguel
+                  "Haelyn", # doesn't respond to anything
+                  "Caethrodyn", # doesn't respond to anything
+                  "Robar Greybeard", # completed dialogue
                   "Greenbough the Dryad",
                   "Deep Root", # completed dialogue
                   "Oakheart",
@@ -105,17 +105,17 @@ class TalkGrindThread(BotThread):
                   # "Cheryn", # completed dialogue
                   # "Maco Bail", # Behind locked door
                   "Manic Soothsayer",
-                  # "Elder Barthrodue", # completed dialogue
-                  # "Goourd", # completed dialogue
-                  # "Old Man James", # completed dialogue
+                  "Elder Barthrodue", # completed dialogue
+                  "Goourd", # completed dialogue
+                  "Old Man James", # completed dialogue
                   'Haram', # completed dialogue
                   # "GuildMaster Cuvelas", # trainer
                   "Chiaru Maradiu",
                   # "Thereze", # completed dialogue
-                  # "Qimoth", # completed dialogue
-                  # "Joffi the Mystic", # completed dialogue
+                  "Qimoth", # completed dialogue
+                  "Joffi the Mystic", # completed dialogue
                   # "Gorban", # completed dialogue
-                  # "Pansy", # completed dialogue
+                  "Pansy", # completed dialogue
                   # "Kelluran", # completed dialogue
                   # "Ordaran the White", # completed dialogue
                   # "Corellan", # completed dialogue
@@ -437,6 +437,8 @@ class TalkGrindThread(BotThread):
                   "alchemist",
                   "druid",
                   # characters
+                  "agguedian",
+                  "soothsayer",
                   "deldan",
                   "lord",
                   "lady",
