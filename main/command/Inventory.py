@@ -614,7 +614,7 @@ class Inventory(SimpleCommand, ReferencingList):
     def bulk_give(self, item_string, target, quantity):
         i = 0
 
-        while i <= (quantity):
+        while i < (quantity):
             self.telnetHandler.write("give {} {}".format(item_string, target))
             i += 1
 

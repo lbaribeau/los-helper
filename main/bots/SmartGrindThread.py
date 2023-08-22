@@ -134,6 +134,18 @@ class SmartGrindThread(TrackGrindThread):
 
         if len(self.character.MONSTER_KILL_LIST) == 0:
             self.reset_kill_list()
+        
+        # get the next direction and area id to go to - does this area contain a hazard? If so run the prepare command
+        if self.direction_list[0] is not None:
+            next_direction = self.direction_list[0]
+            mud_area = self.character.MUD_AREA
+
+            if next_direction in mud_area.area_exits:
+                next_area = mud_area.area_exits[next_direction].area_to
+                if next_area is not None and next_area.contains_hazard:
+                    self.command_handler.process('prepare')
+
+
 
     def reset_gear(self):
         if self.should_reset_gear and not (self.is_character_class('Mag') or self.is_character_class('Thi') or self.is_character_class('Mon')):# or self.is_character_class('Ass')):
