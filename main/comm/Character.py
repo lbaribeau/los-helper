@@ -132,6 +132,7 @@ class Character(object):
         self.CAN_SEE = True
         self.ACTIVELY_MAPPING = False
         self.ACTIVELY_BOTTING = False
+        self.ACTIVELY_NOOBGRINDING = False
         self.CAN_FLEE = True
 
         self.ESCAPES = 0

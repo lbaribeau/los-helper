@@ -490,18 +490,10 @@ class CommandHandler(object):
         elif re.match("hsdi", user_input):
             #quickly ask the heal slave to cast detect-invis on us
             self.telnetHandler.write("em wants to see with eyes unclouded by hate")
+        elif re.match("^bfe$", user_input):
+            self.brute_force_exits()
         elif re.match("bfexit", user_input):
-            magentaprint("brute forcing all exits", False)
-            exits = ExitType.get_hidden_exits()
-            exit_objs = {}
-            for exit in exits:
-                first_word = exit.name.split(' ')[0]
-                exit_objs[first_word] = first_word
-            
-            for unique_exit in exit_objs:
-                if not unique_exit in self.character.EXIT_LIST:
-                    self.telnetHandler.write("look " + unique_exit)
-                    time.sleep(0.2)
+            self.brute_force_exits(False, True)
         elif re.match("ready?", user_input):
             is_ready = self.character.is_ready_for_tough_fight()
             magentaprint(str(is_ready), False)
@@ -518,22 +510,7 @@ class CommandHandler(object):
                     self.telnetHandler.write("look " + unique_exit)
                     time.sleep(0.2)
         elif re.match("bfdesc", user_input):
-            area = self.character.MUD_AREA.area
-            if area:
-                description = re.sub(r'[!\.\?,\'\"]',' ',area.description)
-                words = description.split(' ')
-                unique_words = {}
-                for word in words:
-                    # if word is not a filler word then look at it
-                    # remove punctuation from word
-                    if len(word) < 4:
-                        continue
-                    word = re.sub(r's$','',word.lower())
-                    unique_words[word.lower()] = word.lower()
-                
-                for unique_word in unique_words:
-                    self.telnetHandler.write("look " + unique_word)
-                    time.sleep(0.2)
+            self.brute_force_exits(True, False)
         elif re.match("m2e (.+)", user_input):
             try:
                 M_obj = re.search("m2e (.+)", user_input)
@@ -651,6 +628,38 @@ class CommandHandler(object):
             self.armour_bot.start_thread()
         else: # Doesn't match any command we are looking for
             self.telnetHandler.write(user_input) # Just shovel to telnet.
+
+    def brute_force_exits(self, description=True, hidden_exits=True):
+        if description:
+            magentaprint("brute forcing by description", False)
+            area = self.character.MUD_AREA.area
+            if area:
+                description = re.sub(r'[!\.\?,\'\"]',' ',area.description)
+                words = description.split(' ')
+                unique_words = {}
+                for word in words:
+                    # if word is not a filler word then look at it
+                    # remove punctuation from word
+                    if len(word) < 4:
+                        continue
+                    word = re.sub(r's$','',word.lower())
+                    unique_words[word.lower()] = word.lower()
+                
+                for unique_word in unique_words:
+                    self.telnetHandler.write("look " + unique_word)
+                    time.sleep(0.2)
+        if hidden_exits:
+            magentaprint("brute forcing all hidden exits", False)
+            exits = ExitType.get_hidden_exits()
+            exit_objs = {}
+            for exit in exits:
+                first_word = exit.name.split(' ')[0]
+                exit_objs[first_word] = first_word
+            
+            for unique_exit in exit_objs:
+                if not unique_exit in self.character.EXIT_LIST:
+                    self.telnetHandler.write("look " + unique_exit)
+                    time.sleep(0.2)
 
     def user_move(self, user_input):
         # if user_input.startswith("go "):

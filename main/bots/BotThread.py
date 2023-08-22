@@ -150,8 +150,8 @@ class BotThread(threading.Thread):
 
         # wait_for_move_ready(self.character)
         self.command_handler.go.wait_until_ready()
-        self.kill.wait_until_ready()
-        self.cast.wait_until_ready()
+        # self.kill.wait_until_ready()
+        # self.cast.wait_until_ready()
         # magentaprint("Going " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)), False)
 
         self.character.GO_BLOCKING_MOB = ""

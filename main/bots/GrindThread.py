@@ -804,7 +804,7 @@ class GrindThread(BotThread):
 
         # guard_count = 0
         for mob in m_list:
-            if re.search('town guards', mob) or \
+            if (self.character.level < 16 and re.search('town guard', mob)) or \
                 re.search('town crier', mob) or \
                re.search('clown', mob) or \
                re.search('Rancher Plover', mob) or \
@@ -1011,7 +1011,7 @@ class GrindThread(BotThread):
             self.character.NEEDS_TO_SELL = True
             self.command_handler.get.failed_to_get_items = False
 
-    def get_items_if_weapon(self):        
+    def get_items_if_weapon(self):
         if not self.character.NEEDS_TO_SELL or hasattr(self.smartCombat.weapon_bot, 'weapon') or self.is_character_class('Mon'):
             self.get_items()
         else:

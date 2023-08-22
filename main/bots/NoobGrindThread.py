@@ -7,27 +7,28 @@ class NoobGrindThread(TrackGrindThread):
 
     def __init__(self, character=None, command_handler=None, mud_reader_handler=None,
                 mud_map=None):
-        super().__init__(character, command_handler, mud_reader_handler, mud_map, 0)
+      super().__init__(character, command_handler, mud_reader_handler, mud_map, 0)
 
-        self.reset = ['drop_keys', 'areaid86']
-        self.setup_track = ['purchase_key', 'unlock_south', 'south', 'get_book', 'trade_book', 'north']
-        self.skellington_track = ['buff', 'unlock_east', 'east', 'engage_skelington', 'west']
-        self.probably_repair = False
+      self.reset = ['drop_keys', 'areaid86']
+      self.setup_track = ['purchase_key', 'unlock_south', 'south', 'get_book', 'trade_book', 'north']
+      self.skellington_track = ['buff', 'unlock_east', 'east', 'engage_skelington', 'west']
+      self.probably_repair = False
 
-        # if self.character.inventory.has('stout cudgel'):
-        #   self.probably_repair = False
-        #   self.command_handler.process('wield cudgel')
+      # if self.character.inventory.has('stout cudgel'):
+      #   self.probably_repair = False
+      #   self.command_handler.process('wield cudgel')
 
-        # if self.character.inventory.has('fragile white key'):
-        #   self.directions = ['drop_keys', 'areaid86']
+      # if self.character.inventory.has('fragile white key'):
+      #   self.directions = ['drop_keys', 'areaid86']
 
-        self.track_runs = 0
-        self.character.MONSTER_KILL_LIST = ['skeleton']
-        self.character.CAN_FLEE = False
+      self.track_runs = 0
+      self.character.MONSTER_KILL_LIST = ['skeleton']
+      self.character.CAN_FLEE = False
+      self.character.ACTIVELY_NOOBGRINDING = True
 
     def stop(self):
-        self.character.CAN_FLEE = True
-        super().stop()
+      self.character.CAN_FLEE = True
+      super().stop()
 
     def decide_where_to_go(self):
       if not self.stopping:
@@ -35,7 +36,7 @@ class NoobGrindThread(TrackGrindThread):
         magentaprint("Area ID: " + str(self.character.AREA_ID), False)
         if (self.character.AREA_ID != 2524 and\
           self.character.AREA_ID != 86) or\
-          self.track_runs > 10:
+          self.track_runs > 8:
           self.track_runs = 0
           return self.reset[:]
 
@@ -86,6 +87,7 @@ class NoobGrindThread(TrackGrindThread):
         return True
       elif exit_str == "engage_skelington":
         self.engage_monster('skeleton')
+        magentaprint("Engaged skelington", False)
         return True
       elif exit_str == "drop_keys":
         for _ in range(self.count_keys()):
@@ -109,3 +111,6 @@ class NoobGrindThread(TrackGrindThread):
     
     def check_armour(self):
       return
+
+    def get_items_if_weapon(self):
+      self.command_handler.get.execute("all")
