@@ -136,7 +136,7 @@ class SmartGrindThread(TrackGrindThread):
             self.reset_kill_list()
         
         # get the next direction and area id to go to - does this area contain a hazard? If so run the prepare command
-        if self.direction_list[0] is not None:
+        if len(self.direction_list) > 0:
             next_direction = self.direction_list[0]
             mud_area = self.character.MUD_AREA
 
