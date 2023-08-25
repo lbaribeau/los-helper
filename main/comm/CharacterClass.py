@@ -169,6 +169,9 @@ class CharacterClass(object):
         # this is a bit of a hack to help scale weapon proficiencies too
         return self.id in ["Cle", "Pal", "Dru"]
 
+    def should_ignore_class_abilities(self):
+        return self.id in ['Alc', 'Cle', 'Pal']
+
     # characters that primarily rely on physical attacks for their damage and have innate weapon skill
     # while dark knigth and paladin don't have innate weapon skill they get aura damage buffs
     def is_phys(self):

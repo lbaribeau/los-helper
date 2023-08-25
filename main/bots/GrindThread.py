@@ -179,23 +179,15 @@ class GrindThread(BotThread):
                 max_attempts = 2
 
             if mob_target is not None and not mob_target.is_hostile and (self.is_character_class('Thi') or self.is_character_class('Ass')):
-                hide_attempt = 0
-                first = True
-                while not self.character.HIDDEN and hide_attempt < max_attempts:
-                    if self.character.mobs.chase != '' or \
-                     self.character.mobs.attacking != []:
-                     break
+                magentaprint("persistent backstab prep started", False)
+                hidden = self.persistently_take_action(self.backstab_prep)
+                magentaprint("persistent backstab prep done", False)
 
-                    if not first and not self.character.HIDDEN:
-                        self.sleep(11)
-                    hidden = self.backstab_prep()
-                    hide_attempt += 1
-                    first = False
-                    if hidden:
-                        magentaprint("we're hidden so sleeping for a bit", False)
-                        time.sleep(3)
-                    else:
-                        magentaprint("failed to hide", False)
+                if hidden:
+                    magentaprint("we're hidden so sleeping for a bit", False)
+                    time.sleep(2.5)
+                else:
+                    magentaprint("failed to hide", False)
 
             self.engage_monster(new_target)
             self.engage_mobs_who_joined_in()
@@ -232,20 +224,40 @@ class GrindThread(BotThread):
 
         return mob_level < (self.character.level - level_diff)
 
+    def persistently_take_action(self, action_func, timeout=20):
+        success = False
+        start_time = get_timeint()
+        seconds_since_start = (get_timeint() - start_time).total_seconds()
+
+        while seconds_since_start < timeout and not success:
+            for i in range(0,20):
+                success = action_func()
+                self.sleep(0.25)
+                if success:
+                    break
+            self.engage_any_attacking_mobs()
+            seconds_since_start = (get_timeint() - start_time).total_seconds()
+        
+        return success
+
     def persistently_try_to_buff(self):
-        buff_attempt = 0
-        buff_success = False
-        while not buff_success and not self.character.is_buffed() and buff_attempt < 4:
-            buff_success = self.use_buff_ability()
-            if self.character.mobs.chase != '' or \
-                self.character.mobs.attacking != []:
-                break
+        magentaprint("GrindThread.persistently_try_to_buff() started", False)
+        self.persistently_take_action(self.use_buff_ability)
+        magentaprint("GrindThread.persistently_try_to_buff() finished", False)
+        # buff_attempt = 0
+        # buff_success = False
 
-            if not buff_success:
-                self.sleep(6)
+        # while not buff_success and not self.character.is_buffed() and buff_attempt < 4:
+        #     buff_success = self.use_buff_ability()
+        #     if self.character.mobs.chase != '' or \
+        #         self.character.mobs.attacking != []:
+        #         break
 
-            buff_attempt += 1
-            first = False
+        #     if not buff_success:
+        #         self.sleep(6)
+
+        #     buff_attempt += 1
+        #     first = False
 
     def pre_combat_actions(self, target):
         mob_target = Mob.get_mob_by_name(target)

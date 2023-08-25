@@ -514,6 +514,13 @@ class TrackGrindThread(GrindThread):
         'south', 'southeast', 'south', 'west', 'west', 'west', 'northwest', 'northwest', 'north', 'gate', 'east', 'north', 'north',
         'north', 'west', 'north', 'chapel']
 
+    def do_glamp_actions(self):
+        done_glamping = False
+        self.do_regular_actions()
+        if not self.ready_for_combat():
+            done_glamping = True
+        return done_glamping
+
     def do_go_hooks(self, exit_str):
         # magentaprint(str(self.character.AREA_ID) + ", " + exit_str, False)
         if exit_str == "slow_prepare":
@@ -538,25 +545,15 @@ class TrackGrindThread(GrindThread):
             return True
         elif exit_str == "glamp":
             # camp for 20 seconds
-            camp_start_time = get_timeint()
-            seconds_since_camp_start = (get_timeint() - camp_start_time).total_seconds()
-
-            magentaprint("camping for 20 seconds", False)
-            self.command_handler.process("rest")
-            while seconds_since_camp_start < 20:
-                for i in range(0,20):
-                    self.sleep(0.25)
-                    if self.stopping:
-                        return
-                    self.do_regular_actions()
-                self.engage_any_attacking_mobs()
-                seconds_since_camp_start = (get_timeint() - camp_start_time).total_seconds()
+            self.persistently_take_action(self.do_glamp_actions)
+            
             return True
         elif exit_str == "think":
             return True
         elif exit_str == "tap":
-            magentaprint("pausing for a few seconds", False)
-            self.sleep(3)
+            magentaprint("waiting for mob to engage us", False)
+            self.persistently_take_action(self.do_regular_actions, 10)
+            magentaprint("tap function completed", False)
             return True
         elif exit_str == "sell_items":
             # if we're in the pawn shop then sell stuff
@@ -702,6 +699,8 @@ class TrackGrindThread(GrindThread):
             # Track("THOMAS_IRONHEART", self.THOMAS_IRONHEART, 18, 20, 0, requires_ready=True, target_kills=1), # causes granite usage
             # Track("Hef the Bandit Chief", self.HEF, 12, 13, -1, allows_caster=False),
         ]
+
+        # self.tracks = [Track("WAY_STATION_GLAMP", self.WAY_STATION_GLAMP, 10, 14, 0, False, is_glamping=True)]
 
         self.tracks = [x for x in self.tracks if self.character.level >= x.min_level and self.character.level < x.max_level]
         # sort the list of tracks by track_aura
