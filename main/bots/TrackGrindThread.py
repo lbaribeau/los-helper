@@ -677,7 +677,7 @@ class TrackGrindThread(GrindThread):
             Track("Jerrek and Tag", self.JERREK_TAG, 16, 20, -1, target_kills=1),
             Track("Gnomes", self.GNOMES, 10, 12, 1, has_cooldown=False),
             Track("Garbo", self.GARBO, 13, 15, 1, target_kills=1),
-            Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 20, 0, requires_ready=False, target_kills=1, mob_name="Manic Soothsayer"),
+            Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 17, 0, requires_ready=False, target_kills=1),
             Track("Goourd, Manic and Elder", self.MANIC_ELDER, 17, 20, 0, requires_ready=True, target_kills=1, mob_name="Manic Soothsayer"),
             Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1, requires_ready=True, target_kills=1, mob_name="Cal the Hermit"),
             Track("Plovers", self.PLOVERS, 15, 20, 1, requires_ready=True, target_kills=1, mob_name="Annette Plover"),
@@ -811,10 +811,10 @@ class TrackGrindThread(GrindThread):
             magentaprint("{0} is our chosen track".format(track.name), False)
             self.start_track(track)
             self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
-            # if track.mob_target is not None:
+            if track.mob_target is not None:
                 # set mob_target as the main kill list mob if we would kill it normally
-                # if track.mob_target.name in self.character.MONSTER_KILL_LIST:            
-                #     self.character.MONSTER_KILL_LIST = [track.mob_target.name]
+                if track.mob_target.name in self.character.MONSTER_KILL_LIST:            
+                    self.character.MONSTER_KILL_LIST = [track.mob_target.name]
             return track.track[:]
         else:
             magentaprint("{0} isn't acceptable to us due to level".format(track.name), False)
@@ -834,11 +834,11 @@ class TrackGrindThread(GrindThread):
         self.last_track_kills = getattr(track, "kills")
         self.on_track = True
 
-    def reset_kiil_list(self):
+    def reset_kill_list(self):
         pass
 
     def end_track(self):
-        # self.reset_kiil_list()
+        self.reset_kill_list()
         if self.last_track is not None:
             self.track_end_time = get_timeint()
             track_time = (self.track_end_time - self.track_start_time).total_seconds()

@@ -216,6 +216,11 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'Aaashaaal\'s gift',
         'silver flute',
         'ash wood key',
+
+        # gnoll keys
+        'grey stone key',
+        'large bone key',
+        'crude iron key',
         # 'black lacquered key',
         'rusty key',
 
