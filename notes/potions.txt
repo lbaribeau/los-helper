@@ -8,6 +8,7 @@ milky potion, silver chalice - bless
 green potion, steel bottle - protection
 lady's tears, indigo potion, mushroom potion - detect invis
 aegis tears == skill is beyond you
+grey potion == resist magic
 dull grey potion - This skill is currently beyond you
 philtre of perception - detect magic
 granite potion, crystal vial - teleport to safety

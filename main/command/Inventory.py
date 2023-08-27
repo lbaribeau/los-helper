@@ -225,7 +225,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'rusty key',
 
         # important potions / consumable items
-        'Elixir of Morinva', 'granite potion', 'large granite potion', 'philtre of perception', 'philtre of health',
+        'Elixir of Morinva', 'granite potion', 'crystal vial', 'large granite potion', 'philtre of perception', 'philtre of health',
         'chequered vial', 'misty potion',
         'orange potion', # levitate
         'golden potion', #'platinum crucifix', # Helps disease? Worth a lot of money?

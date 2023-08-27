@@ -45,7 +45,10 @@ class Consume(threading.Event):
         # Do we really want to do it this way... no... use the command objects that have the right regexes on them
 
     def granite_potion(self):
-        if self.inventory.has('granite potion'):
+        if self.inventory.has('crystal vial'):
+            self.drink.execute(self.inventory.get_reference('crystal vial'))
+            return True
+        elif self.inventory.has('granite potion'):
             self.drink.execute(self.inventory.get_reference('granite potion'))
             return True
         return False

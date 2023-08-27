@@ -87,9 +87,9 @@ class TalkGrindThread(BotThread):
                   # "Lady Denlise",  # completed dialogue 
                   # "Vickie", # completed dialogue
                   "Matriarch Sara",
-                  "Lady Arielle",
-                  "Lord Arduis",
-                  "Lady Jenlira", # completed dialogue
+                  # "Lady Arielle",
+                  # "Lord Arduis",
+                  # "Lady Jenlira", # completed dialogue
                   "Bhezkam",
                   "Ironbark", # not found but mentioned by Jenlira!!!
                   "Esrhae", # completed dialoguel
@@ -205,6 +205,7 @@ class TalkGrindThread(BotThread):
                   "bandit",
                   "chameleon",
                   "bugbear",
+                  "bear",
                   "efreet",
                   "demon",
                   "demons",

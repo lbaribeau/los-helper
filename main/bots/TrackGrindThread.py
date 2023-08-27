@@ -656,7 +656,8 @@ class TrackGrindThread(GrindThread):
             Track("Cheryn", self.CHERYN, 11, 20, -1, requires_ready=False, target_kills=1),
             Track("Orcs", self.ORCS, 11, 16, -1),
             Track("Artificers", self.ARTIFICERS, 11, 14, -1),
-            Track("Haelyn", self.HAELYN, 16, 20, -1, requires_ready=True, target_kills=1, allows_caster=False, mob_name="Haelyn"),
+            # Haelyn is dusty blue but we want to priorize him for farming purposes
+            Track("Haelyn", self.HAELYN, 16, 20, 0, requires_ready=True, target_kills=1, allows_caster=False, mob_name="Haelyn"),
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1, has_cooldown=False),
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1, has_cooldown=False),
