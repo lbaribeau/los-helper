@@ -169,6 +169,9 @@ class CharacterClass(object):
         # this is a bit of a hack to help scale weapon proficiencies too
         return self.id in ["Cle", "Pal", "Dru"]
 
+    def is_evil(self):
+        return self.id in ["Dar", "Ass"]
+
     def should_ignore_class_abilities(self):
         return self.id in ['Alc', 'Cle', 'Pal']
 

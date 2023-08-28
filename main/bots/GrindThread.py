@@ -27,6 +27,9 @@ class GrindThread(BotThread):
         self.run_kills = 0
         self.last_aura_refresh_kills = 0
 
+        if self.character._class.is_evil():
+            self.healing_area = "areaid2"
+
     def do_run_startup(self):
         pass
         # if not self.is_character_class("Mon"):
@@ -180,7 +183,7 @@ class GrindThread(BotThread):
 
             if mob_target is not None and not mob_target.is_hostile and (self.is_character_class('Thi') or self.is_character_class('Ass')):
                 magentaprint("persistent backstab prep started", False)
-                hidden = self.persistently_take_action(self.backstab_prep)
+                hidden = self.persistently_take_action(self.backstab_prep, timeout=2)
                 magentaprint("persistent backstab prep done", False)
 
                 if hidden:

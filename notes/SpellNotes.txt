@@ -25,7 +25,8 @@ Level 5 spells are not really in the game
 - Sigil of Fire - Immolate (lvl4 spell) is dropped by the Lich of Bloodrock
 - Robar Greybeard - will trade dragon scroll (fire protect?) for some special gauntlets
 - Madame Zara drops a green scroll (detect-magic)
-
+- Feleesa the Nereid drops the Steamblast spell (rarely) - Bugbear cave under Halwyn (press the bone in the pit to open a hidden door), third arch into the well into the water
+  - down, down, down, (when the right/left change) prep, right, down, down, back, right, on, down, down, prep, back, down, right, down, down, on, on, on, prep, right, right, (home stretch!), down, down => Feleesa
 
 Wands/Items spell cast on use
 - white amulet/small flask/sticky salve == small heal
@@ -53,3 +54,4 @@ Wands/Items spell cast on use
 - bag of dirt == ??? (warm loamy smell)
 - electrum rod == ??? (rich brown aura)
 - clear blue crystal == ???
+- pine cone == Shatterstone

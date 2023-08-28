@@ -482,6 +482,8 @@ class TrackGrindThread(GrindThread):
         self.GOBLINS = ['areaid250', 'slow_prepare', 'areaid1615', 'north', 'camp', 'west', 'east', 'south', 'areaid2381', 'slow_prepare', 'up']
         self.HEF = ['areaid533', 'trail', 'areaid1678', 'door'] #'areaid2170', 'unlock panel key', 'panel', 'get all'
         self.AMBER_GUARDS = ['areaid575', 'areaid590', 'areaid552', 'areaid563', 'areaid585', 'areaid1338', 'areaid1359']
+        self.REMISARA = ['areaid4338']
+        self.CHOORGA = ['areaid3440', 'areaid2389']
 
         self.PATH_TO_SKIP_WITH = ['think']
 
@@ -697,6 +699,8 @@ class TrackGrindThread(GrindThread):
             # Track("CHIARU", self.CHIARU, 18, 20, 1, requires_ready=True, target_kills=1), # causes granite usage
             Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 1, requires_ready=True, target_kills=1, mob_name="Whiteblade the Barbarian"),
             Track("MAYOR_DEMLIN", self.MAYOR_DEMLIN, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Mayor Demlin"),
+            Track("REMISARA", self.REMISARA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Remisara"),
+            Track("CHOORGA", self.CHOORGA, 18, 20, -1, False, requires_ready=True),
             # Track("THOMAS_IRONHEART", self.THOMAS_IRONHEART, 18, 20, 0, requires_ready=True, target_kills=1), # causes granite usage
             # Track("Hef the Bandit Chief", self.HEF, 12, 13, -1, allows_caster=False),
         ]

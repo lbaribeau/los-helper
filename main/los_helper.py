@@ -58,7 +58,7 @@ from reactions.server_reaction import ServerReaction
 from reactions.health_monitor import HealthMonitor
 from comm.analyser import Analyser
 from Exceptions import *
-from reactions.ring_reaction import RingWearingReaction
+# from reactions.ring_reaction import RingWearingReaction
 
 class LosHelper(object):
     def __init__(self):
@@ -175,10 +175,10 @@ class LosHelper(object):
             self.set_preferred_weapon_proficiency(weapon_type_to_set)
             self.character.process_info()
 
-        
-        if self.character._class.id != "Mon" and self.character._class.id != "Alc": #Alc's have a class ring
-            # self.mud_reader_handler.register_reaction(RingWearingReaction(self.character.inventory, self.commandHandler))
-            self.mud_reader_handler.register_reaction(RingWearingReaction(self.command_handler.wear, self.character.inventory))
+        # no automatic ring wearing needed anymore please        
+        # if self.character._class.id != "Mon" and self.character._class.id != "Alc": #Alc's have a class ring
+        #     # self.mud_reader_handler.register_reaction(RingWearingReaction(self.character.inventory, self.commandHandler))
+        #     self.mud_reader_handler.register_reaction(RingWearingReaction(self.command_handler.wear, self.character.inventory))
 
     def set_preferred_weapon_proficiency(self, profficiency):
         try:

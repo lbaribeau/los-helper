@@ -323,6 +323,9 @@ class TalkGrindThread(BotThread):
                   "master",
                   "remedy",
                   "lime",
+                  "opal",
+                  "pine",
+                  "cone",
                   # spells
                   "blind",
                   "clairvoyance",

@@ -216,11 +216,14 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'Aaashaaal\'s gift',
         'silver flute',
         'ash wood key',
+        'the head of Choorga',
+        'tiger eye gem',
+        'stone eye', # super rare golem eye
 
         # gnoll keys
-        'grey stone key',
-        'large bone key',
-        'crude iron key',
+        # 'grey stone key',
+        # 'large bone key',
+        # 'crude iron key',
         # 'black lacquered key',
         'rusty key',
 
