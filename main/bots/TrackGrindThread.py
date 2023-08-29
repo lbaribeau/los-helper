@@ -626,7 +626,7 @@ class TrackGrindThread(GrindThread):
             Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0, requires_ready=True),
             Track("Lady Denlise", self.smart_knights_path, 18, 20, 1, True, 7, 18, target_kills=1, mob_name="Lady Denlise"),
             Track("Lord Tamaran", self.smart_knights_path, 18, 20, 1, True, 7, 18, True, target_kills=1, mob_name="Lord Tamaran"),
-            Track("Cathedral", self.CATHEDRAL, 10, 20, 1, True, 7, 18),
+            Track("Cathedral", self.CATHEDRAL, 10, 20, 1, True, 7, 18, skip_if_ready=True),
             Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 12, 20, 2, False, 7, 18, is_glamping=True, skip_if_ready=True),
             # grey and minor aura tracks
             Track("Theatre Farm", self.smart_theatre_path, 0, 14, 0, has_cooldown=False),
@@ -698,8 +698,8 @@ class TrackGrindThread(GrindThread):
             Track("CHOORGA", self.CHOORGA, 18, 20, -1, requires_ready=True, mob_name="Choorga the swamp troll"),
             # Track("THOMAS_IRONHEART", self.THOMAS_IRONHEART, 18, 20, 0, requires_ready=True, target_kills=1), # causes granite usage
             # Track("Hef the Bandit Chief", self.HEF, 12, 13, -1, allows_caster=False),
-            Track("Gnoll Camp", self.GNOLL_CAMP, 15, 20, -1, False, 0, 9),
-            Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9),
+            Track("Gnoll Camp", self.GNOLL_CAMP, 15, 20, -1, False, 0, 9, skip_if_ready=True),
+            Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9, skip_if_ready=True),
             Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True, skip_if_ready=True),
             Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9, is_glamping=True, skip_if_ready=True),
             # Track("Goblins", self.GOBLINS, 16, 20, -2, False, 0, 9, requires_ready=False, allows_caster=False),
@@ -777,9 +777,10 @@ class TrackGrindThread(GrindThread):
                 magentaprint("{0} isn't acceptable due to tough fight function".format(track.name), False)
                 return self.skip_track()
 
-        if track.skip_if_ready:
+        # optimization for level 18s so they don't waste time on tracks that are too easy
+        if track.skip_if_ready and self.character.info.level == 18:
             if self.character.is_ready_for_tough_fight() and aura_acceptable:
-                return self.skip_track
+                return self.skip_track()
 
         if track.track_aura == 9:
             if self.character.level in level_range:
