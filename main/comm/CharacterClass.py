@@ -160,7 +160,7 @@ class CharacterClass(object):
 
     # characters that primarily rely on magic for their damage
     def is_caster(self):
-        return self.id in ["Mag", "Alc"]
+        return self.id in ["Mag", "Alc", "Dru"]
 
     def is_healer(self):
         # druid doesn't get bonus piety but seems to have decent heal scaling

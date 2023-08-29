@@ -48,6 +48,7 @@ class TrackGrindThread(GrindThread):
             "stage","side 2","backstage", "door", "out", "door 2", "out", "curtain", "stage",
             "side", "door","up", "out", "out", "n", "e","e", "e", "n", "chapel"
         ]
+        self.BERTRAM = ["areaid109"]
         self.smart_market_path = ['areaid113','w', 'w', 'office', 'out', 'n', 'n','s', 'w', 'e', 's', 'w', 's', 'n', 'w', 'e', 'n',
             's', 'e', 'e', "out"]
         self.MARKET_PATH = ["areaid2", 
@@ -343,6 +344,9 @@ class TrackGrindThread(GrindThread):
             'west', 'north', 'chapel'
         ]
 
+        self.LADY_DENLISE = ['areaid1079']
+        self.LORD_TAMARAN = ['areaid1074']
+
         # self.GNOLL_CAMP = ['think']
         self.GNOLL_CAMP = [
             'areaid986', 'brush', 'west', 'west', 'south', 'southwest', 'southwest', 'tent', 'out', 'north', 'southeast',
@@ -541,11 +545,14 @@ class TrackGrindThread(GrindThread):
                 self.direction_list = ['oops','s','w','w','w','n','chapel']
             return True
         elif exit_str == "check_aura":
+            magentaprint("checking aura, run kills: " + str(self.run_kills), False)
             # check kills since last aura check - if <5 then don't bother
+            magentaprint("kills since last aura check: " + str(self.run_kills - self.last_aura_refresh_kills), False)
             if self.run_kills > self.last_aura_refresh_kills:
                 self.update_aura(force=True)
             return True
         elif exit_str == "glamp":
+            magentaprint("glamping for 20 seconds...", False)
             # camp for 20 seconds
             self.persistently_take_action(self.do_glamp_actions)
             
@@ -624,20 +631,20 @@ class TrackGrindThread(GrindThread):
             Track("Gorban", self.GORBAN, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Gorban"),
             Track("Qimoth", self.QIMOTH, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Qimoth"),
             Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0, requires_ready=True),
-            Track("Lady Denlise", self.smart_knights_path, 18, 20, 1, True, 7, 18, target_kills=1, mob_name="Lady Denlise"),
-            Track("Lord Tamaran", self.smart_knights_path, 18, 20, 1, True, 7, 18, True, target_kills=1, mob_name="Lord Tamaran"),
+            Track("Lady Denlise", self.LADY_DENLISE, 18, 20, 1, True, 7, 18, target_kills=1, mob_name="Lady Denlise"),
+            Track("Lord Tamaran", self.LORD_TAMARAN, 18, 20, 1, True, 7, 18, True, target_kills=1, mob_name="Lord Tamaran"),
             Track("Cathedral", self.CATHEDRAL, 10, 20, 1, True, 7, 18, skip_if_ready=True),
             Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 12, 20, 2, False, 7, 18, is_glamping=True, skip_if_ready=True),
             # grey and minor aura tracks
             Track("Theatre Farm", self.smart_theatre_path, 0, 14, 0, has_cooldown=False),
-            Track("Theatre Bertram", self.smart_theatre_path, 14, 20, 0, target_kills=1, skip_if_ready=True),
+            Track("Theatre Bertram", self.BERTRAM, 14, 20, 0, target_kills=1, skip_if_ready=True),
             Track("Market", self.smart_market_path, 0, 15, 0, has_cooldown=False),
             Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0, has_cooldown=False),
             Track("Kobolds", self.smart_kobold_path, 0, 9, -1, has_cooldown=False), #sentries are suuuper tough
             Track("Kobolds", self.kobold_massacre, 10, 17, -2, has_cooldown=False), #sentries are suuuper tough
             #Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
             Track("Fort Farm", self.smart_fort_path, 9, 14, 0, has_cooldown=False, requires_ready=False),
-            Track("Fort Commander", self.smart_fort_path, 14, 20, 0, requires_ready=True, target_kills=1, mob_name="Commander Rilmenson"),
+            Track("Fort Commander", ["areaid850"], 14, 16, 0, requires_ready=True, target_kills=1, mob_name="Commander Rilmenson"),
             Track("Veterans", self.BLADEMASTER, 8, 12, 0, has_cooldown=False),
             Track("North Bandits", self.smart_northern_bandits_path, 9, 14, -1, has_cooldown=False),
             # Track("Eastern Zombies Farm", self.ZOMBIES, 6, 12, 0, has_cooldown=False),
@@ -671,8 +678,8 @@ class TrackGrindThread(GrindThread):
             # Track("Shaldena the Red", self.SHALDENA, 15, 20, 1),
             # Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,8,20,9, has_cooldown=False),
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
-            Track("Jerrek and Tag", self.JERREK_TAG, 11, 16, -1, requires_ready=True, target_kills=1, mob_name="Jerrek"),
-            Track("Jerrek and Tag", self.JERREK_TAG, 16, 20, -1, target_kills=1),
+            Track("Jerrek and Tag", self.JERREK_TAG, 11, 17, -1, requires_ready=True, target_kills=1, mob_name="Jerrek"),
+            # Track("Jerrek and Tag", self.JERREK_TAG, 16, 20, -1, target_kills=1),
             Track("Gnomes", self.GNOMES, 10, 12, 1, has_cooldown=False),
             Track("Garbo", self.GARBO, 13, 15, 1, target_kills=1),
             Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 17, 0, requires_ready=False, target_kills=1),
@@ -695,7 +702,7 @@ class TrackGrindThread(GrindThread):
             Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 1, requires_ready=True, target_kills=1, mob_name="Whiteblade the Barbarian"),
             Track("MAYOR_DEMLIN", self.MAYOR_DEMLIN, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Mayor Demlin"),
             Track("REMISARA", self.REMISARA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Remisara"),
-            Track("CHOORGA", self.CHOORGA, 18, 20, -1, requires_ready=True, mob_name="Choorga the swamp troll"),
+            Track("CHOORGA", self.CHOORGA, 18, 20, -1, requires_ready=True, has_cooldown=False, mob_name="Choorga the swamp troll"),
             # Track("THOMAS_IRONHEART", self.THOMAS_IRONHEART, 18, 20, 0, requires_ready=True, target_kills=1), # causes granite usage
             # Track("Hef the Bandit Chief", self.HEF, 12, 13, -1, allows_caster=False),
             Track("Gnoll Camp", self.GNOLL_CAMP, 15, 20, -1, False, 0, 9, skip_if_ready=True),

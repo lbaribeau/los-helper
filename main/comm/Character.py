@@ -291,13 +291,15 @@ class Character(object):
 
     def is_ready_for_tough_fight(self):
         is_ready = self.is_near_max_stats()
+        has_restoratives = self.inventory.count_large_restoratives() > 4
         magentaprint("is_near_max_stats: " + str(is_ready), False)
-        is_ready = is_ready and self.inventory.count_large_restoratives() > 4
-        magentaprint("has_restoratives: " + str(is_ready), False)
+        magentaprint("has_restoratives: " + str(has_restoratives), False)
+        is_ready = is_ready and has_restoratives
 
         # we don't care about Alchemist slow combat ability "slow"
         if is_ready and not self._class.should_ignore_class_abilities():
             is_ready = self.abilities_up()
+            magentaprint("abilities_up: " + str(is_ready), False)
             
             # if is_ready and len(buff_abilities) > 0:
             #     is_ready = self.is_buffed() or self.check_cooldowns(buff_abilities)
