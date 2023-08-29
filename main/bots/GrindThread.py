@@ -927,6 +927,11 @@ class GrindThread(BotThread):
 
         self.smartCombat.spell = self.smartCombat.favourite_spell
         self.smartCombat.run()
+
+        if new_target in ('Choorga the swamp troll'):
+            self.smartCombat.nervous_mode = True
+        else:
+            self.smartCombat.nervous_mode = False
         # What about flee... can we rest after a flee maybe, or quit...
         # Do lowest risk at this point, right... or do we want to rest
         # If the mob isn't there... better remove it from the lists

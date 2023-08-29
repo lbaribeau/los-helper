@@ -4,7 +4,7 @@ from threading import Thread
 from combat.CombatObject import CombatObject
 # from Ability import HealAbility, FastCombatAbility, CombatAbility, DanceOfTheCobra, Circle, Bash, Turn, Touch
 from command.Ability import *
-from misc_functions import magentaprint
+from misc_functions import magentaprint, get_timestamp, output_api_feed
 import comm.Spells as Spells
 from comm import RegexStore as R
 from combat.mob_target_determinator import MobTargetDeterminator
@@ -111,6 +111,14 @@ class SmartCombat(CombatObject):
             self.character.AREA_TITLE = timeless_area.name
             self.character.ESCAPES += 1
 
+            self.character.flee_log.append({
+                'target': self.target,
+                'attacking_mobs': str(self.character.mobs.attacking),
+                'time': str(get_timestamp()),
+                'area': self.character.MUD_AREA.to_string(),
+                'stats': "HP: " + str(self.character.HEALTH) + " MP: " + str(self.character.MANA)
+            })
+            output_api_feed("flee_log", self.character.flee_log)
             self.stop()
             self.cast.stop()
             self.kill.stop()
@@ -141,7 +149,7 @@ class SmartCombat(CombatObject):
                         self.heal_abilities[0].execute()
                     # if we're a cleric or paladin then we should use a heal spell - set black_magic to false
                     # let's also check to make sure our PTY is higher than 14
-                    elif self.is_healer_class() and self.black_magic and self.character.info.pty > 14:
+                    elif self.is_healer_class() and self.black_magic:
                         magentaprint("Should top up so I'ma turn off BM", False)
                         self.black_magic = False
                         # the character will cast a heal spell if they can on the next cast
@@ -304,7 +312,7 @@ class SmartCombat(CombatObject):
         self.fleeing     = False
         self.error       = False
         self.used_ability = False
-        # self.nervous_mode = False
+        self.nervous_mode = False
 
         self.casts = 0
         self.attacks = 0

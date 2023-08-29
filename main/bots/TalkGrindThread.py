@@ -298,6 +298,7 @@ class TalkGrindThread(BotThread):
                   "fungus",
                   "king",
                   "statue",
+                  "tiger",
                   "moth",
                   "jade",
                   "raw",

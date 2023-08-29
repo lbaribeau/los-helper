@@ -700,7 +700,7 @@ class TrackGrindThread(GrindThread):
             Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 1, requires_ready=True, target_kills=1, mob_name="Whiteblade the Barbarian"),
             Track("MAYOR_DEMLIN", self.MAYOR_DEMLIN, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Mayor Demlin"),
             Track("REMISARA", self.REMISARA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Remisara"),
-            Track("CHOORGA", self.CHOORGA, 18, 20, -1, False, requires_ready=True),
+            Track("CHOORGA", self.CHOORGA, 18, 20, -1, requires_ready=True, mob_name="Choorga the swamp troll"),
             # Track("THOMAS_IRONHEART", self.THOMAS_IRONHEART, 18, 20, 0, requires_ready=True, target_kills=1), # causes granite usage
             # Track("Hef the Bandit Chief", self.HEF, 12, 13, -1, allows_caster=False),
         ]
@@ -786,7 +786,7 @@ class TrackGrindThread(GrindThread):
         current_time = get_timeint()
         # seconds_since_last_run = (current_time - current_time).total_seconds()
         seconds_since_last_run = (current_time - get_timeint_from_int(track.last_run)).total_seconds()
-        if not track.is_glamping and not self.abandoned_last_track and track.has_cooldown and seconds_since_last_run < 3600:
+        if not track.is_glamping and not self.abandoned_last_track and track.has_cooldown and seconds_since_last_run < 4000:
             magentaprint("{0} isn't acceptable to us due to cooldown".format(track.name), False)
             return self.skip_track()
         # aura correction here is maybe more valuable than short term efficiency - seeing a lot of bots dangling near their incorrect aura

@@ -64,6 +64,8 @@ class Character(object):
         self.PREFER_BM = True
         self.is_headless = False #True if the character is running remotely and we want to run some logs
 
+        self.flee_log = []
+
         #WEAPON_SKILLS = [0, 0, 0, 0, 0] #sharp, thrust, blunt, pole, missile
         #MAGIC_SKILLS= [0, 0, 0, 0, 0]
         self.SKILLS = {}
@@ -279,7 +281,7 @@ class Character(object):
 
         # we don't care about Alchemist slow combat ability "slow"
         if is_ready and not self._class.should_ignore_class_abilities():
-            heal_abilities        = self._class.heal_skills
+            heal_abilities        = [] #self._class.heal_skills # removing this from the logic since they get used often and have a short cooldown
             buff_abilities        = self._class.buff_skills
             slow_combat_abilities = self._class.slow_combat_skills
             fast_combat_abilities = self._class.fast_combat_skills
