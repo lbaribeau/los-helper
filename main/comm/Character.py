@@ -273,6 +273,22 @@ class Character(object):
                     return True
         return False
 
+    def abilities_up(self):
+        is_ready = True
+        heal_abilities        = [] #self._class.heal_skills # removing this from the logic since they get used often and have a short cooldown
+        buff_abilities        = self._class.buff_skills
+        slow_combat_abilities = self._class.slow_combat_skills
+        fast_combat_abilities = self._class.fast_combat_skills
+        cooldowns = [heal_abilities, slow_combat_abilities, buff_abilities, fast_combat_abilities]
+
+        for cooldown in cooldowns:
+            is_ready = self.check_cooldowns(cooldown)
+            if not is_ready:
+                is_ready = False
+                break
+        
+        return is_ready
+
     def is_ready_for_tough_fight(self):
         is_ready = self.is_near_max_stats()
         magentaprint("is_near_max_stats: " + str(is_ready), False)
@@ -281,17 +297,7 @@ class Character(object):
 
         # we don't care about Alchemist slow combat ability "slow"
         if is_ready and not self._class.should_ignore_class_abilities():
-            heal_abilities        = [] #self._class.heal_skills # removing this from the logic since they get used often and have a short cooldown
-            buff_abilities        = self._class.buff_skills
-            slow_combat_abilities = self._class.slow_combat_skills
-            fast_combat_abilities = self._class.fast_combat_skills
-            cooldowns = [heal_abilities, slow_combat_abilities, buff_abilities, fast_combat_abilities]
-
-            for cooldown in cooldowns:
-                is_ready = self.check_cooldowns(cooldown)
-                if not is_ready:
-                    is_ready = False
-                    break
+            is_ready = self.abilities_up()
             
             # if is_ready and len(buff_abilities) > 0:
             #     is_ready = self.is_buffed() or self.check_cooldowns(buff_abilities)

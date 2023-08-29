@@ -928,7 +928,7 @@ class GrindThread(BotThread):
         self.smartCombat.spell = self.smartCombat.favourite_spell
         self.smartCombat.run()
 
-        if new_target in ('Choorga the swamp troll'):
+        if new_target == 'Choorga the swamp troll':
             self.smartCombat.nervous_mode = True
         else:
             self.smartCombat.nervous_mode = False

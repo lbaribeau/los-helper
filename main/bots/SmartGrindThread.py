@@ -422,20 +422,24 @@ class SmartGrindThread(TrackGrindThread):
 
         # if not target_list:
 
-        self.character.MONSTER_KILL_LIST = []
-
         # magentaprint(target_list.count(), False)
         # magentaprint(target_list, False)
+        temp_list = []
 
         for target in target_list:
             mob_locations = MudMap.get_mob_locations_by_id(target.id)
-            self.character.MONSTER_KILL_LIST.append(target.name) # This might append too many?
+            temp_list.append(target.name) # This might append too many?
             self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
+
+        self.character.MONSTER_KILL_LIST = temp_list
+
+        # magentaprint("Monster")
 
         if self.character.is_headless:
             output_api_feed('mkl', self.character.MONSTER_KILL_LIST)
 
     def reset_kill_list(self):
+        magentaprint("Resetting kill list", False)
         self.get_targets()
 
     def pick_new_target(self):

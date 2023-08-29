@@ -469,10 +469,10 @@ class TrackGrindThread(GrindThread):
         self.FORGE_THIEVES = ['areaid1240', 'conveyor', 'east', 'plank', 'east', 'west', 'out', 'west', 'door']
         self.MASSIVE_SWAMP_TROLL = ["areaid2157"]
         self.BARBARIN_SHAMAN = ["areaid450"]
-        self.KNIGHTS_TENT_CAMP = ["areaid1068", "glamp", "glamp", "glamp"]
-        self.HOLY_SISTER_CAMP = ["areaid1363", "glamp", "glamp", "glamp"]
+        self.KNIGHTS_TENT_CAMP = ["areaid1068", "glamp", "glamp", "glamp", "check_aura"]
+        self.HOLY_SISTER_CAMP = ["areaid1363", "glamp", "glamp", "glamp", "check_aura"]
         self.GNOLL_SUB_CHIEF_CAMP = ["areaid2363", "glamp", "glamp", "glamp"]
-        self.GNOLL_CHAPLAIN_CAMP = ["areaid1737", "glamp", "glamp", "glamp"]
+        self.GNOLL_CHAPLAIN_CAMP = ["areaid1737", "glamp", "glamp", "glamp", "check_aura"]
         self.WAY_STATION_GLAMP = ["areaid1107", "glamp", "glamp", "glamp"]
         self.CHIARU = ["areaid3096"]
         self.WHITEBLADE = ["areaid2109"]
@@ -611,6 +611,8 @@ class TrackGrindThread(GrindThread):
         
         magentaprint("aura updated hook", False)
         magentaprint("tracks: " + str(self.tracks), False)
+        self.abandoned_last_track = False
+        self.skipped_last_track = False
 
         # restart the paths
         self.__nextpath = 0
@@ -619,23 +621,16 @@ class TrackGrindThread(GrindThread):
         self.tracks = [
             Track("Shop and Tip 0",self.SHOP_AND_TIP_PATH,0,20,9, has_cooldown=False),
             # Aura intensive stuff all up front
-            Track("Gorban", self.GORBAN, 18, 20, 0, requires_ready=True, mob_name="Gorban"),
-            Track("Qimoth", self.QIMOTH, 18, 20, 0, requires_ready=True, mob_name="Qimoth"),
+            Track("Gorban", self.GORBAN, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Gorban"),
+            Track("Qimoth", self.QIMOTH, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Qimoth"),
             Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0, requires_ready=True),
-            Track("Gnoll Camp", self.GNOLL_CAMP, 15, 20, -1, False, 0, 9),
-            Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9),
-            Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True),
-            Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9, is_glamping=True),
-            # Track("Goblins", self.GOBLINS, 16, 20, -2, False, 0, 9, requires_ready=False, allows_caster=False),
-            Track("Amber Guards", self.AMBER_GUARDS, 15, 20, 1, has_cooldown=False),
-            Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18),
-            Track("Lady Denlise", self.smart_knights_path, 18, 20, 1, True, 7, 18, mob_name="Lady Denlise"),
-            Track("Lord Tamaran", self.smart_knights_path, 18, 20, 1, True, 7, 18, True, mob_name="Lord Tamaran"),
+            Track("Lady Denlise", self.smart_knights_path, 18, 20, 1, True, 7, 18, target_kills=1, mob_name="Lady Denlise"),
+            Track("Lord Tamaran", self.smart_knights_path, 18, 20, 1, True, 7, 18, True, target_kills=1, mob_name="Lord Tamaran"),
             Track("Cathedral", self.CATHEDRAL, 10, 20, 1, True, 7, 18),
-            Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 12, 20, 2, False, 7, 18, is_glamping=True),
+            Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 12, 20, 2, False, 7, 18, is_glamping=True, skip_if_ready=True),
             # grey and minor aura tracks
             Track("Theatre Farm", self.smart_theatre_path, 0, 14, 0, has_cooldown=False),
-            Track("Theatre Bertram", self.smart_theatre_path, 14, 20, 0, target_kills=1),
+            Track("Theatre Bertram", self.smart_theatre_path, 14, 20, 0, target_kills=1, skip_if_ready=True),
             Track("Market", self.smart_market_path, 0, 15, 0, has_cooldown=False),
             Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0, has_cooldown=False),
             Track("Kobolds", self.smart_kobold_path, 0, 9, -1, has_cooldown=False), #sentries are suuuper tough
@@ -647,7 +642,7 @@ class TrackGrindThread(GrindThread):
             Track("North Bandits", self.smart_northern_bandits_path, 9, 14, -1, has_cooldown=False),
             # Track("Eastern Zombies Farm", self.ZOMBIES, 6, 12, 0, has_cooldown=False),
             # Track("Eastern Farmers", self.ZOMBIES, 13, 16, 0, requires_ready=True),
-            Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH, 0, 20, 9),
+            # Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH, 0, 20, 9),
             Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 15, 0, has_cooldown=False),
             Track("Miners", self.MINERS, 10, 16, 0, has_cooldown=False),
             Track("Boris Ironfounder", self.BORIS_IRONFOUNDER, 15, 20, 0, requires_ready=True, target_kills=1, allows_caster=False, mob_name="Boris Ironfounder"),
@@ -669,12 +664,12 @@ class TrackGrindThread(GrindThread):
             Track("Tardan", self.TARDAN, 15, 20, 0, requires_ready=True, target_kills=1, mob_name="Tardan"),
             Track("Hurn", self.HURN, 15, 20, 1, requires_ready=True, target_kills=1, mob_name="Hurn the Smith"),
             Track("Rimark", self.RIMARK, 15, 17, 1, requires_ready=True, target_kills=1, mob_name="Rimark"),
-            Track("Dojo", self.DOJO, 16, 20, 1, requires_ready=True, mob_name="Dojo Administrator"),
+            Track("Dojo", self.DOJO, 16, 20, 1, requires_ready=True, target_kills=1, mob_name="Dojo Administrator"),
             Track("HORSEMASTER", self.HORSEMASTER, 17, 20, 1, requires_ready=True, target_kills=1, mob_name="Th'kit the HorseMaster"),
             Track("Dini", self.DINI, 11, 15, 0, target_kills=1),
             Track("Horbuk", self.HORBUK, 15, 20, 1, requires_ready=True, target_kills=1, mob_name="Horbuk"),
             # Track("Shaldena the Red", self.SHALDENA, 15, 20, 1),
-            Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,8,20,9, has_cooldown=False),
+            # Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,8,20,9, has_cooldown=False),
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
             Track("Jerrek and Tag", self.JERREK_TAG, 11, 16, -1, requires_ready=True, target_kills=1, mob_name="Jerrek"),
             Track("Jerrek and Tag", self.JERREK_TAG, 16, 20, -1, target_kills=1),
@@ -693,7 +688,7 @@ class TrackGrindThread(GrindThread):
             # Track("Forge / weapon thieves",self.FORGE_THIEVES,14,20,-1),
             # Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 12, 20, -1), # too aggressive and multiple spawn
             Track("Massive swamp troll", self.MASSIVE_SWAMP_TROLL, 15, 20, -1, requires_ready=True, target_kills=1, mob_name="massive swamp troll"),
-            Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9,has_cooldown=False),
+            # Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9,has_cooldown=False),
             # Track("Barbarian shaman", self.BARBARIN_SHAMAN, 15, 20, 0), # some pretty big nuke spells, maybe not worth it
             Track("WAY_STATION_GLAMP", self.WAY_STATION_GLAMP, 10, 14, 0, False, is_glamping=True),
             # Track("CHIARU", self.CHIARU, 18, 20, 1, requires_ready=True, target_kills=1), # causes granite usage
@@ -703,6 +698,13 @@ class TrackGrindThread(GrindThread):
             Track("CHOORGA", self.CHOORGA, 18, 20, -1, requires_ready=True, mob_name="Choorga the swamp troll"),
             # Track("THOMAS_IRONHEART", self.THOMAS_IRONHEART, 18, 20, 0, requires_ready=True, target_kills=1), # causes granite usage
             # Track("Hef the Bandit Chief", self.HEF, 12, 13, -1, allows_caster=False),
+            Track("Gnoll Camp", self.GNOLL_CAMP, 15, 20, -1, False, 0, 9),
+            Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9),
+            Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True, skip_if_ready=True),
+            Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9, is_glamping=True, skip_if_ready=True),
+            # Track("Goblins", self.GOBLINS, 16, 20, -2, False, 0, 9, requires_ready=False, allows_caster=False),
+            Track("Amber Guards", self.AMBER_GUARDS, 15, 20, 1, has_cooldown=False, skip_if_ready=True),
+            Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18, skip_if_ready=True),
         ]
 
         # self.tracks = [Track("WAY_STATION_GLAMP", self.WAY_STATION_GLAMP, 10, 14, 0, False, is_glamping=True)]
@@ -752,6 +754,7 @@ class TrackGrindThread(GrindThread):
         return nextpath
 
     def evaluate_track(self, track):
+        self.reset_kill_list()
         self.skipped_last_track = False
         level_range = range(track.min_level, track.max_level)
 
@@ -773,6 +776,10 @@ class TrackGrindThread(GrindThread):
             if not self.character.is_ready_for_tough_fight():
                 magentaprint("{0} isn't acceptable due to tough fight function".format(track.name), False)
                 return self.skip_track()
+
+        if track.skip_if_ready:
+            if self.character.is_ready_for_tough_fight() and aura_acceptable:
+                return self.skip_track
 
         if track.track_aura == 9:
             if self.character.level in level_range:
@@ -843,7 +850,6 @@ class TrackGrindThread(GrindThread):
         pass
 
     def end_track(self):
-        self.reset_kill_list()
         if self.last_track is not None:
             self.track_end_time = get_timeint()
             track_time = (self.track_end_time - self.track_start_time).total_seconds()
@@ -924,7 +930,7 @@ class TrackGrindThread(GrindThread):
 class Track():
     def __init__(self, name, track, min_level, max_level, track_aura, has_cooldown=True,
                 min_aura=0, max_aura=18, requires_ready=False, is_glamping=False, target_kills=99,
-                allows_caster=True, mob_name=""):
+                allows_caster=True, mob_name="", skip_if_ready=False):
         self.name = name
         # setup the track with a buffer at the end so that last node mobs don't get misattributed to the next track
         track.append("think")
@@ -946,6 +952,7 @@ class Track():
         self.is_glamping = is_glamping
         self.target_kills = target_kills
         self.allows_caster = allows_caster
+        self.skip_if_ready = skip_if_ready
 
         mob_target = None
         if mob_name != "":
