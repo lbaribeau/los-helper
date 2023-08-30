@@ -11,18 +11,33 @@ from db.Mob import *
 # bot that finds named mobs and talks to them
 class TalkGrindThread(BotThread):
       def __init__(self, character=None, command_handler=None, mud_reader_handler=None,
-            mud_map=None, target=None):
+            mud_map=None, target=None, trade_grind=False):
             super().__init__(character, command_handler, mud_reader_handler, mud_map)
+
+            self.trade_items = []
+            if trade_grind:
+                  magentaprint("trade_grind mode", False)
+
+                  self.trade_items = target.split(",")
+            else:
+                  magentaprint("talk_grind mode", False)
+
+            if target is not None and not trade_grind:
+                  self.target_mobs = [target]
+
+            self.index = 0
 
             # self.travel_bot = TravelBot(self.char, self.command_handler, mud_map)
             self.talking = False
+            self.target = target
+            self.trade_grind = trade_grind
             self.current_topics = []
             self.target_mobs = [
                   "Farside",
                   "Dwar", # completed dialogue
                   "Mayor Demlin", # completed dialogue
                   "Commander Rilmenson", # completed dialogue
-                  # "General", # completed dialoguestop
+                  "General", # completed dialoguestop
                   # "Madame Zara", # completed dialogue
                   # "Ringmaster", # doesn't respond to anything
                   # "Farmer Grangers Ghost", # completed dialogue
@@ -66,7 +81,8 @@ class TalkGrindThread(BotThread):
                   # "Knight Errant", # trainer
                   "barbarian shaman",
                   "Corien",
-                  "Lyron the Elder","Shaldena the Red","Garbo the Hobbit","Whiteblade the Barbarian", # completed dialogue
+                  "Shaldena the Red",
+                  "Lyron the Elder","Garbo the Hobbit","Whiteblade the Barbarian", # completed dialogue
                   # "Great Druid",
                   # "Teamleader Egan", # doesn't respond to anything
                   # "Trent the Merchant", # doesn't respond to anything
@@ -81,36 +97,24 @@ class TalkGrindThread(BotThread):
                   # "Druid Galm", # completed dialogue
                   # "Forest Master",
                   "Broad Leaf",
+                  # "Winter's Watcher", # completed dialogue
                   "Red Crown",
-                  "Lord Tamaran",
-                  # "Tario", # completed dialogue
-                  # "Lady Denlise",  # completed dialogue 
-                  # "Vickie", # completed dialogue
-                  "Matriarch Sara",
-                  # "Lady Arielle",
-                  # "Lord Arduis",
-                  # "Lady Jenlira", # completed dialogue
-                  "Bhezkam",
-                  "Ironbark", # not found but mentioned by Jenlira!!!
-                  "Esrhae", # completed dialoguel
-                  "Haelyn", # doesn't respond to anything
-                  "Caethrodyn", # doesn't respond to anything
-                  "Robar Greybeard", # completed dialogue
                   "Greenbough the Dryad",
                   "Deep Root", # completed dialogue
+                  # "Picharos Silvermane", # completed dialogue
                   "Oakheart",
-                  # "Winter's Watcher", # completed dialogue
                   # "Agguedian's Simulcrum", # not pathable
                   # "rough-hewn golem", # completed dialogue
                   # "Cheryn", # completed dialogue
                   # "Maco Bail", # Behind locked door
                   "Manic Soothsayer",
+                  "Remisara",
+                  # "Maya",
+                  # "Crenigan",
                   "Elder Barthrodue", # completed dialogue
                   "Goourd", # completed dialogue
                   "Old Man James", # completed dialogue
                   'Haram', # completed dialogue
-                  # "GuildMaster Cuvelas", # trainer
-                  "Chiaru Maradiu",
                   # "Thereze", # completed dialogue
                   "Qimoth", # completed dialogue
                   "Joffi the Mystic", # completed dialogue
@@ -119,13 +123,23 @@ class TalkGrindThread(BotThread):
                   # "Kelluran", # completed dialogue
                   # "Ordaran the White", # completed dialogue
                   # "Corellan", # completed dialogue
-                  # "Picharos Silvermane", # completed dialogue
+                  # "GuildMaster Cuvelas", # trainer
+                  "Chiaru Maradiu",
+                  "Esrhae", # completed dialoguel
+                  "Caethrodyn", # doesn't respond to anything
+                  "Haelyn", # doesn't respond to anything
+                  "Robar Greybeard", # completed dialogue
+                  "Lord Tamaran",
+                  "Tario", # completed dialogue
+                  "Lady Denlise",  # completed dialogue 
+                  # "Vickie", # completed dialogue
+                  "Matriarch Sara",
+                  # "Lady Arielle",
+                  # "Lord Arduis",
+                  # "Lady Jenlira", # completed dialogue
+                  "Bhezkam",
+                  "Ironbark", # not found but mentioned by Jenlira!!!
             ]
-
-            if target is not None:
-                  self.target_mobs = [target]
-
-            self.index = 0
 
             self.talk_topics = [
                   "", # empty string to talk to the mob
@@ -289,6 +303,14 @@ class TalkGrindThread(BotThread):
                   "juices",
                   "arrow",
                   "eye",
+                  "ear",
+                  "finger",
+                  "hand",
+                  "foot",
+                  "leg",
+                  "arm",
+                  "head",
+                  "skull",
                   "amulet",
                   "medallion",
                   "ring",
@@ -535,6 +557,71 @@ class TalkGrindThread(BotThread):
             talk_command = "ask {} {}".format(first_mob_word, topic)
             self.command_handler.process(talk_command)
 
+      def pick_next_mob(self):
+            self.target_mob = self.target_mobs[self.index]
+            mob = Mob.get_mob_by_name(self.target_mob)
+            return mob
+
+      def should_talk_to_mob(self, mob):
+            mobMessages = MobMessage.get_all_messages_by_mob(mob)
+
+            self.smart_get_topics(mobMessages)
+
+            magentaprint("Found talking points: {} for {}".format(len(self.current_topics), self.target_mob), False)
+            magentaprint("Topics: {}".format(self.current_topics), False)
+            if len(self.current_topics) == 0:
+                  return False
+
+            return True
+
+      def find_and_get_mob_path(self):
+            foundMob = self.found_target_mob(self.target_mob)
+            
+            if foundMob:
+                  self.talking = True
+                  return []
+
+            magentaprint("Looking {} for mob: {}".format(self.index, self.target_mob), False)
+            # get the path to the mob
+            try:
+                  path = self.get_path_to_target_mob(self.target_mob)
+            except:
+                  magentaprint("Error getting path to mob, skipping: {}".format(self.target_mob), False)
+                  # we can't path to this mob so skip it
+                  self.index += 1
+                  path = []
+
+            # if we found a path then return the path
+            if len(path) > 0:
+                  # magentaprint("returning path: " + str(path), False)
+                  self.talking = True
+                  return path
+
+      def decide_who_to_talk_to(self):
+            mob = self.pick_next_mob()
+            # magentaprint("Picked mob: {}".format(mob), False)
+
+            if mob is None:
+                  magentaprint("Mob not found, skipping: {}".format(self.target_mob), False)
+                  self.index += 1
+                  return []
+
+            if not self.trade_grind and not self.should_talk_to_mob(mob):
+                  magentaprint("No talking points found, skipping: {}".format(self.target_mob), False)
+                  self.index += 1
+                  return []
+
+            return self.find_and_get_mob_path()
+
+
+      def found_target_mob(self, mob_name):
+            foundMob = False
+            for mob in [str(m) for m in self.character.mobs.list]:
+                  if mob_name == mob:
+                        foundMob = True
+                        break
+            return foundMob
+
       def decide_where_to_go(self):
             if self.stopping:
                   self.stop()
@@ -545,78 +632,42 @@ class TalkGrindThread(BotThread):
                   return []
 
             if not self.talking:
-                  self.target_mob = self.target_mobs[self.index]
-                  mob = Mob.get_mob_by_name(self.target_mob)
-
-                  if mob is None:
-                        magentaprint("Mob not found, skipping: {}".format(self.target_mob), False)
-                        self.index += 1
-                        return []
-
-                  mobMessages = MobMessage.get_all_messages_by_mob(mob)
-
-                  self.smart_get_topics(mobMessages)
-
-                  magentaprint("Found talking points: {} for {}".format(len(self.current_topics), self.target_mob), False)
-                  magentaprint("Topics: {}".format(self.current_topics), False)
-                  if len(self.current_topics) == 0:
-                        magentaprint("No talking points found, skipping: {}".format(self.target_mob), False)
-                        self.index += 1
-                        return []
-
-                  foundMob = False
-                  for mob in [str(m) for m in self.character.mobs.list]:
-                        if self.target_mob == mob:
-                              foundMob = True
-                              break
-                  
-                  if foundMob:
-                        self.talking = True
-                        return []
-
-                  magentaprint("Looking {} for mob: {}".format(self.index, self.target_mob), False)
-                  # get the path to the mob
-                  try:
-                        path = self.get_path_to_target_mob(self.target_mob)
-                  except:
-                        magentaprint("Error getting path to mob, skipping: {}".format(self.target_mob), False)
-                        # we can't path to this mob so skip it
-                        self.index += 1
-                        path = []
-
-                  # if we found a path then return the path
-                  if len(path) > 0:
-                        self.talking = True
-                        return path
+                  return self.decide_who_to_talk_to()
             else:
                   # is the mob in the area?
-                  foundMob = False
+                  foundMob = self.found_target_mob(self.target_mob)
 
-                  for mob in [str(m) for m in self.character.mobs.list]:
-                        if self.target_mob == mob:
-                              foundMob = True
-                              break
                   if foundMob:
-                        magentaprint("Talking to mob: {}".format(self.target_mob), False)
-                        # talk to the mob about all the topics in our list
-                        while len(self.current_topics) > 0:
-                              if self.stopping:
-                                    self.stop()
-                                    return []
-                              for topic in self.current_topics:                        
-                                    self.talk_to_mob(self.target_mob, topic)
-                                    time.sleep(0.5)
-                              mob = Mob.get_mob_by_name(self.target_mob)
-                              mobMessages = MobMessage.get_all_messages_by_mob(mob)
-                              self.smart_get_topics(mobMessages, use_area=True)
+                        if not self.trade_grind:
+                              self.talk_to_mob()
+                        else:
+                              self.trade_with_mob()
                         self.talking = False
                         self.index += 1
                   else:
                         self.talking = False
                         self.index += 1
-                        magentaprint("Mob not found, skipping: {}".format(self.target_mob), False)
-            
+             
             return []
+
+      def trade_with_mob(self):
+            for item in self.trade_items:
+                  self.command_handler.process("trade " + item + " " + self.target_mob)
+                  time.sleep(0.5)
+
+      def talk_to_mob(self):
+            magentaprint("Talking to mob: {}".format(self.target_mob), False)
+            # talk to the mob about all the topics in our list
+            while len(self.current_topics) > 0:
+                  if self.stopping:
+                        self.stop()
+                        return []
+                  for topic in self.current_topics:                        
+                        self.talk_to_mob(self.target_mob, topic)
+                        time.sleep(0.5)
+                  mob = Mob.get_mob_by_name(self.target_mob)
+                  mobMessages = MobMessage.get_all_messages_by_mob(mob)
+                  self.smart_get_topics(mobMessages, use_area=True)
 
       def get_topics(self, mobMessages):
             self.current_topics = []

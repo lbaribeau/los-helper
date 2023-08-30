@@ -4,7 +4,7 @@ from misc_functions import magentaprint, get_timeint, get_timeint_from_int
 from Aura import Aura
 import db.Area
 from db.Mob import Mob
-import random
+import random, re
 
 class Path():
     def __init__(self, aura, directions):
@@ -472,6 +472,7 @@ class TrackGrindThread(GrindThread):
         self.GNOMES = ['areaid2113', 'areaid2099', 'areaid2104', 'areaid2106', 'areaid2138', 'areaid2138', 'areaid2093', 'areaid2094', 'areaid2095']
         self.FORGE_THIEVES = ['areaid1240', 'conveyor', 'east', 'plank', 'east', 'west', 'out', 'west', 'door']
         self.MASSIVE_SWAMP_TROLL = ["areaid2157"]
+        self.MINOR_SWAMP_TROLLS = ["areaid3427", "ne", "nw", "sw", "se"]
         self.BARBARIN_SHAMAN = ["areaid450"]
         self.KNIGHTS_TENT_CAMP = ["areaid1068", "glamp", "glamp", "glamp", "check_aura"]
         self.HOLY_SISTER_CAMP = ["areaid1363", "glamp", "glamp", "glamp", "check_aura"]
@@ -488,6 +489,9 @@ class TrackGrindThread(GrindThread):
         self.AMBER_GUARDS = ['areaid575', 'areaid590', 'areaid552', 'areaid563', 'areaid585', 'areaid1338', 'areaid1359']
         self.REMISARA = ['areaid4338']
         self.CHOORGA = ['areaid3440', 'areaid2389']
+
+        self.FETCH_TIGER_EYE = ["has_item the head of Choorga", "areaid2097", "trade_item the of head choorga to Lyron"]
+        self.FETCH_RUSTY_KEY = ["has_item diamantium cross", "areaid2430", "trade_item diamantium cross to Douvan"]
 
         self.PATH_TO_SKIP_WITH = ['think']
 
@@ -526,6 +530,16 @@ class TrackGrindThread(GrindThread):
         if not self.ready_for_combat():
             done_glamping = True
         return done_glamping
+
+    def check_for_item(self, input, pattern):
+        M_obj = re.search(pattern + " (.+?)", input)
+        if M_obj and M_obj.group(1):
+            item = M_obj.group(1)
+
+            if self.character.inventory.has(item):
+                return True, item, M_obj
+
+        return False, "", M_obj
 
     def do_go_hooks(self, exit_str):
         # magentaprint(str(self.character.AREA_ID) + ", " + exit_str, False)
@@ -582,6 +596,29 @@ class TrackGrindThread(GrindThread):
                 self.direction_list = ["think", "areaid266", "drop_items"] # tip
 
             return True
+        # if "has <pattern>" in exit_str:
+        elif exit_str.startswith("has_item "):
+            has_item, item_name, M_obj = self.check_for_item(exit_str, "has_item")
+            if has_item:
+                magentaprint("has <" + item_name + ">, continuing track", False)
+                return True
+            else:
+                magentaprint("no <" + item_name + ">, continuing track", False)
+                self.direction_list = ["think"]
+                return False
+
+        elif exit_str.startswith("trade_item "):
+            has_item, item_name, M_obj = self.check_for_item(exit_str, "trade_item (.+?) to (.+?)")
+            if has_item:
+                magentaprint("has <" + item_name + ">, trading", False)
+                item_ref = self.character.inventory.get_first_reference(item_name)
+                mob_ref = M_obj.group(2).split(' ')[0]
+                self.command_handler.process("trade " + item_ref + " " + mob_ref)
+                return True
+            else:
+                magentaprint("no <" + item_name + ">, this shouldn't be happening", False)
+                self.direction_list = ["think"]
+                return False
         else:
             return super().do_go_hooks(exit_str)
 
@@ -627,6 +664,7 @@ class TrackGrindThread(GrindThread):
     def setup_tracks(self):
         self.tracks = [
             Track("Shop and Tip 0",self.SHOP_AND_TIP_PATH,0,20,9, has_cooldown=False),
+            Track("Check Aura",["check_aura"],0,20,9, has_cooldown=False),
             # Aura intensive stuff all up front
             Track("Gorban", self.GORBAN, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Gorban"),
             Track("Qimoth", self.QIMOTH, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Qimoth"),
@@ -693,7 +731,7 @@ class TrackGrindThread(GrindThread):
             Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 20, 1, requires_ready=True, target_kills=1),
             # Track("Halwyn Bugbears",) # has a pit which could cause issues
             # Track("Forge / weapon thieves",self.FORGE_THIEVES,14,20,-1),
-            # Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 12, 20, -1), # too aggressive and multiple spawn
+            Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 18, 20, -2), # too aggressive and multiple spawn
             Track("Massive swamp troll", self.MASSIVE_SWAMP_TROLL, 15, 20, -1, requires_ready=True, target_kills=1, mob_name="massive swamp troll"),
             # Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9,has_cooldown=False),
             # Track("Barbarian shaman", self.BARBARIN_SHAMAN, 15, 20, 0), # some pretty big nuke spells, maybe not worth it

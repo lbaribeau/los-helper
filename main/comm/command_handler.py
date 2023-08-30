@@ -411,6 +411,8 @@ class CommandHandler(object):
         # start the talk bot
         elif re.match("talkgrind", user_input):
             self.start_talk_grind(user_input)
+        elif re.match("tradegrind (.+?)", user_input):
+            self.start_talk_grind(user_input, trade_grind=True)
         elif re.match("^gg$", user_input):
             self.telnetHandler.write('drink granite')
         elif re.match("dropkeys", user_input):
@@ -955,14 +957,14 @@ class CommandHandler(object):
             self.bot_thread.start()
 
     # start talk grind
-    def start_talk_grind(self, user_input):
-        M_obj = re.search("talkgrind (.+)", user_input)
+    def start_talk_grind(self, user_input, trade_grind=False):
+        M_obj = re.search("(?:talkgrind|tradegrind) (.+)", user_input)
         target = None
         if M_obj:
             target = M_obj.group(1)
 
         if self.bot_check():
-            self.bot_thread = TalkGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, target)
+            self.bot_thread = TalkGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, target, trade_grind=trade_grind)
             self.bot_thread.start()
 
     def start_campslave(self, do_buffs=True):

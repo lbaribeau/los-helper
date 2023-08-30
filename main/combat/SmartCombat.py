@@ -304,7 +304,7 @@ class SmartCombat(CombatObject):
             return self.character.mobs.attacking[0]
         return None
 
-    def run(self):
+    def run(self, nervousmode=False):
         self.stopping    = False
         self.mob_charmed = False
 
@@ -312,7 +312,7 @@ class SmartCombat(CombatObject):
         self.fleeing     = False
         self.error       = False
         self.used_ability = False
-        self.nervous_mode = False
+        self.nervous_mode = nervousmode
 
         self.casts = 0
         self.attacks = 0
