@@ -4,7 +4,7 @@ from misc_functions import magentaprint, get_timeint, get_timeint_from_int
 from Aura import Aura
 import db.Area
 from db.Mob import Mob
-import random, re
+import random, re, time
 
 class Path():
     def __init__(self, aura, directions):
@@ -472,7 +472,7 @@ class TrackGrindThread(GrindThread):
         self.GNOMES = ['areaid2113', 'areaid2099', 'areaid2104', 'areaid2106', 'areaid2138', 'areaid2138', 'areaid2093', 'areaid2094', 'areaid2095']
         self.FORGE_THIEVES = ['areaid1240', 'conveyor', 'east', 'plank', 'east', 'west', 'out', 'west', 'door']
         self.MASSIVE_SWAMP_TROLL = ["areaid2157"]
-        self.MINOR_SWAMP_TROLLS = ["areaid3427", "ne", "nw", "sw", "se"]
+        self.MINOR_SWAMP_TROLLS = ["areaid3436", "n", "ne", "nw", "sw", "se"]
         self.BARBARIN_SHAMAN = ["areaid450"]
         self.KNIGHTS_TENT_CAMP = ["areaid1068", "glamp", "glamp", "glamp", "check_aura"]
         self.HOLY_SISTER_CAMP = ["areaid1363", "glamp", "glamp", "glamp", "check_aura"]
@@ -488,10 +488,15 @@ class TrackGrindThread(GrindThread):
         self.HEF = ['areaid533', 'trail', 'areaid1678', 'door'] #'areaid2170', 'unlock panel key', 'panel', 'get all'
         self.AMBER_GUARDS = ['areaid575', 'areaid590', 'areaid552', 'areaid563', 'areaid585', 'areaid1338', 'areaid1359']
         self.REMISARA = ['areaid4338']
+        self.MAYA = ['areaid4339']
         self.CHOORGA = ['areaid3440', 'areaid2389']
 
-        self.FETCH_TIGER_EYE = ["has_item the head of Choorga", "areaid2097", "trade_item the of head choorga to Lyron"]
+        self.FETCH_TIGER_EYE = ["has_item the head of Choorga", "areaid2097", "trade_item the head of Choorga to Lyron"]
         self.FETCH_RUSTY_KEY = ["has_item diamantium cross", "areaid2430", "trade_item diamantium cross to Douvan"]
+
+        self.GRANITE_GOLEM = ["has_item tiger eye gem", "areaid3072", "invoke_item tiger eye gem",
+          "north", "north", "north", "north", "glamp", "south","south","south","south","cubicle","ladder"
+        ]
 
         self.PATH_TO_SKIP_WITH = ['think']
 
@@ -532,9 +537,16 @@ class TrackGrindThread(GrindThread):
         return done_glamping
 
     def check_for_item(self, input, pattern):
-        M_obj = re.search(pattern + " (.+?)", input)
+        M_obj = re.search(pattern, input)
+
+        # magentaprint("M_obj: " + str(M_obj), False)
+        # magentaprint("checking for item: <" + str(M_obj.group(1)) + ">", False)
+        # magentaprint("checking for target: <" + str(M_obj.group(2)) + ">", False)
+
         if M_obj and M_obj.group(1):
             item = M_obj.group(1)
+            # magentaprint("M_obj: " + str(M_obj), False)
+            # magentaprint("checking for item: <" + item + ">", False)
 
             if self.character.inventory.has(item):
                 return True, item, M_obj
@@ -543,7 +555,9 @@ class TrackGrindThread(GrindThread):
 
     def do_go_hooks(self, exit_str):
         # magentaprint(str(self.character.AREA_ID) + ", " + exit_str, False)
-        if exit_str == "slow_prepare":
+        if exit_str == "raise":
+            raise Exception("Manual exception to crash the bot raised!!!")
+        elif exit_str == "slow_prepare":
             magentaprint("prearing to move to trapped area", False)
             self.sleep(2)
             self.command_handler.process("prepare")
@@ -598,27 +612,48 @@ class TrackGrindThread(GrindThread):
             return True
         # if "has <pattern>" in exit_str:
         elif exit_str.startswith("has_item "):
-            has_item, item_name, M_obj = self.check_for_item(exit_str, "has_item")
+            has_item, item_name, M_obj = self.check_for_item(exit_str, "has_item (.+)")
             if has_item:
                 magentaprint("has <" + item_name + ">, continuing track", False)
                 return True
             else:
                 magentaprint("no <" + item_name + ">, continuing track", False)
-                self.direction_list = ["think"]
-                return False
+                self.direction_list = []
+                return True
 
-        elif exit_str.startswith("trade_item "):
-            has_item, item_name, M_obj = self.check_for_item(exit_str, "trade_item (.+?) to (.+?)")
+        elif exit_str.startswith("invoke_item "):
+            has_item, item_name, M_obj = self.check_for_item(exit_str, "invoke_item (.+)")
             if has_item:
-                magentaprint("has <" + item_name + ">, trading", False)
+                # magentaprint("has <" + item_name + ">, invoking", False)
                 item_ref = self.character.inventory.get_first_reference(item_name)
-                mob_ref = M_obj.group(2).split(' ')[0]
-                self.command_handler.process("trade " + item_ref + " " + mob_ref)
+                self.command_handler.process("invoke " + str(item_ref))
+                time.sleep(1)
+                self.character.inventory.get_inventory()
                 return True
             else:
-                magentaprint("no <" + item_name + ">, this shouldn't be happening", False)
-                self.direction_list = ["think"]
-                return False
+                magentaprint("no <" + str(item_name) + ">, this shouldn't be happening", False)
+                self.direction_list = []
+                return True
+
+        elif exit_str.startswith("trade_item "):
+            has_item, item_name, M_obj = self.check_for_item(exit_str, "trade_item (.+?) to (.+)")
+
+            # magentaprint("has_item: " + str(has_item), False)
+            # magentaprint("trade_item: " + item_name, False)
+            # magentaprint("target: " + str(M_obj.group(1)), False)
+            # magentaprint("target: " + str(M_obj.group(2)), False)
+            if has_item:
+                # magentaprint("has <" + item_name + ">, trading", False)
+                item_ref = self.character.inventory.get_first_reference(item_name)
+                mob_ref = M_obj.group(2).split(' ')[0]
+                self.command_handler.process("trade " + str(item_ref) + " " + str(mob_ref))
+                time.sleep(1)
+                self.character.inventory.get_inventory()
+                return True
+            else:
+                magentaprint("no <" + str(item_name) + ">, this shouldn't be happening", False)
+                self.direction_list = []
+                return True
         else:
             return super().do_go_hooks(exit_str)
 
@@ -666,16 +701,15 @@ class TrackGrindThread(GrindThread):
             Track("Shop and Tip 0",self.SHOP_AND_TIP_PATH,0,20,9, has_cooldown=False),
             Track("Check Aura",["check_aura"],0,20,9, has_cooldown=False),
             # Aura intensive stuff all up front
-            Track("Gorban", self.GORBAN, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Gorban"),
-            Track("Qimoth", self.QIMOTH, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Qimoth"),
-            Track("Silken Alley", self.SILKEN_ALLEY, 11, 20, 0, requires_ready=True),
-            Track("Lady Denlise", self.LADY_DENLISE, 18, 20, 1, True, 7, 18, target_kills=1, mob_name="Lady Denlise"),
-            Track("Lord Tamaran", self.LORD_TAMARAN, 18, 20, 1, True, 7, 18, True, target_kills=1, mob_name="Lord Tamaran"),
+            Track("Gorban", self.GORBAN, 17, 20, 0, requires_ready=True, target_kills=1, mob_name="Gorban"),
+            Track("Silken Alley", self.SILKEN_ALLEY, 11, 17, 0, requires_ready=True),
+            Track("Lady Denlise", self.LADY_DENLISE, 17, 20, 1, True, 7, 18, target_kills=1, mob_name="Lady Denlise"),
+            Track("Lord Tamaran", self.LORD_TAMARAN, 17, 20, 1, True, 7, 18, True, target_kills=1, mob_name="Lord Tamaran"),
             Track("Cathedral", self.CATHEDRAL, 10, 20, 1, True, 7, 18, skip_if_ready=True),
             Track("Holy Sister Aura Fix", self.HOLY_SISTER_CAMP, 12, 20, 2, False, 7, 18, is_glamping=True, skip_if_ready=True),
             # grey and minor aura tracks
             Track("Theatre Farm", self.smart_theatre_path, 0, 14, 0, has_cooldown=False),
-            Track("Theatre Bertram", self.BERTRAM, 14, 20, 0, target_kills=1, skip_if_ready=True),
+            Track("Theatre Bertram", self.BERTRAM, 14, 17, 0, target_kills=1, skip_if_ready=True),
             Track("Market", self.smart_market_path, 0, 15, 0, has_cooldown=False),
             Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0, has_cooldown=False),
             Track("Kobolds", self.smart_kobold_path, 0, 9, -1, has_cooldown=False), #sentries are suuuper tough
@@ -690,7 +724,7 @@ class TrackGrindThread(GrindThread):
             # Track("Shop and Tip 1",self.SHOP_AND_TIP_PATH, 0, 20, 9),
             Track("Dwarven Field Workers", self.smart_dwarven_path, 9, 15, 0, has_cooldown=False),
             Track("Miners", self.MINERS, 10, 16, 0, has_cooldown=False),
-            Track("Boris Ironfounder", self.BORIS_IRONFOUNDER, 15, 20, 0, requires_ready=True, target_kills=1, allows_caster=False, mob_name="Boris Ironfounder"),
+            Track("Boris Ironfounder", self.BORIS_IRONFOUNDER, 15, 17, 0, requires_ready=True, target_kills=1, allows_caster=False, mob_name="Boris Ironfounder"),
             Track("Mill Workers", self.smart_mill_path, 7, 14, 0, has_cooldown=False),
             Track("Muggers", self.SMART_MUGGER_PATH, 9, 15, -1, has_cooldown=False),
             Track("Old Man James", self.OLD_MAN_JAMES, 9, 12, 0, target_kills=1),
@@ -703,16 +737,15 @@ class TrackGrindThread(GrindThread):
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1, has_cooldown=False),
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1, has_cooldown=False),
-            Track("Trent", self.EGAN_TRENT, 12, 20, -1, requires_ready=False, target_kills=1, mob_name="Trent the Merchant"),
-            Track("Egan", self.EGAN_TRENT, 18, 20, -1, requires_ready=True, target_kills=1, mob_name="Teamleader Egan"),
+            Track("Trent", self.EGAN_TRENT, 12, 17, -1, requires_ready=False, target_kills=1, mob_name="Trent the Merchant"),
             Track("Combat Master / barbs", self.BARBS, 8, 14, 0),
-            Track("Tardan", self.TARDAN, 15, 20, 0, requires_ready=True, target_kills=1, mob_name="Tardan"),
-            Track("Hurn", self.HURN, 15, 20, 1, requires_ready=True, target_kills=1, mob_name="Hurn the Smith"),
+            Track("Tardan", self.TARDAN, 15, 17, 0, requires_ready=True, target_kills=1, mob_name="Tardan"),
+            Track("Hurn", self.HURN, 15, 17, 1, requires_ready=True, target_kills=1, mob_name="Hurn the Smith"),
             Track("Rimark", self.RIMARK, 15, 17, 1, requires_ready=True, target_kills=1, mob_name="Rimark"),
             Track("Dojo", self.DOJO, 16, 20, 1, requires_ready=True, target_kills=1, mob_name="Dojo Administrator"),
             Track("HORSEMASTER", self.HORSEMASTER, 17, 20, 1, requires_ready=True, target_kills=1, mob_name="Th'kit the HorseMaster"),
             Track("Dini", self.DINI, 11, 15, 0, target_kills=1),
-            Track("Horbuk", self.HORBUK, 15, 20, 1, requires_ready=True, target_kills=1, mob_name="Horbuk"),
+            Track("Horbuk", self.HORBUK, 15, 17, 1, requires_ready=True, target_kills=1, mob_name="Horbuk"),
             # Track("Shaldena the Red", self.SHALDENA, 15, 20, 1),
             # Track("Shop and Tip 2",self.SHOP_AND_TIP_PATH,8,20,9, has_cooldown=False),
             # Track("Corellan", self.CORELLAN, 16, 20, 0),
@@ -722,35 +755,42 @@ class TrackGrindThread(GrindThread):
             Track("Garbo", self.GARBO, 13, 15, 1, target_kills=1),
             Track("Goourd, Manic and Elder", self.MANIC_ELDER, 10, 17, 0, requires_ready=False, target_kills=1),
             Track("Goourd, Manic and Elder", self.MANIC_ELDER, 17, 20, 0, requires_ready=True, target_kills=1, mob_name="Manic Soothsayer"),
-            Track("Viladin and Cal", self.VILADIN_CAL, 12, 20, 1, requires_ready=True, target_kills=1, mob_name="Cal the Hermit"),
-            Track("Plovers", self.PLOVERS, 15, 20, 1, requires_ready=True, target_kills=1, mob_name="Annette Plover"),
+            Track("Viladin and Cal", self.VILADIN_CAL, 12, 17, 1, requires_ready=True, target_kills=1, mob_name="Cal the Hermit"),
+            Track("Plovers", self.PLOVERS, 15, 17, 1, requires_ready=True, target_kills=1, mob_name="Annette Plover"),
             # Track("Bards", self.BARDS1, 11, 16, 1, requires_ready=True), #minstrels are a hazard
             Track("Brother monk", self.MONKS1, 9, 17, 0, requires_ready=True),
-            Track("Floor Manager", self.FLOOR_MANAGER, 12, 20, -1, requires_ready=True, target_kills=1, mob_name="Floor Manager"),
+            Track("Floor Manager", self.FLOOR_MANAGER, 12, 17, -1, requires_ready=True, target_kills=1, mob_name="Floor Manager"),
             # Track("Dalla and Douvan", self.DALLA_DOUVAN, 11, 20, 1), # Dalla overheals and is too dangerous
-            Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 20, 1, requires_ready=True, target_kills=1),
+            Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 17, 1, requires_ready=True, target_kills=1),
             # Track("Halwyn Bugbears",) # has a pit which could cause issues
             # Track("Forge / weapon thieves",self.FORGE_THIEVES,14,20,-1),
-            Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 18, 20, -2), # too aggressive and multiple spawn
-            Track("Massive swamp troll", self.MASSIVE_SWAMP_TROLL, 15, 20, -1, requires_ready=True, target_kills=1, mob_name="massive swamp troll"),
+            Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 15, 20, -1, has_cooldown=False, skip_if_ready=True, mob_name="swamp troll"), # too aggressive and multiple spawn
+            Track("Massive swamp troll", self.MASSIVE_SWAMP_TROLL, 15, 17, -1, requires_ready=True, target_kills=1, mob_name="massive swamp troll"),
             # Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9,has_cooldown=False),
             # Track("Barbarian shaman", self.BARBARIN_SHAMAN, 15, 20, 0), # some pretty big nuke spells, maybe not worth it
             Track("WAY_STATION_GLAMP", self.WAY_STATION_GLAMP, 10, 14, 0, False, is_glamping=True),
             # Track("CHIARU", self.CHIARU, 18, 20, 1, requires_ready=True, target_kills=1), # causes granite usage
-            Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 1, requires_ready=True, target_kills=1, mob_name="Whiteblade the Barbarian"),
-            Track("MAYOR_DEMLIN", self.MAYOR_DEMLIN, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Mayor Demlin"),
-            Track("REMISARA", self.REMISARA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Remisara"),
-            Track("CHOORGA", self.CHOORGA, 18, 20, -1, requires_ready=True, has_cooldown=False, mob_name="Choorga the swamp troll"),
             # Track("THOMAS_IRONHEART", self.THOMAS_IRONHEART, 18, 20, 0, requires_ready=True, target_kills=1), # causes granite usage
             # Track("Hef the Bandit Chief", self.HEF, 12, 13, -1, allows_caster=False),
             Track("Gnoll Camp", self.GNOLL_CAMP, 15, 20, -1, False, 0, 9, skip_if_ready=True),
             Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9, skip_if_ready=True),
             Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True, skip_if_ready=True),
             Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9, is_glamping=True, skip_if_ready=True),
-            # Track("Goblins", self.GOBLINS, 16, 20, -2, False, 0, 9, requires_ready=False, allows_caster=False),
+            Track("Goblins", self.GOBLINS, 16, 20, -2, False, 0, 9, requires_ready=False, allows_caster=False),
             Track("Amber Guards", self.AMBER_GUARDS, 15, 20, 1, has_cooldown=False, skip_if_ready=True),
             Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18, skip_if_ready=True),
+            Track("CHOORGA", self.CHOORGA, 18, 20, 0, requires_ready=True, has_cooldown=False, mob_name="Choorga the swamp troll"),
+            Track("Head trade",self.FETCH_TIGER_EYE,18,20,0, has_cooldown=True, mob_name="", cooldown=600),
+            Track("Granite Golem",self.GRANITE_GOLEM,18,20,0, has_cooldown=True, cooldown=9000, mob_name="granite golem", prime_cooldown=True),
+            Track("Qimoth", self.QIMOTH, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Qimoth"),
+            Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 0, requires_ready=True, target_kills=1, mob_name="Whiteblade the Barbarian"), # meh?
+            Track("MAYOR_DEMLIN", self.MAYOR_DEMLIN, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Mayor Demlin"),
+            Track("Egan", self.EGAN_TRENT, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Teamleader Egan"),
+            Track("REMISARA", self.REMISARA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Remisara"), # doesn't seem to have drops
+            # Track("Maya", self.MAYA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Maya"),
         ]
+        # self.tracks = [Track("Goblins", self.GOBLINS, 16, 20, -1, False, 0, 9, requires_ready=False, allows_caster=False)]
+        # self.tracks = [Track("Granite Golem",self.GRANITE_GOLEM,18,20,0, has_cooldown=True, cooldown=8000, mob_name="granite golem")]
 
         # self.tracks = [Track("WAY_STATION_GLAMP", self.WAY_STATION_GLAMP, 10, 14, 0, False, is_glamping=True)]
 
@@ -818,9 +858,15 @@ class TrackGrindThread(GrindThread):
                 return self.skip_track()
 
             # if (track.mob_target is None or not self.is_mob_weak(track.mob_target, 4)) and 
-            if not self.character.is_ready_for_tough_fight():
+            if not self.character.is_ready_for_tough_fight() and track.mob_target is not None:
                 magentaprint("{0} isn't acceptable due to tough fight function".format(track.name), False)
                 return self.skip_track()
+            
+            if track.mob_target is not None:
+                if not self.is_mob_weak(track.mob_target, 5):
+                    if not self.character.is_ready_for_tough_fight():
+                        magentaprint("{0} isn't acceptable due to tough fight for specific mob {1}".format(track.name, track.mob_target.name), False)
+                        return self.skip_track()
 
         # optimization for level 18s so they don't waste time on tracks that are too easy
         if track.skip_if_ready and self.character.info.level == 18:
@@ -839,7 +885,7 @@ class TrackGrindThread(GrindThread):
         current_time = get_timeint()
         # seconds_since_last_run = (current_time - current_time).total_seconds()
         seconds_since_last_run = (current_time - get_timeint_from_int(track.last_run)).total_seconds()
-        if not track.is_glamping and not self.abandoned_last_track and track.has_cooldown and seconds_since_last_run < 4000:
+        if not track.is_glamping and not self.abandoned_last_track and track.has_cooldown and seconds_since_last_run < track.cooldown:
             magentaprint("{0} isn't acceptable to us due to cooldown".format(track.name), False)
             return self.skip_track()
         # aura correction here is maybe more valuable than short term efficiency - seeing a lot of bots dangling near their incorrect aura
@@ -976,12 +1022,14 @@ class TrackGrindThread(GrindThread):
 class Track():
     def __init__(self, name, track, min_level, max_level, track_aura, has_cooldown=True,
                 min_aura=0, max_aura=18, requires_ready=False, is_glamping=False, target_kills=99,
-                allows_caster=True, mob_name="", skip_if_ready=False):
+                allows_caster=True, mob_name="", skip_if_ready=False, cooldown=4000, prime_cooldown=False):
         self.name = name
         # setup the track with a buffer at the end so that last node mobs don't get misattributed to the next track
         track.append("think")
         self.track = track
         self.last_run = 0
+        if prime_cooldown:
+            self.last_run = int(round(get_timeint().timestamp()))
         self.min_level = min_level
         self.max_level = max_level
         self.track_aura = track_aura
@@ -994,6 +1042,7 @@ class Track():
         self.min_aura = min_aura
         self.max_aura = max_aura
         self.has_cooldown = has_cooldown
+        self.cooldown = cooldown
         self.requires_ready = requires_ready
         self.is_glamping = is_glamping
         self.target_kills = target_kills

@@ -103,7 +103,16 @@ class SmartCombat(CombatObject):
 
     def handle_granite_use(self):
         if self.potion_thread_handler.use_granite():
-            timeless_area = Area.get_area_by_id(306)
+            self.character.flee_log.append({
+                'target': str(self.target),
+                'attacking_mobs': str(self.character.mobs.attacking),
+                'time': str(get_timestamp()),
+                'area_id': str(self.character.AREA_ID),
+                'area_title': str(self.character.AREA_TITLE),
+                'stats': "HP: " + str(self.character.HEALTH) + " MP: " + str(self.character.MANA)
+            })
+
+            timeless_area = Area.get_area_by_id(2796)
 
             # hopefully this works for pathing
             self.character.MUD_AREA = MudArea(timeless_area)
@@ -111,13 +120,6 @@ class SmartCombat(CombatObject):
             self.character.AREA_TITLE = timeless_area.name
             self.character.ESCAPES += 1
 
-            self.character.flee_log.append({
-                'target': self.target,
-                'attacking_mobs': str(self.character.mobs.attacking),
-                'time': str(get_timestamp()),
-                'area': self.character.MUD_AREA.to_string(),
-                'stats': "HP: " + str(self.character.HEALTH) + " MP: " + str(self.character.MANA)
-            })
             output_api_feed("flee_log", self.character.flee_log)
             self.stop()
             self.cast.stop()
@@ -304,7 +306,7 @@ class SmartCombat(CombatObject):
             return self.character.mobs.attacking[0]
         return None
 
-    def run(self, nervousmode=False):
+    def run(self):
         self.stopping    = False
         self.mob_charmed = False
 
@@ -312,7 +314,7 @@ class SmartCombat(CombatObject):
         self.fleeing     = False
         self.error       = False
         self.used_ability = False
-        self.nervous_mode = nervousmode
+        # self.nervous_mode = nervousmode
 
         self.casts = 0
         self.attacks = 0

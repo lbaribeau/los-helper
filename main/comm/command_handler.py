@@ -40,6 +40,7 @@ from command.Ask                import Ask
 # from command.Talk               import Talk
 #from command.Drop               import Drop
 from command.Get                import Get
+from command.Prepare            import Prepare
 from Aura                       import Aura
 from comm.thread_maker          import ThreadMaker
 from command.Repair             import Repair
@@ -132,6 +133,9 @@ class CommandHandler(object):
         # mudReaderHandler.add_subscriber(self.drop)
         self.get = Get(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.get)
+        self.prepare = Prepare(telnetHandler)
+        mudReaderHandler.add_subscriber(self.prepare)
+        
         self.repair = Repair(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.repair)
         self.mix = Mix(telnetHandler, character.inventory)
@@ -497,7 +501,7 @@ class CommandHandler(object):
         elif re.match("bfexit", user_input):
             self.brute_force_exits(False, True)
         elif re.match("ready?", user_input):
-            is_ready = self.character.is_ready_for_tough_fight()
+            is_ready = self.character.is_ready_for_tough_fight(True)
             magentaprint(str(is_ready), False)
         elif re.match("bfall", user_input):
             magentaprint("brute forcing all exits", False)

@@ -134,7 +134,7 @@ class SmartGrindThread(TrackGrindThread):
 
         if len(self.character.MONSTER_KILL_LIST) == 0:
             self.reset_kill_list()
-        
+
         # get the next direction and area id to go to - does this area contain a hazard? If so run the prepare command
         if self.direction_list is not None and len(self.direction_list) > 0:
             next_direction = self.direction_list[0]
@@ -183,6 +183,35 @@ class SmartGrindThread(TrackGrindThread):
             self.character.is_sleepy = True
 
     def do_go_hooks(self, exit_str):
+        # check exit conditions
+        mud_area = self.character.MUD_AREA
+        if self.direction_list is not None and len(self.direction_list) > 0:
+            next_direction = self.direction_list[0]
+
+            if mud_area is not None and mud_area.area_exits is not None:
+                for exit in mud_area.area_exits:
+                    exit_name = exit.exit_type.name
+                    if exit_name == next_direction:
+                        if exit.is_trapped:
+                            if self.character.HEALTH < 30:
+                                magentaprint("trying to path into trapped area and hp is too low", False)
+                                self.direction_list = ["cry"]
+                                self.smartCombat.handle_granite_use()
+                            self.command_handler.prepare.prepared = False
+                            first = True
+                            while self.command_handler.prepare.prepared == False:
+                                if not first:
+                                    time.sleep(0.5)
+                                self.command_handler.prepare.execute_and_wait()
+                                first = False
+                                time.sleep(2)
+                            magentaprint("trapped area, preparing to move", False)
+                        if exit.open_command is not None and exit.open_command != "":
+                            magentaprint("opening the exit: " + exit.open_command, False)
+                            self.command_handler.process(exit.open_command)
+                            time.sleep(2)
+                        break
+
         if self.go_rest_if_not_ready() and self.character.mobs.chase != "" and not self.on_heal_path:
         # if self.go_rest_if_not_ready() and not self.on_heal_path:
             # magentaprint("going to rest and not on heal path", False)

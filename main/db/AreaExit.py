@@ -12,6 +12,8 @@ class AreaExit(BaseModel):
     is_hidden = BooleanField(default=False) #these will be manually set for now
     note = CharField(default="")
     weight = DecimalField(default=0.1) #this is the weight of the exit, 1 is default, 0 is impassable, 10 is a shortcut, 100 is a teleport, etc
+    is_trapped = BooleanField(default=False) #if the exit is trapped, it will be set to true
+    open_command = CharField(default=None, null=True) #the command to open the exit
 
     '''Private Area Functions'''
     def map(self, area_from=None, exit_from=None):

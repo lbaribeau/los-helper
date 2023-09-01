@@ -23,7 +23,7 @@ dwarven rum - Earth-Shield
 dwarven hangover remedy - ??? It tastes truly awful, but at least you are fully alert now.
 green lime potion - Poison protect
 master remdedy - restore (small heal and big mana regen)
-heavy water - teleport
+heavy water, chromatic potion - teleport
 dark-green potion - ???
 mauve potion - ??? cool relief sweeps across your body
 vial of sap - ??? The syrupy sap tastes extremely sour but refreshing. (ent-draught)

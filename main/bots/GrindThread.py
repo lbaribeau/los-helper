@@ -895,8 +895,9 @@ class GrindThread(BotThread):
         return False
 
     def should_set_nervous_mode(self, target):
+        magentaprint("GrindThread.should_set_nervous_mode() target: " + str(target), False)
         nervousmode = False
-        if target == 'Choorga the swamp troll':
+        if target == 'Choorga':
             nervousmode = True
         
         return nervousmode
@@ -937,8 +938,10 @@ class GrindThread(BotThread):
 
         if nervousmode:
             magentaprint("Nervous mode engaged!", False)
+            self.smartCombat.nervous_mode = True
 
-        self.smartCombat.run(nervousmode)
+        self.smartCombat.run()
+        self.smartCombat.nervous_mode = False
         # What about flee... can we rest after a flee maybe, or quit...
         # Do lowest risk at this point, right... or do we want to rest
         # If the mob isn't there... better remove it from the lists

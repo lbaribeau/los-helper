@@ -219,6 +219,8 @@ class Inventory(SimpleCommand, ReferencingList):
         'the head of Choorga',
         'tiger eye gem',
         'stone eye', # super rare golem eye
+        'stone ear',
+        'stone finger',
 
         # gnoll keys
         # 'grey stone key',
