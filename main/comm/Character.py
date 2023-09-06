@@ -890,6 +890,7 @@ class Character(object):
         if track.name not in self.tracks.keys():
             self.tracks[track.name] = track
 
+        # track.start()
         self.tracks[track.name].start()
         self.current_track = track.name
         self.add_to_track_param("runs", 1)

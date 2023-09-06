@@ -198,13 +198,16 @@ class SmartGrindThread(TrackGrindThread):
                                 self.direction_list = ["cry"]
                                 self.smartCombat.handle_granite_use()
                             self.command_handler.prepare.prepared = False
-                            first = True
-                            while self.command_handler.prepare.prepared == False:
-                                if not first:
-                                    time.sleep(0.5)
-                                self.command_handler.prepare.execute_and_wait()
-                                first = False
-                                time.sleep(2)
+                            self.command_handler.prepare.execute_and_wait()
+                            # first = False
+                            # time.sleep(2)
+                            # first = True
+                            # while self.command_handler.prepare.prepared == False:
+                            #     if not first:
+                            #         time.sleep(0.5)
+                            #     self.command_handler.prepare.execute_and_wait()
+                            #     first = False
+                            #     time.sleep(2)
                             magentaprint("trapped area, preparing to move", False)
                         if exit.open_command is not None and exit.open_command != "":
                             magentaprint("opening the exit: " + exit.open_command, False)

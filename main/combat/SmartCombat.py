@@ -207,7 +207,7 @@ class SmartCombat(CombatObject):
         return should_use
 
     def should_top_up_health(self):
-        return self.character.HEALTH <= (self.character.maxHP - 15)
+        return self.character.HEALTH <= (self.character.maxHP - 30)
 
     def needs_big_heal(self):
         return self.potion_threshold() - self.character.HEALTH > 6

@@ -400,6 +400,7 @@ class TrackGrindThread(GrindThread):
          'north', 'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel'
          ]
 
+        self.MARTIN_MARIE = ['areaid11', 'try_arch', 'areaid4429', 'glamp', 'areaid4433', 'glamp']
         self.ZOMBIES = ['areaid113', 'try_gate',
         'east', 'east']
         #McDermotts farm
@@ -443,6 +444,7 @@ class TrackGrindThread(GrindThread):
         self.CHERYN = ['areaid1380']
         self.ARTIFICERS = ['areaid1350', 'areaid1008']
         self.HAELYN = ['areaid999'] #Haelyn
+        self.ESRHAE = ['areaid2967'] #Esrhae
         self.SILKEN_ALLEY = ['areaid686', 'areaid706', 'areaid705', 'areaid698', 'areaid699', 'areaid700']
         self.QIMOTH = ['areaid686']
         self.GORBAN = ['areaid699']
@@ -564,13 +566,14 @@ class TrackGrindThread(GrindThread):
             self.sleep(2)
             magentaprint("waiting after prepare to take a breath", False)
             return True
-        elif exit_str == "try_gate":
+        elif exit_str.startswith("try_"):
+            exitCommand = exit_str.replace("try_", "")
             curArea = int(self.character.AREA_ID)
-            self.command_handler.process("go gate")
+            self.command_handler.process("go " + exitCommand)
             self.sleep(3)
             if (curArea == int(self.character.AREA_ID)):
-                magentaprint("failed to go through the gate probably", False)
-                self.direction_list = ['oops','s','w','w','w','n','chapel']
+                magentaprint("failed to go through the " + exitCommand + " probably", False)
+                self.direction_list = ['areaid2']
             return True
         elif exit_str == "check_aura":
             magentaprint("checking aura, run kills: " + str(self.run_kills), False)
@@ -734,6 +737,7 @@ class TrackGrindThread(GrindThread):
             Track("Artificers", self.ARTIFICERS, 11, 14, -1),
             # Haelyn is dusty blue but we want to priorize him for farming purposes
             Track("Haelyn", self.HAELYN, 16, 20, 0, requires_ready=True, target_kills=1, allows_caster=False, mob_name="Haelyn"),
+            Track("Esrhae", self.ESRHAE, 18, 20, 0, requires_ready=True, target_kills=1, allows_caster=False, mob_name="Esrhae"),
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1, has_cooldown=False),
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1, has_cooldown=False),
@@ -780,17 +784,20 @@ class TrackGrindThread(GrindThread):
             Track("Amber Guards", self.AMBER_GUARDS, 15, 20, 1, has_cooldown=False, skip_if_ready=True),
             Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18, skip_if_ready=True),
             Track("CHOORGA", self.CHOORGA, 18, 20, 0, requires_ready=True, has_cooldown=False, mob_name="Choorga the swamp troll"),
-            Track("Head trade",self.FETCH_TIGER_EYE,18,20,0, has_cooldown=True, mob_name="", cooldown=600),
-            Track("Granite Golem",self.GRANITE_GOLEM,18,20,0, has_cooldown=True, cooldown=9000, mob_name="granite golem", prime_cooldown=True),
+            Track("Head trade",self.FETCH_TIGER_EYE, 18, 20, 0, has_cooldown=True, mob_name="", cooldown=600),
+            Track("Granite Golem",self.GRANITE_GOLEM, 18, 20, 0, has_cooldown=True, target_kills=1, cooldown=8000, mob_name="granite golem", prime_cooldown=True),
             Track("Qimoth", self.QIMOTH, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Qimoth"),
-            Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 0, requires_ready=True, target_kills=1, mob_name="Whiteblade the Barbarian"), # meh?
+            # Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 0, requires_ready=True, target_kills=1, mob_name="Whiteblade the Barbarian"), # meh?
             Track("MAYOR_DEMLIN", self.MAYOR_DEMLIN, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Mayor Demlin"),
             Track("Egan", self.EGAN_TRENT, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Teamleader Egan"),
             Track("REMISARA", self.REMISARA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Remisara"), # doesn't seem to have drops
-            # Track("Maya", self.MAYA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Maya"),
+            Track("Maya", self.MAYA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Maya"),
+            Track("MARTIN", self.MARTIN_MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Martin"),
+            Track("MARIE", self.MARTIN_MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Marie"),
         ]
-        # self.tracks = [Track("Goblins", self.GOBLINS, 16, 20, -1, False, 0, 9, requires_ready=False, allows_caster=False)]
-        # self.tracks = [Track("Granite Golem",self.GRANITE_GOLEM,18,20,0, has_cooldown=True, cooldown=8000, mob_name="granite golem")]
+        
+        # self.tracks = []
+        # self.tracks = [Track("Granite Golem",self.GRANITE_GOLEM,18,20,0, has_cooldown=True, cooldown=8000, mob_name="granite golem", prime_cooldown=True),]
 
         # self.tracks = [Track("WAY_STATION_GLAMP", self.WAY_STATION_GLAMP, 10, 14, 0, False, is_glamping=True)]
 
@@ -827,12 +834,13 @@ class TrackGrindThread(GrindThread):
         #     magentaprint("Character doesn't need to sell", False)
 
         nextpath = None
-        if self.last_track is not None and not self.skipped_last_track and self.abandoned_last_track and not self.last_track.is_glamping:
-            magentaprint(f"abandoned last track ({str(self.abandoned_last_track)}) so we're re-running it", False)
-            nextpath = self.evaluate_track(self.last_track)
-        else:
-            # self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
-            nextpath = self.evaluate_track(self.tracks[self.__nextpath])
+        # removed abandoned_last_track check here
+        # if self.last_track is not None and not self.skipped_last_track and self.abandoned_last_track and not self.last_track.is_glamping:
+        #     magentaprint(f"abandoned last track ({str(self.abandoned_last_track)}) so we're re-running it", False)
+        #     nextpath = self.evaluate_track(self.last_track)
+        # else:
+        #     # self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
+        nextpath = self.evaluate_track(self.tracks[self.__nextpath])
     
         self.abandoned_last_track = False
 
@@ -881,13 +889,15 @@ class TrackGrindThread(GrindThread):
                 return self.skip_track()
 
         # if the track has a cooldown and the last run was less than 15 minutes ago, skip it
-        # if track.last_run != 0:
-        current_time = get_timeint()
-        # seconds_since_last_run = (current_time - current_time).total_seconds()
-        seconds_since_last_run = (current_time - get_timeint_from_int(track.last_run)).total_seconds()
-        if not track.is_glamping and not self.abandoned_last_track and track.has_cooldown and seconds_since_last_run < track.cooldown:
-            magentaprint("{0} isn't acceptable to us due to cooldown".format(track.name), False)
-            return self.skip_track()
+        if track.last_run != 0:
+            current_time = get_timeint()
+            # seconds_since_last_run = (current_time - current_time).total_seconds()
+            seconds_since_last_run = (current_time - get_timeint_from_int(track.last_run)).total_seconds()
+            if track.has_cooldown and seconds_since_last_run < track.cooldown:
+                magentaprint("{0} isn't acceptable to us due to cooldown".format(track.name), False)
+                magentaprint("seconds since last run: " + str(seconds_since_last_run), False)
+                magentaprint("cooldown: " + str(track.cooldown), False)
+                return self.skip_track()
         # aura correction here is maybe more valuable than short term efficiency - seeing a lot of bots dangling near their incorrect aura
         # elif track.is_glamping and self.abandoned_last_track:
         #     magentaprint("{0} is a camping track so we won't re-run".format(track.name), False)
@@ -933,6 +943,7 @@ class TrackGrindThread(GrindThread):
 
     def start_track(self, track):
         self.track_start_time = get_timeint()
+        track.start()
         self.character.start_track(track)
         self.last_track = track
         self.last_track_kills = getattr(track, "kills")

@@ -68,7 +68,13 @@ class Consume(threading.Event):
         ] # 'golden potion' (leave that manual)
 
         if self.use_golden:
-            pots.append('golden potion')
+            pots = [
+                'golden potion',
+                'philtre of health',
+                'large restorative',
+                'scarlet potion',
+                'golden potion',
+            ]
 
         if self.prefer_big:
             # I think self.prefer_big needs to be an argument to healing_potion()
