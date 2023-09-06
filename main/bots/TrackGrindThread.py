@@ -737,7 +737,7 @@ class TrackGrindThread(GrindThread):
             Track("Artificers", self.ARTIFICERS, 11, 14, -1),
             # Haelyn is dusty blue but we want to priorize him for farming purposes
             Track("Haelyn", self.HAELYN, 16, 20, 0, requires_ready=True, target_kills=1, allows_caster=False, mob_name="Haelyn"),
-            Track("Esrhae", self.ESRHAE, 18, 20, 0, requires_ready=True, target_kills=1, allows_caster=False, mob_name="Esrhae"),
+            # Track("Esrhae", self.ESRHAE, 18, 20, 0, requires_ready=True, target_kills=1, allows_caster=False, mob_name="Esrhae"),
             # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1, has_cooldown=False),
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1, has_cooldown=False),
@@ -768,7 +768,7 @@ class TrackGrindThread(GrindThread):
             Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 17, 1, requires_ready=True, target_kills=1),
             # Track("Halwyn Bugbears",) # has a pit which could cause issues
             # Track("Forge / weapon thieves",self.FORGE_THIEVES,14,20,-1),
-            Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 15, 20, -1, has_cooldown=False, skip_if_ready=True, mob_name="swamp troll"), # too aggressive and multiple spawn
+            Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 15, 20, -1, False, 0, 9, skip_if_ready=True, mob_name="swamp troll", allows_caster=False), # too aggressive and multiple spawn
             Track("Massive swamp troll", self.MASSIVE_SWAMP_TROLL, 15, 17, -1, requires_ready=True, target_kills=1, mob_name="massive swamp troll"),
             # Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9,has_cooldown=False),
             # Track("Barbarian shaman", self.BARBARIN_SHAMAN, 15, 20, 0), # some pretty big nuke spells, maybe not worth it
@@ -783,7 +783,7 @@ class TrackGrindThread(GrindThread):
             Track("Goblins", self.GOBLINS, 16, 20, -2, False, 0, 9, requires_ready=False, allows_caster=False),
             Track("Amber Guards", self.AMBER_GUARDS, 15, 20, 1, has_cooldown=False, skip_if_ready=True),
             Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18, skip_if_ready=True),
-            Track("CHOORGA", self.CHOORGA, 18, 20, 0, requires_ready=True, has_cooldown=False, mob_name="Choorga the swamp troll"),
+            # Track("CHOORGA", self.CHOORGA, 18, 20, 0, requires_ready=True, has_cooldown=False, mob_name="Choorga the swamp troll"),
             Track("Head trade",self.FETCH_TIGER_EYE, 18, 20, 0, has_cooldown=True, mob_name="", cooldown=600),
             Track("Granite Golem",self.GRANITE_GOLEM, 18, 20, 0, has_cooldown=True, target_kills=1, cooldown=8000, mob_name="granite golem", prime_cooldown=True),
             Track("Qimoth", self.QIMOTH, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Qimoth"),

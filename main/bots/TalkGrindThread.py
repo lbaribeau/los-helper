@@ -251,6 +251,7 @@ class TalkGrindThread(BotThread):
                   "copper",
                   "iron",
                   "steel",
+                  "platinum",
                   "weapon",
                   "magic",
                   "magical",

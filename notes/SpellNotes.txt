@@ -28,6 +28,7 @@ Level 5 spells are not really in the game
 - Feleesa the Nereid drops the Steamblast spell (rarely) - Bugbear cave under Halwyn (press the bone in the pit to open a hidden door), third arch into the well into the water
   - down, down, down, (when the right/left change) prep, right, down, down, back, right, on, down, down, prep, back, down, right, down, down, on, on, on, prep, right, right, (home stretch!), down, down => Feleesa
 - Stone altar (from the swamp troll in the astral plains) - can be traded to Lyron the Elder for an earthen scroll which teaches the "earth-shield" spell
+- Memorial arch "The Morlok" stands above a sigil of stone which teaches the engulf spell
 
 Wands/Items spell cast on use
 - white amulet/small flask/sticky salve == small heal
