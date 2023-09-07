@@ -737,8 +737,8 @@ class TrackGrindThread(GrindThread):
             Track("Artificers", self.ARTIFICERS, 11, 14, -1),
             # Haelyn is dusty blue but we want to priorize him for farming purposes
             Track("Haelyn", self.HAELYN, 16, 20, 0, requires_ready=True, target_kills=1, allows_caster=False, mob_name="Haelyn"),
-            # Track("Esrhae", self.ESRHAE, 18, 20, 0, requires_ready=True, target_kills=1, allows_caster=False, mob_name="Esrhae"),
-            # Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
+            Track("Esrhae", self.ESRHAE, 18, 20, 0, requires_ready=True, target_kills=1, allows_caster=False, mob_name="Esrhae"),
+            Track("Foundry", self.FOUNDRY, 16, 20, 0), #Rimark joins in, not enough mobs actually are there by default
             Track("Rancher Sentries", self.smart_rancher_path, 12, 15, 1, has_cooldown=False),
             Track("Large Spider Forest", self.SPIDER_FOREST, 12, 15, -1, has_cooldown=False),
             Track("Trent", self.EGAN_TRENT, 12, 17, -1, requires_ready=False, target_kills=1, mob_name="Trent the Merchant"),
@@ -787,7 +787,7 @@ class TrackGrindThread(GrindThread):
             Track("Head trade",self.FETCH_TIGER_EYE, 18, 20, 0, has_cooldown=True, mob_name="", cooldown=600),
             Track("Granite Golem",self.GRANITE_GOLEM, 18, 20, 0, has_cooldown=True, target_kills=1, cooldown=8000, mob_name="granite golem", prime_cooldown=True),
             Track("Qimoth", self.QIMOTH, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Qimoth"),
-            # Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 0, requires_ready=True, target_kills=1, mob_name="Whiteblade the Barbarian"), # meh?
+            Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 0, requires_ready=True, target_kills=1, mob_name="Whiteblade the Barbarian"), # meh?
             Track("MAYOR_DEMLIN", self.MAYOR_DEMLIN, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Mayor Demlin"),
             Track("Egan", self.EGAN_TRENT, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Teamleader Egan"),
             Track("REMISARA", self.REMISARA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Remisara"), # doesn't seem to have drops
