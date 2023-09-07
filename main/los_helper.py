@@ -378,6 +378,7 @@ def do_startup():
     try:
         L = LosHelper()
         L.main()
+        magentaprint("Main ended - shutting down client", False)
         L.close()
     except Exception as e:
         magentaprint("Shutting down client", False)

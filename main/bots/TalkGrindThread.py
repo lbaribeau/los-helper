@@ -22,9 +22,6 @@ class TalkGrindThread(BotThread):
             else:
                   magentaprint("talk_grind mode", False)
 
-            if target is not None and not trade_grind:
-                  self.target_mobs = [target]
-
             self.index = 0
 
             # self.travel_bot = TravelBot(self.char, self.command_handler, mud_map)
@@ -530,6 +527,10 @@ class TalkGrindThread(BotThread):
                   # "valiant", #players the criers speak about
             ]
 
+            if target is not None and not trade_grind:
+                  self.talk_topics = ["hello"]
+                  self.target_mobs = [target]
+
             # brute_forced_responses  = MobMessage.get_messages_with_responses()
             # self.talk_topics = self.get_unique_keywords(brute_forced_responses)
 
@@ -551,7 +552,7 @@ class TalkGrindThread(BotThread):
                         path.append("talk")
                         return path
 
-      def talk_to_mob(self, mob, topic):
+      def ask_mob(self, mob, topic):
             # talk to the mob about the topic in our list
             first_mob_word = mob.split(" ", 2)[0]
             first_mob_word = first_mob_word.split("'", 2)[0] # cover for the apostrophe in the mob name
@@ -664,7 +665,7 @@ class TalkGrindThread(BotThread):
                         self.stop()
                         return []
                   for topic in self.current_topics:                        
-                        self.talk_to_mob(self.target_mob, topic)
+                        self.ask_mob(self.target_mob, topic)
                         time.sleep(0.5)
                   mob = Mob.get_mob_by_name(self.target_mob)
                   mobMessages = MobMessage.get_all_messages_by_mob(mob)
