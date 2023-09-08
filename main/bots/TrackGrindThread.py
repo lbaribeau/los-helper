@@ -787,11 +787,11 @@ class TrackGrindThread(GrindThread):
             Track("Head trade",self.FETCH_TIGER_EYE, 18, 20, 0, has_cooldown=True, mob_name="", cooldown=600),
             Track("Granite Golem",self.GRANITE_GOLEM, 18, 20, 0, has_cooldown=True, target_kills=1, cooldown=8000, mob_name="granite golem", prime_cooldown=True),
             Track("Qimoth", self.QIMOTH, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Qimoth"),
-            Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 0, requires_ready=True, target_kills=1, mob_name="Whiteblade the Barbarian"), # meh?
+            # Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 0, requires_ready=True, target_kills=1, mob_name="Whiteblade the Barbarian"), # meh?
             Track("MAYOR_DEMLIN", self.MAYOR_DEMLIN, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Mayor Demlin"),
             Track("Egan", self.EGAN_TRENT, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Teamleader Egan"),
             Track("REMISARA", self.REMISARA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Remisara"), # doesn't seem to have drops
-            Track("Maya", self.MAYA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Maya"),
+            # Track("Maya", self.MAYA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Maya"),
             Track("MARTIN", self.MARTIN_MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Martin"),
             Track("MARIE", self.MARTIN_MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Marie"),
         ]
