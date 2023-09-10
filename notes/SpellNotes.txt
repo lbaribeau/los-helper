@@ -58,3 +58,4 @@ Wands/Items spell cast on use
 - electrum rod == ??? (rich brown aura)
 - clear blue crystal == ???
 - pine cone == Shatterstone
+- lapis amulet == protect-air

@@ -297,10 +297,11 @@ class GrindThread(BotThread):
             # away all the mana for characters with low piety, whose vigors will not do much,
             # and may just be one tick away from good health.
 
-        if self.character.MANA < mana_to_wait or self.character.MANA:
+        if self.character.MANA < mana_to_wait or self.character.MANA or not self.has_ideal_health():
             self.rest_until_ready()
         elif (self.character.MANA < self.mana_to_go or self.character.MANA) and self.character.NEEDS_MAGIC:
             # trigger any heal bots in the room
+            magentaprint("Resting for mana", False)
             self.command_handler.process("rest")
             self.wait_for_mana()
 
@@ -446,10 +447,12 @@ class GrindThread(BotThread):
         # TODO: keep resting if benefitting from resting until maxed.
 
         if (self.neither_is_maxed or self.one_is_too_low) and not self.stopping:
+            magentaprint("rest until ready start", False)
             self.command_handler.process("rest")
 
         while (self.neither_is_maxed or self.one_is_too_low) and not self.stopping:
             if self.engage_any_attacking_mobs():
+                magentaprint("resting until ready", False)
                 self.command_handler.process("rest")
             self.sleep(0.1)
 
@@ -479,15 +482,18 @@ class GrindThread(BotThread):
 
         if not self.character.info.pty < 12:
             self.do_heal_skills()
+        magentaprint("rest for health start", False)
         self.command_handler.process("rest")
         # magentaprint(self.has_ideal_health(), False)
 
         while not self.has_ideal_health() and not self.stopping:
             magentaprint("GrindThread.rest_for_health() stopping is: " + str(self.stopping))
             if self.engage_any_attacking_mobs():
+                magentaprint("resting for health", False)
                 self.command_handler.process("rest")
             elif not self.character.info.pty < 10:
                 if self.do_heal_skills():
+                    magentaprint("resting for health after healing", False)
                     self.command_handler.process("rest")
 
             self.sleep(1.2)
@@ -1104,6 +1110,10 @@ class GrindThread(BotThread):
         return engaged
 
     def ready_for_combat(self):
+        # has_ideal_health = self.character.HEALTH >= self.character.HEALTH_TO_HEAL
+        # has_ideal_mana = self.character.MANA >= self.character.MANA_TO_ENGAGE
+        # magentaprint("GrindThread.ready_for_combat() has_ideal_health: " + str(has_ideal_health) + ", has_ideal_mana: " + str(has_ideal_mana), False)
+
         return self.character.HEALTH >= self.character.HEALTH_TO_HEAL and \
                self.character.MANA >= self.character.MANA_TO_ENGAGE and \
                ((hasattr(self.command_handler.weapon_bot, 'weapon') and \

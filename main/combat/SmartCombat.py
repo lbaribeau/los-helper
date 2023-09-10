@@ -102,6 +102,7 @@ class SmartCombat(CombatObject):
         self.full_rings = False
 
     def handle_granite_use(self):
+        self.character.inventory.get_inventory()
         if self.potion_thread_handler.use_granite():
             self.character.flee_log.append({
                 'target': str(self.target),
@@ -121,6 +122,7 @@ class SmartCombat(CombatObject):
             self.character.ESCAPES += 1
 
             output_api_feed("flee_log", self.character.flee_log)
+            self.character.inventory.get_inventory()
             self.stop()
             self.cast.stop()
             self.kill.stop()

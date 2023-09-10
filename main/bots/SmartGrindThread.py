@@ -44,7 +44,9 @@ class SmartGrindThread(TrackGrindThread):
             self.character.MANA_TO_ENGAGE = 12
         elif self.character.MANA_TO_ENGAGE < 24 and self.character.MAX_MANA > 24:
             self.character.MANA_TO_ENGAGE = 24
-        
+
+        if self.character.MANA_TO_ENGAGE > self.character.MAX_MANA:
+            self.character.MANA_TO_ENGAGE = self.character.MAX_MANA
         
         self.HEALTH_TO_HEAL = 0.95 * self.character.maxHP
 

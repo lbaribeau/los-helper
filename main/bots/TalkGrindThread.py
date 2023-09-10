@@ -106,14 +106,14 @@ class TalkGrindThread(BotThread):
                   # "Maco Bail", # Behind locked door
                   "Manic Soothsayer",
                   "Remisara",
-                  # "Maya",
-                  # "Crenigan",
+                  "Maya",
+                  "Crenigan",
                   "Elder Barthrodue", # completed dialogue
                   "Goourd", # completed dialogue
                   "Old Man James", # completed dialogue
                   'Haram', # completed dialogue
                   # "Thereze", # completed dialogue
-                  "Qimoth", # completed dialogue
+                  # "Qimoth", # completed dialogue
                   "Joffi the Mystic", # completed dialogue
                   # "Gorban", # completed dialogue
                   "Pansy", # completed dialogue
@@ -131,12 +131,13 @@ class TalkGrindThread(BotThread):
                   "Lady Denlise",  # completed dialogue 
                   # "Vickie", # completed dialogue
                   "Matriarch Sara",
-                  # "Lady Arielle",
-                  # "Lord Arduis",
-                  # "Lady Jenlira", # completed dialogue
+                  "Lady Arielle",
+                  "Lord Arduis",
+                  "Lady Jenlira", # completed dialogue
                   "Bhezkam",
                   "Ironbark", # not found but mentioned by Jenlira!!!
             ]
+            # self.target_mobs = ["Lady Arielle", "Lord Arduis", "Lady Jenlira"]
 
             self.talk_topics = [
                   "", # empty string to talk to the mob
@@ -249,6 +250,7 @@ class TalkGrindThread(BotThread):
                   "iron",
                   "steel",
                   "platinum",
+                  "lapis",
                   "weapon",
                   "magic",
                   "magical",
@@ -387,6 +389,7 @@ class TalkGrindThread(BotThread):
                   "mountain",
                   "dungeon",
                   "castle",
+                  "rook",
                   "tower",
                   "bog",
                   "swamp",
@@ -704,8 +707,8 @@ class TalkGrindThread(BotThread):
                         messages += " " + mobMessage.message
             
             # join together all the mob names into a string list and lowercase it all
-            mob_names = ' '.join(self.target_mobs).lower()
-            messages += " " + mob_names
+            # mob_names = ' '.join(self.target_mobs).lower()
+            # messages += " " + mob_names
 
             # regex replace all punctuation in messages with spaces
             # for each word greater than 3 letters in the messages list
