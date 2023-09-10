@@ -780,7 +780,7 @@ class TrackGrindThread(GrindThread):
             Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9, skip_if_ready=True),
             Track("Knights Aura Fix", self.KNIGHTS_TENT_CAMP, 15, 20, 2, False, 7, 18, is_glamping=True, skip_if_ready=True),
             Track("Gnoll Chaplain Aura Fix", self.GNOLL_CHAPLAIN_CAMP, 15, 20, -2, False, 0, 9, is_glamping=True, skip_if_ready=True),
-            Track("Goblins", self.GOBLINS, 16, 20, -2, False, 0, 9, requires_ready=False, allows_caster=False),
+            # Track("Goblins", self.GOBLINS, 16, 20, -2, False, 0, 9, requires_ready=False, allows_caster=False),
             Track("Amber Guards", self.AMBER_GUARDS, 15, 20, 1, has_cooldown=False, skip_if_ready=True),
             Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18, skip_if_ready=True),
             # Track("CHOORGA", self.CHOORGA, 18, 20, 0, requires_ready=True, has_cooldown=False, mob_name="Choorga the swamp troll"),
