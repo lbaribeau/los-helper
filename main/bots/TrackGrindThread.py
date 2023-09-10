@@ -877,9 +877,9 @@ class TrackGrindThread(GrindThread):
                         return self.skip_track()
 
         # optimization for level 18s so they don't waste time on tracks that are too easy
-        if track.skip_if_ready and self.character.info.level == 18:
-            if self.character.is_ready_for_tough_fight() and aura_acceptable:
-                return self.skip_track()
+        # if track.skip_if_ready and self.character.info.level == 18:
+        #     if self.character.is_ready_for_tough_fight() and aura_acceptable:
+        #         return self.skip_track()
 
         if track.track_aura == 9:
             if self.character.level in level_range:
