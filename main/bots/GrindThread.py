@@ -281,7 +281,7 @@ class GrindThread(BotThread):
 
     def rest_and_check_aura(self):
         # This method is only efficient in a healing area
-        magentaprint("BotThread.rest_and_check_aura()")
+        magentaprint("BotThread.rest_and_check_aura()", False)
         mana_to_wait = 0
         is_slow_steady = self.character.MANA_TO_ENGAGE > 0
         if is_slow_steady:
@@ -475,7 +475,7 @@ class GrindThread(BotThread):
             self.command_handler.process('')
 
     def rest_for_health(self):
-        magentaprint("BotThread.rest_for_health()")
+        magentaprint("BotThread.rest_for_health()", False)
 
         if self.has_ideal_health():
             return
