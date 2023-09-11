@@ -91,7 +91,7 @@ class SmartCombat(CombatObject):
         # Let the parent make WeaponBot.  I think the parent should make use of an Initializer.
         self.weapon_bot = weapon_bot
         self.set_pot_thread = False
-        self.healing_spell='v' 
+        self.healing_spell = self.determine_healing_spell()
         # command handler can change this
         # Right now human can hit 'cc m' to switch the spell to mend
         # I think command handler needs to be able to hit self.black_magic, in theory
@@ -459,6 +459,18 @@ class SmartCombat(CombatObject):
                     return False
         return True
 
+    def determine_healing_spell(self):
+        healing_spell = Spells.vigor
+        # has_vigor = Spells.vigor in self.character.spells # Should add logic to account for this sometime
+        has_mend = Spells.mendwounds in self.character.spells
+
+        if has_mend and self.character.MANA > 4:
+            healing_spell = Spells.mendwounds
+        else:
+            healing_spell = Spells.vigor
+
+        return healing_spell
+
     def determine_favorite_spell_for_target(self):
         if self.mob_target is not None:
             if self.get_mob_level() < 5 or self.character.info.int < 9:
@@ -596,7 +608,11 @@ class SmartCombat(CombatObject):
              (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7)):
              # (self.character.MANA >= self.character.maxMP - 1 and damage > self.character.max_vigor()/1.7 and damage > self.character.hptick()):
             # TODO: cast vigor if a tick is about to come and we're full mana
-            self.do_cast('v')
+
+            self.healing_spell = self.determine_healing_spell()
+            magentaprint("SmartCombat casting heal spell: " + str(self.healing_spell), False)
+
+            self.do_cast(self.healing_spell)
         elif self.mob_charmed:
             time.sleep(min(0.2, self.kill.wait_time()))
             # time.sleep(min(0.2, self.kill.wait_time() + 0.05))

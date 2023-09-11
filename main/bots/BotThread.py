@@ -115,11 +115,11 @@ class BotThread(threading.Thread):
             print (e)
             self.stop()
 
-            if (self.exceptionCount < 3):
-                magentaprint("Bot encountered an error trying to restart: " + str(self.exceptionCount), False)
-                self.exceptionCount += 1
-                traceback.print_exc()
-                self.run()
+            # if (self.exceptionCount < 3):
+            magentaprint("Bot encountered an error:", False)
+            # self.exceptionCount += 1
+            traceback.print_exc()
+            raise e
 
         finally:
             magentaprint("BotThread: finished now.")
