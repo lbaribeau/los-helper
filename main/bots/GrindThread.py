@@ -477,7 +477,7 @@ class GrindThread(BotThread):
     def rest_for_health(self):
         magentaprint("BotThread.rest_for_health()")
 
-        if self.character.HEALTH >= self.character.maxHP * 0.95:
+        if self.has_ideal_health():
             return
 
         if not self.character.info.pty < 12:
@@ -496,7 +496,7 @@ class GrindThread(BotThread):
                     magentaprint("resting for health after healing", False)
                     self.command_handler.process("rest")
 
-            self.sleep(1.2)
+            self.sleep(10)
 
         # magentaprint("Stopping rest for health",False)
 
