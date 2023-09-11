@@ -392,4 +392,6 @@ def do_startup():
         sys.exit()
     return L
 
+magentaprint("LosHelper starting up...", False)
 L = do_startup()
+magentaprint("LosHelper ended...", False)
