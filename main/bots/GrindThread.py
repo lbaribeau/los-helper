@@ -297,9 +297,9 @@ class GrindThread(BotThread):
             # away all the mana for characters with low piety, whose vigors will not do much,
             # and may just be one tick away from good health.
 
-        if self.character.MANA < mana_to_wait or self.character.MANA or not self.has_ideal_health():
+        if self.character.MANA < mana_to_wait:
             self.rest_until_ready()
-        elif (self.character.MANA < self.mana_to_go or self.character.MANA) and self.character.NEEDS_MAGIC:
+        elif (self.character.MANA < self.mana_to_go) and self.character.NEEDS_MAGIC:
             # trigger any heal bots in the room
             magentaprint("Resting for mana", False)
             self.command_handler.process("rest")
