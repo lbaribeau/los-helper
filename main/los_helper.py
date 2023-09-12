@@ -138,18 +138,6 @@ class LosHelper(object):
         self.command_handler.go.wait_for_flag()
         self.check_inventory()
 
-        if '-grind' in sys.argv:
-            self.command_handler.start_grind("grind")
-
-        if '-noobgrind' in sys.argv:
-            self.command_handler.start_noob_grind()
-
-        if '-campslave' in sys.argv:
-            self.command_handler.start_campslave(do_buffs=True)
-
-        if '-healslave' in sys.argv:
-            self.command_handler.start_campslave(do_buffs=False)
-
         if '-fast' in sys.argv:
             self.character.MANA_TO_ENGAGE = 0
             self.character.NEEDS_MAGIC = False
@@ -174,6 +162,18 @@ class LosHelper(object):
             # we expect weapon to be an index of 1 through 5 corresponding to the weapon type in info
             self.set_preferred_weapon_proficiency(weapon_type_to_set)
             self.character.process_info()
+
+        if '-grind' in sys.argv:
+            self.command_handler.start_grind("grind")
+
+        if '-noobgrind' in sys.argv:
+            self.command_handler.start_noob_grind()
+
+        if '-campslave' in sys.argv:
+            self.command_handler.start_campslave(do_buffs=True)
+
+        if '-healslave' in sys.argv:
+            self.command_handler.start_campslave(do_buffs=False)
 
         # no automatic ring wearing needed anymore please        
         # if self.character._class.id != "Mon" and self.character._class.id != "Alc": #Alc's have a class ring
