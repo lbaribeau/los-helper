@@ -31,6 +31,7 @@ class BotThread(threading.Thread):
         self.kill = command_handler.smartCombat.kill
         self.cast = command_handler.smartCombat.cast
         self.direction_list = []
+        self.tracks = []
 
         self.character.ACTIVELY_BOTTING = False
 
