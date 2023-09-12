@@ -796,11 +796,13 @@ class TrackGrindThread(GrindThread):
             Track("MARTIN", self.MARTIN_MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Martin"),
             Track("MARIE", self.MARTIN_MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Marie"),
         ]
-        
+
         # self.tracks = []
         # self.tracks = [Track("Granite Golem",self.GRANITE_GOLEM,18,20,0, has_cooldown=True, cooldown=8000, mob_name="granite golem", prime_cooldown=True),]
 
         # self.tracks = [Track("WAY_STATION_GLAMP", self.WAY_STATION_GLAMP, 10, 14, 0, False, is_glamping=True)]
+
+        magentaprint("character level for tracks: " +  str(self.character.level), False)
 
         self.tracks = [x for x in self.tracks if self.character.level >= x.min_level and self.character.level < x.max_level]
         # sort the list of tracks by track_aura

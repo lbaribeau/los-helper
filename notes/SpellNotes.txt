@@ -60,3 +60,4 @@ Wands/Items spell cast on use
 - clear blue crystal == ???
 - pine cone == Shatterstone
 - lapis amulet == protect-air
+- Heart of Stone == Avalanche
