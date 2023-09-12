@@ -170,7 +170,7 @@ class FakeTelnetSocket(object):
         if not self.whois_string:
             # The first written string is the character's name for login
             self.initialize_socket_output(command)
-            self.write('genaid 2')
+            self.write('genaid 2181')
             # self.write('addmob spiv')
         if re.match('whois (.+?)', command):
             self.socket_output.append(self.whois_string)

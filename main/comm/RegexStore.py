@@ -175,6 +175,7 @@ nothing_here = [r"There's nothing here\."]
 # Go and Cartography
 #           .=\n\r   EAT JUNK DATA (prompt,falldamange,resting,death,loginprompts,hptick)                                                             Title           Description       Exit list                   Players / Mobs / Signs / Items (optional)
 area                  = ["(?:(?:.+?]: )?(?:You run like a chicken|You fell and hurt yourself for .+? damage|You stop resting)\.\n\r\n\r)?(?s)(?:(?:.+?Stone\.\n\r|.+?healed\.\n\r|.+?\]:\s+?)\n\r)?([A-Za-z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"]
+area_simplified       = ["(?si)^(.+?)(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"]
 obvious_exits         = [r"(?s)Obvious exits: ([A-Za-z\s,]+)\.\n\r"]
 go_where              = [r"Go where\?"]
 cant_go               = [r"You can't go that way\."]

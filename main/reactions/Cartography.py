@@ -26,7 +26,7 @@ class Cartography(BotReactionWithFlag):
         self.store_item_list = "(?:[\s]*)(?:A |An |Some )?(.+?)(?:[\s]*)(?:(\(.\))?(?:[\s]*))?Cost: ([\d]*)" 
         # (Do a re.findall on the list above to iterate through, don't add this to the array below)
         self.regex_cart = [
-            R.area,             R.too_dark,            R.blocked_path,     R.please_wait,
+            R.area_simplified,  R.too_dark,            R.blocked_path,     R.please_wait,
             R.cant_go,          R.no_exit,             R.class_prohibited, R.level_too_low,
             R.not_invited,      R.not_open_during_day, R.not_open_during_night,
             R.no_items_allowed, R.locked,              R.no_right,         R.not_authorized,
@@ -47,8 +47,8 @@ class Cartography(BotReactionWithFlag):
     def notify(self, regex, M):
         if regex in R.too_dark:
             self.too_dark(regex, M)
-        elif regex in R.area:
-            self.area(M)
+        elif regex in R.area_simplified:
+            self.area_simplified(M)
         elif regex in R.blocked_path:
             self.blocked_path(regex, M)
         elif regex in R.loot_blocked:
@@ -165,6 +165,80 @@ class Cartography(BotReactionWithFlag):
         C.CONFUSED = False
 
         if C.TRYING_TO_MOVE:
+            C.TRYING_TO_MOVE = False
+
+    def area_simplified(self, match):
+        C = self.character
+        groups = match.groups()
+        area_content_raw = groups[0].strip()
+        # magentaprint("area_content_raw: " + str(groups), False)
+
+        area_description = re.search("(?si)^.*\n\r?\n\r?(.*)$", area_content_raw.strip()).groups()[0]
+        # magentaprint("area_description: " + area_description, False)
+
+        area_title_raw = area_content_raw.replace(area_description, "").strip()
+
+        # get the last line of the first group to get the area title
+        area_title = re.search("(?si)^(?:.+M] )?(.*)$", area_title_raw.split("\n")[-1]).groups()[0]
+        # magentaprint("area_title: " + area_title, False)
+        area_exits = groups[1]
+        area_entities_1 = groups[2]
+        area_entities_2 = groups[3]
+        # area_entities_3 = groups[4]
+        # area_entities_4 = groups[5]
+
+        C.AREA_TITLE = area_title
+        C.EXIT_LIST  = self.parse_exit_list(area_exits)
+        C.EXIT_REGEX = self.create_exit_regex_for_character(C.EXIT_LIST)
+
+        C.area_has_players = False
+
+        # check for C.players to see if any appear in match.group(4)
+        if area_entities_1 is not None:
+            for player in C.players:
+                if player in area_entities_1:
+                    C.area_has_players = True
+                    break
+        
+        if area_entities_1 is not None and not C.area_has_players:
+            C.mobs.list  = ReferencingList(self.parse_monster_list(area_entities_1))
+        else:
+            C.mobs.list  = ReferencingList(self.parse_monster_list(area_entities_2))
+        
+        C.mobs.attacking = []
+        C.CAN_SEE       = True
+        C.CONFUSED      = False
+        C.SUCCESSFUL_GO = True
+
+        self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
+
+        if C.TRYING_TO_MOVE:
+
+            if C.EXIT_LIST != []:
+                C.MUD_AREA = MudArea.map(
+                    C.AREA_TITLE, 
+                    area_description,
+                    C.EXIT_LIST, 
+                    C.AREA_ID, 
+                    C.LAST_DIRECTION, 
+                    C.MUD_AREA
+                )
+                magentaprint("Cartography area match: " + str(C.MUD_AREA.area))
+                #magentaprint("Try [m for m in C.mobs.list.list] " + str([m for m in C.mobs.list.list]))
+                #magentaprint("Try [str(m).lower() for m in C.mobs.list.list]" + str([str(m).lower() for m in C.mobs.list.list]))
+                #magentaprint("Cartography monster list: " + str(C.mobs.list))
+                self.catalog_monsters(
+                    C.MUD_AREA.area, 
+                    [str(m) for m in C.mobs.list.list]
+                    # [str(m).lower() for m in C.mobs.list.list]
+                )
+                # I think we catalog in lower case?
+                # Still don't know how m is a GameObject and we need str(m).lower() 
+                # - (check ReferencingList.add - items/things are GameObjects)
+                C.AREA_ID = C.MUD_AREA.area.id
+            else:
+                magentaprint("Cartography warning: exit list was empty???")
+                C.AREA_ID = None
             C.TRYING_TO_MOVE = False
 
     def area(self, match):
