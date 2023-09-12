@@ -179,7 +179,7 @@ class Cartography(BotReactionWithFlag):
         area_title_raw = area_content_raw.replace(area_description, "").strip()
 
         # get the last line of the first group to get the area title
-        area_title = re.search("(?si)^(?:.+M] )?(.*)$", area_title_raw.split("\n")[-1]).groups()[0]
+        area_title = re.search("(?si)^(?:.+M] )?(.*)$", area_title_raw.split("\n")[-1]).groups()[0].strip()
         # magentaprint("area_title: " + area_title, False)
         area_exits = groups[1]
         area_entities_1 = groups[2]
