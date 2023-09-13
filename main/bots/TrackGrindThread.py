@@ -799,7 +799,7 @@ class TrackGrindThread(GrindThread):
             Track("MARIE", self.MARTIN_MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Marie"),
         ]
 
-        self.tracks = [Track("Memory Spam", ["think", "memory_spam"], 0, 20, 9, has_cooldown=False)]
+        # self.tracks = [Track("Memory Spam", ["think", "memory_spam"], 0, 20, 9, has_cooldown=False)]
         # self.tracks = [Track("Granite Golem",self.GRANITE_GOLEM,18,20,0, has_cooldown=True, cooldown=8000, mob_name="granite golem", prime_cooldown=True),]
 
         # self.tracks = [Track("WAY_STATION_GLAMP", self.WAY_STATION_GLAMP, 10, 14, 0, False, is_glamping=True)]
