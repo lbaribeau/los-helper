@@ -1,6 +1,6 @@
 
 from bots.GrindThread import GrindThread
-from misc_functions import magentaprint, get_timeint, get_timeint_from_int, get_memory_usage
+from misc_functions import magentaprint, get_timeint, get_timeint_from_int#, get_memory_usage
 from Aura import Aura
 import db.Area
 from db.Mob import Mob
