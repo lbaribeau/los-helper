@@ -8,7 +8,7 @@ import sys
 import json
 
 import misc_functions
-from misc_functions import magentaprint
+from misc_functions import magentaprint #, get_memory_usage
 from db.Database import *
 from db.MudMap import *
 from db.ExitType import *
@@ -464,6 +464,8 @@ class CommandHandler(object):
             self.stop_bot()
         elif re.match("^q!$", user_input):
             raise Exception("Hard Quit!")
+        # elif re.match("memtop", user_input):
+        #     get_memory_usage()
         elif re.match("aura (\d)", user_input):
             M_obj = re.search("aura (\d)", user_input)
             magentaprint(Aura.auras[int(M_obj.group(1))], False)

@@ -3,6 +3,7 @@ import time
 import sys
 import json
 from inspect import getframeinfo, stack
+# from mem_top import mem_top
 
 # from db.Database import Log
 from datetime import datetime
@@ -147,6 +148,16 @@ def flush_input():
 def output_api_feed(filename, data):
     with open('reporting_website/dist/api/{}.json'.format(filename), 'w') as outfile:
         json.dump(data, outfile)
+
+# pip install mem_top to leverage this
+# def get_memory_usage():
+#     minutes_run = get_runtime_in_minutes()
+#     filename = f"{minutes_run}_memory_usage"
+#     data = f"{mem_top(verbose_types=[dict])}"
+    
+#     # write as a plain text file
+#     with open(f"reporting_website/dist/api/{filename}.txt", "w") as text_file:
+#         text_file.write(data)
 
 def list_to_count_dict(l):
     d={}

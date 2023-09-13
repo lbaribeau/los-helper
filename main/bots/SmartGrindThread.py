@@ -135,7 +135,7 @@ class SmartGrindThread(TrackGrindThread):
         # self.check_armour()
 
         if len(self.character.MONSTER_KILL_LIST) == 0:
-            self.reset_kill_list()
+            self.get_targets()
 
         # get the next direction and area id to go to - does this area contain a hazard? If so run the prepare command
         if self.direction_list is not None and len(self.direction_list) > 0:
@@ -458,23 +458,17 @@ class SmartGrindThread(TrackGrindThread):
 
         # magentaprint(target_list.count(), False)
         # magentaprint(target_list, False)
-        temp_list = []
+        self.character.MONSTER_KILL_LIST = []
 
         for target in target_list:
-            mob_locations = MudMap.get_mob_locations_by_id(target.id)
-            temp_list.append(target.name) # This might append too many?
-            self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
-
-        self.character.MONSTER_KILL_LIST = temp_list
+            # mob_locations = MudMap.get_mob_locations_by_id(target.id)
+            self.character.MONSTER_KILL_LIST.append(target.name) # This might append too many?
+            # self.smart_target_list.append(SmartGrindTarget(target, mob_locations))
 
         # magentaprint("Monster")
 
         if self.character.is_headless:
             output_api_feed('mkl', self.character.MONSTER_KILL_LIST)
-
-    def reset_kill_list(self):
-        magentaprint("Resetting kill list", False)
-        self.get_targets()
 
     def pick_new_target(self):
         next_target = self.cur_target
@@ -527,7 +521,7 @@ class SmartGrindThread(TrackGrindThread):
 
         magentaprint("My aura is {}".format(aura_context), False)
 
-        self.reset_kill_list()
+        self.get_targets()
 
     def do_rest_hooks(self):
         pass

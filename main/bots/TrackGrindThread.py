@@ -1,6 +1,6 @@
 
 from bots.GrindThread import GrindThread
-from misc_functions import magentaprint, get_timeint, get_timeint_from_int
+from misc_functions import magentaprint, get_timeint, get_timeint_from_int, get_memory_usage
 from Aura import Aura
 import db.Area
 from db.Mob import Mob
@@ -559,6 +559,8 @@ class TrackGrindThread(GrindThread):
         # magentaprint(str(self.character.AREA_ID) + ", " + exit_str, False)
         if exit_str == "raise":
             raise Exception("Manual exception to crash the bot raised!!!")
+        elif exit_str == "memory_spam":
+            self.memory_spam()
         elif exit_str == "slow_prepare":
             magentaprint("prearing to move to trapped area", False)
             self.sleep(2)
@@ -715,7 +717,7 @@ class TrackGrindThread(GrindThread):
             Track("Theatre Bertram", self.BERTRAM, 14, 17, 0, target_kills=1, skip_if_ready=True),
             Track("Market", self.smart_market_path, 0, 15, 0, has_cooldown=False),
             Track("Militia Soldiers", self.smart_militia_path, 0, 14, 0, has_cooldown=False),
-            Track("Kobolds", self.smart_kobold_path, 0, 9, -1, has_cooldown=False), #sentries are suuuper tough
+            Track("Kobolds", self.smart_kobold_path, 0, 10, -1, has_cooldown=False), #sentries are suuuper tough
             Track("Kobolds", self.kobold_massacre, 10, 17, -2, has_cooldown=False), #sentries are suuuper tough
             #Track("Coral Alley", self.CORAL_ALLEY_PATH, 0, 6, -1),
             Track("Fort Farm", self.smart_fort_path, 9, 14, 0, has_cooldown=False, requires_ready=False),
@@ -797,7 +799,7 @@ class TrackGrindThread(GrindThread):
             Track("MARIE", self.MARTIN_MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Marie"),
         ]
 
-        # self.tracks = []
+        self.tracks = [Track("Memory Spam", ["think", "memory_spam"], 0, 20, 9, has_cooldown=False)]
         # self.tracks = [Track("Granite Golem",self.GRANITE_GOLEM,18,20,0, has_cooldown=True, cooldown=8000, mob_name="granite golem", prime_cooldown=True),]
 
         # self.tracks = [Track("WAY_STATION_GLAMP", self.WAY_STATION_GLAMP, 10, 14, 0, False, is_glamping=True)]
@@ -849,8 +851,16 @@ class TrackGrindThread(GrindThread):
 
         return nextpath
 
+    # def memory_spam(self):
+    #     for i in range(0, 20):
+    #         get_memory_usage()
+    #         self.get_targets()
+    #         time.sleep(2)
+    #     raise Exception("crashing for science")
+
     def evaluate_track(self, track):
-        self.reset_kill_list()
+        self.get_targets()
+        # do this twenty times
         self.skipped_last_track = False
         level_range = range(track.min_level, track.max_level)
 
@@ -952,7 +962,7 @@ class TrackGrindThread(GrindThread):
         self.last_track_kills = getattr(track, "kills")
         self.on_track = True
 
-    def reset_kill_list(self):
+    def get_targets(self):
         pass
 
     def end_track(self):
