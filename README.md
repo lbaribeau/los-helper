@@ -93,7 +93,7 @@ sudo python3.5 get-pip.py
 
 ## Helpful vm commands
 * `pkill -f los` (kill all processes with los in the name)
-* `grep -a -a 20 -B 20 "### Ferp was defeated" nohup.out` (logs on death w/ 200 lines before, replace with your char name)
+* `grep -a -A 20 -B 20 "### Ferp was defeated" nohup.out` (logs on death w/ 200 lines before, replace with your char name)
 * `grep -a -A 20 -B 20 "granite potion disintegrates" nohup.out` (logs on death w/ 200 lines before, replace with your char name)
 
 ## Modifying the Database

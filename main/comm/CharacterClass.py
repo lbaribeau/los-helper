@@ -159,13 +159,14 @@ class CharacterClass(object):
         magentaprint("CharacterClass final abilities: " + str(self.abilities))
 
     # characters that primarily rely on magic for their damage
+    # they have fast cast (3 seconds), should bias towards t2 spells and cast first - hit second
     def is_caster(self):
-        return self.id in ["Mag", "Alc", "Dru"]
+        return self.id in ["Mag", "Alc"]#, "Dru"]
 
     def is_healer(self):
         # druid doesn't get bonus piety but seems to have decent heal scaling
         # cleric and paladin get bonus piety and have good heal scaling
-        # druid and cleric have faster cast speeds so they can heal more often
+        # druid and cleric have faster cast speeds (4 seconds) so they can heal more often
         # this is a bit of a hack to help scale weapon proficiencies too
         return self.id in ["Cle", "Pal", "Dru"]
 

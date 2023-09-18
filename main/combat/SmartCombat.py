@@ -103,6 +103,7 @@ class SmartCombat(CombatObject):
 
     def handle_granite_use(self):
         # self.character.inventory.get_inventory() # causes lag
+        magentaprint("SmartCombat handle_granite_use", False)
         if self.potion_thread_handler.use_granite():
             self.character.flee_log.append({
                 'target': str(self.target),

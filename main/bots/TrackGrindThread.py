@@ -793,7 +793,7 @@ class TrackGrindThread(GrindThread):
             # Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 0, requires_ready=True, target_kills=1, mob_name="Whiteblade the Barbarian"), # meh?
             Track("MAYOR_DEMLIN", self.MAYOR_DEMLIN, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Mayor Demlin"),
             # Track("Egan", self.EGAN_TRENT, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Teamleader Egan"),
-            Track("REMISARA", self.REMISARA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Remisara"), # doesn't seem to have drops
+            # Track("REMISARA", self.REMISARA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Remisara"), # doesn't seem to have drops, causes flee
             # Track("Maya", self.MAYA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Maya"),
             Track("MARTIN", self.MARTIN_MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Martin"),
             Track("MARIE", self.MARTIN_MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Marie"),
@@ -840,11 +840,11 @@ class TrackGrindThread(GrindThread):
 
         nextpath = None
         # removed abandoned_last_track check here
-        # if self.last_track is not None and not self.skipped_last_track and self.abandoned_last_track and not self.last_track.is_glamping:
-        #     magentaprint(f"abandoned last track ({str(self.abandoned_last_track)}) so we're re-running it", False)
-        #     nextpath = self.evaluate_track(self.last_track)
-        # else:
-        #     # self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
+        if self.last_track is not None and not self.skipped_last_track and self.abandoned_last_track and not self.last_track.is_glamping:
+            magentaprint(f"abandoned last track ({str(self.abandoned_last_track)}) so we're re-running it", False)
+            nextpath = self.evaluate_track(self.last_track)
+        else:
+            self.__nextpath = (self.__nextpath + 1) % len(self.tracks)
         nextpath = self.evaluate_track(self.tracks[self.__nextpath])
     
         self.abandoned_last_track = False
@@ -890,9 +890,9 @@ class TrackGrindThread(GrindThread):
                         return self.skip_track()
 
         # optimization for level 18s so they don't waste time on tracks that are too easy
-        # if track.skip_if_ready and self.character.info.level == 18:
-        #     if self.character.is_ready_for_tough_fight() and aura_acceptable:
-        #         return self.skip_track()
+        if track.skip_if_ready and self.character.info.level == 18:
+            if self.character.is_ready_for_tough_fight() and aura_acceptable:
+                return self.skip_track()
 
         if track.track_aura == 9:
             if self.character.level in level_range:
@@ -912,11 +912,11 @@ class TrackGrindThread(GrindThread):
                 magentaprint("cooldown: " + str(track.cooldown), False)
                 return self.skip_track()
         # aura correction here is maybe more valuable than short term efficiency - seeing a lot of bots dangling near their incorrect aura
-        # elif track.is_glamping and self.abandoned_last_track:
-        #     magentaprint("{0} is a camping track so we won't re-run".format(track.name), False)
-        #     return self.PATH_TO_SKIP_WITH[:]
-        # else:
-        #     magentaprint("{0} is acceptable to us due to cooldown > {1} and has_cooldown {2}".format(track.name, seconds_since_last_run, track.has_cooldown), False)
+        elif track.is_glamping and self.abandoned_last_track:
+            magentaprint("{0} is a camping track so we won't re-run".format(track.name), False)
+            return self.PATH_TO_SKIP_WITH[:]
+        else:
+            magentaprint("{0} is acceptable to us due to cooldown > {1} and has_cooldown {2}".format(track.name, seconds_since_last_run, track.has_cooldown), False)
 
         if character_aura < track.min_aura or character_aura > track.max_aura:
             magentaprint("Character too good or evil for this track", False)
