@@ -915,8 +915,8 @@ class TrackGrindThread(GrindThread):
         elif track.is_glamping and self.abandoned_last_track:
             magentaprint("{0} is a camping track so we won't re-run".format(track.name), False)
             return self.PATH_TO_SKIP_WITH[:]
-        else:
-            magentaprint("{0} is acceptable to us due to cooldown > {1} and has_cooldown {2}".format(track.name, seconds_since_last_run, track.has_cooldown), False)
+        # else:
+        #     magentaprint("{0} is acceptable to us due to cooldown > {1} and has_cooldown {2}".format(track.name, seconds_since_last_run, track.has_cooldown), False)
 
         if character_aura < track.min_aura or character_aura > track.max_aura:
             magentaprint("Character too good or evil for this track", False)
