@@ -213,7 +213,7 @@ class Inventory(SimpleCommand, ReferencingList):
         'makeup kit', 'Dalla\'s blessing',
         'diamantium cross', 'rare coin',
         # 'dragon claws',
-        # 'Aaashaaal\'s gift',
+        'Aaashaaal\'s gift',
         'silver flute',
         'ash wood key',
         'tiny silver key',

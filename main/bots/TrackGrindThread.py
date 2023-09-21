@@ -500,6 +500,8 @@ class TrackGrindThread(GrindThread):
           "north", "north", "north", "north", "glamp", "south","south","south","south","cubicle","ladder"
         ]
 
+        self.BUGBEARS = ["areaid2150", "areaid3720", "areaid3717", "areaid3716"]
+
         self.PATH_TO_SKIP_WITH = ['think']
 
         self.setup_tracks()
@@ -797,9 +799,12 @@ class TrackGrindThread(GrindThread):
             # Track("Maya", self.MAYA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Maya"),
             Track("MARTIN", self.MARTIN_MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Martin"),
             Track("MARIE", self.MARTIN_MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Marie"),
+            Track("BUGBEARS", self.BUGBEARS, 14, 20, -2, False, 0, 9, requires_ready=False, allows_caster=False),
         ]
 
-        # self.tracks = [Track("Memory Spam", ["think", "memory_spam"], 0, 20, 9, has_cooldown=False)]
+        # self.tracks = [
+        #     Track("BUGBEARS", self.BUGBEARS, 14, 20, -1, False, 0, 9, requires_ready=False),
+        # ]
         # self.tracks = [Track("Granite Golem",self.GRANITE_GOLEM,18,20,0, has_cooldown=True, cooldown=8000, mob_name="granite golem", prime_cooldown=True),]
 
         # self.tracks = [Track("WAY_STATION_GLAMP", self.WAY_STATION_GLAMP, 10, 14, 0, False, is_glamping=True)]
