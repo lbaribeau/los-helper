@@ -35,22 +35,22 @@ Level 5 spells are not really in the game
 Wands/Items spell cast on use
 - white amulet/small flask/sticky salve == small heal
 - silver crucifix == bless
-- Adamantine rod/zinc/bronze == Burn
-- Silver Rod == Waterbolt
-- Metallic Rod == Steamblast
-- Red Rod == Fireball
-- Fiery Rod == Burstflame
-- Granite Rod == Crush
-- Grey rod == dustgust
-- Light Brown Crystal == engulf (t4 earth)
-- Glass Rod == invisibility
+- adamantine rod/zinc/bronze == Burn
+- silver rod == Waterbolt
+- metallic rod == Steamblast
+- red rod == Fireball
+- fiery rod == Burstflame
+- granite rod == Crush
+- grey rod == dustgust
+- light Brown Crystal == engulf (t4 earth)
+- glass rod == invisibility
 - wand of elemental wind - thunderbolt spell (low dmg)
-- Ruby Amulet == Word of recall (teleport to timeless halls)
-- Heathen Amulet == slow poison
-- Gold Hippogriff Feather == fly
-- Magic Carpet == levitate
-- Platinum Compass == detect magic
-- Glass Compass == track (teleport to the given player)
+- ruby amulet == Word of recall (teleport to timeless halls)
+- heathen amulet == slow poison
+- gold hippogriff feather == fly
+- magic carpet == levitate
+- platinum compass == detect magic
+- glass compass == track (teleport to the given player)
 - hollow reed == ??? (Thomas Ironheart trade for hippogriff egg)
 - shadowy glass == detect-invisible
 - crystal talisman == ??? (maybe summon? trades to Farside for crystal ring)

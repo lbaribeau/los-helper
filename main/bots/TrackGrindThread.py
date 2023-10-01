@@ -400,7 +400,8 @@ class TrackGrindThread(GrindThread):
          'north', 'north', 'gate', 'east', 'north', 'north', 'north', 'west', 'north', 'chapel'
          ]
 
-        self.MARTIN_MARIE = ['areaid11', 'try_arch', 'areaid4429', 'glamp', 'areaid4433', 'glamp']
+        self.MARTIN = ['areaid11', 'try_arch', 'areaid4429', 'glamp']
+        self.MARIE = ['areaid11', 'try_arch', 'areaid4433', 'glamp']
         self.ZOMBIES = ['areaid113', 'try_gate',
         'east', 'east']
         #McDermotts farm
@@ -773,7 +774,7 @@ class TrackGrindThread(GrindThread):
             Track("Aldo and Brotain", self.ALDO_BROTAIN, 11, 17, 1, requires_ready=True, target_kills=1),
             # Track("Halwyn Bugbears",) # has a pit which could cause issues
             # Track("Forge / weapon thieves",self.FORGE_THIEVES,14,20,-1),
-            Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 15, 20, -1, False, 0, 9, skip_if_ready=True, mob_name="swamp troll", allows_caster=False), # too aggressive and multiple spawn
+            Track("Minor swamp trolls", self.MINOR_SWAMP_TROLLS, 16, 20, -1, False, 0, 9, skip_if_ready=True, mob_name="swamp troll", allows_caster=False), # too aggressive and multiple spawn
             Track("Massive swamp troll", self.MASSIVE_SWAMP_TROLL, 15, 17, -1, requires_ready=True, target_kills=1, mob_name="massive swamp troll"),
             # Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9,has_cooldown=False),
             # Track("Barbarian shaman", self.BARBARIN_SHAMAN, 15, 20, 0), # some pretty big nuke spells, maybe not worth it
@@ -797,8 +798,8 @@ class TrackGrindThread(GrindThread):
             # Track("Egan", self.EGAN_TRENT, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Teamleader Egan"),
             # Track("REMISARA", self.REMISARA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Remisara"), # doesn't seem to have drops, causes flee
             # Track("Maya", self.MAYA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Maya"),
-            Track("MARTIN", self.MARTIN_MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Martin"),
-            Track("MARIE", self.MARTIN_MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Marie"),
+            Track("MARTIN", self.MARTIN, 14, 20, 0, True, requires_ready=False, mob_name="Martin"),
+            Track("MARIE", self.MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Marie"),
             Track("BUGBEARS", self.BUGBEARS, 14, 20, -2, False, 0, 9, requires_ready=False, allows_caster=False),
         ]
 
