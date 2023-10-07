@@ -211,9 +211,9 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'dwarven rum',
         # 'burnt ochre potion',
         'makeup kit', 'Dalla\'s blessing',
-        'diamantium cross', 'rare coin',
+        # 'diamantium cross', 'rare coin',
         # 'dragon claws',
-        'Aaashaaal\'s gift',
+        # 'Aaashaaal\'s gift',
         'silver flute',
         'ash wood key',
         'tiny silver key',
@@ -236,7 +236,7 @@ class Inventory(SimpleCommand, ReferencingList):
         # important potions / consumable items
         'Elixir of Morinva', 'granite potion', 'crystal vial', 'large granite potion', 'philtre of perception', 'philtre of health',
         'chequered vial', 'misty potion',
-        'orange potion', # levitate
+        # 'orange potion', # levitate
         'golden potion', #'platinum crucifix', # Helps disease? Worth a lot of money?
         # 'white potion', 'small restorative',
         'small flask', 'large restorative', 'scarlet potion',

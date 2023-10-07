@@ -825,15 +825,15 @@ class GrindThread(BotThread):
 
         # guard_count = 0
         for mob in m_list:
-            if (self.character.level < 16 and re.search('town guard', mob)) or \
+            if (self.character.level < 15 and re.search('town guard', mob)) or \
                 re.search('town crier', mob) or \
                re.search('clown', mob) or \
                re.search('Rancher Plover', mob) or \
                re.search('bouncer', mob):
                 return ''
             
-            if re.search('town guard', mob) and self.character.level < 14:
-                return ''
+            # if re.search('town guard', mob) and self.character.level < 14:
+            #     return ''
             # low level characters fight market officials - there is an edge case here where they'll end up attacking Alaran and die
             if self.character.level < 11:
                 if re.search('Alaran the Market Manager', mob):
