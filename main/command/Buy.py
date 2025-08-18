@@ -11,7 +11,8 @@ class Buy(Command):
         R.bought
     ]
     failure_regexes = [
-        R.cant_carry
+        R.cant_carry,
+        R.no_gold
     ]
     error_regexes = [
         R.buy_what, 
@@ -20,10 +21,14 @@ class Buy(Command):
     ]
     @property
     def cant_carry(self):
-        return self.result in RegexStore.cant_carry
+        return self.result in R.cant_carry
         # I'd like to have this sort of thing automated.  Would require cleaning up Command.py
         # It might be possible to automatically create a boolean for each regex in a command,
         # named the same as the regex.
+
+    @property
+    def no_gold(self):
+        return self.result in R.no_gold
 
     def __init__(self, telnetHandler, inventory):
         super().__init__(telnetHandler)

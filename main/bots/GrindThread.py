@@ -17,8 +17,8 @@ class GrindThread(BotThread):
     def __init__(self, character, command_handler, mudReaderHandler, mud_map):
         super().__init__(character, command_handler, mudReaderHandler, mud_map)
         self.bless_timer = BlessTimer(command_handler.use, self.inventory)
+        self.prot_timer  = ProtTimer(command_handler.use, self.inventory)
         self.mudReaderHandler.add_subscriber(self.bless_timer)
-        self.prot_timer = ProtTimer(command_handler.use, self.inventory)
         self.mudReaderHandler.add_subscriber(self.prot_timer)
         self.loot_threshold = 1  # the amount of loot to collect before selling
 

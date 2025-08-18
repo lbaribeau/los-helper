@@ -5,6 +5,7 @@ from combat.mob_target_determinator import MobTargetDeterminator
 from db.AreaStoreItem import AreaStoreItem
 from mini_bots.travel_bot import TravelBot
 from mini_bots.sell_bot import SellBot
+from misc_functions import magentaprint
 
 class ShoppingBot(MiniBot):
     def __init__(self, char, command_handler, mud_map):
@@ -15,6 +16,7 @@ class ShoppingBot(MiniBot):
         self.sell_bot = SellBot(self.char.inventory, self.command_handler.sell, self.command_handler.drop)
 
     def stop(self):
+        super().stop()
         self.travel_bot.stop()
 
     def go_buy(self, asi):
@@ -29,40 +31,57 @@ class ShoppingBot(MiniBot):
         return self.buy_with_ref(asi, self.choose_reference(asi))
 
     def buy_with_ref(self, asi, ref):
+        self.stopping = False
         self.command_handler.buy.execute_and_wait(ref)
         if self.command_handler.buy.success:
             self.char.inventory.add(asi.item.name) # It's a bit hard for buy to do this part
             return True
         else:
-            # Ok go sell stuff then
-            self.travel_bot.go_to_nearest_pawn_shop()
-            self.sell_bot.sell_stuff()
-            self.travel_bot.go_to_nearest_tip()
-            self.sell_bot.drop_stuff()
-            self.travel_bot.go_to_area(asi.area.id)
-            self.command_handler.buy.execute_and_wait(ref)
-            if self.command_handler.buy.success:
-                self.char.inventory.add(asi.item.name)
-                return True
+            if self.command_handler.buy.no_gold:
+                magentaprint("ShoppingBot saw no_gold.")
+                raise
             else:
-                self.sell_bot.bulk_drop('scarlet')
-                self.sell_bot.bulk_drop('flask')
-                if self.char.inventory.has('steel bottle'):
-                    # self.command_handler.telnetHandler.write('drin ' + self.char.inventory.get_reference('steel bottle'))
-                    # self.command_handler.use.command = 'drin'
-                    # self.command_handler.use.execute_and_wait(self.char.inventory.get_reference('steel bottle'))
-                    # self.command_handler.use.command = 'use'
-                    self.command_handler.drink.execute_and_wait(self.char.inventory.get_reference('steel bottle'))
-                self.sell_bot.bulk_drop('bottle') # Hopefully no valuable "bottles"
-                # Otherwise, write bulk drop that takes full item name
-                self.command_handler.buy.execute_and_wait(ref) # ref is a reference to a shop item so it doesn't depend on inventory
-                # We might have too many weapons, that can happen right now
-                self.command_handler.telnetHandler.write('get all')
+                # Ok go sell stuff then (assumes overburdened)
+                if self.stopping:
+                    return
+                self.travel_bot.go_to_nearest_pawn_shop()
+                if self.stopping:
+                    return
+                self.sell_bot.sell_stuff()
+                if self.stopping:
+                    return
+                self.travel_bot.go_to_nearest_tip()
+                if self.stopping:
+                    return
+                self.sell_bot.drop_stuff()
+                if self.stopping:
+                    return
+                self.travel_bot.go_to_area(asi.area.id)
+                if self.stopping:
+                    return
+                self.command_handler.buy.execute_and_wait(ref)
                 if self.command_handler.buy.success:
                     self.char.inventory.add(asi.item.name)
                     return True
                 else:
-                    raise
+                    self.sell_bot.bulk_drop('scarlet')
+                    self.sell_bot.bulk_drop('flask')
+                    if self.char.inventory.has('steel bottle'):
+                        # self.command_handler.telnetHandler.write('drin ' + self.char.inventory.get_reference('steel bottle'))
+                        # self.command_handler.use.command = 'drin'
+                        # self.command_handler.use.execute_and_wait(self.char.inventory.get_reference('steel bottle'))
+                        # self.command_handler.use.command = 'use'
+                        self.command_handler.drink.execute_and_wait(self.char.inventory.get_reference('steel bottle'))
+                    self.sell_bot.bulk_drop('bottle') # Hopefully no valuable "bottles"
+                    # Otherwise, write bulk drop that takes full item name
+                    self.command_handler.buy.execute_and_wait(ref) # ref is a reference to a shop item so it doesn't depend on inventory
+                    # We might have too many weapons, that can happen right now
+                    self.command_handler.telnetHandler.write('get all')
+                    if self.command_handler.buy.success:
+                        self.char.inventory.add(asi.item.name)
+                        return True
+                    else:
+                        raise
 
     def choose_reference(self, asi):
         # i = str(asi)

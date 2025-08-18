@@ -193,6 +193,7 @@ class Cartography(BotReactionWithFlag):
 
         if C.TRYING_TO_MOVE:
             # I think TRYING_TO_MOVE prevents multiple saves of the area
+            # Yes, and ensures that variables related to the 'from' area are present
             #if C.EXIT_LIST is not []: 
             # Ehhh this was always true! ('is' tests for same object)
             # I don't think the regex will match without an exit list.
@@ -206,6 +207,8 @@ class Cartography(BotReactionWithFlag):
                     C.LAST_DIRECTION, 
                     C.MUD_AREA
                 )
+                # Maybe we can handle two kinds of descriptions.... hmmmm
+                # Can MudArea.map handle that?
                 magentaprint("Cartography area match: " + str(C.MUD_AREA.area))
                 #magentaprint("Try [m for m in C.mobs.list.list] " + str([m for m in C.mobs.list.list]))
                 #magentaprint("Try [str(m).lower() for m in C.mobs.list.list]" + str([str(m).lower() for m in C.mobs.list.list]))
@@ -300,9 +303,11 @@ class Cartography(BotReactionWithFlag):
 
         if self.character.ACTIVELY_MAPPING:
             try:
-                area_from = self.character.AREA_ID
-                exit_type = self.character.LAST_DIRECTION
-                MudArea.set_area_exit_as_unusable(regex, area_from, exit_type)
+                MudArea.set_area_exit_as_unusable(
+                    regex, 
+                    self.character.AREA_ID, 
+                    self.character.LAST_DIRECTION
+                )
             except Exception:
                 magentaprint("Tried to make an area exit unusuable but failed")
 
@@ -323,7 +328,7 @@ class Cartography(BotReactionWithFlag):
 
                 magentaprint("Cartography catalog_monsters() mob_location id {0}, {1}".format(mob_location, mob.name))
         except Exception:
-            magentaprint("Problem cataloging monsters", False)
+            magentaprint("Problem cataloguing monsters", False)
 
     def catalog_monster_bio(self, name, description, level):
         try:
@@ -343,7 +348,7 @@ class Cartography(BotReactionWithFlag):
 
                 mob.save()
         except Exception:
-            magentaprint("Problem cataloging monster bio")
+            magentaprint("Problem cataloguing monster bio")
 
     def catalog_monster_aura(self, name, aura):
         if aura not in Aura.auras:
@@ -360,7 +365,7 @@ class Cartography(BotReactionWithFlag):
         mob.map()
 
         if not mob.blocks_exit:
-            magentaprint("Cartography catalogged new path blocker", False)
+            magentaprint("Cartography catalogued new path blocker", False)
             mob.blocks_exit = True
             mob.save()
 
@@ -369,7 +374,7 @@ class Cartography(BotReactionWithFlag):
         mob.map()
 
         if not mob.blocks_pickup:
-            magentaprint("Cartography catalogged new loot blocker", False)
+            magentaprint("Cartography catalogued new loot blocker", False)
             mob.blocks_pickup = True
             mob.save()
 

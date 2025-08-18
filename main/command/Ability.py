@@ -95,11 +95,13 @@ class SlowCombatAbility(CombatAbility):
     #     super().notify(r, m)
 
     def execute(self, target=None):
-        Kill.start_timer() # TODO: ABILITIES NEED the kill object for this
+        # Kill.start_timer() # TODO: ABILITIES NEED the kill object for this
+        # Try ASSUMING it's ready???! 
         super().execute(target)
         # self.character.ATTACK_CLK = time()
         # Hmmm.... do abilities need to be constructed with a cooldowns object?
         # How about botThread takes care of that...
+        # HACK FIX (idea) write combat algorithm to attack first circle 2nd every time
 
 # Hint: the 'time' command in game tells you how much time is left on your buff
 # Although I don't think I will use the 'lasts' variable.

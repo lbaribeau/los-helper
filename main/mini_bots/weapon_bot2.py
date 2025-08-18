@@ -100,7 +100,7 @@ class MainhandWeaponBot(MiniBot):
         if match.group('weapon').endswith('in your off hand'):
             pass
         else:
-            self.weapon = match.group('weapon')
+            self.weapon = match.group('weapon') # 'self.weapon' gets checked with 'hasattr' to see if we are weilding
 
     def react_to_weapon_break(self, match):
         # if hasattr(self, 'weapon') and self.weapon == match.group('weapon'):
@@ -155,8 +155,8 @@ class MainhandWeaponBot(MiniBot):
         return self.has_broken_weapon_in_inventory() and not self.has_unbroken_weapon_in_inventory()
 
     def check_weapons(self):
-        self.get_possible_weapons()
-        self.look_at_each_possible_weapon()
+        self.get_possible_weapons() # Sets self.possible_weapons by checking DB
+        self.look_at_each_possible_weapon() # Looks at weapons in inventory to update if they are broken
         if self.possible_weapons[0].item.name not in self.inventory.keep_list:
             self.inventory.keep_list.append(self.possible_weapons[0].item.name)
             magentaprint("Weapon bot added {0} to inventory keep list, {1}".format(self.possible_weapons[0].item.name, self.possible_weapons[0].item.name in self.inventory.keep_list))
@@ -221,7 +221,10 @@ class MainhandWeaponBot(MiniBot):
                     raise
             else:
                 self.go_buy_default_weapon()
-                self.check_weapons() # Wield, buy secondary
+                # Have to be able to stop as there is travel here
+                # I think this check is necessary or we won't stop?
+                if not self.stopping:
+                    self.check_weapons() # Wield, buy secondary
         else:
             # So we are wealding a weapon here and need to make sure we have one in the bag as well
             if self.has_usable_weapon_in_inventory():
@@ -253,6 +256,7 @@ class MainhandWeaponBot(MiniBot):
                     raise
                     # This could be a db error
             else:
+
                 return self.go_buy_default_weapon()
 
         # if self.needs_weapon():
@@ -271,6 +275,12 @@ class MainhandWeaponBot(MiniBot):
         # if self.possible_weapons[0] not in self.shopping_bot.keep_list:
         #     self.shopping_bot.keep_list.add(self.possible_weapons[0])
         # I think we want to alleviate inventory of the keep list
+
+        # Can we check if we can afford it?? seems like a good place to do that here
+        # Could do that in shopping bot too... do you put those checks up high or down low?
+        # Down low
+        # Do we want to stop if we can't get the weapon??? At level 1 not really but I think it's generally safer to stop if we can't.
+        # That is assuming the code is buggy... judgement call... let's just exit if we can't afford it...
 
         if self.shopping_bot.go_buy(self.possible_weapons[0]):
             return True
@@ -310,7 +320,85 @@ class MainhandWeaponBot(MiniBot):
             if not self.try_exact_replacement_from_inventory():
                 self.try_other_possible_weapons_in_inventory()
 
-    ###--- I don't think I use anything below (from weapon bot 1) ---###
+    def stop(self):
+        super().stop() # sets self.stopping
+        # if hasattr(self, 'smithy_bot'):
+        if hasattr(self, 'travel_bot'):
+            # self.smithy_bot.stop()
+            self.travel_bot.stop()
+            magentaprint("weaponbot2 Mainhandweaponbot STOP")
+            self.shopping_bot.stop()
+
+    def get_possible_weapons(self):
+        if self.possible_weapons:
+            # magentaprint("WeaponBot possible weapons: " + str([w.item.name for w in self.possible_weapons]))
+            return self.possible_weapons
+        elif not hasattr(self, 'travel_bot'):
+            magentaprint("WeaponBot: Warning: get_possible_weapons() was called before init_with_map.")
+            return None
+        else:
+            # self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max('weapon', self.character.weapon_type, self.character.weapon_level)
+            # self.possible_weapons = sorted(self.possible_weapons, key = lambda i: i.item.level, reverse=True)
+            # (For sorting, peewee can also do it with order_by(-Item.Level))
+            # Strict about level? Broc wants to only accept top level
+            # The bard needs to use a level 2 weapon...
+            specific_level_query = AreaStoreItem.get_by_item_type_and_level(
+                'weapon', 
+                self.character.info.weapon_type, 
+                self.character.info.weapon_level
+            )
+
+            if specific_level_query:
+                self.possible_weapons = specific_level_query
+            else:
+                self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max(
+                    'weapon', 
+                    self.character.info.weapon_type, 
+                    self.character.info.weapon_level
+                )
+
+            # Do by level, and if that's empty, then do level_max
+            # Since we prefer to only allow top level, but if there's no such areastoreitem, try level_max
+            # magentaprint("WeaponBot possible weapons: " + str(self.possible_weapons))
+            return self.possible_weapons
+
+            # level = self.character.weapon_level
+            # while not self.possible_weapons and level > 0:
+
+            #     areastoreitems = AreaStoreItem.get_by_item_type_and_level(model_name, data_name, level)
+            #     self.possible_weapons = list(MudItem.get_suitable_item_of_type('weapon', self.character.info.weapon_type, level).values())
+            #     areastoreitems = AreaStoreItem.get_by_item_type_and_level(model_name, data_name, level)
+
+            # while not self.possible_weapons and level > 0:
+            #     magentaprint("check_weapons() trying lower level weapons.")
+            #     self.possible_weapons = list(MudItem.get_suitable_item_of_type('weapon', self.character.info.weapon_type, level).values())
+            #     level = level - 1
+
+            # if not self.possible_weapons:
+            #     magentaprint("WeaponBot didn't come up with a default weapon!")
+
+            # return self.possible_weapons
+
+            # SELECT 
+            #     "t1"."id", 
+            #     "t1"."area_id", 
+            #     "t1"."item_id" 
+            # FROM "areastoreitem"  AS "t1" 
+            # INNER JOIN "item"     AS "t2" ON ("t1"."item_id"     = "t2"."id") 
+            # INNER JOIN "itemtype" AS "t3" ON ("t2"."itemtype_id" = "t3"."id") 
+            # WHERE (
+            #     ("t2"."level" = 2) AND (
+            #         ("t3"."model_id" = 1) AND 
+            #         ("t3"."data_id" = 2)
+            #     )
+            # )
+
+    ###################################################################--- I don't think I use anything below (from weapon bot 1) ---###
+    ###################################################################--- I don't think I use anything below (from weapon bot 1) ---###
+    ###################################################################--- I don't think I use anything below (from weapon bot 1) ---###
+    ###################################################################--- I don't think I use anything below (from weapon bot 1) ---###
+    ###################################################################--- I don't think I use anything below (from weapon bot 1) ---###
+    ###################################################################--- I don't think I use anything below (from weapon bot 1) ---###
 
     def repair_or_replace_weapon(self):
         self.command_handler.equipment.execute_and_wait()
@@ -639,13 +727,6 @@ class MainhandWeaponBot(MiniBot):
             weapon_word = self.weapon.split()[1] if len(self.weapon.split()) > 1 else self.weapon
             self.command_handler.telnetHandler.write('rm ' + weapon_word)  # If some equipped armour has the same word as a weapon, this will be a bug
 
-    def stop(self):
-        self.stopping = True
-        # if hasattr(self, 'smithy_bot'):
-        if hasattr(self, 'travel_bot'):
-            # self.smithy_bot.stop()
-            self.travel_bot.stop()
-            self.shopping_bot.stop()
 
     # def go_repair(self):
     #     if hasattr(self, 'broken_weapon'):
@@ -688,69 +769,7 @@ class MainhandWeaponBot(MiniBot):
     def try_reequipping_offhand(self, weapon_name):
         return self.try_rewielding_each_in_inventory(self.command_handler.smartCombat.wield.second, weapon_name)
 
-    def get_possible_weapons(self):
-        if self.possible_weapons:
-            # magentaprint("WeaponBot possible weapons: " + str([w.item.name for w in self.possible_weapons]))
-            return self.possible_weapons
-        elif not hasattr(self, 'travel_bot'):
-            magentaprint("WeaponBot: Warning: get_possible_weapons() was called before init_with_map.")
-            return None
-        else:
-            # self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max('weapon', self.character.weapon_type, self.character.weapon_level)
-            # self.possible_weapons = sorted(self.possible_weapons, key = lambda i: i.item.level, reverse=True)
-            # (For sorting, peewee can also do it with order_by(-Item.Level))
-            # Strict about level? Broc wants to only accept top level
-            # The bard needs to use a level 2 weapon...
-            specific_level_query = AreaStoreItem.get_by_item_type_and_level(
-                'weapon', 
-                self.character.info.weapon_type, 
-                self.character.info.weapon_level
-            )
-
-            if specific_level_query:
-                self.possible_weapons = specific_level_query
-            else:
-                self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max(
-                    'weapon', 
-                    self.character.info.weapon_type, 
-                    self.character.info.weapon_level
-                )
-
-            # Do by level, and if that's empty, then do level_max
-            # Since we prefer to only allow top level, but if there's no such areastoreitem, try level_max
-            # magentaprint("WeaponBot possible weapons: " + str(self.possible_weapons))
-            return self.possible_weapons
-
-            # level = self.character.weapon_level
-            # while not self.possible_weapons and level > 0:
-
-            #     areastoreitems = AreaStoreItem.get_by_item_type_and_level(model_name, data_name, level)
-            #     self.possible_weapons = list(MudItem.get_suitable_item_of_type('weapon', self.character.info.weapon_type, level).values())
-            #     areastoreitems = AreaStoreItem.get_by_item_type_and_level(model_name, data_name, level)
-
-            # while not self.possible_weapons and level > 0:
-            #     magentaprint("check_weapons() trying lower level weapons.")
-            #     self.possible_weapons = list(MudItem.get_suitable_item_of_type('weapon', self.character.info.weapon_type, level).values())
-            #     level = level - 1
-
-            # if not self.possible_weapons:
-            #     magentaprint("WeaponBot didn't come up with a default weapon!")
-
-            # return self.possible_weapons
-
-            # SELECT 
-            #     "t1"."id", 
-            #     "t1"."area_id", 
-            #     "t1"."item_id" 
-            # FROM "areastoreitem"  AS "t1" 
-            # INNER JOIN "item"     AS "t2" ON ("t1"."item_id"     = "t2"."id") 
-            # INNER JOIN "itemtype" AS "t3" ON ("t2"."itemtype_id" = "t3"."id") 
-            # WHERE (
-            #     ("t2"."level" = 2) AND (
-            #         ("t3"."model_id" = 1) AND 
-            #         ("t3"."data_id" = 2)
-            #     )
-            # )
+   
 
     # def get_smithy_path(self):
     #     try:

@@ -4,5 +4,6 @@
 # python -m unittest discover -s main test.test_mob_target_determinator.TestMobTargetDeterminator.test_silly
 #python -m unittest discover main test.test_mob_target_determinator.TestMobTargetDeterminator.test_silly
 #python -m unittest discover main test.test_mob_target_determinator.TestMobTargetDeterminator.on_mob_arrival_should_increment
-python3 -m unittest discover
+# python3 -m unittest discover
+python -m unittest discover . test.test_mobs.TestMobs.test_remove_floor_manager_from_attacking
 

@@ -19,17 +19,26 @@ class MudArea():
 
     @staticmethod
     def map(area_title, area_description, exit_list, area_from, direction_from, cur_mud_area):
-        direction_list = []
-        area = Area(name=str(area_title), description=str(area_description).replace("\n\r", ' '))
-        mud_area = None
+        area = Area(
+            name        = str(area_title), 
+            description = str(area_description).replace("\n\r", ' ')
+        )
+        # mud_area = None
         area_exits = None
+        direction_list = []
 
         for exit in exit_list:
             exit_type = ExitType(name=str(exit))
             exit_type.map()
             direction_list.append(exit_type)
 
-        discerned_area = MudArea.discern_location(area, direction_list, area_from, direction_from, cur_mud_area)
+        discerned_area = MudArea.discern_location(
+            area, 
+            direction_list, 
+            area_from, 
+            direction_from, 
+            cur_mud_area
+        )
 
         if discerned_area is not None:
             area = discerned_area.area
@@ -37,15 +46,11 @@ class MudArea():
             if area_from is not None and direction_from is not None: #if we have an area we're coming from
                 area_from = Area.get_area_by_id(area_from)
                 direction_from = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
-
                 # magentaprint("MudArea: " + str(area_from) + " " + str(direction_from))
-                
                 area.map(direction_list, area_from, direction_from)
             else:
                 area.map(direction_list)
-
             area_exits = AreaExit.get_area_exits_from_area(area)
-
         return MudArea(area, area_exits)
 
     @staticmethod

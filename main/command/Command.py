@@ -151,10 +151,10 @@ class Command(SimpleCommand):
             #magentaprint(str(self) + " clearing timer... wf is " + str(self.is_set()) + ', class wf is ' + str(self.__class__._waiter_flag) + 'regex is ' + regex[0:10] + '...')
             magentaprint(str(self) + " clearing timer... wf is " + str(self.is_set()) + 'regex is ' + regex[0:10] + '...')
             self.clear_timer()
-        elif self.please_wait1:
+        elif self.please_wait1: # Isn't self._executing needed? Gets checked 
             self.please_wait_time = int(M_obj.group(1))
             self.notify_please_wait()
-        elif self.please_wait2:
+        elif self.please_wait2: 
             self.please_wait_time = 60*int(M_obj.group(1)) + int(M_obj.group(2))
             self.notify_please_wait()
 
@@ -210,7 +210,7 @@ class Command(SimpleCommand):
             # if not self.__class__.timer or (self.__class__.timer and abs(self.please_wait_time - self.wait_time()) < 2):
             # if not self.__class__.timer or (self.__class__.timer and abs(self.please_wait_time - self.wait_time()) < 2):
             # timer gets set on execute() so we can assume it's set
-            if self.please_wait_time <= max(self.cooldown_after_success, self.cooldown_after_failure):
+            if self.please_wait_time <= max(self.cooldown_after_success, self.cooldown_after_failure) or self.__class__.__name__ == "Go":
             # If it's a big time it must be an ability - using the cooldown as a ceiling would help a little.
                 # self.result = 'Please wait ' + str(self.please_wait_time)
                 # self.result = self.please_wait1
@@ -222,6 +222,9 @@ class Command(SimpleCommand):
                 # If we were careful about when it gets unset (when super().notify() is called,) we could potentially use that trick
                 # Clipping with the cooldowns helps a bit.
                 magentaprint("Command {} set wait time to {}".format(self.__class__.__name__, round(self.wait_time(), 0)))
+
+            # Ok all of that broke when we died and Go had a 10 sec cooldown
+            # Added 'or self.__class__.__name__ == "Go"''... could put a long sleep on Go on false positive
 
     # @classmethod
     def clear_timer(self):

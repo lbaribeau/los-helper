@@ -38,27 +38,24 @@ class Area(NamedModel):
         is_new_mapping = self.search_for_area(mapped_exits)
 
         #if (cur_area_from is None):
-
         #elif (cur_area_from.name != self.name): #if the names are the same then this is a new area since we have moved
         #    is_new_mapping = self.search_for_area(mapped_exits)
 
-        if is_new_mapping: #this means the search has found the matching area and our Area.ID is set
+        if is_new_mapping: # this means the search has found the matching area and our Area.ID is set
             super().save()  # Db can be locked if this happens immediately...
 
             #now we map our area exits
             for exit in mapped_exits:
                 #magentaprint("exit " + str(exit.to_string()), False)
                 area_exit = AreaExit(area_from=self.id, area_to=None, exit_type=exit)
-
                 '''if (exit_from.opposite is None):
                     if (exit.id == exit_from.opposite.id):
                         area_exit.map(area_from, exit_from)
                     else:'''
-
                 area_exit.map()
                 is_new_exit_mapping = True
 
-        #last but not least we want to try to update our area_from with it's area_to value :)
+        #last but not least we want to try to update our area_from with its area_to value :)
         if cur_area_from is not None and cur_exit_from is not None:
             area_exit_from = AreaExit.get_area_exit_by_area_from_and_exit_type(cur_area_from, cur_exit_from)
             if (area_exit_from is not None):

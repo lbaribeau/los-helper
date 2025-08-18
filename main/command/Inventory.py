@@ -386,6 +386,9 @@ class Inventory(SimpleCommand, ReferencingList):
 
         #             self.equipped_items[slot[0]].append(MudItem(slot[1]))
         #     # magentaprint(self.equipped_items,False)
+        elif regex in R.no_inventory:
+            magentaprint("Inventory R.no_inventory (2025)")
+            self.set_inventory("")
         else:
             magentaprint("Inventory uncaught notify")
             # "use all": "You have nothing you can wear."
@@ -707,6 +710,7 @@ class Inventory(SimpleCommand, ReferencingList):
         else:
             magentaprint("Inventory.set_inventory didn't overwrite self.list, lengths: %s, %s." % (len(l), len(self.list)))
             self.sellable_assuming_correctness()
+        magentaprint("Inventory self.list: {0}".format(self.list))
 
     def compare_lists(self, l1, l2):
         if len(l1) != len(l2):
