@@ -6,51 +6,54 @@ import time
 import re
 import sys
 
+#print("MudReaderHandler etc"); from comm.MudReaderHandler     import MudReaderHandler
+
 import misc_functions
 from misc_functions import magentaprint
-from db.Database import *
-from db.MudMap import MudMap
-import comm.Spells
-from combat.SmartCombat         import SmartCombat
-from command.Go                 import Go
-from comm                       import RegexStore
-from bots.TrackGrindThread      import TrackGrindThread
-from bots.SmartGrindThread      import SmartGrindThread
-from bots.CrawlThread           import CrawlThread
-from bots.SmartCrawlThread      import SmartCrawlThread
-from bots.GotoThread            import GotoThread
-from bots.MixThread             import MixThread
-from bots.SlaveThread           import SlaveThread
-from bots.TopDownGrind          import TopDownGrind
-from command.Quit               import Quit
-from command.Command            import Command
-from reactions.CombatReactions  import CombatReactions
-from combat.Kill                import Kill
-from combat.Cast                import Cast
-from command.Wield              import Wield
-from command.Wield              import Second
-from command.Buy                import Buy
-from command.Get                import Get
-from comm.thread_maker          import ThreadMaker
-from command.repair             import Repair
-from command.wear               import Wear
-from mini_bots.armour_bot       import ArmourBot
-from command.equipment          import Equipment
-from mini_bots.smithy_bot       import SmithyBot
-# from mini_bots.weapon_bot     import WeaponBot
-from mini_bots.weapon_bot2      import MainhandWeaponBot
-# from mini_bots.simple_weapon_bot import SimpleWeaponBot
-from mini_bots.travel_bot       import TravelBot
-from reactions.referencing_list import ReferencingList
-from mini_bots.sell_bot         import SellBot
-from command.CommandThatRemovesFromInventory import Sell, Drop, Drink, Use
-from command.potion_thread import PotionThreadHandler, Consume
-from command.look          import Look
-from reactions.prompt      import Prompt
-from comm.analyser         import Analyser
-from command.Info          import Info
-from db.Database import AreaStoreItem
-from plotter import Plotter
+magentaprint("... db.Database (*) (all)"); from db.Database import *
+magentaprint("... db.MudMap");             from db.MudMap import MudMap
+magentaprint("... Spells...");             import comm.Spells
+magentaprint("... SmartCombat...");        from combat.SmartCombat         import SmartCombat
+magentaprint("... Go...");                 from command.Go                 import Go
+# magentaprint("... RegexStore...");         from comm                       import RegexStore
+magentaprint("... TrackGrindThread...");   from bots.TrackGrindThread      import TrackGrindThread
+magentaprint("... SmartGrindThread...");   from bots.SmartGrindThread      import SmartGrindThread
+magentaprint("... CrawlThread...");        from bots.CrawlThread           import CrawlThread
+magentaprint("... SmartCrawlThread...");   from bots.SmartCrawlThread      import SmartCrawlThread
+magentaprint("... GotoThread...");         from bots.GotoThread            import GotoThread
+magentaprint("... MixThread...");          from bots.MixThread             import MixThread
+magentaprint("... SlaveThread...");        from bots.SlaveThread           import SlaveThread
+magentaprint("... TopDownGrind...");       from bots.TopDownGrind          import TopDownGrind
+magentaprint("... Quit...");               from command.Quit               import Quit
+magentaprint("... Command...");            from command.Command            import Command
+magentaprint("... CombatReactions...");    from reactions.CombatReactions  import CombatReactions
+magentaprint("... Kill...");               from combat.Kill                import Kill
+magentaprint("... Cast...");               from combat.Cast                import Cast
+magentaprint("... Wield...");              from command.Wield              import Wield
+magentaprint("... Second...");             from command.Wield              import Second
+magentaprint("... Buy...");                from command.Buy                import Buy
+magentaprint("... Get...");                from command.Get                import Get
+magentaprint("... ThreadMaker...");        from comm.thread_maker          import ThreadMaker
+magentaprint("... Repair...");             from command.repair             import Repair
+magentaprint("... Wear...");               from command.wear               import Wear
+magentaprint("... ArmourBot...");          from mini_bots.armour_bot       import ArmourBot
+magentaprint("... Equipment...");          from command.equipment          import Equipment
+magentaprint("... SmithyBot...");          from mini_bots.smithy_bot       import SmithyBot
+#magentaprint("... WeaponBot...");         # from mini_bots.weapon_bot     import WeaponBot
+magentaprint("... MainhandWeaponBot...");  from mini_bots.weapon_bot2      import MainhandWeaponBot
+# magentaprint("... SimpleWeaponBot...");  # from mini_bots.simple_weapon_bot import SimpleWeaponBot
+magentaprint("... TravelBot...");          from mini_bots.travel_bot       import TravelBot
+magentaprint("... ReferencingList...");    from reactions.referencing_list import ReferencingList
+magentaprint("... SellBot...");            from mini_bots.sell_bot         import SellBot
+magentaprint("... CommandThatRemovesFromInventory (Sell, Drop, Drink, Use)...");        from command.CommandThatRemovesFromInventory import Sell, Drop, Drink, Use
+magentaprint("... PotionThreadHandler, Consume...");        from command.potion_thread  import PotionThreadHandler, Consume
+magentaprint("... Look...");               from command.look               import Look
+magentaprint("... Prompt...");             from reactions.prompt           import Prompt
+magentaprint("... Analyser...");           from comm.analyser              import Analyser
+magentaprint("... Info...");               from command.Info               import Info
+magentaprint("... AreaStoreItem...");      from db.Database                import AreaStoreItem
+magentaprint("... Plotter...");            from plotter                    import Plotter
+magentaprint("... Done command_handler.py import section, now defining classes")
 
 class CommandHandler(object):
     def init_map_and_bots(self):
@@ -1002,18 +1005,20 @@ class CommandHandler(object):
     def print_experience(self):
         x = self.character.EXPERIENCE # Accumulated this session (initialized to zero, matches "You gain...")
         t = misc_functions.get_runtime_seconds()
-        magentaprint("Started: " + str(misc_functions.startTime))
-        magentaprint("Uptime: " + misc_functions.get_runtime_string())
-        magentaprint("Experience this session: " + str(x))
-        magentaprint("Exp rate: {} exp/hr; {} exp/min.".format(round(x/t*3600), round(x/t*60)))
+        magentaprint("Start time: " + str(misc_functions.startTime))
+        magentaprint("Uptime:     " + misc_functions.get_runtime_string())
+        magentaprint("Exp rate: {} /hr".format(round(x/t*3600)))
+        magentaprint("Exp rate: {} /min".format(round(round(x/t*60))))
+        magentaprint("Total this session: " + str(x))
         # g = self.character.GOLD # Ok this is all the current gold, so it won't give us gold rate
         # magentaprint("Gold delta: ")
         # magentaprint("Gold rate: {} gold/hr; {} gold/min; {} gold/s.".format(round(x/t/3600), round(x/t/60), round(x/t)))
         # magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
         #magentaprint(str(exp), False)
         gold = self.character.GOLD-self.character.START_GOLD
-        magentaprint("Gold this session: {} ".format(gold))
-        magentaprint("Gold rate: {} g/hr; {} g/min".format(round(gold/t*3600), round(gold/t*60)))
+        magentaprint("Gold rate: {} /hr".format(round(gold/t*3600)))
+        magentaprint("Gold rate: {} /min".format(round(gold/t*60)))
+        magentaprint("Total this session: {} ".format(gold))
 
     def print_gold(self):
         gold = self.inventory.GOLD-self.character.START_GOLD

@@ -3,14 +3,14 @@ import re
 import pdb
 from math import floor, ceil
 
-from bots.BotThread import BotThread
-from misc_functions import magentaprint
-from reactions.BotReactions import GenericBotReaction
-from reactions.ring_reaction import RingWearingReaction
+from bots.BotThread           import BotThread
+from misc_functions           import magentaprint
+from reactions.BotReactions   import GenericBotReaction
+from reactions.ring_reaction  import RingWearingReaction
 from Exceptions import *
-from comm import Spells
-from db.MudItem import MudItem
-from db.Mob import Mob
+from comm                     import Spells
+from db.MudItem               import MudItem
+from db.Mob                   import Mob
 from mini_bots.bless_and_prot import BlessTimer, ProtTimer
 
 class GrindThread(BotThread):
@@ -21,6 +21,7 @@ class GrindThread(BotThread):
         self.mudReaderHandler.add_subscriber(self.bless_timer)
         self.mudReaderHandler.add_subscriber(self.prot_timer)
         self.loot_threshold = 1  # the amount of loot to collect before selling
+        self.fled=False
 
     def do_run_startup(self):
         pass
@@ -153,8 +154,17 @@ class GrindThread(BotThread):
             self.heal_up()
 
     def do_on_successful_go(self):
-        super().do_on_successful_go()
-
+        super().do_on_successful_go() # function doesn't exists because of a typo... but, super().do_on_succesful_go() gets called by BotThread.run
+        #So, let's fix the typo
+        if self.fled:
+            # wait see if we get attacked
+            mobs=self.character.mobs
+            mobs.clear()
+            mobs.expect_flee_attack=True
+            mobs.wait_for_flag(timeout=3)  # Here we wait for the mob to attack to know we are being attacked
+            # Ok now mobs will know if we got attacked... I believe that engage_any_attacking_mobs will happen
+            # TODO: Would be faster to LOOK at each mob to see if one is aggroed
+            self.fled=False
 
     def do_regular_actions(self):
         # This is regular_actions hook is actually in a funny spot (maybe)
@@ -458,6 +468,22 @@ class GrindThread(BotThread):
                 self.command_handler.process("rest")
             self.sleep(0.1)
 
+        # Ok well the area regex has its problems, like, seeing "You stop resting." if you just go at this point
+        # So let's hack away
+        # How can we clear, you stop resting?
+        # Send an enter, and wait for prompt
+        # Not the following, the following reset will set area id wrong
+        # self.character.TRYING_TO_MOVE=True
+        # go = self.command_handler.go
+        # go.clear()
+        # go.cartography.clear() # Ok we are "simulating" a "go" pretty well here... both of them should get 
+        # self.command_handler.process("l")
+        # go.wait_for_flag() # waits for cartography??? DOESN"T?!!! Ehrm how about we wait for both... with waits that will return immediately if late...
+        self.command_handler.prompt.clear()
+        self.command_handler.process('')
+        self.command_handler.prompt.wait()
+
+
     @property
     def neither_is_maxed(self):
         return self.character.HEALTH < self.character.maxHP and self.character.MANA < self.character.maxMP
@@ -734,7 +760,42 @@ class GrindThread(BotThread):
     def check_armour(self):
         if self.stopping:
             return
-        self.command_handler.armour_bot.suit_up()
+
+        possible_weapon_asi = self.command_handler.weapon_bot.possible_weapons[0]
+        gold = self.character.GOLD
+
+        if possible_weapon_asi.item.value:
+            pass
+        else:
+            magentaprint("Warning: Database should really have 'value' (cost) assigned for " + asi.item.name)
+            # Continuing because we don't need to exit right away, we could fail later if we can't afford a weapon repair or something
+
+        # Well it'd be nice to go into "suit_up" and skip on a case-by-case basis and know the shopping list...
+        # Maybe we could get it...
+        # We also want that cost so we don't overspend and break our weapons
+        # Well the safe way is to use the most expensive thing in "determine_shopping list"
+        # Doesn't armour bot have this access??
+        # I guess it needs it
+        # Everything needs to keep minimum money, which may as well be, weapon cost * 2
+
+        # armour_list = self.command_handler.armour_bot.determine_shopping_list
+
+        # if gold < 2*possible_weapon_asi.item.value + :
+        #     magentaprint("GrindThread.check_armour() skipping armour bot as need to have enough gold for a weapon")
+        #     return asi.item.value > self.command_handler.character.GOLD
+        # else:
+        # magentaprint("Warning: Database should really have 'value' (cost) assigned for " + asi.item.name)
+        # return asi.get_cost() > self.command_handler.character.GOLD
+
+        # if W.shopping_bot.cant_afford(W.possible_weapons[0]):
+            # This logic makes sure 
+
+        # if self.command_handler.weapon_bot.cant_afford: 
+        if gold < 2*possible_weapon_asi.item.value:
+            return
+        else:
+            self.command_handler.armour_bot.suit_up() # Armour bot is checking gold now on a case-by-case basis
+
 
     def stop(self):
         super().stop()
@@ -995,6 +1056,8 @@ class GrindThread(BotThread):
         else:
             SC.spell = SC.favourite_spell
 
+        note_current_location = self.character.AREA_ID
+
         SC.run() # we recently got rid of waits, maybe that's why SC exits
         # What about flee... can we rest after a flee maybe, or quit...
         # Do lowest risk at this point, right... or do we want to rest
@@ -1002,6 +1065,44 @@ class GrindThread(BotThread):
         # Ok it might not BE in the list (we chase, we call engage monster on the target we assume is there...)
         # Here is a good place to check smartCombat.fleeing... smartCombat.escape is blocking call with a bit of a sleep
         # Ok this really is the place to add some smarts
+
+        if SC.fleeing:
+            # Ok maybe I shouldn't use that variable but whatev
+            # This means, we just fled
+            # Smart combat did some waiting so cartography shouldn't have been notified
+            # This is a bit improper, unless we wait for cartography to match the flee
+
+            # location2 = self.character.AREA_ID # Except cartography wasn't activated
+
+            # So smartCombat has to set TRYING TO MOVE
+            # So Cartogrphy will update AREA ID
+            # Unless we make it do so anyway
+            # Ok that got set in smartCombat now (character.TRYING_TO_MOVE=True)
+
+            # self.character.TRYING_TO_MOVE=False
+
+            #SC.fleeing=False # Will get reset on init() when someone starts smart combat up again
+
+            # Instead what you do is... do a look right here (problem was "You run like a chicken!"" was getting matched in "area" and making a new entry)
+            self.character.TRYING_TO_MOVE=True
+            go = self.command_handler.go
+            go.clear()
+            go.cartography.clear() # Ok we are "simulating" a "go" pretty well here... both of them should get 
+            self.command_handler.process("l")
+            go.wait_for_flag() # waits for cartography??? DOESN"T?!!! Ehrm how about we wait for both... with waits that will return immediately if late...
+
+            # go.cartography.wait_for_flag() # Correct, you do not need this because "go" calls it, BUT, we were missing cartography.clear()
+
+            # Ehrm his is really trackgrind code(?) Maybe it'll work anyway
+            self.direction_list = self.mud_map.get_path(self.character.AREA_ID, note_current_location) + self.direction_list
+            # Ok skipping the Try Except on that mud_map call...
+            self.rest_until_ready()
+            # PERFECT
+            # Ok there was some JANK
+            # "You run like a chicken" gets matched by cartography... so, do a look instead
+            # ok need to create fled mob True
+            self.fled=True
+
         # Here we are initiating a chase... it'd be nice to prioritize that over starting a new fight
         # Also need to support... if we get blocked I believe
         # We could end up with two chases then if we are getting blocked
@@ -1096,7 +1197,7 @@ class GrindThread(BotThread):
 
         # if C.mobs.attacking == []:
         #     self.get_items_if_weapon()
-        if not C.mobs.chase and not SC.error:
+        if not C.mobs.chase and not SC.error and not SC.fleeing:
             self.get_items_if_weapon()
 
     # def do_flee_hook(self):
@@ -1215,3 +1316,69 @@ class GrindThread(BotThread):
         # self.command_handler.wear.ring_wearing_reaction = rwr # Well we decided not to do it this way
         self.mudReaderHandler.register_reaction(rwr)
         #Todo: fix for case where there's ring mail in the inventory or multiple rings are dropped
+
+    def check_experience(self):
+        # Alrighty so the idea here is to go train
+        # TrackGrindThread calls this in pre_go_actions
+        return # (Not finished)
+        if self.can_go_train():
+            self.go_train()
+
+        # Better refresh "info" if we level
+        # Also mob kill lists...
+        # Do we even want it to train
+        # Yeah it's inconvenient
+        # It should also level down though if we die?
+        # It stops if we die... it's not supposed to die anyway
+        # Maybe just don't update level and keep grinding the same stuff
+
+    def can_go_train(self):
+        character = self.character
+        info = character.info
+
+        return \
+            character.EXPERIENCE > info.exp_to_level and \
+            character.GOLD > info.gold_to_level + 2*self.command_handler.weapon_bot.possible_weapons[0].item.value and \
+            info.level 
+
+    def supported_training(self):
+        # This will be a lookup by class and level
+        # Starting with supported_training()['barbarian'][1]
+        # x = dict()
+        # x.add('barbarian', )
+        return {\
+            "Ass": [],\
+            "Bar": [1],\
+            "Cle": [],\
+            "Fig": [],\
+            "Brd": [],\
+            "Mag": [],\
+            "Pal": [],\
+            "Ran": [],\
+            "Thi": [],\
+            "Mon": [],\
+            "Dru": [],\
+            "Alc": [],\
+            "Dar": []\
+        }
+        # Might be better to check inside an actual resource rather than having parallel information
+
+
+    def go_train(self):
+        pass
+
+character_class_lookup = {
+    "assassin":     "Ass",\
+    "barbarian":    "Bar",\
+    "cleric":       "Cle",\
+    "fighter":      "Fig",\
+    "bard":         "Brd",\
+    "mage":         "Mag",\
+    "paladin":      "Pal",\
+    "ranger":       "Ran",\
+    "thief":        "Thi",\
+    "monk":         "Mon",\
+    "druid":        "Dru",\
+    "alchemist":    "Alc",\
+    "dark knight":  "Dar" \
+}

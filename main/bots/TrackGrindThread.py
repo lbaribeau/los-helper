@@ -309,7 +309,12 @@ class TrackGrindThread(GrindThread):
             self.rest_and_check_aura()
             self.check_weapons()
             self.check_armour()
+            self.check_experience()
 
+            # Ok this is dubious, we check in_chapel above... 
+            # I guess we are catching a mistake... it THINKs (assumes) it's in the chapel, but isn't
+            # So we correct it here
+            # This does happen, so, in_chapel() doesn't work (legacy assumption that the loop always runs from chapel)
             if self.character.AREA_ID != 2:
                 self.direction_list.insert(0,'areaid2') # Check weapons can stop in the shop, then try to go on a tip path, get to the end of the path, then it notices after
 

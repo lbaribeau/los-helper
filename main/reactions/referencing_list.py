@@ -181,7 +181,8 @@ class ReferencingList(object):
             # magentaprint("Inventory list: " + str(self.list))
             # magentaprint("Inventory.get() returning " + str(self.list[i]))
             #magentaprint("ReferencingList.get() ref/index/str(item): " + str(ref) + '/' + str(i) + '/' + str(self.list[i]))
-            magentaprint('ReferencingList.get({0}) got {1} returning {2}'.format(ref, i,self.list[i]))
+            # magentaprint('ReferencingList.get({0}) got {1} returning {2}'.format(ref, i,self.list[i]))
+            # Ok that's a great print but the bot is checking its inventory too often now
             return self.list[i]
 
     def get_usable_object_of_type(self, model, data, level=-1):
@@ -277,6 +278,10 @@ class ReferencingList(object):
         # There would be less code if I didn't treat '1' specially (I prefer 'potion' not 'potion 1' for the 1st potion)
         # I added splitting off "'" since "repair Dalla's" gets "You don't have that"
         # I don't want to mess up == comparisons though
+    def get_last_reference_with_print(self, item_name, first_or_second_word=1):
+        x=self.get_last_reference(item_name, first_or_second_word)
+        magentaprint("reactions/referencing_list.py get_last_reference returning " + str(x))
+        return x
 
     def get_all_references(self, item_name, first_or_second_word=1):
         # You have many of an item and want a reference for each

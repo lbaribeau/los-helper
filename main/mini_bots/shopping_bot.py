@@ -19,15 +19,37 @@ class ShoppingBot(MiniBot):
         super().stop()
         self.travel_bot.stop()
 
+    def cant_afford(self, asi):
+        # Item.get_item_by_name(asi.item
+        if asi.item.value:
+            return asi.item.value > self.command_handler.character.GOLD
+        else:
+            magentaprint("Warning: Database should really have 'value' (cost) assigned for " + asi.item.name)
+        # return asi.get_cost() > self.command_handler.character.GOLD
+
     def go_buy(self, asi):
         self.stopping = False
+        magentaprint("ShoppingBot starting Travel bot to buy " + str(asi.item.name))
+        # Let's put a check in here right???? If can't afford... ohhhh crappp only the bot knows that!!! That's executive...
+        # No we ARE a bot we have command handler
+        magentaprint(asi.item.value)
+        # Oooofff a bunch of debugging because DBeaver was showing me the wrong database... "value" hadn't written
+        if self.cant_afford(asi):
+            magentaprint("Can't afford " + str(asi.item.name))
+            return False
+
         self.travel_bot.go_to_area(asi.area.id)
+
         if self.stopping:
             return
         else:
-            return self.buy_from_shop(asi)
+            success = self.buy_from_shop(asi)
+            if success and asi.item.value:
+                self.command_handler.character.GOLD -= asi.item.value
+            return success
 
     def buy_from_shop(self, asi):
+        # Alright well we check here too... because armour bot is doing its own traveling... 
         return self.buy_with_ref(asi, self.choose_reference(asi))
 
     def buy_with_ref(self, asi, ref):

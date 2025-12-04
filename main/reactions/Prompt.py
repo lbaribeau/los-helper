@@ -46,3 +46,10 @@ class Prompt(threading.Event):
         
     def mp_delta(self):
         return self.mp - self.prev_mp
+
+    # def wait(self, *args, **kwargs):
+    def wait(self):
+        magentaprint("Prompt.wait called (wait for prompt)")
+        # return super().wait(*args, **kwargs)
+        return super().wait()
+

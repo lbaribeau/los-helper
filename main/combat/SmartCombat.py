@@ -229,6 +229,34 @@ class SmartCombat(CombatObject):
         else:
             self.target = None
 
+    def berserking(self):
+        if hasattr(self, "berserk_ability"):
+            return self.berserk_ability.active
+
+        for a in self.character._class.abilities:
+            if isinstance(a, Berserk):
+                self.berserk_ability=a
+                break
+        if hasattr(self, "berserk_ability"):
+            return self.berserk_ability.active
+        else:
+            # self.berserk_ability=BuffAbility(self.telnetHandler)
+            # Ack this isn't working
+            # init assumes there are success regexes
+            # self.berserk_ability=object()
+            # self.berserk_ability.active=False # doesn't work
+            class DummyAbility(BuffAbility):
+                active=False
+                def __init__(self, telnetHandler):
+                    self.success_regexes=[]
+                    self.error_regexes=[]
+                    super().__init__(telnetHandler)
+            self.berserk_ability=DummyAbility(self.telnetHandler) # Object that always says "active" is False
+            # Question though - how did we get to this section as a barbarian...
+
+        return self.berserk_ability.active
+        # Could be better if were to notice right away when berserking drops but that's an optimization
+
     def run(self):
         self.stopping    = False
         self.mob_charmed = False
@@ -266,13 +294,17 @@ class SmartCombat(CombatObject):
             # if self.weapon_bot.broken_weapon:
             #     self.weapon_bot.combat_rewield()
             # Why not call rewield on reaction
-            if self.fleeing and not cast.wait_time() - kill.wait_time() > kill.cooldown_after_success:
+            if self.fleeing and not cast.wait_time() - kill.wait_time() > kill.cooldown_after_success and not self.berserking():
                 # If the cast wait time is so long that we should hit once before fleeing, don't flee yet
+                # If berserking we just have to keep fighting (leave fleeing true though in case berserk fades)
                 self.escape()
             elif kill.up() or kill.wait_time() <= cast.wait_time() or not self.casting:
                 magentaprint("SmartCombat kill block")
                 kill.wait_until_ready()
                 if self.stopping:
+                    break
+                if self.fleeing and not self.berserking():
+                    self.escape() # added recently to improve flee as I felt the bot was not noticing it should flee and issuing an attack, not confirmed though
                     break
                 self.prompt.clear()
                 self.mud_reader_completion_event.clear()
@@ -291,6 +323,9 @@ class SmartCombat(CombatObject):
                 damage = C.maxHP - C.HEALTH
                 cast.wait_until_ready()
                 if self.stopping:
+                    break
+                elif self.fleeing and not self.berserking():
+                    self.escape() # added recently to improve flee as I felt the bot was not noticing it should flee and issuing an attack, not confirmed though
                     break
                 elif not self.casting or (self.mob_charmed and len(C.mobs.attacking) <= 1):
                     time.sleep(min(0.2, kill.wait_time()))
@@ -400,7 +435,7 @@ class SmartCombat(CombatObject):
                     self.stop()
                 #elif a.failure:
                     # kill.timer is correct
-                elif a.success:
+                elif a.success or not isinstance(a, Circle):
                     kill.timer -= 1
                 a.timer=kill.timer
                 return
@@ -643,9 +678,31 @@ class SmartCombat(CombatObject):
         if w2 != '':
             self.telnetHandler.write("rm " + w2)
 
+        # self.character.TRYING_TO_MOVE=True # Such that cartography matches the area we get to... maybe flee should be a Command object
+        # NOPE JANKY (You run like a chicken gets matched)
         self.telnetHandler.write("fl")
         self.telnetHandler.write("fl")
         self.telnetHandler.write("fl")
+
+        ## Ehrm after we flee we should figure out where we are
+        ## Referring to Cartography,
+        # self.character.TRYING_TO_MOVE = True
+        # prev_area = self.character.AREA_ID
+        # self.cartography.clear() # Referring to Go (Go.py does this) (this means wait for a notify event to finish ie. server text)
+        # # Some of this might need to be at a bot level oy since we don't have access to cartography?? Also it's not really combat??
+        # # Could return saying we fled or return saying to flee
+        # # To wherever smart combat is called from... that's a thread handoff
+        # # so need to call cartography.wait()
+        # self.cartography.wait(timeout=3) # to get new area ID (Prefers that flee will work...) https://docs.python.org/3/library/threading.html#threading.Event.wait
+        # new_area = self.character.AREA_ID
+        # # Now find path from where we are to where we were...
+        # self.mud_map.get_path(new_area, prev_area) # like from GotoThread
+        # # Ok wait a minute is our answer really to go back there... why didn't we just walk away??? is that possible?
+        # # What if it blocks
+        # # Well... ideally we find a place to rest at I guess
+        # The fact is we died because we got lost... so it's better to repair the path... maybe add a rest after fleeing
+        
+
 
         # Maybe use remove command if it exists? Fleeing is kind of panic-mode... also this might work
 
@@ -674,6 +731,25 @@ class SmartCombat(CombatObject):
 
         # I think I had a bug of using self.character.weapon1 when I should start using weapon_bot (hasattr(weapon_bot), 'weapon')
         # So I didn't rewield (blank rewield)
+
+        # Now this needs, on command sent, save current location
+        # After that 0.9, get current location again - maybe use go to determine it?Needs Trying to Move?
+        # Anyway after that you need to fix direction list?
+        # Yea because otherwise we end up back in combat with a bad direction list that could think we're in the pawn shop?
+        # I guess we fled North to Holly Lane... would have been good to rest up (7 hp)
+        # Could we just kind of hit Go so we can use it for area regex notify... there are a bunch of race conditions we want to know where we are
+        # We also need to know how to make a path! Try command handler goto or showto
+
+        # FLEE RECOVERY
+        # we have self.fleeing is true and SmartCombat exits
+        # So where was smartcombat started?
+        # Do we add code there?
+        # Ok...
+        # The follow-up is in engage_monster
+
+
+
+
 
     def check_rings(self):
         # magentaprint("SmartCombat check_rings()")

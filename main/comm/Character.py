@@ -133,7 +133,7 @@ class Character(object):
         self.START_GOLD = self.GOLD = self.info.gold
 
         self.MANA_TO_ENGAGE = self.info.maxMP * 0.4
-        self.HEALTH_TO_FLEE = self.info.maxHP * 0.35
+        self.HEALTH_TO_FLEE = self.info.maxHP * 0.4 # Increased from 0.35 as I've improved flee recovery... 8 hp is ok I guess?? Not sure why he didn't flee at 8 with max 24
         self.MAX_MANA = self.info.maxMP
 
         # self.ARMOR_SLOTS = self._class.ARMOR_SLOTS
@@ -212,9 +212,10 @@ class Character(object):
         'dustman', 'small girl', 'young boy', 'old woman', 'old man', 'townsman', 'stall holder', 'duck', 'hedgehog', 'piglet',
         'streetsweeper', 'shopper', 'window shopper', 'window cleaner', 'waitress', 'housewife', 'squirrel', 'milk maid', 'rabbit',
         'one man band', 'heather seller', 'irate teenager', 'peasant', 'one-armed beggar', 'village elder', 'small dog', 'tribesman',
-        'searcher', 'delivery boy', 'traveller', 'wanderer', 'villager', 'vagrant', 'dropout', 'tramp', 'serf', 'dishwasher',
+        'searcher', 'delivery boy', 'wanderer', 'villager', 'vagrant', 'dropout', 'tramp', 'serf', 'dishwasher',
         'punter','chicken','coopers apprentice', 'diner', "cook's assistant", "miner's assistant", 'surveyor', 'pit pony', 'cleaner',
         'hungy busker', 'beggar', 'dropout', 'one-armed beggar', 'sitting beggar'
+        # level 3 travellers exist, spawn near the amethyst town crier, so, not level 1
     ]
     lvl1_red_monsters = [ # 8-15 exp
         'old kobold', 'kobold child', 'kobold dam'
@@ -243,6 +244,7 @@ class Character(object):
         'cashier', 'thatcher',  'tax inspector', 'journeyman', 'human miner', 'hobbitish miner', 'hawk', 'stacker', # ring mail gauntlets
         'mill worker', # chain mail gloves
         'General', # (The)
+        'traveller', 
         'bouncer', 'yard worker', 'town clerk', 'stevedore', 'scared trawlerman', 'cooper','digger', 'pulley operator',
         'ore carrier', # copper ring
         'furniture maker', 'cabinet maker', # SW part of lumber yards (glue)

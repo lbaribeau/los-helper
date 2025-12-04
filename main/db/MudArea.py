@@ -2,6 +2,7 @@ from db.Database import *
 from misc_functions import *
 
 class MudArea():
+    # Seems like "MudArea" is a Python object for Area that is more than the Peewee Area (DB object)"
     area = None
     area_exits = []
 
@@ -15,29 +16,35 @@ class MudArea():
             else:
                 self.area_exits = area_exits
         else:
-            print("Area is null for some awful reason.")
+            print("MudArea given area is null for some awful reason.")
 
     @staticmethod
     def map(area_title, area_description, exit_list, area_from, direction_from, cur_mud_area):
+        # This tries to make a DB-synced area object (Cartography sets C.MUD_AREA, calling this)
+        # I mean, adds it to the DB with an identifier if it doesn't exist, or
+        # looks it up in the dB
         area = Area(
             name        = str(area_title), 
-            description = str(area_description).replace("\n\r", ' ')
+            description = str(area_description).replace("\n\r", ' ') # Removes newlines from matched description text
         )
         # mud_area = None
-        area_exits = None
+        area_exits     = None
         direction_list = []
 
         for exit in exit_list:
-            exit_type = ExitType(name=str(exit))
-            exit_type.map()
-            direction_list.append(exit_type)
+            exit_type = ExitType(name=str(exit)) # Looks up the index related to the exit text (ie "north" is 5)
+            exit_type.map() # This gets us the id number of the exit text
+            direction_list.append(exit_type) # Ok now we have a list of "exits" of proper type
+            # This isn't "direction" like how TrackGrind follows a list of exits
+            # This is an exit list associate on one area
 
         discerned_area = MudArea.discern_location(
-            area, 
-            direction_list, 
-            area_from, 
-            direction_from, 
-            cur_mud_area
+            area           ,
+            direction_list ,
+            area_from      ,
+            direction_from ,
+            cur_mud_area # This is the previous record of the area that we left from
+            # It is used with LAST_DIRECTION which was picked up by user_move to determine where we have gone to
         )
 
         if discerned_area is not None:
@@ -50,11 +57,17 @@ class MudArea():
                 area.map(direction_list, area_from, direction_from)
             else:
                 area.map(direction_list)
-            area_exits = AreaExit.get_area_exits_from_area(area)
+        area_exits = AreaExit.get_area_exits_from_area(area)  # Ummm this should be one to the left??? Let's try it
         return MudArea(area, area_exits)
+        # I guess .map is being used as kind of a constructor
 
     @staticmethod
     def discern_location(area, direction_list, area_from_id, direction_from, cur_mud_area):
+        # Ok here we know what exit was taken and from what area
+        # So we can use that to do a db lookup to find out where we have ended up
+        # We also have "direction_list" which is basically what is matched after "Obvious exits".
+        # But we don't use it
+
         discerned_area = None
 
         if cur_mud_area is not None:
@@ -68,6 +81,8 @@ class MudArea():
             #if isNewExit: - this is logic we can implement once we have exit_type mapping completely bullet proof
 
             # magentaprint("MudArea discerning: " + str(cur_mud_area) + " against " + str(area))
+
+            # Ok I'm a bit concerned that every "north" is 5 and it looks like we are using only that to figure out where we are
 
         return discerned_area
 

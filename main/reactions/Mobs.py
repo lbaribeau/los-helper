@@ -28,6 +28,7 @@ class Mobs(BotReactionWithFlag):
         R.ze_mob_fled,
         R.blocked_path
         # TODO: bandit sentry returns to his post... he still shows up in look, but if you don't look, you can't target him for a sec
+        # R.is_attacking_you
     ]
 
     def __init__(self):
@@ -43,6 +44,7 @@ class Mobs(BotReactionWithFlag):
         self.damage = []
         self.chase = ''
         self.chase_exit = ''
+        self.expect_flee_attack=False
 
     def notify(self, r, M):
         # We'll let Cartography handle the initialization of monster_list with the area regex.
@@ -53,7 +55,8 @@ class Mobs(BotReactionWithFlag):
         elif r in R.ze_mob_died:
             mob_name = self.read_match(M)
             # magentaprint("Mobs noticed " + mob_name + " died, it's in the self.list: " + str(mob_name in self.list))
-            magentaprint("Mobs noticed " + mob_name + " died, it's in the self.list: {}, self.list is {} (len {}), self.attacking is {} (len {}).".format(mob_name in self.list, self.list, len(self.list), self.attacking, len(self.attacking)))
+            magentaprint("Mobs noticed " + mob_name + " died, it's in the self.list: {}, self.list is {} (len {}), self.attacking is {} (len {}).".format(\
+                mob_name in self.list, self.list, len(self.list), self.attacking, len(self.attacking)))
             if mob_name in self.list:
                 self.list.remove(mob_name)
             # magentaprint("Mobs removed it from the list, now is it in attacking: {0}".format(mob_name in self.attacking))
@@ -94,17 +97,23 @@ class Mobs(BotReactionWithFlag):
             # c = self.attacking.count(M.group('mob').strip())
             # if c == 0:
             #     self.attacking.append(M.group('mob'))
-            # # else:
-            # #     if M.group('nth'):
-            # #         nth = int(M.group('nth')[0:len(M.group('nth'))-2])
-            # #         self.attacking.extend([M.group('mob')] * max(nth - c, 0))
-            #c = self.attacking.count(self.read_match(M))
+            # else:
+            #     if M.group('nth'):
+            #         nth = int(M.group('nth')[0:len(M.group('nth'))-2])
+            #         self.attacking.extend([M.group('mob')] * max(nth - c, 0))
+            # c = self.attacking.count(self.read_match(M))
             # if self.attacking.count(self.read_match(M)) == 0:
             #     self.attacking.append(self.read_match(M)) # Oy I think this is jank (gets added twice?? yes)
                 # So does "You attack" always happen?? (To make sure things always get added...)
             # Try relying only on "you attack" and "X attacks you" (mob_aggro) because of race conditions (adding twice)
             # Also, checking.count is an unreliable check (should be redundant)
             # TODO: remember if 1st and 2nd mobs are attacking and ensure attacking has length 2 if necessary
+            # Ehrm well I guess we have to add it ourselves if we flee... aggro regex doesn't exist... so uncomment the above... (will it double add?)
+            # Is double-adding ok? Not really
+            # If we fled then we know we have to add it
+            if self.expect_flee_attack:
+                self.attacking.append(self.read_match(M))
+                self.expect_flee_attack=False
             if 'd' in M.groupdict().keys():
                 self.damage.append(int(M.group('d')))
             else:

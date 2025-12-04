@@ -4,26 +4,29 @@ Install Peewee to use this
 http://peewee.readthedocs.org/en/latest/peewee/installation.html
 '''
 
-import peewee
-import sys
+# 'maplos.db' should be in current directory (one above "main", repository directory... run from there... see bottom of file)
+print("... Database.py...");   
+print("... ... import peewee"); import peewee
+print("... ... import sys"); import sys
 
-db = peewee.Proxy()
+print("... ... db = peewee.Proxy()"); db = peewee.Proxy()
 
 #import db as db_package
-from db.BaseModel     import BaseModel
-from db.Log           import Log
-from db.Area          import Area
-from db.AreaExit      import AreaExit
-from db.ExitType      import ExitType
-from db.Mob           import Mob
-from db.MobLocation   import MobLocation
-from db.Item          import Item
-from db.ItemType      import ItemType
-from db.ItemTypeModel import ItemTypeModel
-from db.ItemTypeData  import ItemTypeData
-from db.AreaStoreItem import AreaStoreItem
-from db.MudMap        import MudMap
+print("... ... import BaseModel");     from db.BaseModel     import BaseModel
+print("... ... import Log");           from db.Log           import Log
+print("... ... import Area");          from db.Area          import Area
+print("... ... import AreaExit");      from db.AreaExit      import AreaExit
+print("... ... import ExitType");      from db.ExitType      import ExitType
+print("... ... import Mob");           from db.Mob           import Mob
+print("... ... import MobLocation");   from db.MobLocation   import MobLocation
+print("... ... import Item");          from db.Item          import Item
+print("... ... import ItemType");      from db.ItemType      import ItemType
+print("... ... import ItemTypeModel"); from db.ItemTypeModel import ItemTypeModel
+print("... ... import ItemTypeData");  from db.ItemTypeData  import ItemTypeData
+print("... ... import AreaStoreItem"); from db.AreaStoreItem import AreaStoreItem
+# print("... ... import MudMap");        from db.MudMap        import MudMap # Ehrm then mudmap comes back here??
 #from misc_functions import magentaprint # Circular import?
+print("... Done Database.py import section")
 
 create_view_named_mobs = """
 CREATE VIEW [v_named_mobs] AS 
@@ -44,7 +47,6 @@ where a.id in (
       from v_areaexits_for_graph);"""
 
 # Add items joined to area store items (we have a view for that)
-
 def create_tables():
     try:
         try_create(db.Log.Log)

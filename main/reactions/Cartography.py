@@ -175,20 +175,24 @@ class Cartography(BotReactionWithFlag):
             C.TRYING_TO_MOVE = False
 
     def area(self, match):
+        # This is what we do when area regex matches in notify(), we are given "match" which is the regex matched text
+
         # magentaprint(M.group(0),False,False,True)
-        C = self.character
-        C.AREA_TITLE = match.group(1).strip()
+        C            = self.character
+        C.AREA_TITLE = match.group(1).strip() 
+        # Area title sometimes has issues if TRYING_TO_MOVE was set prematurely and we get rubbish prepended
         C.EXIT_LIST  = self.parse_exit_list(match.group(3))
         C.EXIT_REGEX = self.create_exit_regex_for_character(C.EXIT_LIST)
         C.mobs.list  = ReferencingList(self.parse_monster_list(match.group(4)))
-        # This calls mobs.parse_monster_list
+        # This calls mobs.parse_mob_string
         # magentaprint("Cartography.area (id is {}) set character.mobs.list: {}".format(C.))
         # magentaprint("Cartography set character.mobs.list.list: " + str(C.mobs.list.list))
         C.mobs.attacking = [] # TODO: match regex for entering an area where a mob is already attacking you
 
         C.CAN_SEE       = True
         C.CONFUSED      = False
-        C.SUCCESSFUL_GO = True #successful go should be true everytime the area parses
+        C.SUCCESSFUL_GO = True #successful go should be true everytime the area parses - here we are setting it as we see Go worked
+        # Better way is that "Go" command object exists now... not sure if it's used
         self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
 
         if C.TRYING_TO_MOVE:
@@ -204,9 +208,10 @@ class Cartography(BotReactionWithFlag):
                     match.group(2).strip(), # area description (eat the description - doesn't give the full text)
                     C.EXIT_LIST, 
                     C.AREA_ID, 
-                    C.LAST_DIRECTION, 
-                    C.MUD_AREA
-                )
+                    C.LAST_DIRECTION, # command_handler user_move() picks up to where we issued a go command
+                    C.MUD_AREA # Here we are giving the PREVIOUS C.MUD_AREA, which should be a record of where we WERE
+                    # This will use the direction we went and from where to find out where we are now
+                ) # Creates a "MudArea" object... also interfaces with the DB... MudArea object is a bit more than an "Area" from the DB table
                 # Maybe we can handle two kinds of descriptions.... hmmmm
                 # Can MudArea.map handle that?
                 magentaprint("Cartography area match: " + str(C.MUD_AREA.area))
@@ -277,6 +282,8 @@ class Cartography(BotReactionWithFlag):
         #     # Redo loop for print readability
         #     magentaprint("Cartography mapped asi area/ item: {}/{}".format(asitem.area.id, asitem.item.id))
 
+        # Ehrm cost not getting uploaded?? Not sure why not maybe since the record exists already?
+
     #Used if it's dark and / or the current area doesn't appear to be findable
     def guess_location(self, area_from_id, direction_from):
         guessed_area = None
@@ -313,6 +320,7 @@ class Cartography(BotReactionWithFlag):
 
     def catalog_monsters(self, area, monster_list):
         try:
+            magentaprint("Cartography catalog_monsters() monster_list: " + str(monster_list)) #mob_location id {0}, {1}".format(mob_location, mob.name))
             for monster in monster_list:
                 mob = Mob(name=monster)
                 mob.map()
@@ -326,7 +334,7 @@ class Cartography(BotReactionWithFlag):
                 mob_location = MobLocation(area=area, mob=mob)
                 mob_location.map()
 
-                magentaprint("Cartography catalog_monsters() mob_location id {0}, {1}".format(mob_location, mob.name))
+                # magentaprint("Cartography catalog_monsters() mob_location id {0}, {1}".format(mob_location, mob.name))
         except Exception:
             magentaprint("Problem cataloguing monsters", False)
 
@@ -403,6 +411,7 @@ class Cartography(BotReactionWithFlag):
             #http://stackoverflow.com/questions/501308/problem-in-understanding-python-list-comprehensions/501323#501323
 
             E_LIST = self.number_exits(E_LIST)
+            magentaprint("parse_exit_list got exit list " + str(E_LIST))
         except Exception:
             E_LIST = []
             magentaprint("Parse exit Exception: " + str(sys.exc_info()[0]), False)

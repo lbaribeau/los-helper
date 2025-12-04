@@ -73,7 +73,12 @@ class ArmourBot(MiniBot):
         # Maybe start by checking self.broken_armour
         # We know the armour broke, but we can't assume it didn't get dropped
         # Unless we have the bot keep broken armour...
-        self.go_repair_or_replace_broken_armour()
+
+        if self.command_handler.character.GOLD < 3*self.command_handler.weapon_bot.possible_weapons[0].item.value:
+            # This check is up here indirectly because we aren't doing a lookup of the broken armour piece for cost
+            # And saves going to the smithy when we can't afford it
+            self.go_repair_or_replace_broken_armour()
+        # Conceivably we start buying replacement armour instead if we have the perfect amount of gold... could be an interesting bug
         self.get_needed_default_armour()
         # Need to cancel if inventory doesn't have the broken armour piece (user manually repairs armour)
 
@@ -111,9 +116,9 @@ class ArmourBot(MiniBot):
             self.go_to_nearest_smithy()
 
         self.do_for_each_broken_piece(self.repair_and_wear)
-        self.do_for_each_broken_piece(self.go_buy_and_wear)  # I think we'll skip this bit and rely on the default armour
+        # self.do_for_each_broken_piece(self.go_buy_and_wear)  # I think we'll skip this bit and rely on the default armour
             # We should make all the paths beforehand to ensure an efficient shopping trip
-        self.broken_armour = []  # If it couldn't be bought, it's time to forget about it.
+        self.broken_armour = []  # If it couldn't be repaired, it's time to forget about it (use default armour not try to maintain what was worn)
 
         # self.broken_armour = self.try_armour_from_inventory(self.broken_armour[:])
         # self.go_to_nearest_smithy()
@@ -150,6 +155,20 @@ class ArmourBot(MiniBot):
                 ref = MobTargetDeterminator().increment_ref(ref)
 
     def repair_and_wear(self, a):
+        # So "a" is a string from the armour that broke and we use get_last_reference to get that piece
+        # That means we can't check the price
+        # So if the bot has a bunch of armour it could lose money and stop working
+        # It only buys armour is it has enough
+        # I guess we could just weaken this clause for now, make it 3x weapon cost
+
+        # We'll do a gold check here because this is where we've decided to go through with a specific armour
+        # if self.command_handler.character.GOLD < 2*self.command_handler.weapon_bot.possible_weapons[0].item.value + a.item.value:
+            # UMMM 'a' is a string!
+        if self.command_handler.character.GOLD < 3*self.command_handler.weapon_bot.possible_weapons[0].item.value:
+            magentaprint("armour bot decided we don't have enough gold to repair "+str(a))
+            return False # This tells the caller it didn't happen so the caller doesn't action it in any lists or inventory
+            # I guess this could make for a lot of traveling
+
         armour_ref = self.char.inventory.get_last_reference(a)
         magentaprint("ArmourBot.repair_and_wear on " + str(a) + ", armour_ref: " + str(armour_ref))
         if armour_ref:
@@ -175,9 +194,9 @@ class ArmourBot(MiniBot):
                     # Ok the loop condition would have caught that - call get_last_reference here anyway
                     armour_ref = self.char.inventory.get_last_reference(a)
                     # Contiue loop (try next in inventory if there is one)
-                elif self.command_handler.repair.result is R.cant_repair:
+                elif self.command_handler.repair.result in R.cant_repair:
                     # This can happen if the character was wearing something odd, so don't raise an exception
-                    # ie. big nose and glasses
+                    # ie. big nose and glasses, sticky salve
                     # Caller will remove it from the broken list
                     return True
                 else:
@@ -185,6 +204,7 @@ class ArmourBot(MiniBot):
                     # Could try go to smithy again here if necessary
                     # "It's not broken yet".... well my command was wrong... steel 3 not steel 2...
                     # That was from assuming in try_armour_from_inventory that the last ref was going to be the broken one
+                    # I think no_gold gets us here
                     raise
         else:
             magentaprint("ArmourBot.repair_and_wear() error - no inventory ref for " + str(a) + ".")  
@@ -193,6 +213,17 @@ class ArmourBot(MiniBot):
     def go_buy_and_wear(self, a):
         # I think we won't try to shop for the same armour that just broke, and just fall back immediately to the default set
         pass
+
+    # def cant_afford(self):
+    #     # shopping_bot cant_afford is similar
+    #     # (I guess armour_bot is not using shopping bot? It kind of is...??)
+    # def cant_afford(self, asi):
+    #     # Item.get_item_by_name(asi.item
+    #     if asi.item.value:
+    #         return asi.item.value > self.command_handler.character.GOLD
+    #     else:
+    #         magentaprint("Warning: Database should really have 'value' (cost) assigned for " + asi.item.name)
+    #     # return asi.get_cost() > self.command_handler.character.GOLD
 
     def get_needed_default_armour(self):
         # Given size, armor level, slot, choose best piece from shop
@@ -211,12 +242,18 @@ class ArmourBot(MiniBot):
                 return
             # path = self.map.get_path(self.char.AREA_ID, asi.area.id)
             # travel_bot.follow_path(path)
+            # if self.shopping_bot.cant_afford(asi): # Want to keep a higher minimum than 0 gold
+            if self.command_handler.character.GOLD < 2*self.command_handler.weapon_bot.possible_weapons[0].item.value + asi.item.value:
+                # just skip it and keep running instead of traveling there etc.... take the death risk with no money
+                # Also this is the correct time to check because gold can change
+                magentaprint("Skipping can't afford " + str(asi.item.name))
+                continue
             self.travel_bot.go_to_area(asi.area.id)
             if self.stopping:
                 return
             if self.shopping_bot.buy_from_shop(asi):
                 self.command_handler.wear.execute_and_wait(self.char.inventory.get_last_reference(str(asi.item.name)))
-                if self.command_handler.wear.result == R.no_room:
+                if self.command_handler.wear.result in R.no_room:
                     # This is probably the equipment command messing up and buying unnecessarily
                     # The equipment dict didn't get set up right
                     self.get_needed_default_armour() 
@@ -283,7 +320,9 @@ class ArmourBot(MiniBot):
                 slot = slot.title()
                 # items = AreaStoreItem.get_by_item_type_and_level_max(size, slot, level)
                 items = AreaStoreItem.get_buyable_armour(size, slot, level)
-                magentaprint("Called get_buyable_armour(size={},slot={},level={}), got {}.".format(size, slot, level, len(items)))
+                # This is a good print... but so large
+                # magentaprint("Called get_buyable_armour(size={},slot={},level={}), got {}.".format(size, slot, level, len(items)))
+
                 #magentaprint("determine_shopping_list() items: " + str(items))
                 # if items:
                 #     if len(items) > 0:

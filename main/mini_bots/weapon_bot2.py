@@ -82,7 +82,8 @@ class MainhandWeaponBot(MiniBot):
             # R.off_hand, 
             # R.shield
         ]
-        self.possible_weapons = []
+        self.possible_weapons = [] # this will be a list of area-store-items
+        self.cant_afford = False # this is to help armour bot decide not to shop if weapon bot needs gold
 
     # Inventory keeps track of if a weapon is broken in the inventory
 
@@ -201,9 +202,10 @@ class MainhandWeaponBot(MiniBot):
                     magentaprint("Error case checking weapons, expected {0}, removing.".format(usable_ref))
                     self.inventory.remove_by_ref(usable_ref)
                     self.check_weapons() # Error: remove it and go back to square one
-                elif repair.result in R.no_gold:
-                    magentaprint("Check weapons saw no gold to repair.")
-                    raise
+                elif repair.result in R.repair_no_gold:
+                    magentaprint("Ok we quit out here we don't have a main hand weapon")
+                    self.cant_afford = True
+                    raise  
                 elif repair.result in R.cant_repair:
                     # self.command_handler.drop.execute_and_wait(self.inventory.get('drow sabre'))
                     # Go to tip without fighting anything? Get the first reference after going there? I think so
@@ -220,14 +222,23 @@ class MainhandWeaponBot(MiniBot):
                     magentaprint("Check weapons repairing problem")
                     raise
             else:
-                self.go_buy_default_weapon()
-                # Have to be able to stop as there is travel here
-                # I think this check is necessary or we won't stop?
-                if not self.stopping:
-                    self.check_weapons() # Wield, buy secondary
+                # Need to check if we can afford it here so we can act accordingly
+                if self.shopping_bot.cant_afford(self.possible_weapons[0]):
+                    # Don't call self.check_weapons to handle the secondary because here we are giving up on having a main hand weapon,
+                    # for out-of-box experience at level 1, no inifinite loop
+                    magentaprint("Can't afford weapon")
+                    self.cant_afford = True
+                    return False
+                else:
+                    self.go_buy_default_weapon()
+                    # Have to be able to stop as there is travel here
+                    # I think this check is necessary or we won't stop?
+                    if not self.stopping:
+                        self.check_weapons() # Wield, buy secondary
         else:
-            # So we are wealding a weapon here and need to make sure we have one in the bag as well
+            # This else is to make sure we have a weapon ready to go in the bag (we are weilding one by now)
             if self.has_usable_weapon_in_inventory():
+                self.cant_afford=False
                 return 0 # Success
             elif self.has_broken_weapon_in_inventory(): # TODO (optimize): Should be a repairable broken weapon
                 repair = self.command_handler.repair
@@ -239,13 +250,14 @@ class MainhandWeaponBot(MiniBot):
                 elif repair.failure:
                     # Repair failure is blacksmith breaking it
                     self.check_weapons() # Maybe there's another to try repairing
-                elif repair.result is R.dont_have:
+                elif repair.result in R.dont_have:
                     magentaprint("CAUTION: Error case checking weapons, expected {0}, removing.".format(usable_ref))
                     self.inventory.remove_by_ref(usable_ref)
                     self.check_weapons()
                     # Hmmmm... how was the inventory wrong
-                elif repair.result is R.no_gold:
-                    magentaprint("CAUTION: Check weapons saw no gold to repair.")
+                elif repair.result in R.repair_no_gold:
+                    self.cant_afford = True
+                    magentaprint("CAUTION: Check weapons saw no gold to repair backup weapon.")
                     return
                 elif repair.result in R.cant_repair:
                     self.travel_bot.go_to_nearest_tip()
@@ -256,7 +268,8 @@ class MainhandWeaponBot(MiniBot):
                     raise
                     # This could be a db error
             else:
-
+                # magentaprint("weapon_bot2.py check_weapons() else (hasattr(weapon)) else (not has_usable or broken weapon) ")
+                magentaprint("Going to buy default weapon because we want one ready in the inventory")
                 return self.go_buy_default_weapon()
 
         # if self.needs_weapon():
@@ -281,8 +294,16 @@ class MainhandWeaponBot(MiniBot):
         # Down low
         # Do we want to stop if we can't get the weapon??? At level 1 not really but I think it's generally safer to stop if we can't.
         # That is assuming the code is buggy... judgement call... let's just exit if we can't afford it...
+        magentaprint("weapon_bot2 go_buy_default_weapon")
+        #raise # This helped - you get a stack trace
+
+        if self.shopping_bot.cant_afford(self.possible_weapons[0]):
+            self.cant_afford=True
+            magentaprint("Warning: WeaponBot could not buy another weapon (cant_afford)")
+            return False
 
         if self.shopping_bot.go_buy(self.possible_weapons[0]):
+            self.cant_afford=False
             return True
         else:
             if hasattr(self, 'weapon'):
@@ -631,6 +652,7 @@ class MainhandWeaponBot(MiniBot):
                     return True
 
     def go_buy_replacement(self):
+        magentaprint("weapon_bot2.py go_buy_replacement()")
         if self.go_buy_default_weapon():
             self.wield_default_weapon()
         # if self.go_purchase_item(possible_weapons[0]):

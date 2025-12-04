@@ -156,6 +156,8 @@ you_died = [r"You are overwhelmed by " + __three_possible_mob_strings + r"'s att
 loot_blocked = [__Three_possible_mob_strings + r" won't let you take anything\."]
 nothing_here = [r"There's nothing here\."]
 
+is_attacking_you = [__Three_possible_mob_strings + r" is attacking you\."] # This one happens when you arrive into a room
+
 # Go and Cartography
 #           .=\n\r   EAT JUNK DATA (death,loginprompts,hptick)              Title           Description               Exit list             Players / Mobs / Signs / Items (optional)
 area                  = ["(?s)(?:(?:.+?Stone\.\n\r|.+?healed\.\n\r|.+?\]:\s+?)\n\r)?([A-Za-z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"]
@@ -232,7 +234,7 @@ already_hardened        = [r"Your skin is already hardened\."]
 red_mist                = [r"A red mist coats your vision, your heart pounds harder \. \. \."]
 berserk_fail            = [r"You fail to work yourself into a frenzy\."]
 red_mist_fades          = [r"The red mist fades from your sight\."]  # Neato dark blue colored text
-already_berserk         = [r"You're already berserk!"]
+already_berserk         = [r"You are already berserk!"]
 meditate                = [r"You feel at one with the universe\."]
 not_at_peace            = [r"Your spirit is not at peace\."]
 aesters_tears           = ["Your music rejuvenates everyone in the room\."]
@@ -640,6 +642,7 @@ doesnt_fit     = [__item + r" doesn't fit you\."]
 class_prevents = [r'Your class prevents you from using '+__items+r'\.']
 not_yet        = [r'You are not yet adept enough to use this\!']
 no_gold        = [r"You don't have enough gold\."]
+repair_no_gold = [r"You don't have enough money\."]
 # get_ring     = [r"(?s)You get .+? an? .+? ring((,.+?\.)|(\.))"]  # problem here.
 get_ring       = [r"(?s)You get " + __items + r"?an? [a-z]+ ring(([a-zA-Z0-1-',\s]+\.)|(\.))"]
 
@@ -653,3 +656,4 @@ unbless = [r"You feel less holy\."]
 prot =    [r"You feel watched\."] # you feel that a protective presence watches over you
 unprot =  [r"You feel less protected\."]
 
+cant_flee_berserk = [r"You cannot flee while in a berserker rage"] # (No period) Didn't need this regex in the code, just recording it

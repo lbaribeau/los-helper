@@ -53,3 +53,20 @@ class Item(NamedModel):
         Item.magentaprint("Item.lookup_armour_type atype.itemtype.data: " + str(atype.itemtype.data))
         # return str(atype.itemtype.data).lower()
         return atype.itemtype.data
+
+    # def get_by_id(id):
+    #     try:
+    #         item = Item.select().where((Item.id == id)).get()
+    #     except Item.DoesNotExist:
+    #         item = None
+
+    #     return item
+
+    # def get_by_areastoreitem(asi):
+    #     try:
+    #         item = Item.select().where((Item.id == asi.item)).get()
+    #     except Item.DoesNotExist:
+    #         item = None
+
+    #     return item
+    # Didn't need these functions ^ ... I had .value == None because dBeaver had connections to wrong database files open

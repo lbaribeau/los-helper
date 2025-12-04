@@ -16,7 +16,7 @@ class Repair(Command):
         R.not_a_repair_shop, 
         R.repair_what, 
         R.dont_have, 
-        R.no_gold, # Would be nice to handle no_gold
+        R.repair_no_gold, # Would be nice to handle no_gold
         R.cant_repair
     ]
 

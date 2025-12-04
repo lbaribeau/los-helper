@@ -163,6 +163,12 @@ class BotReactionWithFlag(threading.Event, BotReaction):
         # Eh can we pretend we are an object?
 
         # magentaprint("wait_for_class_flag done ")
+
+    # By the way, google Python threading event, "Event Objects"
+    # "clear()" sets it up to be ready to go
+    # "set()" is what's called to trigger the event flag to be true
+    # "wait()" is how you wait for something else to hit "set()"
+    
 # class BotReactionWithClassFlag(BotReaction):
 #     """ This reaction provides a flag that can be watched at the class level,
 #     so you don't need to have the reaction object on hand to watch the flag."""

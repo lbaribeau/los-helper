@@ -59,7 +59,7 @@ class Go(Command):
         super().wait_for_flag(**kwargs)
         # if not self.cartography.__class__._waiter_flag:
         #     self.cartography.wait_for_flag()
-        self.cartography.wait_for_flag(**kwargs)
+        self.cartography.wait_for_flag(**kwargs) # I think the .__class__.waiter flag is an OLD WAY, I think you have to call .clear()
 
     def notify(self, regex, M_obj):
         if regex in R.open_first:

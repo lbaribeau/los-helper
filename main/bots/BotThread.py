@@ -78,7 +78,7 @@ class BotThread(threading.Thread):
                 magentaprint("BotThread has direction list")
                 self.do_regular_actions()
                 if self.go(self.direction_list[0]):
-                    self.do_on_succesful_go()
+                    self.do_on_successful_go()
                 else:
                     if self.character.GO_BLOCKING_MOB != "":
                         # MUDReaderThread sets GO_BLOCKING_MOB when go returns false
@@ -105,6 +105,7 @@ class BotThread(threading.Thread):
         magentaprint("BotThread: finished now.")
 
     def go(self, exit_str):
+        # Not overridden
         if self.stopping:
             return True
 
@@ -112,7 +113,7 @@ class BotThread(threading.Thread):
         self.command_handler.go.wait_until_ready()
         self.kill.wait_until_ready()
         self.cast.wait_until_ready()
-        magentaprint("Going " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)), False)
+        magentaprint("BotThread going " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)), False)
 
         self.character.GO_BLOCKING_MOB = ""
         self.character.GO_PLEASE_WAIT  = False
@@ -240,7 +241,7 @@ class BotThread(threading.Thread):
     def do_regular_actions(self):
         return
 
-    def do_on_succesful_go(self):
+    def do_on_successful_go(self):
         self.direction_list.pop(0)
         # self.character.MOBS_JOINED_IN = []
         # self.character.MOBS_ATTACKING = []

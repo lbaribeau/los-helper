@@ -120,6 +120,9 @@ class TravelBot(MiniBot):
             if not self.command_handler.go.success:
                 raise Exception("TravelBot aborting due to errors!")
                 # Could be that AREA_ID is wrong - try doing a look.
+                # "I don't see that exit"
+                # " I don't see that exit"
+                # "The mugger blocks your exit""
 
     def get_pawn_path(self):
         try:

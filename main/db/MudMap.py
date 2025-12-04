@@ -1,9 +1,10 @@
+
 from peewee import *
 import networkx
 
-from db.Database import *
-# from misc_functions import *
-from misc_functions import do_magentaprint
+from db.Database         import *
+# from misc_functions    import *
+from misc_functions      import do_magentaprint
 from comm.ConsoleHandler import newConsoleHandler
 
 def get_shortest_array(list_of_arrays):
@@ -100,6 +101,7 @@ class MudMap(object):
         # edge_path = [self.los_map.get_edge_data(N[i-1], N[i])['name'] for i in range(1,len()) 
         #do_magentaprint("MudMap: Node path: " + str(node_path), False)
         do_magentaprint("MudMap.get_path() got path of length {0}.".format(len(edge_path)))
+        do_magentaprint(str(edge_path))
         return edge_path
 
     def get_nearest_unexplored_path(self, start_area_id):
