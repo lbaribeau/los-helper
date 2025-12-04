@@ -30,6 +30,12 @@ class AreaStoreItem(BaseModel):
     def to_string(self):
         return str(self.id) + ", " + str(self.area.id) + ", " + str(self.item.name)
 
+    # def get_item(self):
+    #     return Item.get_by_areastoreitem(self)
+
+    # def get_cost(self):
+    #     return Item.get_by_areastoreitem(self).value
+
     '''Static AreaStoreItem Functions'''
     def get_by_area_and_item(areaid, itemid):
         try:
@@ -45,6 +51,7 @@ class AreaStoreItem(BaseModel):
         return areastoreitem
 
     def get_by_item_type_and_level(model_name, data_name, level=1):
+        # Here the query is for a given item level
         # Model: weapon s-armor m-armor l-armor consumable held reageant scroll quest trash armor
         # Data: Sharp Thrust Blunt Pole Missile Body Arms Legs Neck Hands Head Feet Finger Shield
         # items = []
@@ -67,6 +74,7 @@ class AreaStoreItem(BaseModel):
         return items
 
     def get_by_item_type_and_level_max(model_name, data_name, level_max=1):
+        # Here, the query is for a given maximum item level (returns all items less than or equal to given max item level)
         #BaseModel.magentaprint("AreaStoreItem get model_name/data_name: " + model_name + '/' + data_name + ", ids: " + str(itemtypemodel) + "/" + str(itemtypedata) )
         # (Searches general armour and sized armour)
         items = (AreaStoreItem
@@ -125,4 +133,6 @@ class AreaStoreItem(BaseModel):
         # # print('AreaStoreItem itemtypemodel: ' + str(ItemTypeModel.get_by_name(model_name).get()))  # This one
         # print('AreaStoreItem itemtypemodel: ' + str(myitemtypemodel.get()))  # This one
         # print('AreaStoreItem itemtypemodel.id: ' + str(ItemTypeModel.get_by_name(model_name).get().id))
+
+
 

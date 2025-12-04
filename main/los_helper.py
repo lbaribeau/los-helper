@@ -31,11 +31,11 @@ import sys, time, getpass, threading, atexit, re, os, socket
 # import_subdir("../reactions")
 # import_subdir("../threads")
 
-from misc_functions            import *
-from comm.Character            import Character
-from comm.CharacterClass       import CharacterClass
-from comm.command_handler      import CommandHandler
-from comm.MudReaderHandler     import MudReaderHandler
+print("misc_functions,"); from misc_functions            import *
+print("Character"); from comm.Character            import Character
+print("CharacterClass"); from comm.CharacterClass       import CharacterClass
+print("command_handler"); from comm.command_handler      import CommandHandler
+print("MudReaderHandler etc"); from comm.MudReaderHandler     import MudReaderHandler
 from comm.MudReaderThread      import MudReaderThread
 from comm.MudListenerThread    import MudListenerThread
 from comm.MyBuffer             import MyBuffer
@@ -50,12 +50,12 @@ from reactions.Cartography     import Cartography
 from reactions.BotReactions    import *
 # from reactions.WieldReaction import WieldReaction
 from comm.TelnetHandler        import TelnetHandler
-from fake.FakeTelnetHandler    import FakeTelnetHandler
-from db.Database               import *
-from db.MudMap                 import *
+print("FakeTelnetHandler"); from fake.FakeTelnetHandler    import FakeTelnetHandler
+print("Database"); from db.Database               import *
+print("MudMap"); from db.MudMap                 import *
 # from reactions.health_monitor  import HealthMonitor
 # from comm.analyser             import Analyser
-from reactions.ring_reaction import RingWearingReaction
+print("RingWearingReaction"); from reactions.ring_reaction import RingWearingReaction
 
 class LosHelper(object):
     def __init__(self):

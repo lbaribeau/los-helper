@@ -16,7 +16,7 @@ class Repair(Command):
         R.not_a_repair_shop, 
         R.repair_what, 
         R.dont_have, 
-        R.no_gold,
+        R.no_gold, # Would be nice to handle no_gold
         R.cant_repair
     ]
 
@@ -31,7 +31,6 @@ class Repair(Command):
         if self.failure:
             self.inventory.remove_by_ref(self._sent_target)
         super().notify(regex, match)
-
         
 # [96 H 42 M]: repair Arrum's
 # 20:23:38.91   | "repair Arrum's"

@@ -87,6 +87,7 @@ class GrindThread(BotThread):
             buy.execute_and_wait('misty')
             if buy.success:
                 self.inventory.add('misty potion')
+                self.character.GOLD-=10
             else:
                 magentaprint("Error buying misty potions!")
                 return True
@@ -95,6 +96,7 @@ class GrindThread(BotThread):
             buy.execute_and_wait('glowing')
             if buy.success:
                 self.inventory.add('glowing potion')
+                self.character.GOLD-=40
             else:
                 magentaprint("Error buying glowing potion!")
                 return True
@@ -1167,10 +1169,19 @@ class GrindThread(BotThread):
         return engaged
 
     def ready_for_combat(self):
+        magentaprint("GrindThread.py Ready for combat: " + str(self.character.HEALTH >= self.character.HEALTH_TO_HEAL and \
+               self.character.MANA >= self.character.MANA_TO_ENGAGE and \
+               ((hasattr(self.command_handler.weapon_bot, 'weapon') and \
+               self.command_handler.weapon_bot.has_usable_weapon_in_inventory()) or \
+               self.character.level == 1)))
+        # magentaprint("health to heal: " + str(self.character.HEALTH_TO_HEAL))
+        # magentaprint("mana_to_engage: " + str(self.character.MANA_TO_ENGAGE))
+
         return self.character.HEALTH >= self.character.HEALTH_TO_HEAL and \
                self.character.MANA >= self.character.MANA_TO_ENGAGE and \
-               hasattr(self.command_handler.weapon_bot, 'weapon') and \
-               self.command_handler.weapon_bot.has_usable_weapon_in_inventory() 
+               ((hasattr(self.command_handler.weapon_bot, 'weapon') and \
+               self.command_handler.weapon_bot.has_usable_weapon_in_inventory()) or \
+               self.character.level == 1)
                # TODO: Could be stricter about second weapon (this is is a lot of list checks)
         # return (self.has_ideal_health() and
         #         self.has_ideal_mana())

@@ -73,7 +73,7 @@ class Go(Command):
         magentaprint("Go notify done.")
 
     def execute(self, target):
-        # magentaprint("Go.execute()")
+        magentaprint("Go.execute(\""+str(target)+"\")")
         self.door = False
         # while self.character.TRYING_TO_MOVE is True:
         #     # Hack - wait for Cartography
@@ -86,7 +86,7 @@ class Go(Command):
         self.wait_for_flag(timeout=3) # also waits for cartography
         # self.cartography.wait_for_flag(timeout=3)
         self.cartography.clear()
-        magentaprint("Go.execute() 2")
+        # magentaprint("Go.execute() 2")
         super().execute(target) # self.clear()
 
     def persistent_execute(self, target):

@@ -132,6 +132,10 @@ class Character(object):
         # (Unlike mana, hp ticks are inconsistent)
         self.START_GOLD = self.GOLD = self.info.gold
 
+        self.MANA_TO_ENGAGE = self.info.maxMP * 0.4
+        self.HEALTH_TO_FLEE = self.info.maxHP * 0.35
+        self.MAX_MANA = self.info.maxMP
+
         # self.ARMOR_SLOTS = self._class.ARMOR_SLOTS
         # self.WEAPON_SLOTS = self._class.WEAPON_SLOTS
 
@@ -533,6 +537,7 @@ class Character(object):
 
     def configure_health_and_mana_variables(self):
         # Health to heal is now a percentage (see process_info)
+        # ALL THIS GETS OVERWRITTEN IN prcoess_info
         if self.level <= 2:
             # self.HEALTH_TO_HEAL = 19
             self.HEALTH_TO_FLEE = 8
@@ -616,6 +621,7 @@ class Character(object):
             #adam.HEALTH_TO_FLEE = 15
             #adam.MAX_MANA = 4
             #adam.MANA_TO_ENGAGE = 0
+        # all this gets overwritten in process_info
 
     def max_vigor(self):
         #return self.info.pty / 2.3

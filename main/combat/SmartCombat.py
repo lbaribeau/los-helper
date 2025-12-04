@@ -368,13 +368,19 @@ class SmartCombat(CombatObject):
                 break
 
     def use_slow_combat_ability_or_attack(self):
-        for a in self.slow_combat_abilities + [self.kill]:
+        kill = self.kill
+        for a in self.slow_combat_abilities + [kill]:
             if a.up():
                 if isinstance(a, Bash):
                     continue  # For now, don't bash
 
                 if isinstance(a, Circle):
-                    # Sets up alternating circling
+                    if len(self.character.mobs.attacking) > 1:
+                        # Skip circle if many mobs (need to dps)
+                        # This didn't work? Had aggro on 2 mobs keps circling...
+                        continue
+
+                    # Sets up alternating circling (1 target)
                     if self.circled:
                         self.circled = False
                         # Todo: execute circle
@@ -384,12 +390,22 @@ class SmartCombat(CombatObject):
 
                 magentaprint("SmartCombat executing " + str(a))
                 a.execute(self.target)
-                # self.kill.start_timer()
+                magentaprint("SmartCombat use_slow_combat_ability_or_attach() Mobs attacking by the way: " + str(self.character.mobs.attacking))
+                kill.start_timer() # Why commented out?
+                kill.timer += 1 # Add 1 for now in case circle failed
+                # By the way, failing to circle it has a longer cooldown! (on both kill and circle? Yes)
                 a.wait_for_flag()
                 if a.error:
                     self.error = True
                     self.stop()
+                #elif a.failure:
+                    # kill.timer is correct
+                elif a.success:
+                    kill.timer -= 1
+                a.timer=kill.timer
                 return
+                # The point of the above was to implement the common cooldown of "kill" and "circle"
+                # If circle fails there's an extra second
 
         # # self.attack_wait()
         # # self.kill.execute(self.target)
@@ -493,9 +509,15 @@ class SmartCombat(CombatObject):
         # I don't think this gets used... it doesn't look good though
         magentaprint("SmartCombat.reequip_weapon()... broken, weapons1/2: '" + self.broken_weapon + "', '" + self.character.weapon1 + "'/'" + self.character.weapon2 + "'")
         ref = self.character.inventory.get_reference(self.broken_weapon, 2)
+        weapon_bot = self.weapon_bot
+        if hasattr(weapon_bot,'weapon'):
+            w1=weapon_bot.weapon
+        else:
+            w1=self.character.weapon1
+
         if ref == None:
             return False
-        if self.character.weapon1 == self.broken_weapon:
+        if w1 == self.broken_weapon:
             # ref = self.character.inventory.get_reference(self.broken_weapon)
             self.wield.execute_and_wait(ref)
             # self.wield.wait_for_flag()
@@ -505,6 +527,7 @@ class SmartCombat(CombatObject):
 
             while self.wield.failure:  # found broken one from inventory...
                 # need to try the next one
+                # Why would this ever work? Broken weapon will be at back of stack
                 ref = self.mob_target_determinator.increment_ref(ref)
                 if self.character.inventory.get_item_name_from_reference(ref) == self.broken_weapon:
                     self.wield.execute_and_wait(ref)
@@ -513,7 +536,7 @@ class SmartCombat(CombatObject):
                         self.broken_weapon = False
                         return True
 
-            if (self.wield.already_wielding_error and self.character.weapon1 == self.character.weapon2) or \
+            if (self.wield.already_wielding_error and w1 == self.character.weapon2) or \
                (self.character.weapon2 == self.broken_weapon):
                 self.wield.second.execute(ref)
                 self.wield.second.wait_for_flag()
@@ -607,23 +630,50 @@ class SmartCombat(CombatObject):
         self.cast.wait_until_ready()
         self.kill.wait_until_ready()
 
-        if self.character.weapon1 != '':
-            self.telnetHandler.write("rm " + self.character.weapon1)
-        if self.character.weapon2 != '':
-            self.telnetHandler.write("rm " + self.character.weapon2)
+        # w1=self.character.weapon1
+        w2=self.character.weapon2
+        weapon_bot=self.weapon_bot
+        if hasattr(weapon_bot, 'weapon'):
+            w1=self.weapon_bot.weapon # weapon_bot is new, need to use it instead of character.weaponX
+        else:
+            w1=''
+
+        if w1 != '':
+            self.telnetHandler.write("rm " + w1)  # Could split off second word, ie. "mace" in "small mace"
+        if w2 != '':
+            self.telnetHandler.write("rm " + w2)
 
         self.telnetHandler.write("fl")
         self.telnetHandler.write("fl")
         self.telnetHandler.write("fl")
 
-        time.sleep(0.1)
+        # Maybe use remove command if it exists? Fleeing is kind of panic-mode... also this might work
+
+        # time.sleep(0.1)
+        time.sleep(0.9) # Needs to be long enough for inventory to realize weapon was removed... else we do it properly with a Command object but that's too slow
+        # (get_last_reference is None if Inventory doesn't have "small mace" in it)
+        # So it doesn't get rewielded... code write code that "assumes" it's in inventory if needed 
         self.stop_pots_if_started_by_smart_combat()
         self.potion_thread_handler.stop()
 
-        if self.character.weapon1 != "":
-            self.wield.execute(self.character.inventory.get_last_reference(self.character.weapon1))
-        if self.character.weapon2 != "":
-            self.wield.second.execute(self.character.inventory.get_last_reference(self.character.weapon2))
+        if w1 != '':
+            self.wield.execute(self.character.inventory.get_last_reference_with_print(w1))
+        if w2 != '':
+            self.wield.second.execute(self.character.inventory.get_last_reference_with_print(w2))
+
+        # Alright well SmartCombat should return a code maybe the bot can reconstruct the path... a safe path... or rest on the spot??? That'd be good
+        # Currently it tries to continue and messes up where it is
+        # So it tries to go to exits that don't exist etc.
+        # Till it runs out of directions
+        # "I don't see that exit."
+        # "You can't go that way"
+        # One is "error" one is "failure" yeesh
+        # Then from there we get "CAUTION: decide_where_to_go called when we should be in the chapel"
+        # It says "l" unnecessarily I think
+        # Would a rest really be good? Might we get attacked by a hostile?? A fresh one? Is status quo ok? 
+
+        # I think I had a bug of using self.character.weapon1 when I should start using weapon_bot (hasattr(weapon_bot), 'weapon')
+        # So I didn't rewield (blank rewield)
 
     def check_rings(self):
         # magentaprint("SmartCombat check_rings()")
