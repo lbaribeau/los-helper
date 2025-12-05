@@ -11,6 +11,7 @@ from fake.FakeBuy          import FakeBuy
 from fake.fake_consume     import FakeUse,FakeDrink
 from fake.fake_mobs.fake_mobs import *
 from fake.fake_character   import FakeCharacter
+from comm.CharacterClass   import CharacterClass
 
 class FakeTelnetSocket(object):
     def __init__(self, mud_map):
@@ -233,6 +234,11 @@ class FakeTelnetSocket(object):
             self.socket_output.append('You feel yourself moving faster.\n\r')
         elif command.startswith('pra'):
             self.socket_output.append('You feel extremely pious.\n\r')
+        elif command.startswith('ber'):
+            self.socket_output.append('The red mist fades from your sight.\n\r')
+        elif command.startswith('regex_cart'):
+            self.char._class=CharacterClass(self, "Bar", 1)
+            self.socket_output.append(str(self.char._class.buff_skills[0].regex_cart))
         elif command == 'rest':
             self.char.hp = self.char.maxhp
             self.char.mp = self.char.maxmp

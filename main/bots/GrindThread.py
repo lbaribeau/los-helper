@@ -154,7 +154,7 @@ class GrindThread(BotThread):
             self.heal_up()
 
     def do_on_successful_go(self):
-        super().do_on_successful_go() # function doesn't exists because of a typo... but, super().do_on_succesful_go() gets called by BotThread.run
+        super().do_on_successful_go() # function doesn't exist because of a typo... but, super().do_on_succesful_go() gets called by BotThread.run
         #So, let's fix the typo
         if self.fled:
             # wait see if we get attacked
@@ -200,6 +200,12 @@ class GrindThread(BotThread):
             # Try leaving if we want to leave - then we'll get into any fights about blocking if necessary
 
         self.engage_any_attacking_mobs()
+
+        if self.fled:
+            return
+            # Just prevent unnecessary fights in this state
+            # engage_any_attacking_mobs() above there probably were none
+            # We want to fight whatever we ran from
 
         # Now it seems like we are out of combat
         # If we got blocked... we might not get to this code... 
@@ -1102,6 +1108,9 @@ class GrindThread(BotThread):
             # "You run like a chicken" gets matched by cartography... so, do a look instead
             # ok need to create fled mob True
             self.fled=True
+            # Ok we still need something... we don't want to start a new fight and not be ready for the mob we fled from because then we'll bypass it and forget this setup
+            # So if fled is true, don't engage
+            # And it better get unset once we "go"
 
         # Here we are initiating a chase... it'd be nice to prioritize that over starting a new fight
         # Also need to support... if we get blocked I believe

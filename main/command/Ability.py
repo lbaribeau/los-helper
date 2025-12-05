@@ -8,6 +8,7 @@ from reactions.BotReactions import BotReactionWithFlag
 from comm import RegexStore
 from misc_functions import magentaprint
 from command.Command import Command
+# from itertools import chain
 
 # class Ability(ThreadingMixin2):
 #     def __init__(self):
@@ -41,29 +42,52 @@ class Ability(ThreadingMixin2, Command):
 
 # class BuffAbility(AbilityWithFailure):
 class BuffAbility(Ability):
+
     active = False
     # @property 
     # def already_buffed_regex(self):
     #     raise NotImplementedError()
     # @property 
     # def wear_off_regex(self):
-    #     raise NotImplementedError() 
+    #     raise NotImplementedError() # Ehrm didn't see this I guess this never got done...
+
+    def __init__(self, telnetHandler):
+        super().__init__(telnetHandler)
+        # self.regex_cart += [self.wear_off_regex]
+        # self.regex_cart += self.wear_off_regex
+        self.regex_cart.append(self.wear_off_regex)
+
     def notify(self, regex, M_obj):
-        if regex in self.success_regexes:
+        # if regex in self.success_regexes:
+        # magentaprint("Ability.notify()")
+        # magentaprint(self.wear_off_regex)
+        # magentaprint(regex)
+        if regex in itertools.chain.from_iterable(self.success_regexes):
+            # I think that's to collapse the list of lists
+            magentaprint("BuffAbility notify active=True")
             self.active = True
-        elif regex is self.wear_off_regex:
+        elif regex in self.wear_off_regex:
             # self.__class__.timer = time.time() + self.__class__.cooldown_after_success - self.lasts
-            self.timer = time.time() + self.cooldown_after_success - self.lasts
-            self.active = False
+            magentaprint("BuffAbility.notify wear_off_regex (active=False)")
+            self.timer = time.time() + self.cooldown_after_success - self.lasts #superfluous except if there was a logout
+            self.active = False # This part we want to know
+            # Ehrm this is a bit of jank... wear_off_regex is actually a LIST... but we are checking if the regex is the list... yeah that won't work... needs to be IN
+            # Ohhh goshhh... print test?? yeah ok so we know this clause didn't work (no print)
+            # Ok maybe fixed it
+            # Ok why did wear off not work... do we need to collapse (chain) iterable again
         # elif regex is self.already_buffed_regex:
         #     if self.up():
         #         # Timer is completely wrong -> Just set it very high and wait for wear_off_regex
         #         magentaprint("BuffAbility timer was way off.")
+        elif regex in itertools.chain.from_iterable(self.failure_regexes):
+            magentaprint("BuffAbility.notify() failure_regexes (active=False)")
+
         super().notify(regex, M_obj)
         # I could make this a BuffTimer and have silver chalice and steel bottle inherit the timer code
         # And have the abilities multiple inherit
 
     def execute_until_success(self):
+        # This funciton isn't needed... you can add a "c" to the end of the command, ie "bersc" "hasc" for haste... it is implemented
         pass
 
     def stop_executing(self):

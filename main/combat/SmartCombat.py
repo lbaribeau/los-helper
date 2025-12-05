@@ -230,32 +230,12 @@ class SmartCombat(CombatObject):
             self.target = None
 
     def berserking(self):
-        if hasattr(self, "berserk_ability"):
-            return self.berserk_ability.active
-
-        for a in self.character._class.abilities:
-            if isinstance(a, Berserk):
-                self.berserk_ability=a
-                break
-        if hasattr(self, "berserk_ability"):
-            return self.berserk_ability.active
+        # Fixed it:
+        if Berserk.command in self.character._class.abilities:
+            return self.character._class.abilities[Berserk.command].active
         else:
-            # self.berserk_ability=BuffAbility(self.telnetHandler)
-            # Ack this isn't working
-            # init assumes there are success regexes
-            # self.berserk_ability=object()
-            # self.berserk_ability.active=False # doesn't work
-            class DummyAbility(BuffAbility):
-                active=False
-                def __init__(self, telnetHandler):
-                    self.success_regexes=[]
-                    self.error_regexes=[]
-                    super().__init__(telnetHandler)
-            self.berserk_ability=DummyAbility(self.telnetHandler) # Object that always says "active" is False
-            # Question though - how did we get to this section as a barbarian...
-
-        return self.berserk_ability.active
-        # Could be better if were to notice right away when berserking drops but that's an optimization
+            return False
+        # Needed to put wear_off_regex into regex_cart, and correctly
 
     def run(self):
         self.stopping    = False
@@ -795,6 +775,54 @@ class SmartCombat(CombatObject):
         self.run()
         magentaprint("SmartCombat completed!")
 
+
+
+    # def berserking(self):
+    #     if hasattr(self, "berserk_ability"):
+    #         return self.berserk_ability.active
+
+    #     magentaprint("Smart combat looking at abilities... ")
+    #     magentaprint(str(self.character._class.abilities))
+    #     for a in self.character._class.abilities:
+    #         # magentaprint("Smart combat looking at abilities... " + a.command)
+    #         magentaprint("Smart combat looking at abilities... " + str(a))
+    #         magentaprint(a.__class__)
+    #         magentaprint(isinstance(a, Berserk))
+    #         if isinstance(a, Berserk):
+    #             magentaprint("Got Berserk ability")
+    #             self.berserk_ability=a
+    #             break
+
+    #     if Berserk.command in self.character._class.abilities:
+    #         self.berserk_ability=a
+
+    #     if hasattr(self, "berserk_ability"):
+    #         return self.berserk_ability.active
+    #     else:
+    #         # self.berserk_ability=BuffAbility(self.telnetHandler)
+    #         # Ack this isn't working
+    #         # init assumes there are success regexes
+    #         # self.berserk_ability=object()
+    #         # self.berserk_ability.active=False # doesn't work
+    #         class DummyAbility(BuffAbility):
+    #             active=False
+    #             # wear_off_regex=RegexStore.red_mist_fades
+    #             def __init__(self, telnetHandler):
+    #                 self.success_regexes=[]
+    #                 self.error_regexes=[]
+    #                 super().__init__(telnetHandler)
+    #         self.berserk_ability=DummyAbility(self.telnetHandler) # Object that always says "active" is False
+    #         # Question though - how did we get to this section as a barbarian...
+    #         # So, expecting the error... can't run if you are berserk... (unlikely)
+    #         # ...Ok maybe I know why this didn't work either?
+    #         # Maybe because it never happens
+    #         # We were still using actual Berserk
+    #         # Ok that's good so we know why Dummy also didnt' work
+    #         # I fixed Berserk. Wear_off_regex needed to be in regex_cart to get notification. Also, += was weird because strings, .append worked...
+    #         # Also be sure to use "in" because everything in the regex store is in lists
+
+    #     return self.berserk_ability.active
+    #     # Could be better if were to notice right away when berserking drops but that's an optimization
 
 
 

@@ -522,7 +522,9 @@ class CommandHandler(object):
                 magentaprint(i)
         elif user_input == 'get_possible_weapons':
             magentaprint(self.weapon_bot.get_possible_weapons())
-        # Node: see self.actions before adding more cases (just associate a command with a function pointer)
+        elif user_input == 'Berserking':
+            magentaprint(self.smartCombat.berserking())
+        # Note: see self.actions before adding more cases (just associate a command with a function pointer)
         else:
             # Doesn't match any command we are looking for, send it to server
             self.telnetHandler.write(user_input)
