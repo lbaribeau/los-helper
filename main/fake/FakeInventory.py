@@ -7,6 +7,7 @@ from fake.FakeItem import FakeItem
 
 class FakeInventory(object):
     def __init__(self, l):
+        # magentaprint("Fake inventory list before sorting: " + str(l))
         self.l = sorted(FakeItem(s) for s in l)
 
         magentaprint("Fake inventory list: " + str(self.l))

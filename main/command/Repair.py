@@ -1,6 +1,7 @@
 
 from command.Command import Command
 from comm import RegexStore as R
+from misc_functions import magentaprint
 
 # class Repair(CommandThatRemovesFromInventory):
 class Repair(Command):
@@ -26,6 +27,7 @@ class Repair(Command):
 
     def notify(self, regex, match):
         self.result = regex
+        magentaprint("Repair(Command) notify(), _sent_target is: " +str(self._sent_target)+"... trying that on inventory.get or .remove_by_ref")
         if self.success:
             self.inventory.get(self._sent_target).usable = True
         if self.failure:

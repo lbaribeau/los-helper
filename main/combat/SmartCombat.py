@@ -94,7 +94,8 @@ class SmartCombat(CombatObject):
                 # if self.weapon_bot.broken_weapon or not self.character.inventory.has_restorative():
                 if not hasattr(self.weapon_bot, 'weapon') or not self.character.inventory.has_restorative():
                     self.fleeing = True  # TODO: Do pots interfere with the flee timer?  (Should I use a pot?)
-                    print('\a')
+                    magentaprint("SmartCombat fleeing ASAP")
+                    print('\a') # Terminal programs interpret this character as being asked to make an alarm sound, so a sound is made so you know bot is low HP
                 self.spam_pots()
             else:
                 self.stop_pots_if_started_by_smart_combat()
@@ -104,8 +105,8 @@ class SmartCombat(CombatObject):
             self.activated = False
             # self.check_rings()
         elif regex in R.mob_attacked and self.needs_heal() and not self.character.inventory.has_large_restorative():
-            magentaprint("SmartCombat.fleeing = True")
             self.fleeing = True
+            magentaprint("SmartCombat fleeing ASAP (2)")
             print('\a')
         elif regex in R.weapon_break + R.weapon_shatters:
             magentaprint("SmartCombat weapon break: " + str(match.group('weapon')))

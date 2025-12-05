@@ -67,7 +67,7 @@ class FakeTelnetSocket(object):
             ['dwarven hammer']+
             ['glowing potion']+["paladins's plate armour"]+2*['maul hammer'] +
             ['plate mail sleeves']+2*['scarlet potion']+
-            ['steel bottle'])
+            ['steel bottle']+2*['studded leather gloves'])
         self.inventory.unset_usable('morning')
         self.inventory.unset_usable('maul 2')
         self.inventory.unset_usable('maul 3')
@@ -75,6 +75,7 @@ class FakeTelnetSocket(object):
         self.inventory.unset_usable('ring 5')
         self.inventory.unset_usable('crossbow 2')
         self.inventory.unset_usable('crossbow 3')
+        self.inventory.unset_usable('studded 2')
         self.char.inv = self.inventory
         # self.inventory = FakeInventory({'awl':1, 'small lamp':6, 'small knife':6, 'large sack':2, 'silver chalice':6, 'small flask':2, \
         #     'small lamp':2, 'small restorative':2, 'steel bottle':6, 'steel ring':6, 'stilleto':2, 'white potion':2, \
@@ -239,6 +240,8 @@ class FakeTelnetSocket(object):
         elif command.startswith('regex_cart'):
             self.char._class=CharacterClass(self, "Bar", 1)
             self.socket_output.append(str(self.char._class.buff_skills[0].regex_cart))
+        elif command.startswith('berserking'):
+            self.socket_output.append()
         elif command == 'rest':
             self.char.hp = self.char.maxhp
             self.char.mp = self.char.maxmp
@@ -320,17 +323,6 @@ class FakeTelnetSocket(object):
             self.socket_output.append(echo + '\n\r')
         elif re.match('quit', command) or re.match('quilt', command):
             self.socket_output.append('Goodbye! Come back soon.\n\r')
-        elif re.match('repair ', command):
-            # self.socket_output.append("\"Darnitall!\" shouts the smithy, \"I broke another. Sorry lad.\"")
-            magentaprint("FakeTelnet command: " + str(command))
-            item = self.char.inv.get(command.partition(' ')[1])
-            if item:  # item can be none if person used 'echo Your chain mail armour fell apart.'... then inventory is out of sync
-                item.usable = True
-                self.socket_output.append("The smithy hands a " + str(item) + " back to you, almost good as new.")
-            else:
-                self.socket_output.append('"Darnitall!" shouts the smithy, "I broke another. Sorry lad."')
-                # self.char.inv.remove(item)
-                # Did they just remove an item we didn't have???
         elif re.match('wear? iron \d', command):
             self.socket_output.append("You wear an iron shield.\n\ryou grip the shield firmly.\n\r")
             self.inventory.remove(command.partition(' ')[2])
@@ -342,6 +334,28 @@ class FakeTelnetSocket(object):
         # elif re.match("l maul?( \d)?", command) or re.match("l dwarven", command):
         elif any(re.match(x, command) for x in ['l maul?( \d)?', 'l dwarven', 'l heavy', 'l small?( \d)?']):
             self.socket_output.append("It is in pristine condition.")
+        # elif re.match('l stud?.*', command):
+        elif re.match('l stud?d?e?d? 2', command):
+            self.socket_output.append("It is unusable.\n\r")
+        elif re.match('l stud?', command):
+            self.socket_output.append("It is in pristine condition.\n\r")
+        elif re.match('rep?a?i?r? stud?d?e?d? 2', command):
+            self.inventory.set_usable('stud 2')
+            self.socket_output.append("The smithy takes 38 gold pieces from you.\n\r")
+            self.socket_output.append("The smithy hands some studded leather gloves back to you, almost good as new.\n\r")
+        elif re.match('rep?a?i?r? stud?', command):
+            self.socket_output.append("It's not broken yet.\n\r")
+        elif re.match('repair ', command):
+            # self.socket_output.append("\"Darnitall!\" shouts the smithy, \"I broke another. Sorry lad.\"")
+            magentaprint("FakeTelnet command: " + str(command))
+            item = self.char.inv.get(command.partition(' ')[1])
+            if item:  # item can be none if person used 'echo Your chain mail armour fell apart.'... then inventory is out of sync
+                item.usable = True
+                self.socket_output.append("The smithy hands a " + str(item) + " back to you, almost good as new.")
+            else:
+                self.socket_output.append('"Darnitall!" shouts the smithy, "I broke another. Sorry lad."')
+                # self.char.inv.remove(item)
+                # Did they just remove an item we didn't have???
 
     def gen_area(self, area):
         magentaprint("FakeTelnetSocket generate area {0}".format(area))
