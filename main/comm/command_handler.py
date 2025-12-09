@@ -53,6 +53,8 @@ magentaprint("... Analyser...");           from comm.analyser              impor
 magentaprint("... Info...");               from command.Info               import Info
 magentaprint("... AreaStoreItem...");      from db.Database                import AreaStoreItem
 magentaprint("... Plotter...");            from plotter                    import Plotter
+magentaprint("... Plotter...");            from command.Rest               import Rest
+
 magentaprint("... Done command_handler.py import section, now defining classes")
 
 class CommandHandler(object):
@@ -127,6 +129,8 @@ class CommandHandler(object):
         # self.wear = Wear(telnetHandler)
         self.wear = Wear(telnetHandler, character.inventory)
         mudReaderHandler.add_subscriber(self.wear)
+        self.rest = Rest(telnetHandler)
+        mudReaderHandler.add_subscriber(self.rest)
         # magentaprint(str(Equipment))
         self.equipment = Equipment(telnetHandler)
         # self.eq_bot = EquipmentBot(character, self, self.mudReaderHandler, self.mud_map)
@@ -524,6 +528,11 @@ class CommandHandler(object):
             magentaprint(self.weapon_bot.get_possible_weapons())
         elif user_input == 'Berserking':
             magentaprint(self.smartCombat.berserking())
+        elif user_input == 'TOTALPATHS':
+            if self.bot_thread:
+                magentaprint(self.bot_thread.total_paths())
+            else:
+                magentaprint("No bot thread yet (no total paths yet)")
         # Note: see self.actions before adding more cases (just associate a command with a function pointer)
         else:
             # Doesn't match any command we are looking for, send it to server
@@ -1011,7 +1020,7 @@ class CommandHandler(object):
         magentaprint("Uptime:     " + misc_functions.get_runtime_string())
         magentaprint("Exp rate: {} /hr".format(round(x/t*3600)))
         magentaprint("Exp rate: {} /min".format(round(round(x/t*60))))
-        magentaprint("Total this session: " + str(x))
+        magentaprint("Total exp this session: " + str(x))
         # g = self.character.GOLD # Ok this is all the current gold, so it won't give us gold rate
         # magentaprint("Gold delta: ")
         # magentaprint("Gold rate: {} gold/hr; {} gold/min; {} gold/s.".format(round(x/t/3600), round(x/t/60), round(x/t)))
@@ -1020,7 +1029,7 @@ class CommandHandler(object):
         gold = self.character.GOLD-self.character.START_GOLD
         magentaprint("Gold rate: {} /hr".format(round(gold/t*3600)))
         magentaprint("Gold rate: {} /min".format(round(gold/t*60)))
-        magentaprint("Total this session: {} ".format(gold))
+        magentaprint("Total gold this session: {} ".format(gold))
 
     def print_gold(self):
         gold = self.inventory.GOLD-self.character.START_GOLD

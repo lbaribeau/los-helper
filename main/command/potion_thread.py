@@ -47,6 +47,7 @@ class Consume(threading.Event):
         # small_pots = ['chicken soup', 'small restorative', 'small flask', 'white potion']
         pots = [
             'chicken soup', 
+            # 'carrot', # I know "eat" works but what about "use"
             'small restorative', 
             'white potion', 
             'small flask', 

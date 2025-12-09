@@ -213,9 +213,11 @@ class Character(object):
         'streetsweeper', 'shopper', 'window shopper', 'window cleaner', 'waitress', 'housewife', 'squirrel', 'milk maid', 'rabbit',
         'one man band', 'heather seller', 'irate teenager', 'peasant', 'one-armed beggar', 'village elder', 'small dog', 'tribesman',
         'searcher', 'delivery boy', 'wanderer', 'villager', 'vagrant', 'dropout', 'tramp', 'serf', 'dishwasher',
-        'punter','chicken','coopers apprentice', 'diner', "cook's assistant", "miner's assistant", 'surveyor', 'pit pony', 'cleaner',
+        'punter','chicken','coopers apprentice', 'diner', "cook's assistant", 
+        'surveyor', 'pit pony', 'cleaner',
         'hungy busker', 'beggar', 'dropout', 'one-armed beggar', 'sitting beggar'
         # level 3 travellers exist, spawn near the amethyst town crier, so, not level 1
+        # There is certainly a level 2 one so we can't have miner's assisstant in this list
     ]
     lvl1_red_monsters = [ # 8-15 exp
         'old kobold', 'kobold child', 'kobold dam'
@@ -223,7 +225,9 @@ class Character(object):
     lvl2_monsters = [
         'hawker', 'barmaid', 'smelly beggar', 'black crow', 'sheep', 'goose', 'singer', 'musician', 'spiv', 'bidder', 'dairy cow',
         'scholar', 'juggler', 'shepherd', 'gazelle', 'jongleur', 'clerk', 'stablehand', 'rich kid', 'bladesman',
-        "cook's assistant", "miner's assistant", 'mare', 'tabby cat', 'plumber', 'old fisherman', 'hungry diner',
+        "cook's assistant", 
+        "miner's assistant", 
+        'mare', 'tabby cat', 'plumber', 'old fisherman', 'hungry diner',
         'fletcher', 'baker',
         'retired fisherman', # to confirm
         'acolyte',  # blue balance

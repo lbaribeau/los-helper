@@ -93,12 +93,14 @@ class SellBot(MiniBot):
             if self.stopping:
                 break
             else:
+                magentaprint("sell_bot.sell_or_drop_stuff actioning: \"" + item_ref + "\": " + str(self.inventory.get_item_name_from_reference(item_ref)))
                 command_object.execute_and_wait(item_ref)
 
         for item_ref in self.inventory.broken_junk():
             if self.stopping:
                 break
             else:
+                magentaprint("sell_bot.sell_or_drop_stuff actioning broken: \"" + item_ref + "\": " + str(self.inventory.get_item_name_from_reference(item_ref)))
                 command_object.execute_and_wait(item_ref)
 
     def bulk_drop(self, unique_word, qty='all'):

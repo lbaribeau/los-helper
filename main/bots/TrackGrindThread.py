@@ -43,9 +43,12 @@ class Tracks:
             # For somewhat low level characters (this is pretty safe)
             # Also go fight the children first, we don't want to miss out on them
             'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','se','se','se','s','s','s','s','s','e','e',
-            'se','e','s','s','s','s','glowing',
+            'se','e', # Onduring Road / Miner's Lane
+            's','s','s',
+            'w', 'w', 'centre', 'rest_here', 'out', 'e', 'e',  # NEW
+            's','glowing',
             'passage','mines','down','n','n','n','n','ne','n','w','n','n',
-            'e','door','w','gully','up','boulder','up','cave 3','ne','ne','n','s','up','e','cave','out', # child large
+            'e','door','w','gully','up','boulder','up','cave 3','ne','ne','n','s','up','e','cave','out', # child, large
             'se','cave','out', # large kobolds (danger?)
             #'prepare', 'e', 'ne', 'door', 'door', 'prepare', 'sw','w',
             'ladder','cave','out', # champion
@@ -356,7 +359,7 @@ class TrackGrindThread(GrindThread):
             self.__TOTALPATHS = 10 # Theatre, market, main roads (militia soldiers path), easy coral path, and kobolds are level 1 safe. 
             # Idea: picnic hill for level 1s (if there's a spot safe from guards showing up)
             # Amethyst centre, bidders, animals, theatre goers, actors, auctioneers, acrobats (add window shopper)
-        if C.level <= 3:
+        elif C.level <= 3:
             self.__TOTALPATHS = 18 # Coral alley (hookers help aura at level 3), kobold back door (lvl 7), mill worker area
             # idea: casino, or look around amber for level 4/5 mobs... not sure if casino is safe tho
         elif C.level <= 6:
@@ -385,16 +388,23 @@ class TrackGrindThread(GrindThread):
         else:
             self.__TOTALPATHS = 128
 
+        magentaprint("TrackGrindThread __init__() __TOTALPATHS is " + str(self.__TOTALPATHS))
+
         if isinstance(starting_path, int) and starting_path < self.__TOTALPATHS:
             self.nextpath = starting_path
         else:
             self.nextpath = 0
 
+    def total_paths(self):
+        return self.__TOTALPATHS
+
     def decide_where_to_go(self):
-        magentaprint("Inside decide_where_to_go", False)
+        magentaprint("Inside decide_where_to_go...", False)
+        magentaprint("...self.__TOTALPATHS is " + str(self.__TOTALPATHS), False)
         C=self.character
+        magentaprint("...next path was " + str(self.nextpath), False)
         self.nextpath = (self.nextpath + 1) % (self.__TOTALPATHS + 1)
-        magentaprint("next path = " + str(self.nextpath), False)
+        magentaprint("... next path is now " + str(self.nextpath), False)
 
         if C.AREA_ID != 2:
             magentaprint("CAUTION: decide_where_to_go called when we should be in the chapel! AREA_ID is {}.".format(C.AREA_ID))
@@ -433,12 +443,15 @@ class TrackGrindThread(GrindThread):
         # If level 6-8, do a setup run before kobold guards (also include 1-5) (carpenter, thatcher, street traders)
         elif self.nextpath == 7:
             if C.level in range(1,11):
-                return self.tracks.CORAL[:]
+                return self.tracks.CORAL[:] # This doesn't seem all that necessary...
             else:
                 magentaprint("Skipping easy coral pretrack to glowing portal")
                 return self.skip()
         elif self.nextpath == 9:
-            if not self.cast.aura or (self.cast.aura and self.cast.aura >= Aura('pale blue') and self.cast.aura <= C.preferred_aura):
+            magentaprint(".nextpath is 9, kobolds!")
+            cast=self.cast
+            # if not cast.aura or (cast.aura and cast.aura >= Aura('pale blue') and cast.aura <= C.preferred_aura):
+            if not cast.aura or (cast.aura >= Aura('pale blue') and cast.aura <= C.preferred_aura):
                 if C.level in [1,2,3,4,5]:
                     magentaprint("Not going to do kobolds - aura unknown or very blue and level too low.")
                     return self.skip()
@@ -452,12 +465,12 @@ class TrackGrindThread(GrindThread):
                 else:
                     return self.tracks.kobold_massacre[:]
             # Track-based aura fixing (skipping track if aura is too blue)
-            # elif (C.level >= 4 or self.cast.aura < Aura('pale blue')) or \
-            #     self.cast.aura <= C.preferred_aura:
-            elif self.cast.aura > C.preferred_aura:
+            # elif (C.level >= 4 or cast.aura < Aura('pale blue')) or \
+            #     cast.aura <= C.preferred_aura:
+            elif cast.aura > C.preferred_aura:
                     magentaprint("Not going to do kobolds - too blue right now")
                     # magentaprint("Not going to do kobolds. Current aura, and preferred, comparison: %s,  %s, %s" %
-                    #     (str(self.cast.aura), str(C.preferred_aura), str(self.cast.aura <= C.preferred_aura)))
+                    #     (str(cast.aura), str(C.preferred_aura), str(cast.aura <= C.preferred_aura)))
                     return self.skip()
             else:
                 if C.level in [1,2,3,4,5]:
@@ -478,7 +491,7 @@ class TrackGrindThread(GrindThread):
             # So I made a track for the kobold back door
             # This reduces the need for kobold_massacre (all in one shot)
             # It avoids a few insanes and a few guards though
-            # At level 7 my guy is just fighting the shaft manager then is totally spent, and visits the kobolds for no reason after
+            # (nvm) At level 7 my guy is just fighting the shaft manager then is totally spent, and visits the kobolds for no reason after
             if not self.cast.aura or (self.cast.aura and self.cast.aura >= Aura('pale blue') and self.cast.aura <= C.preferred_aura) and C.level in range(7,10):
                 return self.tracks.KOBOLD_BACK_DOOR[:]
             elif self.cast.aura <= C.preferred_aura and C.level in range(5,10):
@@ -708,7 +721,7 @@ class TrackGrindThread(GrindThread):
         # Human paladin likes steel collars (oremaster) steel armour (Rimark) steel mask (spiv) rings (bandits, sawmill, minstrel)
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.nextpath))
-        return self.skip()
+            return self.skip()
 
     def skip(self):
         self.nextpath = self.nextpath + 1 # So that we don't go selling

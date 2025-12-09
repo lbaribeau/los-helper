@@ -247,7 +247,7 @@ class Inventory(SimpleCommand, ReferencingList):
             R.disintegrates     ,
             R.you_drink         ,
             R.sold              ,
-            R.not_a_pawn_shop   ,
+            # R.not_a_pawn_shop   ,
             R.wont_buy          ,
             R.wont_buy2         ,
             R.you_wield         ,
@@ -367,7 +367,7 @@ class Inventory(SimpleCommand, ReferencingList):
             item = match.group(1)
             self.add_broken(match.group(1))
             # self.get_equipment()
-            self.unequip_weapon(item)
+            self.unequip_weapon(item) # Ehrm what if it was armour?
         elif regex in R.weapon_shatters:
             magentaprint('Inventory weapon_shatters')
             item = match.group(1)
@@ -392,6 +392,7 @@ class Inventory(SimpleCommand, ReferencingList):
         else:
             magentaprint("Inventory uncaught notify")
             # "use all": "You have nothing you can wear."
+            # Could be "This is not a pawn shoppe."
 
         # magentaprint(self.list, False)
         super().notify(regex, match)
@@ -1028,6 +1029,8 @@ class Inventory(SimpleCommand, ReferencingList):
             magentaprint(str(self.equipped_items))
         elif 'Second' in self.equipped_items.keys() and self.equipped_items['Second'] and self.equipped_items['Second'][0].obj.name == weapon:
             del self.equipped_items['Second']
+        else:
+            magentaprint("Inventory.unequip_weapon didn't see an equipped match on " + weapon)
 
     def count(self, item_string):
         mud_item = MudItem(item_string)

@@ -12,6 +12,8 @@ from comm                     import Spells
 from db.MudItem               import MudItem
 from db.Mob                   import Mob
 from mini_bots.bless_and_prot import BlessTimer, ProtTimer
+# from command.Rest import Rest
+import time # Not needed though you can use self.sleep
 
 class GrindThread(BotThread):
     def __init__(self, character, command_handler, mudReaderHandler, mud_map):
@@ -64,6 +66,9 @@ class GrindThread(BotThread):
             return True
         elif exit_str == "drop_items":
             self.drop_items()
+            return True
+        elif exit_str == "rest_here":
+            self.rest_here()
             return True
         elif re.match("dobuy.+?", exit_str):
             return self.buy_and_wield(exit_str)
@@ -466,13 +471,13 @@ class GrindThread(BotThread):
 
         # TODO: keep resting if benefitting from resting until maxed.
 
-        if (self.neither_is_maxed or self.one_is_too_low) and not self.stopping:
-            self.command_handler.process("rest")
+        # if (self.neither_is_maxed or self.one_is_too_low) and not self.stopping:
+        #     self.command_handler.process("rest")
 
         while (self.neither_is_maxed or self.one_is_too_low) and not self.stopping:
             if self.engage_any_attacking_mobs():
                 self.command_handler.process("rest")
-            self.sleep(0.1)
+            self.sleep(0.4)
 
         # Ok well the area regex has its problems, like, seeing "You stop resting." if you just go at this point
         # So let's hack away
@@ -530,6 +535,10 @@ class GrindThread(BotThread):
             self.sleep(1.2)
 
         # magentaprint("Stopping rest for health",False)
+
+
+
+
 
     def update_aura(self):
         # if self.stopping or self.character.ACTIVELY_MAPPING or not Spells.showaura in self.character.spells:
@@ -904,6 +913,41 @@ class GrindThread(BotThread):
         # We also have broken rings...
         # Hmmmm, what if some of it is restoratives?
 
+    def rest_here(self):
+        # Ok we got a "TrackGrind" code to introduce a rest point into the track, likely other than the amethyst chapel
+        # Just do a rest (don't do all the weapon checks)
+        self.rest_to_full() # Didn't realize I had rest_until_ready... but even that doesn't rest to full
+
+    def rest_to_full(self):
+        # Ok this one's new I went a long time with super-optimal resting code but now I'm like just type "rest" (ASAP), that'll get us to full
+        # Might we get attacked???
+        # I guess we fight if so...
+        # Should I make a "rest" command to check that it's working?
+        # self.command_handler.process("rest")
+
+        rest=self.command_handler.rest
+        # rest.execute_and_wait()
+        # rest.execute()
+        # if rest.success:
+            # while self.health_ticks_needed()
+            # self.health_ticks_needed()
+        C=self.character
+        rest.execute()
+        magentaprint("Entering GrindThread rest_to_full loop wait loop")
+        while (C.HEALTH < C.maxHP or C.MANA < C.maxMP) and not self.stopping:
+            while C.mobs.attacking != [] and not self.stopping:
+                self.engage_any_attacking_mobs() # Outer loop is superfluous but that's fine (engage_any_attacking_mobs SHOULD empty mobs.attacking)
+                # rest.execute_and_wait()
+                rest.execute()
+            self.sleep(2)
+            # magentaprint("GrindThread rest_to_full() waiting, hopefully resting is active")
+            # Very rudimentary check for combat interrupt... not sure any of the other code does it better though
+
+        # Rest_until_ready had this bit to help the "go" regex... 
+        # self.command_handler.prompt.clear()
+        # self.command_handler.process('')
+        # self.command_handler.prompt.wait()
+
     def drop_refs(self):
         pass
 
@@ -1102,7 +1146,8 @@ class GrindThread(BotThread):
             # Ehrm his is really trackgrind code(?) Maybe it'll work anyway
             self.direction_list = self.mud_map.get_path(self.character.AREA_ID, note_current_location) + self.direction_list
             # Ok skipping the Try Except on that mud_map call...
-            self.rest_until_ready()
+            # self.rest_until_ready()
+            self.rest_to_full() # new
             # PERFECT
             # Ok there was some JANK
             # "You run like a chicken" gets matched by cartography... so, do a look instead
