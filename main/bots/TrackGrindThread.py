@@ -125,7 +125,8 @@ class Tracks:
         self.KOBOLD_BACK_DOOR = self.to_glowing_portal + [
             'glowing', 'passage','mines','down','n','n','n','n','nw','e',
             'shaft','d','d','d','d','n','n','n','n','slope','n','d','d','d','d','ne','ne','cleft',
-            'd','d','water',
+            'd','d','water', 
+            # Why the heck did I add water??? I guess to help aura... maybe add a pretrack before the water (pit ponies, miner's assistants, diggers... to help level ~5)
             'n','n','d','e','n','w','d','n','e','n','u','w','n','u','u',
             'e','e','n','n','e', # Not seeing a better way to the priests
             # After visiting priests, "fait le tour"
@@ -400,12 +401,7 @@ class TrackGrindThread(GrindThread):
 
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go...", False)
-        magentaprint("...self.__TOTALPATHS is " + str(self.__TOTALPATHS), False)
         C=self.character
-        magentaprint("...next path was " + str(self.nextpath), False)
-        self.nextpath = (self.nextpath + 1) % (self.__TOTALPATHS + 1)
-        magentaprint("... next path is now " + str(self.nextpath), False)
-
         if C.AREA_ID != 2:
             magentaprint("CAUTION: decide_where_to_go called when we should be in the chapel! AREA_ID is {}.".format(C.AREA_ID))
             self.command_handler.process("l")
@@ -418,6 +414,68 @@ class TrackGrindThread(GrindThread):
             magentaprint("Died: stopping bot thread.", False)
             self.stop()
             return self.tracks.LIMBO_TO_CHAPEL[:]
+
+        # Put training logic here I guess... weapon/armour shopping could have gone here...
+        # if self.should_train():
+
+        # t = self.training_path()
+        # if t:
+        #     return t
+        # else:
+        #     return self.decide_grind_path()
+
+    # def should_train(self):
+    #     return 
+
+    # def should_train(self):
+        # gold check is similar to what armour bot does - 3x weapon cost + train cost
+        # exp check is just > x amount on info
+        # also check if we have the path for it... maybe return a dummy path... I guess could return empty list or call decide_grind_path
+        # Either hardcode the path or use the mudmap...
+        # Could have a mudmap query by area title if it's in the map...
+        # Maybe not just boolean then go...
+        # maybe just return a path and if empty that's the clause
+    # def training_path(self):
+    #     if self.info    
+    #     # Why even make it a function... hmmm
+
+    # def can_go_train(self):
+    #     character = self.character
+    #     info = character.info
+
+    #     return \
+    #         character.EXPERIENCE > info.exp_to_level and \
+    #         character.GOLD > info.gold_to_level + 2*self.command_handler.weapon_bot.possible_weapons[0].item.value and \
+    #         info.level 
+
+        self.command_handler.print_gold_exp_etc("")
+
+        if self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > C.info.gold_to_level + 2*self.command_handler.weapon_bot.possible_weapons[0].item.value and \
+            C.current_experience > C.info.exp_to_level:
+            if C._class.id == "Bar":
+                if C.level in [1,2,3,4]:
+                    return ['ou','n','n','w','g','n','n','n','n','n','g','n','n','g','n','nw','nw','n','nw','nw','nw','nw','n','nw','n','n','nw','n','se','doo','e','train','areaid2']
+                    # 1421, Barbarian Lodge
+                    # This will probably work but I kind of want to fix up chase, flee, (targeting correct mob after chasing, killing mobs attacking if resting) before leveling
+                    # Also needs "Train" object
+            elif C._class.id == "Fig":
+                if C.level in [1,2]:
+                    return ['ou','s','e','s','s','s','w','g','s','se','se','e','e','e','se','se','se','s','s','s','s','s','s','s','s','s','s','e','ac','ar','doo 2','train','out','ar','ou', 'areaid2']
+                if C.level in [3,4]:
+                    return ['ou','s','e','s','s','s','w','g','s','se','se','e','e','e','se','se','se','s','s','s','s','s','s','s','s','s','s','e','ac','ar','doo 3','train','out','ar','ou', 'areaid2']
+        else:
+            magentaprint("TrackGrindThread.decide_where_to_go decided training is not needed at the moment.")
+            # magentaprint("Note: keeping " + str(2*self.command_handler.weapon_bot.possible_weapons[0].item.value) + " backup gold for weapons.")
+
+        # If execution got here, we aren't training
+
+    # def decide_grind_path(self):
+
+        # This is still decide_where_to_go()
+        magentaprint("...self.__TOTALPATHS is " + str(self.__TOTALPATHS), False)
+        magentaprint("...next path was " + str(self.nextpath), False)
+        self.nextpath = (self.nextpath + 1) % (self.__TOTALPATHS + 1)
+        magentaprint("... next path is now " + str(self.nextpath), False)
 
         if self.nextpath % 2 == 0:
             # self.inventory.get_inventory()
@@ -492,10 +550,14 @@ class TrackGrindThread(GrindThread):
             # This reduces the need for kobold_massacre (all in one shot)
             # It avoids a few insanes and a few guards though
             # (nvm) At level 7 my guy is just fighting the shaft manager then is totally spent, and visits the kobolds for no reason after
-            if not self.cast.aura or (self.cast.aura and self.cast.aura >= Aura('pale blue') and self.cast.aura <= C.preferred_aura) and C.level in range(7,10):
+            # if C.level in range(7,10) and (not self.cast.aura or self.cast.aura >= Aura('pale blue') and self.cast.aura <= C.preferred_aura):
+            if C.level in range(7,10) and (not self.cast.aura or self.cast.aura <= C.preferred_aura):
+                # Ehrm logic was true if we didn't know aura
                 return self.tracks.KOBOLD_BACK_DOOR[:]
-            elif self.cast.aura <= C.preferred_aura and C.level in range(5,10):
+            # elif C.level in range(5,10) and (not self.cast.aura or self.cast.aura <= C.preferred_aura):
+            elif C.level in range(5,10) and self.cast.aura and self.cast.aura <= C.preferred_aura and self.cast.aura < Aura('pale blue'):
                 return self.tracks.KOBOLD_BACK_DOOR[:] # Might be risky for lvl 5 because of the water - the track avoids hostiles
+                # I guess I wanted to skip if we were too low and pale blue due to hostility? Rewrote logic
             magentaprint("Skip kobold waterway, aura too blue.")
             return self.skip()
         elif self.nextpath == 15:
@@ -722,6 +784,7 @@ class TrackGrindThread(GrindThread):
         else:
             magentaprint("Unexpected case in decide_where_to_go, nextpath==" + str(self.nextpath))
             return self.skip()
+        # Idea: Berzerkers (level 8), Brutalizers (level 11), other shamans ("ask Immigration barbarbian")
 
     def skip(self):
         self.nextpath = self.nextpath + 1 # So that we don't go selling

@@ -42,6 +42,36 @@ class CharacterClass(object):
 
         self.mana_tick = 2
         # NOTE: 18 Int gives you +1 mana tick, not sure of other thresholds (use info object for that)
+        abilities = self.possible_abilities_list(class_string, level)
+
+        self.abilities = {}
+
+        for a in abilities + [Search, Prepare, Hide]:
+            if level >= a.level:
+                self.abilities[a.command] = a(telnetHandler)  # Construct all abilities
+
+        self.heal_skills = [a for a in self.abilities.values() if isinstance(a, HealAbility)]
+        self.buff_skills = [a for a in self.abilities.values() if isinstance(a, BuffAbility)]
+        self.slow_combat_skills = [a for a in self.abilities.values() if isinstance(a, SlowCombatAbility)]
+        self.fast_combat_skills = [a for a in self.abilities.values() if isinstance(a, FastCombatAbility)]
+
+        for h in self.heal_skills:
+            h.set_level(level)
+        # for s in self.slow_combat_skills:
+        #     s.kill = 
+
+        # self.abilities.append(Search(telnetHandler))
+        # self.abilities = [a for a in self.abilities if level >= a.level]
+        # self.abilities = [c, a for c, a in self.abilities.items() if level >= a.level]
+        # self.abilities = {c: a for c, a in self.abilities.items() if level >= a.level}
+        # for c, a in self.abilities.items:
+        #     if level >= a.level:
+        # magentaprint("CharacterClass abilities before dict comprehension: " + str(self.abilities))
+        # self.abilities = {a.command: a for a in self.abilities if level >= a.level}
+        # magentaprint("CharacterClass final abilities: " + str(self.abilities))
+        magentaprint("CharacterClass final abilities: " + dict_to_string_by_classes(self.abilities))
+
+    def possible_abilities_list(self, class_string, level):
         abilities = []
 
         if self.id == "Ass":
@@ -137,16 +167,21 @@ class CharacterClass(object):
         else:
             magentaprint("CharacterClass error: could not recognize class string.")
 
+        return abilities
+
+    def on_level_up(self, level):
+        abilities = self.possible_abilities_list(self.id, level)
+
         self.abilities = {}
 
         for a in abilities + [Search, Prepare, Hide]:
-            if level >= a.level:
-                self.abilities[a.command] = a(telnetHandler)  # Construct all abilities
+            if level == a.level:
+                self.abilities[a.command] = a(telnetHandler)
 
-        self.heal_skills = [a for a in self.abilities.values() if isinstance(a, HealAbility)]
-        self.buff_skills = [a for a in self.abilities.values() if isinstance(a, BuffAbility)]
-        self.slow_combat_skills = [a for a in self.abilities.values() if isinstance(a, SlowCombatAbility)]
-        self.fast_combat_skills = [a for a in self.abilities.values() if isinstance(a, FastCombatAbility)]
+        self.heal_skills = [a for a in self.abilities.values() if isinstance(a, HealAbility) and level == a.level]
+        self.buff_skills = [a for a in self.abilities.values() if isinstance(a, BuffAbility) and level == a.level]
+        self.slow_combat_skills = [a for a in self.abilities.values() if isinstance(a, SlowCombatAbility) and level == a.level]
+        self.fast_combat_skills = [a for a in self.abilities.values() if isinstance(a, FastCombatAbility) and level == a.level]
 
         for h in self.heal_skills:
             h.set_level(level)

@@ -70,6 +70,19 @@ class GrindThread(BotThread):
         elif exit_str == "rest_here":
             self.rest_here()
             return True
+        elif exit_str == "train":
+            C = self.character
+            if self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > C.info.gold_to_level + 2*self.command_handler.weapon_bot.possible_weapons[0].item.value and \
+                C.current_experience > C.info.exp_to_level:
+                self.command_handler.train.execute_and_wait()
+                if self.command_handler.train.success:
+                    self.command_handler.patch_character_info_after_level_up()
+                else:
+                    raise(Exception("Why level up not work"))
+                return True # I think this prevents "go train" (trying to "go" the train code)... other option is to trim the front of direction list with x=x[1:] 
+            else:
+                magentaprint("Train clause is false now... must not have the money")
+                return True 
         elif re.match("dobuy.+?", exit_str):
             return self.buy_and_wield(exit_str)
         elif exit_str == 'kill_guard':
@@ -1027,9 +1040,10 @@ class GrindThread(BotThread):
                 return skill.success
         return False
 
+    def engage_monster(self, monster, monster_ref=None):
+    #     self.engage_monster_given_ref(self, self.character.mobs.list.get_first_reference(monster))
 
-
-    def engage_monster(self, monster):
+    # def engage_monster_given_ref(self, new_target):
         # Here, monster is GIVEN
         # Anything that can happen to change the target should be done by now
         # By extension, that means that, we are ready to fight (kill and cast are ready)
@@ -1044,6 +1058,7 @@ class GrindThread(BotThread):
         # if C.mobs.attacking == []:
         #     SC.wait_for_both_of_kill_and_cast() # TODO: Ideally we interrupt if something arrives, for now I just want to attack the right thing
         
+        # Bless / prot right before fighting
         if C.mobs.attacking == []:
             # self.kill.wait_until_ready()
             # self.cast.wait_until_ready()
@@ -1054,10 +1069,7 @@ class GrindThread(BotThread):
             # So, how about we call engage_any_attacking_mobs before engage_monster, and we also do the waits outside of this scope
             # We could do it here... maybe
 
-            if C.HEALTH == C.maxHP and \
-               C.MANA == C.maxMP and \
-               self.bless_timer.check_timer() and \
-                self.prot_timer.check_timer():
+            if C.HEALTH == C.maxHP and C.MANA == C.maxMP and self.bless_timer.check_timer() and self.prot_timer.check_timer():
                 self.bless_timer.maybe_bless()
                 self.prot_timer.maybe_prot()
                 # Could do buff ability here
@@ -1067,8 +1079,13 @@ class GrindThread(BotThread):
         if self.stopping:
             return
 
-        magentaprint("GrindThread engage_monster get_first_reference({0})".format(monster))
-        new_target = C.mobs.list.get_first_reference(monster)
+        if monster_ref:
+            magentaprint("GrindThread engage_monster sees given target :" + monster_ref)
+            new_target = monster_ref
+        else:
+            magentaprint("GrindThread engage_monster get_first_reference({0})".format(monster))
+            new_target = C.mobs.list.get_first_reference(monster)
+
         # So... suppose someone (Qerp) runs by and kills the nobleman we have chased
         # Ok, fixed that up a level
         # I think we are assuming here that the target is in the list
@@ -1138,11 +1155,27 @@ class GrindThread(BotThread):
             self.direction_list = self.mud_map.get_path(self.character.AREA_ID, note_current_location) + self.direction_list
             # Ok skipping the Try Except on that mud_map call...
             # self.rest_until_ready()
+            C.mobs.chase = SC.target # Make sure we'll attack it
             self.rest_to_full() # new
             # PERFECT
             # Ok there was some JANK
             # "You run like a chicken" gets matched by cartography... so, do a look instead
             # ok need to create fled mob True
+
+            # Do two looks so that we correct the current location and the next location will also be correct
+            # The problem was we'd "Go" and get the wrong area... "chase" is set... but "flee" mapping should work...
+            self.character.TRYING_TO_MOVE=True
+            go.clear()
+            go.cartography.clear() # Ok we are "simulating" a "go" pretty well here... both of them should get 
+            self.command_handler.process("l")
+            go.wait_for_flag() # Will get incorrect area match
+
+            self.character.TRYING_TO_MOVE=True
+            go.clear()
+            go.cartography.clear() # Ok we are "simulating" a "go" pretty well here... both of them should get 
+            self.command_handler.process("l")
+            go.wait_for_flag() # Correct current area match
+
             self.fled=True
             # Ok we still need something... we don't want to start a new fight and not be ready for the mob we fled from because then we'll bypass it and forget this setup
             # So if fled is true, don't engage

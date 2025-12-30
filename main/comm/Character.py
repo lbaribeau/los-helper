@@ -130,11 +130,15 @@ class Character(object):
         # Barbarian bonus is +2 (seems like) (how do we add in the barbarian bonus??)
         # Rest bonus is 0 to 1
         # (Unlike mana, hp ticks are inconsistent)
-        self.START_GOLD = self.GOLD = self.info.gold
+        self.GOLD = self.info.gold
+        self.level = self.info.level
 
         self.MANA_TO_ENGAGE = self.info.maxMP * 0.4
         self.HEALTH_TO_FLEE = self.info.maxHP * 0.4 # Increased from 0.35 as I've improved flee recovery... 8 hp is ok I guess?? Not sure why he didn't flee at 8 with max 24
         self.MAX_MANA = self.info.maxMP
+
+        # self.EXPERIENCE = self.info.exp # Ehrm I guess this isn't right, "EXPERIENCE" is more like, how much we got this session
+        self.current_experience = self.info.exp # Ehrm I guess this isn't right, "EXPERIENCE" is more like, how much we got this session
 
         # self.ARMOR_SLOTS = self._class.ARMOR_SLOTS
         # self.WEAPON_SLOTS = self._class.WEAPON_SLOTS
@@ -498,42 +502,42 @@ class Character(object):
     # Idea: berzerker
     # Idea: brutalizer, other barbarians (ask immigration barbarian)
 
-    def set_monster_kill_list(self):
+    def set_monster_kill_list(self, level):
         self.MONSTER_KILL_LIST = []
         self.MONSTER_KILL_LIST.extend(self.lvl1_red_monsters)
-        if self.level <= 7:
+        if level <= 7:
             self.MONSTER_KILL_LIST.extend(self.lvl1_monsters)
-        if self.level >= 4:
+        if level >= 4:
             if self.level < 13:
                 self.MONSTER_KILL_LIST.extend(self.lvl2_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl2_red_monsters)
-        if self.level >= 5:
+        if level >= 5:
             self.MONSTER_KILL_LIST.extend(self.lvl3_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl3_red_monsters)
-        if self.level >= 6:
+        if level >= 6:
             # self.MONSTER_KILL_LIST = [m for m in self.MONSTER_KILL_LIST \
             #                           if m not in self.lvl1_monsters    \
             #                           and m not in self.lvl2_monsters]
             self.MONSTER_KILL_LIST.extend(self.preferred_lvl_1_2_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl4_monsters)
             self.MONSTER_KILL_LIST.extend(self.lvl4_red_monsters)
-        if self.level >= 7:
+        if level >= 7:
             self.MONSTER_KILL_LIST.extend(self.lvl5_monsters)    # lyrist, logger, sawmill guys I think, seekers
             self.MONSTER_KILL_LIST.extend(self.lvl5_red_monsters)
-        if self.level >= 8: # was 9... felt like level 8 needed to add something 
+        if level >= 8: # was 9... felt like level 8 needed to add something 
             self.MONSTER_KILL_LIST.extend(self.lvl6_monsters)     # sword swallower, usher, shaft manager, town guard, dwarven farm worker
             self.MONSTER_KILL_LIST.extend(self.lvl6_red_monsters)
-        if self.level >= 11:
+        if level >= 11:
             self.MONSTER_KILL_LIST.extend(self.lvl7_monsters)
-        if self.level >= 12:
+        if level >= 12:
             self.MONSTER_KILL_LIST.extend(self.lvl8_monsters)
-        if self.level >= 13:
+        if level >= 13:
             self.MONSTER_KILL_LIST.extend(self.lvl9_monsters)
-        if self.level >= 14:
+        if level >= 14:
             self.MONSTER_KILL_LIST.extend(self.lvl10_monsters) # Dame Brethil, Jerrek, Commander RIlmenson 
-        if self.level >= 15:
+        if level >= 15:
             self.MONSTER_KILL_LIST.extend(self.lvl11_monsters) # Brotain, minstrel, Gregor, Bertram Dalram
-        if self.level >= 16:
+        if level >= 16:
             self.MONSTER_KILL_LIST.extend(self.lvl12_monsters) # Tardan, Horbuk, Gorban
             # Brotain seems a bit tough... need mend wounds logic... or maybe the bot will surprise me with heals or something
             # Ok, brocolli can do this, the second weapon is there and mend wounds logic is there
@@ -545,81 +549,81 @@ class Character(object):
 # Drops -
 #  Alaran, Aldo, Farmer Calmor for rings (platinum, gold, etc.)
 
-    def configure_health_and_mana_variables(self):
+    def configure_health_and_mana_variables(self, level):
         # Health to heal is now a percentage (see process_info)
         # ALL THIS GETS OVERWRITTEN IN prcoess_info
-        if self.level <= 2:
+        if level <= 2:
             # self.HEALTH_TO_HEAL = 19
             self.HEALTH_TO_FLEE = 8
             self.MAX_MANA = 3
             self.MANA_TO_ENGAGE = 3
-        elif self.level <= 3:
+        elif level <= 3:
             # self.HEALTH_TO_HEAL = 27
             self.HEALTH_TO_FLEE = 9
             self.MAX_MANA = 7
             self.MANA_TO_ENGAGE = 3
-        elif self.level <= 4:
+        elif level <= 4:
             # self.HEALTH_TO_HEAL = 31
             self.HEALTH_TO_FLEE = 11
             self.MAX_MANA = 9
             self.MANA_TO_ENGAGE = 3
-        elif self.level <= 5:
+        elif level <= 5:
             # self.HEALTH_TO_HEAL = 31
             self.HEALTH_TO_FLEE = 8
             self.MAX_MANA = 12
             self.MANA_TO_ENGAGE = 6
-        elif self.level <= 6:
+        elif level <= 6:
             # self.HEALTH_TO_HEAL = 35 # was 43 for Ruorg
             self.HEALTH_TO_FLEE = 15
             self.MAX_MANA = 18
             self.MANA_TO_ENGAGE = 9
-        elif self.level <= 7: # has the same enemy list as 6
+        elif level <= 7: # has the same enemy list as 6
             # self.HEALTH_TO_HEAL= 40 # was 45
             self.HEALTH_TO_FLEE =  15
             self.MAX_MANA = 21
             self.MANA_TO_ENGAGE = 9
-        elif self.level <= 8:
+        elif level <= 8:
             # self.HEALTH_TO_HEAL= 45
             self.HEALTH_TO_FLEE = 30
             self.MAX_MANA       = 24 # This has to depend on the class
             self.MANA_TO_ENGAGE = 15
-        elif self.level <= 9:
+        elif level <= 9:
             self.HEALTH_TO_FLEE = 31
             self.MAX_MANA       = 24
             self.MANA_TO_ENGAGE = 16
-        elif self.level <= 10:
+        elif level <= 10:
             self.HEALTH_TO_FLEE = 32
             self.MAX_MANA       = 24
             self.MANA_TO_ENGAGE = 17
-        elif self.level <= 11:
+        elif level <= 11:
             self.HEALTH_TO_FLEE = 33
             self.MAX_MANA       = 24
             self.MANA_TO_ENGAGE = 18
-        elif self.level <= 12:
+        elif level <= 12:
             self.HEALTH_TO_FLEE = 34
             self.MAX_MANA       = 24
             self.MANA_TO_ENGAGE = 19
-        elif self.level <= 13:
+        elif level <= 13:
             self.HEALTH_TO_FLEE = 35
             self.MAX_MANA       = 24
             self.MANA_TO_ENGAGE = 20
-        elif self.level <= 14:
+        elif level <= 14:
             self.HEALTH_TO_FLEE = 36
             self.MAX_MANA       = 24
             self.MANA_TO_ENGAGE = 21
-        elif self.level <= 15:
+        elif level <= 15:
             self.HEALTH_TO_FLEE = 37
             self.MAX_MANA       = 24
             self.MANA_TO_ENGAGE = 22
-        elif self.level <= 16:
+        elif level <= 16:
             self.HEALTH_TO_FLEE = 38
             self.MAX_MANA       = 24
             self.MANA_TO_ENGAGE = 23
-        elif self.level <= 17:
+        elif level <= 17:
             self.HEALTH_TO_FLEE = 39
             self.MAX_MANA       = 24
             self.MANA_TO_ENGAGE = 24
-        elif self.level <= 18:
+        elif level <= 18:
             self.HEALTH_TO_FLEE = 40
             self.MAX_MANA       = 25
             self.MANA_TO_ENGAGE = 25

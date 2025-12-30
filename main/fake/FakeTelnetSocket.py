@@ -133,7 +133,6 @@ class FakeTelnetSocket(object):
 
         )
 
-
         self.time_string = '                      Meditate   *READY*\n                         Touch   3:25 minutes remaining\n\r'
 
         self.info_string = (
@@ -336,8 +335,11 @@ class FakeTelnetSocket(object):
             M_obj = re.search('echo (.+)', command)
             echo = str(M_obj.group(1))
             self.socket_output.append(echo + '\n\r')
-        elif re.match('quit', command) or re.match('exit', command):
+        elif re.match('quit', command):
             self.socket_output.append('Goodbye! Come back soon.\n\r')
+        elif re.match('exit', command):
+            self.socket_output.append('Goodbye! Come back soon.\n\r')
+            self.socket_output.append("(You'd need \"quit\" in the game.)\n\r")
         elif re.match('wear? iron \d', command):
             self.socket_output.append("You wear an iron shield.\n\ryou grip the shield firmly.\n\r")
             self.inventory.remove(command.partition(' ')[2])

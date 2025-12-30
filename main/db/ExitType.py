@@ -58,7 +58,7 @@ class ExitType(NamedModel):
             #print("Could not find exit Type with name: " + name, False)
             exit_types = None
 
-        magentaprint("ExitType.py given parameter name: "+str(name))
+        magentaprint("ExitType.py get_exit_type_by_name_or_shorthand(name) given parameter ('name'): "+str(name))
         magentaprint("ExitType.py get_exit_type_by_name_or_shorthand() matched exit, given " + str(name) + ", to: " + str(exit_types))
         # raise # Gives a stack trace... mudReaderThread s.notify(r, match), cartography, notify, self.area(M), C.MUD_AREA= MudAea.map( (line 202), in map, MudArea.discern_location, in discern_location... (line 61 MudArea.py)
         return exit_types

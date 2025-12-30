@@ -138,7 +138,8 @@ class PollingBotReactionWithFlag(BotReaction):
 
 class BotReactionWithFlag(threading.Event, BotReaction):
     def notify(self, regex, M_obj):
-        self.set()
+        self.set() # Ends wherever self.wait() is called (ie. on another thread... MudReaderThread calls notify() which calls set here, then BotThread finds out it can resume)
+
     def wait_for_flag(self, **kwargs):
         if 'timeout' in kwargs:
             timed_out = not self.wait(**kwargs)
@@ -147,7 +148,7 @@ class BotReactionWithFlag(threading.Event, BotReaction):
             # Not sure how to test this
             # Maybe at the grazing fields with the false inventory match
         if timed_out:
-            magentaprint("BotReactionWithFlag {0} timed out!!! Wait() returning now. Also, set the flag for the next wait call.".format(self.__class__.__name__))
+            magentaprint("BotReactionWithFlag {0} timed out!!! Wait() returning now. Set the flag to tell waiters to stop waiting.".format(self.__class__.__name__))
             self.set()
 
     def set_waiter_flag(self):

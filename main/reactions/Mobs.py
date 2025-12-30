@@ -7,8 +7,8 @@ import comm.RegexStore as R
 from misc_functions import magentaprint
 from reactions.referencing_list import ReferencingList
 
-# class MobRegexReader(BotReactionWithFlag):
-class Mobs(BotReactionWithFlag):
+class MobRegexReader(BotReactionWithFlag):
+# class Mobs(BotReactionWithFlag):
     def __init__(self):
         super().__init__() # threading.Event
         self.singles = ['a', 'an', 'the']
@@ -118,7 +118,7 @@ class Mobs(BotReactionWithFlag):
             # self.list.append(mob_parse[0])
             return [mob_parse[0]]
 
-# class Mobs(MobRegexReader):
+class Mobs(MobRegexReader):
 # class Mobs(BotReactionWithFlag, ReferencingList):
     # I will give this object MONSTER_LIST because that provides a place for possible extended functionality
     # in the future, such as correcting targets. (Ok we wrote MobTargetDeterminator)
@@ -158,6 +158,7 @@ class Mobs(BotReactionWithFlag):
             self.list.add_from_list(self.read_mobs(M.group('mobs')))
             magentaprint("Mobs.list (added): " + str(self.list.list)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
         elif r in R.ze_mob_died:
+            # The "ze" is because the regex notifications go out in alphebetical order by variable name
             mob_name = self.read_match(M)
             # magentaprint("Mobs noticed " + mob_name + " died, it's in the self.list: " + str(mob_name in self.list))
             magentaprint("Mobs noticed " + mob_name + " died, it's in the self.list: {}, self.list is {} (len {}), self.attacking is {} (len {}).".format(\
@@ -172,7 +173,13 @@ class Mobs(BotReactionWithFlag):
                 # Are we really going to fix this by putting you_attack alphabetically before your attack overwhelms (mob died)
                 # Unless we put a -1 or something to pre-remove it... how about calling it engage
             magentaprint("Mobs: likely removed "+mob_name + ": self.list is {} (len {}), self.attacking is {} (len {}).".format(self.list, len(self.list), self.attacking, len(self.attacking)))
-            magentaprint('Mobs: damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(round(self.mean(self.damage), 1)) + ', stdev=' + str(round(self.stdev(self.damage), 1)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/max(len(self.damage),1), 2)))
+            magentaprint('Mobs.damage (list) ' + str(self.damage) + \
+                '\n  sum            : ' + str(sum(self.damage)) + \
+                '\n  mean           : ' + str(round(self.mean(self.damage), 2)) + \
+                '\n  mean when hit  : ' + str(round(self.mean([d for d in self.damage if d > 0.1]), 2)) + \
+                '\n  stdev          : ' + str(round(self.stdev(self.damage), 1)) + \
+                '\n  stdev when hit : ' + str(round(self.stdev([d for d in self.damage if d > 0.1]), 2)) + \
+                '\n  hit            : ' + str(round(100 - 100.0*sum([x == 0 for x in self.damage])/max(len(self.damage),1), 1))+str('%'))
             # m = sum(self.damage) / max(len(self.damage), 1)
             # s = sum(self.damage - [m]*len(self.damage))
             # magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(stats.mean(self.damage)) + ', stdev=' + str(stats.stdev(self.damage)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/len(self.damage), 2)))

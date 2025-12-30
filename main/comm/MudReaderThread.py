@@ -258,7 +258,7 @@ class MudReaderThread(threading.Thread):
             # (Would be better to use "Commands" to do this)
             M_obj = re.search("Exp : (\d+)",text_buffer)
             if M_obj:
-                self.character.TOTAL_EXPERIENCE = M_obj.group(1)
+                self.character.TOTAL_EXPERIENCE = M_obj.group(1) # Better use .info.... ehrm this variable is bad because, it's current experience... EXPERIENCE is currently experience this session
 
             # M_obj = re.search("Gold : (\d+)",text_buffer)
             # if M_obj:
@@ -287,8 +287,9 @@ class MudReaderThread(threading.Thread):
 
             #### Shopping stuff ####
             # On gold pickup:
-            M_obj = re.search("You now have (.+?) gold coins", text_buffer)
+            M_obj = re.search("You now have (.+?) gold pieces", text_buffer)
             if M_obj:
+                magentaprint("MudReaderThred updating character GOLD")
                 self.character.GOLD = int(M_obj.group(1))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             # On tip drop:                    
@@ -340,6 +341,7 @@ class MudReaderThread(threading.Thread):
             M_obj = re.search("You gain (.+?) experience\.", text_buffer)       
             if M_obj:
                 self.character.EXPERIENCE = self.character.EXPERIENCE + int(M_obj.group(1))
+                self.character.current_experience = self.character.current_experience + int(M_obj.group(1))
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             # Monster flees.
             #TODO chasing function.

@@ -213,7 +213,8 @@ class Inventory(SimpleCommand, ReferencingList):
         'morning star', 'superior dwarven hammer', "horseman's mace",
         # 'war hammer',
         # 'hard cap', 'hard gloves', 'hard boots', 'padded hat', 'mountain gloves', 'mountain boots',
-        'mountain boots with crampons', 'leather mask', 'leather collar', 'studded leather collar',
+        # 'mountain boots with crampons', 
+        'leather mask', 'leather collar', 'studded leather collar',
         # 'studded leather sleeves', 'studded leather boots', 'studded leather pants', 'studded leather gloves','studded leather leggings',
         # kobold champion
         # 'plate mail leggings', # Jerrek drops
@@ -1030,7 +1031,7 @@ class Inventory(SimpleCommand, ReferencingList):
         elif 'Second' in self.equipped_items.keys() and self.equipped_items['Second'] and self.equipped_items['Second'][0].obj.name == weapon:
             del self.equipped_items['Second']
         else:
-            magentaprint("Inventory.unequip_weapon didn't see an equipped match on " + weapon)
+            magentaprint("Inventory.unequip_weapon didn't see an equipped weapon match on " + weapon)
 
     def count(self, item_string):
         mud_item = MudItem(item_string)

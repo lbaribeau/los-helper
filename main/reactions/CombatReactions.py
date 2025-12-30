@@ -84,7 +84,7 @@ class CombatReactions(object):
 
     def report(self):
         C = self.character
-        exp = C.TOTAL_EXPERIENCE
+        exp = C.TOTAL_EXPERIENCE  # Ehrm maybe name these variables better...
         gold = C.GOLD
 
         # if not hasattr(C,'aura'):

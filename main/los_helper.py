@@ -235,8 +235,8 @@ class LosHelper(object):
         self.character._class = CharacterClass(self.telnetHandler, self.character.class_string, self.character.level)
         # self.character.CAST_PERIOD = self.character._class.cast_wait
         # self.character.CAST_WAIT = self.character._class.cast_wait
-        self.character.configure_health_and_mana_variables()
-        self.character.set_monster_kill_list()
+        self.character.configure_health_and_mana_variables(self.character.level) # These get overwritten when we do info
+        self.character.set_monster_kill_list(self.character.level)
         # magentaprint("LosHelper ability list: " + str(self.character._class.abilities))
         for a in self.character._class.abilities.values():
             # self.mud_reader_handler.register_reaction(a)

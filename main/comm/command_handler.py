@@ -11,7 +11,6 @@ import sys
 import misc_functions
 from misc_functions import magentaprint
 magentaprint("... db.Database (*) (all)"); from db.Database import *
-magentaprint("... db.MudMap");             from db.MudMap import MudMap
 magentaprint("... Spells...");             import comm.Spells
 magentaprint("... SmartCombat...");        from combat.SmartCombat         import SmartCombat
 magentaprint("... Go...");                 from command.Go                 import Go
@@ -34,7 +33,7 @@ magentaprint("... Second...");             from command.Wield              impor
 magentaprint("... Buy...");                from command.Buy                import Buy
 magentaprint("... Get...");                from command.Get                import Get
 magentaprint("... ThreadMaker...");        from comm.thread_maker          import ThreadMaker
-magentaprint("... Repair...");             from command.repair             import Repair
+magentaprint("... Repair...");             from command.Repair             import Repair
 magentaprint("... Wear...");               from command.wear               import Wear
 magentaprint("... ArmourBot...");          from mini_bots.armour_bot       import ArmourBot
 magentaprint("... Equipment...");          from command.equipment          import Equipment
@@ -52,8 +51,10 @@ magentaprint("... Prompt...");             from reactions.prompt           impor
 magentaprint("... Analyser...");           from comm.analyser              import Analyser
 magentaprint("... Info...");               from command.Info               import Info
 magentaprint("... AreaStoreItem...");      from db.Database                import AreaStoreItem
-magentaprint("... Plotter...");            from plotter                    import Plotter
+# magentaprint("... Plotter...");            from plotter                    import Plotter
 magentaprint("... Rest...");               from command.Rest               import Rest
+magentaprint("... Train...");              from command.Train              import Train
+magentaprint("... db.MudMap");             from db.MudMap import MudMap
 from mini_bots.rest_loop import RestLoop
 
 magentaprint("... Done command_handler.py import section, now defining classes")
@@ -102,9 +103,9 @@ class CommandHandler(object):
         self.prompt = Prompt(); mudReaderHandler.add_subscriber(self.prompt)
         self.character.prompt = self.prompt
         self.info = Info(self.mudReaderHandler, self.telnetHandler)
-        self.info.execute_and_wait()
         self.character.info = self.info
-        self.character.process_info()
+        self.set_up_character_info()
+
         self.smartCombat = SmartCombat(self.kill,self.cast,self.potion_thread_handler,self.wield,self.telnetHandler,self.character,self.weapon_bot,self.prompt, self.info, self.mudReaderHandler.mudReaderThread.mud_reader_completion_event) 
         mudReaderHandler.add_subscriber(self.smartCombat)
 
@@ -128,9 +129,11 @@ class CommandHandler(object):
         self.sell_bot = SellBot(self.character.inventory, self.sell, self.drop)
         # Use will have to keep inventory up to date, right
         # That is if items support usable (small inhaler, white amulet, rods)
-        self.look = Look(self.character.inventory, telnetHandler)
-        mudReaderHandler.add_subscriber(self.look)
+        self.look = Look(self.character.inventory, telnetHandler); mudReaderHandler.add_subscriber(self.look)
         self.analyser = Analyser(self.mudReaderHandler, self.prompt, self.info)
+        self.rest = Rest(telnetHandler);   mudReaderHandler.add_subscriber(self.rest)
+        self.train = Train(telnetHandler); mudReaderHandler.add_subscriber(self.train)
+        self.rest_loop = RestLoop(self.rest, self.character.mobs, self.character); mudReaderHandler.add_subscriber(self.rest_loop)
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
@@ -159,16 +162,48 @@ class CommandHandler(object):
             'lookup_armour' : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
             'print_reactions' : lambda a : self.mudReaderHandler.print_reactions(),
             'weapon' : lambda a : self.start_weapon_bot(),
-            'plot_map' : self.plot_map
+            'plot_map' : self.plot_map,
+            'print_gold_exp' : self.print_gold_exp_etc
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
         # Each action is going to be passed "a" which is string.partition(' ')[2] on the command that came in
+        # So make sure the function has the right signature (self, args)
+
+    def print_gold_exp_etc(self, args):
+        C=self.character
+        magentaprint("COMMAND_HANDLER.PRINT_GOLD_EXP_ETC...")
+        magentaprint("  self.command_handler.weapon_bot.possible_weapons:   "+str(self.weapon_bot.possible_weapons))
+        magentaprint("  C.current_experience:   "+str(C.current_experience))
+        magentaprint("  C.info.exp_to_level:    "+str(C.info.exp_to_level))
+        magentaprint("  self.character.GOLD:    "+str(C.GOLD))
+        magentaprint("  C.info.gold_to_level:   "+str(C.info.gold_to_level))
+        magentaprint("  C.EXPERIENCE (exp this session):   "+str(C.EXPERIENCE))
+
+    def set_up_character_info(self):
+        self.info.execute_and_wait()
+        # self.character._class = CharacterClass(self.telnetHandler, self.character.class_string, self.character.level)
+        self.character.process_info()
+        self.character.START_GOLD = self.character.GOLD
+
+    def patch_character_info_after_level_up(self):
+        # Doing again what los-helper.py did at start
+        self.info.execute_and_wait()
+        self.character.process_info()
+        # self.character.configure_health_and_mana_variables(self.character.level)
+        self.character.set_monster_kill_list(self.character.level)
+        self.character._class.on_level_up(self.character.level)
+        for a in self.character._class.abilities.values():
+            #los-helper does this across the board... but if we just gained a level, we only need to add if it's a new ability
+            if a.level == self.info.level:
+                self.mudReaderHandler.add_subscriber(a)
+            # Ehrm not ture... we don't really want to "remake" all of the abilities...
 
     def plot_map(self, args):
-         #(lambda a : Plotter(self.mud_map)
-         self.join_mud_map_thread()
-         Plotter(self.mud_map.los_map).plot_map()
+        magentaprint("... Plotter...");            from plotter                    import Plotter
+        #(lambda a : Plotter(self.mud_map)
+        self.join_mud_map_thread()
+        Plotter(self.mud_map.los_map).plot_map()
 
     def join_mud_map_thread(self):
         if self.threaded_map_setup:
@@ -436,7 +471,7 @@ class CommandHandler(object):
             magentaprint(self.character.MOBS_JOINED_IN, False)
         elif re.match("(?i)aura", user_input):
             magentaprint('cast.aura:                ' + str(self.cast.aura.s if self.cast.aura else None))
-            magentaprint('character.preferred_aura: ' + str(self.character.preferred_aura))
+            magentaprint('preferred_aura: ' + str(self.character.preferred_aura))
             self.cast.print_aura_timer()
         elif re.match("(?i)mobs_attacking", user_input):
             magentaprint(self.character.MOBS_ATTACKING, False)
@@ -489,12 +524,7 @@ class CommandHandler(object):
             magentaprint("Track number (command_handler.bot_thread.nextpath) is " + str(self.bot_thread.nextpath))
         elif user_input == 'mud_events':
             magentaprint("MudReaderThread mud events:\n\t{}".format('\n\t'.join([str(m.regexes) for m in self.mudReaderHandler.mudReaderThread.mud_events.values()])))
-        elif user_input == 'possible_weapons':
-            magentaprint([asi.item.name for asi in AreaStoreItem.get_by_item_type_and_level_max(
-                'weapon', 
-                self.character.info.weapon_type, 
-                self.character.info.weapon_level
-            )])
+
         elif user_input == 'alarm':
             print('\a')
         elif user_input == 'bless_timer':
@@ -509,8 +539,17 @@ class CommandHandler(object):
         elif user_input == "items":
             for i in self.inventory.list:
                 magentaprint(i)
+        elif user_input == 'possible_weapons':
+            magentaprint("self.weapon_bot.possible_weapons currently is: " + str(self.weapon_bot.possible_weapons) + ", running query...")
+            magentaprint([asi.item.name for asi in AreaStoreItem.get_by_item_type_and_level_max(
+                'weapon', 
+                self.character.info.weapon_type, 
+                self.character.info.weapon_level
+            )]) 
         elif user_input == 'get_possible_weapons':
             magentaprint(self.weapon_bot.get_possible_weapons())
+        elif user_input == "check_weapons":
+            self.weapon_bot.check_weapons()
         elif user_input == 'Berserking':
             magentaprint(self.smartCombat.berserking())
         elif user_input == 'TOTALPATHS':
@@ -527,6 +566,11 @@ class CommandHandler(object):
         elif user_input == "mobslist":
             for m in self.character.mobs.list:
                 magentaprint(m)
+        elif user_input == "test_info":
+            self.info.execute_and_wait()
+            magentaprint("Test_info done... (Thrust is "+str(self.character.info.thrust)+ "!)")
+        elif user_input.startswith('exec '):
+            exec(user_input.partition(' ')[2]) # General purpose, for example, try, "exec self.weapon_bot.possible_weapons"
         # Note: see self.actions before adding more cases (just associate a command with a function pointer)
         else:
             # Doesn't match any command we are looking for, send it to server
@@ -1010,28 +1054,30 @@ class CommandHandler(object):
     def print_experience(self):
         x = self.character.EXPERIENCE # Accumulated this session (initialized to zero, matches "You gain...")
         t = misc_functions.get_runtime_seconds()
-        magentaprint("Start time: " + str(misc_functions.startTime))
-        magentaprint("Uptime:     " + misc_functions.get_runtime_string())
-        magentaprint("Exp rate: {} /hr".format(round(x/t*3600)))
-        magentaprint("Exp rate: {} /min".format(round(round(x/t*60))))
-        magentaprint("Total exp this session: " + str(x))
+        gold_gained = self.character.GOLD-self.character.START_GOLD
+        magentaprint("Start time:        " + str(misc_functions.startTime))
+        magentaprint("Uptime:            " + misc_functions.get_runtime_string())
+        magentaprint("Start gold:        " + self.character.START_GOLD)
+        magentaprint("Current gold:      " + self.character.GOLD)
+        magentaprint("Exp this session:  " + str(x))
+        magentaprint("Exp rate:          {} /hr".format(round(x/t*3600)))
+        magentaprint("Exp rate:          {} /min".format(round(round(x/t*60))))
         # g = self.character.GOLD # Ok this is all the current gold, so it won't give us gold rate
         # magentaprint("Gold delta: ")
         # magentaprint("Gold rate: {} gold/hr; {} gold/min; {} gold/s.".format(round(x/t/3600), round(x/t/60), round(x/t)))
         # magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
         #magentaprint(str(exp), False)
-        gold = self.character.GOLD-self.character.START_GOLD
-        magentaprint("Gold rate: {} /hr".format(round(gold/t*3600)))
-        magentaprint("Gold rate: {} /min".format(round(gold/t*60)))
-        magentaprint("Total gold this session: {} ".format(gold))
+        magentaprint("Gold this session: {} ".format(gold_gained))
+        magentaprint("Gold rate:         {} /hr".format(round(gold_gained/t*3600)))
+        magentaprint("Gold rate:         {} /min".format(round(gold_gained/t*60, 1)))
 
     def print_gold(self):
-        gold = self.inventory.GOLD-self.character.START_GOLD
-        # gpm = str(misc_functions.calculate_vpm(gold))
-        # magentaprint("Gold this Session: " + str(gold) + " | Gold / MIN: " + gpm, False)
+        gold_gained = self.inventory.GOLD-self.character.START_GOLD
+        # gpm = str(misc_functions.calculate_vpm(gold_gained))
+        # magentaprint("Gold this Session: " + str(gold_gained) + " | Gold / MIN: " + gpm, False)
         t = misc_functions.get_runtime_seconds()
-        magentaprint("Gold this session: {} ".format(gold))
-        magentaprint("Gold rate: {} g/hr; {} g/min".format(round(gold/t*3600), round(gold/t*60)))
+        magentaprint("Gold this session: {} ".format(gold_gained))
+        magentaprint("Gold rate: {} g/hr; {} g/min".format(round(gold_gained/t*3600), round(gold_gained/t*60)))
         # Report spending? Not so easy. Would need dB queries. 
         # Would also need to figure out which thing was bought from the command, which isn't implemented.
         # NOTE: this relies heavily on tip drop (sell and you_get are not happening)

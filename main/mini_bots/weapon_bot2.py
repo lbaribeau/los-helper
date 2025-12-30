@@ -380,7 +380,7 @@ class MainhandWeaponBot(MiniBot):
 
             # Do by level, and if that's empty, then do level_max
             # Since we prefer to only allow top level, but if there's no such areastoreitem, try level_max
-            # magentaprint("WeaponBot possible weapons: " + str(self.possible_weapons))
+            magentaprint("WeaponBot possible weapons: " + str(self.possible_weapons))
             return self.possible_weapons
 
             # level = self.character.weapon_level

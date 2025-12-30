@@ -86,7 +86,7 @@ class MudMap(object):
         try:
             node_path = networkx.shortest_path(self.los_map, source=start_area_id, target=end_area_id)
         except Exception as e:
-            do_magentaprint("MudMap: " + str(e))
+            do_magentaprint("MudMap.get_path exception!: " + str(e))
             raise e
 
         edge_path = []

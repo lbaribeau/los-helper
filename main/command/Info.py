@@ -45,10 +45,11 @@ class Info(BotReactionWithFlag):
     def execute_and_wait(self):
         self.got_first = False
         self.got_second = False
-        self.mudReaderHandler.register_reaction(self)
+        self.mudReaderHandler.register_reaction(self) # Ehrm problem of doing this twice...
         self.telnetHandler.write("info")
-        self.wait_for_flag()
-        self.mudReaderHandler.unregister_reaction(self)
+        self.clear() # threading event https://docs.python.org/3/library/threading.html  .. 
+        self.wait_for_flag() # ie. when "notify()" happens (see notify... self variables get set, also, got_first and got_second)
+        self.mudReaderHandler.unregister_reaction(self)  # Ok this may explain the jank... (new "train" code... calls info but doesn't get updates...")
 
         self.weapon_proficiencies = {
             'Sharp'   : self.sharp, 
@@ -67,7 +68,7 @@ class Info(BotReactionWithFlag):
         else:
             self.weapon_level = 1
 
-        self.weapon_to_buy = self.pick_weapon()
+        self.weapon_to_buy = self.pick_weapon() # Doubt this gets used... we have weapon_bot2 now
 
         self.spell_proficiencies = {
             'Earth'  : self.earth, 

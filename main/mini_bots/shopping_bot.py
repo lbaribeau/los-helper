@@ -22,10 +22,10 @@ class ShoppingBot(MiniBot):
     def cant_afford(self, asi):
         # Item.get_item_by_name(asi.item
         if asi.item.value:
-            return asi.item.value > self.command_handler.character.GOLD
+            return asi.item.value > self.char.GOLD
         else:
             magentaprint("Warning: Database should really have 'value' (cost) assigned for " + asi.item.name)
-        # return asi.get_cost() > self.command_handler.character.GOLD
+        # return asi.get_cost() > self.char.GOLD
 
     def go_buy(self, asi):
         self.stopping = False
@@ -45,7 +45,8 @@ class ShoppingBot(MiniBot):
         else:
             success = self.buy_from_shop(asi)
             if success and asi.item.value:
-                self.command_handler.character.GOLD -= asi.item.value
+                self.char.GOLD -= asi.item.value # Does this happen? Could do this at buy_with_ref level
+                magentaprint("Shopping bot reduced GOLD to " + str(self.char.GOLD))
             return success
 
     def buy_from_shop(self, asi):
@@ -57,6 +58,7 @@ class ShoppingBot(MiniBot):
         self.command_handler.buy.execute_and_wait(ref)
         if self.command_handler.buy.success:
             self.char.inventory.add(asi.item.name) # It's a bit hard for buy to do this part
+            # self.char.GOLD -= asi.item.value
             return True
         else:
             if self.command_handler.buy.no_gold:

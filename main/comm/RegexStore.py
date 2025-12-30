@@ -66,7 +66,9 @@ please_wait2   = [r"Please wait (\d+):(\d+) more minutes"]
 __numbers      = "(1st|2nd|3rd|4th|5th|6th|7th|8th|9th|10th|11th|12th|13th|14th|15th|16th|17th|18th|19th)" 
 __numbers2     = "(?:(\d*1st|\d*2nd|\d*3rd|\d+th) )?"
 __numbers3     = "(?P<nth>\d*1st|\d*2nd|\d*3rd|\d+th) "
-__numbers_opt  = "(?:" + __numbers3 + ")?"
+__numbers2025  = "(?P<nth>(?P<n>\d+)(st|nd|rd|th) )" # This one bifurcates the suffix"st/nd/rd/th" from the actual number (1/2/3/4) but we can assume that the mud is consistant that way
+# __numbers_opt  = "(?:" + __numbers3 + ")?"
+__numbers_opt  = "(?:" + __numbers2025 + ")?"
 # __The_mob    = "(?:The " + __numbers_opt + ")?(?P<mob>[a-z '-]+) "
 __Numbered_mob = r"(?P<numbered_mob>[A-Z](?:he " + __numbers_opt + ")?[a-z '-]+) "
 # __The_mob    = "[A-Z](?:he " + __numbers_opt + ")?(?P<mob>[a-z '-]+) "
@@ -561,3 +563,9 @@ prot =    [r"You feel watched\."] # you feel that a protective presence watches 
 unprot =  [r"You feel less protected\."]
 
 cant_flee_berserk = [r"You cannot flee while in a berserker rage"] # (No period) Didn't need this regex in the code, just recording it
+
+not_training_location = [r'This is not your training location\.']
+# "### Balancedbarb just made a level!"
+# "Congratulations, you made a level!"
+train_success = [r'Congratulations, you made a level\!']
+not_enough_xp = [r"You need \d+ more experience\."]

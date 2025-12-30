@@ -74,9 +74,10 @@ class ArmourBot(MiniBot):
         # We know the armour broke, but we can't assume it didn't get dropped
         # Unless we have the bot keep broken armour...
 
-        if self.command_handler.character.GOLD < 3*self.command_handler.weapon_bot.possible_weapons[0].item.value:
+        if self.command_handler.character.GOLD >= 3*self.command_handler.weapon_bot.possible_weapons[0].item.value:
             # This check is up here indirectly because we aren't doing a lookup of the broken armour piece for cost
             # And saves going to the smithy when we can't afford it
+            # The check was the wrong way... 
             self.go_repair_or_replace_broken_armour()
         # Conceivably we start buying replacement armour instead if we have the perfect amount of gold... could be an interesting bug
         self.get_needed_default_armour()
@@ -248,6 +249,11 @@ class ArmourBot(MiniBot):
                 # Also this is the correct time to check because gold can change
                 magentaprint("Skipping can't afford " + str(asi.item.name))
                 continue
+            magentaprint("ArmourBot.get_needed_default_armour GOING TO GET " + str(asi.item.name))
+            # if self.inventory.has(asi.item.name):
+            #     self.command_handler.wear.execute_and_wait(self.char.inventory.get_last_reference(str(asi.item.name)))
+            #     if not self.command_handler.wear.success:
+            #         raise(Exception("Weird armour bot case - shouldn't be trying to buy what we have"))
             self.travel_bot.go_to_area(asi.area.id)
             if self.stopping:
                 return
@@ -259,6 +265,8 @@ class ArmourBot(MiniBot):
                     self.get_needed_default_armour() 
                     # This will call determine_shopping_list again
                     break # This will prevent finishing the current version of the loop
+                elif self.command_handler.wear.result in R.not_yet:
+                    raise(Exception("Armour bot logic error didn't catch character level too low to wear thing"))
                 if asi.item.name in self.broken_armour:
                     self.broken_armour.remove(asi.item.name)
                 else:
@@ -374,15 +382,26 @@ class ArmourBot(MiniBot):
 
     def get_armour_level(self, character_lvl):
         # cloth, ring mail, chain, plate, steel (1-5)
-        if self.steel():
+        if self.steel_class():
             if character_lvl > 9:
                 # Bard confirmed can't wear steel gauntlets at level 8 - not adept enough
                 # So the bard can wear plate and is not adept enough to wear steel
                 # Apparently Druid can wear plate but not steel even at level 10 (need to figure that out - is level the important factor?)
-                return 5
+            #     return 5 # Ehrm the dB only has 3 levels right now... can be changed though
+            # elif character_lvl > 6: # TODO: set this number correctly
+            #     return 4 # plate... what level can it be worn??? Not fighter level 1! 
+            # elif character_lvl > 5: # TODO: set this number correctly
+                return 3  
+                # Ehrm wonder how many actual armour levels there are in the game... maybe just 3??
+                # I think unlocking steel at level 10 is correct? Also steel being level "3"
+            elif character_lvl > 4: # OK yes I believe at level 5 barbarian "unlocked" chain mail... how about steel?
+                return 2 
             else:
-                return 4 # plate
-        elif self.chain():
+                return 1 
+            # Notes... fighter can't wear chain boots nor plate collar at level 1
+            # level 4 Dwarf barbarian couldn't wear chain mail boots
+            # Another note: "Some chain mail boots doesn't fit you." does come in if they don't fit, over "You are not yet adept enough to use this!"
+        elif self.chain_class():
             if character_lvl > 9:
                 return 3
             else:
@@ -408,10 +427,10 @@ class ArmourBot(MiniBot):
         return self.char.class_string in ["Mag"]
     # def leather(self):
     #     return self.char.class_string in ['Dru', 'Alc', 'Thi']
-    def chain(self):
+    def chain_class(self):
         return self.char.class_string in ['Alc', 'Thi', 'Dru', 'Ran', 'Cle', 'Ass']
-    def steel(self):
-        #magentaprint("ArmourBot.steel() class string is: " + str(self.char.class_string))
+    def steel_class(self):
+        #magentaprint("ArmourBot.steel_class() class string is: " + str(self.char.class_string))
         return self.char.class_string in ['Pal', 'Dk', 'Bar', 'Fig', 'Brd']
 
     def go_to_nearest_smithy(self):
