@@ -97,7 +97,7 @@ class FakeTelnetSocket(object):
             self.char.name + spaces + "Ran  M  [08]Keeper                    16    Human\n"
             # self.char.name + spaces + "Pal  M  [13]Keeper                    16    Human\n"
         )
-        self.spells_string = (
+        self.spells_string_A = (
             "\n\r"
             "/=== Combat Spells ======================================================\\\n\r"
             "| Level Earth        Wind         Fire         Water        Astral       |\n\r"
@@ -118,6 +118,21 @@ class FakeTelnetSocket(object):
             "\========================================================================/\n\r"
 
         )
+        self.spells_string = (
+            "\n\r"
+            "/=== Combat Spells ======================================================\\\n\r"
+            "|          none                                                          |\n\r"
+            "/================== Healing and Protection ==============================\\\n\r"
+            "|   Vigor                                                                |\n\r"
+            "/======================================= Miscellaneous ==================\\\n\r"
+            "|   Light                                                                |\n\r"
+            "|   Show-Aura                                                            |\n\r"
+            "/===================================================== Running Spells ===\\\n\r"
+            "|                                   none                                 |\n\r"
+            "\========================================================================/\n\r"
+
+        )
+
 
         self.time_string = '                      Meditate   *READY*\n                         Touch   3:25 minutes remaining\n\r'
 
@@ -321,7 +336,7 @@ class FakeTelnetSocket(object):
             M_obj = re.search('echo (.+)', command)
             echo = str(M_obj.group(1))
             self.socket_output.append(echo + '\n\r')
-        elif re.match('quit', command) or re.match('quilt', command):
+        elif re.match('quit', command) or re.match('exit', command):
             self.socket_output.append('Goodbye! Come back soon.\n\r')
         elif re.match('wear? iron \d', command):
             self.socket_output.append("You wear an iron shield.\n\ryou grip the shield firmly.\n\r")

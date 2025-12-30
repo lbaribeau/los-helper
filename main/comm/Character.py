@@ -121,7 +121,7 @@ class Character(object):
         self.preferred_aura = self.info.preferred_alignment
 
         if self.level <= 3:
-            self.HEALTH_TO_HEAL = 0.85 * self.info.maxHP
+            self.HEALTH_TO_HEAL = 0.85 * self.info.maxHP # Safer heal threshold for low level
         else:
             self.HEALTH_TO_HEAL = 0.75 * self.info.maxHP  # We can crank this back up when we fight stronger mobs
 
@@ -230,6 +230,7 @@ class Character(object):
         'mare', 'tabby cat', 'plumber', 'old fisherman', 'hungry diner',
         'fletcher', 'baker',
         'retired fisherman', # to confirm
+        'goat', 'hound', #show up by the Combat Master
         'acolyte',  # blue balance
         'penitent' # for aura (!)
         #'dancer',  # dancer spawns by the sword swallower and can run north towards the guard, which will join in
@@ -493,6 +494,9 @@ class Character(object):
         'oaf', 'wanderer', 'thug', 'spiv', 'kobold sentry', 'tired hooker', 'waitress',
         'blond hooker', 'angry hooker', 'sultry hooker', 'journeyman', 'housewife', # 'acolyte'
     ]
+    # Idea: marauder
+    # Idea: berzerker
+    # Idea: brutalizer, other barbarians (ask immigration barbarian)
 
     def set_monster_kill_list(self):
         self.MONSTER_KILL_LIST = []

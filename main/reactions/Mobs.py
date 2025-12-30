@@ -7,7 +7,118 @@ import comm.RegexStore as R
 from misc_functions import magentaprint
 from reactions.referencing_list import ReferencingList
 
+# class MobRegexReader(BotReactionWithFlag):
 class Mobs(BotReactionWithFlag):
+    def __init__(self):
+        super().__init__() # threading.Event
+        self.singles = ['a', 'an', 'the']
+        self.numbers = [
+            'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 
+            'thirteen', 'fourteen', 'fifteen' , 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'
+        ]
+        self.numbers.extend([str(i) + " " for i in range(21, 200)])
+
+    def get_reference_from_mob_match_object(self, match_object):
+        return self.get_reference(self.read_match(match_object))
+
+    def parse_mob_string(self, s):
+        # You see (two kobold children, a dustman).
+        # (Two lay followers) just arrived.
+        s = s.replace("\n\r", ' ')
+        # comma_items = [comma_item.strip().lower() for comma_item in s.split(',')]
+        # return [Mobs.remove_plural(m.strip()) for m in mob_match.group(1).split(',')]
+        m_list = []
+        # for c in comma_items:
+        for comma_item in s.split(','):
+            # Make sure to keep capitals in names, but don't miss any comparisons because of capitols at the beginnings of sentences
+            M = comma_item.strip() # monster with caps
+            m = M.lower()          # monster lower case
+
+            #if m[len(m)-4:len(m)-2] == ' (' and m[len(m)-1] == ')':
+            if m[-4:-2] == ' (' and m[-1] == ')':
+                # m = remove_good_evil(m)
+                magentaprint("Mobs.parse_mob_string reduced {0} to {1}".format(M,M[:-4]))
+                m = m[:-4]
+                M = M[:-4]
+            # It seems like this part gets done elsewhere
+            # It turns Cheryn into Ch and Olmer into O somewhere
+            # Ok "The Floor Manager" has to be "Floor Manager" because you can't hit it with 'The'
+            # So the policy will be to remove "The" with capital T
+            # "the" with little 't' probably won't happen
+
+            if any(m.startswith(single + ' ') for single in self.singles):
+                # m_dict[m.partition(' ')[2]] = 1
+                m_list.extend([M.partition(' ')[2]])
+                # number_check = [m.startswith(n) for n in numbers]
+            elif any(m.startswith(n + ' ') for n in self.numbers):
+                magentaprint("Mobs.parse_mob_string extending {0}".format([remove_plural(M.partition(' ')[2])] * (self.numbers.index(M.split(' ')[0]) + 2)))
+                m_list.extend([remove_plural(M.partition(' ')[2])] * (self.numbers.index(M.split(' ')[0]) + 2))
+            elif m.startswith('the '):
+                magentaprint("Mobs.parse_mob_string appending " + M[4:])
+                m_list.append(M[4:]) 
+            else:
+                magentaprint("Mobs.parse_mob_string appending " + M)
+                m_list.append(M)
+
+            # for n in range(0, len(numbers)):
+            #     if c.startswith(numbers[n] + ' '):
+            #         # m_dict[m.partition(' ')[2]] = n + 2
+            #         c_singular = remove_plural(c)
+            #         m_list.extend([c_singular.partition(' ')[2]] * (n + 2))
+            #         break
+
+        # return list(m_dict.keys())
+        return m_list
+
+    def read_match(self, m):
+        # You attack The Floor Manager.
+        # So this isn't used for "You see ..." and it's a list
+        # It's used in Mobs.notify for a __three_possible_mob_strings
+        # It seems like parse_mob_string should/could actually call read_match so that they're parsed the same way
+        # You attack The Floor Manager would match mobs1 and we can strip the The to match what happens with mobst list
+        if m.group('mob1'):
+            magentaprint("Mobs mob1: {}".format(m.group('mob1').strip()))
+            # return m.group('mob1').strip() # 'The' should have been removed, right?
+            if m.group('mob1').startswith('The '):
+                # ie. The Floor Manager
+                return m.group('mob1').partition(' ')[2].strip() # partition just parses the first space so we can cut off the "The " and just get "Floor Manager"
+            else:
+                return m.group('mob1').strip() # This was "mob2" looked wrong
+        elif m.group('mob2'):
+            # magentaprint("Mobs mob2") # Had to comment out because this triggers all the time
+            # "(?:The " + __numbers_opt + r"(?P<mob2>[a-z '-]+))"" 
+            # 2nd regex is like "The 2nd stall holder..." with or without the number in it
+            # So this "The " might never happen... we are cutting out the number part here just to get "stall holder"
+            if m.group('mob2').startswith('The '):
+                # TODO: No, I don't see how this regex could have 'The' in it after numbers like 1st/2nd
+                # Well, sure, "The stall holder kicks you for 2 damage." 
+                return m.group('mob2').partition(' ')[2].strip()
+            else:
+                return m.group('mob2').strip()
+        elif m.group('mob3'):
+            # "mob3" doesn't have "The " like it's a proper name, "Annette Plover attacks you..."  (no "The")... or like Commander Rilmenson
+            magentaprint("Mobs mob3")
+            return m.group('mob3').strip()
+
+    def read_mobs(self, arrived_mobs):
+        # This is to make a mobs list, ie. from "Three acolytes just arrived""
+        mob_parse  = arrived_mobs.partition(' ')
+        first_word = mob_parse[0]
+
+        if first_word.lower() in self.singles:
+            # Note that lower() doesn't modify first_word; it just returns the lowered string.
+            # We'll keep the case on first word so Jerrek gets added to the monster list with capitol J so he matches the monster lists
+            return [mob_parse[2]]
+        elif first_word.lower() in self.numbers:
+            #magentaprint("Mobs mobs: " + arrived_mobs + ", first_word: " + first_word)
+            return [remove_plural(mob_parse[2])] * (int(self.numbers.index(first_word.lower())) + 2)
+        else:
+            # Named mob
+            magentaprint("Mobs arrived no article: first_word " + first_word + " mobs: " + arrived_mobs)
+            # self.list.append(mob_parse[0])
+            return [mob_parse[0]]
+
+# class Mobs(MobRegexReader):
 # class Mobs(BotReactionWithFlag, ReferencingList):
     # I will give this object MONSTER_LIST because that provides a place for possible extended functionality
     # in the future, such as correcting targets. (Ok we wrote MobTargetDeterminator)
@@ -32,15 +143,9 @@ class Mobs(BotReactionWithFlag):
     ]
 
     def __init__(self):
-        super().__init__() # threading.Event
+        super().__init__()
         self.list = ReferencingList([])
         self.attacking = []
-        self.singles = ['a', 'an', 'the']
-        self.numbers = [
-            'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 
-            'thirteen', 'fourteen', 'fifteen' , 'sixteen', 'seventeen', 'eighteen', 'nineteen', 'twenty'
-        ]
-        self.numbers.extend([str(i) + " " for i in range(21, 200)])
         self.damage = []
         self.chase = ''
         self.chase_exit = ''
@@ -115,6 +220,7 @@ class Mobs(BotReactionWithFlag):
                 self.attacking.append(self.read_match(M))
                 self.expect_flee_attack=False
             if 'd' in M.groupdict().keys():
+                # (mob damage regex)
                 self.damage.append(int(M.group('d')))
             else:
                 self.damage.append(0)
@@ -148,102 +254,6 @@ class Mobs(BotReactionWithFlag):
         # Also jank was… remove before add
         # So the fix is to check if it’s (still) in the list before adding to attacking (in you_attack)
 
-    def get_reference_from_mob_match_object(self, match_object):
-        return self.get_reference(self.read_match(match_object))
-
-    def get_reference(self, target):
-        return self.list.get_reference(target)
-
-    def parse_mob_string(self, s):
-        # You see (two kobold children, a dustman).
-        # (Two lay followers) just arrived.
-        s = s.replace("\n\r", ' ')
-        # comma_items = [comma_item.strip().lower() for comma_item in s.split(',')]
-        # return [Mobs.remove_plural(m.strip()) for m in mob_match.group(1).split(',')]
-        m_list = []
-        # for c in comma_items:
-        for comma_item in s.split(','):
-            # Make sure to keep capitals in names, but don't miss any comparisons because of capitols at the beginnings of sentences
-            M = comma_item.strip() # monster with caps
-            m = M.lower()          # monster lower case
-
-            #if m[len(m)-4:len(m)-2] == ' (' and m[len(m)-1] == ')':
-            if m[-4:-2] == ' (' and m[-1] == ')':
-                # m = remove_good_evil(m)
-                magentaprint("Mobs.parse_mob_string reduced {0} to {1}".format(M,M[:-4]))
-                m = m[:-4]
-                M = M[:-4]
-            # It seems like this part gets done elsewhere
-            # It turns Cheryn into Ch and Olmer into O somewhere
-            # Ok "The Floor Manager" has to be "Floor Manager" because you can't hit it with 'The'
-            # So the policy will be to remove "The" with capital T
-            # "the" with little 't' probably won't happen
-
-            if any(m.startswith(single + ' ') for single in self.singles):
-                # m_dict[m.partition(' ')[2]] = 1
-                m_list.extend([M.partition(' ')[2]])
-                # number_check = [m.startswith(n) for n in numbers]
-            elif any(m.startswith(n + ' ') for n in self.numbers):
-                magentaprint("Mobs.parse_mob_string extending {0}".format([remove_plural(M.partition(' ')[2])] * (self.numbers.index(M.split(' ')[0]) + 2)))
-                m_list.extend([remove_plural(M.partition(' ')[2])] * (self.numbers.index(M.split(' ')[0]) + 2))
-            elif m.startswith('the '):
-                magentaprint("Mobs.parse_mob_string appending " + M[4:])
-                m_list.append(M[4:]) 
-            else:
-                magentaprint("Mobs.parse_mob_string appending " + M)
-                m_list.append(M)
-
-            # for n in range(0, len(numbers)):
-            #     if c.startswith(numbers[n] + ' '):
-            #         # m_dict[m.partition(' ')[2]] = n + 2
-            #         c_singular = remove_plural(c)
-            #         m_list.extend([c_singular.partition(' ')[2]] * (n + 2))
-            #         break
-
-        # return list(m_dict.keys())
-        return m_list
-
-    def read_match(self, m):
-        # You attack The Floor Manager.
-        # So this isn't used for "You see ..." and it's a list
-        # It's used in Mobs.notify for a __three_possible_mob_strings
-        # It seems like parse_mob_string should/could actually call read_match so that they're parsed the same way
-        # You attack The Floor Manager would match mobs1 and we can strip the The to match what happens with mobst list
-        if m.group('mob1'):
-            magentaprint("Mobs mob1: {}".format(m.group('mob1').strip()))
-            # return m.group('mob1').strip() # 'The' should have been removed, right?
-            if m.group('mob1').startswith('The '):
-                # ie. The Floor Manager
-                return m.group('mob1').partition(' ')[2].strip()
-            else:
-                return m.group('mob2').strip()
-        elif m.group('mob2'):
-            magentaprint("Mobs mob2")
-            if m.group('mob2').startswith('The '):
-                # TODO: No, I don't see how this regex could have 'The' in it after numbers like 1st/2nd
-                return m.group('mob2').partition(' ')[2].strip()
-            else:
-                return m.group('mob2').strip()
-        elif m.group('mob3'):
-            magentaprint("Mobs mob3")
-            return m.group('mob3').strip()
-
-    def read_mobs(self, arrived_mobs):
-        mob_parse  = arrived_mobs.partition(' ')
-        first_word = mob_parse[0]
-
-        if first_word.lower() in self.singles:
-            # Note that lower() doesn't modify first_word; it just returns the lowered string.
-            # We'll keep the case on first word so Jerrek gets added to the monster list with capitol J so he matches the monster lists
-            return [mob_parse[2]]
-        elif first_word.lower() in self.numbers:
-            #magentaprint("Mobs mobs: " + arrived_mobs + ", first_word: " + first_word)
-            return [remove_plural(mob_parse[2])] * (int(self.numbers.index(first_word.lower())) + 2)
-        else:
-            # Named mob
-            magentaprint("Mobs arrived no article: first_word " + first_word + " mobs: " + arrived_mobs)
-            # self.list.append(mob_parse[0])
-            return [mob_parse[0]]
 
     # Todo: Why are these part Mobs? Shouldn'they be misc functions?
     def mean(self, a):
@@ -255,6 +265,9 @@ class Mobs(BotReactionWithFlag):
         l = len(a) - sum([x==0 for x in a])
         # return math.sqrt(1/len(a) * sum([(x-m)^2 for x in a]))
         return math.sqrt(1/max(l,1) * sum([pow((x-m),2) for x in a]))
+
+    def get_reference(self, target):
+        return self.list.get_reference(target)
 
 def remove_plural(m):
     # if mob_string.endswith('s'):

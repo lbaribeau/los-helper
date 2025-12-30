@@ -192,9 +192,12 @@ class GrindThread(BotThread):
         C.mobs.chase_exit = ''
 
         if chase_ref:
-            new_target = chase_ref # This is a reference, but the other clause hasn't made a reference yet
+            magentaprint("do_regular_actions saw chase_ref: " + chase_ref)
+            # new_target = chase_ref # This is a reference, but the other clause hasn't made a reference yet
             # new_target = C.mobs.chase 
-            self.engage_monster(new_target) # Need to make sure this gets removed from mobs.list
+            self.engage_monster(chase_ref, chase_ref) # Need to make sure this gets removed from mobs.list
+            # Added an argument to engage_monster, as we know WHICH mob to go for (the 2nd), we have engage_monster bypass get_first_reference()
+            # (2nd argument is a "ref" ie. "stall 2"" not just a string saying what the mob is in general)
 
         if C.mobs.chase:
             return # it ran again (prioritize chasing over other attacking mobs I guess)
@@ -806,7 +809,10 @@ class GrindThread(BotThread):
             # This logic makes sure 
 
         # if self.command_handler.weapon_bot.cant_afford: 
-        if gold < 2*possible_weapon_asi.item.value:
+        # if gold < 2*possible_weapon_asi.item.value: # Checking for None on this...
+        if possible_weapon_asi == None or possible_weapon_asi.item == None or possible_weapon_asi.item.value == None or gold < 2*possible_weapon_asi.item.value:
+            magentaprint("Not going armour shopping due to gold issue")
+            magentaprint("Note: possible weapon: " + str(possible_weapon_asi))
             return
         else:
             self.command_handler.armour_bot.suit_up() # Armour bot is checking gold now on a case-by-case basis
@@ -919,34 +925,19 @@ class GrindThread(BotThread):
         self.rest_to_full() # Didn't realize I had rest_until_ready... but even that doesn't rest to full
 
     def rest_to_full(self):
-        # Ok this one's new I went a long time with super-optimal resting code but now I'm like just type "rest" (ASAP), that'll get us to full
-        # Might we get attacked???
-        # I guess we fight if so...
-        # Should I make a "rest" command to check that it's working?
-        # self.command_handler.process("rest")
-
-        rest=self.command_handler.rest
-        # rest.execute_and_wait()
-        # rest.execute()
-        # if rest.success:
-            # while self.health_ticks_needed()
-            # self.health_ticks_needed()
-        C=self.character
-        rest.execute()
-        magentaprint("Entering GrindThread rest_to_full loop wait loop")
-        while (C.HEALTH < C.maxHP or C.MANA < C.maxMP) and not self.stopping:
-            while C.mobs.attacking != [] and not self.stopping:
-                self.engage_any_attacking_mobs() # Outer loop is superfluous but that's fine (engage_any_attacking_mobs SHOULD empty mobs.attacking)
-                # rest.execute_and_wait()
-                rest.execute()
-            self.sleep(2)
-            # magentaprint("GrindThread rest_to_full() waiting, hopefully resting is active")
-            # Very rudimentary check for combat interrupt... not sure any of the other code does it better though
-
-        # Rest_until_ready had this bit to help the "go" regex... 
-        # self.command_handler.prompt.clear()
-        # self.command_handler.process('')
-        # self.command_handler.prompt.wait()
+        while True:
+            attacking_mob_ref = self.command_handler.rest_loop.run() # Initiates a REST and returns a mob if we got attacked
+            if attacking_mob_ref:
+                self.engage_monster(attacking_mob_ref, attacking_mob_ref) 
+                # Engage monster won't know to call rest_to_full again... so I guess engage_monster will actually COMPLETE
+                # It won't remember we fled previously... do we even have to finish resting??!?!? It'd be good to
+                # Even if we fought off an attacker... hmmm... well I do think this'll work but it's messed
+                # So if engage_monster FINISHES we're gonna rest again... whether it's FLEE or CHASE (or MOB_DEAD) we are RESTING
+                # If it's FLEE we'll actually have more on the call stack here
+                # I guess we send it
+            else:
+                # Base case of infinite loop is, rest_loop returned None, which should happen
+                return
 
     def drop_refs(self):
         pass

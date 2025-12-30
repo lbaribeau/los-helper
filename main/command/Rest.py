@@ -12,7 +12,7 @@ class Rest(Command):
         self.hp_amount = None
         self.mp_amount = None
         self.success_regexes = [R.rest]
-        self.failure_regexes = [] # Needed
+        self.failure_regexes = [] # Needed? Can rest fail?
         self.error_regexes = []
         # Would be good to have failure... 
         super().__init__(telnet_handler)

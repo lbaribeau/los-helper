@@ -22,6 +22,9 @@ light        = 'l'
 showaura     = 'show'
 protection   = 'prot'
 
+bless = 'ble'
+detectinvis='detect-i'
+
 # Parallel arrays used to downrank
 _lvl1 = [
 	burn, 

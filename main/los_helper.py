@@ -45,7 +45,7 @@ from reactions.Mobs            import Mobs
 from combat.SmartCombat        import SmartCombat
 # from command.Info              import Info
 from command.Whois             import Whois
-from command.SpellsCommand     import SpellsCommand
+from command.SpellsCommand     import SpellsCommand2
 from reactions.Cartography     import Cartography
 from reactions.BotReactions    import *
 # from reactions.WieldReaction import WieldReaction
@@ -246,7 +246,7 @@ class LosHelper(object):
     def check_spells(self):
         # magentaprint("LosHelper.check_spells() sleeping 2 sec.")
         # time.sleep(2)
-        spells = SpellsCommand(self.telnetHandler, self.character)
+        spells = SpellsCommand2(self.telnetHandler, self.character)
         self.mud_reader_handler.add_subscriber(spells)
         spells.execute()
         spells.wait_for_flag()

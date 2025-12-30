@@ -2,6 +2,8 @@
 from threading import Thread
 from misc_functions import magentaprint
 
+# MiniBot is a wrapper implementing a way to run as a new thread or as a current thread
+
 # class MiniBot(Thread):
 class MiniBot(object):
     # Probably no regexes/reactions

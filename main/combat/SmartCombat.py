@@ -299,7 +299,7 @@ class SmartCombat(CombatObject):
                 self.mud_reader_completion_event.wait()
                 magentaprint("After mud reader completion, end combat is {}, stopping is {}, event is {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
             else:
-                magentaprint("SmartCombat cast block")
+                # magentaprint("SmartCombat cast block") # Good info but prints too much
                 C = self.character
                 damage = C.maxHP - C.HEALTH
                 cast.wait_until_ready()

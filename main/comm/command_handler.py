@@ -53,7 +53,8 @@ magentaprint("... Analyser...");           from comm.analyser              impor
 magentaprint("... Info...");               from command.Info               import Info
 magentaprint("... AreaStoreItem...");      from db.Database                import AreaStoreItem
 magentaprint("... Plotter...");            from plotter                    import Plotter
-magentaprint("... Plotter...");            from command.Rest               import Rest
+magentaprint("... Rest...");               from command.Rest               import Rest
+from mini_bots.rest_loop import RestLoop
 
 magentaprint("... Done command_handler.py import section, now defining classes")
 
@@ -83,30 +84,22 @@ class CommandHandler(object):
         # mudReaderHandler.register_reaction(self.smartCombat.cast)
         # mudReaderHandler.register_reaction(self.smartCombat)
         # self.smartCombat = SmartCombat(self.telnetHandler, self.character, Kill(telnetHandler), Cast(telnetHandler), Prompt(character))
-        self.combat_reactions = CombatReactions(self.character)
-        mudReaderHandler.add_subscriber(self.combat_reactions)
+        self.combat_reactions = CombatReactions(self.character); mudReaderHandler.add_subscriber(self.combat_reactions)
         # self.simple_weapon_bot = SimpleWeaponBot(self.telnetHandler, self.character)
         # mudReaderHandler.add_subscriber(self.simple_weapon_bot)
         # self.weapon_bot = WeaponBot(self.character, self) # This guy takes the map after it's available... seems like his functions should be made thread safe
-        self.weapon_bot = MainhandWeaponBot(self.character, self) # This guy takes the map after it's available... seems like his functions should be made thread safe
-        self.mudReaderHandler.add_subscriber(self.weapon_bot)
+        self.weapon_bot = MainhandWeaponBot(self.character, self); self.mudReaderHandler.add_subscriber(self.weapon_bot)
+        # This guy takes the map after it's available... seems like his functions should be made thread safe
 
-        self.kill = Kill(telnetHandler)
-        mudReaderHandler.add_subscriber(self.kill)
-        self.cast = Cast(telnetHandler)
-        mudReaderHandler.add_subscriber(self.cast)
-        self.use = Use(telnetHandler, self.inventory)
-        mudReaderHandler.add_subscriber(self.use)
-        self.drink = Drink(telnetHandler, self.inventory)
-        mudReaderHandler.add_subscriber(self.drink)
-        self.wield = Wield(character, telnetHandler, self.inventory)
-        mudReaderHandler.add_subscriber(self.wield)
-        self.second = Second(character, telnetHandler, self.inventory)
-        mudReaderHandler.add_subscriber(self.second)
+        self.kill = Kill(telnetHandler);                                mudReaderHandler.add_subscriber(self.kill)
+        self.cast = Cast(telnetHandler);                                mudReaderHandler.add_subscriber(self.cast)
+        self.use = Use(telnetHandler, self.inventory);                  mudReaderHandler.add_subscriber(self.use)
+        self.drink = Drink(telnetHandler, self.inventory);              mudReaderHandler.add_subscriber(self.drink) 
+        self.wield = Wield(character, telnetHandler, self.inventory);   mudReaderHandler.add_subscriber(self.wield)
+        self.second = Second(character, telnetHandler, self.inventory); mudReaderHandler.add_subscriber(self.second)
         # self.potion_thread_handler = PotionThreadHandler(Consume(self.use, self.drink, self.eat))
         self.potion_thread_handler = PotionThreadHandler(Consume(self.use, self.drink))
-        self.prompt = Prompt()
-        mudReaderHandler.add_subscriber(self.prompt)
+        self.prompt = Prompt(); mudReaderHandler.add_subscriber(self.prompt)
         self.character.prompt = self.prompt
         self.info = Info(self.mudReaderHandler, self.telnetHandler)
         self.info.execute_and_wait()
@@ -118,28 +111,20 @@ class CommandHandler(object):
         self.go = Go(self.kill, self.cast, telnetHandler, character)
         mudReaderHandler.add_subscriber(self.go)
         mudReaderHandler.add_subscriber(self.go.open)
-        self.buy = Buy(telnetHandler, character.inventory)
-        mudReaderHandler.add_subscriber(self.buy)
+        self.buy = Buy(telnetHandler, character.inventory);       mudReaderHandler.add_subscriber(self.buy)
         # self.drop = Drop(telnetHandler)
         # mudReaderHandler.add_subscriber(self.drop)
-        self.get = Get(telnetHandler, character.inventory)
-        mudReaderHandler.add_subscriber(self.get)
-        self.repair = Repair(telnetHandler, character.inventory)
-        mudReaderHandler.add_subscriber(self.repair)
+        self.get = Get(telnetHandler, character.inventory);       mudReaderHandler.add_subscriber(self.get)
+        self.repair = Repair(telnetHandler, character.inventory); mudReaderHandler.add_subscriber(self.repair)
         # self.wear = Wear(telnetHandler)
-        self.wear = Wear(telnetHandler, character.inventory)
-        mudReaderHandler.add_subscriber(self.wear)
-        self.rest = Rest(telnetHandler)
-        mudReaderHandler.add_subscriber(self.rest)
+        self.wear = Wear(telnetHandler, character.inventory);     mudReaderHandler.add_subscriber(self.wear)
         # magentaprint(str(Equipment))
         self.equipment = Equipment(telnetHandler)
         # self.eq_bot = EquipmentBot(character, self, self.mudReaderHandler, self.mud_map)
         mudReaderHandler.add_subscriber(self.equipment)
-        mudReaderHandler.add_buffer_completion_subscriber(self.equipment)
-        self.sell = Sell(telnetHandler, self.inventory)
-        mudReaderHandler.add_subscriber(self.sell)
-        self.drop = Drop(telnetHandler, self.inventory)
-        mudReaderHandler.add_subscriber(self.drop)
+        mudReaderHandler.add_buffer_completion_subscriber(self.equipment) # Interesting
+        self.sell = Sell(telnetHandler, self.inventory); mudReaderHandler.add_subscriber(self.sell)
+        self.drop = Drop(telnetHandler, self.inventory); mudReaderHandler.add_subscriber(self.drop)
         self.sell_bot = SellBot(self.character.inventory, self.sell, self.drop)
         # Use will have to keep inventory up to date, right
         # That is if items support usable (small inhaler, white amulet, rods)
@@ -533,6 +518,15 @@ class CommandHandler(object):
                 magentaprint(self.bot_thread.total_paths())
             else:
                 magentaprint("No bot thread yet (no total paths yet)")
+        elif user_input == 'Casting':
+            if hasattr(self.smartCombat, 'casting'):
+                magentaprint(self.smartCombat.casting)
+                magentaprint(Spells.vigor in self.character.spells)
+            else:
+                magentaprint("SmartCombat hasn't initialized itself yet")
+        elif user_input == "mobslist":
+            for m in self.character.mobs.list:
+                magentaprint(m)
         # Note: see self.actions before adding more cases (just associate a command with a function pointer)
         else:
             # Doesn't match any command we are looking for, send it to server
