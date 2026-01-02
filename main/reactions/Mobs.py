@@ -159,6 +159,7 @@ class Mobs(MobRegexReader):
             magentaprint("Mobs.list (added): " + str(self.list.list)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
         elif r in R.ze_mob_died:
             # The "ze" is because the regex notifications go out in alphebetical order by variable name
+            # See .you_attack below for a note on this, ie, one-shot a mob, you want "added" to happen before "removed"
             mob_name = self.read_match(M)
             # magentaprint("Mobs noticed " + mob_name + " died, it's in the self.list: " + str(mob_name in self.list))
             magentaprint("Mobs noticed " + mob_name + " died, it's in the self.list: {}, self.list is {} (len {}), self.attacking is {} (len {}).".format(\
@@ -205,6 +206,7 @@ class Mobs(MobRegexReader):
         elif r in R.mob_joined1 or r in R.mob_joined2:
             magentaprint("Mobs.notify mob joined in {}".format(r))
             self.attacking.append(self.read_match(M))
+            # Ok mob joined in is clear enough... they get added...
         elif r in R.mob_attacked:
             # c = self.attacking.count(M.group('mob').strip())
             # if c == 0:
@@ -223,6 +225,16 @@ class Mobs(MobRegexReader):
             # Ehrm well I guess we have to add it ourselves if we flee... aggro regex doesn't exist... so uncomment the above... (will it double add?)
             # Is double-adding ok? Not really
             # If we fled then we know we have to add it
+            # I think the problem is that we want a REFERENCE to a specific mob that is attacking not a general term
+            # Then we need to use mob-target-determinator to babysit those references
+            # We also probably want the caller to understand that
+            # I think that I wrote code for the first time that gets text from the server and makes a reference out of it when I was doing rest_loop or flee
+            # Yes, it was rest_loop, but rest_loop RETURNED, and bot_thread had to figure out the target
+            # There is code in rest_loop.notify() that I should refactor out
+            # Also, why did I have to update the regex... I guess it wasn't firing (matching)?
+            # I see I put "n" in there to get the "n" out of "nth" maybe that's the only new part... seems right
+            # A MobTargetListMaintainer might be appropriate...
+            # I think I'll make a new object for this???
             if self.expect_flee_attack:
                 self.attacking.append(self.read_match(M))
                 self.expect_flee_attack=False
@@ -231,7 +243,7 @@ class Mobs(MobRegexReader):
                 self.damage.append(int(M.group('d')))
             else:
                 self.damage.append(0)
-        elif r in R.mob_aggro:
+        elif r in R.mob_aggro: # ie. "<Mob> attacks you."
             self.damage = []
             magentaprint("Mobs.notify mob aggro {}".format(r))
             self.attacking.append(self.read_match(M)) # Ehrm this adds the mob even if it got one-shotted (it's dead(!))
@@ -239,6 +251,7 @@ class Mobs(MobRegexReader):
             # Ok suppose we one-shot a waitress; You attack the waitress and waitress died are in the same block.
             # This clause gets called last because you_attack is alphabetically later than mob_died (see mudReaderHandler's dir(RegexStore))
             # So check if the mob is in the list to reduce jank
+            # (or we fixed this with ze_mob_died)
             self.damage = []
             mob_name = self.read_match(M)
             magentaprint("Mobs.notify attacked mob {}".format(mob_name)) # Hmmm "The Floor Manager" not in [Floor Manager]
@@ -258,7 +271,7 @@ class Mobs(MobRegexReader):
         # Well it seems good now
         # The jank was double add
         # Double add happened because count occurred while mob_aggro was still queued up
-        # Also jank was… remove before add
+        # Also jank was... remove before add
         # So the fix is to check if it’s (still) in the list before adding to attacking (in you_attack)
 
 
@@ -275,6 +288,55 @@ class Mobs(MobRegexReader):
 
     def get_reference(self, target):
         return self.list.get_reference(target)
+
+    def get_ref_of_attacking_mob(self, M):
+        # Get mob name from server text (M)
+        mob_text = self.read_match(M) # Mob text ie. "Floor Manager" (no "The"), "stall holder", "Annette Plover" 
+
+        # Get the number from the server text, ie. _2nd_ stall holder
+        if M.group('n'):
+            n=M.group('n')
+        else:
+            # Assign n to be 1 if it's not the _2nd_ stall holder (no number given)
+            n=1
+
+        # Get a "reference" for that mob (supposing a stall bolder could be present)
+        ref_first_mob = self.list.get_first_reference(mob_text)
+        if not ref_first_mob:
+            magentaprint("get_ref_of_attacking_mob is confused... probably not important... this code was first written for rest_loop")
+            magentaprint("It's bad input... a mob attacking should be in mobs.list!")
+            return
+
+        # get_first_reference doesn't put a " 1", only puts that string for 2 or greater...
+        # Extract new "m" from the reference ("m" that accounts for stall bolder)
+        # Calling it "m" to diferentiate it...
+        #  "n" is from the server text match, which doesn't account for "stall bolder"
+        #  "m" is an index number pointing at the first mob
+        if ' ' in ref_first_mob:
+            ref_first_mob, first_mob_m = ref_first_mob.split(' ')#[1]
+        else:
+            first_mob_m = 1
+
+        # We just got the _first_ reference so this arithmetic is to target the proper mob not the first one (add "n" and "m") minus 1
+        attacking_mob_ref = ref_first_mob + ' ' + str(int(first_mob_m) + int(n) - 1) # # If the 1st stall holder is "stall 2" and we want the 2nd, we gotta add that
+        if attacking_mob_ref.split(' ')[1] == '1':
+            return attacking_mob_ref.split(' ')[0] # Removes " 1" if like "stall 1"
+        return attacking_mob_ref
+
+        # if M.group('nth'):
+            # Ok I guess this asks if we have a match of that text...
+            # nth = int(M.group('nth')[0:len(M.group('nth'))-2]) # what in the h!$&*??? I think we remove two off the end?
+        # else:
+        #     self.attacking.extend([M.group('mob')] * max(nth - c, 0)) # is the idea that if the 3rd is hitting me... i add 3 to attacking??!?!?!
+
+        # ok looks like self.attacking_mob_ref is used like a return variable, not to mudReaderThread though, (rest_loop.)run() returns it
+        # I could put this code in Mobs.py as a function?? 
+        # Takes R_mob_attacked, and match
+        # Needs "mobs" because that knows the current list
+        # So it could be a function on "Mobs"
+        # mobs.get_ref_of_attacking_mob(match)
+        # ie. self.attacking_mob_ref = self.mobs.get_ref_of_attacking_mob(M) # looks good
+        return
 
 def remove_plural(m):
     # if mob_string.endswith('s'):

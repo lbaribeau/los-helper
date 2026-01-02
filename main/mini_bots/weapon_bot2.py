@@ -8,7 +8,6 @@ from comm import RegexStore as R
 from combat.mob_target_determinator import MobTargetDeterminator
 # from mini_bots.smithy_bot import SmithyBot
 from mini_bots.travel_bot   import TravelBot
-from mini_bots.shopping_bot import ShoppingBot
 from mini_bots.mini_bot     import MiniBot
 from mini_bots.shopping_bot import ShoppingBot
 from db.Database            import AreaStoreItem
@@ -92,6 +91,7 @@ class MainhandWeaponBot(MiniBot):
         # self.smithy_bot   = SmithyBot(self.character, self.command_handler, mud_map)
         self.travel_bot   = TravelBot(self.character, self.command_handler, mud_map)
         self.shopping_bot = ShoppingBot(self.character, self.command_handler, mud_map)
+        magentaprint("Weapon_bot add_in_map done")
 
     def notify(self, regex, match):
         self.actions[regex](match)
@@ -136,6 +136,11 @@ class MainhandWeaponBot(MiniBot):
     def has_usable_weapon_in_inventory(self):
         # Ehrm can we start doing "looks" here in case we can't maintain is_usable
         return any([self.command_handler.inventory.has_unbroken(p.item.name) for p in self.get_possible_weapons()])
+        # Ehrm we are getting FALSE here?!??!!? These are area store items...
+        # [56 H 0 M]: exec print([p for p in self.weapon_bot.get_possible_weapons()])
+        #[<AreaStoreItem: 15>, <AreaStoreItem: 110>, <AreaStoreItem: 111>]
+        # [56 H 0 M]: exec print([p.item.name for p in self.weapon_bot.get_possible_weapons()])
+        # ['morning star', "footman's mace", "horseman's mace"] # Ok so we did remove level 1 when we were level 2...
     def look_at_each_possible_weapon(self):
         for w in self.get_possible_weapons():
             for r in self.command_handler.inventory.get_all_references(w.item.name):
@@ -155,13 +160,23 @@ class MainhandWeaponBot(MiniBot):
     def needs_smithy(self):
         return self.has_broken_weapon_in_inventory() and not self.has_unbroken_weapon_in_inventory()
 
+    def wielding(self):
+        return hasattr(self, 'weapon')
+
+    def add_to_keep_list(self, weapon_item_name):
+        if weapon_item_name not in self.inventory.keep_list:
+            self.inventory.keep_list.append(weapon_item_name)
+        magentaprint("Weapon bot added {0} to inventory keep list... \"in\" is now: {1}".format(weapon_item_name, weapon_item_name in self.inventory.keep_list))
+        # if self.possible_weapons[0].item.name not in self.inventory.keep_list:
+        #     self.inventory.keep_list.append(self.possible_weapons[0].item.name)
+        #     magentaprint("Weapon bot added {0} to inventory keep list, {1}".format(self.possible_weapons[0].item.name, self.possible_weapons[0].item.name in self.inventory.keep_list))
+
     def check_weapons(self):
+        magentaprint("Weaponbot2.py check_weapons()")
         self.get_possible_weapons() # Sets self.possible_weapons by checking DB
         self.look_at_each_possible_weapon() # Looks at weapons in inventory to update if they are broken
-        if self.possible_weapons[0].item.name not in self.inventory.keep_list:
-            self.inventory.keep_list.append(self.possible_weapons[0].item.name)
-            magentaprint("Weapon bot added {0} to inventory keep list, {1}".format(self.possible_weapons[0].item.name, self.possible_weapons[0].item.name in self.inventory.keep_list))
-        if not hasattr(self, 'weapon'):
+        # self.add_to_keep_list(self.possible_weapons[0].item.name)
+        if not self.wielding():
             if self.has_usable_weapon_in_inventory():
                 wield = self.command_handler.wield
                 usable_ref = self.get_usable_weapon_ref()
@@ -222,30 +237,41 @@ class MainhandWeaponBot(MiniBot):
                     magentaprint("Check weapons repairing problem")
                     raise
             else:
-                # Need to check if we can afford it here so we can act accordingly
-                if self.shopping_bot.cant_afford(self.possible_weapons[0]):
-                    # Don't call self.check_weapons to handle the secondary because here we are giving up on having a main hand weapon,
-                    # for out-of-box experience at level 1, no inifinite loop
-                    magentaprint("Can't afford weapon")
-                    self.cant_afford = True
-                    return False
+                if self.go_buy_a_weapon() and not self.stopping: # should make self.has_usable_weapon_in_inventory true
+                    self.check_weapons() # this will wield it then it'll set up the secondary weapon
                 else:
-                    self.go_buy_default_weapon()
-                    # Have to be able to stop as there is travel here
-                    # I think this check is necessary or we won't stop?
-                    if not self.stopping:
-                        self.check_weapons() # Wield, buy secondary
+                    raise(Exception("Had trouble buying a weapon, or stop() was called"))
+                # # Need to check if we can afford it here so we can act accordingly
+                # # (.cant_afford() is a simple GOLD check)
+                # if self.shopping_bot.cant_afford(self.possible_weapons[0]):
+                #     # Don't call self.check_weapons to handle the secondary because here we are giving up on having a main hand weapon,
+                #     # for out-of-box experience at level 1, no inifinite loop
+                #     magentaprint("Can't afford weapon")
+                #     self.cant_afford = True
+                #     return False
+                # else:
+                #     self.go_buy_default_weapon()
+                #     # Have to be able to stop as there is travel here
+                #     # I think this check is necessary or we won't stop?
+                #     if not self.stopping:
+                #         self.check_weapons() # Wield, buy secondary
         else:
             # This else is to make sure we have a weapon ready to go in the bag (we are weilding one by now)
             if self.has_usable_weapon_in_inventory():
                 self.cant_afford=False
+                magentaprint("weapon_bot check_weapons done... wielding " + str(self.weapon) + "... backup confirmed in inventory")
+                self.add_to_keep_list(self.inventory.get_item_name_from_reference(self.get_usable_weapon_ref()))
                 return 0 # Success
             elif self.has_broken_weapon_in_inventory(): # TODO (optimize): Should be a repairable broken weapon
                 repair = self.command_handler.repair
                 self.travel_bot.go_to_nearest_smithy(grinding=False) 
+                if self.stopping:
+                    magentaprint("Stop was called (weapon bot)")
+                    return False
                 weapon = self.get_broken_weapon_ref()
                 repair.execute_and_wait(weapon)
                 if repair.success:
+                    self.add_to_keep_list(self.inventory.get_item_name_from_reference(self.get_usable_weapon_ref()))
                     return 0 # Ok the weapon is ready in the bag
                 elif repair.failure:
                     # Repair failure is blacksmith breaking it
@@ -264,13 +290,18 @@ class MainhandWeaponBot(MiniBot):
                     self.command_handler.drop.execute_and_wait(weapon) 
                     self.check_weapons()
                 else:
-                    magentaprint("Check weapons repairing problem")
-                    raise
+                    raise(Exception("Check weapons repairing problem"))
                     # This could be a db error
             else:
                 # magentaprint("weapon_bot2.py check_weapons() else (hasattr(weapon)) else (not has_usable or broken weapon) ")
                 magentaprint("Going to buy default weapon because we want one ready in the inventory")
-                return self.go_buy_default_weapon()
+                # return self.go_buy_default_weapon()
+                outcome = self.go_buy_a_weapon()
+                if outcome:
+                    self.add_to_keep_list(self.inventory.get_item_name_from_reference(self.get_usable_weapon_ref()))
+                else:
+                    raise(Exception("Weapon bot couldn't buy a weapon"))
+                    return False
 
         # if self.needs_weapon():
         #     if self.has_weapon_in_inventory():
@@ -282,7 +313,35 @@ class MainhandWeaponBot(MiniBot):
         # else:
         #     self.repair_or_replace_weapon()
 
+    def go_buy_a_weapon(self):
+        # Had an issue where we couldn't afford morning star... it looks like the code will work if we use anything from possible_weapons
+
+        # if not hasattr(self, 'shopping_bot'):
+        #     raise(Exception("Weapon_bot needs add_in_map called..."))
+
+        if all([self.shopping_bot.cant_afford(w) for w in self.possible_weapons]):
+            self.cant_afford = True
+            raise(Exception("Weapon bot can't buy a weapon it wants/needs"))
+            # I think I used to function a bit with cant_afford = True...
+
+        for w in self.possible_weapons:
+            if self.shopping_bot.cant_afford(w):
+                continue
+            magentaprint("weapon_bot2 go_buy_a_weapon picked " + str(w.item.name))
+
+            if self.shopping_bot.go_buy(w):
+                self.cant_afford = False
+                return True
+            else:
+                if self.shopping_bot.stopping:
+                    magentaprint("Weapon bot sees shopping bot stopped?")
+                else:
+                    raise(Exception("weapon bot could not buy a weapon (cant afford?) (could be either first or backup weapon)"))
+                return False
+
     def go_buy_default_weapon(self):
+        # NOTE: I believe I've switched to go_buy_a_weapon(), maybe not everywhere...
+
         # magentaprint("WeaponBot.go_buy_default_weapon()")
         # magentaprint("WeaponBot.go_buy_replacement() calling shopping_bot.go_buy " + str(self.get_possible_weapons()[0]))
         # if self.possible_weapons[0] not in self.shopping_bot.keep_list:
@@ -358,23 +417,46 @@ class MainhandWeaponBot(MiniBot):
             magentaprint("WeaponBot: Warning: get_possible_weapons() was called before init_with_map.")
             return None
         else:
-            # self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max('weapon', self.character.weapon_type, self.character.weapon_level)
-            # self.possible_weapons = sorted(self.possible_weapons, key = lambda i: i.item.level, reverse=True)
-            # (For sorting, peewee can also do it with order_by(-Item.Level))
-            # Strict about level? Broc wants to only accept top level
-            # The bard needs to use a level 2 weapon...
-            specific_level_query = AreaStoreItem.get_by_item_type_and_level(
-                'weapon', 
-                self.character.info.weapon_type, 
-                self.character.info.weapon_level
-            )
+            # # self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max('weapon', self.character.weapon_type, self.character.weapon_level)
+            # # self.possible_weapons = sorted(self.possible_weapons, key = lambda i: i.item.level, reverse=True)
+            # # (For sorting, peewee can also do it with order_by(-Item.Level))
+            # # Strict about level? Broc wants to only accept top level
+            # # The bard needs to use a level 2 weapon...
+            # specific_level_query = AreaStoreItem.get_by_item_type_and_level(
+            #     'weapon', 
+            #     self.character.info.weapon_type, 
+            #     self.character.info.weapon_level
+            # )
+            # # Alright this did exclude level 1 weapons when we hit level 2
+            # # a) hit 40% blunt, b) cannot afford morning star
+            # # So what if we switched to allow level 1 one to be used... switched to the easier query??
+            # # Then the bot could be weak... do we allow that?
+            # # My guy can't afford a morning star... he needs to function, right? 
+            # # So I guess this is needed... 
+            # # What if he sorts them by level so he has fallbacks
+            # # Can we catch that low gold case?
+            # # Well we have to be able to use level 1 weapons as a fallback
+            # # So start by enabling that? I guess we have to use the whole list of possible weapons
+            # # Maybe include one level down? Use all of level max?
+            # # Try sorting reverse order by level... weapon bot and smart combat can handle a large list...
+            # # The case is, he gained a weapon level, and the query still worked, but we still want to enable lower weapons..
+            # # Maybe even buy the lower weapon level
+            # # Okkkkkk so we have that sort.... (in AreaStoreItem)
+            # Try that then?? Maybe write some can't afford code
+            # This should work because we should just prefer the higher levels...
 
-            if specific_level_query:
-                self.possible_weapons = specific_level_query
-            else:
-                self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max(
-                    'weapon', 
-                    self.character.info.weapon_type, 
+            # if specific_level_query:
+            #     self.possible_weapons = specific_level_query
+            # else:
+            #     self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max(
+            #         'weapon', 
+            #         self.character.info.weapon_type, 
+            #         self.character.info.weapon_level
+            #     )
+
+            self.possible_weapons = AreaStoreItem.get_by_item_type_and_level_max(
+                    'weapon',
+                    self.character.info.weapon_type,
                     self.character.info.weapon_level
                 )
 

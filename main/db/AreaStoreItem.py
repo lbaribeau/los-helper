@@ -77,6 +77,8 @@ class AreaStoreItem(BaseModel):
         # Here, the query is for a given maximum item level (returns all items less than or equal to given max item level)
         #BaseModel.magentaprint("AreaStoreItem get model_name/data_name: " + model_name + '/' + data_name + ", ids: " + str(itemtypemodel) + "/" + str(itemtypedata) )
         # (Searches general armour and sized armour)
+        # Model means something of "weapon", "s-armour", "m-armour", "l-armour", "finger" , "shield", sizeless armour... also other item types (consume, held...)
+        # Data means where it equips??? Not exactly... 1-5: are extended weapon types, 6-15 are where they equip
         items = (AreaStoreItem
             .select()
             .join(Item)
@@ -85,7 +87,8 @@ class AreaStoreItem(BaseModel):
             .where(
                 (ItemType.model == ItemTypeModel.get_by_name(model_name).get().id) & 
                 (ItemType.data == ItemTypeData.get_by_name(data_name).get().id))
-            .order_by(-Item.level)
+            # .order_by(-Item.level)
+            .order_by(-Item.value) # Prefer expensive (cant afford logic is elsewhere)... honestly only value is likely needed as it correlates with .level
         )
         # obj = NamedModel.select().where(fn.Lower(NamedModel.name) == fn.Lower(name)).get()
         #print("AreaStoreItem get_by_item_type_and_level_max returning " + str(items))
