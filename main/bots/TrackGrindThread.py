@@ -1,8 +1,10 @@
 
-from bots.GrindThread import GrindThread
-from misc_functions import magentaprint
-from Aura import Aura
-import db.Area
+print("... ... TrackGrindThread.py import magentaprint..."); from misc_functions import magentaprint
+print("... ... TrackGrindThread.py import GrindTread...");   from bots.GrindThread import GrindThread
+print("... ... TrackGrindThread.py import Aura...");         from Aura import Aura
+print("... ... TrackGrindThread.py import db.Area...");      import db.Area
+
+print("... ... TracKGrindThread.py class Tracks")
 
 class Tracks:
     def __init__(self):
@@ -306,6 +308,8 @@ class Tracks:
         self.LIMBO_TO_CHAPEL = [
             'ame','out','w','n','chapel'
         ]
+
+print("... ... TracKGrindThread.py class TrackGrindThread")
 
 class TrackGrindThread(GrindThread):
     def do_pre_go_actions(self):
@@ -855,6 +859,8 @@ class TrackGrindThread(GrindThread):
         for i in range(1,len(area_ids)):
             path += self.mud_map.get_path(area_ids[i-1], area_ids[i])
         return path
+
+magentaprint("... ... TracKGrindThread.py end")
 
 # Just thinking about changing top level...
 

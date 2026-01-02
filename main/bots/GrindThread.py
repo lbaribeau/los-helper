@@ -310,7 +310,7 @@ class GrindThread(BotThread):
         self.command_handler.process('experience')
         # self.command_handler.process('aura')
         # self.command_handler.cast.print_aura_timer()
-        magentaprint("Last target was " + str(self.smartCombat.target))
+        magentaprint("Last target: " + str(self.smartCombat.target))
         self.command_handler.process('trackno')
         self.command_handler.process('time')
 
@@ -938,9 +938,10 @@ class GrindThread(BotThread):
         self.rest_to_full() # Didn't realize I had rest_until_ready... but even that doesn't rest to full
 
     def rest_to_full(self):
-        while True:
+        while True and not self.stopping:
             attacking_mob_ref = self.command_handler.rest_loop.run() # Initiates a REST and returns a mob if we got attacked
             if attacking_mob_ref:
+                magentaprint("GrindThread.rest_to_full() engaging attacking mob \"" + attacking_mob_ref + "\".")
                 self.engage_monster(attacking_mob_ref, attacking_mob_ref) 
                 # Engage monster won't know to call rest_to_full again... so I guess engage_monster will actually COMPLETE
                 # It won't remember we fled previously... do we even have to finish resting??!?!? It'd be good to
@@ -950,6 +951,7 @@ class GrindThread(BotThread):
                 # I guess we send it
             else:
                 # Base case of infinite loop is, rest_loop returned None, which should happen
+                magentaprint("GrindThread.rest_to_full() done.")
                 return
 
     def drop_refs(self):

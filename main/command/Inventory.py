@@ -963,6 +963,7 @@ class Inventory(SimpleCommand, ReferencingList):
     #             ref_n = ref_n - ivalue.qty
 
     def name_from_reference(self, ref):
+        # Looks to do the same as the next function... 
         return str(self.item_from_reference(ref))
 
     def get_item_name_from_reference(self, ref):
@@ -982,7 +983,12 @@ class Inventory(SimpleCommand, ReferencingList):
         #             return itemkey.to_string()
         #         ref_n = ref_n - ivalue.qty
 
-        return self.get_item_from_reference(ref).to_string() if self.get_item_from_reference(ref) else None
+        # return self.get_item_from_reference(ref).to_string() if self.get_item_from_reference(ref) else None
+        item = self.get_item_from_reference(ref)
+        if item:
+            return item.to_string()
+        else:
+            return None
 
     def get_item_from_reference(self, ref):
         return self.get(ref)

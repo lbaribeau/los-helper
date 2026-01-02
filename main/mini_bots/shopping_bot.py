@@ -29,10 +29,9 @@ class ShoppingBot(MiniBot):
 
     def go_buy(self, asi):
         self.stopping = False
-        magentaprint("ShoppingBot starting Travel bot to buy " + str(asi.item.name))
+        magentaprint("ShoppingBot starting Travel bot to buy " + str(asi.item.name) + " for " + str(asi.item.value))
         # Let's put a check in here right???? If can't afford... ohhhh crappp only the bot knows that!!! That's executive...
         # No we ARE a bot we have command handler
-        magentaprint(asi.item.value)
         # Oooofff a bunch of debugging because DBeaver was showing me the wrong database... "value" hadn't written
         if self.cant_afford(asi):
             magentaprint("Can't afford " + str(asi.item.name))

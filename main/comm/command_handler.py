@@ -92,11 +92,11 @@ class CommandHandler(object):
         self.weapon_bot = MainhandWeaponBot(self.character, self); self.mudReaderHandler.add_subscriber(self.weapon_bot)
         # This guy takes the map after it's available... seems like his functions should be made thread safe
 
-        self.kill = Kill(telnetHandler);                                mudReaderHandler.add_subscriber(self.kill)
-        self.cast = Cast(telnetHandler);                                mudReaderHandler.add_subscriber(self.cast)
-        self.use = Use(telnetHandler, self.inventory);                  mudReaderHandler.add_subscriber(self.use)
-        self.drink = Drink(telnetHandler, self.inventory);              mudReaderHandler.add_subscriber(self.drink) 
-        self.wield = Wield(character, telnetHandler, self.inventory);   mudReaderHandler.add_subscriber(self.wield)
+        self.kill   = Kill(telnetHandler);                                mudReaderHandler.add_subscriber(self.kill)
+        self.cast   = Cast(telnetHandler);                                mudReaderHandler.add_subscriber(self.cast)
+        self.use    = Use(telnetHandler, self.inventory);                  mudReaderHandler.add_subscriber(self.use)
+        self.drink  = Drink(telnetHandler, self.inventory);              mudReaderHandler.add_subscriber(self.drink) 
+        self.wield  = Wield(character, telnetHandler, self.inventory);   mudReaderHandler.add_subscriber(self.wield)
         self.second = Second(character, telnetHandler, self.inventory); mudReaderHandler.add_subscriber(self.second)
         # self.potion_thread_handler = PotionThreadHandler(Consume(self.use, self.drink, self.eat))
         self.potion_thread_handler = PotionThreadHandler(Consume(self.use, self.drink))
@@ -113,11 +113,9 @@ class CommandHandler(object):
         mudReaderHandler.add_subscriber(self.go)
         mudReaderHandler.add_subscriber(self.go.open)
         self.buy = Buy(telnetHandler, character.inventory);       mudReaderHandler.add_subscriber(self.buy)
-        # self.drop = Drop(telnetHandler)
-        # mudReaderHandler.add_subscriber(self.drop)
+        # self.drop = Drop(telnetHandler);                        mudReaderHandler.add_subscriber(self.drop)
         self.get = Get(telnetHandler, character.inventory);       mudReaderHandler.add_subscriber(self.get)
         self.repair = Repair(telnetHandler, character.inventory); mudReaderHandler.add_subscriber(self.repair)
-        # self.wear = Wear(telnetHandler)
         self.wear = Wear(telnetHandler, character.inventory);     mudReaderHandler.add_subscriber(self.wear)
         # magentaprint(str(Equipment))
         self.equipment = Equipment(telnetHandler)
@@ -129,10 +127,10 @@ class CommandHandler(object):
         self.sell_bot = SellBot(self.character.inventory, self.sell, self.drop)
         # Use will have to keep inventory up to date, right
         # That is if items support usable (small inhaler, white amulet, rods)
-        self.look = Look(self.character.inventory, telnetHandler); mudReaderHandler.add_subscriber(self.look)
-        self.analyser = Analyser(self.mudReaderHandler, self.prompt, self.info)
-        self.rest = Rest(telnetHandler);   mudReaderHandler.add_subscriber(self.rest)
-        self.train = Train(telnetHandler); mudReaderHandler.add_subscriber(self.train)
+        self.look      = Look(self.character.inventory, telnetHandler); mudReaderHandler.add_subscriber(self.look)
+        self.analyser  = Analyser(self.mudReaderHandler, self.prompt, self.info)
+        self.rest      = Rest(telnetHandler);   mudReaderHandler.add_subscriber(self.rest)
+        self.train     = Train(telnetHandler); mudReaderHandler.add_subscriber(self.train)
         self.rest_loop = RestLoop(self.rest, self.character.mobs, self.character); mudReaderHandler.add_subscriber(self.rest_loop)
 
         if '-fake' in sys.argv:
@@ -163,12 +161,27 @@ class CommandHandler(object):
             'print_reactions' : lambda a : self.mudReaderHandler.print_reactions(),
             'weapon' : lambda a : self.start_weapon_bot(),
             'plot_map' : self.plot_map,
-            'print_gold_exp' : self.print_gold_exp_etc
+            'print_gold_exp' : self.print_gold_exp_etc,
+            'rest_loop' : self.do_rest_loop,
+            'has_usable_weapon_in_inventory' : self.has_usable_weapon_in_inventory
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
         # Each action is going to be passed "a" which is string.partition(' ')[2] on the command that came in
         # So make sure the function has the right signature (self, args)
+    def has_usable_weapon_in_inventory(self, args):
+        if self.weapon_bot:
+            magentaprint(self.weapon_bot.has_usable_weapon_in_inventory())
+        else:
+            magnetaprint("NEED WEAPON BOT")
+
+    def do_rest_loop(self, args):
+        if self.bot_thread and self.rest_loop:
+            self.bot_thread.stopping = False
+            # self.rest_loop.stopping = False # happens in rest_loop.run()
+            self.bot_thread.rest_to_full()
+        else:
+            magentaprint("Bot thread not set up yet, you can make it with \"bot\" and \"stop\".")
 
     def print_gold_exp_etc(self, args):
         C=self.character
@@ -473,7 +486,7 @@ class CommandHandler(object):
             magentaprint('cast.aura:                ' + str(self.cast.aura.s if self.cast.aura else None))
             magentaprint('preferred_aura: ' + str(self.character.preferred_aura))
             self.cast.print_aura_timer()
-        elif re.match("(?i)mobs_attacking", user_input):
+        elif re.match("(?i)attacking", user_input):
             magentaprint(self.character.MOBS_ATTACKING, False)
         elif re.match("(?i)monster_kill_list", user_input):
             magentaprint(str(self.character.MONSTER_KILL_LIST), False)
@@ -959,6 +972,7 @@ class CommandHandler(object):
         # if self.threaded_map_setup and self.mud_map_thread != None:
         #     self.mud_map_thread.daemon = True
         # Could do self.join_mud_map_thread()
+        self.rest_loop.stop()
 
     def bbuy(self, user_input):
         try:
@@ -1057,8 +1071,8 @@ class CommandHandler(object):
         gold_gained = self.character.GOLD-self.character.START_GOLD
         magentaprint("Start time:        " + str(misc_functions.startTime))
         magentaprint("Uptime:            " + misc_functions.get_runtime_string())
-        magentaprint("Start gold:        " + self.character.START_GOLD)
-        magentaprint("Current gold:      " + self.character.GOLD)
+        magentaprint("Start gold:        " + str(self.character.START_GOLD))
+        magentaprint("Current gold:      " + str(self.character.GOLD))
         magentaprint("Exp this session:  " + str(x))
         magentaprint("Exp rate:          {} /hr".format(round(x/t*3600)))
         magentaprint("Exp rate:          {} /min".format(round(round(x/t*60))))

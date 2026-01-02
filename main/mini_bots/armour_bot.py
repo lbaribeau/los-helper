@@ -395,7 +395,7 @@ class ArmourBot(MiniBot):
                 # Ehrm wonder how many actual armour levels there are in the game... maybe just 3??
                 # I think unlocking steel at level 10 is correct? Also steel being level "3"
             elif character_lvl > 4: # OK yes I believe at level 5 barbarian "unlocked" chain mail... how about steel?
-                return 2 
+                return 2 # Ruorg can wear chain but not steel, right? That'd be level 2
             else:
                 return 1 
             # Notes... fighter can't wear chain boots nor plate collar at level 1
@@ -403,9 +403,9 @@ class ArmourBot(MiniBot):
             # Another note: "Some chain mail boots doesn't fit you." does come in if they don't fit, over "You are not yet adept enough to use this!"
         elif self.chain_class():
             if character_lvl > 9:
-                return 3
+                return 2 # Was 3 and ruorg tried to buy a steel collar...
             else:
-                return 2 # ring mail
+                return 1 # ring mail... but can mages wear ring mail hmmm
         else:
             return 1
 
