@@ -56,6 +56,7 @@ magentaprint("... Rest...");               from command.Rest               impor
 magentaprint("... Train...");              from command.Train              import Train
 magentaprint("... db.MudMap");             from db.MudMap import MudMap
 from mini_bots.rest_loop import RestLoop
+from reactions.wait_for_mob_attack import MobAttackWaiter
 
 magentaprint("... Done command_handler.py import section, now defining classes")
 
@@ -132,6 +133,7 @@ class CommandHandler(object):
         self.rest      = Rest(telnetHandler);   mudReaderHandler.add_subscriber(self.rest)
         self.train     = Train(telnetHandler); mudReaderHandler.add_subscriber(self.train)
         self.rest_loop = RestLoop(self.rest, self.character.mobs, self.character); mudReaderHandler.add_subscriber(self.rest_loop)
+        self.mob_attack_waiter = MobAttackWaiter(); mudReaderHandler.add_subscriber(self.mob_attack_waiter)
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
@@ -163,12 +165,19 @@ class CommandHandler(object):
             'plot_map' : self.plot_map,
             'print_gold_exp' : self.print_gold_exp_etc,
             'rest_loop' : self.do_rest_loop,
-            'has_usable_weapon_in_inventory' : self.has_usable_weapon_in_inventory
+            'has_usable_weapon_in_inventory' : self.has_usable_weapon_in_inventory,
+            'waitformobattack' : self.wait_for_mob_attack
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
         # Each action is going to be passed "a" which is string.partition(' ')[2] on the command that came in
         # So make sure the function has the right signature (self, args)
+
+    def wait_for_mob_attack(self, args):
+        magentaprint("Calling it...")
+        self.mob_attack_waiter.wait_for_mob_attack()
+        magentaprint("wait for mob attack done.")
+
     def has_usable_weapon_in_inventory(self, args):
         if self.weapon_bot:
             magentaprint(self.weapon_bot.has_usable_weapon_in_inventory())
@@ -559,6 +568,7 @@ class CommandHandler(object):
                 self.character.info.weapon_type, 
                 self.character.info.weapon_level
             )]) 
+            magentaprint([p.item.name for p in self.weapon_bot.get_possible_weapons()])
         elif user_input == 'get_possible_weapons':
             magentaprint(self.weapon_bot.get_possible_weapons())
         elif user_input == "check_weapons":

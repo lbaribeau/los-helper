@@ -74,10 +74,11 @@ class ArmourBot(MiniBot):
         # We know the armour broke, but we can't assume it didn't get dropped
         # Unless we have the bot keep broken armour...
 
-        if self.command_handler.character.GOLD >= 3*self.command_handler.weapon_bot.possible_weapons[0].item.value:
+        if self.command_handler.character.GOLD >= 3*self.command_handler.weapon_bot.possible_weapons[-1].item.value:
             # This check is up here indirectly because we aren't doing a lookup of the broken armour piece for cost
             # And saves going to the smithy when we can't afford it
             # The check was the wrong way... 
+            # - Changed to last possible weapon beacuse 1st possible weapon is too strict when we hit 40% weapon skill
             self.go_repair_or_replace_broken_armour()
         # Conceivably we start buying replacement armour instead if we have the perfect amount of gold... could be an interesting bug
         self.get_needed_default_armour()
@@ -165,7 +166,7 @@ class ArmourBot(MiniBot):
         # We'll do a gold check here because this is where we've decided to go through with a specific armour
         # if self.command_handler.character.GOLD < 2*self.command_handler.weapon_bot.possible_weapons[0].item.value + a.item.value:
             # UMMM 'a' is a string!
-        if self.command_handler.character.GOLD < 3*self.command_handler.weapon_bot.possible_weapons[0].item.value:
+        if self.command_handler.character.GOLD < 3*self.command_handler.weapon_bot.possible_weapons[-1].item.value:
             magentaprint("armour bot decided we don't have enough gold to repair "+str(a))
             return False # This tells the caller it didn't happen so the caller doesn't action it in any lists or inventory
             # I guess this could make for a lot of traveling
@@ -244,7 +245,7 @@ class ArmourBot(MiniBot):
             # path = self.map.get_path(self.char.AREA_ID, asi.area.id)
             # travel_bot.follow_path(path)
             # if self.shopping_bot.cant_afford(asi): # Want to keep a higher minimum than 0 gold
-            if self.command_handler.character.GOLD < 2*self.command_handler.weapon_bot.possible_weapons[0].item.value + asi.item.value:
+            if self.command_handler.character.GOLD < 2*self.command_handler.weapon_bot.possible_weapons[-1].item.value + asi.item.value:
                 # just skip it and keep running instead of traveling there etc.... take the death risk with no money
                 # Also this is the correct time to check because gold can change
                 magentaprint("Skipping can't afford " + str(asi.item.name))

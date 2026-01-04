@@ -128,7 +128,7 @@ class SmartCombat(CombatObject):
         elif regex in R.mob_wandered + R.mob_left and self.activated:
             self.target = self.mob_target_determinator.on_mob_departure(
                 self.target,
-                self.character.mobs.read_match(match),
+                self.character.mobs.read_mob_name_from_regex_match(match),
                 self.character.mobs.list
             )
             pass

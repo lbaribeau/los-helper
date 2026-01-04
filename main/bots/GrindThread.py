@@ -208,6 +208,15 @@ class GrindThread(BotThread):
             magentaprint("do_regular_actions saw chase_ref: " + chase_ref)
             # new_target = chase_ref # This is a reference, but the other clause hasn't made a reference yet
             # new_target = C.mobs.chase 
+
+            # Let's confirm the attacker! (chase_ref makes some presumptions...)
+            match = self.command_handler.mob_attack_waiter.wait_for_mob_attack()
+
+            if match:
+                chase_ref = C.mobs.get_ref_of_attacking_mob(match)
+            else:
+                magentaprint("do_regular_actions(): wait_for_mob_attack() oddly timed out... try engaging chase_ref as is ("+chase_ref+")")
+
             self.engage_monster(chase_ref, chase_ref) # Need to make sure this gets removed from mobs.list
             # Added an argument to engage_monster, as we know WHICH mob to go for (the 2nd), we have engage_monster bypass get_first_reference()
             # (2nd argument is a "ref" ie. "stall 2"" not just a string saying what the mob is in general)
@@ -217,8 +226,8 @@ class GrindThread(BotThread):
             # Keeps the chase list short if possible
 
         if C.mobs.attacking != [] and not self.ready_for_combat():
+            magentaprint("do_regular_actions() Try leaving if we want to leave - then we'll get into any fights about blocking if necessary")
             return
-            # Try leaving if we want to leave - then we'll get into any fights about blocking if necessary
 
         self.engage_any_attacking_mobs()
 
@@ -792,7 +801,7 @@ class GrindThread(BotThread):
         if self.stopping:
             return
 
-        possible_weapon_asi = self.command_handler.weapon_bot.possible_weapons[0]
+        possible_weapon_asi = self.command_handler.weapon_bot.possible_weapons[-1] # Changed from [0] as last weapon should be ok
         gold = self.character.GOLD
 
         if possible_weapon_asi.item.value:
@@ -1082,7 +1091,7 @@ class GrindThread(BotThread):
             return
 
         if monster_ref:
-            magentaprint("GrindThread engage_monster sees given target :" + monster_ref)
+            magentaprint("GrindThread engage_monster sees given target: " + monster_ref)
             new_target = monster_ref
         else:
             magentaprint("GrindThread engage_monster get_first_reference({0})".format(monster))

@@ -59,7 +59,7 @@ class CombatReactions(object):
             self.lowest_damage = min(self.lowest_damage, int(M_obj.group('d')))
         elif regex in R.mob_defeated:
                 # number = M_obj.group(1)
-                self.mobs_killed.append(self.character.mobs.read_match(M_obj))
+                self.mobs_killed.append(self.character.mobs.read_mob_name_from_regex_match(M_obj))
                 # self.character.area_id, monster - map both into a MobLocation
                 # add a rank to the MobLocation
         elif regex in R.attack_miss:

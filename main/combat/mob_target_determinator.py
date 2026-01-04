@@ -51,7 +51,7 @@ class MobTargetDeterminator(object):
         else:
             return old_target_reference
 
-        # elif self.character.mobs.read_match(M_obj) < old_target_reference):
+        # elif self.character.mobs.read_mob_name_from_regex_match(M_obj) < old_target_reference):
         # TODO: fix targetting when a mob of same name lower in stack arrives
     # def determine_if_ref_is_affected(self, )
 

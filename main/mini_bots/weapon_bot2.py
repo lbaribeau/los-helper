@@ -145,6 +145,8 @@ class MainhandWeaponBot(MiniBot):
         for w in self.get_possible_weapons():
             for r in self.command_handler.inventory.get_all_references(w.item.name):
                 self.command_handler.look.execute_and_wait(r)
+        # Well... we have four entries of "small mace" because they can be bought in four places, so it's four AreaStoreItems, and four "w"s
+        # So the bot looks four times at each small mace...
     def get_usable_weapon_ref(self):
         if not self.has_usable_weapon_in_inventory():
             return None

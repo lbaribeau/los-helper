@@ -73,7 +73,7 @@ class Cartography(BotReactionWithFlag):
             self.blocked_path(regex, M)
         elif regex in R.loot_blocked:
             # loot_blocker = M.group(2)
-            loot_blocker = self.character.mobs.read_match(M)
+            loot_blocker = self.character.mobs.read_mob_name_from_regex_match(M)
             magentaprint("Cartography loot blocker blocking pickup: " + loot_blocker)
             self.catalog_loot_blocker(loot_blocker)
         elif regex in R.please_wait:
@@ -111,8 +111,8 @@ class Cartography(BotReactionWithFlag):
             #magentaprint("{" + M.group(0) + "}", False)
             #magentaprint("{" + regex + "}", False)
             #magentaprint("'" + name + "' => '" + aura + "'",False)
-            magentaprint("Cartography mob aura: " + self.character.mobs.read_match(M) + ', ' + M.group('aura'))
-            self.catalog_monster_aura(self.character.mobs.read_match(M), M.group('aura'))
+            magentaprint("Cartography mob aura: " + self.character.mobs.read_mob_name_from_regex_match(M) + ', ' + M.group('aura'))
+            self.catalog_monster_aura(self.character.mobs.read_mob_name_from_regex_match(M), M.group('aura'))
         elif regex in R.not_here + R.no_exit:
             #The state is confusion is usually caused by bad processing of good data (i.e. bugs)
             #The following is a set of work arounds to smoothe things out until those bugs are fixed
@@ -233,7 +233,7 @@ class Cartography(BotReactionWithFlag):
 
     def blocked_path(self, regex, M):
         # mob_name = M.group('mob_name')
-        mob_name = self.character.mobs.read_match(M)
+        mob_name = self.character.mobs.read_mob_name_from_regex_match(M)
         magentaprint("Cartography blocking mob name: " + mob_name)
         self.character.GO_BLOCKING_MOB = mob_name
         self.character.SUCCESSFUL_GO = False

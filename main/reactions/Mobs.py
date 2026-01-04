@@ -19,7 +19,7 @@ class MobRegexReader(BotReactionWithFlag):
         self.numbers.extend([str(i) + " " for i in range(21, 200)])
 
     def get_reference_from_mob_match_object(self, match_object):
-        return self.get_reference(self.read_match(match_object))
+        return self.get_reference(self.read_mob_name_from_regex_match(match_object))
 
     def parse_mob_string(self, s):
         # You see (two kobold children, a dustman).
@@ -70,12 +70,18 @@ class MobRegexReader(BotReactionWithFlag):
         # return list(m_dict.keys())
         return m_list
 
-    def read_match(self, m):
+    def read_mob_name_from_regex_match(self, m):
         # You attack The Floor Manager.
         # So this isn't used for "You see ..." and it's a list
         # It's used in Mobs.notify for a __three_possible_mob_strings
-        # It seems like parse_mob_string should/could actually call read_match so that they're parsed the same way
+        # It seems like parse_mob_string should/could actually call read_mob_name_from_regex_match so that they're parsed the same way
         # You attack The Floor Manager would match mobs1 and we can strip the The to match what happens with mobst list
+
+        # Gets you the string of the mob name
+        # Examples:
+        # "The Floor Manager hits you for..." -> return "Floor Manager" (Uses "Three_possible_mob_strings, mob1")
+        # "You attack the (2nd) stall holder for..." (Uses, three_possible_mob_strings, mob2)... returns "stall holder"" ("2nd" not important")
+        # "Commander Rilmenson attacks you for..." (Uses "mob3")... returns Commander Rilmenson
         if m.group('mob1'):
             magentaprint("Mobs mob1: {}".format(m.group('mob1').strip()))
             # return m.group('mob1').strip() # 'The' should have been removed, right?
@@ -83,7 +89,8 @@ class MobRegexReader(BotReactionWithFlag):
                 # ie. The Floor Manager
                 return m.group('mob1').partition(' ')[2].strip() # partition just parses the first space so we can cut off the "The " and just get "Floor Manager"
             else:
-                return m.group('mob1').strip() # This was "mob2" looked wrong
+                magentaprint("Mobs.read_mob_name_from_regex_match()... I think this clause never happens!")
+                return m.group('mob1').strip() # This was "mob2", looked wrong...
         elif m.group('mob2'):
             # magentaprint("Mobs mob2") # Had to comment out because this triggers all the time
             # "(?:The " + __numbers_opt + r"(?P<mob2>[a-z '-]+))"" 
@@ -160,7 +167,7 @@ class Mobs(MobRegexReader):
         elif r in R.ze_mob_died:
             # The "ze" is because the regex notifications go out in alphebetical order by variable name
             # See .you_attack below for a note on this, ie, one-shot a mob, you want "added" to happen before "removed"
-            mob_name = self.read_match(M)
+            mob_name = self.read_mob_name_from_regex_match(M)
             # magentaprint("Mobs noticed " + mob_name + " died, it's in the self.list: " + str(mob_name in self.list))
             magentaprint("Mobs noticed " + mob_name + " died, it's in the self.list: {}, self.list is {} (len {}), self.attacking is {} (len {}).".format(\
                 mob_name in self.list, self.list, len(self.list), self.attacking, len(self.attacking)))
@@ -190,7 +197,7 @@ class Mobs(MobRegexReader):
             # Ey well engage_monster ends up thinking that there is still something attacking
             # Engage monster was actually removing it(!)
             # Well then use check Mobs.chase for any chase logic
-            mob_name = self.read_match(M)
+            mob_name = self.read_mob_name_from_regex_match(M)
             if mob_name in self.list:
                 self.list.remove(mob_name)
             magentaprint("Mobs removed it from the list, now is it in attacking: {0}".format(mob_name in self.attacking))
@@ -200,12 +207,12 @@ class Mobs(MobRegexReader):
             self.chase_exit = M.group('exit')
             magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(round(self.mean(self.damage), 1)) + ', stdev=' + str(round(self.stdev(self.damage), 1)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/max(len(self.damage),1), 2)))
         elif r in R.mob_wandered or r in R.mob_left:
-            mob_name = self.read_match(M)
+            mob_name = self.read_mob_name_from_regex_match(M)
             if mob_name in self.list:
                 self.list.remove(mob_name)
         elif r in R.mob_joined1 or r in R.mob_joined2:
             magentaprint("Mobs.notify mob joined in {}".format(r))
-            self.attacking.append(self.read_match(M))
+            self.attacking.append(self.read_mob_name_from_regex_match(M))
             # Ok mob joined in is clear enough... they get added...
         elif r in R.mob_attacked:
             # c = self.attacking.count(M.group('mob').strip())
@@ -215,9 +222,9 @@ class Mobs(MobRegexReader):
             #     if M.group('nth'):
             #         nth = int(M.group('nth')[0:len(M.group('nth'))-2])
             #         self.attacking.extend([M.group('mob')] * max(nth - c, 0))
-            # c = self.attacking.count(self.read_match(M))
-            # if self.attacking.count(self.read_match(M)) == 0:
-            #     self.attacking.append(self.read_match(M)) # Oy I think this is jank (gets added twice?? yes)
+            # c = self.attacking.count(self.read_mob_name_from_regex_match(M))
+            # if self.attacking.count(self.read_mob_name_from_regex_match(M)) == 0:
+            #     self.attacking.append(self.read_mob_name_from_regex_match(M)) # Oy I think this is jank (gets added twice?? yes)
                 # So does "You attack" always happen?? (To make sure things always get added...)
             # Try relying only on "you attack" and "X attacks you" (mob_aggro) because of race conditions (adding twice)
             # Also, checking.count is an unreliable check (should be redundant)
@@ -236,7 +243,7 @@ class Mobs(MobRegexReader):
             # A MobTargetListMaintainer might be appropriate...
             # I think I'll make a new object for this???
             if self.expect_flee_attack:
-                self.attacking.append(self.read_match(M))
+                self.attacking.append(self.read_mob_name_from_regex_match(M))
                 self.expect_flee_attack=False
             if 'd' in M.groupdict().keys():
                 # (mob damage regex)
@@ -246,20 +253,20 @@ class Mobs(MobRegexReader):
         elif r in R.mob_aggro: # ie. "<Mob> attacks you."
             self.damage = []
             magentaprint("Mobs.notify mob aggro {}".format(r))
-            self.attacking.append(self.read_match(M)) # Ehrm this adds the mob even if it got one-shotted (it's dead(!))
+            self.attacking.append(self.read_mob_name_from_regex_match(M)) # Ehrm this adds the mob even if it got one-shotted (it's dead(!))
         elif r in R.you_attack:
             # Ok suppose we one-shot a waitress; You attack the waitress and waitress died are in the same block.
             # This clause gets called last because you_attack is alphabetically later than mob_died (see mudReaderHandler's dir(RegexStore))
             # So check if the mob is in the list to reduce jank
             # (or we fixed this with ze_mob_died)
             self.damage = []
-            mob_name = self.read_match(M)
+            mob_name = self.read_mob_name_from_regex_match(M)
             magentaprint("Mobs.notify attacked mob {}".format(mob_name)) # Hmmm "The Floor Manager" not in [Floor Manager]
             if mob_name in self.list: # Make sure it hasn't been killed already
                 self.attacking.append(mob_name) # adds the mob even if it got one-shotted (it's dead(!)) (FIXED with ze_mob_died!)
         elif r in R.blocked_path:
             # magentaprint("Mobs got {}".format(M.group('whole_mob_name')))
-            mob_name = self.read_match(M)
+            mob_name = self.read_mob_name_from_regex_match(M)
             # magentaprint("Mobs got {}".format(mob_name))
             if mob_name not in self.list:
                 self.list.add(mob_name) # Have bandit sentry in the list for when the bandit arrives so target can be calculated properly
@@ -291,7 +298,7 @@ class Mobs(MobRegexReader):
 
     def get_ref_of_attacking_mob(self, M):
         # Get mob name from server text (M)
-        mob_text = self.read_match(M) # Mob text ie. "Floor Manager" (no "The"), "stall holder", "Annette Plover" 
+        mob_text = self.read_mob_name_from_regex_match(M) # Mob text ie. "Floor Manager" (no "The"), "stall holder", "Annette Plover" 
 
         # Get the number from the server text, ie. _2nd_ stall holder
         if M.group('n'):

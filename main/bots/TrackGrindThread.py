@@ -416,6 +416,7 @@ class TrackGrindThread(GrindThread):
             C.DEATHS += 1
             # magentaprint("Died: Pulling up my bootstraps and starting again", False)
             magentaprint("Died: stopping bot thread.", False)
+            # Usually it finishes the next track before it actually stops
             self.stop()
             return self.tracks.LIMBO_TO_CHAPEL[:]
 
