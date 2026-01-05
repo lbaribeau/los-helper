@@ -21,7 +21,7 @@ class ReferencingList(object):
         elif isinstance(initializer, 'str'.__class__):
             # Children need to support parse
             self.list = self.parse(initializer)
-        elif isinstance(initializer[0], 'str'.__class__):
+        elif hasattr(initializer, '__getitem__') and isinstance(initializer[0], 'str'.__class__):
             #self.list = sorted(GameObject(s) for s in initializer)
             if None in initializer:
                 magentaprint("ReferencingList can't have None since it's sorted: {0}".format(initializer))
@@ -35,6 +35,8 @@ class ReferencingList(object):
             while None in self.list:
                 self.list.remove(None)
             #self.list = sorted([i for i in list if i != None])
+        elif isinstance(initializer, ReferencingList):
+            self.list = initializer.list[:] # Copies the list but the contents of the list could be the same (GameObjects)
         else:
             self.list = initializer
             
@@ -45,7 +47,7 @@ class ReferencingList(object):
         self.numbers = [
             'a', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen',
             'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'
-        ] + [str(n) for n in range(20, 200)]
+        ] + [str(n) for n in range(20, 200)] # Ehrm this is going to take some space??? Should be like a class variable not an object variable
 
     def add(self, obj_or_string):
         if isinstance(obj_or_string, 'str'.__class__):
@@ -66,6 +68,7 @@ class ReferencingList(object):
         # self.list.append(obj)
         # Ummm does it get ['bandit','bandit sentry']?
         self.list = sorted(self.list + [obj]) # Ehhh do we really want to sort here
+        return self # Is this bad form? Call add on a ReferencingList, which modifies it... and also gives us a reference to it
 
     def append(self, new_entry):
         self.list = sorted(self.list + [new_entry])

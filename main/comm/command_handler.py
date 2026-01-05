@@ -1082,18 +1082,18 @@ class CommandHandler(object):
         magentaprint("Start time:        " + str(misc_functions.startTime))
         magentaprint("Uptime:            " + misc_functions.get_runtime_string())
         magentaprint("Start gold:        " + str(self.character.START_GOLD))
-        magentaprint("Current gold:      " + str(self.character.GOLD))
         magentaprint("Exp this session:  " + str(x))
+        magentaprint("Current gold:      " + str(self.character.GOLD))
+        magentaprint("Gold this session: {} ".format(gold_gained))
         magentaprint("Exp rate:          {} /hr".format(round(x/t*3600)))
-        magentaprint("Exp rate:          {} /min".format(round(round(x/t*60))))
+        # magentaprint("Exp rate:          {} /min".format(round(round(x/t*60))))
         # g = self.character.GOLD # Ok this is all the current gold, so it won't give us gold rate
         # magentaprint("Gold delta: ")
         # magentaprint("Gold rate: {} gold/hr; {} gold/min; {} gold/s.".format(round(x/t/3600), round(x/t/60), round(x/t)))
         # magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
         #magentaprint(str(exp), False)
-        magentaprint("Gold this session: {} ".format(gold_gained))
         magentaprint("Gold rate:         {} /hr".format(round(gold_gained/t*3600)))
-        magentaprint("Gold rate:         {} /min".format(round(gold_gained/t*60, 1)))
+        # magentaprint("Gold rate:         {} /min".format(round(gold_gained/t*60, 1)))
 
     def print_gold(self):
         gold_gained = self.inventory.GOLD-self.character.START_GOLD

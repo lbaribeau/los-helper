@@ -99,9 +99,9 @@ class MobRegexReader(BotReactionWithFlag):
             if m.group('mob2').startswith('The '):
                 # TODO: No, I don't see how this regex could have 'The' in it after numbers like 1st/2nd
                 # Well, sure, "The stall holder kicks you for 2 damage." 
-                return m.group('mob2').partition(' ')[2].strip()
+                return m.group('mob2').partition(' ')[2].strip() # This removes the "The"
             else:
-                return m.group('mob2').strip()
+                return m.group('mob2').strip() # If there's no "The", just strip spaces, if any (there might be )
         elif m.group('mob3'):
             # "mob3" doesn't have "The " like it's a proper name, "Annette Plover attacks you..."  (no "The")... or like Commander Rilmenson
             magentaprint("Mobs mob3")
@@ -162,6 +162,7 @@ class Mobs(MobRegexReader):
         # We'll let Cartography handle the initialization of monster_list with the area regex.
         #magentaprint("mobs.list " + str(self.list) + "; notification from regex: " + str(r[0:min(10, len(r))]))
         if r in R.mob_arrived:
+            magentaprint("Mobs mob arrived")
             self.list.add_from_list(self.read_mobs(M.group('mobs')))
             magentaprint("Mobs.list (added): " + str(self.list.list)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
         elif r in R.ze_mob_died:
@@ -207,6 +208,7 @@ class Mobs(MobRegexReader):
             self.chase_exit = M.group('exit')
             magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(round(self.mean(self.damage), 1)) + ', stdev=' + str(round(self.stdev(self.damage), 1)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/max(len(self.damage),1), 2)))
         elif r in R.mob_wandered or r in R.mob_left:
+            magentaprint("Mobs mob left")
             mob_name = self.read_mob_name_from_regex_match(M)
             if mob_name in self.list:
                 self.list.remove(mob_name)
@@ -296,7 +298,7 @@ class Mobs(MobRegexReader):
     def get_reference(self, target):
         return self.list.get_reference(target)
 
-    def get_ref_of_attacking_mob(self, M):
+    def get_ref_of_attacking_mob(self, M, hypothetical_list=None):
         # Get mob name from server text (M)
         mob_text = self.read_mob_name_from_regex_match(M) # Mob text ie. "Floor Manager" (no "The"), "stall holder", "Annette Plover" 
 
@@ -307,8 +309,13 @@ class Mobs(MobRegexReader):
             # Assign n to be 1 if it's not the _2nd_ stall holder (no number given)
             n=1
 
+        if hypothetical_list == None:
+            # The point of hypothetical list is that by the time SmartCombat is notified, mobs.list has already been edited
+            # So it recreates the old list, because it needs it
+            hypothetical_list = self.list
+
         # Get a "reference" for that mob (supposing a stall bolder could be present)
-        ref_first_mob = self.list.get_first_reference(mob_text)
+        ref_first_mob = hypothetical_list.get_first_reference(mob_text)
         if not ref_first_mob:
             magentaprint("get_ref_of_attacking_mob is confused... probably not important... this code was first written for rest_loop")
             magentaprint("It's bad input... a mob attacking should be in mobs.list!")

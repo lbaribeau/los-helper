@@ -9,6 +9,7 @@ import comm.Spells as Spells
 from comm import RegexStore as R
 from combat.mob_target_determinator import MobTargetDeterminator
 from command.potion_thread          import PotionThreadHandler
+from reactions.referencing_list import ReferencingList
 
 class SmartCombat(CombatObject):
     black_magic = True
@@ -118,6 +119,7 @@ class SmartCombat(CombatObject):
                 if match.group(1).split(' ')[1] == 'ring':
                     self.broke_ring = True
         elif regex in R.mob_arrived and self.activated:
+            magentaprint("SmartCombat mob arrived")
             # self.activated prevents unnecessary prints (calls to referencing_list.get)
             self.target = self.mob_target_determinator.on_mob_arrival(
                 self.target,
@@ -126,12 +128,41 @@ class SmartCombat(CombatObject):
             )
             # magentaprint("SmartCombat mob arrived, new target: " + str(self.target))
         elif regex in R.mob_wandered + R.mob_left and self.activated:
+            magentaprint("SmartCombat mob left")
+            old_target_ref=self.target
+            # RL=ReferencingList(self.character.mobs.list)
+            departed_mob_name = self.character.mobs.read_mob_name_from_regex_match(match)
+            # RL.add(departed_mob_name), # Departed mob should be in it now
+            self.character.mobs.list.add(departed_mob_name), # Departed mob should be in it now
+            # (this is some spaghetti though... we are shuffling the list elements!)
+            # Could go back to using "RL" but I'm afraid that's slow
+            # temp=self.character.mobs.list
+            # self.character.mobs.list=RL
             self.target = self.mob_target_determinator.on_mob_departure(
                 self.target,
-                self.character.mobs.read_mob_name_from_regex_match(match),
-                self.character.mobs.list
+                # Ehrm I presume... the mobs.list... has changed already?????????
+                # Who gets notified first???
+                # Keep our own version of it?
+                # Is the mudreader subscription ordered??
+                # Before I had to add the mob back in! 
+                # So we have the new list!
+                # Ok so we need to put the mob name back in (to a copy of the list)
+                # ReferencingList(self.character.mobs.list).add(self.character.mobs.read_mob_name_from_regex_match(match)),
+                # RL,
+                self.character.mobs.list,
+                # self.character.mobs.get_ref_of_attacking_mob(match) 
+                # Not actually an attacking mob! but works anyway? Ehhh it uses mob.list!!
+                # Need to use a hypothetical mobs.list because mobs.list has changed already
+                # RL.get_ref_of_attacking_mob(match, RL) # doesn't have that function
+                # Time for a messy hack
+                self.character.mobs.get_ref_of_attacking_mob(match) # ie gives "stall 3" from "2nd stall holder" if a "stall bolder" is present
             )
-            pass
+            # self.character.mobs.list = temp
+            # del RL
+            self.character.mobs.list.remove(departed_mob_name)
+            magentaprint("SmartCombat MTD just checked target!: \""+str(old_target_ref)+"\" to \""+str(self.target)+"\"! Wow!")
+        else:
+            magentaprint("Some random smartCombat notify() not dealt with or self.activated was false")
         # magentaprint("SmartCombat notify done " + match.re.pattern)
 
     def notify_of_buffer_completion():
@@ -289,6 +320,8 @@ class SmartCombat(CombatObject):
                     break
                 self.prompt.clear()
                 self.mud_reader_completion_event.clear()
+                if self.stopping:
+                    break
                 self.use_slow_combat_ability_or_attack()
                 self.mud_reader_completion_event.clear() # How does this work at all...
                 magentaprint("Smart combat attacked, end combat is {}, stopping is {}, event is {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
