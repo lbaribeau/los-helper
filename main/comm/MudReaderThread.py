@@ -83,30 +83,33 @@ class MudReaderThread(threading.Thread):
         text_buffer = ""
         while not self.stopping:
             # magentaprint("MRT")
-            time_loop_start = time.time()
+            # time_loop_start = time.time()
 
-            # do a wait loop.  this means that the main loop will
-            # iterate every time new text comes in.
-            # put in a sleep so the loop doesn't hog too many resources
-            # (i think mudlistener should call some sort of notify...)
-            timeout = 1
-            start_time = time.time()
-            run_time = 0
+            # # do a wait loop.  this means that the main loop will
+            # # iterate every time new text comes in.
+            # # put in a sleep so the loop doesn't hog too many resources
+            # # (i think mudlistener should call some sort of notify...)
+            # timeout = 1
+            # start_time = time.time()
+            # run_time = 0
 
-            while self.__left_off_index == len(self.MUDBuffer.buffer) and run_time < timeout:
-                 time.sleep(0.005)
-                 run_time = time.time() - start_time
-                 # this should be an event flag with mudbuffer or mudlistener
+            # while self.__left_off_index == len(self.MUDBuffer.buffer) and run_time < timeout:
+            #      time.sleep(0.005)
+            #      run_time = time.time() - start_time
+            #      # this should be an event flag with mudbuffer or mudlistener
 
             # if run_time >= timeout:
             #     magentaprint("MRT first loop timed out!")
 
             # Just stop until there is text...
-            # if len(self.MUDBuffer.buffer) == 0 and self.MUDBuffer.is_set():
-            #     magentaprint("MRT just waiting for text!")
-            #     self.MUDBuffer.clear()
-            #     if self.MUDBuffer.wait(2):
-            #         magentaprint("MRT wait timed out!")
+            if self.__left_off_index == len(self.MUDBuffer.buffer) and self.MUDBuffer.is_set():
+                # magentaprint("MRT notifying buffer done...")
+                self.notify_subscribers_of_buffer_completion()
+                # magentaprint("MRT waiting for more text!")
+                self.MUDBuffer.clear()
+                if not self.MUDBuffer.wait(6):
+                    # magentaprint("MRT wait 1 timed out!")
+                    pass
 
             # Note that that check on the length of the MUD buffer means
             # that now there's probably new text data.  It doesn't matter
@@ -185,8 +188,8 @@ class MudReaderThread(threading.Thread):
 
             # while self.MUDBuffer.access_flag == True:
             #     time.sleep(0.05) # Gotta get rid of these sleeps with threading.Event
-            if not self.MUDBuffer.wait(1): # threading.Event
-                magentaprint("MRT buffer wait timeout!!")
+            if not self.MUDBuffer.wait(0.5): # threading.Event... timeout should only be used on quit
+                magentaprint("MRT wait 2 (buffer wait) timeout!!")
 
             # self.MUDBuffer.access_flag = True
             self.MUDBuffer.clear()
@@ -403,7 +406,7 @@ class MudReaderThread(threading.Thread):
             # if M_obj:
 
             ##### DONE MATCHING RE's  WOOOOOOOO ######
-            self.notify_subscribers_of_buffer_completion()
+            # self.notify_subscribers_of_buffer_completion()
 
             #sys.stdout.write('"' + MUDBuffer[MUD_buffer_trunc] + '"') #debug.  Shows where last match took place. Gives MUD_buffer not defined error.
             #magentaprint("Clearing text buffer.  len: %d.  trunc: %d.  last matched char: %c." % (
@@ -429,8 +432,8 @@ class MudReaderThread(threading.Thread):
         
         # while self.MUDBuffer.access_flag == True:
         #     time.sleep(0.05)
-        if not self.MUDBuffer.wait(1):
-            magentaprint("MRT MudBuffer wait timeout!")
+        if not self.MUDBuffer.wait(0.5):
+            magentaprint("MRT MudBuffer wait 3 timeout!")
 
         # self.MUDBuffer.access_flag = True
         self.MUDBuffer.clear()

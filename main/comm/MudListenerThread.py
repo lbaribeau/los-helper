@@ -92,9 +92,10 @@ class MudListenerThread(threading.Thread):
                 # self.MUDBuffer.clear()
 
                 # Ok we probably don't even NEED the fricken flag to protect the buffer
-                self.MUDBuffer.buffer = self.MUDBuffer.buffer + fragment
-                self.MUDBuffer.set()
-                fragment = ""
+                if fragment != "":
+                    self.MUDBuffer.buffer = self.MUDBuffer.buffer + fragment
+                    self.MUDBuffer.set()
+                    fragment = ""
             else:
                 magentaprint("Socket timed out: "+str(select_triple))
                 pass    # just keep waiting.
