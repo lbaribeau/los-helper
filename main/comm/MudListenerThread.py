@@ -78,17 +78,22 @@ class MudListenerThread(threading.Thread):
 
                 #while(self.MUDBuffer.access_flag == True):
                     #time.sleep(0.05)
-                if self.MUDBuffer.access_flag == True:
-                    magentaprint("MudListenerThread couldn't access buffer, will try again after next socket fragment.")
-                    continue
-                    # This may cause strings to be matched late (if the buffer was being accessed,)
-                    # We'll see if that happens, even at all.  Worst case that I can imagine is that 
-                    # the bot may pause at one node for several seconds until an ambient event happens,
-                    # but I'm not sure if that's even possible.
+                # if self.MUDBuffer.access_flag == True:
 
-                self.MUDBuffer.access_flag = True
+                # if not self.MUDBuffer.is_set():
+                #     magentaprint("MudListenerThread couldn't access buffer, will try again after next socket fragment.")
+                #     continue
+                #     # This may cause strings to be matched late (if the buffer was being accessed,)
+                #     # We'll see if that happens, even at all.  Worst case that I can imagine is that 
+                #     # the bot may pause at one node for several seconds until an ambient event happens,
+                #     # but I'm not sure if that's even possible.
+
+                # # self.MUDBuffer.access_flag = True
+                # self.MUDBuffer.clear()
+
+                # Ok we probably don't even NEED the fricken flag to protect the buffer
                 self.MUDBuffer.buffer = self.MUDBuffer.buffer + fragment
-                self.MUDBuffer.access_flag = False
+                self.MUDBuffer.set()
                 fragment = ""
             else:
                 magentaprint("Socket timed out: "+str(select_triple))

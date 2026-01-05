@@ -82,12 +82,13 @@ class MudReaderThread(threading.Thread):
         currently_escaping = False  # Used to filter escape sequences
         text_buffer = ""
         while not self.stopping:
+            # magentaprint("MRT")
             time_loop_start = time.time()
 
-            # Do a wait loop.  This means that the main loop will
+            # do a wait loop.  this means that the main loop will
             # iterate every time new text comes in.
-            # Put in a sleep so the loop doesn't hog too many resources
-            # (I think MudListener should call some sort of notify...)
+            # put in a sleep so the loop doesn't hog too many resources
+            # (i think mudlistener should call some sort of notify...)
             timeout = 1
             start_time = time.time()
             run_time = 0
@@ -95,7 +96,17 @@ class MudReaderThread(threading.Thread):
             while self.__left_off_index == len(self.MUDBuffer.buffer) and run_time < timeout:
                  time.sleep(0.005)
                  run_time = time.time() - start_time
-                 # This should be an event flag with MUDBuffer or MUDListener
+                 # this should be an event flag with mudbuffer or mudlistener
+
+            # if run_time >= timeout:
+            #     magentaprint("MRT first loop timed out!")
+
+            # Just stop until there is text...
+            # if len(self.MUDBuffer.buffer) == 0 and self.MUDBuffer.is_set():
+            #     magentaprint("MRT just waiting for text!")
+            #     self.MUDBuffer.clear()
+            #     if self.MUDBuffer.wait(2):
+            #         magentaprint("MRT wait timed out!")
 
             # Note that that check on the length of the MUD buffer means
             # that now there's probably new text data.  It doesn't matter
@@ -168,14 +179,18 @@ class MudReaderThread(threading.Thread):
 
             # Trim buffers if they are too long.
             L = len(text_buffer)
-            if(L >= self.MUDBuffer.size):
+            if L >= self.MUDBuffer.size:
                 text_buffer = text_buffer[L-self.MUDBuffer.size:L]
             #print "<REPRINT>"+MUD_buffer+"<\REPRINT>"
 
-            while self.MUDBuffer.access_flag == True:
-                time.sleep(0.05) # Gotta get rid of these sleeps with threading.Event
+            # while self.MUDBuffer.access_flag == True:
+            #     time.sleep(0.05) # Gotta get rid of these sleeps with threading.Event
+            if not self.MUDBuffer.wait(1): # threading.Event
+                magentaprint("MRT buffer wait timeout!!")
 
-            self.MUDBuffer.access_flag = True
+            # self.MUDBuffer.access_flag = True
+            self.MUDBuffer.clear()
+
             L = len(self.MUDBuffer.buffer)
 
             if L > self.MUDBuffer.size:
@@ -186,7 +201,8 @@ class MudReaderThread(threading.Thread):
                 #magentaprint("L is "+str(L))
                 #magentaprint("MUDBuffer.size is "+str(self.MUDBuffer.size))
 
-            self.MUDBuffer.access_flag = False
+            # self.MUDBuffer.access_flag = False
+            self.MUDBuffer.set()
 
             ###### Now match the buffer with some REs  #######
             text_buffer_trunc = 0
@@ -410,12 +426,17 @@ class MudReaderThread(threading.Thread):
     def copy_MUDBuffer(self):
         # Routine to copy the buffer shared with MudListenerThread.
         # Wait for access flag to go down for the read.
-        while self.MUDBuffer.access_flag == True:
-            time.sleep(0.05)
+        
+        # while self.MUDBuffer.access_flag == True:
+        #     time.sleep(0.05)
+        if not self.MUDBuffer.wait(1):
+            magentaprint("MRT MudBuffer wait timeout!")
 
-        self.MUDBuffer.access_flag = True
+        # self.MUDBuffer.access_flag = True
+        self.MUDBuffer.clear()
         MUDBuffer_copy = self.MUDBuffer.buffer[:]
-        self.MUDBuffer.access_flag = False
+        # self.MUDBuffer.access_flag = False
+        self.MUDBuffer.set()
         return MUDBuffer_copy
 
     def set_colour(self,ANSI_escape_sequence):
