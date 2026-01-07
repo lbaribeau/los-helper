@@ -32,20 +32,28 @@ class TelnetHandler(object):
         self.tn.close()
 
     def get_socket(self):
-        return self.tn.get_socket()
+        if hasattr(self, 'my_socket'):
+            return self.my_socket
+        else:
+            self.my_socket = self.tn.get_socket()
+            self.my_socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
+            return self.my_socket
 
     def read_some(self):
         try:
             # return self.tn.read_some()  # read_eager() would miss characters
             return self.tn.read_very_eager()  # This seems faster and also helps the tricky equipment parsing
+            # return self.tn.read_some() 
+            # return self.tn.read_eager() 
         except socket.error as e:
-            magentaprint("TelnetHandler read_some() error: " + str(e))
+            magentaprint("TelnetHandler read_X() error: " + str(e))
             # Server shutdown is errno 104
             return ''
 
     def write(self, command):
-        magentaprint('"' + command + '"')
         self.set_timer()
+        print("")
+        magentaprint('"' + command + '"')
         command += '\r'
         # magentaprint("\"" + command[:len(command)-1] + "\" ", end="")
         # magentaprint("Sending '" + command[:len(command)-1] + "'")

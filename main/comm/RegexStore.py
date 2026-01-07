@@ -161,8 +161,58 @@ nothing_here = [r"There's nothing here\."]
 is_attacking_you = [__Three_possible_mob_strings + r" is attacking you\."] # This one happens when you arrive into a room
 
 # Go and Cartography
+# Recall (?s:___) means "DOTALL", so dot matches newlines, (normally it's everything except newlines) (ie. \n is a newline, \r is a carriage return, which is matched either way)
+# (dot doesn't match \n unless you put ?s)
+# So we are going to want "DOTALL" (?s) for the description section, maybe Obvious exits, maybe item text? but not for the title
+# Also recall, "+" means one or more of the previous character, it's a quantifier
+# Question mark makes the quantifier NON-GREEDY. (Greedy wilcards will take text away from adjacent characters of the regex, i think only if it satisfies the pattern)
+
+# Ok ?s applies to the entire regex (in standard re library) so we must use another way for area descriptions within a regex;
+# \s matches any whitespace including newlines
+# \S matches any non-whitespace character (capital S is the opposite)
+# [\s\S] matches all characters including newlines (so we don't have to use dot . with DOTALL or ?s on)
+# [\S ] (slash S and space) is anything except whitespace plus space " ", so, still doesn't include newline
+# [^.] matches anything except period (.)
+# - The dot inside the brackets is not the wildcard, it's the literal dot
+# - ^ inside the [] square brackets makes a negation character class
+# (?:...) is a non-capturing group (doesn't get indexed or remembered)
+# (...) is a capturing group
+
+# Previous area regex is not written strictly it's written generically, ie, \n?\r?, it's like, the newlines are optional
+# Can tighten it up by saying, no those newlines must be there
+
 #           .=\n\r   EAT JUNK DATA (death,loginprompts,hptick)              Title           Description               Exit list             Players / Mobs / Signs / Items (optional)
-area                  = ["(?s)(?:(?:.+?Stone\.\n\r|.+?healed\.\n\r|.+?\]:\s+?)\n\r)?([A-Za-z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"]
+# area_was_this_for_years = ["(?s)(?:(?:.+?Stone\.\n\r|.+?healed\.\n\r|.+?\]:\s+?)\n\r)?([A-Za-z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"]
+# area                  = ["(?s)(?:(Stone|healed|\]:\s))?([A-Za-z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"]
+# area                  = ["(?s)((||))?([A-Za-z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"]
+# # area                  = ["(?s)(?:(?:.+?Stone\.\n\r|.+?healed\.\n\r|.+?\]:\s+?)\n\r)?([A-Za-z].+?)\n\r\n\r(?:(.+?)\n\r)?(Obvious exits: .+?\.)\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?(You see .+?\.)?\n?\r?"]
+# # \n\r\n\r[A-Z].+?\n\r\n\r[\s\S]+?\n\rObvious exits: [\s\S]
+# # \n\r\n\r[A-Z][\S ]+?\n\r\n\r[\s\S]+?\n\rObvious exits: [^.]+?\.\n\r(You see [^.]\.\n\r)?(You see [^.]\.\n\r)?(You see [^.]\.\n\r)\n\r
+# # Should we wait for the prompt? Probably not
+# # Add groups... 1) area title, 3) exit list, 4) monster list, 2) area description
+# # \n\r\n\r([A-Z][\S ]+?)\n\r\n\r([\s\S]+?)\n\r(Obvious exits: [^.]+?\.)\n\r(You see [^.]\.\n\r)?(You see [^.]\.\n\r)?(You see [^.]\.\n\r)?\n\r
+# area = [r"\n\r\n\r([A-Z][\S ]+?)\n\r\n\r([\s\S]+?)\n\r(Obvious exits: [^.]+?\.)\n\r(You see [^.]\.\n\r)?(You see [^.]\.\n\r)?(You see [^.]\.\n\r)?\n\r"]
+# area = [r"[\n\r]+([A-Z][\S ]+?)[\n\r]+([\s\S]+?)[\n\r]+(Obvious exits: [^.]+?\.)[\n\r]+(You see [^.]\.[\n\r]+)?(You see [^.]\.[\n\r]+)?(You see [^.]\.[\n\r]+)?"]
+# area = [r"[\n\r]+([A-Z][\S ]+?)[\n\r]+([\s\S]+?)[\n\r]+(Obvious exits: [^.]+?\.)[\n\r]+(You see [^.]\.[\n\r]+)?(You see [^.]\.[\n\r]+)?(You see [^.]\.[\n\r]+)?[\n\r]+"]
+# area = [r"[\n\r]+([A-Z][\S ]+?)[\n\r]+([\s\S]+?)[\n\r]+(Obvious exits: [^.]+?\.)[\n\r](You see [^.]\.[\n\r]+)?(You see [^.]\.[\n\r]+)?(You see [^.]\.[\n\r]+)?[\n\r]"]
+# area = [r"[\n\r]+([A-Z][\S ]+?)[\n\r]+([\s\S]+?)[\n\r]+(Obvious exits: [^.]+?\.[\n\r])(You see [^.]+?\.[\n\r])?(You see [^.]+?\.[\n\r])?(You see [^.]+?\.[\n\r])?[\n\r]"]
+# area = [r"[\n\r]+([A-Z][\S ]+?)[\n\r]+([\s\S]+?)[\n\r]+(Obvious exits: [^.]+?\.\s*)(You see [^.]+?\.)"]
+# area = [r"[\n\r]+([A-Z][\S ]+?)[\n\r]+([\s\S]+?)[\n\r]+(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.)"]
+# area = [r"[\n\r]+([A-Z][\S ]+?)[\n\r]+([\s\S]+?)[\n\r]+(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.)\n\r"]
+# area = [r"[\n\r]+([A-Z][\S ]+?)[\n\r]+([\s\S]+?)[\n\r]+(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.)?\n\r"]
+# area = [r"\n\r\n\r([A-Z][\S ]+?)[\n\r]+([\s\S]+?)[\n\r]+(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.)?\n\r"]
+# area = [r"\n\r\n\r([A-Z][\S ]+?)\n\r([\s\S]+?)[\n\r]+(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.)?\n\r"]  # Why only one newline after title??
+# area = [r"\n\r\n\r([A-Z][\S ]+?)\n\r([\s\S]+?)\n\r(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.)?\n\r"] 
+# area = [r"\n\r\n\r([A-Z][\S ]+?)\n\r([\s\S]+?)\n\r(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?\n\r"] # Ehrm the sign shows up as an item
+area = [r"\n\r\n\r([A-Z][\S ]+?)\n\r([\s\S]+?)\n\r(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?\n\r"] # So just have mobs list and item list
+area = [r"\n\r([A-Z][\S ]+?)\n\r([\s\S]+?)\n\r(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?\n\r"] # Limbo works with one less newline on top... group 2 has a newline thoughk
+area = [r"\n\r([A-Z][\S ]+?)\n\r\n\r([\s\S]+?)\n\r(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?\n\r"]
+# This works because of the newline at the end
+# If there are no mobs or items, you have two newlines in a row after the exits.
+# If there are mobs or items, they have to fit in before that last newline
+# They are optional with the question but are forced to match if the server put that text there because then there won't be two newlines ('\n\r's) in a row so the ? is forced true if/when appropriate
+# (item list looks like a mob list if there are no mobs)
+
 obvious_exits         = [r"(?s)Obvious exits: ([A-Za-z\s,]+)\.\n\r"]
 go_where              = [r"Go where\?"]
 cant_go               = [r"You can't go that way\."]

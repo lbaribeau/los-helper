@@ -76,9 +76,8 @@ class MudReaderThread(threading.Thread):
         self.stopping = True
 
     def run(self):
-        self.__left_off_index = 0  # This is a save point index of the buffer
-                            # so that we know where in the buffer to begin
-                            # printing again.
+        self.__left_off_index = 0  
+        # This is a save point index of the buffer so that we know where in the buffer to begin printing again.
         currently_escaping = False  # Used to filter escape sequences
         text_buffer = ""
         while not self.stopping:
@@ -102,14 +101,20 @@ class MudReaderThread(threading.Thread):
             #     magentaprint("MRT first loop timed out!")
 
             # Just stop until there is text...
+
+            # Can I get away with a wait() here? Maybe?
+            # self.MUDBuffer.wait(5) # This just waits if MudListerThread needs it? No, it waits for MUD text... and only if you set .clear() first
+
             if self.__left_off_index == len(self.MUDBuffer.buffer) and self.MUDBuffer.is_set():
                 # magentaprint("MRT notifying buffer done...")
                 self.notify_subscribers_of_buffer_completion()
                 # magentaprint("MRT waiting for more text!")
                 self.MUDBuffer.clear()
-                if not self.MUDBuffer.wait(6):
-                    # magentaprint("MRT wait 1 timed out!")
+                if not self.MUDBuffer.wait(5):
+                    magentaprint("MRT wait 1 timed out!")
                     pass
+            else:
+                magentaprint("MRT has text in the buffer")
 
             # Note that that check on the length of the MUD buffer means
             # that now there's probably new text data.  It doesn't matter
@@ -412,10 +417,14 @@ class MudReaderThread(threading.Thread):
             #magentaprint("Clearing text buffer.  len: %d.  trunc: %d.  last matched char: %c." % (
             #           len(text_buffer), text_buffer_trunc, text_buffer[text_buffer_trunc]))
             text_buffer = text_buffer[text_buffer_trunc:]
+            magentaprint("MRT truncated: "+str(text_buffer_trunc))
+            magentaprint("MRT floating characters: "+str(len(text_buffer)))
+            magentaprint("MRT floating text: "+str(text_buffer))
 
             #magentaprint("MudReader loop times: incl wait: %f; iteration time: %f" % 
             #             (time.time()-time_loop_start, time.time()-time_loop_after_waiting))
         # end loop
+        magentaprint("MudReaderThread finished run()!")
     # end run  (congrats!)
 
     def notify_subscribers_of_buffer_completion(self):
@@ -433,6 +442,7 @@ class MudReaderThread(threading.Thread):
         # while self.MUDBuffer.access_flag == True:
         #     time.sleep(0.05)
         if not self.MUDBuffer.wait(0.5):
+            # wait() returns False if the timeout expiered
             magentaprint("MRT MudBuffer wait 3 timeout!")
 
         # self.MUDBuffer.access_flag = True
@@ -442,7 +452,7 @@ class MudReaderThread(threading.Thread):
         self.MUDBuffer.set()
         return MUDBuffer_copy
 
-    def set_colour(self,ANSI_escape_sequence):
+    def set_colour(self, ANSI_escape_sequence):
         """ This routine takes an ANSI escape sequence as an argument and
         calls the ConsoleHandler class routines to have the windows console react."""
         bright_char = ANSI_escape_sequence[2]
@@ -472,7 +482,7 @@ class MudReaderThread(threading.Thread):
         elif colour_char == '7' or colour_char == '9':
             self.consoleHander.white()
         else:
-            magentaprint("MudReaderThread saw unrecognized ANSI escape sequence:"+ANSI_escape_sequence)
+            magentaprint("MudReaderThread saw unrecognized ANSI escape sequence: "+ANSI_escape_sequence)
             pass
 
     def start_recording_mud_text(self):

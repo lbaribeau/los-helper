@@ -15,7 +15,7 @@ class Equipment(Command):
         # ]
         self.success_regexes = [
             R.you_arent_wearing_anything,
-            R.one_equip, 
+            R.one_equip, # (?:On [^:]{4,6})|(?:Shield)|(?:Wielded)|(?:Seconded)|(?:Holding)):\s+(?P<piece>.+?)\s*\n\r
             R.prompt
         ]
         # success/fail/error doesn't work so well in this case... do not inherit Command?
@@ -42,11 +42,11 @@ class Equipment(Command):
         self.reset()
 
     def reset(self):
-        self.dict = dict.fromkeys(self.slot_names)
-        self.neck_count = 0
+        self.dict         = dict.fromkeys(self.slot_names)
+        self.neck_count   = 0
         self.finger_count = 0
-        self.prompt_flag = 0
-        self.eq_flag = 0
+        self.prompt_flag  = 0
+        self.eq_flag      = 0
 
     def notify(self, r, match):
         # magentaprint("Equipment notify, match 0 is " + match.group(0))
@@ -68,7 +68,7 @@ class Equipment(Command):
             if slot_name in self.dict.keys():
                 self.dict[slot_name] = self.determine_gear_name(match.group('piece'))
                 self.eq_flag = True  # We need to concoct a flag that determines whether all equipment was matched...
-                # The prompt hack isn't doing it job in that regard
+                # The prompt hack isn't doing its job in that regard
             else:
                 magentaprint("match.group('slot').lower() is " + match.group('slot').lower() + " and is not in " + str(self.dict.keys()))
         elif r in R.you_arent_wearing_anything:

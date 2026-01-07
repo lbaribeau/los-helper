@@ -88,7 +88,9 @@ class SmartCombat(CombatObject):
         # I prefer the latter.
         # magentaprint("SmartCombat notify " + match.re.pattern) # gets prompt (too many prints)
         super().notify(regex, match) # Calls self.stop if it's an end-combat regex
-        if regex in R.prompt and self.activated:
+        if not self.activated:
+            magentaprint("SmartCombat got a notify, but not activated, regex: " + regex[0:20])
+        elif regex in R.prompt and self.activated:
             if self.should_use_heal_ability():
                 self.heal_abilities[0].execute()
             elif self.needs_heal():

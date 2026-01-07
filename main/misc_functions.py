@@ -6,8 +6,8 @@ import sys
 from datetime import datetime
 import comm.ConsoleHandler
 
-debugMode = True
-verboseMode = True
+debugMode = True # Only used in one function
+verboseMode = True # Not used
 startTime = datetime.now()
 VERSION = "2"
 #databaseFile = "maplos.db"
@@ -17,13 +17,20 @@ VERSION = "2"
 def magentaprint(text, is_debug_command=True, show_hidden=False, **kwargs):
     # This function doesn't log because of circular import
     # See Log.magentaprint
-    global debugMode
+    global debugMode # "global" gets you the variable above instead of just clobbering it (without saying "global" you'd get another variable of the same name and less scope)
 
     if show_hidden:
         text = repr(text)  # escape all characters in string
 
     if debugMode or not is_debug_command:
         do_magentaprint(text, **kwargs)
+
+    # Example:
+    # x=2
+    # def f(a):
+    #   x=3
+    # f(a)
+    # # Leaves x as 2 but with "global x" inside f() you'd modify x to 3
 
 def do_magentaprint(text, **kwargs):
     # Use this from the db to avoid circular import (Other magentaprint needs Log())

@@ -167,6 +167,7 @@ class CommandHandler(object):
             'rest_loop' : self.do_rest_loop,
             'has_usable_weapon_in_inventory' : self.has_usable_weapon_in_inventory,
             'waitformobattack' : self.wait_for_mob_attack
+            # 'toggle_prints' : self.toggle_prints
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
@@ -502,10 +503,10 @@ class CommandHandler(object):
         elif re.match("(?i)reactionlist", user_input):
             for r in self.mudReaderHandler.MudReaderThread.BotReactionList:
                 magentaprint('    ' + str(r), False)
-        elif re.match("cackle", user_input):
+        elif re.match("(toggle_prints1)|(cackle)", user_input):
             misc_functions.verboseMode = not misc_functions.verboseMode
             magentaprint("Verbose mode changed", False)
-        elif re.match("defecate", user_input):
+        elif re.match("(toggle_prints2)|(defecate)", user_input):
             misc_functions.debugMode = not misc_functions.debugMode
             magentaprint("Debug Mode changed", False)
         elif re.match(str(self.character.EXIT_REGEX), user_input):
@@ -1033,6 +1034,7 @@ class CommandHandler(object):
         quit = Quit(self.mudReaderHandler, self.telnetHandler)
         magentaprint("CommandHandler quit returned " + str(quit.success))
         if quit.success:
+            self.mudReaderHandler.mudReaderThread.MUDBuffer.set() # Might help it exit if it's waiting for Listener
             self.join_mud_map_thread() 
             self.stop_bot() # Ehrm suppose another thread is making the map - maybe interrupt it or join it
             # self.mud_map_thread

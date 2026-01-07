@@ -3,6 +3,10 @@
 from print_magenta import magentaprint
 from reactions.game_object import GameObject
 # from db.GenericMudObject import GenericMudObject
+numbers = [
+    'a', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen',
+    'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'
+] + [str(n) for n in range(20, 200)] # Ehrm this is going to take some space??? Should be like a class variable not an object variable
 
 class ReferencingList(object):
     # This is for "word n" object targeting mechanisms, ie. "ring 5"
@@ -44,10 +48,7 @@ class ReferencingList(object):
         self.list.sort() 
 
         # magentaprint("Referencing list: " + str(self.list))
-        self.numbers = [
-            'a', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen',
-            'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'
-        ] + [str(n) for n in range(20, 200)] # Ehrm this is going to take some space??? Should be like a class variable not an object variable
+        self.numbers = numbers # Try it like this... we can all share the variable, right?
 
     def add(self, obj_or_string):
         if isinstance(obj_or_string, 'str'.__class__):

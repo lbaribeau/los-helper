@@ -124,10 +124,12 @@ class LosHelper(object):
         #     self.commandHandler.mud_map_thread.join()
         magentaprint("Joining mudListenerThread")
         self.mudListenerThread.join(10)
-        magentaprint("Joining mudReaderThread")
+        magentaprint("Joining mudReaderThread (10 s)")
+        self.mudReaderThread.MUDBuffer.set()
         self.mudReaderThread.join(10)
+        magentaprint("Closing Telnet.")
         self.telnetHandler.close()
-        magentaprint("Closed telnet.")
+        magentaprint("Closed telnet. Flushing input.")
         flush_input()
         try:
             # Maybe it's better to remove on startup.
@@ -137,7 +139,20 @@ class LosHelper(object):
                 # errno 2 means the file's not there.
                 magentaprint("LosHelper os.remove(\"no.db\") error: " + str(e))
         a=threading.active_count()
-        magentaprint(str(a) + ' thread' + ('s' if a > 1 else '') + ' remaining: ' + str(threading.enumerate()))
+        magentaprint("threading.active_count(): "+str(a) + ' thread' + ('s' if a > 1 else '') + ' remaining, threading.enumerate(): ' + str(threading.enumerate()))
+        for t in [self.mudListenerThread, self.mudReaderThread, self.commandHandler.mud_map_thread, self.commandHandler.bot_thread]:
+            self.check_thread(t)
+
+    def check_thread(self, thread):
+        if thread:
+            magentaprint("Thread "+str(thread)+"\"is\", and... ")
+            if thread.is_alive():
+                magentaprint("... \"is_alive\",: "+str(thread.is_alive()))
+            else:
+                magentaprint("... \"is_n't_alive\",: "+str(thread.is_alive()))
+                # magentaprint("Thread "+str(thread)+" \"is_n't_alive()\".")
+        else:
+            magentaprint("Thread "+str(thread)+"\"is\"n't!")
 
     def join_thread(self, thread):
         if thread and thread.is_alive():
