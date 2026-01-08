@@ -110,9 +110,9 @@ class MudReaderThread(threading.Thread):
                 self.notify_subscribers_of_buffer_completion()
                 # magentaprint("MRT waiting for more text!")
                 self.MUDBuffer.clear()
-                if not self.MUDBuffer.wait(5):
+                if not self.MUDBuffer.wait(8):
                     magentaprint("MRT wait 1 timed out!")
-                    pass
+                    self.MUDBuffer.set() # so that other MRT waits don't wait either
             else:
                 magentaprint("MRT has text in the buffer")
 
@@ -417,8 +417,8 @@ class MudReaderThread(threading.Thread):
             #magentaprint("Clearing text buffer.  len: %d.  trunc: %d.  last matched char: %c." % (
             #           len(text_buffer), text_buffer_trunc, text_buffer[text_buffer_trunc]))
             text_buffer = text_buffer[text_buffer_trunc:]
-            magentaprint("MRT truncated: "+str(text_buffer_trunc))
-            magentaprint("MRT floating characters: "+str(len(text_buffer)))
+            # magentaprint("MRT truncated: "+str(text_buffer_trunc))
+            # magentaprint("MRT floating characters: "+str(len(text_buffer)))
             magentaprint("MRT floating text: "+str(text_buffer))
 
             #magentaprint("MudReader loop times: incl wait: %f; iteration time: %f" % 
@@ -483,6 +483,8 @@ class MudReaderThread(threading.Thread):
             self.consoleHander.white()
         else:
             magentaprint("MudReaderThread saw unrecognized ANSI escape sequence: "+ANSI_escape_sequence)
+            # Berserk wearing off does this, some sort of blue... we get <-[1m at start and <-[0m at the end
+            # These are modifiers for BOLD... so we could set bold 
             pass
 
     def start_recording_mud_text(self):

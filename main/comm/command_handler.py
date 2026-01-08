@@ -93,11 +93,11 @@ class CommandHandler(object):
         self.weapon_bot = MainhandWeaponBot(self.character, self); self.mudReaderHandler.add_subscriber(self.weapon_bot)
         # This guy takes the map after it's available... seems like his functions should be made thread safe
 
-        self.kill   = Kill(telnetHandler);                                mudReaderHandler.add_subscriber(self.kill)
-        self.cast   = Cast(telnetHandler);                                mudReaderHandler.add_subscriber(self.cast)
-        self.use    = Use(telnetHandler, self.inventory);                  mudReaderHandler.add_subscriber(self.use)
-        self.drink  = Drink(telnetHandler, self.inventory);              mudReaderHandler.add_subscriber(self.drink) 
-        self.wield  = Wield(character, telnetHandler, self.inventory);   mudReaderHandler.add_subscriber(self.wield)
+        self.kill   = Kill(telnetHandler);                              mudReaderHandler.add_subscriber(self.kill)
+        self.cast   = Cast(telnetHandler);                              mudReaderHandler.add_subscriber(self.cast)
+        self.use    = Use(telnetHandler, self.inventory);               mudReaderHandler.add_subscriber(self.use)
+        self.drink  = Drink(telnetHandler, self.inventory);             mudReaderHandler.add_subscriber(self.drink) 
+        self.wield  = Wield(character, telnetHandler, self.inventory);  mudReaderHandler.add_subscriber(self.wield)
         self.second = Second(character, telnetHandler, self.inventory); mudReaderHandler.add_subscriber(self.second)
         # self.potion_thread_handler = PotionThreadHandler(Consume(self.use, self.drink, self.eat))
         self.potion_thread_handler = PotionThreadHandler(Consume(self.use, self.drink))

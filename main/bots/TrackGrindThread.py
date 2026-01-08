@@ -69,6 +69,7 @@ class Tracks:
             'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','se','se','se','s','s','s','s','s','e','e',
             'se','e','s','s','s','s','glowing',
             'passage','mines','down','n','n','n','n','ne','n','w','n','n',
+            # 'cast_light',
             'e','door','w','gully','up','boulder','up','cave 3','ne','ne',#'n','s',
             'up','e','se',
             'prepare', 'e', 'ne', # guards
@@ -87,6 +88,7 @@ class Tracks:
             'nw', 'nw', 'w', 'w', 'w','nw','nw', 'n', 'gate', 'e', 'n', 'n', 'n','w', 'n', 'chapel'
         ] 
         self.kobold_priests = self.kobold_guards_and_insane[0:59] + ['door','door'] + self.kobold_guards_and_insane[59:]
+        # If the digit is wrong (ie. added cast_light)... then we got 'door' 'door' at the wrong point... it figured it out because the loop was intact otherwise
             # Priests turn you very blue.  These fights may be difficult.
             # Also useful to test mobs who join in.
             # They're optional because kobolds are allowed when you're pale blue, which is one off of blue... and these guards
@@ -521,7 +523,7 @@ class TrackGrindThread(GrindThread):
                 elif C.level in [6,7]:
                     return self.tracks.KOBOLDS1[:]
                 elif C.level in [8,9]:
-                    return self.tracks.kobold_guards_and_insane[:]
+                    return self.tracks.kobold_guards_and_insane[:] # Ehrm we just hit the dart twice and didn't kill any because it was too dark to see
                 elif C.level in [10,11,12]:
                     # So this will throw the balance of the track at level 10
                     return self.tracks.kobold_priests[:]

@@ -32,7 +32,7 @@ class MudListenerThread(threading.Thread):
         # socket_number
         fragment = ""
         # magentaprint("MudListenerThread sys.argv " + str(sys.argv))
-        select_timeout = 10.0 if not self.fake_version() else 0.1
+        select_timeout = 8.0 if not self.fake_version() else 0.1
         # magentaprint("MudListenerThread select timeout is " + str(select_timeout))
         # So fake just works by timing out the select call
         # Better would be to actually use the socket, but this is working
@@ -63,8 +63,7 @@ class MudListenerThread(threading.Thread):
                 try:
                     # magentaprint("MudListenerThread calling read_some().")  # Can print a LOT
                     # magentaprint("MudListener select came true!: "+ str(select_triple[0]))
-                    print("")
-                    magentaprint("MudListenerThread getting something!")
+                    # print(""); magentaprint("MudListenerThread getting something!")
                     # magentaprint("MudListener (fake_version is "+str(self.fake_version())+")")
                     new_bit = self.telnetHandler.read_some() # Make sure you read TelnetHandler
                     # new_bit = self.telnetHandler.read_very_eager()
@@ -116,12 +115,12 @@ class MudListenerThread(threading.Thread):
                 magentaprint("MudListenerThread: Note: socket says it's ready for writing!")
             else:
                 magentaprint("Select timeout reached, looping: "+str(select_triple))
-                self.MUDBuffer.set()
+                self.MUDBuffer.set() # safety set? I guess we let MRT run its empty loop...
                 pass    # just keep waiting.
                         # if stopping was set it will exit the loop
                 # Hmmm..... is there any way to tell if the server's ignoring us... "Timed out."
                 # other than that text.
-        self.MUDBuffer.set()
+        self.MUDBuffer.set() # Exit .set() could help MRT also exit
         magentaprint("MudListenerThread finished run()!")
 
         # los-helper closes the socket

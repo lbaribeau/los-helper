@@ -149,7 +149,12 @@ class BotReactionWithFlag(threading.Event, BotReaction):
             # Maybe at the grazing fields with the false inventory match
         if timed_out:
             magentaprint("BotReactionWithFlag {0} timed out!!! Wait() returning now. Set the flag to tell waiters to stop waiting.".format(self.__class__.__name__))
+            self.timed_out=True
             self.set()
+
+    def clear(self):
+        self.timed_out=False
+        super().clear()
 
     def set_waiter_flag(self):
         self.clear()

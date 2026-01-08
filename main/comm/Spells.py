@@ -18,7 +18,7 @@ shatterstone = 'shatt'
 
 vigor        = 'v'
 mendwounds   = 'm'
-light        = 'l'
+light        = 'light'
 showaura     = 'show'
 protection   = 'prot'
 

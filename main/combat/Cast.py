@@ -18,6 +18,7 @@ class Cast(SimpleCombatObject):
     failure_regexes = [R.cast_failure, R.no_mana]
     error_regexes = [R.bad_target_or_spell, R.not_here]
     # TODO: recently died, not allowed to attack same target yet
+    # Spell name is not unique
 
     aura = None
     aura_timer = 0
@@ -30,6 +31,10 @@ class Cast(SimpleCombatObject):
     # lvl1_black_amount = 3
     # lvl2_black_amount = 7
     # prot_amount = 10
+
+    @property
+    def result_no_mana(self):
+        return self.result in R.no_mana
 
     def __init__(self, telnetHandler):
         super().__init__(telnetHandler)
@@ -100,6 +105,13 @@ class Cast(SimpleCombatObject):
         # The caller even has access to wait_for_flag so this is not important.
 
         # Keep in mind that cls.target is for thread use.
+
+    # def execute(self, spell, target=None):
+    #     self.cast(spell, target)
+
+    def cast_and_wait(self, spell, target=None):
+        self.cast(spell, target)
+        self.wait_for_flag()
 
     def persistent_cast(self, spell, target=None):
         # This just spams on Please wait, and spam_spell also deals with Spell failed.

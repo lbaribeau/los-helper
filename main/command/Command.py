@@ -40,7 +40,7 @@ class SimpleCommand(BotReactionWithFlag):
     def execute(self, target=None):
         # Same as send() but gets called from instance
         # (send() doesn't need an instance but needs telnetHandler put in)
-        self.clear()
+        self.clear() # Sets up the waiter flag for waiting
         self.send(self.telnetHandler, target)
         # self.wait_for_flag()  # Just expect caller to call wait.
 

@@ -12,7 +12,6 @@ startTime = datetime.now()
 VERSION = "2"
 #databaseFile = "maplos.db"
 
-
 # def magentaprint(text, is_debug_command=True, log_output=False, show_hidden=False, **kwargs):
 def magentaprint(text, is_debug_command=True, show_hidden=False, **kwargs):
     # This function doesn't log because of circular import

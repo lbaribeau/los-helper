@@ -74,7 +74,8 @@ class Character(object):
 
         # These are like globals, doesn't seem like the best place, I think there's a new Go object
         self.SUCCESSFUL_GO   = True
-        self.GO_BLOCKING_MOB = ""
+        # self.GO_BLOCKING_MOB = ""
+        # self.mobs.GO_BLOCKING_MOB=self.GO_BLOCKING_MOB
         self.GO_PLEASE_WAIT  = False
         self.GO_NO_EXIT      = False
         self.GO_TIMEOUT      = False

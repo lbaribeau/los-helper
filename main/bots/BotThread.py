@@ -10,6 +10,9 @@ from Exceptions import *
 from db.Database import *
 from db.MudMap import MudMap
 
+# from comm.Spells import light
+from comm import Spells
+
 # Refer to https://docs.python.org/3/library/threading.html
 # excepthook is available as a method from threading
 # Only override .__init__ and .run()
@@ -78,22 +81,28 @@ class BotThread(threading.Thread):
                 magentaprint("BotThread has direction list")
                 self.do_regular_actions()
                 if self.go(self.direction_list[0]):
-                    self.do_on_successful_go()
+                    self.do_on_successful_go() # area regex or too_dark matched
                 else:
-                    if self.character.GO_BLOCKING_MOB != "":
+                    # if self.character.mobs.GO_BLOCKING_MOB != "":
+                    if self.command_handler.go.blocked:
                         # MUDReaderThread sets GO_BLOCKING_MOB when go returns false
                         self.do_on_blocking_mob()
                         continue
-                    elif self.character.GO_PLEASE_WAIT:
+                    # elif self.character.GO_PLEASE_WAIT:
+                    elif self.command_handler.go.please_wait:
                         # Just try again.
                         self.do_on_go_please_wait()
                         continue
-                    elif self.character.GO_TIMEOUT:
+                    # elif self.character.GO_TIMEOUT:
+                    elif self.command_handler.go.timed_out:
                         self.do_on_go_timeout()
-                    elif self.character.GO_NO_EXIT:
+                    # elif self.character.GO_NO_EXIT:
+                    elif self.command_handler.go.no_exit:
                         self.no_exit_count += 1
                         self.do_on_go_no_exit()
                         continue
+                    elif self.command_handler.go.go_where:
+                        magentaprint("BotThread: Ok go command is really confused (no target)")
                     else:
                         pass
                 # It's a loop, so we only need a hook on one side of it (no need for beginning + end hooks)
@@ -115,7 +124,7 @@ class BotThread(threading.Thread):
         self.cast.wait_until_ready()
         magentaprint("BotThread going " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)), False)
 
-        self.character.GO_BLOCKING_MOB = ""
+        self.character.mobs.GO_BLOCKING_MOB = ""
         self.character.GO_PLEASE_WAIT  = False
         self.character.GO_NO_EXIT      = False
         self.character.GO_TIMEOUT      = False
@@ -246,13 +255,43 @@ class BotThread(threading.Thread):
         # self.character.MOBS_JOINED_IN = []
         # self.character.MOBS_ATTACKING = []
         self.no_exit_count = 0
+        if self.command_handler.go.too_dark:
+            # "It's too dark to see"
+            self.character.mobs.list=[]      # Maybe Cartography also does this
+            self.character.mobs.attacking=[] # Maybe Cartography also does this
+            pot = self.inventory.get_first_reference("glowing potion")
+            if pot:
+                self.command_handler.drink.execute_and_wait(pot)
+            elif Spells.light in self.character.spells and self.character.MANA>=5:
+                self.command_handler.cast.cast_and_wait(Spells.light)
+                while self.command_handler.cast.failure and not self.command_handler.cast.result_no_mana:
+                    self.command_handler.cast.cast_and_wait(light)
+                if self.command_handler.cast.result_no_mana:
+                    magentaprint("BotThread couldn't cast light!")
+            else:
+                magentaprint("BotThread couldn't cast light!")
+                return None
+            # Let's simulate a "go" to correct area id
+            # Did this before in GrindThread.engage_monster after a flee to find ourselves
+            self.character.TRYING_TO_MOVE=True
+            self.command_handler.go.clear()
+            self.command_handler.go.cartography.clear() # Ok we are "simulating" a "go" pretty well here... both of them should get 
+            self.command_handler.process("l")
+            self.command_handler.go.wait_for_flag()
 
     def do_on_blocking_mob(self):
-        #self.engage_monster(self.character.GO_BLOCKING_MOB)
-        #self.get_items()
-        #self.character.GO_BLOCKING_MOB = ""
-        #self.engage_mobs_who_joined_in()
-        #self.engage_any_attacking_mobs()
+        # Ok well we TRIED to leave and COULDN"T
+        # So we have to fight
+        # We don'g have to fight all of attacking but we have to fight (or flee... but that could create more problems)
+        # We'll fight and flee might kick in
+        # We don't need global variables we can just start the engagement
+        # Can presume mobs.list is still OK
+        ref = self.character.mobs.get_ref_of_attacking_mob(self.command_handler.go.M_obj)
+        self.engage_monster(ref, ref)
+        # self.get_items()
+        self.character.mobs.GO_BLOCKING_MOB = "" # Not big on using these global variables any more
+        #self.engage_mobs_who_joined_in() # These might block as well
+        #self.engage_any_attacking_mobs() # Could leave these behind
         #self.check_weapons()
 
         #if (not self.character.BLACK_MAGIC):
@@ -261,21 +300,33 @@ class BotThread(threading.Thread):
 
     def do_on_go_please_wait(self):
         # The go object handles 'Please wait 1 second' now... maybe not longer times though.
+        self.command_handler.go.wait_until_ready() # object likely recorded please wait time
         magentaprint("Bot: Got please wait on a go attempt, retrying.", False)
 
     def do_on_go_timeout(self):
         magentaprint("Bot: Check go timed out.  Could be sys clock.")
         # This can happen when the system clock makes time.time() inconsistent.
         # Unless I can fix this I have to ignore this case and hope it worked.
-        self.direction_list.pop(0)
+        # self.direction_list.pop(0) # Assumes it was successful?
+        old_aid = self.character.AREA_ID # Supposing we got a hiccup that made R.area Go not match
+        self.sleep(5)
+        self.command_handler.go.clear() # Makes sure that wait_for_flag() happens properly (Make sure we get notify() called on a regex match)
+        self.command_handler.process('l')
+        self.command_handler.go.wait_for_flag()
+        # Could we check aids now?
         # self.character.MOBS_JOINED_IN = []
         # self.character.MOBS_ATTACKING = []
-        self.sleep(6)
+        if self.character.AREA_ID == old_aid:
+            magentaprint("Go failed weirdly? I guess don't pop direction_list") # Try again...
+        else:
+            magentaprint("I think we got Go to match this time, so pop() and continue.")
+            self.direction_list.pop(0)
 
     def do_on_go_no_exit(self):
         # This is a tough one.  Hopefully it never happens.  I'm gonna assume it happened
         # because the last go actually worked and was wrongly determined not to.
         magentaprint("Go no exit on: " + self.direction_list.pop(0) + ". Try a look and cross fingers.", False)
+            # We did drop one of the directions... did we go twice north by accident? Try to prevent that
         # self.character.MOBS_JOINED_IN = []
         # self.character.MOBS_ATTACKING = []
         # Ok I have an error case
@@ -283,8 +334,11 @@ class BotThread(threading.Thread):
         # So areaid2 is saying the path is length 1 (saying we are outside)
         # But we are inside... so let's just add a LOOK here???
         # (I don't get these hooks)
+        self.command_handler.go.clear() # Makes sure that wait_for_flag() happens properly (Make sure we get notify() called on a regex match)
         self.command_handler.process('l')
-        self.command_handler.go.wait_for_flag()
+        self.command_handler.go.wait_for_flag() # You gotta unset the flag though
+        # Now we have to check our area ids to know, right? Presumably, we shouldn't have repeated? Presumably, we are already too late (go no exit)
+        # We need to catch it when it times out
 
     def do_post_go_actions(self):
         return

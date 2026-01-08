@@ -182,13 +182,14 @@ class Cartography(BotReactionWithFlag):
             "\n... exit list: " + str(self.parse_exit_list(match.group(3)))+
             "\n... (number of match groups: " + str(len(match.groups()))+")"+
             "\n... group(1): " + str(match.group(1))+
-            "\n... group(2): " + str(match.group(2))+
-            "\n... group(3): " + str(match.group(3))+
-            "\n... group(4): " + str(match.group(4))+
+            # "\n... group(2): " + str(match.group(2))+
+            # "\n... group(3): " + str(match.group(3))+
+            "\n... group(3): " + str(self.parse_exit_list(match.group(3))) +
+            # "\n... group(4): " + str(match.group(4))+
+            "\n... mobs list: " + str(ReferencingList(self.parse_monster_list(match.group(4))))+\
             # "\n... mobs group match (group(4)): " + str(match.group(4))+
-            "\n... group(5): " + str(match.group(5))+
+            "\n... group(5): " + str(match.group(5)))
             # "\n... group(6): " + str(match.group(6))+
-            "\n... mobs list: " + str(ReferencingList(self.parse_monster_list(match.group(4)))))
         C            = self.character
         C.AREA_TITLE = match.group(1).strip() 
         # Area title sometimes has issues if TRYING_TO_MOVE was set prematurely and we get rubbish prepended
@@ -247,12 +248,20 @@ class Cartography(BotReactionWithFlag):
     def blocked_path(self, regex, M):
         # mob_name = M.group('mob_name')
         mob_name = self.character.mobs.read_mob_name_from_regex_match(M)
-        magentaprint("Cartography blocking mob name: " + mob_name)
-        self.character.GO_BLOCKING_MOB = mob_name
+        # magentaprint("Cartography blocking mob name: " + mob_name)
+        # # self.character.GO_BLOCKING_MOB = mob_name
+        self.character.GO_BLOCKING_MOB = self.character.mobs.get_ref_of_attacking_mob(M) 
+            # Use a "ref" instead of a mob name (ie. which mob is attacking specifically)
+            # Note: invalidated on mob arrival or departure
+            # "Go" should be doing this, right? 
+            # Or "Mobs?"
+            # Don't worry about it...
+            # But what maintains it? Let "mobs" maintain it. 
+            # Letting "mobs" do other mob arrival/departure but keeping setting it here
         self.character.SUCCESSFUL_GO = False
         self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
         self.catalog_path_blocker(mob_name)
-        if self.character.TRYING_TO_MOVE:  
+        if self.character.TRYING_TO_MOVE:
             self.character.TRYING_TO_MOVE = False
 
     def go_please_wait(self, regex, M):

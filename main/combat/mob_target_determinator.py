@@ -6,11 +6,11 @@ from reactions.referencing_list import ReferencingList
 
 class MobTargetDeterminator(object):
     # TODO: the wrong enemy could still be engaged when an enemy arrives immediately after the kill command is sent
-    def on_mob_arrival(self, old_target_reference, arrived_mobs, mob_list):
+    def on_mob_arrival(self, old_target_reference, arrived_mobs, old_mob_list):
         # magentaprint("MobTargetDeterminator old ref: " + str(old_target_reference))
         # Argh I'm worried about race condition.... 'bandit' wasn't in the list
         if old_target_reference:
-            prev_mob_list = ReferencingList(mob_list.list) # not yet previous mob list
+            prev_mob_list = ReferencingList(old_mob_list.list) # not yet previous mob list
             prev_mob_list.remove_from_list(arrived_mobs) # Simulate the pre-arrival list to determine the intended target
             # So that removed the bandit sentry?
             old_target_name = str(prev_mob_list.get(old_target_reference)) # bandit sentry?
@@ -30,7 +30,7 @@ class MobTargetDeterminator(object):
         else:
             magentaprint("MTD wasn't given a previous reference to work with(!)")
             new_target= old_target_reference
-        magentaprint("MTD called for target: {}, current mobs.list: {}, arrivals: {}. New_target: {}.".format(old_target_reference, mob_list.list, arrived_mobs, new_target))
+        magentaprint("MTD called for target: {}, current mobs.list: {}, arrivals: {}. New_target: {}.".format(old_target_reference, old_mob_list.list, arrived_mobs, new_target))
         return new_target
         # Ok an issue was that the bandit sentry wasn't in the old list since he was hiding at first
         # Erhm did MTD fail here??? Target act 2 (an actress)... "An actor just arrived" (half-word example) Why would that not work??
@@ -53,6 +53,8 @@ class MobTargetDeterminator(object):
             # departed_mob_name = str(old_mob_referencing_list.get(departed_mob_ref))
             if index_of_departed_mob == None or index_of_target == None:
                 return old_target_reference
+            elif index_of_departed_mob == index_of_target:
+                return "" # New case... previous use cases didn't need this at all (only needed other mobs departing as fighting mobs don't depart)
             departed_mob_name = str(old_mob_referencing_list.list[index_of_departed_mob])
             # if (departed_mob_name < target_name and any([s.startswith(old_target_reference.split()[0]) for s in departed_mob_name.split(' ')])) or \
             #     (departed_mob_name == target_name and departed_mob_ref < old_target_reference):

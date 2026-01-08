@@ -57,7 +57,7 @@ class GrindTravelBot(TrackGrindThread):
             if self.go(self.direction_list[0]):
                 self.do_on_successful_go() # There was a typo before... implements "fled" (sets up for engage_monster to see on next loop iteration)
             else:
-                if self.character.GO_BLOCKING_MOB != "":
+                if self.character.mobs.GO_BLOCKING_MOB != "":
                     # MUDReaderThread sets GO_BLOCKING_MOB when go returns false
                     self.do_on_blocking_mob()
                     continue

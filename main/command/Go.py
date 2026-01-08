@@ -20,7 +20,7 @@ class Go(Command):
         R.go_where
     ]
     failure_regexes = [
-        R.blocked_path,
+        R.blocked_path, # == [__Three_possible_mob_strings + r" blocks your exit\."]
         R.cant_go,
         R.open_first,
         R.class_prohibited,
@@ -42,6 +42,12 @@ class Go(Command):
     cooldown_after_success = 0.34
     good_mud_timeout = 20.0
         # There's a rancher gate node that seems to take quite a while
+
+    @property
+    def result_no_exit(self):
+        return self.result in R.no_exit
+    def result_go_where(self):
+        return self.result in R.go_where
 
     def __init__(self, kill, cast, telnetHandler, character):
         super().__init__(telnetHandler)
@@ -70,7 +76,7 @@ class Go(Command):
         #     # time.sleep(0.8)  # Hacked fix to get_heal_path being called before Cartography updates area_id
         # Maybe also wait for cartography? Our wait function waits for cartography
         super().notify(regex, M_obj)
-        magentaprint("Go notify done.")
+        magentaprint("Go notify done... too_dark: " + str(self.result in R.too_dark))
 
     def execute(self, target):
         magentaprint("Go.execute(\""+str(target)+"\")")
@@ -126,6 +132,11 @@ class Go(Command):
     def wait_execute_and_wait(self, exit):
         self.wait_until_ready()
         self.execute_and_wait(exit) #super().execute_and_wait(target=None)
+
+    @property
+    def too_dark(self):
+        magentaprint("Go too_dark: " + str(self.result in R.too_dark))
+        return self.result in R.too_dark
 
 class Open(Command):
     command = 'open'

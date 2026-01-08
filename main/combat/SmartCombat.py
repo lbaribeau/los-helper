@@ -449,10 +449,17 @@ class SmartCombat(CombatObject):
                 if a.error:
                     self.error = True
                     self.stop()
+                    return
                 #elif a.failure:
                     # kill.timer is correct
                 elif a.success or not isinstance(a, Circle):
                     kill.timer -= 1
+                # Be careful of multiple adding...
+                # if a.success:
+                #     self.character.mobs.attacking.append(self.target) 
+                    # Let's assume the mob will retaliate
+                    # Typically mobs checks to add attackers whenever they attack
+                    # Suppose another mob attacks too... this way we know right away that there are two attackers
                 a.timer=kill.timer
                 return
                 # The point of the above was to implement the common cooldown of "kill" and "circle"

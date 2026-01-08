@@ -6,6 +6,7 @@ from reactions.BotReactions import BotReactionWithFlag
 import comm.RegexStore as R
 from misc_functions import magentaprint
 from reactions.referencing_list import ReferencingList
+from combat.mob_target_determinator import MobTargetDeterminator
 
 class MobRegexReader(BotReactionWithFlag):
 # class Mobs(BotReactionWithFlag):
@@ -157,30 +158,53 @@ class Mobs(MobRegexReader):
         self.chase = ''
         self.chase_exit = ''
         self.expect_flee_attack=False
+        self.mob_target_determinator = MobTargetDeterminator()
+        self.GO_BLOCKING_MOB=''
 
     def notify(self, r, M):
         # We'll let Cartography handle the initialization of monster_list with the area regex.
         #magentaprint("mobs.list " + str(self.list) + "; notification from regex: " + str(r[0:min(10, len(r))]))
         if r in R.mob_arrived:
             magentaprint("Mobs mob arrived")
-            self.list.add_from_list(self.read_mobs(M.group('mobs')))
+            read_mobs = self.read_mobs(M.group('mobs'))
+            self.list.add_from_list(self.read_mobs(M.group('mobs'))) # I guess on arrival we edit the list first???
+            self.GO_BLOCKING_MOB = self.mob_target_determinator.on_mob_arrival(
+                self.GO_BLOCKING_MOB,
+                read_mobs, # ie. Parse "Three small girls just arrived." into a list
+                self.list # Mob target determinator needs the old mobs list to know what exactly was being targeted (old reference is not complete enough)
+            )
+            self.attacking = [self.mob_target_determinator.on_mob_arrival(a, read_mobs, self.list) for a in self.attacking]
             magentaprint("Mobs.list (added): " + str(self.list.list)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
+            magentaprint("Mobs.attacking: " + str(self.attacking)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
         elif r in R.ze_mob_died:
             # The "ze" is because the regex notifications go out in alphebetical order by variable name
             # See .you_attack below for a note on this, ie, one-shot a mob, you want "added" to happen before "removed"
             mob_name = self.read_mob_name_from_regex_match(M)
             # magentaprint("Mobs noticed " + mob_name + " died, it's in the self.list: " + str(mob_name in self.list))
-            magentaprint("Mobs noticed " + mob_name + " died, it's in the self.list: {}, self.list is {} (len {}), self.attacking is {} (len {}).".format(\
+            magentaprint("Mobs noticed " + mob_name + " died, is it in self.list?: {}, self.list is {} (len is {}), self.attacking is {} (len {}).".format(\
                 mob_name in self.list, self.list, len(self.list), self.attacking, len(self.attacking)))
+            ref_of_departed_mob = self.get_ref_of_attacking_mob(M)
+            self.GO_BLOCKING_MOB = self.mob_target_determinator.on_mob_departure(
+                self.GO_BLOCKING_MOB,
+                self.list,
+                ref_of_departed_mob
+            ) # Presumably the bot knows to do this also... the bot could unset GO_BLOCKING_MOB... who is in charge of this...
+            # The bot could presume, ok Combat ended true, so I'll maintain this variable (on dying) 
+            magentaprint("Mobs MTD just checked target!: \""+str(self.GO_BLOCKING_MOB)+"\" to \""+str(self.GO_BLOCKING_MOB)+"\"! Wowee!")
+            self.attacking = [self.mob_target_determinator.on_mob_departure(m, self.list, ref_of_departed_mob) for m in self.attacking]
+            self.attacking = [a for a in self.attacking if a] # Removes it if the ref in .attacking is pointing at the mob that died (MTD returns "")
+            magentaprint("Mobs.attacking: " + str(self.attacking)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
+            # This does happen, ie, "kkc s" then we get "stall" in the attacking list"
             if mob_name in self.list:
                 self.list.remove(mob_name)
             # magentaprint("Mobs removed it from the list, now is it in attacking: {0}".format(mob_name in self.attacking))
-            if mob_name in self.attacking:
-                # magentaprint("Mobs removed it from the list, now is it in attacking: {0}".format(mob_name in self.attacking))
-                self.attacking.remove(mob_name)  
-                # TODO: if a mob is one-shot, it's not removed because the You attacked notify is after
-                # Are we really going to fix this by putting you_attack alphabetically before your attack overwhelms (mob died)
-                # Unless we put a -1 or something to pre-remove it... how about calling it engage
+            # if mob_name in self.attacking:
+            #     # self.attacking is going to need to be mob references...
+            #     # magentaprint("Mobs removed it from the list, now is it in attacking: {0}".format(mob_name in self.attacking))
+            #     self.attacking.remove(mob_name)  
+            #     # TODO: if a mob is one-shot, it's not removed because the You attacked notify is after
+            #     # Are we really going to fix this by putting you_attack alphabetically before your attack overwhelms (mob died)
+            #     # Unless we put a -1 or something to pre-remove it... how about calling it engage
             magentaprint("Mobs: likely removed "+mob_name + ": self.list is {} (len {}), self.attacking is {} (len {}).".format(self.list, len(self.list), self.attacking, len(self.attacking)))
             magentaprint('Mobs.damage (list) ' + str(self.damage) + \
                 '\n  sum            : ' + str(sum(self.damage)) + \
@@ -198,23 +222,61 @@ class Mobs(MobRegexReader):
             # Ey well engage_monster ends up thinking that there is still something attacking
             # Engage monster was actually removing it(!)
             # Well then use check Mobs.chase for any chase logic
+            ref_of_departed_mob = self.get_ref_of_attacking_mob(M)
+            # self.GO_BLOCKING_MOB = self.mob_target_determinator.on_mob_departure(
+            #     self.GO_BLOCKING_MOB,
+            #     self.list,
+            #     ref_of_departed_mob
+            # )
+            # for a in self.attacking # How to update a whole list... hmmm
+            self.attacking = [self.mob_target_determinator.on_mob_departure(m, self.list, ref_of_departed_mob) for m in self.attacking]
+            self.attacking = [a for a in self.attacking if a != ""]
+            magentaprint("Mobs.attacking: " + str(self.attacking)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
             mob_name = self.read_mob_name_from_regex_match(M)
             if mob_name in self.list:
                 self.list.remove(mob_name)
             magentaprint("Mobs removed it from the list, now is it in attacking: {0}".format(mob_name in self.attacking))
-            if mob_name in self.attacking:
-                self.attacking.remove(mob_name)  
+            # if mob_name in self.attacking:
+            #     self.attacking.remove(mob_name)  
+            # I guess we remove it here?
             self.chase = mob_name
             self.chase_exit = M.group('exit')
             magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(round(self.mean(self.damage), 1)) + ', stdev=' + str(round(self.stdev(self.damage), 1)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/max(len(self.damage),1), 2)))
+            # I'm just going to assume that the bot is knowing/maintaining GO_BLOCKING_MOB on fleeing
+            # Same with .attacking since the bot will know which one fled... just do the adding here
         elif r in R.mob_wandered or r in R.mob_left:
             magentaprint("Mobs mob left")
+            ref_of_departed_mob = self.get_ref_of_attacking_mob(M)
+            self.GO_BLOCKING_MOB = self.mob_target_determinator.on_mob_departure(
+                self.GO_BLOCKING_MOB,
+                self.list,
+                ref_of_departed_mob
+            ) # What if two or three wander off together? Could that happen? 
+            # for a in self.attacking # How to update a whole list... hmmm
+            self.attacking = [self.mob_target_determinator.on_mob_departure(m, self.list, ref_of_departed_mob) for m in self.attacking]
+            magentaprint("Mobs.attacking: " + str(self.attacking)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
             mob_name = self.read_mob_name_from_regex_match(M)
             if mob_name in self.list:
                 self.list.remove(mob_name)
         elif r in R.mob_joined1 or r in R.mob_joined2:
             magentaprint("Mobs.notify mob joined in {}".format(r))
-            self.attacking.append(self.read_mob_name_from_regex_match(M))
+            # self.attacking.append(self.read_mob_name_from_regex_match(M))
+            # self.attacking.append(self.get_ref_of_attacking_mob(M)) # Will the ref be correct? Hopefully (ie mob just wandered in)
+            # Ok I did get double-adding so I think the guards "attacked" can come in the same text clump and get matched and notified before "mob_joined"
+            # self.attacking.sort()
+            mob_name = self.read_mob_name_from_regex_match(M)
+            if mob_name not in self.list:
+                magentaprint("Mobs got an attack from a mob not in list, weird!")
+                self.list.add(mob_name)
+            attacking_mob_ref = self.get_ref_of_attacking_mob(M)
+            attacking_mob_index = self.list.index(attacking_mob_ref)
+            # Check if it's already in .attacking
+            if not any([self.list.index(a) == attacking_mob_index for a in self.attacking]):
+                # (If not already in attacking list)
+                # ^ Catches duplicate if the references in attacking list use a different "word" from what we made up from the server string (unlikely)
+                self.attacking.append(attacking_mob_ref)
+                # self.attacking.sort()
+            magentaprint("Mobs.attacking: " + str(self.attacking))
             # Ok mob joined in is clear enough... they get added...
         elif r in R.mob_attacked:
             # c = self.attacking.count(M.group('mob').strip())
@@ -244,8 +306,22 @@ class Mobs(MobRegexReader):
             # I see I put "n" in there to get the "n" out of "nth" maybe that's the only new part... seems right
             # A MobTargetListMaintainer might be appropriate...
             # I think I'll make a new object for this???
+            mob_name = self.read_mob_name_from_regex_match(M)
+            if mob_name not in self.list:
+                magentaprint("Mobs got an attack from a mob not in list, weird!")
+                self.list.add(mob_name)
+            attacking_mob_ref = self.get_ref_of_attacking_mob(M)
+            attacking_mob_index = self.list.index(attacking_mob_ref)
+            # Check if it's already in .attacking
+            if not any([self.list.index(a) == attacking_mob_index for a in self.attacking]):
+                # (If not already in attacking list)
+                # ^ Catches duplicate if the references in attacking list use a different "word" from what we made up from the server string (unlikely)
+                self.attacking.append(attacking_mob_ref)
+                # self.attacking.sort()
+                magentaprint("Mobs.attacking: " + str(self.attacking)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
             if self.expect_flee_attack:
-                self.attacking.append(self.read_mob_name_from_regex_match(M))
+                # Ok this was being quite defensive??
+                # self.attacking.append(self.read_mob_name_from_regex_match(M))
                 self.expect_flee_attack=False
             if 'd' in M.groupdict().keys():
                 # (mob damage regex)
@@ -255,7 +331,11 @@ class Mobs(MobRegexReader):
         elif r in R.mob_aggro: # ie. "<Mob> attacks you."
             self.damage = []
             magentaprint("Mobs.notify mob aggro {}".format(r))
-            self.attacking.append(self.read_mob_name_from_regex_match(M)) # Ehrm this adds the mob even if it got one-shotted (it's dead(!))
+            # No need to check if it's already accounted for, right? I suppose not...
+            # self.attacking.append(self.read_mob_name_from_regex_match(M))
+            self.attacking.append(self.get_ref_of_attacking_mob(M)) 
+            # self.attacking.sort()
+            magentaprint("Mobs.attacking: " + str(self.attacking)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
         elif r in R.you_attack:
             # Ok suppose we one-shot a waitress; You attack the waitress and waitress died are in the same block.
             # This clause gets called last because you_attack is alphabetically later than mob_died (see mudReaderHandler's dir(RegexStore))
@@ -265,15 +345,28 @@ class Mobs(MobRegexReader):
             mob_name = self.read_mob_name_from_regex_match(M)
             magentaprint("Mobs.notify attacked mob {}".format(mob_name)) # Hmmm "The Floor Manager" not in [Floor Manager]
             if mob_name in self.list: # Make sure it hasn't been killed already
-                self.attacking.append(mob_name) # adds the mob even if it got one-shotted (it's dead(!)) (FIXED with ze_mob_died!)
+                # self.attacking.append(mob_name) # adds the mob even if it got one-shotted (it's dead(!)) (FIXED with ze_mob_died!)
+                self.attacking.append(self.get_ref_of_attacking_mob(M))
+                magentaprint("Mobs.attacking: " + str(self.attacking)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
         elif r in R.blocked_path:
             # magentaprint("Mobs got {}".format(M.group('whole_mob_name')))
             mob_name = self.read_mob_name_from_regex_match(M)
             # magentaprint("Mobs got {}".format(mob_name))
             if mob_name not in self.list:
                 self.list.add(mob_name) # Have bandit sentry in the list for when the bandit arrives so target can be calculated properly
-            magentaprint("Mobs list is now {}".format(self.list.list))
+                magentaprint("Mobs list edited on blocking mob! Is now {}".format(self.list.list))
             # TODO: "The 2nd XXX blocks your path." (should ensure to have two XXX in the list then)
+            # self.character.GO_BLOCKING_MOB = self.character.mobs.get_ref_of_attacking_mob(M) # Happens correctly after it's in self.list (list should not need to change though)
+            # Let'ssss just let Cartography keep doing that part...
+            # No... then you have to know, what order .list got updated, right? Keep in mind, mobs is before SmartCombat
+            # Would be good to know the notification order
+            # But we also have notify_of_buffer_completion_event which we can use to handle state
+            # Well we know that it WORKED on Cartography so we can leave that?
+            # It was just mob name it wasn't a reference.
+            # Well that's fine it's not like it needed to be added
+            # Ahh bandit sentry is a good example..... it'd block twice
+            # Why not have Go do it
+            # Well Go waits for Cartography so let Cartography do it
         # if self.attacking:
         #     magentaprint("Mobs.notify, mobs.attacking " + str(self.attacking))
         super().notify(r, M)
@@ -349,7 +442,7 @@ class Mobs(MobRegexReader):
         # Needs "mobs" because that knows the current list
         # So it could be a function on "Mobs"
         # mobs.get_ref_of_attacking_mob(match)
-        # ie. self.attacking_mob_ref = self.mobs.get_ref_of_attacking_mob(M) # looks good
+        # ie. self.attacking_mob_ref = self.get_ref_of_attacking_mob(M) # looks good
         return
 
 def remove_plural(m):

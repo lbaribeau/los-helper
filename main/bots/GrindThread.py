@@ -1,29 +1,29 @@
 
-import re
-import pdb
-from math import floor, ceil
+print("... ... ... GrindThread import re"); import re
+print("... ... ... GrindThread import re"); # import pdb
+print("... ... ... GrindThread import floor, ceil"); from math import floor, ceil
 
-from bots.BotThread           import BotThread
-from misc_functions           import magentaprint
-from reactions.BotReactions   import GenericBotReaction
-from reactions.ring_reaction  import RingWearingReaction
-from Exceptions import *
-from comm                     import Spells
-from db.MudItem               import MudItem
-from db.Mob                   import Mob
-from mini_bots.bless_and_prot import BlessTimer, ProtTimer
-# from command.Rest import Rest
-import time # Not needed though you can use self.sleep
+print("... ... ... GrindThread import BotThread"); from bots.BotThread           import BotThread
+print("... ... ... GrindThread import magentaprint"); from misc_functions           import magentaprint
+# magentaprint("... ... ... GrindThread import "); from reactions.BotReactions   import GenericBotReaction
+magentaprint("... ... ... GrindThread import RingWearingReaction"); from reactions.ring_reaction  import RingWearingReaction
+magentaprint("... ... ... GrindThread import Exeptions *"); from Exceptions import *
+magentaprint("... ... ... GrindThread import Spells"); from comm                     import Spells
+magentaprint("... ... ... GrindThread import dbMudItem"); from db.MudItem               import MudItem
+magentaprint("... ... ... GrindThread import db.Mob"); from db.Mob                   import Mob
+magentaprint("... ... ... GrindThread import BlessTimer, ProtTimer"); from mini_bots.bless_and_prot import BlessTimer, ProtTimer
+# magentaprint("... ... ... GrindThread import Rest"); # from command.Rest import Rest
+magentaprint("... ... ... GrindThread import time"); import time
+
+magentaprint("GrindThread done imports, starting class GrindThread(BotThread)")
 
 class GrindThread(BotThread):
     def __init__(self, character, command_handler, mudReaderHandler, mud_map):
         super().__init__(character, command_handler, mudReaderHandler, mud_map)
-        self.bless_timer = BlessTimer(command_handler.use, self.inventory)
-        self.prot_timer  = ProtTimer(command_handler.use, self.inventory)
-        self.mudReaderHandler.add_subscriber(self.bless_timer)
-        self.mudReaderHandler.add_subscriber(self.prot_timer)
+        self.bless_timer = BlessTimer(command_handler.use, self.inventory); self.mudReaderHandler.add_subscriber(self.bless_timer)
+        self.prot_timer  = ProtTimer(command_handler.use, self.inventory);  self.mudReaderHandler.add_subscriber(self.prot_timer)
         self.loot_threshold = 1  # the amount of loot to collect before selling
-        self.fled=False
+        self.fled = False
 
     def do_run_startup(self):
         pass
@@ -96,8 +96,16 @@ class GrindThread(BotThread):
             return True
         elif exit_str == 'buy_potions':
             return self.potion_shopping()
+        elif exit_str == 'cast_light':
+            return self.cast_light()
         else:
             return super().do_go_hooks(exit_str) # does areaid[\d] pathfinding
+
+    def cast_light(self):
+        pot=self.inventory.get_first_reference("glowing potion")
+        if pot:
+            self.command_handler.process("drin "+pot)
+        return True
 
     def potion_shopping(self):
         buy = self.command_handler.buy
@@ -162,14 +170,15 @@ class GrindThread(BotThread):
     def wield(self, item):
         return self.smartCombat.try_weapon(item)
 
-    def do_on_blocking_mob(self):
-        self.engage_monster(self.character.GO_BLOCKING_MOB)
-        self.character.GO_BLOCKING_MOB = ""
-        self.engage_any_attacking_mobs()
-        # self.check_weapons()  # TODO: shopping doesn't work everywhere
+    # def do_on_blocking_mob(self):
+    # Let BotThread implement
+    #     self.engage_monster(self.character.mobs.GO_BLOCKING_MOB)
+    #     self.character.mobs.GO_BLOCKING_MOB = ""
+    #     self.engage_any_attacking_mobs()
+    #     # self.check_weapons()  # TODO: shopping doesn't work everywhere
 
-        if not self.character.BLACK_MAGIC:
-            self.heal_up()
+    #     if not self.character.BLACK_MAGIC:
+    #         self.heal_up()
 
     def do_on_successful_go(self):
         super().do_on_successful_go() # function doesn't exist because of a typo... but, super().do_on_succesful_go() gets called by BotThread.run
