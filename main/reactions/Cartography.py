@@ -199,7 +199,11 @@ class Cartography(BotReactionWithFlag):
         # This calls mobs.parse_mob_string
         # magentaprint("Cartography.area (id is {}) set character.mobs.list: {}".format(C.))
         # magentaprint("Cartography set character.mobs.list.list: " + str(C.mobs.list.list))
-        C.mobs.attacking = [] # TODO: match regex for entering an area where a mob is already attacking you
+        # C.mobs.attacking = [] # TODO: match regex for entering an area where a mob is already attacking you
+        ref_of_attacking_mob = C.mobs.get_ref_of_attacking_mob(match)
+        if ref_of_attacking_mob:
+            magentaprint("Cartography got attacking mob: " + ref_of_attacking_mob)
+            C.mobs.attacking = [ref_of_attacking_mob] # Works if only one mob is attacking, and works on "look" not on "go"
 
         C.CAN_SEE       = True
         C.CONFUSED      = False

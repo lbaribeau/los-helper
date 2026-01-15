@@ -34,13 +34,14 @@ class CombatObject(ThreadingMixin):
 
     def notify(self, regex, M_obj):
         self.result = regex
-        if self.end_combat:
+        if self.end_combat_check:
             magentaprint("Combat object "+str(self.__class__.__name__) + " ending combat.")
             # Need to add check to make sure it was the mob that fled.
             self.stop()
+            self.end_combat=True
 
     @property
-    def end_combat(self):
+    def end_combat_check(self):
         # return self.result in R.ze_mob_died or self.result in R.ze_mob_fled or self.result in R.you_died
         return self.result in R.ze_mob_died + R.ze_mob_fled + R.you_died
         #return self.result in self.end_combat_regexes
@@ -53,6 +54,10 @@ class CombatObject(ThreadingMixin):
     def in_combat(self):
         magentaprint(str(self) + " in combat returning " + str(hasattr(self, 'thread') and self.thread and self.thread.is_alive()))
         return hasattr(self, 'thread') and self.thread and self.thread.is_alive()
+    def stop(self):
+        super().stop()
+        self.end_combat=True
+
 
 class SimpleCombatObject(CombatObject, Command):
     # This is for code used by Kill and Cast but not SmartCombat
@@ -82,11 +87,11 @@ class SimpleCombatObject(CombatObject, Command):
         #     self.stop()
 
     @property
-    def end_combat(self):
+    def end_combat_check(self):
         # magentaprint("SimpleCombatObject.end_combat():\n\tsuper().end_combat: {0}\n\tself.result: {1}\n\tself.error_regexes: {2}\n\tresult in error regexes: {3}".format(
         #     super().end_combat, self.result, self.error_regexes, self.result in itertools.chain.from_iterable(self.error_regexes)))
-        magentaprint("SimpleCombatObject.end_combat is {0}".format(super().end_combat or self.result in itertools.chain.from_iterable(self.error_regexes)))
-        return super().end_combat or self.result in itertools.chain.from_iterable(self.error_regexes)
+        magentaprint("SimpleCombatObject.end_combat is {0}".format(super().end_combat_check or self.result in itertools.chain.from_iterable(self.error_regexes)))
+        return super().end_combat_check or self.result in itertools.chain.from_iterable(self.error_regexes)
 
     # Needs to be a class method because the human doesn't have the object.
     #@classmethod
@@ -111,6 +116,7 @@ class SimpleCombatObject(CombatObject, Command):
         self.stopping = False
         self.target = target
         self.wait_until_ready()
+        self.end_combat=False # Maybe not needed as notify() should stop us (had an issue in smartCombat where a cast went off after the fact)
 
         while not self.stopping:
             self.send(telnetHandler, self.target)

@@ -14,7 +14,7 @@ from reactions.referencing_list import ReferencingList
 class SmartCombat(CombatObject):
     black_magic = True
 
-    def __init__(self, kill, cast, potion_thread_handler, wield, telnetHandler, character, weapon_bot, prompt, info, mud_reader_completion_event):
+    def __init__(self, kill, cast, potion_thread_handler, wield, telnetHandler, character, weapon_bot, prompt, info, mud_reader_completion_event, regex_busy):
         super().__init__(telnetHandler)
         self.thread   = None
         self.target   = None
@@ -62,7 +62,9 @@ class SmartCombat(CombatObject):
             R.armour_breaks,
             R.mob_arrived, 
             R.mob_wandered, 
-            R.mob_left
+            R.mob_left,
+            R.fighting_white_magic_caster,
+            R.fighting_black_magic_caster
         ])
         self.mob_target_determinator = MobTargetDeterminator()
         # We can let SmartCombat do a few extra things, like make kill/cast/use commands, but let's not go overboard.
@@ -81,13 +83,14 @@ class SmartCombat(CombatObject):
         self.prompt = prompt
         self.info = info
         self.mud_reader_completion_event = mud_reader_completion_event
+        self.regex_busy = regex_busy
 
     def notify(self, regex, match):
         # Notifications are used for healing
         # So SmartCombat needs to be registered/unregistered... or have a boolean for whether we're in combat.
         # I prefer the latter.
         # magentaprint("SmartCombat notify " + match.re.pattern) # gets prompt (too many prints)
-        super().notify(regex, match) # Calls self.stop if it's an end-combat regex
+        super().notify(regex, match) # Calls self.stop if it's an end-combat regex (maybe)
         if not self.activated:
             magentaprint("SmartCombat got a notify, but not activated, regex: " + regex[0:20])
         elif regex in R.prompt and self.activated:
@@ -163,9 +166,27 @@ class SmartCombat(CombatObject):
             # del RL
             self.character.mobs.list.remove(departed_mob_name)
             magentaprint("SmartCombat MTD just checked target!: \""+str(old_target_ref)+"\" to \""+str(self.target)+"\"! Wow!")
+            # Ok well it can still happen
+            # 56.6: "ci miner"
+            # 56.7: "The 1st koboled miner just wandered to the east.""
+            # (MTD: self.target = """)
+            # 56.8: "You failed to circle it"
+            # So we need to "queue up" the target edit... maybe we know if "wandered off" comes in before the attack response we know we "missed" (server didn't get message on time)
+            # Maybe we should read very eager? 
+            # We didn't hit the target we intended... we ended up hitting the 2nd... so MTD makes a good point... 
+            # I guess if this case happens while kill or circle is "executing" that'd be a good clue
+
+        elif regex in R.fighting_white_magic_caster:
+            self.fighting_white_magic_caster = True
+        elif regex in R.fighting_black_magic_caster:
+            self.fighting_black_magic_caster = True
         else:
             magentaprint("Some random smartCombat notify() not dealt with or self.activated was false")
         # magentaprint("SmartCombat notify done " + match.re.pattern)
+
+    @property
+    def fighting_caster(self):
+        return self.fighting_white_magic_caster or self.fighting_black_magic_caster
 
     def notify_of_buffer_completion():
         pass
@@ -173,13 +194,6 @@ class SmartCombat(CombatObject):
         # That will be our way of checking if the mob died or didn't after one hit
         # (Wait for all notifies to finish before sending cast)
         # It'll usually work... we could shorten "Your attack overwhelms" to help with clumping
-
-    def stop(self):
-        super().stop()
-        self.activated = False
-        # Eh should we stop the potion thread?
-        # sure
-        self.potion_thread_handler.stop
 
     def should_use_heal_ability(self):
         return \
@@ -210,14 +224,24 @@ class SmartCombat(CombatObject):
 
     def potion_threshold(self):
         if self.character.mobs.damage:
-            return 1.3*max(self.character.mobs.damage)
+            if len(self.character.mobs.attacking) >= 2:
+                return 2.6*max(self.character.mobs.damage)
+            else:
+                return 1.3*max(self.character.mobs.damage)
         else:
-            return 0.20 * self.character.maxHP
+            return 0.25 * self.character.maxHP
+
+    # def stop(self):
+    #     super().stop() # Where is stop implemented? It has to set self.stopping? Or does it?? Maybe it's not implemented in super!?
+    #     self.activated = False
+    #     # Eh should we stop the potion thread?
+    #     # sure
+    #     self.potion_thread_handler.stop 
 
     def stop(self):
         self.potion_thread_handler.stop()
         #self.stopping = True
-        super().stop() #.stopping
+        super().stop() #.stopping (combat/ThreadingMixin.py)
 
     def keep_going(self, target=None):
         # self.stopping = False
@@ -275,6 +299,7 @@ class SmartCombat(CombatObject):
         self.stopping    = False
         self.mob_charmed = False
         self.circled     = False
+        self.bashed      = False
         self.activated   = True
         self.fleeing     = False
         self.error       = False
@@ -282,6 +307,9 @@ class SmartCombat(CombatObject):
         cast = self.cast
         kill = self.kill
         self.result='' # makes sure self.end_combat isn't True
+        self.fighting_white_magic_caster = False
+        self.fighting_black_magic_caster = False
+        self.end_combat=False
 
         # magentaprint("SmartCombat Why isn't this wait waiting1")
         # magentaprint(self.mud_reader_completion_event)
@@ -322,14 +350,19 @@ class SmartCombat(CombatObject):
                     break
                 self.prompt.clear()
                 self.mud_reader_completion_event.clear()
+                self.prompt.clear()
                 if self.stopping:
                     break
                 self.use_slow_combat_ability_or_attack()
-                self.mud_reader_completion_event.clear() # How does this work at all...
+                self.prompt.wait()  # We want, even if the prompt came already... we want this wait to go through, we don't want a clear() at this moment, just to know the prompt came
+                # self.mud_reader_completion_event.clear() # How does this work at all... 
+                # What if we got the prompt already? In a clump with the attack? Also, we did a list operation to add mob attacking
+                # Might be introducing a wait
                 magentaprint("Smart combat attacked, end combat is {}, stopping is {}, event is {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
-                self.prompt.wait() # Wait for prompt to come to give time for mob death info to get through
+                # self.prompt.wait() # Wait for prompt to come to give time for mob death info to get through
                 # magentaprint("SmartCombat finished attack, stopping: " + str(self.stopping))
                 # time.sleep(0.1) # How do we wait to know if the mob was killed. (Wait for prompt)
+                # Oooookkkkkk now we're waiting too long... 
                 magentaprint("After prompt wait, end combat is {}, stopping is {}, event is {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
                 self.mud_reader_completion_event.wait()
                 magentaprint("After mud reader completion, end combat is {}, stopping is {}, event is {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
@@ -423,47 +456,110 @@ class SmartCombat(CombatObject):
         for a in self.slow_combat_abilities + [kill]:
             if a.up():
                 if isinstance(a, Bash):
-                    continue  # For now, don't bash
+                    if not self.fighting_black_magic_caster or len(self.character.mobs.attacking) > 1:
+                        continue
+                    # Continue means don't use this ability, go to the next one, the last option being regular attack
+                    # Don't bash white magic casters, just dps
 
-                if isinstance(a, Circle):
-                    if len(self.character.mobs.attacking) > 1:
+                    if self.bashed:
+                        self.bashed = False
+                        continue # ie. we bashed already, so don't bash again (need to dps)
+                    else:
+                        self.bashed = True
+                        self.circled = True # Do not circle if bashing
+                elif isinstance(a, Circle):
+                    # Optimal group fighting is probably using both circle and bash but not doing that here... 
+                    if len(self.character.mobs.attacking) > 1 or self.fighting_caster:
+                        # Don't circle casters
                         # Skip circle if many mobs (need to dps)
-                        # This didn't work? Had aggro on 2 mobs keps circling...
+                        # This didn't work? Had aggro on 2 mobs keps circling... (mobs.attacking wasn't being populated)
                         continue
 
                     # Sets up alternating circling (1 target)
                     if self.circled:
                         self.circled = False
-                        # Todo: execute circle
-                        continue
+                        continue # We circled already, do not circle again
                     else:
                         self.circled = True
 
+                magentaprint("SmartCombat waiting for regex_busy ({})".format(a)) # We could put this right into telnethandler, right?? Yes... could put it everywhere
+                # self.mudReaderThread.MLT.regex_busy.wait() # Just to make sure notifies from Mobs aren't currently happening (ie. MTD - mob target determinator)
                 magentaprint("SmartCombat executing " + str(a))
-                a.execute(self.target)
-                magentaprint("SmartCombat use_slow_combat_ability_or_attach() Mobs attacking by the way: " + str(self.character.mobs.attacking))
-                kill.start_timer() # Why commented out?
+                self.regex_busy.wait() # Just to make sure notifies from Mobs aren't currently happening (ie. MTD - mob target determinator)
+                a.execute(self.target) # Ehrm this didn't use to wait, now it waits? Yes... No it doesn't wait but it clears the waiter flag
+                # if a.success and not self.stopping and not self.end_combat and a.result not in R.ze_mob_fled + R.ze_mob_died:
+
+                # Be careful of multiple adding... it checks for that...
+                magentaprint("SmartCombat adding mob attacker")
+                self.character.mobs.add_attacker_with_ref(self.target)  # Ok this can definitely add AFTER it got removed from fleeing (stopping check should prevent)
+                    # Because... how else did it gett added on those two regexes... "You bludgeon for 5". "The acolyte flees"... so we got an add somehow on You bludgeon
+                # self.character.mobs.attacking.append(self.target) 
+                # Let's assume the mob will retaliate
+                # Typically mobs checks to add attackers whenever they attack
+                # Suppose another mob attacks too... this way we know right away that there are two attackers
+                # Ehrm I think this is taking a millisecond and then we can't wait for prompt
+                # The problem is this is happening too late... it gets re-added after the mob flees... 
+                # Same with "They are not here" on circle... needs to get removed from attacking
+                # Maybe just add it earlier!?               
+
+                magentaprint("SmartCombat use_slow_combat_ability_or_attack() Mobs attacking by the way: " + str(self.character.mobs.attacking))
+                kill.start_timer() # Why commented out? Because those objects should do it themselves?
                 kill.timer += 1 # Add 1 for now in case circle failed
                 # By the way, failing to circle it has a longer cooldown! (on both kill and circle? Yes)
-                a.wait_for_flag()
+                a.wait_for_flag() # We will probably wait for the prompt and mud_reader_completion anyway
+                # Ok in the lag case self.target is now wrong
+                # We could check it?? Why not? Should also fix it for "cast" ideally
                 if a.error:
                     self.error = True
+                    if a._sent_target in self.character.mobs.attacking:
+                        self.character.mobs.attacking.remove(a._sent_target) 
+                        # Since we just added it we know we can remove it... also we know nothing removes on this regex
+                        # Note that mob fleeing could have "happened" first and edited self.target (not on error though)
+                    else:
+                        magentaprint("SmartCombat thought it had to remove {} from mobs.attacking?? (attack error)".format(a._sent_target))
+                    kill.timer -= 4
                     self.stop()
                     return
                 #elif a.failure:
                     # kill.timer is correct
-                elif a.success or not isinstance(a, Circle):
-                    kill.timer -= 1
-                # Be careful of multiple adding...
-                # if a.success:
-                #     self.character.mobs.attacking.append(self.target) 
-                    # Let's assume the mob will retaliate
-                    # Typically mobs checks to add attackers whenever they attack
-                    # Suppose another mob attacks too... this way we know right away that there are two attackers
+                # elif a.success or not isinstance(a, Circle) or not isinstance(a,Bash):
+                elif a.success or isinstance(a, Kill) or isinstance(a, Wither) or isinstance(a, Touch):
+                    kill.timer -= 1 # Bash, circle have 4s cooldown on fail... maybe check some of the other abilities? Fail safe?
+                    # Not sure about wither and Touch but Circle and Bash have 4s cooldown
                 a.timer=kill.timer
-                return
                 # The point of the above was to implement the common cooldown of "kill" and "circle"
                 # If circle fails there's an extra second
+
+                # What if MTD is correcting attacking list and mobs.list as we speak?!?!?
+                # Can we wait for MRT?
+                # Let MudListener "clear" a flag and MRT "set" it (I hate those terms)
+                # self.mudReaderThread.MLT.regex_busy.wait()
+                # self.regex_busy.wait() # Just to make sure notifies from Mobs aren't currently happening (ie. MTD - mob target determinator)
+                # Why here? We needed it before we sent the command
+
+                # Lag fix... won't catch everything though
+                # (Suppose mob leaves and MTD makes our target "" but we actually hit another mob of the same name)
+                # if self.target == "" and a.success or a.failure: 
+                # Could do it more strongly... 
+                # What if it died or fled though??!?
+                # Ok this was a good idea but caused a problem... we kept attacking after the mob was gone...
+                if self.character.mobs.list.index(self.target) != self.character.mobs.list.index(a._sent_target) and not self.stopping:
+                    # Ok we probably hit the wrong thing
+                    # The "stopping" check is because we might have killed the mob, and in that case, it's no longer in mobs.list
+                    target_from_return_string = self.character.mobs.get_ref_of_attacking_mob(a.M_obj) # Maybe we can see what we hit from the text
+                    if target_from_return_string:
+                        # Might not work, ie, "You failed to circle it." doesn't have mob name in it
+                        # But this is just lag correction
+                        self.target = target_from_return_string # Ok good we saw what we hit
+                    else:
+                        self.target = a._sent_target # Suppose "A mob arrived" at the wrong time... this is our best bet
+                        # (This is like "undo" if mob target determinator did something in lag and was too late")
+                        # May as well switch back to what we sent even if it missed
+                    # if isinstance(s, Kill) or (isinstance
+                    # self.target = self.character.mobs.get_ref_of_attacking_mob(a.M_obj)
+                # Smart combat doesn't know if the mob died???
+                # Combat objects get killed (stopped) by a reaction
+                return
 
         # # self.attack_wait()
         # # self.kill.execute(self.target)
@@ -769,8 +865,6 @@ class SmartCombat(CombatObject):
         # Do we add code there?
         # Ok...
         # The follow-up is in engage_monster
-
-
 
 
 

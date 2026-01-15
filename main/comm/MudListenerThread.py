@@ -18,8 +18,11 @@ class MudListenerThread(threading.Thread):
         self.stopping      = False
         self.airbag        = False
         atexit.register(self.stop)
+        self.regex_busy = threading.Event()
+        self.regex_busy.set()
 
     def stop(self):
+        self.MUDBuffer.set()
         self.stopping = True
 
     def fake_version(self):
@@ -61,13 +64,17 @@ class MudListenerThread(threading.Thread):
                 # It'll fire whenever any of them are ready for reading or writing
                 # But we are only interested in reading here
                 try:
+                    self.regex_busy.clear() # MRT can "set" this when done/waiting for text
                     # magentaprint("MudListenerThread calling read_some().")  # Can print a LOT
                     # magentaprint("MudListener select came true!: "+ str(select_triple[0]))
-                    # print(""); magentaprint("MudListenerThread getting something!")
+                    # print(""); 
+                    magentaprint("MudListenerThread getting something!")
                     # magentaprint("MudListener (fake_version is "+str(self.fake_version())+")")
-                    new_bit = self.telnetHandler.read_some() # Make sure you read TelnetHandler
+                    # new_bit = self.telnetHandler.read_some() # Make sure you read TelnetHandler
+                    new_bit = self.telnetHandler.read_text() # Make sure you read TelnetHandler
                     # new_bit = self.telnetHandler.read_very_eager()
-                    fragment = fragment + new_bit.decode('ascii', errors='ignore')
+                    # fragment = fragment + new_bit.decode('ascii', errors='ignore')
+                    fragment = fragment + new_bit
                     # Should we be ignoring errors
                     # String object has no attribute decode
                     # This occurs when the computer went to sleep
@@ -83,7 +90,11 @@ class MudListenerThread(threading.Thread):
                     magentaprint("MudListenerThread is exiting because server sent EOF; error says: \""+str(e)+"\"") # "Telnet connection closed" (ie. Timed out.)
                     break
                 except AttributeError as e:
-                    magentaprint("Lag spikes happen like this (new_bit has no attribute decode)")
+                    magentaprint("Lag spikes happen like this (new_bit ('str' object) has no attribute 'decode')")
+                    magentaprint("Coincides with TelnetHander error: WinError 10054, An existing connection was forcibly closed by the remote host")
+                    magentaprint("Can be bad WiFi.")
+                    magentaprint("(new_bit is returned by telnetHandler)")
+                    magentaprint("telnetHandler had a try except and it was returning empty string which didn't have decode on it so all we got was Attribute error")
                     print("\a")
                     raise e
 
@@ -106,7 +117,7 @@ class MudListenerThread(threading.Thread):
 
                 # Ok we probably don't even NEED the fricken flag to protect the buffer
                 if fragment != "":
-                    magentaprint("MudListener got text!:" + fragment[0:50])
+                    magentaprint("MudListener got text! (len {}):".format(len(fragment)) + fragment[0:50])
                     self.MUDBuffer.buffer = self.MUDBuffer.buffer + fragment
                     self.MUDBuffer.set()
                     fragment = ""

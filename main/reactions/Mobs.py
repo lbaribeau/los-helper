@@ -83,30 +83,35 @@ class MobRegexReader(BotReactionWithFlag):
         # "The Floor Manager hits you for..." -> return "Floor Manager" (Uses "Three_possible_mob_strings, mob1")
         # "You attack the (2nd) stall holder for..." (Uses, three_possible_mob_strings, mob2)... returns "stall holder"" ("2nd" not important")
         # "Commander Rilmenson attacks you for..." (Uses "mob3")... returns Commander Rilmenson
-        if m.group('mob1'):
-            magentaprint("Mobs mob1: {}".format(m.group('mob1').strip()))
-            # return m.group('mob1').strip() # 'The' should have been removed, right?
-            if m.group('mob1').startswith('The '):
-                # ie. The Floor Manager
-                return m.group('mob1').partition(' ')[2].strip() # partition just parses the first space so we can cut off the "The " and just get "Floor Manager"
-            else:
-                magentaprint("Mobs.read_mob_name_from_regex_match()... I think this clause never happens!")
-                return m.group('mob1').strip() # This was "mob2", looked wrong...
-        elif m.group('mob2'):
-            # magentaprint("Mobs mob2") # Had to comment out because this triggers all the time
-            # "(?:The " + __numbers_opt + r"(?P<mob2>[a-z '-]+))"" 
-            # 2nd regex is like "The 2nd stall holder..." with or without the number in it
-            # So this "The " might never happen... we are cutting out the number part here just to get "stall holder"
-            if m.group('mob2').startswith('The '):
-                # TODO: No, I don't see how this regex could have 'The' in it after numbers like 1st/2nd
-                # Well, sure, "The stall holder kicks you for 2 damage." 
-                return m.group('mob2').partition(' ')[2].strip() # This removes the "The"
-            else:
-                return m.group('mob2').strip() # If there's no "The", just strip spaces, if any (there might be )
-        elif m.group('mob3'):
-            # "mob3" doesn't have "The " like it's a proper name, "Annette Plover attacks you..."  (no "The")... or like Commander Rilmenson
-            magentaprint("Mobs mob3")
-            return m.group('mob3').strip()
+        try:
+            if m.group('mob1'):
+                magentaprint("Mobs mob1: {}".format(m.group('mob1').strip()))
+                # return m.group('mob1').strip() # 'The' should have been removed, right?
+                if m.group('mob1').startswith('The '):
+                    # ie. The Floor Manager
+                    return m.group('mob1').partition(' ')[2].strip() # partition just parses the first space so we can cut off the "The " and just get "Floor Manager"
+                else:
+                    magentaprint("Mobs.read_mob_name_from_regex_match()... I think this clause never happens!")
+                    return m.group('mob1').strip() # This was "mob2", looked wrong...
+            elif m.group('mob2'):
+                # magentaprint("Mobs mob2") # Had to comment out because this triggers all the time
+                # "(?:The " + __numbers_opt + r"(?P<mob2>[a-z '-]+))"" 
+                # 2nd regex is like "The 2nd stall holder..." with or without the number in it
+                # So this "The " might never happen... we are cutting out the number part here just to get "stall holder"
+                if m.group('mob2').startswith('The '):
+                    # TODO: No, I don't see how this regex could have 'The' in it after numbers like 1st/2nd
+                    # Well, sure, "The stall holder kicks you for 2 damage." 
+                    return m.group('mob2').partition(' ')[2].strip() # This removes the "The"
+                else:
+                    return m.group('mob2').strip() # If there's no "The", just strip spaces, if any (there might be )
+            elif m.group('mob3'):
+                # "mob3" doesn't have "The " like it's a proper name, "Annette Plover attacks you..."  (no "The")... or like Commander Rilmenson
+                magentaprint("Mobs mob3")
+                return m.group('mob3').strip()
+        except IndexError:
+            magentaprint("Mobs.read_mob_name_from_regex_match called with regex that doesn't have 'mob1', 'mob2', 'mob3' (couldn't get mob name)")
+            return ""
+
 
     def read_mobs(self, arrived_mobs):
         # This is to make a mobs list, ie. from "Three acolytes just arrived""
@@ -206,16 +211,17 @@ class Mobs(MobRegexReader):
             #     # Are we really going to fix this by putting you_attack alphabetically before your attack overwhelms (mob died)
             #     # Unless we put a -1 or something to pre-remove it... how about calling it engage
             magentaprint("Mobs: likely removed "+mob_name + ": self.list is {} (len {}), self.attacking is {} (len {}).".format(self.list, len(self.list), self.attacking, len(self.attacking)))
-            magentaprint('Mobs.damage (list) ' + str(self.damage) + \
-                '\n  sum            : ' + str(sum(self.damage)) + \
-                '\n  mean           : ' + str(round(self.mean(self.damage), 2)) + \
+            magentaprint('Mobs damage list ' + str(self.damage) + \
+                '\n  total            : ' + str(sum(self.damage)) + \
+                # '\n  mean           : ' + str(round(self.mean(self.damage), 2)) + \
                 '\n  mean when hit  : ' + str(round(self.mean([d for d in self.damage if d > 0.1]), 2)) + \
-                '\n  stdev          : ' + str(round(self.stdev(self.damage), 1)) + \
+                # '\n  stdev          : ' + str(round(self.stdev(self.damage), 1)) + \
                 '\n  stdev when hit : ' + str(round(self.stdev([d for d in self.damage if d > 0.1]), 2)) + \
                 '\n  hit            : ' + str(round(100 - 100.0*sum([x == 0 for x in self.damage])/max(len(self.damage),1), 1))+str('%'))
             # m = sum(self.damage) / max(len(self.damage), 1)
             # s = sum(self.damage - [m]*len(self.damage))
             # magentaprint('Mobs damage ' + str(self.damage) + ', s=' + str(sum(self.damage)) + ', m=' + str(stats.mean(self.damage)) + ', stdev=' + str(stats.stdev(self.damage)) + ', h=' + str(round(1 - sum([x == 0 for x in self.damage])/len(self.damage), 2)))
+            # self.damage = []
         elif r in R.ze_mob_fled:  
             # Leave mobs.attacking populated. (?)  
             # might help to chase mobs that don't block you (chase currently relies on that.)
@@ -264,20 +270,21 @@ class Mobs(MobRegexReader):
             # self.attacking.append(self.get_ref_of_attacking_mob(M)) # Will the ref be correct? Hopefully (ie mob just wandered in)
             # Ok I did get double-adding so I think the guards "attacked" can come in the same text clump and get matched and notified before "mob_joined"
             # self.attacking.sort()
-            mob_name = self.read_mob_name_from_regex_match(M)
-            if mob_name not in self.list:
-                magentaprint("Mobs got an attack from a mob not in list, weird!")
-                self.list.add(mob_name)
-            attacking_mob_ref = self.get_ref_of_attacking_mob(M)
-            attacking_mob_index = self.list.index(attacking_mob_ref)
-            # Check if it's already in .attacking
-            if not any([self.list.index(a) == attacking_mob_index for a in self.attacking]):
-                # (If not already in attacking list)
-                # ^ Catches duplicate if the references in attacking list use a different "word" from what we made up from the server string (unlikely)
-                self.attacking.append(attacking_mob_ref)
-                # self.attacking.sort()
-            magentaprint("Mobs.attacking: " + str(self.attacking))
-            # Ok mob joined in is clear enough... they get added...
+            self.add_attacker_with_match_object(M)
+            # mob_name = self.read_mob_name_from_regex_match(M)
+            # if mob_name not in self.list:
+            #     magentaprint("Mobs got an attack from a mob not in list, weird!")
+            #     self.list.add(mob_name)
+            # attacking_mob_ref = self.get_ref_of_attacking_mob(M)
+            # attacking_mob_index = self.list.index(attacking_mob_ref)
+            # # Check if it's already in .attacking
+            # if not any([self.list.index(a) == attacking_mob_index for a in self.attacking]):
+            #     # (If not already in attacking list)
+            #     # ^ Catches duplicate if the references in attacking list use a different "word" from what we made up from the server string (unlikely)
+            #     self.attacking.append(attacking_mob_ref)
+            #     # self.attacking.sort()
+            # magentaprint("Mobs.attacking: " + str(self.attacking))
+            # # Ok mob joined in is clear enough... they get added...
         elif r in R.mob_attacked:
             # c = self.attacking.count(M.group('mob').strip())
             # if c == 0:
@@ -306,19 +313,20 @@ class Mobs(MobRegexReader):
             # I see I put "n" in there to get the "n" out of "nth" maybe that's the only new part... seems right
             # A MobTargetListMaintainer might be appropriate...
             # I think I'll make a new object for this???
-            mob_name = self.read_mob_name_from_regex_match(M)
-            if mob_name not in self.list:
-                magentaprint("Mobs got an attack from a mob not in list, weird!")
-                self.list.add(mob_name)
-            attacking_mob_ref = self.get_ref_of_attacking_mob(M)
-            attacking_mob_index = self.list.index(attacking_mob_ref)
-            # Check if it's already in .attacking
-            if not any([self.list.index(a) == attacking_mob_index for a in self.attacking]):
-                # (If not already in attacking list)
-                # ^ Catches duplicate if the references in attacking list use a different "word" from what we made up from the server string (unlikely)
-                self.attacking.append(attacking_mob_ref)
-                # self.attacking.sort()
-                magentaprint("Mobs.attacking: " + str(self.attacking)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
+            self.add_attacker_with_match_object(M)
+            # mob_name = self.read_mob_name_from_regex_match(M)
+            # if mob_name not in self.list:
+            #     magentaprint("Mobs got an attack from a mob not in list, weird!")
+            #     self.list.add(mob_name)
+            # attacking_mob_ref = self.get_ref_of_attacking_mob(M)
+            # attacking_mob_index = self.list.index(attacking_mob_ref)
+            # # Check if it's already in .attacking
+            # if not any([self.list.index(a) == attacking_mob_index for a in self.attacking]):
+            #     # (If not already in attacking list)
+            #     # ^ Catches duplicate if the references in attacking list use a different "word" from what we made up from the server string (unlikely)
+            #     self.attacking.append(attacking_mob_ref)
+            #     # self.attacking.sort()
+            #     magentaprint("Mobs.attacking: " + str(self.attacking)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
             if self.expect_flee_attack:
                 # Ok this was being quite defensive??
                 # self.attacking.append(self.read_mob_name_from_regex_match(M))
@@ -333,21 +341,27 @@ class Mobs(MobRegexReader):
             magentaprint("Mobs.notify mob aggro {}".format(r))
             # No need to check if it's already accounted for, right? I suppose not...
             # self.attacking.append(self.read_mob_name_from_regex_match(M))
-            self.attacking.append(self.get_ref_of_attacking_mob(M)) 
+            # self.attacking.append(self.get_ref_of_attacking_mob(M)) 
             # self.attacking.sort()
-            magentaprint("Mobs.attacking: " + str(self.attacking)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
+            self.add_attacker_with_match_object(M)
+            # magentaprint("Mobs.attacking: " + str(self.attacking)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
         elif r in R.you_attack:
             # Ok suppose we one-shot a waitress; You attack the waitress and waitress died are in the same block.
             # This clause gets called last because you_attack is alphabetically later than mob_died (see mudReaderHandler's dir(RegexStore))
             # So check if the mob is in the list to reduce jank
             # (or we fixed this with ze_mob_died)
-            self.damage = []
-            mob_name = self.read_mob_name_from_regex_match(M)
-            magentaprint("Mobs.notify attacked mob {}".format(mob_name)) # Hmmm "The Floor Manager" not in [Floor Manager]
-            if mob_name in self.list: # Make sure it hasn't been killed already
-                # self.attacking.append(mob_name) # adds the mob even if it got one-shotted (it's dead(!)) (FIXED with ze_mob_died!)
-                self.attacking.append(self.get_ref_of_attacking_mob(M))
-                magentaprint("Mobs.attacking: " + str(self.attacking)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
+            self.damage = [] # This happens so rarely???
+            # mob_name = self.read_mob_name_from_regex_match(M)
+            # magentaprint("Mobs.notify attacked mob {}".format(mob_name)) # Hmmm "The Floor Manager" not in [Floor Manager]
+            # if mob_name in self.list: # Make sure it hasn't been killed already
+            #     # self.attacking.append(mob_name) # adds the mob even if it got one-shotted (it's dead(!)) (FIXED with ze_mob_died!)
+            #     self.attacking.append(self.get_ref_of_attacking_mob(M))
+            #     magentaprint("Mobs.attacking: " + str(self.attacking)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
+            # Really the caller should be doing much of this, ie, "kill" or "circle" command was successful... then you know to add the mob
+            magentaprint("Mobs.py R.you_attack... (this is on initial engage)")
+            self.add_attacker_with_match_object(M)
+            # Hooolllllyyyy I just fixed these regexes they weren't supporting __three_possible_mob_strings
+            # Now I have a re-add happening
         elif r in R.blocked_path:
             # magentaprint("Mobs got {}".format(M.group('whole_mob_name')))
             mob_name = self.read_mob_name_from_regex_match(M)
@@ -376,6 +390,33 @@ class Mobs(MobRegexReader):
         # Also jank was... remove before add
         # So the fix is to check if it’s (still) in the list before adding to attacking (in you_attack)
 
+    def add_attacker_with_match_object(self, M):
+        mob_name = self.read_mob_name_from_regex_match(M)
+        if mob_name not in self.list:
+            magentaprint("Mobs got an attack from a mob not in list, weird!")
+            self.list.add(mob_name)
+        attacking_mob_ref = self.get_ref_of_attacking_mob(M)
+        attacking_mob_index = self.list.index(attacking_mob_ref)
+        # Check if it's already in .attacking
+        if not any([self.list.index(a) == attacking_mob_index for a in self.attacking]):
+            # (If not already in attacking list)
+            # ^ Catches duplicate if the references in attacking list use a different "word" from what we made up from the server string (unlikely)
+            self.attacking.append(attacking_mob_ref)
+            # self.attacking.sort()
+            magentaprint("Mobs.attacking: " + str(self.attacking)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
+
+    def add_attacker_with_ref(self, attacking_mob_ref):
+        # Assume it's in the list in this case
+        attacking_mob_index = self.list.index(attacking_mob_ref)
+        if attacking_mob_index == None:
+            magentaprint("Couldn't add attacker from ref!")
+        # Check if it's already in .attacking
+        if not any([self.list.index(a) == attacking_mob_index for a in self.attacking]):
+            # (If not already in attacking list)
+            # ^ Catches duplicate if the references in attacking list use a different "word" from what we made up from the server string (unlikely)
+            self.attacking.append(attacking_mob_ref)
+            # self.attacking.sort()
+            magentaprint("Mobs.attacking: " + str(self.attacking)) # 1st list is referencing list, 2nd list is the ReferencingList's python list
 
     # Todo: Why are these part Mobs? Shouldn'they be misc functions?
     def mean(self, a):
@@ -394,6 +435,10 @@ class Mobs(MobRegexReader):
     def get_ref_of_attacking_mob(self, M, hypothetical_list=None):
         # Get mob name from server text (M)
         mob_text = self.read_mob_name_from_regex_match(M) # Mob text ie. "Floor Manager" (no "The"), "stall holder", "Annette Plover" 
+
+        if not mob_text:
+            magentaprint("Warning: get_ref_of_attacking_mob couldn't get mob_text from M: " + str(M))
+            return ""
 
         # Get the number from the server text, ie. _2nd_ stall holder
         if M.group('n'):

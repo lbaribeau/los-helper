@@ -39,16 +39,18 @@ class TelnetHandler(object):
             self.my_socket.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
             return self.my_socket
 
-    def read_some(self):
-        try:
+    def read_text(self):
+        # try:
             # return self.tn.read_some()  # read_eager() would miss characters
-            return self.tn.read_very_eager()  # This seems faster and also helps the tricky equipment parsing
+        # return self.tn.read_very_eager()  # This seems faster and also helps the tricky equipment parsing
+        # return self.tn.read_very_eager().decode('ascii', errors='ignore') 
+        return self.tn.read_very_eager().decode('ascii')
             # return self.tn.read_some() 
             # return self.tn.read_eager() 
-        except socket.error as e:
-            magentaprint("TelnetHandler read_X() error: " + str(e))
-            # Server shutdown is errno 104
-            return ''
+        # except socket.error as e:
+        #     magentaprint("TelnetHandler read_X() error: " + str(e))
+        #     # Server shutdown is errno 104
+        #     return '' # This "string" doesn't have "decode" on it so we just get a confusing error from MudListener
 
     def write(self, command):
         self.set_timer()

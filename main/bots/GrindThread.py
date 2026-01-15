@@ -1,6 +1,6 @@
 
 print("... ... ... GrindThread import re"); import re
-print("... ... ... GrindThread import re"); # import pdb
+# print("... ... ... GrindThread import re"); # import pdb
 print("... ... ... GrindThread import floor, ceil"); from math import floor, ceil
 
 print("... ... ... GrindThread import BotThread"); from bots.BotThread           import BotThread
@@ -676,6 +676,7 @@ class GrindThread(BotThread):
             self.command_handler.process('drink milky')
         elif self.inventory.has("steel bottle"):
             self.command_handler.process('drink steel')
+            # Note: green potion casts protect as well, can be bought
         else:
             self.character.HAS_BUFF_ITEMS = False
 
@@ -1105,6 +1106,13 @@ class GrindThread(BotThread):
         else:
             magentaprint("GrindThread engage_monster get_first_reference({0})".format(monster))
             new_target = C.mobs.list.get_first_reference(monster)
+            if new_target == None:
+                # ie. we start the bot but mobs.attacking has something in it from another area
+                return None
+            # if new_target[0] in ["gnoll", "bandit", 'kobold', 'spider', 'knight', 'hooker', 'miner'] and len(monster.split(' ')>1):
+            # if new_target[0] in ["gnoll", "bandit", 'kobold', 'spider', 'knight', 'hooker', 'miner', 'goblin', 'ranch']:
+            if any([new_target.split(' ')[0].startswith(x) or x.startswith(new_target.split(' ')[0]) for x  in ["gnoll", "bandit", 'kobold', 'spider', 'knight', 'hooker', 'miner', 'goblin', 'ranch', 'small', 'barbarian']]):
+                new_target = C.mobs.list.get_first_reference(monster, first_or_second_word=2) # Use 2nd word if possible ('bandit' is interesting case)
 
         # So... suppose someone (Qerp) runs by and kills the nobleman we have chased
         # Ok, fixed that up a level
@@ -1143,6 +1151,8 @@ class GrindThread(BotThread):
         # Ok it might not BE in the list (we chase, we call engage monster on the target we assume is there...)
         # Here is a good place to check smartCombat.fleeing... smartCombat.escape is blocking call with a bit of a sleep
         # Ok this really is the place to add some smarts
+
+        # Ehrm why would this not start combat hmmm
 
         if SC.fleeing:
             # Ok maybe I shouldn't use that variable but whatev
@@ -1290,13 +1300,15 @@ class GrindThread(BotThread):
             # (attack, cast 1.0 seconds later, it dies, then wait for cast ready 3.6 s, then go and get blocked)
             # So what if we dont' remove from mobs attacking... we might get missed attacks I guess? (start attacking at ghosts?)
             # Maybe 'Go" needs to take better control of this... ala TRYING_TO_MOVE
-            magentaprint("Grindthread: Is something wrong with the attacking list??")
+            magentaprint("Grindthread: Is something wrong with the attacking list?? Just got monster (name) is in C.mobs.attacking... doesn't look conclusive")
             # I guess we have to check somewhere (ie at the top of this function or in smart Combat) whether the target was good
 
         # if C.mobs.attacking == []:
         #     self.get_items_if_weapon()
         if not C.mobs.chase and not SC.error and not SC.fleeing:
             self.get_items_if_weapon()
+
+        return 1 # If we return None, it means there's a problem with mobs.attacking, maybe trouble finding that mob
 
     # def do_flee_hook(self):
     #     self.stop()
@@ -1349,18 +1361,53 @@ class GrindThread(BotThread):
         #     self.engage_monster(self.character.MOBS_JOINED_IN[0])
         #     self.character.MOBS_JOINED_IN = self.character.MOBS_JOINED_IN[1:]
         #     self.get_items()
-        while self.character.mobs.attacking and not self.stopping:
-            self.engage_monster(self.character.mobs.attacking[0])
+
+        # while self.character.mobs.attacking and not self.stopping:
+        #     self.engage_monster(self.character.mobs.attacking[0])
+
             # self.character.mobs.attacking = self.character.mobs.attacking[1:]
             # self.get_items_if_weapon() # Could get loot blocked
+        while self.character.mobs.attacking != [] and not self.stopping:
+            if self.character.mobs.list.has_ref(self.character.mobs.attacking[0]):
+                if self.engage_monster(self.character.mobs.attacking[0], self.character.mobs.attacking[0]) == None: 
+                    self.character.mobs.attacking.pop(0)
+            else:
+                magentaprint("GrindThread engage_mobs_who_joined_in removing a mob: {}".format(self.character.mobs.attacking[0]))
+                self.character.mobs.attacking.pop(0) # Must have been a mistake (that engage_monster would have had trouble seeing) - remove
 
     def engage_any_attacking_mobs(self):
         engaged = False
 
-        # while self.character.MOBS_ATTACKING != []:
+        # while self.character.mobs.attacking != [] and not self.stopping:
+        #     if self.character.mobs.list.has(self.character.mobs.attacking[0]):
+        #         engaged = True
+        #         # try_ref = self.character.mobs.list.index(self.character.mobs.attacking[0])
+        #         # if try_ref != None:
+        #         self.engage_monster(self.character.mobs.attacking[0]) 
+        #     else:
+        #        self.character.mobs.attacking.remove(self.character.mobs.attacking[0])
+        #     # Engage monster doesn't know we are doing this because it's in .attacking so it won't know if there's a problem with attacking list
+        # # Maybe don't try to modify the list while looping over it?
+        # for m in self.character.mobs.attacking:
+        #     if self.character.mobs.list.has(m) and not self.stopping:
+        #         engaged = True
+        #         self.engage_monster(self.character.mobs.attacking[0]) 
+                # No that's bad because these are references...
+
         while self.character.mobs.attacking != [] and not self.stopping:
-            engaged = True
-            self.engage_monster(self.character.mobs.attacking[0])
+            if self.character.mobs.list.has_ref(self.character.mobs.attacking[0]):
+                engaged = True
+                if self.engage_monster(self.character.mobs.attacking[0], self.character.mobs.attacking[0]) == None: 
+                    # The call could/should modify current list
+                    # But if it returned None we'd better make sure mobs attacking gets reduced (avoid infinite loop)
+                    self.character.mobs.attacking.pop(0)
+            else:
+                magentaprint("GrindThread engage_any_attacking_mobs removing a mob: {}".format(self.character.mobs.attacking[0]))
+                self.character.mobs.attacking.pop(0) # Must have been a mistake (that engage_monster would have had trouble seeing) - remove
+        # Ok yes we are looping and modifying a list but it should work
+        # It's not a for each loop where things could get skipped
+
+
 
         # if engaged:
         #     self.get_items_if_weapon()

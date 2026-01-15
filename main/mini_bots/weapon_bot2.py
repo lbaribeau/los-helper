@@ -113,8 +113,6 @@ class MainhandWeaponBot(MiniBot):
         self.stopping = False
         self.check_weapons()
 
-    def has_weapon_wielded(self):
-        return hasattr(self, 'weapon')
     # def needs_weapon(self):
     #     #return not self.has_weapon()
     #     return not (self.has_weapon() and self.has_weapon_in_inventory())
@@ -162,6 +160,8 @@ class MainhandWeaponBot(MiniBot):
     def needs_smithy(self):
         return self.has_broken_weapon_in_inventory() and not self.has_unbroken_weapon_in_inventory()
 
+    def has_weapon_wielded(self):
+        return self.wielding()
     def wielding(self):
         return hasattr(self, 'weapon')
 
@@ -395,12 +395,12 @@ class MainhandWeaponBot(MiniBot):
             # What if we passed the baton to the smartCombat run
             # Since it'd be nice to get feedback on this rewield
             # Not sure what happened to is_usable
-
         else:
             # Try weapon bot 1?
             # Try one of the functions below from weapon bot 1?
             if not self.try_exact_replacement_from_inventory():
                 self.try_other_possible_weapons_in_inventory()
+            # Yeah this breaks... (need that backup weapon at all times...)
 
     def stop(self):
         super().stop() # sets self.stopping
@@ -547,10 +547,14 @@ class MainhandWeaponBot(MiniBot):
         # self.temporary_weapon = True  # Ensure that we have a backup
 
     def try_exact_replacement_from_inventory(self):
-        wielded_weapon = self.try_weapon_list_from_inventory(self.broken_weapon)
-        if wielded_weapon:
-            self.broken_weapon.remove(wielded_weapon)
-            return wielded_weapon
+        # previous weapon bot didn't need this check, it would have .broken_weapon
+        if hasattr(self, "broken_weapon"):
+            wielded_weapon = self.try_weapon_list_from_inventory(self.broken_weapon)
+            if wielded_weapon:
+                self.broken_weapon.remove(wielded_weapon)
+                return wielded_weapon
+        else:
+            return False
 
     def try_default_replacement_from_inventory(self):
         magentaprint('try_default_replacement_from_inventory')

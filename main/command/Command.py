@@ -40,7 +40,8 @@ class SimpleCommand(BotReactionWithFlag):
     def execute(self, target=None):
         # Same as send() but gets called from instance
         # (send() doesn't need an instance but needs telnetHandler put in)
-        self.clear() # Sets up the waiter flag for waiting
+        self.clear() # Sets up the waiter flag for waiting 
+        # Did I just break something? Maybe I fixed something
         self.send(self.telnetHandler, target)
         # self.wait_for_flag()  # Just expect caller to call wait.
 
@@ -323,6 +324,9 @@ class Command(SimpleCommand):
         self._executing = True
         self._sent_target = target # Some cases want to know what the target was when the regex comes back (remove from inventory)
         super().execute(target)  # sets the waiter flag and calls send
+
+    # def execute_no_wait(self, target=None):
+        
 
     def execute_and_wait(self, target=None):
         super().execute_and_wait(target)

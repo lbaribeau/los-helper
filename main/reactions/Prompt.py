@@ -51,5 +51,5 @@ class Prompt(threading.Event):
     def wait(self):
         magentaprint("Prompt.wait called (wait for prompt)")
         # return super().wait(*args, **kwargs)
-        return super().wait()
+        return super().wait() # Ok super doesn't "clear" the flag which we want to do manually
 

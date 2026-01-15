@@ -1,17 +1,17 @@
 
-import threading
-from threading import Thread
-import atexit
-import time
-import re
+print("... ... ... ... BotThread from misc_functions import *"); from misc_functions import *
 
-from misc_functions import *
-from Exceptions import *
-from db.Database import *
-from db.MudMap import MudMap
+magentaprint("... ... ... ... BotThread import threading"); import threading
+# from threading import Thread
+magentaprint("... ... ... ... BotThread import atexit"); import atexit
+magentaprint("... ... ... ... BotThread import time"); import time
+magentaprint("... ... ... ... BotThread import re"); import re
 
-# from comm.Spells import light
-from comm import Spells
+magentaprint("... ... ... ... BotThread import Exceptions *"); from Exceptions import *
+magentaprint("... ... ... ... BotThread import db.Database"); from db.Database import *
+magentaprint("... ... ... ... BotThread import db.MudMap"); from db.MudMap import MudMap
+
+magentaprint("... ... ... ... BotThread import comm.Spells"); from comm import Spells
 
 # Refer to https://docs.python.org/3/library/threading.html
 # excepthook is available as a method from threading
@@ -23,14 +23,14 @@ class BotThread(threading.Thread):
         super().__init__(name=name) # Do this first
         self.stopping = False
 
-        self.character = character
-        self.command_handler = command_handler
+        self.character        = character
+        self.command_handler  = command_handler
         self.mudReaderHandler = mudReaderHandler
-        self.inventory = character.inventory
-        self.smartCombat = command_handler.smartCombat
-        self.kill = command_handler.smartCombat.kill
-        self.cast = command_handler.smartCombat.cast
-        self.direction_list = []
+        self.inventory        = character.inventory
+        self.smartCombat      = command_handler.smartCombat
+        self.kill             = command_handler.smartCombat.kill
+        self.cast             = command_handler.smartCombat.cast
+        self.direction_list   = []
 
         self.character.ACTIVELY_BOTTING = False
 
@@ -97,11 +97,11 @@ class BotThread(threading.Thread):
                     elif self.command_handler.go.timed_out:
                         self.do_on_go_timeout()
                     # elif self.character.GO_NO_EXIT:
-                    elif self.command_handler.go.no_exit:
+                    elif self.command_handler.go.result_no_exit:
                         self.no_exit_count += 1
                         self.do_on_go_no_exit()
                         continue
-                    elif self.command_handler.go.go_where:
+                    elif self.command_handler.go.result_go_where:
                         magentaprint("BotThread: Ok go command is really confused (no target)")
                     else:
                         pass
@@ -254,6 +254,7 @@ class BotThread(threading.Thread):
         self.direction_list.pop(0)
         # self.character.MOBS_JOINED_IN = []
         # self.character.MOBS_ATTACKING = []
+        # Just let mobs.list get overwritten, don't set it to []
         self.no_exit_count = 0
         if self.command_handler.go.too_dark:
             # "It's too dark to see"
@@ -339,12 +340,15 @@ class BotThread(threading.Thread):
         self.command_handler.go.wait_for_flag() # You gotta unset the flag though
         # Now we have to check our area ids to know, right? Presumably, we shouldn't have repeated? Presumably, we are already too late (go no exit)
         # We need to catch it when it times out
+        # Well we "popped" direction list...
+        # I've seen this case.. when area wasn't matching at all... so popping is good thing to try... area should match though
 
     def do_post_go_actions(self):
         return
 
     def do_after_directions_travelled(self):
         #after the direction list is empty do these things (Looking at you Goto Thread)
+        self.character.mobs.damage=[]
         return
 
     '''General helper functions for starting cast threads or managing inventory could be included here to assist the child classes

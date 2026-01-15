@@ -304,6 +304,12 @@ class Bash(SlowCombatAbility):
     # classes = ["Bar", "Fig"]
     level = 1
 
+    def notify(self, r, m):
+        super().notify(r, m)
+        if r in RegexStore.circle_fail:
+            Kill.timer = Kill.timer + 1
+            # Bit of a race condition... are we setting our flag (super.notify) too early... but we also need the Kill.timer code to go
+
 class Circle(SlowCombatAbility):
     command = "ci"
     cooldown_after_success = 3
@@ -318,6 +324,7 @@ class Circle(SlowCombatAbility):
         super().notify(r, m)
         if r in RegexStore.circle_fail:
             Kill.timer = Kill.timer + 1
+            # Bit of a race condition... are we setting our flag (super.notify) too early... but we also need the Kill.timer code to go
 
 # class Hide(object):
 # class Backstab(object):

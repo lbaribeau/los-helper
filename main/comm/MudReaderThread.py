@@ -12,8 +12,9 @@ class MudReaderThread(threading.Thread):
     """This thread watches the the MUD output and appends it
     to the buffer for the MudReaderThread to read it."""
 
-    def __init__(self, MUDBuffer, character, consoleHander):
+    def __init__(self, MUDBuffer, character, consoleHander, mudListenerThread):
         super().__init__(name='MudReader')
+        self.MLT = mudListenerThread
         # Constants
         self.ASCII_EOT = 4
         self.ASCII_ESC = 27
@@ -105,10 +106,16 @@ class MudReaderThread(threading.Thread):
             # Can I get away with a wait() here? Maybe?
             # self.MUDBuffer.wait(5) # This just waits if MudListerThread needs it? No, it waits for MUD text... and only if you set .clear() first
 
+            # Yeah I want a wait here for sure
+            # We might spin busy if ... we don't wait
+            # However I think this if becomes true
+            # So I think we do wait for sure
+
             if self.__left_off_index == len(self.MUDBuffer.buffer) and self.MUDBuffer.is_set():
                 # magentaprint("MRT notifying buffer done...")
                 self.notify_subscribers_of_buffer_completion()
                 # magentaprint("MRT waiting for more text!")
+                self.MLT.regex_busy.set()
                 self.MUDBuffer.clear()
                 if not self.MUDBuffer.wait(8):
                     magentaprint("MRT wait 1 timed out!")
@@ -410,6 +417,16 @@ class MudReaderThread(threading.Thread):
             # M_obj = re.search("Goodbye! Come back soon\.", text_buffer)
             # if M_obj:
 
+            # M_obj = re.search("Timed out\.", text_buffer)
+            # new_trunc = 0
+            # temp_buf = text_buffer[:] # copy
+            # if M_obj:
+            #     new_trunc = new_trunc + M_obj.end()
+            #     text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+            #     temp_buf = temp_buf[new_trunc:]
+            #     self.stop()
+            #     MUDBuffer.set()
+
             ##### DONE MATCHING RE's  WOOOOOOOO ######
             # self.notify_subscribers_of_buffer_completion()
 
@@ -423,6 +440,21 @@ class MudReaderThread(threading.Thread):
 
             #magentaprint("MudReader loop times: incl wait: %f; iteration time: %f" % 
             #             (time.time()-time_loop_start, time.time()-time_loop_after_waiting))
+
+            # We still have JANK btw
+            # We should 
+            # - run matching on all the text but not notifies
+            # - then reorder the notifies according to which text came first
+            # - then run notifies
+            # Example:
+            # "The 1st acolyte just wandered to the south.
+            # The acolyte throws a wild punch at you, but it misses."
+            # I was using Mob Attack Waiter to get a reference on a chase
+            # The reference ended up being '''
+            # We had the punch get notifies before the acolyte wandered away
+            # Bot was ok but left loose end...
+            # Could we read less eager??
+
         # end loop
         magentaprint("MudReaderThread finished run()!")
     # end run  (congrats!)

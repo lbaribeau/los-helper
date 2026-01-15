@@ -107,7 +107,7 @@ class CommandHandler(object):
         self.character.info = self.info
         self.set_up_character_info()
 
-        self.smartCombat = SmartCombat(self.kill,self.cast,self.potion_thread_handler,self.wield,self.telnetHandler,self.character,self.weapon_bot,self.prompt, self.info, self.mudReaderHandler.mudReaderThread.mud_reader_completion_event) 
+        self.smartCombat = SmartCombat(self.kill,self.cast,self.potion_thread_handler,self.wield,self.telnetHandler,self.character,self.weapon_bot,self.prompt, self.info, self.mudReaderHandler.mudReaderThread.mud_reader_completion_event, self.mudReaderHandler.mudReaderThread.MLT.regex_busy) 
         mudReaderHandler.add_subscriber(self.smartCombat)
 
         self.go = Go(self.kill, self.cast, telnetHandler, character)
@@ -562,7 +562,8 @@ class CommandHandler(object):
         elif user_input == "items":
             for i in self.inventory.list:
                 magentaprint(i)
-        elif user_input == 'possible_weapons':
+        elif user_input in ['possible_weapons', 'get_possible_weapons']:
+            magentaprint(self.weapon_bot.get_possible_weapons())
             magentaprint("self.weapon_bot.possible_weapons currently is: " + str(self.weapon_bot.possible_weapons) + ", running query...")
             magentaprint([asi.item.name for asi in AreaStoreItem.get_by_item_type_and_level_max(
                 'weapon', 
@@ -570,8 +571,6 @@ class CommandHandler(object):
                 self.character.info.weapon_level
             )]) 
             magentaprint([p.item.name for p in self.weapon_bot.get_possible_weapons()])
-        elif user_input == 'get_possible_weapons':
-            magentaprint(self.weapon_bot.get_possible_weapons())
         elif user_input == "check_weapons":
             self.weapon_bot.check_weapons()
         elif user_input == 'Berserking':
@@ -595,6 +594,8 @@ class CommandHandler(object):
             magentaprint("Test_info done... (Thrust is "+str(self.character.info.thrust)+ "!)")
         elif user_input.startswith('exec '):
             exec(user_input.partition(' ')[2]) # General purpose, for example, try, "exec self.weapon_bot.possible_weapons"
+        elif user_input.startswith('count_weapons_in_inventory'):
+            magentaprint(self.weapon_bot.count_weapons_in_inventory())
         # Note: see self.actions before adding more cases (just associate a command with a function pointer)
         else:
             # Doesn't match any command we are looking for, send it to server
@@ -1083,10 +1084,10 @@ class CommandHandler(object):
         gold_gained = self.character.GOLD-self.character.START_GOLD
         magentaprint("Start time:        " + str(misc_functions.startTime))
         magentaprint("Uptime:            " + misc_functions.get_runtime_string())
-        magentaprint("Start gold:        " + str(self.character.START_GOLD))
         magentaprint("Exp this session:  " + str(x))
-        magentaprint("Current gold:      " + str(self.character.GOLD))
         magentaprint("Gold this session: {} ".format(gold_gained))
+        # magentaprint("Start gold:        " + str(self.character.START_GOLD))
+        magentaprint("Current gold:      " + str(self.character.GOLD))
         magentaprint("Exp rate:          {} /hr".format(round(x/t*3600)))
         # magentaprint("Exp rate:          {} /min".format(round(round(x/t*60))))
         # g = self.character.GOLD # Ok this is all the current gold, so it won't give us gold rate

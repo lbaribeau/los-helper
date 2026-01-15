@@ -15,7 +15,8 @@ sold              = [r"The shopkeep gives you (\d+) gold for " + __item + r'\.']
 you_drop          = [r"You drop " + __items + r"\."]
 disintegrates     = [r"(?:A|Some) " + __item + r" disintegrates\."]
 gold_from_tip     = [r"You have (\d+) gold\."]
-not_a_pawn_shop   = [r"^This is not a pawn shoppe\."]
+# not_a_pawn_shop   = [r"^This is not a pawn shoppe\."]
+not_a_pawn_shop   = [r"This is not a pawn shoppe\."] # Get rid of ^ in case prompt comes in too ie.: "[50 H 31 M]: This is not a pawn shoppe."
 you_now_have      = [r"^You now have (\d+) gold pieces\."]
 not_empty         = [r"^It isn't empty!"]
 you_wear          = [r"You wear " + __items + r"\."]
@@ -122,6 +123,10 @@ mob_arrived = [r"(?P<mobs>[A-Z][a-z]* [a-z '-]+?) just arrived\."]  # no 1st/2nd
 # mob_joined1 = [__the_mob + "joins in the fight!"]  # A mob standing there joins
 mob_joined1 = [__three_possible_mob_strings + " joins in the fight!"]  # A mob standing there joins
 mob_joined2 = [__three_possible_mob_strings + " decides to join in on the fight!"]  # A mob wanders in and joins
+
+fighting_white_magic_caster = [__Three_possible_mob_strings + r" casts a [A-Za-z\-]+? spell on h(?:er)|(?:im)self\."]
+fighting_black_magic_caster = [__Three_possible_mob_strings + r" casts a [A-Za-z\-]+? spell on you for (?P<d>\d+) damage\."]
+
 mob_attacked = [  # TODO: do any mobs wield weapons? (different text)
     # "The" + s_numbered + " (.+?) punches you for (.+?) damage\.",
     __Three_possible_mob_strings + r" punches you for (?P<d>\d+) damage\.",
@@ -141,7 +146,7 @@ mob_attacked = [  # TODO: do any mobs wield weapons? (different text)
     __Three_possible_mob_strings + r" kicks you for (?P<d>\d+) damage\.",
     __Three_possible_mob_strings + r" kicks at you, but fails to connect\.",
     __Three_possible_mob_strings + r" charges at you and butts for (?P<d>\d+) damage\.",  # TODO - missing no dmg version of this one
-    __Three_possible_mob_strings + r" casts a [A-Za-z\-]+ spell on you for (?P<d>\d+) damage\."
+    fighting_black_magic_caster[0]
 ] 
 # mob_died = ["Your attack overwhelms (?:the " + __numbers_opt + ")?(?P<mob>.+?) and (s?he|it) collapses!"]
 ze_mob_died = [r"Your attack overwhelms " + __three_possible_mob_strings + " and (?:s?he|it) collapses!"]
@@ -158,7 +163,7 @@ you_died = [r"You are overwhelmed by " + __three_possible_mob_strings + r"'s att
 loot_blocked = [__Three_possible_mob_strings + r" won't let you take anything\."]
 nothing_here = [r"There's nothing here\."]
 
-is_attacking_you = [__Three_possible_mob_strings + r" is attacking you\."] # This one happens when you arrive into a room
+# is_attacking_you = [__Three_possible_mob_strings + r" is attacking you\."] # This one happens when you arrive into a room
 
 # Go and Cartography
 # Recall (?s:___) means "DOTALL", so dot matches newlines, (normally it's everything except newlines) (ie. \n is a newline, \r is a carriage return, which is matched either way)
@@ -206,14 +211,20 @@ is_attacking_you = [__Three_possible_mob_strings + r" is attacking you\."] # Thi
 # area = [r"\n\r\n\r([A-Z][\S ]+?)\n\r([\s\S]+?)\n\r(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?\n\r"] # Ehrm the sign shows up as an item
 area = [r"\n\r\n\r([A-Z][\S ]+?)\n\r([\s\S]+?)\n\r(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?\n\r"] # So just have mobs list and item list
 area = [r"\n\r([A-Z][\S ]+?)\n\r([\s\S]+?)\n\r(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?\n\r"] # Limbo works with one less newline on top... group 2 has a newline thoughk
-area = [r"\n\r([A-Z][\S ]+?)\n\r\n\r([\s\S]+?)\n\r(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?\n\r"]
+area = [r"\n\r([A-Z][\S ]+?)\n\r\n\r([\s\S]+?)\n\r(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?\n\r"]
+area = [r"\n\r([A-Z][\S ]+?)\n\r\n\r([\s\S]+?)\n\r(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?("+__Three_possible_mob_strings+" is attacking you\.)?\n\r"]
+# area = [r"\n\r([A-Z][\S ]+?)\n\r\n\r([\s\S]+?)\n\r(Obvious exits: [^.]+?\.\n\r)(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?(You see [^.]+?\.\n\r)?("+__Three_possible_mob_strings+" is attacking you\.)|(\n\r)"]
+    # Added one "You see " for other players
+    # Try an "or" at the end when we start talking about mobs attacking you... nevermind that any number of mobs can be attacking
+    # Ehrm who knows how that works... oy... thought I'd need to "end" it with an "or"
+
 # This works because of the newline at the end
 # If there are no mobs or items, you have two newlines in a row after the exits.
 # If there are mobs or items, they have to fit in before that last newline
 # They are optional with the question but are forced to match if the server put that text there because then there won't be two newlines ('\n\r's) in a row so the ? is forced true if/when appropriate
 # (item list looks like a mob list if there are no mobs)
 
-obvious_exits         = [r"(?s)Obvious exits: ([A-Za-z\s,]+)\.\n\r"]
+# obvious_exits         = [r"(?s)Obvious exits: ([A-Za-z\s,]+)\.\n\r"] # This could "eat" the area regex in case of partial text
 go_where              = [r"Go where\?"]
 cant_go               = [r"You can't go that way\."]
 # blocked_path        = ["(?:The " + __numbers2 + ")?(.+?) blocks your exit\."]  # Make the The optional is hard
@@ -245,7 +256,14 @@ too_dark = [r"It's too dark to see\."]
 # the = "?(?:The |the )?" #named mobs have no "The/the"
 #you_see_mob = ["You see (?:[Tt]he )?" + __numbers2 + "(.+?)\.\n\r(.+?)\n\r(.+?)\n\r(.+?(?:\.|!))"]  
 # Not to be confused with "You see a flock of birds take off to the north of you." ideally
+
 you_see_mob = ["Obvious exits: (?:.+?)\.\n\rYou see (?:[Tt]he )?" + __numbers2 + "(.+?)\.\n\r(.+?)\n\r(.+?)\n\r(.+?(?:\.|!))"]  
+# (Does that get used??? maybe don't interfere with area regex (MRT drops text that has been matched)
+# Hmmm yes it does
+# This is messed up
+# Ideally should be a look command implemented for looking at a mob
+# I guess I could leave it in... worried it's eating text though
+
 # So that will match less, I think it's correct, it could be confused with players or items if items are alone.
 # mob_aura = ["(?:The " + __numbers2 + ")?(.+?) glows with a (.+?) aura\."]
 __aura = r"(?P<aura>[A-Za-z ]+)"
@@ -306,7 +324,8 @@ wither                  = [r"You withered " + __three_possible_mob_strings  + r"
 # wither_fail             = [r"Your withering touch did not hurt " + __the_mob + r"\."]
 wither_fail             = [r"Your withering touch did not hurt " + __three_possible_mob_strings + r"\."]
 wither_whom             = [r"Wither whom\?"]
-bash                    = [r"You bash the (.+?), confusing them\."]
+# bash                    = [r"You bash the (.+?), confusing them\."]
+bash                    = [r"You bash " + __three_possible_mob_strings + r", confusing them\."]
 bash_fail               = [r"You failed to bash it\."]
 bash_whom               = [r"Bash whom\?"]
 circle                  = [r"You circle the (.+?)\."]
@@ -315,8 +334,8 @@ circle_whom             = [r"Circle whom\?"]
 
 # Kill command
 bad_k_target = [
-    r"You don't see that here\.",
-    r"Attack what\?"
+    r"You don't see that here\.", # Isn't this cast? No this is bad target
+    r"Attack what\?" # This is empty target ("")")
 ]
 crit = [
     "You knock the wind out of " + __three_possible_mob_strings + '!!',
@@ -326,60 +345,117 @@ crit = [
 magic_crit = [
     "Your wind magic buffets " + __three_possible_mob_strings + "\."
 ]
+# attack_hit = [
+#     "(?s)You swing with your .+?, hacking (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\.",
+#     "(?s)You slice (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+)\s+damage\s+with\s+your\s+.+?\.",
+#     "You slash at (?:the )?(" + __numbers + " )?(.+?) and hit for (?P<d>\d+) damage\.",
+
+#     "You chop at (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+#     "(?s)You stab (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+causing\s+(?P<d>\d+)\s+damage",
+#     "You lunge at (?:the )?(" + __numbers + " )?(.+?), striking for (?P<d>\d+) damage\.",
+
+#     "You lash out and thump (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+#     "You punch (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+#     "You kick (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+#     "You head-butt (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+#     "You grab (?:the )?(" + __numbers + " )?(.+?) and gouge (him|her|it) for (?P<d>\d+)\s+damage\.",
+
+#     "(?s)You smash your .+? into (?:the )?(" + __numbers + " )?(.+?),\s+causing\s+(?P<d>\d+)\s+damage\.",
+#     "You heave your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+smashing\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
+#     "You bludgeon (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+
+#     "You lunge at (?:the )?(" + __numbers + " )?(.+?), hitting them for (?P<d>\d+) damage\.",
+#     "You swing your .+?, striking for (?P<d>\d+) damage\.",
+#     "(?s)You sweep (?:the )?(" + __numbers + " )?(.+?) with your .+?\s+for\s+(?P<d>\d+)\s+damage\.",
+
+#     "Your missile slams into (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+#     "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
+#     "You use your .+? to strike (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\."
+# ]
 attack_hit = [
-    "(?s)You swing with your .+?, hacking (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\.",
-    "(?s)You slice (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+)\s+damage\s+with\s+your\s+.+?\.",
-    "You slash at (?:the )?(" + __numbers + " )?(.+?) and hit for (?P<d>\d+) damage\.",
+    "(?s)You swing with your .+?,\s+hacking\s+ " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
+    "(?s)You slice " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\s+with\s+your\s+.+?\.",
+    "(?s)You slash at " + __three_possible_mob_strings + "\s+and\s+hit\s+for\s+(?P<d>\d+)\s+damage\.",
 
-    "You chop at (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-    "(?s)You stab (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+causing\s+(?P<d>\d+)\s+damage",
-    "You lunge at (?:the )?(" + __numbers + " )?(.+?), striking for (?P<d>\d+) damage\.",
+    "(?s)You chop at " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
+    "(?s)You stab " + __three_possible_mob_strings + " with\s+your\s+.+?,\s+causing\s+(?P<d>\d+)\s+damage",
+    "(?s)You lunge at " + __three_possible_mob_strings + ",\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
 
-    "You lash out and thump (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-    "You punch (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-    "You kick (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-    "You head-butt (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-    "You grab (?:the )?(" + __numbers + " )?(.+?) and gouge (him|her|it) for (?P<d>\d+)\s+damage\.",
+    "(?s)You lash out and thump " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
+    "(?s)You punch " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
+    "(?s)You kick " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
+    "(?s)You head-butt " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
+    "(?s)You grab " + __three_possible_mob_strings + "\s+and\s+gouge\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
 
-    "(?s)You smash your .+? into (?:the )?(" + __numbers + " )?(.+?),\s+causing\s+(?P<d>\d+)\s+damage\.",
-    "You heave your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+smashing\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
-    "You bludgeon (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
+    "(?s)You smash your .+? into " + __three_possible_mob_strings + ",\s+causing\s+(?P<d>\d+)\s+damage\.",
+    "(?s)You heave your .+? at " + __three_possible_mob_strings + ",\s+smashing\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
+    "(?s)You bludgeon " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
 
-    "You lunge at (?:the )?(" + __numbers + " )?(.+?), hitting them for (?P<d>\d+) damage\.",
-    "You swing your .+?, striking for (?P<d>\d+) damage\.",
-    "(?s)You sweep (?:the )?(" + __numbers + " )?(.+?) with your .+?\s+for\s+(?P<d>\d+)\s+damage\.",
+    "(?s)You lunge at " + __three_possible_mob_strings + ",\s+hitting\s+them\s+for\s+(?P<d>\d+)\s+damage\.",
+    # "(?s)You swing your .+? at " + __three_possible_mob_strings + ", striking for (?P<d>\d+) damage\.", # Is this correct??
+    "(?s)You swing your .+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.", # Check this one... won't time out but using the wildcard here
+    "(?s)You sweep " + __three_possible_mob_strings + "\s+with\s+your\s+.+?\s+for\s+(?P<d>\d+)\s+damage\.",
 
-    "Your missile slams into (?:the )?(" + __numbers + " )?(.+?) for (?P<d>\d+) damage\.",
-    "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
-    "You use your .+? to strike (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\."
+    "(?s)Your missile slams into " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
+    "(?s)You attack " + __three_possible_mob_strings + "\s+with\s+your\s+.+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
+    "(?s)You use your .+? to strike " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\."
 ]
+# attack_miss = [
+#     "You hack with your .+?, but your blow swings wide of the mark\.",
+#     "You slice your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+but\s+miss\.",
+#     "You slash at (?:the )?(" + __numbers + " )?(.+?), but miss\.",
+
+#     "You chop at (?:the )?(" + __numbers + " )?(.+?) but fail to hit them\.",
+#     "(?s)You try to stab (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
+#     "You lunge wildly at (?:the )?(" + __numbers + " )?(.+?) but mistime\s+the\s+strike\.",
+
+#     "You lash out at (?:the )?(" + __numbers + " )?(.+?), but miss\.",
+#     "You swing a wild punch at (?:the )?(" + __numbers + " )?(.+?), but it misses\.",
+#     "You kick at (?:the )?(" + __numbers + " )?(.+?), but fail to hurt them\.",
+#     "You grab at (?:the )?(" + __numbers + " )?(.+?), but (s?he|it) escapes your grasp\.",
+#     "You try to gouge (?:the )?(" + __numbers + " )?(.+?), but can't get a good grip\.",
+
+#     "(?s)You swing your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+but\s+miss\.",
+#     "You heave your .+? in a wide arc, but fail to\s+hit\s+anything\.",
+#     "You try to bludgeon (?:the )?(" + __numbers + " )?(.+?), but miss\.",
+
+#     "You lunge at (?:the )?(" + __numbers + " )?(.+?), but you miss\.",
+#     "Your .+? swings, but fails to connect\.",
+#     "(?s)You sweep at (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
+
+#     "Your missile arcs towards (?:the )?(" + __numbers + " )?(.+?), but fails\s+to\s+hit\s+them\.",
+#     "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
+#     "(?s)You use your .+?, but nothing hits (?:the )?(" + __numbers + " )?(.+?)\.",
+#     "Your blow did no damage\." # Should be a hit for 0
+# ]
+
 attack_miss = [
-    "You hack with your .+?, but your blow swings wide of the mark\.",
-    "You slice your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+but\s+miss\.",
-    "You slash at (?:the )?(" + __numbers + " )?(.+?), but miss\.",
+    "(?s)You hack with your .+?,\s+but\s+your\s+blow\s+swings\s+wide\s+of\s+the\s+mark\.",
+    "(?s)You slice your .+? at " + __three_possible_mob_strings + ",\s+but\s+miss\.",
+    "(?s)You slash at " + __three_possible_mob_strings + ",\s+but\s+miss\.",
 
-    "You chop at (?:the )?(" + __numbers + " )?(.+?) but fail to hit them\.",
-    "(?s)You try to stab (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
-    "You lunge wildly at (?:the )?(" + __numbers + " )?(.+?) but mistime\s+the\s+strike\.",
+    "(?s)You chop at " + __three_possible_mob_strings + "\s+but\s+fail\s+to\s+hit\s+them\.", # comma?
+    "(?s)You try to stab " + __three_possible_mob_strings + "\s+with\s+your\s+.+?,\s+but\s+miss\.",
+    "(?s)You lunge wildly at " + __three_possible_mob_strings + "\s+but\s+mistime\s+the\s+strike\.",
 
-    "You lash out at (?:the )?(" + __numbers + " )?(.+?), but miss\.",
-    "You swing a wild punch at (?:the )?(" + __numbers + " )?(.+?), but it misses\.",
-    "You kick at (?:the )?(" + __numbers + " )?(.+?), but fail to hurt them\.",
-    "You grab at (?:the )?(" + __numbers + " )?(.+?), but (s?he|it) escapes your grasp\.",
-    "You try to gouge (?:the )?(" + __numbers + " )?(.+?), but can't get a good grip\.",
+    "(?s)You lash out at " + __three_possible_mob_strings + ",\s+but miss\.",
+    "(?s)You swing a wild punch at " + __three_possible_mob_strings + ", but it misses\.",
+    "(?s)You kick at " + __three_possible_mob_strings + ", but fail to hurt them\.",
+    "(?s)You grab at " + __three_possible_mob_strings + ", but (s?he|it) escapes your grasp\.",
+    "(?s)You try to gouge " + __three_possible_mob_strings + ", but can't get a good grip\.",
 
-    "(?s)You swing your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+but\s+miss\.",
-    "You heave your .+? in a wide arc, but fail to\s+hit\s+anything\.",
-    "You try to bludgeon (?:the )?(" + __numbers + " )?(.+?), but miss\.",
+    "(?s)You swing your .+? at " + __three_possible_mob_strings + ",\s+but\s+miss\.",
+    "(?s)You heave your .+? in a wide arc, but fail to\s+hit\s+anything\.",
+    "(?s)You try to bludgeon " + __three_possible_mob_strings + ",\s+but\s+miss\.",
 
-    "You lunge at (?:the )?(" + __numbers + " )?(.+?), but you miss\.",
-    "Your .+? swings, but fails to connect\.",
-    "(?s)You sweep at (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
+    "(?s)You lunge at " + __three_possible_mob_strings + ",\s+but\s+you\s+miss\.",
+    "(?s)Your .+? swings,\s+but\s+fails\s+to\s+connect\.",
+    "(?s)You sweep at " + __three_possible_mob_strings + "\s+with\s+your\s+.+?,\s+but\s+miss\.",
 
-    "Your missile arcs towards (?:the )?(" + __numbers + " )?(.+?), but fails\s+to\s+hit\s+them\.",
-    "(?s)You attack (?:the )?(" + __numbers + " )?(.+?) with your .+?,\s+but\s+miss\.",
-    "(?s)You use your .+?, but nothing hits (?:the )?(" + __numbers + " )?(.+?)\.",
-    "Your blow did no damage\." # Should be a hit for 0
+    "(?s)Your missile arcs towards " + __three_possible_mob_strings + ",\s+but fails\s+to\s+hit\s+them\.",
+    "(?s)You attack " + __three_possible_mob_strings + "\s+with\s+your\s+.+?,\s+but\s+miss\.",
+    "(?s)You use your .+?, but nothing hits " + __three_possible_mob_strings + "\.",
+    "(?s)Your blow did no damage\." # Should be a hit for 0
 ]
 
 aura = [r"You glow with a " + __aura + " aura\."]
@@ -619,3 +695,4 @@ not_training_location = [r'This is not your training location\.']
 # "Congratulations, you made a level!"
 train_success = [r'Congratulations, you made a level\!']
 not_enough_xp = [r"You need \d+ more experience\."]
+

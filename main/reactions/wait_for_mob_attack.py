@@ -21,7 +21,7 @@ class MobAttackWaiter(threading.Event):
             R.mob_joined2,
             R.mob_attacked,
             R.mob_aggro,
-            R.is_attacking_you,
+            # R.is_attacking_you,
             R.blocked_path
         ]
         # mob_attackedis the main one

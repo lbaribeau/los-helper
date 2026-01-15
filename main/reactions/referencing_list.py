@@ -147,6 +147,9 @@ class ReferencingList(object):
         return False
         # return any(x.name == string for x in self.list)
 
+    def has_ref(self, ref):
+        return self.index(ref) != None
+
     def index(self, ref):
         """ Locates the object in self.list and gives an integer index """
         # magentaprint("RefList.index() ref: " + ref)
@@ -164,14 +167,17 @@ class ReferencingList(object):
         # for obj in sorted(list(set(self.list))):
         # magentaprint("RefList list: " + str(self.list))
         # magentaprint("RefList unique list: " + str(sorted(list(set(x.name for x in self.list)))))
-        for name in sorted(list(set(x.name for x in self.list))):
-            # magentaprint("RefList name: %s, list.count(obj): %s" % (name, str(self.list.count(name))))
-            if any(w.startswith(refw) for w in name.split(' ')):
-                if n <= self.list.count(name):
-                    # magentaprint("RefList.index returning " + str(self.list.index(name)+n-1))
-                    return self.list.index(name) + n - 1
+        for name_from_list in sorted(list(set(x.name for x in self.list))):
+            # magentaprint("RefList name_from_list: %s, list.count(obj): %s" % (name_from_list, str(self.list.count(name_from_list))))
+            if any(w.startswith(refw) for w in name_from_list.split(' ')):
+                # If any of the words of the thing in the list start with "refw", we could have a hit, if "n" is low enough
+                if n <= self.list.count(name_from_list):
+                    # magentaprint("RefList.index returning " + str(self.list.index(name_from_list)+n-1))
+                    return self.list.index(name_from_list) + n - 1 # Returns index of item given by ref
                 else:
-                    n = n - self.list.count(name)
+                    n = n - self.list.count(name_from_list) # Reduces "n" and continues
+
+        return None
 
         # for obj in self.list:
         #     if any(w.startswith(refw) for w in obj.name.split(' ')):
@@ -229,26 +235,40 @@ class ReferencingList(object):
                 if str(obj) == str(list_obj):
                     count_similar_obj = count_similar_obj + 1
 
-    def get_first_reference(self, name, first_or_second_word=1):
-        words = name.strip().split(' ')
+    def get_first_reference(self, target_name, first_or_second_word=1):
+        target_words = target_name.strip().split(' ')
         # self.inventory.sort()  # I think we can assume that proper housekeeping has been done
         # Algorithm: Use the first word in the item.  Count the items in the inventory that also 
         # use that word.  Return a word/int pair that will serve as a usable reference (ie. 'steel 6')
         i = 1
-        word = words[0] if first_or_second_word == 1 or len(words) <= 1 else words[1]
+        chosen_word = target_words[0] if first_or_second_word == 1 or len(target_words) <= 1 else target_words[1]
 
         # for obj in self.list:
-        for list_name in sorted(list(set(str(x) for x in self.list))):
-            if word in list_name.split(' '):
-                if name == list_name:
-                    ref = word if i ==1 else word + ' ' + str(i)
-                    # magentaprint("ReferencingList.get_first_reference() returning " + ref)
-                    return ref
+        # for name_from_list in sorted(list(set(str(x) for x in self.list))):
+        #     # if chosen_word in name_from_list.split(' '):
+        #     if chosen_word in name_from_list.split(' '):
+        #         if target_name == name_from_list:
+        #             ref = chosen_word if i ==1 else chosen_word + ' ' + str(i)
+        #             # magentaprint("ReferencingList.get_first_reference() returning " + ref)
+        #             return ref
+        #         else:
+        #             # i = i + len(self.inventory.dictionary[k].objs)
+        #             i = i + self.count(name_from_list)
+
+        for name_from_list in sorted(list(set(str(x) for x in self.list))):
+            # if chosen_word in name_from_list.split(' '):
+            # if any([x.startswith(chosen_word) in name_from_list.split(' '):
+            if any([x.startswith(chosen_word) for x in name_from_list.split(' ')]):
+                if target_name == name_from_list:
+                    # ref = chosen_word if i == 1 else chosen_word + ' ' + str(i)
+                    # # magentaprint("ReferencingList.get_first_reference() returning " + ref)
+                    # return ref
+                    return chosen_word if i == 1 else chosen_word + ' ' + str(i)
                 else:
                     # i = i + len(self.inventory.dictionary[k].objs)
-                    i = i + self.count(list_name)
+                    i = i + self.count(name_from_list)
 
-        # magentaprint("Caution: referencing_list.get_first_reference() returned None! " + name)
+        # magentaprint("Caution: referencing_list.get_first_reference() returned None! " + target_name)
         # magentaprint("Whole list is " + str(self.list))
         return None
         # Ehrm TODO Fix Arrum's Arrow
@@ -258,6 +278,13 @@ class ReferencingList(object):
         # repair Arrum
         # 20:23:44.42   | "repair Arrum"
         # The smithy cannot repair that.
+
+        # Ehrmm what about startswith???
+        # "You see Rancher Plover, a ranch foreman, a ranch hand".
+        # You can't just use "ranch"
+        # (Fixed I think with that "any" line")
+        # It's a tough case because... alphabetically ranch should be first!?
+        #  No Rancher's first somehow... it sorts the capital R first!! (treats it as a different letter!) (both the MUD and this code do that)
 
     def get_2nd_word_reference(self, item_name):
         return self.get_reference(item_name, 2)

@@ -144,10 +144,12 @@ class BotReactionWithFlag(threading.Event, BotReaction):
         if 'timeout' in kwargs:
             timed_out = not self.wait(**kwargs)
         else:
-            timed_out = not self.wait(timeout=6) # This gets used unlike the old class variable
+            # timed_out = not self.wait(timeout=6) # This gets used unlike the old class variable
+            timed_out = not self.wait(timeout=8) # Sometimes... area doesn't match hmmm
             # Not sure how to test this
             # Maybe at the grazing fields with the false inventory match
         if timed_out:
+            # Yeah... sometimes the server is slow... try playing on Telnet, there can be "lag"
             magentaprint("BotReactionWithFlag {0} timed out!!! Wait() returning now. Set the flag to tell waiters to stop waiting.".format(self.__class__.__name__))
             self.timed_out=True
             self.set()

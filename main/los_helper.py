@@ -76,7 +76,8 @@ class LosHelper(object):
         self.consoleHandler      = newConsoleHandler()
         self.MUDBuffer           = MyBuffer()
         self.mudListenerThread   = MudListenerThread(self.telnetHandler, self.MUDBuffer)
-        self.mudReaderThread     = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
+        # self.mudReaderThread     = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler)
+        self.mudReaderThread     = MudReaderThread(self.MUDBuffer, self.character, self.consoleHandler, self.mudListenerThread)
         self.mud_reader_handler  = MudReaderHandler(self.mudReaderThread, self.character)
         self.inventory           = Inventory(self.telnetHandler, self.character)
         self.character.inventory = self.inventory
