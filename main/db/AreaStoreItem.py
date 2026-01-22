@@ -123,6 +123,17 @@ class AreaStoreItem(BaseModel):
         print("AreaStoreItem.get_by_name() returning: " + str(item_name))
         return items
 
+    # def get_an_instance_by_name(item_name):
+    #     print("AreaStoreItem.get_an_instance_by_name() item_name: " + str(item_name))
+    #     asi = AreaStoreItem.select().join(Item).where(Item.name == item_name).get()
+    #     print("AreaStoreItem.get_an_instance_by_name() returning: " + str(item_name))
+    #     return asi
+
+    # def gold_lookup(item_name):
+    #     g = AreaStoreItem.get_an_instance_by_name(item_name).  # value is in ITEM not areastoreitem...
+    #     print("AreaStoreItem.gold_lookup({}) got {}".format(item_name, g))
+    #     return g
+
     def get_by_area(aid):
         return AreaStoreItem.select().where(AreaStoreItem.area == aid)
 

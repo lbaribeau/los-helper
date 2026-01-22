@@ -65,7 +65,8 @@ class SellBot(MiniBot):
 
     def sellable_assuming_correctness(self):
         self.keep_list=self.inventory.keep_list
-        slist = self.inventory.get_unique_references(self.keep_list)
+        slist = self.inventory.get_unique_references(exception_list=self.keep_list)
+        # slist = self.inventory.get_unique_references(exception_list=self.keep_list) # Any chance of keeping broken armour... hmmm... in case it broke on the way... to the tip... "parent" (caller) will have to do it
         slist.reverse()
         # magentaprint("Sellable items: " + str(slist)) # This is a good print that shows ie. ['the', 'sabre']
         # magentaprint("Sellable items: " + str(ReferencingList([self.inventory.get(i) for i in slist if self.inventory.get(i) is not None]))) 
@@ -73,7 +74,8 @@ class SellBot(MiniBot):
         # magentaprint("Keeping items: " + str(ReferencingList(
         #     [i for i in self.inventory.list if i in self.keep_list and i != None])))
         # get_inventory now prints all that nice stuff
-        self.sell.telnetHandler.write('')
+
+        self.sell.telnetHandler.write('') # What the heck
         # Can't make a referencing list with None, right...
         # return self.inventory.get_unique_references(self.keep_list)
         return slist

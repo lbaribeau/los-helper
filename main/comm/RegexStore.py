@@ -145,7 +145,26 @@ mob_attacked = [  # TODO: do any mobs wield weapons? (different text)
     __Three_possible_mob_strings + r" tries to bite you\.",
     __Three_possible_mob_strings + r" kicks you for (?P<d>\d+) damage\.",
     __Three_possible_mob_strings + r" kicks at you, but fails to connect\.",
-    __Three_possible_mob_strings + r" charges at you and butts for (?P<d>\d+) damage\.",  # TODO - missing no dmg version of this one
+    __Three_possible_mob_strings + r" charges at you and butts for (?P<d>\d+) damage\.",  # TODO - missing no dmg version of this one (viper?)
+    __Three_possible_mob_strings + r" wraps himself around you and crushes you for (?P<d>\d+) damage\.",
+    __Three_possible_mob_strings + r" bites you, causing (?P<d>\d+) damage\.", # (viper)
+    __Three_possible_mob_strings + r" wraps himself around you and squeezes you for (?P<d>\d+) damage\.",
+    __Three_possible_mob_strings + r" tries to wrap himself around you, but you shake him off\.",
+    __Three_possible_mob_strings + r" gouges you with her beak for (?P<d>\d+) damage\.",# Coral alley
+    __Three_possible_mob_strings + r" tries to gouge you with her beak, but fails\.", 
+    __Three_possible_mob_strings + r" rakes you with her talons for (?P<d>\d+) damage\.",
+    __Three_possible_mob_strings + r" tries to rake you with her talons, but misses\.",
+    __Three_possible_mob_strings + r" dives and claws you for (?P<d>\d+) damage\.",
+    __Three_possible_mob_strings + r" dives at you, but doesn't manage to hurt you\.",
+    __Three_possible_mob_strings + r" tries to maul you, but fails\.", # small bore worm (go burrow)
+    __Three_possible_mob_strings + r" pounces on you and mauls you for (?P<d>\d+) damage\.",
+    __Three_possible_mob_strings + r" slashes at you, but fails to catch you with (his|her|its) claws\.",
+    __Three_possible_mob_strings + r" slashes at you with (his|her|its) claws, causing (?P<d>\d+) damage\.",
+    __Three_possible_mob_strings + r" claws at you for (?P<d>\d+) damage\.", # zombie
+    __Three_possible_mob_strings + r" claws at you, but misses\.",
+    __Three_possible_mob_strings + r" scratches you for (?P<d>\d+) damage\.", # TODO: when zombie scratch misses
+    __Three_possible_mob_strings + r" hits you for (?P<d>\d+) damage with a heavy punch\.",
+    __Three_possible_mob_strings + r" throws a heavy punch at you, but (him|her|it) misses\.",
     fighting_black_magic_caster[0]
 ] 
 # mob_died = ["Your attack overwhelms (?:the " + __numbers_opt + ")?(?P<mob>.+?) and (s?he|it) collapses!"]
@@ -247,7 +266,8 @@ cannot_force          = [r"You cannot force yourself to go through there\."]
 washroom = [
     r"Sorry, only males are allowed to go there\.",
     r"Sorry, only females are allowed to go there\."]
-cliff = [r"You fell and hurt yourself for (\d+) damage\."]
+# cliff = [r"You fell and hurt yourself for (?P<d>\d+) damage\."]
+cliff = [r"You fell and hurt yourself for (?P<d>\d+) damage\."]  # What is happening here... go not getting notified... often... is it the yellow text? Probably CARTOGRAPHY (go waits for it)
 # __go_failure = blocked_path + open_first + no_exit + class_prohibited + level_too_low + \
 #     class_prohibited + level_too_low + not_invited + not_open_during_day + \
 #     not_open_during_night + no_items_allowed + locked + no_right \

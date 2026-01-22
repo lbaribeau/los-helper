@@ -220,14 +220,15 @@ class Character(object):
         'searcher', 'delivery boy', 'wanderer', 'villager', 'vagrant', 'dropout', 'tramp', 'serf', 'dishwasher',
         'punter','chicken','coopers apprentice', 'diner', "cook's assistant", 
         'surveyor', 'pit pony', 'cleaner',
-        'hungy busker', 'beggar', 'dropout', 'one-armed beggar', 'sitting beggar'
+        'hungy busker', 'beggar', 'dropout', 'one-armed beggar', 'sitting beggar','fighting cock'
         # level 3 travellers exist, spawn near the amethyst town crier, so, not level 1
         # There is certainly a level 2 one so we can't have miner's assisstant in this list
+        # chained adherant in dark knight area is blue aura, could be useful
     ]
     lvl1_red_monsters = [ # 8-15 exp
         'old kobold', 'kobold child', 'kobold dam'
     ]
-    lvl2_monsters = [
+    lvl2_monsters = [ #~ 15 xp
         'hawker', 'barmaid', 'smelly beggar', 'black crow', 'sheep', 'goose', 'singer', 'musician', 'spiv', 'bidder', 'dairy cow',
         'scholar', 'juggler', 'shepherd', 'gazelle', 'jongleur', 'clerk', 'stablehand', 'rich kid', 'bladesman',
         "cook's assistant", 
@@ -237,14 +238,24 @@ class Character(object):
         'retired fisherman', # to confirm
         'goat', 'hound', #show up by the Combat Master
         'acolyte',  # blue balance
-        'penitent' # for aura (!)
+        'penitent', # for aura (!)
         #'dancer',  # dancer spawns by the sword swallower and can run north towards the guard, which will join in
         # A few scholars in amber
+        'drunken trouble-maker', # A bit dangerous hmmmm... engage this before red axer... but he does aggro so maybe avoid
+        # They just appear in places like The Black Plume, three at a time
+        # There are PLENTY of hookers
+        # Maybe avoid the NORTH
+        # leather collars nice to have dropped in hooker area
+        'apprentice', # via apothecary in highmarket... need to be "small"
+        'treehugger',
+        'small bore worm'
     ]
     lvl2_red_monsters = [
         'kobold sentry', 'blond hooker', 'sultry hooker', 'kobold', 'spiv', 'drunken miner', 'kobold miner', 'kobold archer',
         'angry hooker', 'angry kobold', 'red axer', 'pickpocket', 'thug', 'tired hooker', 'scruffy man','conman',
-        'zombie', 'stumbling skeleton'
+        'zombie', 'stumbling skeleton', 'gambler',
+        'knifer' # Near Copper Mary shows up
+        # hardened drinker
     ]
     # pickpockets drop leather collars and masks
     # red axer drops studded leather collar
@@ -256,15 +267,21 @@ class Character(object):
         'General', # (The)
         'traveller', 
         'bouncer', 'yard worker', 'town clerk', 'stevedore', 'scared trawlerman', 'cooper','digger', 'pulley operator',
-        'ore carrier', # copper ring
+        'ore carrier', # copper ring, nice (oooffff slows down my level 5... worth it I guess...)
         'furniture maker', 'cabinet maker', # SW part of lumber yards (glue)
-        'robed pilgrim'  # blue balance aura (!)
+        'robed pilgrim',  # blue balance aura (!)
         #"miner's mule"  # Why not include this guy... hmmm
         # stevedore leather gloves
+        'singing drunk', # Highmarket
+        'retired miner',
+        'old miner',
+        'large bore worm' # could be level 4 but lets have it kill on sight for the quest to work
     ]
     lvl3_red_monsters = [
-        'large kobold', 'insane kobold', 'kobold scout', 'drunk', 'drunken trouble-maker',
-        'goblin skeleton'
+        'large kobold', 'insane kobold', 'kobold scout', 'drunk',
+        'goblin skeleton', 
+        'adherent', # leather gloves
+        'servitor' # actually level 2
     ]
     lvl4_monsters = [ # 45-60 exp
         'actor', 'grip', 'theatre goer', 'merchant', 'journeyman', 'trader', 'butcher', 'acrobat', 'militia soldier',
@@ -275,16 +292,17 @@ class Character(object):
         'steer', 'sage', # Stoneheart Road
         'forge worker', # burnt ochre potion
         'young knight', # For blue balance #(!)
-        #'miner' # why not this guy
+        # 'miner' # why not this guy
         # enlightened  # "arrives" in the large Kings road dojo (not always there)
         'actress', # blue balance
         'bandit cook', # leather bracers
         'bandit sentry', 'bandit', 'ghast'
+        #'viper' # Poisons
     ]
     # hungry spiders are hostile
     lvl4_red_monsters = [
         'kobold shaman', 'kobold champion', # studded leather leggings
-        'hungry spider', 'ghoul'
+        'hungry spider', 'ghoul', 'fanatic'
         # dice player
         # loser
     ]
@@ -295,14 +313,17 @@ class Character(object):
         'mine foreman', 'badger', # woodland trail
         'adjudicator', 'eagle', 'giant crab', # arrived by the pool by gnolls
         'vicar', # blue balance
-        'lay priest', 'protector', 'battered knight', 'orange picker' # makes trackgrind too red? #(!)
+        'lay priest', 'protector', 'battered knight', 'orange picker', # makes trackgrind too red? #(!)
+        'boa constrictor',
+        'prestidigitator', # Go through apothecary in highmarket
+        'school teacher' # could be hard
     ]
     # level 6 seekers? seeker 100 exp, lyrist 80 exp
     # Effect of missed comma is that mobs after it don't get added
     lvl5_red_monsters = [
         'large bandit', # silver ring
         'kobold guard', 'mugger', 'large spider', 'mime artist',
-        'massive zombie'
+        'massive zombie', 'harrower'
     ]
     lvl6_monsters = [  # 100+ exp
         'dwarven field worker', 'dwarven bartender', 'school teacher', 'nobleman', 'bull', 'hunter', 'usher',
@@ -327,6 +348,7 @@ class Character(object):
         'half-elf traveller,' # appears in the silken alleys
         'old dame', # white potion, Te'Kalns' Walk
         'sewer troll',
+        'dark priest', # probably hard
         'robed priest' #blue balance
         # 'Cheryn (E)'
     ]  # There are also lvl 5 rancher sentries... they're a bit blue
@@ -340,6 +362,7 @@ class Character(object):
         'refinery supervisor', 'owlbear','warrior', #'sentry'
         'half-elf traveller', # 210 exp, 176 gold
         'elven trader', # elven waybread "It has only a very mild subtle taste, blandly inoffensive."
+        'sacrificing priestess'
         # 'old knight', 'dusty warrior'
         # dark warrior  sacrificing priestess
         # forger        weathered barbarian
@@ -668,6 +691,9 @@ class Character(object):
     @property
     def maxHP(self):
         return self.info.maxHP
+    @property
+    def current_damage(self):
+        return self.maxHP - self.hp
     @property
     def maxMP(self):
         return self.info.maxMP

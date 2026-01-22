@@ -175,11 +175,13 @@ class MainhandWeaponBot(MiniBot):
 
     def check_weapons(self):
         magentaprint("Weaponbot2.py check_weapons()")
+        self.stopping=False
         self.get_possible_weapons() # Sets self.possible_weapons by checking DB
         self.look_at_each_possible_weapon() # Looks at weapons in inventory to update if they are broken
         # self.add_to_keep_list(self.possible_weapons[0].item.name)
         if not self.wielding():
             if self.has_usable_weapon_in_inventory():
+                # BTW the bot doesn't "see" any items it can't actually buy... not really a necessary feature... you can wield a spiked club manually and the bot will function
                 wield = self.command_handler.wield
                 usable_ref = self.get_usable_weapon_ref()
                 # self.clear()
@@ -316,30 +318,86 @@ class MainhandWeaponBot(MiniBot):
         #     self.repair_or_replace_weapon()
 
     def go_buy_a_weapon(self):
-        # Had an issue where we couldn't afford morning star... it looks like the code will work if we use anything from possible_weapons
+        # Had an issue where we couldn't afford morning star... it looks like the code will work if we use anything from possible_weapons... (fixed)
+        # (now it checks if it can afford)
+
+        # Ok now he's not too bad but he spends too much on footman's mace... (doesn't earn money)
+        # So what will his logic be... maybe avoid buying something if you don't have double the gold for it... even triple... if possible
 
         # if not hasattr(self, 'shopping_bot'):
         #     raise(Exception("Weapon_bot needs add_in_map called..."))
 
-        if all([self.shopping_bot.cant_afford(w) for w in self.possible_weapons]):
-            self.cant_afford = True
+        # if all([self.shopping_bot.cant_afford(w) for w in self.possible_weapons]):
+        #     self.cant_afford = True
+        #     raise(Exception("Weapon bot can't buy a weapon it wants/needs"))
+        #     # I think I used to function a bit with cant_afford = True...
+
+        # A bit more logic here to not overspend...
+        # This can't be a for w loop then...
+        # Maybe two for w loops
+        G = self.character.GOLD
+
+        p = [w for w in self.possible_weapons if G > 3*w.item.value and w.item.value < self.character.info.gold_to_level/3]
+        # (If we have tons of money, we'll buy the most expensive weapon we can use)
+        # (If we have lots of money, we might still go easy, if it's not TRIPLE the expensive stuff, we take it down a notch)
+        # Also, ideally, we should have triple that money, I guess (buy small mace if we have 707, shy away from horseman's unless we can triple it?)
+        # I guess that's what we're saying... yeah we take it down a notch if we can if G is not big... could get a $#&* weapon though
+        # Guess its worth saving money... (for armour and training)
+        if not p:
+            p = [w for w in self.possible_weapons if G > 2*w.item.value and w.item.value < self.character.info.gold_to_level/3]
+        if not p:
+            p = [w for w in self.possible_weapons if G >= w.item.value and w.item.value < self.character.info.gold_to_level/3]
+        if not p:
+            p = [w for w in self.possible_weapons if G > 3*w.item.value]
+        if not p:
+            p = [w for w in self.possible_weapons if G > 2*w.item.value]
+        if not p:
+            p = [w for w in self.possible_weapons if G >= w.item.value]
+        if not p:
+            self.cant_afford=True
+            magentaprint("Couldn't find a weapon we can afford!!!")
             raise(Exception("Weapon bot can't buy a weapon it wants/needs"))
-            # I think I used to function a bit with cant_afford = True...
 
-        for w in self.possible_weapons:
-            if self.shopping_bot.cant_afford(w):
-                continue
-            magentaprint("weapon_bot2 go_buy_a_weapon picked " + str(w.item.name))
+        magentaprint("Weapon bot got \"p\" (narrowed down possible weapons)...")
+        magentaprint(str(p)) # could print p.item.name
+        magentaprint(str([w.item.name for w in p]))
 
-            if self.shopping_bot.go_buy(w):
-                self.cant_afford = False
-                return True
+        # Might still need controls so we don't lose money!
+        # small mace is super good
+        # bronze stuff could lose us money, right? Maybe not...
+
+        #     return triple_afford_criteria[0] # Best to be able to triple afford
+        # double_afford_criteria = [w for w in self.possible_weapons if w.item.value > 2*G]
+        # if double_afford_criteria:
+        #     return double_afford_criteria[0] # This is if we can't triple afford ANYTHING... quite unlikely
+        # # single_afford_criteria = [w for w in self.possible_weapons if w.item.value > G]
+
+        # w = ""
+
+        # # for w in self.possible_weapons:
+        # for w in p:
+        #     if self.shopping_bot.cant_afford(w):
+        #         continue
+        #     if w:
+        #         break
+
+        # if not w:
+        #     # I think this check is redundant
+        #     magentaprint("Weapon bot can't afford ANYTHING??!?!?!? Need to put some cheap stuff into the database!")
+        #     magentaprint("Trying unarmed I guess? Things might break.")
+
+        # magentaprint("weapon_bot2 go_buy_a_weapon picked " + str(w.item.name))
+        magentaprint("weapon_bot2 go_buy_a_weapon picked " + str(p[0].item.name))
+
+        if self.shopping_bot.go_buy(p[0]):
+            self.cant_afford = False
+            return True
+        else:
+            if self.shopping_bot.stopping:
+                magentaprint("Weapon bot sees shopping bot stopped?")
             else:
-                if self.shopping_bot.stopping:
-                    magentaprint("Weapon bot sees shopping bot stopped?")
-                else:
-                    raise(Exception("weapon bot could not buy a weapon (cant afford?) (could be either first or backup weapon)"))
-                return False
+                raise(Exception("weapon bot could not buy a weapon (cant afford?) (could be either first or backup weapon)"))
+            return False
 
     def go_buy_default_weapon(self):
         # NOTE: I believe I've switched to go_buy_a_weapon(), maybe not everywhere...

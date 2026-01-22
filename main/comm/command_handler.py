@@ -54,9 +54,10 @@ magentaprint("... AreaStoreItem...");      from db.Database                impor
 # magentaprint("... Plotter...");            from plotter                    import Plotter
 magentaprint("... Rest...");               from command.Rest               import Rest
 magentaprint("... Train...");              from command.Train              import Train
-magentaprint("... db.MudMap");             from db.MudMap import MudMap
-from mini_bots.rest_loop import RestLoop
-from reactions.wait_for_mob_attack import MobAttackWaiter
+magentaprint("... db.MudMap");             from db.MudMap                  import MudMap
+magentaprint("... RestLoop");              from mini_bots.rest_loop        import RestLoop
+magentaprint("... MobAttackWaiter");       from reactions.wait_for_mob_attack import MobAttackWaiter
+magentaprint("... db.Item");               from db.Item                    import Item
 
 magentaprint("... Done command_handler.py import section, now defining classes")
 
@@ -364,9 +365,9 @@ class CommandHandler(object):
         elif user_input.startswith('Dr') and not user_input.startswith('Dropp'):
             # self.inventory.drop_stuff()
             self.sell_bot.drop_stuff()
-        elif user_input == 'gopawn':
+        elif user_input == 'go_pawn':
             self.travel_bot.go_to_nearest_pawn_shop() # Try ctrl C to kill the thread
-        elif user_input == 'gotip':
+        elif user_input == 'go_tip':
             self.travel_bot.go_to_nearest_tip()
         elif user_input == 'ga':
             # self.telnetHandler.write('get all')
@@ -475,7 +476,8 @@ class CommandHandler(object):
             magentaprint(str(self.character.HEALTH), False)
         elif re.match("(?i)experience", user_input):
             self.print_experience()
-        elif re.match("(?i)gold", user_input):
+        # elif re.match("(?i)gold", user_input):
+        elif user_input == "gold":
             self.print_gold()
         elif re.match("(?i)kills", user_input):
             kills = self.character.MOBS_KILLED
@@ -593,9 +595,16 @@ class CommandHandler(object):
             self.info.execute_and_wait()
             magentaprint("Test_info done... (Thrust is "+str(self.character.info.thrust)+ "!)")
         elif user_input.startswith('exec '):
-            exec(user_input.partition(' ')[2]) # General purpose, for example, try, "exec self.weapon_bot.possible_weapons"
+            try:
+                exec(user_input.partition(' ')[2]) # General purpose, for example, try, "exec self.weapon_bot.possible_weapons"
+            except Exception as e:
+                magentaprint(str(e))
         elif user_input.startswith('count_weapons_in_inventory'):
             magentaprint(self.weapon_bot.count_weapons_in_inventory())
+        elif user_input.startswith('simulate '):
+            self.mudReaderHandler.mudReaderThread.MUDBuffer += user_input.partition(' ')[2]
+        elif user_input.startswith('gold_lookup '):
+            Item.gold_lookup(user_input.partition(' ')[2])
         # Note: see self.actions before adding more cases (just associate a command with a function pointer)
         else:
             # Doesn't match any command we are looking for, send it to server
@@ -1099,7 +1108,7 @@ class CommandHandler(object):
         # magentaprint("Gold rate:         {} /min".format(round(gold_gained/t*60, 1)))
 
     def print_gold(self):
-        gold_gained = self.inventory.GOLD-self.character.START_GOLD
+        gold_gained = self.character.GOLD-self.character.START_GOLD
         # gpm = str(misc_functions.calculate_vpm(gold_gained))
         # magentaprint("Gold this Session: " + str(gold_gained) + " | Gold / MIN: " + gpm, False)
         t = misc_functions.get_runtime_seconds()

@@ -39,10 +39,21 @@ class GrindThread(BotThread):
         pass
 
     def do_pre_go_actions(self):
-        # TrackGrind overrides this...
+        # TrackGrind overrides this!
         if self.in_chapel():
-            self.rest_and_check_aura()
-            # self.check_weapons()  TODO: shopping doesn't work everywhere
+            # self.rest_and_check_aura()
+                # OK lately I'm not liking all this chapel mumbo jumbo
+                # Switching to a new rest function that is simpler (could be somewhat slow... hmmm... i wonder if Con affects rest time?)
+
+            self.command_handler.print_experience()
+            self.print_bot_stats() # Display while resting
+            if self.update_aura():
+                self.aura_updated_hook()
+            magentaprint("Health ticks needed: {}, Mana ticks needed: {}.".format(round(self.health_ticks_needed(), 1), round(self.mana_ticks_needed(), 1)))
+            # self.chapel_heal_up()
+            self.maybe_use_extra_small_restoratives()
+            self.rest_to_full()
+            # self.check_weapons()  TODO: shopping doesn't work everywhere (?) Should work now, this happens elsewhere
             self.check_armour()
 
     def do_go_hooks(self, exit_str):
@@ -68,18 +79,32 @@ class GrindThread(BotThread):
             self.drop_items()
             return True
         elif exit_str == "rest_here":
-            self.rest_here()
-            return True
+            if self.rest_here():
+                # Ok seems like there were no issues
+                return True # I think that this helps prevent "go rest_here"
+            else:
+                # Ok seems like we got attacked during resting... so let's push rest_here onto the direction list because I think it should get removed once...
+                # Or we just inifinte loop here? No it wanted to return for some reason... for chase? For engage_any_attacking_mobs? Try re-adding it...
+                self.direction_list.insert(0,'rest_here') # So this should accomplish our "while True:" when it comes to resting and we get attacked
+                return True
+            # Ok so this is complicated...
+            # rest here will return True if it got through without attackers
+            # So that's when we pop rest_here off of direction list
+            # If there were attackers, the logic to try to rest again comes from "rest_here" still being in the direction list
         elif exit_str == "train":
             C = self.character
-            if self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > C.info.gold_to_level + 2*self.command_handler.weapon_bot.possible_weapons[0].item.value and \
-                C.current_experience > C.info.exp_to_level:
+            # if C.current_experience > C.info.exp_to_level and self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > C.info.gold_to_level + 2*self.command_handler.weapon_bot.possible_weapons[0].item.value:
+            if C.current_experience > C.info.exp_to_level and self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > 2*C.info.gold_to_level:
+                # just wait for double gold I guess so we don't spend it all... weapon bot should be able to deal with that... because it'll only buy a weapon if it can afford triple
+                # hmmm maybe they should interact a little more... weapon bot could check training cost to help it not spend too much but still spend
                 self.command_handler.train.execute_and_wait()
                 if self.command_handler.train.success:
                     self.command_handler.patch_character_info_after_level_up()
                 else:
-                    raise(Exception("Why level up not work"))
-                return True # I think this prevents "go train" (trying to "go" the train code)... other option is to trim the front of direction list with x=x[1:] 
+                    # raise(Exception("Why level up not work"))
+                    magentaprint("Why level up not work")  # Maybe we didn't get the large bore worm?? That would be go_no_right to get through the door!
+                return True 
+                # I think this prevents "go train" (trying to "go" the train code)... other option is to trim the front of direction list with x=x[1:] 
             else:
                 magentaprint("Train clause is false now... must not have the money")
                 return True 
@@ -99,7 +124,7 @@ class GrindThread(BotThread):
         elif exit_str == 'cast_light':
             return self.cast_light()
         else:
-            return super().do_go_hooks(exit_str) # does areaid[\d] pathfinding
+            return super().do_go_hooks(exit_str) # BotThread does areaid[\d] pathfinding 
 
     def cast_light(self):
         pot=self.inventory.get_first_reference("glowing potion")
@@ -335,7 +360,7 @@ class GrindThread(BotThread):
     def rest_and_check_aura(self):
         # This method is only efficient in a healing area
         magentaprint("GrindThread.rest_and_check_aura()")
-       # self.command_handler.print_experience()
+        self.command_handler.print_experience()
         self.print_bot_stats() # Display while resting
 
         if self.update_aura():
@@ -571,13 +596,10 @@ class GrindThread(BotThread):
         # magentaprint("Stopping rest for health",False)
 
 
-
-
-
     def update_aura(self):
         # if self.stopping or self.character.ACTIVELY_MAPPING or not Spells.showaura in self.character.spells:
         # if self.stopping or self.character.ACTIVELY_MAPPING or not any(s.startswith(Spells.showaura) for s in self.character.spells):
-        self.command_handler.process('aura')
+        self.command_handler.process('aura') # Ehrm 
 
         if self.stopping or self.character.ACTIVELY_MAPPING or not self.cast.check_aura_timer():
             return False
@@ -772,7 +794,8 @@ class GrindThread(BotThread):
         places = AreaStoreItem.get_by_name(name)
         magentaprint("GrindThread going to buy " + str(places))
 
-        self.direction_list = ["areaid%s" % places.values()[0] , "dobuy%s" % name, "areaid2"]  # Something like Thatt
+        self.direction_list = ["areaid%s" % places.values()[0] , "dobuy%s" % name, "areaid2"]  # Something like that
+        # no peewee .get?
 
     def go_purchase_item_by_type(self, model, data, level):
         # Model is main item type (weapon, s-armor, consumable), Data is sub-type (Blunt, Body, etc)
@@ -849,7 +872,6 @@ class GrindThread(BotThread):
         else:
             self.command_handler.armour_bot.suit_up() # Armour bot is checking gold now on a case-by-case basis
 
-
     def stop(self):
         super().stop()
         self.command_handler.armour_bot.stop()
@@ -871,9 +893,43 @@ class GrindThread(BotThread):
         #     else:
         #         return
         # Ok we got it
+        temp=[]
+        # for a in self.command_handler.armour_bot.broken_armour + [self.command_handler.weapon_bot.broken_weapon if hasattr(weapon_bot, "broken_weapon") else None]:
+        # for a in self.command_handler.armour_bot.broken_armour + [self.command_handler.weapon_bot.broken_weapon if hasattr(self.command_handler.weapon_bot, "broken_weapon") else None]:
+        #     self.inventory.get_by_ref(self.command_handler.weapon_bot.get_broken_weapon_ref()).name
+        #     self.inventory.get_item_name_from_reference(self.command_handler.weapon_bot.get_broken_weapon_ref())
+        for a in self.command_handler.armour_bot.broken_armour + [self.inventory.get_item_name_from_reference(self.command_handler.weapon_bot.get_broken_weapon_ref())]:
+            if a not in self.inventory.keep_list:
+                self.inventory.keep_list.append(a)
+                temp.append(a)
         self.command_handler.sell_bot.sell_stuff()
+        for t in temp:
+            self.inventory.keep_list.remove(t)
         # Should this really be Grindthread though
         # There should be a puppet master that chooses between grinding and selling, I think
+
+    def drop_items(self):
+        self.maybe_use_extra_small_restoratives()
+
+        # self.inventory.drop_stuff()
+        # This should maybe be a mini bot...
+        # self.drop_refs(self.inventory.sellable())
+        # self.drop_refs(self.inventory.droppable())
+        # self.inventory.keep_list.extend(self.armour_bot.broken_armour)
+        temp=[]
+        # for a in self.command_handler.armour_bot.broken_armour + [self.command_handler.weapon_bot.broken_weapon if hasattr(weapon_bot, "broken_weapon")]:
+        # for a in self.command_handler.armour_bot.broken_armour + [self.command_handler.weapon_bot.broken_weapon if hasattr(weapon_bot, "broken_weapon") else None]:
+        # for a in self.command_handler.armour_bot.broken_armour + [self.command_handler.weapon_bot.broken_weapon if hasattr(self.command_handler.weapon_bot, "broken_weapon") else None]:
+        for a in self.command_handler.armour_bot.broken_armour + [self.inventory.get_item_name_from_reference(self.command_handler.weapon_bot.get_broken_weapon_ref())]:
+            if a not in self.inventory.keep_list:
+                self.inventory.keep_list.append(a)
+                temp.append(a)
+        self.command_handler.sell_bot.drop_stuff()
+        for t in temp:
+            self.inventory.keep_list.remove(t)
+
+        # We also have broken rings...
+        # Hmmmm, what if some of it is restoratives?
 
     def item_was_sold(self):
         # TODO: class Sell(Command)  - Get rid of these all caps flag variables and copypasta polling code
@@ -940,21 +996,11 @@ class GrindThread(BotThread):
         # while ceil(self.health_ticks_needed()) < ceil(self.mana_ticks_needed()) and self.inventory.has_any(self.small_restoratives) and not self.stopping and self.consume.small_healing_potion_with_wait():
         #     pass
 
-    def drop_items(self):
-        self.maybe_use_extra_small_restoratives()
-
-        # self.inventory.drop_stuff()
-        # This should maybe be a mini bot...
-        # self.drop_refs(self.inventory.sellable())
-        # self.drop_refs(self.inventory.droppable())
-        self.command_handler.sell_bot.drop_stuff()
-        # We also have broken rings...
-        # Hmmmm, what if some of it is restoratives?
 
     def rest_here(self):
         # Ok we got a "TrackGrind" code to introduce a rest point into the track, likely other than the amethyst chapel
         # Just do a rest (don't do all the weapon checks)
-        self.rest_to_full() # Didn't realize I had rest_until_ready... but even that doesn't rest to full
+        return self.rest_to_full() # Didn't realize I had rest_until_ready... but even that doesn't rest to full
 
     def rest_to_full(self):
         while True and not self.stopping:
@@ -971,7 +1017,7 @@ class GrindThread(BotThread):
             else:
                 # Base case of infinite loop is, rest_loop returned None, which should happen
                 magentaprint("GrindThread.rest_to_full() done.")
-                return
+                return True
 
     def drop_refs(self):
         pass
@@ -1022,7 +1068,9 @@ class GrindThread(BotThread):
         ]
 
         for mob in m_list:
-            if mob in C.MONSTER_KILL_LIST and (mob not in blue_mobs or not self.cast.aura or self.cast.aura >= C.preferred_aura):
+            # if mob in C.MONSTER_KILL_LIST and (mob not in blue_mobs or not self.cast.aura or self.cast.aura >= C.preferred_aura):
+            if mob in C.MONSTER_KILL_LIST and (mob not in blue_mobs or (self.cast.aura and self.cast.aura >= C.preferred_aura)):
+                # Ok gotta avoid those acolytes in particular if we are red (ie. even if we don't know our aura)
                 return mob
                 # We can add in robed pilgrim if we want and other blue things... with this code in place
 
@@ -1104,6 +1152,7 @@ class GrindThread(BotThread):
             magentaprint("GrindThread engage_monster sees given target: " + monster_ref)
             new_target = monster_ref
         else:
+            # Ok we kind of have a problem... how about "guard"
             magentaprint("GrindThread engage_monster get_first_reference({0})".format(monster))
             new_target = C.mobs.list.get_first_reference(monster)
             if new_target == None:

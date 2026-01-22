@@ -336,6 +336,10 @@ class MudReaderThread(threading.Thread):
                 self.character.MUD_RETURN_ITEM_SOLD = True
                 self.CHECK_SELL_FLAG = 0
                 text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
+            M_obj = re.search(r"The smithy takes (\d+) gold pieces from you\.", text_buffer)
+            if M_obj:
+                self.character.GOLD = self.character.GOLD - int(M_obj.group(1))
+                text_buffer_trunc = max([text_buffer_trunc, M_obj.end()])
             M_obj = re.search("The shopkeep won't buy that from you\.", text_buffer)
             if M_obj:
                 self.character.MUD_RETURN_ITEM_SOLD = False

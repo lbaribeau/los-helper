@@ -103,6 +103,8 @@ class BotThread(threading.Thread):
                         continue
                     elif self.command_handler.go.result_go_where:
                         magentaprint("BotThread: Ok go command is really confused (no target)")
+                    elif self.command_handler.go.result_cliff:
+                        self.do_on_go_result_cliff()
                     else:
                         pass
                 # It's a loop, so we only need a hook on one side of it (no need for beginning + end hooks)
@@ -112,6 +114,15 @@ class BotThread(threading.Thread):
             magentaprint("BotThread looping, stopping is {0}".format(self.stopping))
 
         magentaprint("BotThread: finished now.")
+
+    def do_on_go_result_cliff(self):
+        # Ok let's handle cliffs... let's try it without mountain boots... so... maybe rest, maybe try the cliff again
+        C = self.command_handler.character
+        if C.current_damage > 10 or C.hp < min(23,C.maxHP) or C.mp < C.maxMP/2:
+            self.rest_to_full()
+        # So... if we do nothing... the current "track" won't be popped.... so autopilot will try again until successful go
+        # What might happen is small bore worms will pile up...
+        # Could definitely be bad
 
     def go(self, exit_str):
         # Not overridden
@@ -132,10 +143,16 @@ class BotThread(threading.Thread):
 
         # A go hook is something other than an exit name in the direction list
         # Custom actions like prepare, sell, and areaN which gets expanded into real directions
-        hook_found = self.do_go_hooks(exit_str)
+        hook_done = self.do_go_hooks(exit_str)
             # ... we need to wait for Cartography before this happens
-        if hook_found:
-            return hook_found
+        if hook_done:
+            return hook_done
+            # Okkkkk can get get a redo on the rest code like this
+            # Maybe just have it add another rest_here to the direction list... oy
+            # The point was to be able to call engage_monster from that rest code
+            # But also for engage monster to be able to rest if it had to flee
+            # Maybe need two functions
+            # The rest code does call engage monster... maybe it should be recursive with the base case being all the monsters got handled... that could be what my infinite loop was
         else:
             # if re.match("(.*?door)", exit_str):
             #     self.command_handler.process("open " + exit_str)

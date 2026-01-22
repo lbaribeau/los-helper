@@ -2,12 +2,24 @@
 # from command.Command import Command
 
 class Aura(object):
-
     auras = [
-        'demonic red', 'ominous red', 'ghastly red', 'blood red', 'murky red',
-        'red', 'rusty', 'dusty red', 'grey',
-        'dusty blue', 'pale blue', 'blue',
-        'deep blue', 'bright blue', 'shimmering blue', 'blazing blue', 'heavenly blue'
+        'demonic red'    , 
+        'ominous red'    , 
+        'ghastly red'    , 
+        'blood red'      , 
+        'murky red'      ,
+        'red'             , 
+        'rusty'           , 
+        'dusty red'       , 
+        'grey'            ,
+        'dusty blue'      , 
+        'pale blue'       , 
+        'blue'            ,
+        'deep blue'       , 
+        'bright blue'     , 
+        'shimmering blue' , 
+        'blazing blue'    , 
+        'heavenly blue'
     ]
     # 0-7 red, 8 grey, 9-16 blue  (17 total)
     # note... never uses "an"  (ie. "You glow with _a_ ominous red aura")

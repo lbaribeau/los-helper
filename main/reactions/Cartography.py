@@ -29,9 +29,11 @@ class Cartography(BotReactionWithFlag):
             R.area,
             R.too_dark,
             R.no_exit,
+            # R.go_where # maybe add this
             R.blocked_path,
             R.cant_go,
-            R.please_wait,
+            R.open_first,
+            R.please_wait, # there are more please wait regexes
             R.class_prohibited,
             R.level_too_low,
             R.level_too_high,
@@ -43,16 +45,17 @@ class Cartography(BotReactionWithFlag):
             R.no_right,
             R.not_authorized,
             R.cannot_force,
+            R.in_tune,
+            R.washroom,
+            R.cliff, # new... I think... cartography doesn't have to do anything... just stop waitin
+            # R.occupied_area, # maybe add this
             R.not_here,
             R.loot_blocked,
             R.teleported,
-            R.in_tune,
             R.you_see_mob,
             R.mob_aura,
-            R.store_list,
+            R.store_list
             # R.ze_mob_fled,
-            R.open_first,
-            R.washroom
         ]
 
         #self.__waiter_flag = False # Now using threading.Event

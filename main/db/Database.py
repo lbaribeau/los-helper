@@ -7,7 +7,7 @@ http://peewee.readthedocs.org/en/latest/peewee/installation.html
 # 'maplos.db' should be in current directory (one above "main", repository directory... run from there... see bottom of file)
 print("... Database.py...");   
 print("... ... import peewee"); import peewee
-print("... ... import sys"); import sys
+print("... ... import sys");    import sys
 
 print("... ... db = peewee.Proxy()"); db = peewee.Proxy()
 

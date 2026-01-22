@@ -21,8 +21,10 @@ class Cast(SimpleCombatObject):
     # Spell name is not unique
 
     aura = None
-    aura_timer = 0
     aura_refresh = 480 # 8 minutes
+    # aura_timer = 0
+    # aura_timer = time.time() - 2*aura_refresh # We want to check aura at the beginning now, so we don't fight acolytes if we are red
+    aura_timer = -480
 
     vig_amount = 2
     mend_amount = 5

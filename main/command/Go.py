@@ -28,13 +28,13 @@ class Go(Command):
         R.level_too_high, 
         R.not_invited,
         R.not_open_during_day,
-        R.locked,
-        R.no_items_allowed,
         R.not_open_during_night,
+        R.no_items_allowed,
+        R.locked,
         R.no_right,
-        R.in_tune,
         R.not_authorized,
-        R.cannot_force,
+        R.cannot_force, # ie there is a door in dark knight area that paladin can't go through
+        R.in_tune,
         R.washroom,
         R.cliff,        # Why does this timeout?
         R.occupied_area # Does cartography need to know this one? Unlikely
@@ -43,6 +43,9 @@ class Go(Command):
     good_mud_timeout = 20.0
         # There's a rancher gate node that seems to take quite a while
 
+    @property
+    def result_cliff(self):
+        return self.result in R.cliff
     @property
     def result_no_exit(self):
         return self.result in R.no_exit

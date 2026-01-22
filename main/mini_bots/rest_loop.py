@@ -86,7 +86,11 @@ class RestLoop(MiniBot):
             # while self.health_ticks_needed()
             # self.health_ticks_needed()
         C = self.character
-        rest.execute()
+
+        if C.HEALTH >= C.maxHP and C.MANA >= C.maxMP:
+            return
+
+        rest.execute() # We're not even checking text that comes back...
         magentaprint("Entering RestLoop rest_to_full loop wait loop")
         while (C.HEALTH < C.maxHP or C.MANA < C.maxMP) and not self.stopping:
             # while C.mobs.attacking != [] and not self.stopping:
@@ -108,7 +112,9 @@ class RestLoop(MiniBot):
                 
                 # rest.execute_and_wait()
                 # rest.execute()
-            time.sleep(1)
+            time.sleep(1) # We're not even reacting immediately... why not just wait on self? Well we have to also notice if we are full HP... which is doable by subscribing to prompt
+            # So it could be better
+            
             # magentaprint("GrindThread rest_to_full() waiting, hopefully resting is active")
             # Very rudimentary check for combat interrupt... not sure any of the other code does it better though
 
