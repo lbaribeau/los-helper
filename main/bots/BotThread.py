@@ -283,7 +283,7 @@ class BotThread(threading.Thread):
             elif Spells.light in self.character.spells and self.character.MANA>=5:
                 self.command_handler.cast.cast_and_wait(Spells.light)
                 while self.command_handler.cast.failure and not self.command_handler.cast.result_no_mana:
-                    self.command_handler.cast.cast_and_wait(light)
+                    self.command_handler.cast.cast_and_wait(Spells.light)
                 if self.command_handler.cast.result_no_mana:
                     magentaprint("BotThread couldn't cast light!")
             else:
