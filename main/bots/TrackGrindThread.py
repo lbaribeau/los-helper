@@ -779,8 +779,8 @@ class TrackGrindThread(GrindThread):
             # Track("Shop and Tip 3",self.SHOP_AND_TIP_PATH,10,20, 9,has_cooldown=False),
             # Track("Barbarian shaman", self.BARBARIN_SHAMAN, 15, 20, 0), # some pretty big nuke spells, maybe not worth it
             Track("WAY_STATION_GLAMP", self.WAY_STATION_GLAMP, 10, 14, 0, False, is_glamping=True),
-            # Track("CHIARU", self.CHIARU, 18, 20, 1, requires_ready=True, target_kills=1), # causes granite usage
-            # Track("THOMAS_IRONHEART", self.THOMAS_IRONHEART, 18, 20, 0, requires_ready=True, target_kills=1), # causes granite usage
+            Track("CHIARU", self.CHIARU, 18, 20, 1, requires_ready=True, target_kills=1), # causes granite usage
+            Track("THOMAS_IRONHEART", self.THOMAS_IRONHEART, 18, 20, 0, requires_ready=True, target_kills=1), # causes granite usage
             # Track("Hef the Bandit Chief", self.HEF, 12, 13, -1, allows_caster=False),
             Track("Gnoll Camp", self.GNOLL_CAMP, 15, 20, -1, False, 0, 9, skip_if_ready=True),
             Track("Gnoll Cave", self.smart_gnoll_cave, 10, 20, -1, False, 0, 9, skip_if_ready=True),
@@ -789,14 +789,14 @@ class TrackGrindThread(GrindThread):
             # Track("Goblins", self.GOBLINS, 16, 20, -2, False, 0, 9, requires_ready=False, allows_caster=False),
             Track("Amber Guards", self.AMBER_GUARDS, 15, 20, 1, has_cooldown=False, skip_if_ready=True),
             Track("Knights", self.smart_knights_path, 7, 20, 1, False, 7, 18, skip_if_ready=True),
-            # Track("CHOORGA", self.CHOORGA, 18, 20, 0, requires_ready=True, has_cooldown=False, mob_name="Choorga the swamp troll"),
+            Track("CHOORGA", self.CHOORGA, 18, 20, 0, requires_ready=True, has_cooldown=False, mob_name="Choorga the swamp troll"),
             Track("Head trade",self.FETCH_TIGER_EYE, 18, 20, 0, has_cooldown=True, mob_name="", cooldown=600),
             Track("Granite Golem",self.GRANITE_GOLEM, 18, 20, 0, has_cooldown=True, target_kills=1, cooldown=8000, mob_name="granite golem", prime_cooldown=True),
             Track("Qimoth", self.QIMOTH, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Qimoth"),
-            # Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 0, requires_ready=True, target_kills=1, mob_name="Whiteblade the Barbarian"), # meh?
+            Track("WHITEBLADE", self.WHITEBLADE, 17, 20, 0, requires_ready=True, target_kills=1, mob_name="Whiteblade the Barbarian"), # meh?
             Track("MAYOR_DEMLIN", self.MAYOR_DEMLIN, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Mayor Demlin"),
-            # Track("Egan", self.EGAN_TRENT, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Teamleader Egan"),
-            # Track("REMISARA", self.REMISARA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Remisara"), # doesn't seem to have drops, causes flee
+            Track("Egan", self.EGAN_TRENT, 18, 20, 0, requires_ready=True, target_kills=1, mob_name="Teamleader Egan"),
+            Track("REMISARA", self.REMISARA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Remisara"), # doesn't seem to have drops, causes flee
             # Track("Maya", self.MAYA, 18, 20, 1, requires_ready=True, target_kills=1, mob_name="Maya"),
             Track("MARTIN", self.MARTIN, 14, 20, 0, True, requires_ready=False, mob_name="Martin"),
             Track("MARIE", self.MARIE, 14, 20, 0, True, requires_ready=False, mob_name="Marie"),
