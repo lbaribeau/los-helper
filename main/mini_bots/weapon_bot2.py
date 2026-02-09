@@ -266,7 +266,7 @@ class MainhandWeaponBot(MiniBot):
                 magentaprint("weapon_bot check_weapons done... wielding " + str(self.weapon) + "... backup confirmed in inventory")
                 self.add_to_keep_list(self.inventory.get_item_name_from_reference(self.get_usable_weapon_ref()))
                 return 0 # Success
-            elif self.has_broken_weapon_in_inventory(): # TODO (optimize): Should be a repairable broken weapon
+            if self.has_broken_weapon_in_inventory(): # TODO (optimize): Should be a repairable broken weapon
                 repair = self.command_handler.repair
                 self.travel_bot.go_to_nearest_smithy(grinding=False) 
                 if self.stopping:
@@ -286,9 +286,19 @@ class MainhandWeaponBot(MiniBot):
                     self.check_weapons()
                     # Hmmmm... how was the inventory wrong
                 elif repair.result in R.repair_no_gold:
-                    self.cant_afford = True
+                    # self.cant_afford = True
                     magentaprint("CAUTION: Check weapons saw no gold to repair backup weapon.")
-                    return
+                    # I guess in this case we keep it around ideally... but we have to abandon it for now
+                    # We could buy a cheaper backup weapon... 
+                    # Maybe go drop it in the tip?? I guess so (scenario is, have 124g, can't repair broad sword)
+                    # Yeah that's fine
+                    # Maybe check if we can afford anything? Well we must because of all the checks in armour bot and TrackGrind leveling
+                    # Yeah go ahead
+                    self.travel_bot.go_to_nearest_tip() # Maybe don't even go to the tip, just drop it on the floor... hmmm
+                    if self.stopping:
+                        return
+                    self.command_handler.drop.execute_and_wait(self.get_broken_weapon_ref()) # refresh "weapon" ref in case we picked anything up... unlikely
+                    self.check_weapons() # Yeeshh these recursions... 
                 elif repair.result in R.cant_repair:
                     self.travel_bot.go_to_nearest_tip()
                     self.command_handler.drop.execute_and_wait(weapon) 

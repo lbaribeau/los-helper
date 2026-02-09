@@ -255,6 +255,7 @@ class DanceOfTheCobra(FastCombatAbility):
     # But if you attacked then you have to wait to use it.
 
 class Turn(FastCombatAbility):
+    # TODO: This should hit the cast cooldown! (3 sec)
     command = "tu"  # needs target
     cooldown_after_success = 30  # can attack immediately, but flee/move is 3 seconds later
     cooldown_after_failure = 30  # can attack immediately, but flee/move is 3 seconds later

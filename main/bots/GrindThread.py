@@ -156,6 +156,8 @@ class GrindThread(BotThread):
         return True # Helps the go hook know to pop I think
 
     def buy_and_wield(self, exit_str):
+        # Yes... this code isn't used... it was 1st try at weapon bot... (dobuy go_hook)
+        # exit_str is the coded text we got, ie. "dobuymace" I think (deprecated anyway)
         magentaprint("go hook found with: " + str(self.direction_list), False)
         item = exit_str.replace("dobuy", "")
 
@@ -168,6 +170,7 @@ class GrindThread(BotThread):
         self.command_handler.buy.execute(item.partition(' ')[0])  # TODO: ensure that the correct item is bought
         self.command_handler.buy.wait_for_flag()
         # I'm hacking here.  I intend start a new Grind thread to do this properly.
+        # Yes... this code isn't used... it was 1st try at weapon bot
         if self.command_handler.buy.cant_carry:
             # Maybe we're carrying a broken one
             # magentaprint("GrindThread.dobuy() reference: " + str(self.inventory.get_reference(item)))
@@ -185,6 +188,7 @@ class GrindThread(BotThread):
         if self.command_handler.buy.success:
             magentaprint("GrindThread.buy_and_wield adding %s." % str(item))
             self.inventory.add(item)
+            # Need to subtract gold
             return True
         else:
             self.command_handler.process('rest')
@@ -865,12 +869,16 @@ class GrindThread(BotThread):
 
         # if self.command_handler.weapon_bot.cant_afford: 
         # if gold < 2*possible_weapon_asi.item.value: # Checking for None on this...
-        if possible_weapon_asi == None or possible_weapon_asi.item == None or possible_weapon_asi.item.value == None or gold < 2*possible_weapon_asi.item.value:
-            magentaprint("Not going armour shopping due to gold issue")
-            magentaprint("Note: possible weapon: " + str(possible_weapon_asi))
-            return
-        else:
-            self.command_handler.armour_bot.suit_up() # Armour bot is checking gold now on a case-by-case basis
+        # if possible_weapon_asi == None or possible_weapon_asi.item == None or possible_weapon_asi.item.value == None or gold < 2*possible_weapon_asi.item.value:
+        #     # I guess this check was... armour was spending too much.. that should be ok now...
+        #     magentaprint("Not going armour shopping due to gold issue") 
+        #     # Ok pretty sure armour bot needs to be called so it can at least mark items we want to keep to repair soon
+        #     magentaprint("Note: possible weapon: " + str(possible_weapon_asi))
+        #     return
+        # else:
+        #     self.command_handler.armour_bot.suit_up() # Armour bot is checking gold now on a case-by-case basis
+        
+        self.command_handler.armour_bot.suit_up() # Armour bot is checking gold now on a case-by-case basis
 
     def stop(self):
         super().stop()
@@ -898,7 +906,8 @@ class GrindThread(BotThread):
         # for a in self.command_handler.armour_bot.broken_armour + [self.command_handler.weapon_bot.broken_weapon if hasattr(self.command_handler.weapon_bot, "broken_weapon") else None]:
         #     self.inventory.get_by_ref(self.command_handler.weapon_bot.get_broken_weapon_ref()).name
         #     self.inventory.get_item_name_from_reference(self.command_handler.weapon_bot.get_broken_weapon_ref())
-        for a in self.command_handler.armour_bot.broken_armour + [self.inventory.get_item_name_from_reference(self.command_handler.weapon_bot.get_broken_weapon_ref())]:
+        armour_bot = self.command_handler.armour_bot
+        for a in armour_bot.broken_armour + armour_bot.broken_list + [self.inventory.get_item_name_from_reference(self.command_handler.weapon_bot.get_broken_weapon_ref())]:
             if a not in self.inventory.keep_list:
                 self.inventory.keep_list.append(a)
                 temp.append(a)
@@ -920,7 +929,9 @@ class GrindThread(BotThread):
         # for a in self.command_handler.armour_bot.broken_armour + [self.command_handler.weapon_bot.broken_weapon if hasattr(weapon_bot, "broken_weapon")]:
         # for a in self.command_handler.armour_bot.broken_armour + [self.command_handler.weapon_bot.broken_weapon if hasattr(weapon_bot, "broken_weapon") else None]:
         # for a in self.command_handler.armour_bot.broken_armour + [self.command_handler.weapon_bot.broken_weapon if hasattr(self.command_handler.weapon_bot, "broken_weapon") else None]:
-        for a in self.command_handler.armour_bot.broken_armour + [self.inventory.get_item_name_from_reference(self.command_handler.weapon_bot.get_broken_weapon_ref())]:
+        # for a in self.command_handler.armour_bot.broken_armour + [self.inventory.get_item_name_from_reference(self.command_handler.weapon_bot.get_broken_weapon_ref())]:
+        armour_bot = self.command_handler.armour_bot
+        for a in armour_bot.broken_armour + armour_bot.broken_list + [self.inventory.get_item_name_from_reference(self.command_handler.weapon_bot.get_broken_weapon_ref())]:
             if a not in self.inventory.keep_list:
                 self.inventory.keep_list.append(a)
                 temp.append(a)

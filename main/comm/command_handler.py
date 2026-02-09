@@ -35,7 +35,7 @@ magentaprint("... Get...");                from command.Get                impor
 magentaprint("... ThreadMaker...");        from comm.thread_maker          import ThreadMaker
 magentaprint("... Repair...");             from command.Repair             import Repair
 magentaprint("... Wear...");               from command.wear               import Wear
-magentaprint("... ArmourBot...");          from mini_bots.armour_bot       import ArmourBot
+magentaprint("... ArmourBot...");          from mini_bots.armour_bot2      import ArmourBot # New
 magentaprint("... Equipment...");          from command.equipment          import Equipment
 magentaprint("... SmithyBot...");          from mini_bots.smithy_bot       import SmithyBot
 #magentaprint("... WeaponBot...");         # from mini_bots.weapon_bot     import WeaponBot

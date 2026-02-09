@@ -33,6 +33,21 @@ class Repair(Command):
         if self.failure:
             self.inventory.remove_by_ref(self._sent_target)
         super().notify(regex, match)
+
+    @property
+    def no_gold(self):
+        return self.result in R.repair_no_gold
+    # @property
+    # def success(self): # Inherited
+    #     return self.result in R.repair_no_gold
+    @property
+    def darnitall(self):
+        return self.result in R.darnitall
+    @property
+    def repair_what(self):
+        return self.result in R.repair_what
+
+
         
 # [96 H 42 M]: repair Arrum's
 # 20:23:38.91   | "repair Arrum's"

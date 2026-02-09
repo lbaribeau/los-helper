@@ -608,10 +608,13 @@ class TrackGrindThread(GrindThread):
     #         info.level 
 
         self.command_handler.print_gold_exp_etc("")
+        WB = self.command_handler.weapon_bot
+        AB = self.command_handler.armour_bot
 
-        if self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > C.info.gold_to_level + 2*self.command_handler.weapon_bot.possible_weapons[0].item.value and \
-            C.current_experience > C.info.exp_to_level:
-            if C._class.id == "Bar":
+        # if self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > C.info.gold_to_level + 2*self.command_handler.weapon_bot.possible_weapons[0].item.value and \
+        # if C.current_experience > C.info.exp_to_level and C.GOLD > C.info.gold_to_level + self.command_handler.armour_bot.gold_to_save_for_weapon:
+        if C.current_experience > C.info.exp_to_level and WB.possible_weapons != [] and C.GOLD > C.info.gold_to_level + AB.gold_to_save_for_weapon:
+            if C._class.id == 'Bar':
                 if C.level in [1,2,3,4]:
                     return ['ou','n','n','w','g','n','n','n','n','n','g','n','n','g','n','nw','nw','n','nw','nw','nw','nw','n','nw','n','n','nw','n','se','doo','e','train','areaid2']
                     # 1421, Barbarian Lodge
@@ -620,7 +623,7 @@ class TrackGrindThread(GrindThread):
                     # Ok so far so good, 1 to 4 work
                     # need to do large bore worm...??? needs climbing implemented
                     # Whoops actually need GNOLL BANDIT
-            elif C._class.id == "Fig":
+            elif C._class.id == 'Fig':
                 if C.level in [1,2]:
                     return ['ou','s','e','s','s','s','w','g','s','se','se','e','e','e','se','se','se','s','s','s','s','s','s','s','s','s','s','e','ac','ar','doo 2','train','out','ar','ou', 'areaid2']
                 elif C.level in [3,4]:
@@ -650,7 +653,7 @@ class TrackGrindThread(GrindThread):
                         # If Train fails what do we do btw...
                         return ['ou','s','e','s','s','s','w','g','s','se','se','e','e','e','se','se','se','s','s','s','s','s','s','s','s','s','s','e','ac','ar','stairs','door','train','out','stairs','ar','out','areaid2']
         else:
-            magentaprint("TrackGrindThread.decide_where_to_go decided training is not needed at the moment.")
+            magentaprint("TrackGrindThread.decide_where_to_go decided not to train, not sure of the numbers though")
             # magentaprint("Note: keeping " + str(2*self.command_handler.weapon_bot.possible_weapons[0].item.value) + " backup gold for weapons.")
 
         # If execution got here, we aren't training

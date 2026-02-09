@@ -57,34 +57,50 @@ class ShoppingBot(MiniBot):
         self.command_handler.buy.execute_and_wait(ref)
         if self.command_handler.buy.success:
             self.char.inventory.add(asi.item.name) # It's a bit hard for buy to do this part
-            # self.char.GOLD -= asi.item.value
+            if asi.item.value:
+                self.char.GOLD -= asi.item.value # Why comment out?? Does parent do this?
+            else:
+                magentaprint("shopping bot asi.item.value doesn't exist, couldn't subtract gold")
             return True
         else:
             if self.command_handler.buy.no_gold:
                 magentaprint("ShoppingBot saw no_gold.")
                 raise
             else:
+                magentaprint("Shopping bot buy issue - going to sell stuff, going to tip, going back to shop")
                 # Ok go sell stuff then (assumes overburdened)
                 if self.stopping:
                     return
                 self.travel_bot.go_to_nearest_pawn_shop()
                 if self.stopping:
                     return
+                magentaprint("Shopping bot selling stuff, assuming overburdened")
                 self.sell_bot.sell_stuff()
                 if self.stopping:
                     return
+                magentaprint("Shopping bot going to tip")
                 self.travel_bot.go_to_nearest_tip()
                 if self.stopping:
                     return
+                magentaprint("Shopping dropping stuff")
                 self.sell_bot.drop_stuff()
                 if self.stopping:
                     return
+                magentaprint("Shopping bot going to buy the thing")
                 self.travel_bot.go_to_area(asi.area.id)
                 if self.stopping:
                     return
+                magentaprint("Shopping bot buying the thing")
                 self.command_handler.buy.execute_and_wait(ref)
                 if self.command_handler.buy.success:
                     self.char.inventory.add(asi.item.name)
+                    # Buy command isn't smart enough to subtract gold, is it? Not really, because we aren't giving it the ASI
+                    # self.char.GOLD -= asi.item.value # Why comment out?? Does parent do this?
+                    # It'd be nice if buy would do this though so it's not forgotten
+                    if asi.item.value:
+                        self.char.GOLD -= asi.item.value
+                    else:
+                        magentaprint("shopping bot asi.item.value doesn't exist, couldn't subtract gold")
                     return True
                 else:
                     self.sell_bot.bulk_drop('scarlet')
@@ -102,6 +118,10 @@ class ShoppingBot(MiniBot):
                     self.command_handler.telnetHandler.write('get all')
                     if self.command_handler.buy.success:
                         self.char.inventory.add(asi.item.name)
+                        if asi.item.value:
+                            self.char.GOLD -= asi.item.value 
+                        else:
+                            magentaprint("shopping bot asi.item.value doesn't exist, couldn't subtract gold")
                         return True
                     else:
                         raise

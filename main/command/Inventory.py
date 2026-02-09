@@ -231,6 +231,7 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'iron shield'
         # 'platinum ring', 'gold ring', 'steel ring', 'silver ring'
         #'steel mask' # spiv, sawmill
+        'green potion' # Bless I think
     ]
     def __init__(self, telnetHandler, character):
         # I am now thinking that inventory is only concerned about the backpack, not what is equipped.
@@ -593,7 +594,7 @@ class Inventory(SimpleCommand, ReferencingList):
     # def sell_fast(self):
 
     def drop_stuff(self):
-        magentaprint("Inventory.drop_stuff() (Don't use this! Can mixes up which items of same name are broken.)")
+        magentaprint("Inventory.drop_stuff() (Don't use this! Can mix up which items of same name are broken.)")
         self.__stopping = False
         # self.get_inventory()  # Maybe unnecessary, except I see "You don't have that" if removed
 
@@ -810,9 +811,13 @@ class Inventory(SimpleCommand, ReferencingList):
         return self.broken_junk()
 
     def broken_junk(self):
+        return []  # I actually want to keep rings now, for some reason (wrote code to buy them even... they'll get repaired and worn... or sold if not needed)
+        # Might lose gold doing this though
+
         refs = []
         # unique_refs = self.get_unique_references(self.list)
         # for uref in unique_refs:
+
         for item in self.list:
             item_name_split = item.name.split(' ')
             if len(item_name_split) > 1:
@@ -1055,6 +1060,44 @@ class Inventory(SimpleCommand, ReferencingList):
                         return 'ring ' + str(count)
                     else:
                         return 'ring'
+
+    def get_reference_for_each_one(self, name):
+        ref = self.get_last_reference(name)
+        count = self.count(name)
+        ret=[]
+        while count > 0:
+            ret.append(ref)
+            ref=self.decrement_ref(ref)
+            count-=1
+        return ret
+
+    def get_n_from_reference(self, ref):
+        thesplit=ref.split(' ')
+        if len(thesplit) > 1:
+            return int(thesplit[1])
+        else:
+            return 1
+
+    def decrement_ref(self, ref):
+        n=self.get_n_from_reference(ref)
+        if n > 1:
+            n=n-1
+            return ref.split(' ')[0]+' '+str(n)
+        else:
+            return ""
+
+    def check_if_broken(self, ref):
+        item=self.get_item_from_reference(ref)
+        if hasattr(item, "usable"):
+            return not item.usable
+        else:
+            magentaprint("Inventory item didn't define usable??")
+
+    def add_to_keep_list_ref(self, ref):
+        name=self.get_item_name_from_reference(ref)
+        if name not in self.keep_list:
+            magentaprint("Adding to keep list!!! Happens if we were wearing armour that we can't afford to repair and isn't in DB {}, {}".format(ref, name))
+
 
 # Ok I want to set up reactions to keep myself up to date.
 # I am thinking of steel bottles and restoratives, so I want

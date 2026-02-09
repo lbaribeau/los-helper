@@ -40,3 +40,7 @@ class Wear(CommandThatRemovesFromInventory):
         #         self.ring_wearing_reaction.rings_worn = 8
         super().notify(r, m)
 
+    @property
+    def no_room(self):
+        return self.result in R.no_room
+

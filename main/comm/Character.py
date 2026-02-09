@@ -228,6 +228,11 @@ class Character(object):
     lvl1_red_monsters = [ # 8-15 exp
         'old kobold', 'kobold child', 'kobold dam'
     ]
+    preferred_lvl_1_2_monsters = [
+        'oaf', 'wanderer', 'thug', 'spiv', 'kobold sentry', 'tired hooker', 'waitress',
+        'blond hooker', 'angry hooker', 'sultry hooker', 'journeyman', 'housewife', # 'acolyte'
+    ]
+    
     lvl2_monsters = [ #~ 15 xp
         'hawker', 'barmaid', 'smelly beggar', 'black crow', 'sheep', 'goose', 'singer', 'musician', 'spiv', 'bidder', 'dairy cow',
         'scholar', 'juggler', 'shepherd', 'gazelle', 'jongleur', 'clerk', 'stablehand', 'rich kid', 'bladesman',
@@ -251,7 +256,8 @@ class Character(object):
         'small bore worm'
     ]
     lvl2_red_monsters = [
-        'kobold sentry', 'blond hooker', 'sultry hooker', 'kobold', 'spiv', 'drunken miner', 'kobold miner', 'kobold archer',
+        'kobold sentry', 'blond hooker', 'sultry hooker', 'kobold', 'spiv', # steel mask
+        'drunken miner', 'kobold miner', 'kobold archer',
         'angry hooker', 'angry kobold', 'red axer', 'pickpocket', 'thug', 'tired hooker', 'scruffy man','conman',
         'zombie', 'stumbling skeleton', 'gambler',
         'knifer' # Near Copper Mary shows up
@@ -317,6 +323,7 @@ class Character(object):
         'boa constrictor',
         'prestidigitator', # Go through apothecary in highmarket
         'school teacher' # could be hard
+        # 'barbarian lass' shows up by HorseMaster, drops broad swords
     ]
     # level 6 seekers? seeker 100 exp, lyrist 80 exp
     # Effect of missed comma is that mobs after it don't get added
@@ -354,8 +361,9 @@ class Character(object):
     ]  # There are also lvl 5 rancher sentries... they're a bit blue
     lvl8_monsters = [  # There are 2 amethyst guards and 3 amber guards of this level
         'Alaran the Market Manager', # small chain hood
-        'hauler', 'Farmer Malbon', 'sonneteer', 'Tag', 'mine manager', 'artificer',
-        'Dini Stonehammer', # horseman's flail 500g
+        'hauler', 'Farmer Malbon', 'sonneteer', 'Tag', 'mine manager', #175 xp, 191g, glass bracers
+        'artificer',
+        'Dini Stonehammer', # horseman's flail 500g... or 161 xp, 291g
         'Douvan', # 472 gold
         'Olmer', 'Thereze', 'Farmer Viladin', 'Rancher Renstone', 'berzerker', 'dwarven hunter',
         'initiate', 'berserk orc', #'hedge knight', 
@@ -384,15 +392,16 @@ class Character(object):
     lvl10_monsters = [ # 350+
         # 'wounded knight', # -2 difficulty
         'Dame Brethil',  #makeup kit, trade to dalla, get dalla's blessing
-        'Jerrek',  # plate armour, sleeves (all sizes), steel plate shield(!)
-        'Rimark', # steel sleeves(s), leggings, armour(!)(many sizes)
+        'Jerrek',  # plate armour, plate sleeves (all sizes), steel plate shield(!)
+        'Rimark', # steel sleeves(s), leggings(s), armour(!)(many sizes)
         'Commander Rilmenson', # heavy crossbow
         'Master of Ceremonies', # 280, adamantine sword 750g (The)
-        'Farmer McDermott', 'dwarven blacksmith', # 400
+        'Farmer McDermott', # 296 xp, 346 gold, yew staff
+        'dwarven blacksmith', # 400
         'abbot', # 445
         'barbarian cook', "shaman's assistant",
         'Ringmaster', 'Marie', 'market guard', #(<=10 (need to check these)) (The)
-        'Kelluran' 
+        'Kelluran' # 256xp, 166g
         # gnomish miner
         # Maybe try master miners then mine managers
         # Mine track looks tougher than others
@@ -414,41 +423,43 @@ class Character(object):
     ]
     # The Hermit Cal
     lvl12_monsters = [
-        'Tardan', # 560 exp, chain mail leggings(!)(L), steel gauntlets(L)
-        'Boris Ironfounder',  # rare coin, plate mail helm(!)(s), plate mail gauntlets(s), diamantium leggings(s), plate sleeves (s)
-        'Horbuk', # steel collar like oremaster (m!), dwarven axe, 361 gold, 570 exp
-        'Hurn the Smith', # 600xp, 733g
-        'Annette Plover', 
-        'Gorban', # (dusty blue) golden potion
-        'dwarven adventurer',# dusty blue, 760 gold, 490 exp, walks into Silken Alleys
-        'ranch foreman',
-        'barbarian shaman',  # grey; fireball, burstflame, 830 exp, did it with just mend
-        'barbarian warrior', 
-        'Floor Manager',  # 550 exp ('The') diamantium longsword
-        'shadowed huorn', # heartwood nugget
-        'Lady Denlise', # golden potion
+        'Tardan',             # 560 exp, 204g, chain mail leggings(!)(L), steel gauntlets(L)
+        'Boris Ironfounder',  # rare coin, plate mail helm(!)(s), plate mail gauntlets(s), diamantium leggings(s), plate sleeves (s) cuz he's a dwarf
+        'Horbuk',             # steel collar like oremaster (m!), dwarven axe, 361 gold, 570 exp
+        'Hurn the Smith',     # 600xp, 733-952g
+        'Annette Plover',     # throwing stars
+        'Gorban',             # (dusty blue) golden potion, 513xp, 424 gold
+        'dwarven adventurer', # dusty blue, 760 gold, 490 exp, walks into Silken Alleys
+        'ranch foreman',      # (E) 745 xp, 230g
+        'barbarian shaman',   # grey; fireball, burstflame, 830 exp, did it with just mend
+        'barbarian warrior',  # 529 exp, 388 gold, maul hammer
+        'Floor Manager',      # 550 exp ('The') diamantium longsword
+        'shadowed huorn',     # heartwood nugget
+        'Lady Denlise',       # golden potion
         # Denlise calls for help
-        'house guest', # fireball/gold dagger/810 exp
-        'Martin'
+        'house guest',        # fireball/gold dagger/810 exp
+        'Martin'              # 495 xp, 712g, sequinned scarf
         #'Saga Teacher', 'Amber Mage', # cannot be killed ("This is not possible!") (The)
         # 'vigil knight'
         # Servant of the Night
     ]
     lvl13_monsters = [
         'Shaldena the Red' # 730 exp, 400 gold, 2 burstflames
-        'Dojo Administrator', # (The)
+        'Dojo Administrator', # 711xp, 1000g, monk hammer
         'Elsuria', # fine elven cloak
         'Tendrurn', # adamantine axe 600g
         'Nospe', # under the Casino, dwarven hammer, thieves blade (trade to alch NPC for slow disease)
         'tiger', # Actually level 7 but there are two of them
-        "Th'kit the HorseMaster"
+        "Th'kit the HorseMaster" # 617 xp, 143g
     ]
     lvl14_monsters = [
-        'Olarma', 
+        'Olarma', # casts crush for 25, shatterstone for 35 repeatedly! Also mend wounds. Pally lost 11k xp with wimpy flee code. She gave 1063 xp, 606g
         'Manic Soothsayer', # dragon claws (thief boots), stolen contract (rare), crypt dust (The)
-        'Team Leader Egan', # night blade (E)
+        'Team Leader Egan', # 800xp, 425 gold, night blade (E)
         'Rancher Plover', # assassin's dagger
-        'Qimoth', "Th'kit the HorseMaster", 'warmonger',
+        'Qimoth', #800 xp, 728 coins
+        "Th'kit the HorseMaster", 
+        'warmonger',
         'Lord Tamaran', # aaashaaal's gift (protect air), diamantium cross (trade to Douvan for ram staff)
         'castle priest',
         'cave troll guard'
@@ -463,8 +474,7 @@ class Character(object):
         'huorn shepherd',
         'Queen Dalla',
         'grey cloaked stranger', # showed up at north intersection of Silken Alleys
-        "Al'Sik the Carver",
-        "Byr'Ula the Smith"
+        "Al'Sik the Carver" # 1000xp, 1520g
     ] # confirm Madame Zara
     # Dalla will take golden pots
     # trade diamantium cross for rusty key at Douvan (door)
@@ -478,29 +488,35 @@ class Character(object):
     # stepping stones east
     # Get choorga's head and give the tiger eye gem to lyron
     # invis potions, buff, go in the room, and all attack at once
-    lvl16_monsters = ['Holbyn', # Holby closes at night
-    'Ordaran the White', 'Pansy', 'Vickie', # Hawk camp
-    'Matriarch Sara', 
-    "Vas'Polu the HawkMaster",
-    'keep guard' # N of greenhaven, avenue, Lion keep, they are in pairs so +2 to level
+    lvl16_monsters = [
+        'Holbyn', # Holby closes at night
+        'Ordaran the White', 'Pansy', 'Vickie', # Hawk camp
+        'Matriarch Sara', 
+        "Vas'Polu the HawkMaster",
+        'keep guard' # N of greenhaven, avenue, Lion keep, they are in pairs so +2 to level
     ] 
     lvl17_monsters = [
         'Faldomet', 
         'ascended',
         # 'Patriarch Jedd Morhennon', # Not possible
-        'Farside', 'Lord Arduis', 'Lady Arielle']
+        'Farside', 'Lord Arduis', 'Lady Arielle', "Byr'Ula the Smith"]
     lvl18_monsters = [
         'Lady Jenlira', # vigil knight guards the entrance
         'Deep Root',
         'weapons master',
-        "Ha'Chans the Shaman" # needles at 14
+        "Ha'Chans the Shaman", # needles at 14
+        "barbarian champion" # shows up near the "barbecue""
     ] 
     lvl20_monsters = ['Archbishop', 'Haram','hero','Corien'] # needles me at 16 (The Archbishop)
     # A list of monsters redundant to the above lists that
     # I may want to kill even if they are too low of level.
     # Mostly hostiles and things that don't let you loot.
-    # Level 18 <= 'master', 'Magus Bregum', 'Magus Cristyl', 'Magus Olthim', 'Magus Tertial', 'Dwar', 
+    # Level 18 <= 'Magus Bregum', 'Magus Cristyl', 'Magus Olthim', 'Magus Tertial', 'Dwar', 
     # Level 19 <= 'Joffi the Mystic'
+    # Level 20: 
+    #   'master' at White Dojo entrance (yards)
+    #   'Ha'Chans the Shaman'
+    # Level 22+: "Zi'Cab the Chieftan"
     # Lich on blood rock (shadow lich). Giant bog troll. Wyvern
     # "Grand Master Yang-Shi" "Sensei" (The)
     # "Master Artificer" (That is not possible!) (The)
@@ -518,13 +534,35 @@ class Character(object):
     # 'myrmidon' spawns outside Keldan's Distillations (also brutalizer - try camping this node)
     # Trantas
     # Kin'Tal
-    preferred_lvl_1_2_monsters = [
-        'oaf', 'wanderer', 'thug', 'spiv', 'kobold sentry', 'tired hooker', 'waitress',
-        'blond hooker', 'angry hooker', 'sultry hooker', 'journeyman', 'housewife', # 'acolyte'
-    ]
     # Idea: marauder
     # Idea: berzerker
     # Idea: brutalizer, other barbarians (ask immigration barbarian)
+
+        # platinum crucifix
+    # Farmer Woldis
+    # Shady Copse without a period is an ambush of bugbears
+    # paths cross
+    # Path, hut, 
+    # Cal the Hermit
+    # Priestly ghost
+    # go floor Back Cellar
+    # Farmer Grangers Ghost
+    # fens is the swamp
+    # fen lich
+    # daemons in lich area
+    # wracked daemon
+    # Fens road is a swamp
+    # trail? wagon? North of the fort "pathway"
+    # large dell
+    # diamantium cross is good for a ram staff
+    # kill a wraith
+    # lich on blood rock
+    # weapons master
+    # Esrhae
+    # steel plate shield from bandits weighs 15 but gives me nice AC
+    # shrew
+    # steel boots that fit Brocolli in Silken Alleys
+ 
 
     def set_monster_kill_list(self, level):
         self.MONSTER_KILL_LIST = []
@@ -726,28 +764,4 @@ class Character(object):
             raise
             return 2
 
-    # platinum crucifix
-    # Farmer Woldis
-    # Shady Copse without a period is an ambush of bugbears
-    # paths cross
-    # Path, hut, 
-    # Cal the Hermit
-    # Priestly ghost
-    # go floor Back Cellar
-    # Farmer Grangers Ghost
-    # fens is the swamp
-    # fen lich
-    # daemons in lich area
-    # wracked daemon
-    # Fens road is a swamp
-    # trail? wagon? North of the fort "pathway"
-    # large dell
-    # diamantium cross is good for a ram staff
-    # kill a wraith
-    # lich on blood rock
-    # weapons master
-    # Esrhae
-    # steel plate shield from bandits weighs 15 but gives me nice AC
-    # shrew
-    # steel boots that fit Brocolli in Silken Alleys
-    
+   

@@ -12,6 +12,7 @@ from mini_bots.shopping_bot         import ShoppingBot
 from mini_bots.mini_bot             import MiniBot
 from db.Database                    import AreaStoreItem  # Am I supposed to import it like this? Is this why db files create a circular import when we try to get magentaprint?
 from db.Item                        import Item           # This is how I figured I should import it... maybe I'm getting another version of it
+from math                           import ceil
 
 class ArmourBot(MiniBot):
     def __init__(self, char, command_handler, the_mud_map):
@@ -272,9 +273,12 @@ class ArmourBot(MiniBot):
 
             # OK bonus case... suppose we forgot we have it broken? 
             # count = self.inventory.count(asi.item.name)
+
+            # Maybe we have a broken one
             if self.inventory.has(asi.item.name):
-                self.broken_armour.append(asi.item.name)
-                self.go_repair_or_replace_broken_armour() 
+                if asi.item.name not in self.broken_armour:
+                    self.broken_armour.append(asi.item.name) # Ehrm this is already bananas... since the above code relies on this list to know what it should do, its presumptuous to edit
+                # self.go_repair_or_replace_broken_armour() 
                 # now that self.broken_armour is set, this should work... i guess we could gold-check
                 # I guess the blacksmith could mess it up
                 # Is there a way we can check... I guess check .has again? Do a count
@@ -283,10 +287,40 @@ class ArmourBot(MiniBot):
                 # If smithy broke it then we want to try any other broken ones we have in inventory and otherwise continue below and buy it
                 # I guess we could recalculate desired_asi_list (recurse)... determine_shopping_list will figure it out...??? Yeah it calls "eq"
                 # if self.broken_armour and self.broken_armour[-1] == asi.item.name:
-                return self.get_needed_default_armour() # Yes this will disregard the current "instance" on the call stack and start a new one
+                # return self.get_needed_default_armour() # Yes this will disregard the current "instance" on the call stack and start a new one
                 # Repair object could help a bit but not guaranteed
                 # OK... handled "large iron shield" in inventory on login, nice.
+                # Ok not too bad except we need to be able to afford to repair it... 
 
+                if self.char.GOLD - ceil(asi.item.value/2) < self.gold_to_save_for_weapon:
+                    magentaprint("Ok armour_bot can't afford to repair {}".format(asi.item.name))
+                    # Got an infinte loop without this... oy
+                    # The problem is that the 1st half of the code depends too much on self.broken_armour
+                    # It should also check inventory for the thing so I don't have to recurse...
+                    continue
+
+                self.go_repair_or_replace_broken_armour() 
+                return self.get_needed_default_armour() # Yes this will disregard the current "instance" on the call stack and start a new one
+                # Maybe don't recurse though
+                # All we are going for is if the smithy failed and broke it (not wearing it and it's gone so continue currently) or if the smithy succeeded in repairing it ("continue")
+                # We could redo determine_shopping_list, that checks "eq""
+                # It _should_ work now as-is since I added a gold clause but still
+                # It could still be in desired_shopping list (iron ring) but... you could do a "count"
+                # What if determine_shopping_list changes due to gold amount... hmmm
+                # This darn "bonus" code... we just added a bit to see it in current inventory...
+                # It's ok we can call go_repair again but we should avoid recursing
+                # We just discovered that the piece we want is in the inventory... we don't even know if it's broken
+                # So we just add it to broken_armour so the that go_repair_or_replace_broken_armour can run on it
+                # If we recurse we just can't end up back here again... so, use broekn_armour for that...
+                # So what is the check, I guess call determine_shopping_list again, and count how many we need now?
+                # Don't forget the count could be the same if we couldn't afford it...
+                # Well I think this'll hold... 
+                # We can't just "continue" in case the smithy broke it
+                # Maybe put a self variable
+                # Wow it sets self.broken_armour = [] holy crapp
+
+
+            # Now going to buy it
             if self.char.GOLD - asi.item.value < self.gold_to_save_for_weapon:
                 # just skip it and keep running instead of traveling there etc.... take the death risk with no money
                 # Also this is the correct time to check because gold can change
