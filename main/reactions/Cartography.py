@@ -152,10 +152,10 @@ class Cartography(BotReactionWithFlag):
     def too_dark(self, regex, M):
         magentaprint("Cartography receiving too_dark notification")
         C = self.character
-        if C.AREA_ID is not None:
+        if C.AREA_ID != None:
             guessed_area = self.guess_location(C.AREA_ID, C.LAST_DIRECTION)
 
-            if guessed_area is not None:
+            if guessed_area != None:
                 C.AREA_ID    = guessed_area.area.id
                 C.AREA_TITLE = guessed_area.area.name
                 C.EXIT_LIST  = guessed_area.area_exits
@@ -219,7 +219,7 @@ class Cartography(BotReactionWithFlag):
         if C.TRYING_TO_MOVE:
             # I think TRYING_TO_MOVE prevents multiple saves of the area
             # Yes, and ensures that variables related to the 'from' area are present
-            #if C.EXIT_LIST is not []: 
+            #if C.EXIT_LIST != []: 
             # Ehhh this was always true! ('is' tests for same object)
             # I don't think the regex will match without an exit list.
             if C.EXIT_LIST != []:
@@ -317,16 +317,16 @@ class Cartography(BotReactionWithFlag):
     def guess_location(self, area_from_id, direction_from):
         guessed_area = None
 
-        if self.character.MUD_AREA is not None:
+        if self.character.MUD_AREA != None:
             exit_type = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
 
-            if exit_type is None:
+            if exit_type == None:
                 exit_type = ExitType(name=direction_from)
 
             guessed_area = self.character.MUD_AREA.get_area_to_from_exit(exit_type)
             curMudArea = self.character.MUD_AREA.get_area_to_from_exit(exit_type)
 
-            if curMudArea is not None:
+            if curMudArea != None:
                 #check if curMudArea can be dark
                 guessed_area = curMudArea
 
@@ -440,7 +440,7 @@ class Cartography(BotReactionWithFlag):
             #http://stackoverflow.com/questions/501308/problem-in-understanding-python-list-comprehensions/501323#501323
 
             E_LIST = self.number_exits(E_LIST)
-            magentaprint("parse_exit_list got exit list " + str(E_LIST))
+            # magentaprint("parse_exit_list got exit list " + str(E_LIST))
         except Exception:
             E_LIST = []
             magentaprint("Parse exit Exception: " + str(sys.exc_info()[0]), False)
@@ -467,7 +467,7 @@ class Cartography(BotReactionWithFlag):
 
     def create_exit_regex_for_character(self, E_LIST):
         exit_regex = "(NEVERMATCHTHISEVEREVER)"
-        if E_LIST is not None:
+        if E_LIST != None:
             exit_regex = "(?:go )?(!?"
 
             for i,s in enumerate(E_LIST):
