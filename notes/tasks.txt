@@ -1,0 +1,40 @@
+            # Tasks:  Weapon, Armour, Sell, Drop, Rest, Grind
+            # Each have: Distance, Urgency
+            # Their urgencies can change.
+            #  Grinding is often after resting but we want to stay out if there are mobs close or HP/MP is still high.
+            # Weapon needed will trump Grinding but not anything else.
+            # Armour needed is lower priority - wander to a smithy then wander to a shop.
+            #  Wandering: killing nearby mobs on the way if rested
+            # Selling/dropping becomes fairly urgent when bags are full, but maybe mobs on the way should die?
+            # Resting urgency varies with a lot of detail (very high or very low or medium etc.)
+            # How to choose?  Well, define levels.
+            # - 1: I think weapon/resting is highest priority (do the nearest then the next, absolutely, not killing)
+            #   - this is for high priority resting (low hp/mp)
+            # - 2: Armour/Selling/Dropping/resting  (wandering)
+            # - 3rd is Hunting/resting/selling/dropping/unimportant armour repair  (sell/drop wander: only do so when passing by)
+            # In step 2 the destination is a smithy or shop but we can deviate for good mob opportunities (if ready for combat)
+            # In step 3 the destination is a strong mob but we can deviate for sell/drop opporutnities (if carrying anything extra)
+            # Most time is spent in 3 (assumes equipment is dealt with.)
+            #  Generally, dropping should happen immediately after selling, until we get really good item data and can tell what to
+            # drop before going to the shop, but due to many items being sometimes sellable, even then we will need to sell first.
+            #  Step 2 means that fixing armour and urgent selling/dropping are similar priority (do nearest first)
+            #  Maybe step 3 needs an armour component.  Low priority armour repair is one unimportant piece.  However, we have to
+            # ensure that broken armour doesn't get dropped.  Ideally, this doesn't affect the route.  Broken armour should be
+            # on the keep list perhaps.
+            #  Step 3 can also have a farming component.  Step 3 introduces many options at high granularity.  Steps 1 and 2 are
+            # pretty absoulute.  Maybe we need another step.  A step is defined by a number of options of equal priority.
+            # - let's leave farming for later... (rings, better weapons)
+            #  Resting seems to occur in tandem with selling and dropping maybe because they are close together in towns.  Maybe that
+            # can be done more abstractly instead of assumed by the definition of the steps.
+            # So there shouldn't be steps, just an urgency %.  Resting can be any %.  The % can be sharply increased by proximity.
+            # Weapon Armour Sell/Drop Rest Hunt
+            # Maybe instead of being numerical there should be a task list.  The tasks can insert themselves into the list.
+            # They get executed when they float to the top.  Weapon can insert itself ahead of the others (they each can.)
+            # They each should know their priority relative to others.  Drop can know that it's always after selling.
+            #  State machine?  Would need a trigger to change states.  ie: shop gets near.
+
+            #  Check every task every node and do the reordering.  1st get distances of each task.  Then, start with weapon/rest,
+            # which can LOCK themselves into first/second.  (Maybe not Themselves - TopDownGrind should order them.)  Weapon/Armour
+            # bots will have to return each node...
+
+            # Other tasks:  Aura correcting, Chasing

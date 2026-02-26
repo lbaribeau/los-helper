@@ -226,7 +226,7 @@ class Character(object):
         # chained adherant in dark knight area is blue aura, could be useful
     ]
     lvl1_red_monsters = [ # 8-15 exp
-        'old kobold', 'kobold child', 'kobold dam'
+        'old kobold', 'kobold child', 'kobold dam', 'ill kobold'
     ]
     preferred_lvl_1_2_monsters = [
         'oaf', 'wanderer', 'thug', 'spiv', 'kobold sentry', 'tired hooker', 'waitress',
@@ -259,7 +259,7 @@ class Character(object):
         'kobold sentry', 'blond hooker', 'sultry hooker', 'kobold', 'spiv', # steel mask
         'drunken miner', 'kobold miner', 'kobold archer',
         'angry hooker', 'angry kobold', 'red axer', 'pickpocket', 'thug', 'tired hooker', 'scruffy man','conman',
-        'zombie', 'stumbling skeleton', 'gambler',
+        'zombie', 'stumbling skeleton', 'gambler',  # check
         'knifer' # Near Copper Mary shows up
         # hardened drinker
     ]

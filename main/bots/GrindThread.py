@@ -236,14 +236,30 @@ class GrindThread(BotThread):
         # We also want to be hitting all the targets we are interested in, and leaving at the appropriate time
         # This is mainly - do combat for one node
 
+        # Ok we need a summary of what actually happens here
+        # 1) check if there is C.mobs.chase (chase mob), leftover from previous state, if so, fight that... also, if it ran away, chase it again
+        # 2) Try walking out if we are hurt and mobs are attacking (by returning)
+        # 3) return if we fled because that gets handled elsewhere
+        # 4) maybe do a light heal
+        # 5) Fight a fresh target, maybe multiple (recursive)
+
         C = self.character
 
-        chase_ref = C.mobs.list.get_last_reference(C.mobs.chase)
-        C.mobs.chase = ''  # It should be a chase list (no would be better to chase one at a time)
+        chase_ref         = C.mobs.list.get_last_reference(C.mobs.chase)
+        C.mobs.chase      = ''  # It should be a chase list (no would be better to chase one at a time)
         C.mobs.chase_exit = ''
 
-        if chase_ref:
-            magentaprint("do_regular_actions saw chase_ref: " + chase_ref)
+        # if chase_ref:
+        # if chase_ref or self.command_handler.go.too_dark:
+        # Working on... what if it's dark, then, it's good "chase" is on but we won't be able to get a solid ref at all
+        # So we'll just have to take a swing...
+        # I guess glowing potion could cover that
+        # But if dark we'll get "get_ref_of_attacking_mob" on empty list so first ref?
+        # No, the mob attack should get itself added into .list (Mobs object, it says "weird")
+        # So yeah we will get the first reference and we won't know what mobs are around
+        # We shoudl be okay because we found the spot in BotThread where .list was being made as the wrong type of list
+        if C.mobs.chase:
+            magentaprint("do_regular_actions saw chase_ref: " + str(chase_ref))
             # new_target = chase_ref # This is a reference, but the other clause hasn't made a reference yet
             # new_target = C.mobs.chase 
 
@@ -522,6 +538,10 @@ class GrindThread(BotThread):
         # Assume one regular tick to make the math simpler
         C = self.character
         return (C.MANA < C.maxMP) + (C.maxMP-(C.MANA+C.mana_tick()+2))/(C.mana_tick()+3) # +3 is 2 from chapel and 1 from resting
+
+    def full_health_and_mana(self):
+        C = self.character
+        return C.MANA >= C.maxMP and C.HEALTH >= C.maxHP
 
     def rest_until_ready(self):
         magentaprint("Rest_until_ready(): hp ticks needed: {}, mana ticks needed: {}.".format(round(self.health_ticks_needed(), 1), round(self.mana_ticks_needed(), 1)))

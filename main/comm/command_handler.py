@@ -58,6 +58,9 @@ magentaprint("... db.MudMap");             from db.MudMap                  impor
 magentaprint("... RestLoop");              from mini_bots.rest_loop        import RestLoop
 magentaprint("... MobAttackWaiter");       from reactions.wait_for_mob_attack import MobAttackWaiter
 magentaprint("... db.Item");               from db.Item                    import Item
+magentaprint("... MobArriveWaiter");       from mini_bots.camping_bot      import MobArriveWaiter
+magentaprint("... CampingBot");            from mini_bots.camping_bot      import CampingBot
+
 
 magentaprint("... Done command_handler.py import section, now defining classes")
 
@@ -135,6 +138,7 @@ class CommandHandler(object):
         self.train     = Train(telnetHandler); mudReaderHandler.add_subscriber(self.train)
         self.rest_loop = RestLoop(self.rest, self.character.mobs, self.character); mudReaderHandler.add_subscriber(self.rest_loop)
         self.mob_attack_waiter = MobAttackWaiter(); mudReaderHandler.add_subscriber(self.mob_attack_waiter)
+        self.mob_arrive_waiter = MobArriveWaiter(); mudReaderHandler.add_subscriber(self.mob_arrive_waiter)
 
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
@@ -167,13 +171,26 @@ class CommandHandler(object):
             'print_gold_exp' : self.print_gold_exp_etc,
             'rest_loop' : self.do_rest_loop,
             'has_usable_weapon_in_inventory' : self.has_usable_weapon_in_inventory,
-            'waitformobattack' : self.wait_for_mob_attack
+            'waitformobattack' : self.wait_for_mob_attack,
+            'waitformobarrive' : self.wait_for_mob_arrive,
+            'camp_here' : self.camp_here
             # 'toggle_prints' : self.toggle_prints
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
         # Each action is going to be passed "a" which is string.partition(' ')[2] on the command that came in
         # So make sure the function has the right signature (self, args)
+
+    def camp_here(self, args):
+        magentaprint("CommandHandler camp_here() (bot start function like start_track_grind)")
+        # self.camping_bot = CampingBot()
+        self.character.DEAD=False # Use case: run bot after death from manual play
+        if self.bot_check():
+            self.bot_thread = CampingBot(self.character, self, self.mudReaderHandler, self.mud_map, self.rest_loop, self.character.AREA_ID)
+            self.bot_thread.start()
+
+    def wait_for_mob_arrive(self, args):
+        self.mob_arrive_waiter.wait_for_mob()
 
     def wait_for_mob_attack(self, args):
         magentaprint("Calling it...")
@@ -980,6 +997,8 @@ class CommandHandler(object):
         #     magentaprint("CommandHandler.stop_bot() self.bot_thread.is_alive(): " + str(self.bot_thread.is_alive()))
         # Error - smithy_bot doesn't have is_alive()
         # if self.bot_thread and self.bot_thread.is_alive():
+        if hasattr(self, 'mob_arrive_waiter') and self.mob_arrive_waiter:
+            self.mob_arrive_waiter.stop()
         if self.bot_thread:
             self.bot_thread.stop()
         self.weapon_bot.stop()

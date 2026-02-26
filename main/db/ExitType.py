@@ -62,6 +62,7 @@ class ExitType(NamedModel):
         magentaprint("ExitType.py get_exit_type_by_name_or_shorthand() matched exit, given " + str(name) + ", to: " + str(exit_types))
         # raise # Gives a stack trace... mudReaderThread s.notify(r, match), cartography, notify, self.area(M), C.MUD_AREA= MudAea.map( (line 202), in map, MudArea.discern_location, in discern_location... (line 61 MudArea.py)
         return exit_types
+        # Ok I think we get "None" because "shorthands" (Synonyms) aren't implemented when we go north with "n""
 
     def get_exit_type_by_name_and_opposite(name, exit_id): #this should always be unique
         exit_types = None

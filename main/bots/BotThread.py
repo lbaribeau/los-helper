@@ -12,6 +12,8 @@ magentaprint("... ... ... ... BotThread import db.Database"); from db.Database i
 magentaprint("... ... ... ... BotThread import db.MudMap"); from db.MudMap import MudMap
 
 magentaprint("... ... ... ... BotThread import comm.Spells"); from comm import Spells
+from reactions.referencing_list     import ReferencingList
+
 
 # Refer to https://docs.python.org/3/library/threading.html
 # excepthook is available as a method from threading
@@ -275,8 +277,8 @@ class BotThread(threading.Thread):
         self.no_exit_count = 0
         if self.command_handler.go.too_dark:
             # "It's too dark to see"
-            self.character.mobs.list=[]      # Maybe Cartography also does this
-            self.character.mobs.attacking=[] # Maybe Cartography also does this
+            self.character.mobs.list=ReferencingList([]) # Maybe Cartography also does this
+            self.character.mobs.attacking=[]             # Maybe Cartography also does this
             pot = self.inventory.get_first_reference("glowing potion")
             if pot:
                 self.command_handler.drink.execute_and_wait(pot)
