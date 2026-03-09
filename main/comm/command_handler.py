@@ -173,13 +173,87 @@ class CommandHandler(object):
             'has_usable_weapon_in_inventory' : self.has_usable_weapon_in_inventory,
             'waitformobattack' : self.wait_for_mob_attack,
             'waitformobarrive' : self.wait_for_mob_arrive,
-            'camp_here' : self.camp_here
+            'camp_here'   : self.camp_here,
+            'armour_init' : self.armour_init,
+            'weapon_init' : self.weapon_init,
+            'gear_init'   : self.gear_init,
+            'Sel' : self.sell_items,
+            'Sell' : self.sell_items,
+            'Drop' : self.drop_items
             # 'toggle_prints' : self.toggle_prints
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
         # Each action is going to be passed "a" which is string.partition(' ')[2] on the command that came in
         # So make sure the function has the right signature (self, args)
+
+    def sell_items(self, args):
+        # if not self.bot_check() or not hasattr(self, 'sell_bot') or not hasattr(self, "bot_thread") or self.bot_thread == None:
+        if not self.bot_check() or not hasattr(self, 'sell_bot'): #or not hasattr(self, "bot_thread") or self.bot_thread == None:
+            magentaprint("Botcheck failed")
+            return
+        if not hasattr(self, "bot_thread") or self.bot_thread == None:
+            magentaprint("Creating a botthread!")
+            # Ok I might be hacking at this point... construct bot if it's not constructed...
+            self.bot_thread = TrackGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, starting_path=0)
+        # self.bot_thread.start()
+        # self.bot_thread.stopping = False
+            magentaprint("Calling self.bot_thread.sell_items()")
+        self.bot_thread.sell_items()
+
+    def drop_items(self, args):
+        if not self.bot_check() or not hasattr(self, 'sell_bot'):# or not hasattr(self, "bot_thread") or self.bot_thread == None:
+            magentaprint("Botcheck failed")
+            return
+        if not hasattr(self, "bot_thread") or self.bot_thread == None:
+            magentaprint("Creating a botthread!")
+            self.bot_thread = TrackGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, starting_path=0)
+        magentaprint("Calling self.bot_thread.drop_items()")
+        self.bot_thread.stopping = False
+        self.bot_thread.drop_items()
+
+    def armour_init(self, args):
+        magentaprint("In armour_init... running setup functions but not travel functions")
+        # The point right now is that I want to implement a way to do pawning and dropping but keep_list is kind of more dynamic now
+        # Well it doesn't get modified but armour bot likes to keep broken stuff if we are too broke to have it repaired
+        # But these things aren't necessarily protected from "Drop" command which is supposed to help drop garbage at the tip (also "Sell")
+
+        if not self.bot_check():
+            # self.bot_thread = ThreadMaker(self.armour_bot, 'suit_up')
+            # self.bot_thread.start()
+            # self.bot_thread = self.armour_bot
+            # self.bot_thread.start_thread()
+            magentaprint("Botcheck failed")
+            return
+        if not hasattr(self, "armour_bot"):
+            magentaprint("no armour bot")
+            return
+        AB = self.armour_bot
+        # AB.action_existing_broken_list() # This is not needed here because 
+        if AB.stopping:
+            magentaprint("Armour bot found no gold for regex broken list (?) stopping true anyway")
+            return
+        AB.try_what_we_have()
+        AB.check_if_we_have_broken_stuff_we_can_use()
+
+    def weapon_init(self, args):
+        if not hasattr(self, "weapon_bot"):
+            magentaprint("No weapon bot")
+            return
+        WB = self.weapon_bot
+        temp = WB.travel_bot
+        WB.travel_bot = None
+        try:
+            WB.check_weapons()
+        except AttributeError as e:
+            # Supposing weapon bot tries to use travel_bot, which is None
+            magnetaprint("Ok caught weapon bot trying to travel...:\n"+str(e))
+        finally:
+            WB.travel_bot = temp
+
+    def gear_init(self, args):
+        self.weapon_init()
+        self.armour_init()
 
     def camp_here(self, args):
         magentaprint("CommandHandler camp_here() (bot start function like start_track_grind)")
@@ -376,12 +450,13 @@ class CommandHandler(object):
             self.sell_bot.sellable()
         elif user_input.startswith('droppable'):
             magentaprint(str(self.inventory.droppable()))
-        elif user_input.startswith('Sel') and not user_input.startswith('Sella'):
-            # self.inventory.sell_stuff()
-            self.sell_bot.sell_stuff() # Stoppable? Maybe not needed
-        elif user_input.startswith('Dr') and not user_input.startswith('Dropp'):
-            # self.inventory.drop_stuff()
-            self.sell_bot.drop_stuff()
+        # elif user_input.startswith('Sel') and not user_input.startswith('Sella'):
+        #     # self.inventory.sell_stuff()
+        #     self.sell_bot.sell_stuff() # Stoppable? Maybe not needed
+        #     # Going to call Grindthread because it knows how to add keep what armour and weapon bot want to keep
+        # elif user_input.startswith('Dr') and not user_input.startswith('Dropp'):
+        #     # self.inventory.drop_stuff()
+        #     self.sell_bot.drop_stuff()
         elif user_input == 'go_pawn':
             self.travel_bot.go_to_nearest_pawn_shop() # Try ctrl C to kill the thread
         elif user_input == 'go_tip':

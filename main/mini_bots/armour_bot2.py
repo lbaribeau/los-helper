@@ -95,20 +95,21 @@ class ArmourBot(MiniBot):
         self.stopping = False
         self.no_gold = False
 
-        self.action_existing_broken_list()
+        self.action_existing_broken_list() # Existing broken list is stuff we know from seeing regex come in, "Your _x_ fell apart" 
         # if self.no_gold or self.stopping:
         # Ehrm we still want the code to run to make .broken_list so we don't throw it all away
         if self.stopping:
             # The point here is, there could be items that we were wearing that we want to wear that don't come up from the DB query
             # It gets untenable if we start using the DB to clobber that... so we just give up if we didn't have that gold... we'll save it up
-            magentaprint("Armour bot found no gold for regex broken list")
+            magentaprint("Armour bot found no gold for regex broken list(?) stopping true anyway")
             return
         # Ok so what if we wear something other than broken_armour... couldn't afford it
         self.try_what_we_have() # This goes through our inventory to see if anything is wearable
+            # IDEA: presume certain things are broken if we have them and are not wearing them (login auto wears)
         # We don't even care what happened here, do we, we check "eq" every time fresh
         self.check_if_we_have_broken_stuff_we_can_use() # This just creates self.broken_list. The idea is that we dealt with regex broken_armour which could have been different pieces than DB
         # So we can try repairing...
-        self.action_DB_based_broken_list() # This is still to repair not shop
+        self.action_DB_based_broken_list() # This is still to repair not shop (ie. broken list is stuff we have)
         if self.no_gold or self.stopping:
             magentaprint("Armour bot found no gold for DB-based broken list")
             return
@@ -211,6 +212,9 @@ class ArmourBot(MiniBot):
         # Assume last reference I guess...
         # What if we can't afford it...
         # Well, have a go...
+
+        # Existing broken list is what is known from things that broke that we have regexes for
+        # "Action" refers to going to repair them
 
         to_remove=[]
         for a in self.broken_armour:
@@ -348,10 +352,11 @@ class ArmourBot(MiniBot):
     #         return ref + ' ' + str(qty + 1)
 
     def check_if_we_have_broken_stuff_we_can_use(self):
-        desired_list = self.determine_shopping_list()
-        ref = ""
-        last_asi_item_name=""
-        self.broken_list=[] # Ok let's do try having two lists... one broken_armour, one broken_list... oooffff whyyy.... broken_armour came from regexes, broken_list is based on DB query
+        """ Adds items that we have that are viable to wear to self.broken_list """
+        desired_list       = self.determine_shopping_list()
+        ref                = ""
+        last_asi_item_name = ""
+        self.broken_list   = [] # Ok let's do try having two lists... one broken_armour, one broken_list... oooffff whyyy.... broken_armour came from regexes, broken_list is based on DB query
         for asi in desired_list:
             # Suppose we have a few iron rings we need
             # We are iterating through inventory to see if we have some broken and adding the correct amount to broken_list

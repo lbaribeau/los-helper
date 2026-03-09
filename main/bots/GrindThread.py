@@ -938,7 +938,7 @@ class GrindThread(BotThread):
         #     else:
         #         return
         # Ok we got it
-        temp=[]
+        temp=[] # Keep track of things being added to keep list
         # for a in self.command_handler.armour_bot.broken_armour + [self.command_handler.weapon_bot.broken_weapon if hasattr(weapon_bot, "broken_weapon") else None]:
         # for a in self.command_handler.armour_bot.broken_armour + [self.command_handler.weapon_bot.broken_weapon if hasattr(self.command_handler.weapon_bot, "broken_weapon") else None]:
         #     self.inventory.get_by_ref(self.command_handler.weapon_bot.get_broken_weapon_ref()).name
@@ -955,6 +955,8 @@ class GrindThread(BotThread):
         # There should be a puppet master that chooses between grinding and selling, I think
 
     def drop_items(self):
+        if self.stopping:
+            return
         self.maybe_use_extra_small_restoratives()
 
         # self.inventory.drop_stuff()
@@ -962,7 +964,7 @@ class GrindThread(BotThread):
         # self.drop_refs(self.inventory.sellable())
         # self.drop_refs(self.inventory.droppable())
         # self.inventory.keep_list.extend(self.armour_bot.broken_armour)
-        temp=[]
+        temp=[] # Keep track of things being added to keep list
         # for a in self.command_handler.armour_bot.broken_armour + [self.command_handler.weapon_bot.broken_weapon if hasattr(weapon_bot, "broken_weapon")]:
         # for a in self.command_handler.armour_bot.broken_armour + [self.command_handler.weapon_bot.broken_weapon if hasattr(weapon_bot, "broken_weapon") else None]:
         # for a in self.command_handler.armour_bot.broken_armour + [self.command_handler.weapon_bot.broken_weapon if hasattr(self.command_handler.weapon_bot, "broken_weapon") else None]:
