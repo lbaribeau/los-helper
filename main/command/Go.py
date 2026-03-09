@@ -12,32 +12,32 @@ from combat.Cast import Cast
 class Go(Command):
     command = 'go'
     success_regexes = [
-        R.area,
+        R.area                  ,
         R.too_dark
     ]
     error_regexes = [
-        R.no_exit,
+        R.no_exit               ,
         R.go_where
     ]
     failure_regexes = [
-        R.blocked_path, # == [__Three_possible_mob_strings + r" blocks your exit\."]
-        R.cant_go,
-        R.open_first,
-        R.class_prohibited,
-        R.level_too_low,
-        R.level_too_high, 
-        R.not_invited,
-        R.not_open_during_day,
-        R.not_open_during_night,
-        R.no_items_allowed,
-        R.locked,
-        R.no_right,
-        R.not_authorized,
-        R.cannot_force, # ie there is a door in dark knight area that paladin can't go through
-        R.in_tune,
-        R.washroom,
-        R.cliff,        # Why does this timeout?
-        R.occupied_area # Does cartography need to know this one? Unlikely
+        R.blocked_path          , # == [__Three_possible_mob_strings + r" blocks your exit\."]
+        R.cant_go               ,
+        R.open_first            ,
+        R.class_prohibited      ,
+        R.level_too_low         ,
+        R.level_too_high        , 
+        R.not_invited           ,
+        R.not_open_during_day   ,
+        R.not_open_during_night ,
+        R.no_items_allowed      ,
+        R.locked                ,
+        R.no_right              ,
+        R.not_authorized        ,
+        R.cannot_force          , # ie there is a door in dark knight area that paladin can't go through
+        R.in_tune               ,
+        R.washroom              ,
+        R.cliff                 , # Why does this timeout? I might have fixed this
+        R.occupied_area         # Does cartography need to know this one? Unlikely
     ]
     cooldown_after_success = 0.34
     good_mud_timeout = 20.0
@@ -97,9 +97,10 @@ class Go(Command):
         #     self.cartography.wait_for_flag()
 
         self.character.TRYING_TO_MOVE = True
+        self.character.LAST_DIRECTION = str(target)
         self.wait_for_flag(timeout=3) # also waits for cartography
         # self.cartography.wait_for_flag(timeout=3)
-        self.cartography.clear()
+        self.cartography.clear() # Sets it up so you can wait for its notify() to finish (super().notify() will call ".set()" which frees the event)
         # magentaprint("Go.execute() 2")
         super().execute(target) # self.clear()
 

@@ -622,6 +622,8 @@ class CommandHandler(object):
             self.mudReaderHandler.mudReaderThread.MUDBuffer += user_input.partition(' ')[2]
         elif user_input.startswith('gold_lookup '):
             Item.gold_lookup(user_input.partition(' ')[2])
+        elif user_input == 'direction_list':
+            magentaprint(self.bot_thread.direction_list)
         # Note: see self.actions before adding more cases (just associate a command with a function pointer)
         else:
             # Doesn't match any command we are looking for, send it to server

@@ -92,7 +92,7 @@ class MudListenerThread(threading.Thread):
                 except AttributeError as e:
                     magentaprint("Lag spikes happen like this (new_bit ('str' object) has no attribute 'decode')")
                     magentaprint("Coincides with TelnetHander error: WinError 10054, An existing connection was forcibly closed by the remote host")
-                    magentaprint("Can be bad WiFi.")
+                    magentaprint("Can be bad WiFi (try simulation by covering antenna).")
                     magentaprint("(new_bit is returned by telnetHandler)")
                     magentaprint("telnetHandler had a try except and it was returning empty string which didn't have decode on it so all we got was Attribute error")
                     print("\a")
@@ -117,7 +117,7 @@ class MudListenerThread(threading.Thread):
 
                 # Ok we probably don't even NEED the fricken flag to protect the buffer
                 if fragment != "":
-                    magentaprint("MudListener got text! (len {}):".format(len(fragment)) + fragment[0:50])
+                    magentaprint("MudListener got text! (len {}):".format(len(fragment)) + fragment[0:26])
                     self.MUDBuffer.buffer = self.MUDBuffer.buffer + fragment
                     self.MUDBuffer.set()
                     fragment = ""

@@ -44,5 +44,6 @@ class MobAttackWaiter(threading.Event):
         # If a mob didn't attack, we could use 
         # (Presumes an attacker will attack in 5 seconds)
         return self.last_match
-        # Please reset me when you use me with .clear()
+        
+
 

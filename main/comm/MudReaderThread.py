@@ -440,7 +440,7 @@ class MudReaderThread(threading.Thread):
             text_buffer = text_buffer[text_buffer_trunc:]
             # magentaprint("MRT truncated: "+str(text_buffer_trunc))
             # magentaprint("MRT floating characters: "+str(len(text_buffer)))
-            magentaprint("MRT floating text: "+str(text_buffer))
+            magentaprint(f"MRT floating text (len {len(text_buffer)}): "+str(text_buffer))
 
             #magentaprint("MudReader loop times: incl wait: %f; iteration time: %f" % 
             #             (time.time()-time_loop_start, time.time()-time_loop_after_waiting))

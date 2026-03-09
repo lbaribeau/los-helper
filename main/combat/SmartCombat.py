@@ -6,10 +6,10 @@ from combat.CombatObject import CombatObject
 from command.Ability import *
 from misc_functions import magentaprint
 import comm.Spells as Spells
-from comm import RegexStore as R
+from comm                           import RegexStore as R
 from combat.mob_target_determinator import MobTargetDeterminator
 from command.potion_thread          import PotionThreadHandler
-from reactions.referencing_list import ReferencingList
+from reactions.referencing_list     import ReferencingList
 
 class SmartCombat(CombatObject):
     black_magic = True
@@ -358,14 +358,15 @@ class SmartCombat(CombatObject):
                 # self.mud_reader_completion_event.clear() # How does this work at all... 
                 # What if we got the prompt already? In a clump with the attack? Also, we did a list operation to add mob attacking
                 # Might be introducing a wait
-                magentaprint("Smart combat attacked, end combat is {}, stopping is {}, event is {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
+                # magentaprint("Smart combat attacked, end combat is {}, stopping is {}, event is {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
                 # self.prompt.wait() # Wait for prompt to come to give time for mob death info to get through
                 # magentaprint("SmartCombat finished attack, stopping: " + str(self.stopping))
                 # time.sleep(0.1) # How do we wait to know if the mob was killed. (Wait for prompt)
                 # Oooookkkkkk now we're waiting too long... 
-                magentaprint("After prompt wait, end combat is {}, stopping is {}, event is {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
+                # magentaprint("After prompt wait, end combat is {}, stopping is {}, event is {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
                 self.mud_reader_completion_event.wait()
-                magentaprint("After mud reader completion, end combat is {}, stopping is {}, event is {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
+                # magentaprint("After mud reader completion, end combat is {}, stopping, {}, event, {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
+                # We have regex_busy now, could use that too
             else:
                 # magentaprint("SmartCombat cast block") # Good info but prints too much
                 C = self.character
@@ -405,7 +406,7 @@ class SmartCombat(CombatObject):
                     time.sleep(min(0.2, kill.wait_time()))
 
         self.activated = False
-        magentaprint(str(self) + " ending run().")
+        magentaprint(str(self) + f" loop ended, run() ended, exiting (stopping: {self.stopping}, end_combat: {self.end_combat}.")
 
     def wait_for_one_of_kill_and_cast(self):
         # Grindthread is gonna use these
@@ -482,15 +483,15 @@ class SmartCombat(CombatObject):
                     else:
                         self.circled = True
 
-                magentaprint("SmartCombat waiting for regex_busy ({})".format(a)) # We could put this right into telnethandler, right?? Yes... could put it everywhere
+                magentaprint("SmartCombat calling wait for regex_busy ({})".format(a.__class__)) # We could put this right into telnethandler, right?? Yes... could put it everywhere
                 # self.mudReaderThread.MLT.regex_busy.wait() # Just to make sure notifies from Mobs aren't currently happening (ie. MTD - mob target determinator)
-                magentaprint("SmartCombat executing " + str(a))
                 self.regex_busy.wait() # Just to make sure notifies from Mobs aren't currently happening (ie. MTD - mob target determinator)
+                # magentaprint("SmartCombat executing ability \"a\" (class" + str(a.__class__)+")") # We'll get a print of the command
                 a.execute(self.target) # Ehrm this didn't use to wait, now it waits? Yes... No it doesn't wait but it clears the waiter flag
                 # if a.success and not self.stopping and not self.end_combat and a.result not in R.ze_mob_fled + R.ze_mob_died:
 
                 # Be careful of multiple adding... it checks for that...
-                magentaprint("SmartCombat adding mob attacker")
+                magentaprint("SmartCombat execute finished, adding mob attacker ("+str(self.target)+")")
                 self.character.mobs.add_attacker_with_ref(self.target)  # Ok this can definitely add AFTER it got removed from fleeing (stopping check should prevent)
                     # Because... how else did it gett added on those two regexes... "You bludgeon for 5". "The acolyte flees"... so we got an add somehow on You bludgeon
                 # self.character.mobs.attacking.append(self.target) 
@@ -502,7 +503,7 @@ class SmartCombat(CombatObject):
                 # Same with "They are not here" on circle... needs to get removed from attacking
                 # Maybe just add it earlier!?               
 
-                magentaprint("SmartCombat use_slow_combat_ability_or_attack() Mobs attacking by the way: " + str(self.character.mobs.attacking))
+                # magentaprint("SmartCombat use_slow_combat_ability_or_attack() Mobs attacking by the way: " + str(self.character.mobs.attacking))
                 kill.start_timer() # Why commented out? Because those objects should do it themselves?
                 kill.timer += 1 # Add 1 for now in case circle failed
                 # By the way, failing to circle it has a longer cooldown! (on both kill and circle? Yes)

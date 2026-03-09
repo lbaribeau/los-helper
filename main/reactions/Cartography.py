@@ -68,6 +68,7 @@ class Cartography(BotReactionWithFlag):
     #     super().wait_for_flag()
 
     def notify(self, regex, M):
+        C=self.character
         if regex in R.too_dark:
             self.too_dark(regex, M)
         elif regex in R.area:
@@ -76,31 +77,31 @@ class Cartography(BotReactionWithFlag):
             self.blocked_path(regex, M)
         elif regex in R.loot_blocked:
             # loot_blocker = M.group(2)
-            loot_blocker = self.character.mobs.read_mob_name_from_regex_match(M)
+            loot_blocker = C.mobs.read_mob_name_from_regex_match(M)
             magentaprint("Cartography loot blocker blocking pickup: " + loot_blocker)
             self.catalog_loot_blocker(loot_blocker)
         elif regex in R.please_wait:
-            if self.character.TRYING_TO_MOVE:
+            if C.TRYING_TO_MOVE:
                 self.go_please_wait(regex, M)
         elif regex in R.cant_go:
             # This one is pretty problematic... as it should never happen.
             # Means we're off course.
             # (Erhm - never say never, this triggers all the time)
             # I think it triggers in regular play
-            self.character.SUCCESSFUL_GO = False
+            C.SUCCESSFUL_GO = False
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
             self.set_area_exit_as_unusable(regex)  # TODO: Seems a little harsh... 
-            if self.character.TRYING_TO_MOVE:
-                magentaprint("Cartography: unsuccessful go (can't go that way): " + str(self.character.LAST_DIRECTION))
-                self.character.TRYING_TO_MOVE = False
+            if C.TRYING_TO_MOVE:
+                magentaprint("Cartography: unsuccessful go (can't go that way): " + str(C.LAST_DIRECTION))
+                C.TRYING_TO_MOVE = False
         elif regex in R.class_prohibited      + R.level_too_low    + R.level_too_high + \
                       R.not_open_during_day   + R.no_items_allowed + R.locked   +       \
                       R.not_open_during_night + R.not_authorized   + R.no_right +       \
                       R.cannot_force          + R.not_invited      + R.washroom + R.in_tune:
             self.set_area_exit_as_unusable(M.group(0))
-            self.character.SUCCESSFUL_GO = False
+            C.SUCCESSFUL_GO = False
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
-            self.character.TRYING_TO_MOVE = False
+            C.TRYING_TO_MOVE = False
         elif regex in R.you_see_mob:
             #health = M.group(4)
             self.catalog_monster_bio(
@@ -114,46 +115,49 @@ class Cartography(BotReactionWithFlag):
             #magentaprint("{" + M.group(0) + "}", False)
             #magentaprint("{" + regex + "}", False)
             #magentaprint("'" + name + "' => '" + aura + "'",False)
-            magentaprint("Cartography mob aura: " + self.character.mobs.read_mob_name_from_regex_match(M) + ', ' + M.group('aura'))
-            self.catalog_monster_aura(self.character.mobs.read_mob_name_from_regex_match(M), M.group('aura'))
+            magentaprint("Cartography mob aura: " + C.mobs.read_mob_name_from_regex_match(M) + ', ' + M.group('aura'))
+            self.catalog_monster_aura(C.mobs.read_mob_name_from_regex_match(M), M.group('aura'))
         elif regex in R.not_here + R.no_exit:
             #The state is confusion is usually caused by bad processing of good data (i.e. bugs)
             #The following is a set of work arounds to smoothe things out until those bugs are fixed
-            if self.character.ACTIVELY_BOTTING:
-                if self.character.CONFUSED:
-                    if not self.character.CAN_SEE:
+            if C.ACTIVELY_BOTTING:
+                if C.CONFUSED:
+                    if not C.CAN_SEE:
                         self.commandHandler.process('c light') #look around to stop the "you don't see that here bug"
 
                     #clear the attacking list
-                    self.character.MOBS_ATTACKING = []
+                    C.MOBS_ATTACKING = []
                     # self.commandHandler.process('l') #look around to stop the "you don't see that here bug"
                 else:
-                    self.character.CONFUSED = True
+                    C.CONFUSED = True
 
             if regex in R.no_exit:
-                self.character.GO_NO_EXIT = True
+                C.GO_NO_EXIT = True
 
-            self.character.SUCCESSFUL_GO = False
-            self.character.TRYING_TO_MOVE = False
+            C.SUCCESSFUL_GO = False
+            C.TRYING_TO_MOVE = False
             self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
         elif regex in R.teleported:
-            if M.group(1) == self.character.name:
-                self.character.DEAD = True
-                self.character.AREA_ID = 82  # TODO: this id is out of sync
-                self.character.MUD_AREA = None
+            if M.group(1) == C.name:
+                C.DEAD = True
+                C.AREA_ID = 82  # TODO: this id is out of sync
+                C.MUD_AREA = None
         elif regex in R.store_list:
             self.store_list(regex, M)
         else:
             # This is fine for a shut door - we just want the super().notify in that case.
             magentaprint("Cartography case missing for regex: " + str(regex)) # (ze_mob_fled)
-        magentaprint("Cartography notify done on: " + str(regex[:min(len(regex), 20)]) + '...')
+        # magentaprint("Cartography notify done on text: " + str(regex[:min(len(regex), 20)]) + '...')
+        # magentaprint("Cartography notify done, got C.AREA_ID: "+str(C.AREA_ID)+", MUD_AREA: "+str(C.MUD_AREA))
+        magentaprint("Cartography notify done, got C.AREA_ID: "+str(C.AREA_ID))
         super().notify(regex, M) # threading.Event
 
     def too_dark(self, regex, M):
-        magentaprint("Cartography receiving too_dark notification")
         C = self.character
+        magentaprint("Cartography receiving too_dark notification, previous area: " + str(C.AREA_ID)+", previous MUD_AREA:"+str(C.MUD_AREA))
         if C.AREA_ID != None:
             guessed_area = self.guess_location(C.AREA_ID, C.LAST_DIRECTION)
+            magentaprint("Cartography guessed area (too dark): " +str(guessed_area))
 
             if guessed_area != None:
                 C.AREA_ID    = guessed_area.area.id
@@ -166,16 +170,27 @@ class Cartography(BotReactionWithFlag):
                 C.MUD_AREA   = None
                 C.EXIT_LIST  = []
 
-        C.mobs.list = ReferencingList([])
+        C.mobs.list = ReferencingList([]) # Will have to deal with unknown mobs list
         C.mobs.attacking = []
+        if C.mobs.chase:
+            C.mobs.list.add(C.mobs.chase)
+            C.mobs.attacking = [C.mobs.chase]
+            # Cartography is a place that gets the notification that it's dark, and it's not the Go object,
+            # so it's currently a good place to make this correction
+            # The bot should now see ok a mob is attacking and there is a mob here and it can base decisions on that like
+            # Ok let's fight the attacking mob then
+            # By the way it also has code regarding chasing specifically
+            # But we could just unset C.mobs.chase and have the bot decide ok there's an attacker
+            # Better though is for it to know it chased
+            # I think that by default I might make the Go object do this or we could have a Go handler and a go-between for more state handling
+            # Anyway, this should help us to know if we chased into a dark room
+            # But why wouldn't a chase happen in a dark room?
 
-        C.SUCCESSFUL_GO = True
+        C.SUCCESSFUL_GO  = True
         self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
-        C.CAN_SEE = False
-        C.CONFUSED = False
-
-        if C.TRYING_TO_MOVE:
-            C.TRYING_TO_MOVE = False
+        C.CAN_SEE        = False
+        C.CONFUSED       = False
+        C.TRYING_TO_MOVE = False
 
     def area(self, match):
         # This is what we do when area regex matches in notify(), we are given "match" which is the regex matched text
@@ -315,20 +330,33 @@ class Cartography(BotReactionWithFlag):
 
     #Used if it's dark and / or the current area doesn't appear to be findable
     def guess_location(self, area_from_id, direction_from):
+        C=self.character
         guessed_area = None
+        magentaprint(f"Cartography.guess_location({area_from_id}, {direction_from}), current MUD_AREA: {C.MUD_AREA}")
 
-        if self.character.MUD_AREA != None:
+        # Suppose we have "go b" for boulder
+        # Would be better to use the exit that is on MUD_AREA instead of doing a global lookup
+        # boulder doesn't come up with "go b"
+        # Using startswith can get backroom
+        # The bot doesn't shorten exits so it's fine
+
+        if C.MUD_AREA != None:
             exit_type = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
+            # "ExitType" is an exit, like "north", but every "north" has the same ID, so we are just doing that lookup based on the go text we have
 
             if exit_type == None:
-                exit_type = ExitType(name=direction_from)
+                exit_type = ExitType(name=direction_from) # Create an Exit if we didn't get one
 
-            guessed_area = self.character.MUD_AREA.get_area_to_from_exit(exit_type)
-            curMudArea = self.character.MUD_AREA.get_area_to_from_exit(exit_type)
+            guessed_area = C.MUD_AREA.get_area_to_from_exit(exit_type)
+            # MUD_AREA is an object for the current area
+            # It's going to check its exits to see if it has a match for what we are giving it
 
-            if curMudArea != None:
-                #check if curMudArea can be dark
-                guessed_area = curMudArea
+            # Commenting code that appears to do nothing... (guessedArea already equals the same thing)
+            # curMudArea   = C.MUD_AREA.get_area_to_from_exit(exit_type)
+
+            # if curMudArea != None:
+            #     #check if curMudArea can be dark
+            #     guessed_area = curMudArea
 
         return guessed_area
 

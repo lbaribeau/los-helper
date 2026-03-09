@@ -222,6 +222,9 @@ class GrindThread(BotThread):
             # TODO: Would be faster to LOOK at each mob to see if one is aggroed
             self.fled=False
 
+    def is_dark(self):
+        return self.command_handler.go.too_dark
+
     def do_regular_actions(self):
         # This is regular_actions hook is actually in a funny spot (maybe)
         # We want to wait for successful go before doing anything
@@ -244,32 +247,46 @@ class GrindThread(BotThread):
         # 5) Fight a fresh target, maybe multiple (recursive)
 
         C = self.character
-
-        chase_ref         = C.mobs.list.get_last_reference(C.mobs.chase)
-        C.mobs.chase      = ''  # It should be a chase list (no would be better to chase one at a time)
-        C.mobs.chase_exit = ''
-
-        # if chase_ref:
-        # if chase_ref or self.command_handler.go.too_dark:
-        # Working on... what if it's dark, then, it's good "chase" is on but we won't be able to get a solid ref at all
-        # So we'll just have to take a swing...
-        # I guess glowing potion could cover that
-        # But if dark we'll get "get_ref_of_attacking_mob" on empty list so first ref?
-        # No, the mob attack should get itself added into .list (Mobs object, it says "weird")
-        # So yeah we will get the first reference and we won't know what mobs are around
-        # We shoudl be okay because we found the spot in BotThread where .list was being made as the wrong type of list
+        magentaprint("do_regular_actions starting, C.mobs.chase: " + str(C.mobs.chase))
         if C.mobs.chase:
-            magentaprint("do_regular_actions saw chase_ref: " + str(chase_ref))
+            # C.mobs.chase is the string of a mob that ran
+            # if self.is_dark():
+
+            # else:
+            #     chase_ref  = C.mobs.list.get_last_reference(C.mobs.chase) # Won't work in the dark
+
+            # if chase_ref:
+            # if chase_ref or self.command_handler.go.too_dark:
+            # Working on... what if it's dark, then, it's good "chase" is on but we won't be able to get a solid ref at all
+            # So we'll just have to take a swing...
+            # I guess glowing potion could cover that
+            # But if dark we'll get "get_ref_of_attacking_mob" on empty list so first ref?
+            # No, the mob attack should get itself added into .list (Mobs object, it says "weird")
+            # So yeah we will get the first reference and we won't know what mobs are around
+            # We shoudl be okay because we found the spot in BotThread where .list was being made as the wrong type of list
+            # Whoops this just got unset!
+            # magentaprint("do_regular_actions saw chase_ref: " + str(chase_ref))
             # new_target = chase_ref # This is a reference, but the other clause hasn't made a reference yet
             # new_target = C.mobs.chase 
 
             # Let's confirm the attacker! (chase_ref makes some presumptions...)
-            match = self.command_handler.mob_attack_waiter.wait_for_mob_attack()
+            mob_attack_match = self.command_handler.mob_attack_waiter.wait_for_mob_attack() # Probably adds it to the list... I think Cartography does too
 
-            if match:
-                chase_ref = C.mobs.get_ref_of_attacking_mob(match)
+            # set chase_ref
+            if mob_attack_match:
+                if C.mobs.list:
+                    chase_ref = C.mobs.get_ref_of_attacking_mob(mob_attack_match)
+                else:
+                    # chase_ref = mob_attack_match.split(' ')[0]
+                    chase_ref = C.mobs.get_ref_of_attacking_mob(mob_attack_match, ReferencingList([C.mobs.chase])) # Handles the match object... tells it it's ok to use given mob list
+                    # This clause is unexpected as I think mobs.list exists even if it's dark
             else:
+                # No mob attack?
+                chase_ref = C.mobs.chase.split(' ')[0]
                 magentaprint("do_regular_actions(): wait_for_mob_attack() oddly timed out... try engaging chase_ref as is ("+chase_ref+")")
+
+            C.mobs.chase      = ''  # It should be a chase list (no would be better to chase one at a time)
+            C.mobs.chase_exit = ''
 
             self.engage_monster(chase_ref, chase_ref) # Need to make sure this gets removed from mobs.list
             # Added an argument to engage_monster, as we know WHICH mob to go for (the 2nd), we have engage_monster bypass get_first_reference()
@@ -1344,9 +1361,8 @@ class GrindThread(BotThread):
                     C.mobs.chase = ''
                     C.mobs.chase_exit = ''
             else:
-                magentaprint("BotThread.engage_monster() area id is none, so go to chapel after chasing.")
-                go_hook = "areaid2"
-                self.direction_list.insert(0, go_hook)
+                magentaprint("BotThread.engage_monster() area id is none, so go to chapel after chasing (seems we don't know where we were).")
+                self.direction_list.insert(0, "areaid2") # go hook
 
             # self.go(C.chase_dir)
             # C.chase_dir = ""

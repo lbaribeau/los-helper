@@ -99,15 +99,10 @@ class MudArea():
                 area_exit.save()
 
     def get_area_to_from_exit(self, exit_type):
-        area = None
-
         for areaexit in self.area_exits:
             if areaexit.exit_type.name == exit_type.name:
                 if areaexit.area_to is not None:
-                    area = MudArea(areaexit.area_to)
-                    break
-
-        return area
+                    return MudArea(areaexit.area_to)
 
     def compare_to_area_and_exit_list(self, area, exit_list):
         matchFound = True

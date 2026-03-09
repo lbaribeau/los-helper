@@ -226,7 +226,7 @@ class Character(object):
         # chained adherant in dark knight area is blue aura, could be useful
     ]
     lvl1_red_monsters = [ # 8-15 exp
-        'old kobold', 'kobold child', 'kobold dam', 'ill kobold'
+        'old kobold', 'kobold child', 'kobold dam', #'ill kobold' poisons you so better avoid it
     ]
     preferred_lvl_1_2_monsters = [
         'oaf', 'wanderer', 'thug', 'spiv', 'kobold sentry', 'tired hooker', 'waitress',

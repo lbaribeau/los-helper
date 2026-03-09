@@ -128,6 +128,7 @@ class BotThread(threading.Thread):
 
     def go(self, exit_str):
         # Not overridden
+        magentaprint("BotThread go() function, going  " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)), False)
         if self.stopping:
             return True
 
@@ -135,7 +136,6 @@ class BotThread(threading.Thread):
         self.command_handler.go.wait_until_ready()
         self.kill.wait_until_ready()
         self.cast.wait_until_ready()
-        magentaprint("BotThread going " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)), False)
 
         self.character.mobs.GO_BLOCKING_MOB = ""
         self.character.GO_PLEASE_WAIT  = False
@@ -214,6 +214,7 @@ class BotThread(threading.Thread):
 
     def do_go_hooks(self, exit_str):
         # add the path to a given areaid to out current direction_list
+        magentaprint("BotThread.do_go_hooks() checking for areaid2")
         if re.match("areaid[\d]*", exit_str):
             #magentaprint("go hook found with: " + str(self.direction_list), False)
             area_id = int(exit_str.replace("areaid", ""))
@@ -267,9 +268,14 @@ class BotThread(threading.Thread):
         raise NotImplementedError()
 
     def do_regular_actions(self):
+        # GoTo thread inherits this
         return
 
     def do_on_successful_go(self):
+        # Ok well go command returned, I guess that means cartography ran already, but, cartography needs C.LAST_DIRECTION if we want to know where we are when it's dark
+        # But all the notifies go through before we get action/priority again
+        # Not sure if we know what order they run in but go wait waits for cartography
+        # I guess we should set LAST_DIRECTION before we send the command, that's probably fine
         self.direction_list.pop(0)
         # self.character.MOBS_JOINED_IN = []
         # self.character.MOBS_ATTACKING = []
@@ -279,9 +285,9 @@ class BotThread(threading.Thread):
             # "It's too dark to see"
             self.character.mobs.list=ReferencingList([]) # Maybe Cartography also does this
             self.character.mobs.attacking=[]             # Maybe Cartography also does this
-            pot = self.inventory.get_first_reference("glowing potion")
-            if pot:
-                self.command_handler.drink.execute_and_wait(pot)
+            glowing_pot = self.inventory.get_first_reference("glowing potion")
+            if glowing_pot:
+                self.command_handler.drink.execute_and_wait(glowing_pot)
             elif Spells.light in self.character.spells and self.character.MANA>=5:
                 self.command_handler.cast.cast_and_wait(Spells.light)
                 while self.command_handler.cast.failure and not self.command_handler.cast.result_no_mana:

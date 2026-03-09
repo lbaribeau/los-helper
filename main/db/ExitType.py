@@ -47,21 +47,32 @@ class ExitType(NamedModel):
         return exit_types
 
     def get_exit_type_by_name_or_shorthand(name):
-        exit_types = None
+        exits = None
 
         #print("Finding exit from given argument: " + str(name))
         try:
             #exit_types = ExitType.select().join(ExitSynonym, JOIN_LEFT_OUTER).where((ExitType.name == name) | (ExitSynonym.name == name) ).get() # worked in 2016, now bad identifier
             #exit_types = ExitType.select().join(ExitSynonym, join_type='LEFT_OUTER').where((ExitType.name == name) | (ExitSynonym.name == name) ).get() # syntax error
+            # exit_types = ExitType.select().join(ExitSynonym, JOIN.LEFT_OUTER).where((ExitType.name == name) | (ExitSynonym.name == name) ).get() # 2022, works
             exit_types = ExitType.select().join(ExitSynonym, JOIN.LEFT_OUTER).where((ExitType.name == name) | (ExitSynonym.name == name) ).get() # 2022, works
+            # "d" is down and doesn't match "door" for that reason I think? I think you need "doo" for door... yep "You can't go that way" on "go do" need "doo"
+            # Should we be told here if "go" was used? Maybe don't bother
+            # "startswith" use could even kibosh the need for exit synonym
+            # exits = ExitType.select().join(ExitSynonym, JOIN.LEFT_OUTER).where((ExitType.name.startswith(name)) | (ExitSynonym.name == name) ).get()
+            # Btw "we" doesn't match "west" only "w" so that expression is ==
+            # No "go b" gets us "go backroom" by the boulder so if we want to use startswith we can't do it without location given
+
         except ExitType.DoesNotExist:
             #print("Could not find exit Type with name: " + name, False)
-            exit_types = None
+            exits = None
 
-        magentaprint("ExitType.py get_exit_type_by_name_or_shorthand(name) given parameter ('name'): "+str(name))
-        magentaprint("ExitType.py get_exit_type_by_name_or_shorthand() matched exit, given " + str(name) + ", to: " + str(exit_types))
+        # magentaprint("ExitType.py get_exit_type_by_name_or_shorthand(name) given parameter ('name'): "+str(name))
+        magentaprint("ExitType.py get_exit_type_by_name_or_shorthand() matched exit, given " + str(name) + ", to: " + str(exits))
+        # Ok debugging this with print statements... "go b" when going to the "boulder" by the kobolds tells me we should be using "startswith"
+        # Getting this exit returning helps the bot know where it went in the dark
+
         # raise # Gives a stack trace... mudReaderThread s.notify(r, match), cartography, notify, self.area(M), C.MUD_AREA= MudAea.map( (line 202), in map, MudArea.discern_location, in discern_location... (line 61 MudArea.py)
-        return exit_types
+        return exits
         # Ok I think we get "None" because "shorthands" (Synonyms) aren't implemented when we go north with "n""
 
     def get_exit_type_by_name_and_opposite(name, exit_id): #this should always be unique

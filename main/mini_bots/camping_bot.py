@@ -74,8 +74,9 @@ class CampingBot(GrindThread):
 
     def camp_here(self):
         C=self.character
+        self.direction_list = []
         while not self.stopping:
-            magentaprint("CampingBot camp_here camping_bot.stopping must be true: " +str(self.stopping))
+            magentaprint("CampingBot camp_here starting, camping_bot.stopping: " +str(self.stopping))
             self.sleep(1) # Just to prevent spinning an infinite loop too fast if that would happen
             magentaprint("CampingBot chase is " + str(C.mobs.chase))
             if self.stopping:
@@ -84,7 +85,8 @@ class CampingBot(GrindThread):
             # Gotta do "chase" off the top because otherwise the first thing is "rest"
             # if C.mobs.chase:
             # I think we can presume that we got directions added if .chase exists
-            self.bothread_run_without_decide_where_to_go()  # Idea is to "chase" if we haven't
+            self.bothread_run_without_decide_where_to_go()  # Idea is to "chase" if we haven't (?)
+                # Well if we call this loop (bothread run) then chasing is part of the function call (it goes while(direction_list))
             # This will burn up all existing directions... should probably do that regardless of chase
             # Ok yea try just calling that with nothing in case it has to cover "chase"
             # We could put a "rest" first... safer to chase first or rest first? I guess rest? Why isn't it chasing at all that's the real problem
@@ -93,6 +95,13 @@ class CampingBot(GrindThread):
             # We want do_regular_actions to set it but the whole point of inheriting grinthread is to be able to call it and have it chase also...
             # If we call "botthread_run" that might be so high level that chase gets unset?
             # Ehrm chase adds directions on so the idea is to go those directions... 
+
+            # Ok that could have fought something and it could have run off so we might want to react to that, before putting "rest_here", 
+            # might want to go through the top level again...
+            # I think we want, while direction list... instead of just calling ... since things can get prepended to direction list, we keep calling until direction list is empty
+            # Doesn't this call do that though?
+            # Well in that case we know our state right now, we've done our chasing, the above does everything...
+            # That's fair... so we just need to make sure that the above takes that swing in the dark
 
             if self.stopping:
                 return
@@ -110,6 +119,7 @@ class CampingBot(GrindThread):
             self.bothread_run_without_decide_where_to_go() # should call rest_to_full...  (rest as the first order of business)
                 # 'rest_here' will rest, engage, and hopefully chase anything that attacked while resting
                 # I think "flee" also puts things onto the stack like rest again and the return direction
+                # Ok 
             if self.stopping:
                 return
             # Ok I think we were going to spam that just to make sure, right? Yeah...
@@ -131,18 +141,38 @@ class CampingBot(GrindThread):
                 continue 
 
             # Ok the idea here is that we've been able to "rest" and chase
-            self.do_regular_actions() # Will engage mobs around?
+            # self.do_regular_actions() # Will engage mobs around?
                 # Might also add chase to the direction list etc.
                 # Might also implement flee
                 # I guess we call a high-level function and hope we get a lot of functionality coverage (chase, flee, engage)
+
+                # The thing is "continue" will start the next fight (do_regular_actions) we actually needed to chase
+                # Aha found it
+                # We called .do_regular_actions
+                # So we didn't end up chasing... we hit "continue" so chase didn't work because chase assumes direction list will get processed
+                # And if we're not careful chase variables will get wiped
+                # If we call it like this we don't get motion then chase variables get wiped
+
+            # I think that maybe before resting we engaged the room? Well we may not have
+            # I guess rest again?
+            # Yeah just hit continue if we aren't full
+            # (don't call self.do_regular_actions because that doesn't chase and then how do we chase without wiping out the chase variables)
+
             if self.stopping:
                 return
             if not self.full_health_and_mana():
                 magentaprint("CampBot called engage and we aren't full hp/mana which I think is possible after flee or chase so just \"continue\" again")
                 continue
+
             # if not self.character.mobs.list:
             # Seems like we should implement chase here... maybe check if we fled or chased
             # I'm not too worried about "flee"... hmmm would be nice though
+
+            if not self.ready_for_combat() or self.stopping:
+                # What if weapon breaks... and we don't have a backup weapon... we exit!
+                # (We are max hp right now)
+                magentaprint(f"Camping bot noticed not ready for combat {not self.ready_for_combat}, maybe weapon broke, exiting!")
+                break
 
             magentaprint("CampingBot mobs.list: "+str(C.mobs.list))
             if self.decide_which_mob_to_kill(C.mobs.list):
@@ -158,6 +188,7 @@ class CampingBot(GrindThread):
             # if fled_mob and fled_exit:
             #     self.find_return_path # Can we import or reuse GrindThread?
             #     self.command_handler.go.execute(fled_exit)
+        magentaprint("Camping bot exiting altogether!")
 
     def bothread_run_without_decide_where_to_go(self):
         # Call self.camp_here...
@@ -172,11 +203,11 @@ class CampingBot(GrindThread):
 
         # while not self.stopping:
             # self.direction_list = self.decide_where_to_go()
-        magentaprint('CampingBot.run: got direction list' + str(self.direction_list))
+        magentaprint('CampingBot starting botthread loop, direction list is ' + str(self.direction_list))
         self.do_pre_go_actions() # Can do shopping here, which can insert at the beginning of the direction list
 
         while self.direction_list and not self.stopping:
-            magentaprint("CampingBot has direction list")
+            magentaprint("CampingBot looping on direction list, " + str(self.direction_list))
             self.do_regular_actions()
             if self.go(self.direction_list[0]):
                 self.do_on_successful_go() # area regex or too_dark matched
@@ -208,8 +239,8 @@ class CampingBot(GrindThread):
             # It's a loop, so we only need a hook on one side of it (no need for beginning + end hooks)
             #do_post_go_actions() # This doesn't seem necessary
 
-        self.do_after_directions_travelled()
         magentaprint("CampingBot looping, stopping is {0}".format(self.stopping))
+        self.do_after_directions_travelled()
         magentaprint("CampingBot: finished direction list (will likely rest).")
 
     def rest(self):
