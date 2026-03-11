@@ -1117,6 +1117,8 @@ class GrindThread(BotThread):
             'acolyte','vicar','robed pilgrim','penitent','young knight','lay priest','protector','battered knight','orange picker','robed priest','priest'
         ]
 
+        magentaprint(f"Decide which mobs to kill deciding from {m_list}")
+
         for mob in m_list:
             # if mob in C.MONSTER_KILL_LIST and (mob not in blue_mobs or not self.cast.aura or self.cast.aura >= C.preferred_aura):
             if mob in C.MONSTER_KILL_LIST and (mob not in blue_mobs or (self.cast.aura and self.cast.aura >= C.preferred_aura)):

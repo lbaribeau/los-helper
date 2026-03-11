@@ -219,10 +219,6 @@ class CommandHandler(object):
         # But these things aren't necessarily protected from "Drop" command which is supposed to help drop garbage at the tip (also "Sell")
 
         if not self.bot_check():
-            # self.bot_thread = ThreadMaker(self.armour_bot, 'suit_up')
-            # self.bot_thread.start()
-            # self.bot_thread = self.armour_bot
-            # self.bot_thread.start_thread()
             magentaprint("Botcheck failed")
             return
         if not hasattr(self, "armour_bot"):
@@ -237,6 +233,9 @@ class CommandHandler(object):
         AB.check_if_we_have_broken_stuff_we_can_use()
 
     def weapon_init(self, args):
+        if not self.bot_check():
+            magentaprint("Botcheck failed")
+            return
         if not hasattr(self, "weapon_bot"):
             magentaprint("No weapon bot")
             return
@@ -247,13 +246,13 @@ class CommandHandler(object):
             WB.check_weapons()
         except AttributeError as e:
             # Supposing weapon bot tries to use travel_bot, which is None
-            magnetaprint("Ok caught weapon bot trying to travel...:\n"+str(e))
+            magentaprint("Ok caught weapon bot trying to travel...:\n"+str(e))
         finally:
             WB.travel_bot = temp
 
     def gear_init(self, args):
-        self.weapon_init()
-        self.armour_init()
+        self.weapon_init(args)
+        self.armour_init(args)
 
     def camp_here(self, args):
         magentaprint("CommandHandler camp_here() (bot start function like start_track_grind)")
@@ -275,7 +274,7 @@ class CommandHandler(object):
         if self.weapon_bot:
             magentaprint(self.weapon_bot.has_usable_weapon_in_inventory())
         else:
-            magnetaprint("NEED WEAPON BOT")
+            magentaprint("NEED WEAPON BOT")
 
     def do_rest_loop(self, args):
         if self.bot_thread and self.rest_loop:
@@ -584,6 +583,10 @@ class CommandHandler(object):
             magentaprint(self.character.__dict__, False)
         elif re.match("(?i)report", user_input):
             self.combat_reactions.report()
+        elif re.match("(?i)reset", user_input):
+            self.combat_reactions.reset()
+        elif re.match("(?i)plot_report", user_input):
+            self.combat_reactions.plot()
         elif re.match("(?i)mobs_joined_in", user_input):
             magentaprint(self.character.MOBS_JOINED_IN, False)
         elif re.match("(?i)aura", user_input):
@@ -1184,24 +1187,7 @@ class CommandHandler(object):
             self.bot_thread.start()
 
     def print_experience(self):
-        x = self.character.EXPERIENCE # Accumulated this session (initialized to zero, matches "You gain...")
-        t = misc_functions.get_runtime_seconds()
-        gold_gained = self.character.GOLD-self.character.START_GOLD
-        magentaprint("Start time:        " + str(misc_functions.startTime))
-        magentaprint("Uptime:            " + misc_functions.get_runtime_string())
-        magentaprint("Exp this session:  " + str(x))
-        magentaprint("Gold this session: {} ".format(gold_gained))
-        # magentaprint("Start gold:        " + str(self.character.START_GOLD))
-        magentaprint("Current gold:      " + str(self.character.GOLD))
-        magentaprint("Exp rate:          {} /hr".format(round(x/t*3600)))
-        # magentaprint("Exp rate:          {} /min".format(round(round(x/t*60))))
-        # g = self.character.GOLD # Ok this is all the current gold, so it won't give us gold rate
-        # magentaprint("Gold delta: ")
-        # magentaprint("Gold rate: {} gold/hr; {} gold/min; {} gold/s.".format(round(x/t/3600), round(x/t/60), round(x/t)))
-        # magentaprint("EXP this Session: " + str(exp) + " | EXP / MIN: " + expm, False)
-        #magentaprint(str(exp), False)
-        magentaprint("Gold rate:         {} /hr".format(round(gold_gained/t*3600)))
-        # magentaprint("Gold rate:         {} /min".format(round(gold_gained/t*60, 1)))
+        self.combat_reactions.print_experience()
 
     def print_gold(self):
         gold_gained = self.character.GOLD-self.character.START_GOLD

@@ -281,6 +281,7 @@ class Character(object):
         'singing drunk', # Highmarket
         'retired miner',
         'old miner',
+        'travelling tourist', # guide book, pristine condition, not sure how to use it, "it says welcome to sunny Amethyst"
         'large bore worm' # could be level 4 but lets have it kill on sight for the quest to work
     ]
     lvl3_red_monsters = [

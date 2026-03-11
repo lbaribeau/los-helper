@@ -614,6 +614,7 @@ class TrackGrindThread(GrindThread):
         # if self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > C.info.gold_to_level + 2*self.command_handler.weapon_bot.possible_weapons[0].item.value and \
         # if C.current_experience > C.info.exp_to_level and C.GOLD > C.info.gold_to_level + self.command_handler.armour_bot.gold_to_save_for_weapon:
         if C.current_experience > C.info.exp_to_level and WB.possible_weapons != [] and C.GOLD > C.info.gold_to_level + AB.gold_to_save_for_weapon:
+            magentaprint(f"To save {AB.gold_to_save_for_weapon} gold for weapon, need {C.info.gold_to_level + AB.gold_to_save_for_weapon} gold to train")
             if C._class.id == 'Bar':
                 if C.level in [1,2,3,4]:
                     return ['ou','n','n','w','g','n','n','n','n','n','g','n','n','g','n','nw','nw','n','nw','nw','nw','nw','n','nw','n','n','nw','n','se','doo','e','train','areaid2']

@@ -23,7 +23,7 @@ you_wear          = [r"You wear " + __items + r"\."]
 nothing_to_wear   = [r"^You have nothing you can wear\."]
 # you_get         = [r"(?s)[^ ]You get (.+?)\.(?:\nYou now have (.+?) gold pieces\.)?"]
 # you_get         = [r"[^ ]You get " + __items + r"\."]  # We don't want this to miss because getting can happen in combat - maybe it shouldn't
-you_get           = [r"^(You weren't able to carry everything\.\n\r)?You get " + __items + r"\."]  
+you_get           = [r"^(You weren't able to carry everything\.\n\r)?You get " + __items + r"\."]  # Watch out! This won't work (\n\r in raw string)
 # False positives on "You get the vague..." ... hard to deal with in regex
 # (\n and \r didn't match at the beginning, but ^ rules out "You get" in descriptions.)
 # "... more than is assuring. You get the distinct feeling (newline) that the rangers are not winning...""
@@ -393,33 +393,109 @@ magic_crit = [
 #     "You use your .+? to strike (?:the )?(" + __numbers + " )?(.+?)\s+for\s+(?P<d>\d+)\s+damage\."
 # ]
 attack_hit = [
-    "(?s)You swing with your .+?,\s+hacking\s+ " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
-    "(?s)You slice " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\s+with\s+your\s+.+?\.",
-    "(?s)You slash at " + __three_possible_mob_strings + "\s+and\s+hit\s+for\s+(?P<d>\d+)\s+damage\.",
-
-    "(?s)You chop at " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
-    "(?s)You stab " + __three_possible_mob_strings + " with\s+your\s+.+?,\s+causing\s+(?P<d>\d+)\s+damage",
-    "(?s)You lunge at " + __three_possible_mob_strings + ",\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
-
-    "(?s)You lash out and thump " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
-    "(?s)You punch " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
-    "(?s)You kick " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
-    "(?s)You head-butt " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
-    "(?s)You grab " + __three_possible_mob_strings + "\s+and\s+gouge\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
-
-    "(?s)You smash your .+? into " + __three_possible_mob_strings + ",\s+causing\s+(?P<d>\d+)\s+damage\.",
-    "(?s)You heave your .+? at " + __three_possible_mob_strings + ",\s+smashing\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
-    "(?s)You bludgeon " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
-
-    "(?s)You lunge at " + __three_possible_mob_strings + ",\s+hitting\s+them\s+for\s+(?P<d>\d+)\s+damage\.",
-    # "(?s)You swing your .+? at " + __three_possible_mob_strings + ", striking for (?P<d>\d+) damage\.", # Is this correct??
-    "(?s)You swing your .+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.", # Check this one... won't time out but using the wildcard here
-    "(?s)You sweep " + __three_possible_mob_strings + "\s+with\s+your\s+.+?\s+for\s+(?P<d>\d+)\s+damage\.",
-
-    "(?s)Your missile slams into " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\.",
-    "(?s)You attack " + __three_possible_mob_strings + "\s+with\s+your\s+.+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
-    "(?s)You use your .+? to strike " + __three_possible_mob_strings + "\s+for\s+(?P<d>\d+)\s+damage\."
+    # Sharp
+    r"(?s)You swing with your .+?,\s+hacking\s+ " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You slice " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\s+with\s+your\s+.+?\.",
+    r"(?s)You slash at " + __three_possible_mob_strings + r"\s+and\s+hit\s+for\s+(?P<d>\d+)\s+damage\.",
+    # Thrust
+    r"(?s)You chop at " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You stab " + __three_possible_mob_strings + r" with\s+your\s+.+?,\s+causing\s+(?P<d>\d+)\s+damage",
+    r"(?s)You lunge at " + __three_possible_mob_strings + r",\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
+    # Unarmed
+    r"(?s)You lash out and thump " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You punch " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You kick " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You head-butt " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You grab " + __three_possible_mob_strings + r"\s+and\s+gouge\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
+    # Blunt
+    r"(?s)You smash your .+? into " + __three_possible_mob_strings + r",\s+causing\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You heave your .+? at " + __three_possible_mob_strings + r",\s+smashing\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You bludgeon " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    # Pole
+    r"(?s)You lunge at " + __three_possible_mob_strings + r",\s+hitting\s+them\s+for\s+(?P<d>\d+)\s+damage\.",
+    # r"(?s)You swing your .+? at " + __three_possible_mob_strings + ", striking for (?P<d>\d+) damage\.", # Is this correct??
+    r"(?s)You swing your .+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.", # Check this one... won't time out but using the wildcard here
+    r"(?s)You sweep " + __three_possible_mob_strings + r"\s+with\s+your\s+.+?\s+for\s+(?P<d>\d+)\s+damage\.",
+    # Missile
+    r"(?s)Your missile slams into " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You attack " + __three_possible_mob_strings + r"\s+with\s+your\s+.+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You use your .+? to strike " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)Your blow did no damage\." # Should be a hit for 0
 ]
+
+# Here is the deal with r (raw) string btw,
+# (SUMMARY)
+# Basically, it's for the backslash, it disables it from converting special characters like \n, \t, \r as the string is interpreted
+#  It stays as backslash, special characters aren't converted
+# HOWEVER, it's shortly going to be a SYNTAX ERROR if you have a backslash pattern in a normal string that doesn't hit any special character
+# BEFORE, if you use \s or \. they'd just stay literally that quietly.
+# SOON, that's a SYNTAX ERROR
+# Python wants you to use raw strings because you are telling it, I'm not trying to make escape characters, I want the slashes in my string
+
+# Without r, you get
+#  \n is newline
+#  \t is tab
+#  \b is backspace character
+#  \\ is one slash
+#  \ is not a slash, it is one of the above, a special character
+# With r, you get actual strings, literally, ie
+#  \n is acutally slash n
+#  \t means backslash t
+#  \b means backslash b
+#  \\ means two backslashes
+#  \  means one backslash just like it looks like
+# Other such characters are \r (carriage return, for moving the cursor to the beginning of the line)
+#  \' in a normal string means '
+#  \' in a raw string keeps the backslash so you get backslash-quote ("\'")
+#  \" means backslash quote in raw string
+#  (\" means just quote in regular string)
+#  \v and \f are similar, they could get interpreted as vertical tab and form feed
+#  \a could get interpreted as bell/alert sound 
+#  (try print("\a"), gets out a bleep
+#   and print(r"\a"), gets you \a
+#  \x gets you a hex character, syntax though is, \xhh, ie \x41 gets you "A"
+#  r"\x41" gets you that string exactly, \x41, no hex number
+#  \nn... with n in range [0-7] inclusive and nnn in range [0-777] octal (no 8s or 9s) is interpreted as octal
+#   (up to 3 n's)
+#   Not in raw strings, you just get the slash and digits unconverted
+# \u means a unicode escape sequence to the python interpreter (16-bit, so, put 4 hex characters, ie, \u0020 is a space
+# (but not in raw, raw gets you literal string with a backslah, a u, and those numbers)
+# \U would be 32-bit unicode hex
+# With \N{name} you can search up a unicode character by name, \N{GREEK CAPITAL LETTER DELTA}
+
+#  
+# Recently, Sublime started highlighting \s as something you shouldn't do
+# Because, Python is deciding recently that even \s and \. are bad form
+# Because, you shouldn't have to know or keep track of what all the special characters are??
+# It's because, you are going to get a SYNTAX ERROR if you put a backslash then a character that isn't a real escape character
+# 
+# Ok so people think it's "working by accident" to "know" that if you didn't put a valid escape code that you meant to keep the backslash
+# It's not an accident though
+# But that's what people think
+# They think ANY backslash should mean VALID ESCAPE CODE AFTER or it's an error
+# That's why they want you to use raw strings in regex
+# To say that you know you aren't trying to make escape codes
+
+# Some code collisions between escape characters and regex are (things I don't use),Q
+# - \b matches the start or end of a word in regex, but means backspace in a nonraw string
+# - \a is bell/alert in a nonraw string but can mean the start of a string in regex
+# - \1, \2 would be interpreted as octal in a nonraw string but can refer to the back of the first group in regex
+# So you use raw so these escapes don't happen in case of collision
+# What about \r\n??? Ok so don't use raw if you actually want those I guess
+# This might be why I had so much trouble with spells!!???
+# ANSWER: NO
+# Crucially, the regex engine ALSO understand \n and \r!
+# So if you use raw strings, the interpreter leaves those characters alone
+# But the regex engine will see them and convert them
+# 
+# Quoting Google AI: "When you write "\s", Python says: "I don't know what \s is. I guess you just meant a literal backslash and an 's'? 
+# I'll allow it for now, but please stop doing this."
+
+# So you'd really need raw if you wanted to use regex \b to match a word boundary (not a backspace character)
+# But you can just always use raw, that way, Python won't complain about your regex codes which aren't escape sequences
+# And the regex engine can convert your newlines and linefeeds
+
+
 # attack_miss = [
 #     "You hack with your .+?, but your blow swings wide of the mark\.",
 #     "You slice your .+? at (?:the )?(" + __numbers + " )?(.+?),\s+but\s+miss\.",
@@ -450,32 +526,32 @@ attack_hit = [
 # ]
 
 attack_miss = [
+    # Sharp
     "(?s)You hack with your .+?,\s+but\s+your\s+blow\s+swings\s+wide\s+of\s+the\s+mark\.",
     "(?s)You slice your .+? at " + __three_possible_mob_strings + ",\s+but\s+miss\.",
     "(?s)You slash at " + __three_possible_mob_strings + ",\s+but\s+miss\.",
-
+    # Thrust
     "(?s)You chop at " + __three_possible_mob_strings + "\s+but\s+fail\s+to\s+hit\s+them\.", # comma?
     "(?s)You try to stab " + __three_possible_mob_strings + "\s+with\s+your\s+.+?,\s+but\s+miss\.",
     "(?s)You lunge wildly at " + __three_possible_mob_strings + "\s+but\s+mistime\s+the\s+strike\.",
-
+    # Unarmed
     "(?s)You lash out at " + __three_possible_mob_strings + ",\s+but miss\.",
     "(?s)You swing a wild punch at " + __three_possible_mob_strings + ", but it misses\.",
     "(?s)You kick at " + __three_possible_mob_strings + ", but fail to hurt them\.",
     "(?s)You grab at " + __three_possible_mob_strings + ", but (s?he|it) escapes your grasp\.",
     "(?s)You try to gouge " + __three_possible_mob_strings + ", but can't get a good grip\.",
-
+    # Blunt
     "(?s)You swing your .+? at " + __three_possible_mob_strings + ",\s+but\s+miss\.",
     "(?s)You heave your .+? in a wide arc, but fail to\s+hit\s+anything\.",
     "(?s)You try to bludgeon " + __three_possible_mob_strings + ",\s+but\s+miss\.",
-
+    # Pole
     "(?s)You lunge at " + __three_possible_mob_strings + ",\s+but\s+you\s+miss\.",
     "(?s)Your .+? swings,\s+but\s+fails\s+to\s+connect\.",
     "(?s)You sweep at " + __three_possible_mob_strings + "\s+with\s+your\s+.+?,\s+but\s+miss\.",
-
+    # Missile
     "(?s)Your missile arcs towards " + __three_possible_mob_strings + ",\s+but fails\s+to\s+hit\s+them\.",
     "(?s)You attack " + __three_possible_mob_strings + "\s+with\s+your\s+.+?,\s+but\s+miss\.",
     "(?s)You use your .+?, but nothing hits " + __three_possible_mob_strings + "\.",
-    "(?s)Your blow did no damage\." # Should be a hit for 0
 ]
 
 aura = [r"You glow with a " + __aura + " aura\."]

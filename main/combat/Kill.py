@@ -34,3 +34,8 @@ class Kill(SimpleCombatObject):
         super().notify(regex, M_obj)
 
     # TODO: This should have a mob_target_determinator since it still gets used
+
+    # Hmmm should I make this in charge of keeping track of damage
+    # Let's not
+    # It's a bit more boilerplate coding to make another object but may as well not add bloat
+    # Doing it right I think (combat log)
