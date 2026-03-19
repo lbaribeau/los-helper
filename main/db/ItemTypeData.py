@@ -42,3 +42,7 @@ class ItemTypeData(NamedModel):
         #print('ItemTypeData get_by_name(name) returning: ' + str(obj))
         #NamedModel.magentaprint('ItemTypeData get_by_name(name) returning: ' + str([o.name for o in obj]))
         return obj
+
+# example test
+# exec print(AreaStoreItem.get_buyable_armour(self.armour_bot.get_size('Dwarf'), 'Body', 1))
+#exec print(AreaStoreItem.get_buyable_armour(self.armour_bot.get_size('Dwarf'), 'Body',1)[0].item.name=='ring mail armour')

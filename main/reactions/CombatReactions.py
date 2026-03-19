@@ -202,6 +202,7 @@ class CombatReactions(object):
             magentaprint(f"75th percentile       : {self.get_percentile(_sorted, .75):.1f}")
             magentaprint(f"90th percentile       : {self.get_percentile(_sorted, .90):.1f}")
             magentaprint(f"Max (100th percentile): {max(D)}")
+        magentaprint("---")
         # Idea: bashes (R.bash, R.bash_fail)... I don't bash lately it's not great... gives acolytes time to regen mana, mime artists land their spells anyway
         # Maybe plot histograms of player damage and mob damage, even spells
         # Maybe split by mob target (both player damage and mob damage)
@@ -215,7 +216,7 @@ class CombatReactions(object):
         self.mobs_killed          = []
         self.hits_missed          = 0
         self.spells_failed        = 0
-        # self.hits_evaded          = 0
+        # self.hits_evaded        = 0
         self.circles              = 0
         self.circle_fails         = 0
 
@@ -225,18 +226,20 @@ class CombatReactions(object):
             return
         pyplot = plots.get_pyplot()
 
-        pyplot.figure("Player Damage Samples")
+        pyplot.figure(f"Player Damage Samples ({self.hits_missed} misses, not shown) ({len(self.mobs_killed)} mobs killed)")
         pyplot.plot(self.damage_array, '--*')
         pyplot.xlabel("Sample")
         pyplot.ylabel("Damage")
         plots.auto_config()
 
-        pyplot.figure("Player Damage Bar Graph")
+        pyplot.figure(f"Player Damage Bar Graph ({self.hits_missed} misses not shown) ({len(self.mobs_killed)} mobs killed)")
         # pyplot.bar(self.damage_array) #[self.damage_array.count(i) for i in range(0,6)]
         D=self.damage_array
         L=len(D)
         plots.do_grid()
-        pyplot.bar(range(0, max(D)+1), [D.count(i) for i in range(0,max(D)+1)], align='center', color='skyblue', edgecolor='black') #[self.damage_array.count(i) for i in range(0,6)]
+        bars=pyplot.bar(range(0, max(D)+1), [D.count(i) for i in range(0,max(D)+1)], align='center', color='skyblue', edgecolor='black') #[self.damage_array.count(i) for i in range(0,6)]
+        bars[0].set_color("dodgerblue") # https://matplotlib.org/stable/gallery/color/named_colors.html
+        bars[0].set_edgecolor("black")
         pyplot.gca().set_xticks(range(0, max(D)+1))
         pyplot.gca().set_yticks(range(0, max([D.count(i) for i in range(0,max(D)+1)])+1))
         pyplot.xlabel("Damage")
@@ -258,7 +261,9 @@ class CombatReactions(object):
         D=self.hits_received
         L=len(D)
         plots.do_grid()
-        pyplot.bar(range(0, max(D)+1), [D.count(i) for i in range(0,max(D)+1)], align='center', color='lightcoral', edgecolor='black') #[self.damage_array.count(i) for i in range(0,6)]
+        bars=pyplot.bar(range(0, max(D)+1), [D.count(i) for i in range(0,max(D)+1)], align='center', color='lightcoral', edgecolor='black') #[self.damage_array.count(i) for i in range(0,6)]
+        bars[0].set_color("coral")
+        bars[0].set_edgecolor("black")
         pyplot.gca().set_xticks(range(0, max(D)+1))
         pyplot.gca().set_yticks(range(0, max([D.count(i) for i in range(0,max(D)+1)])+1)) # maybe ymax
         pyplot.xlabel("Mob Damage")

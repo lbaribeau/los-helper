@@ -129,19 +129,34 @@ class ShoppingBot(MiniBot):
     def choose_reference(self, asi):
         # i = str(asi)
         # menu = AreaStoreItem.get_by_area_area(asi.area)
-        menu = sorted(AreaStoreItem.get_by_area(asi.area), key=lambda a : a.item.name)
-        item_names = ReferencingList([asi_for_sale.item.name for asi_for_sale in menu])
+        menu = sorted(AreaStoreItem.get_by_area(asi.area), key=lambda a : a.item.name) # gets areastoreitems in given area and sorts by name
+        item_names = ReferencingList([asi_for_sale.item.name for asi_for_sale in menu]) # Puts the item names in a ReferencingList on the spot to help targeting
+        magentaprint(f"ASI item itemtype data name is: {asi.item.itemtype.data.name}") # Wow we got LEGS!
+        magentaprint(f"ASI item itemtype model name is: {asi.item.itemtype.model.name}") 
 
         # We have (s), (m), and (l) to deal with.  Item names are alphabetical, but small, medium, large are in that order.
-        if asi.item.itemtype.data.name == 'armor' or item_names.count(asi.item.name) == 1 or asi.item.itemtype.data.name == 's-armor':
+        if asi.item.itemtype.model.name == 'armor' or item_names.count(asi.item.name) == 1 or asi.item.itemtype.model.name == 's-armor':
+            magentaprint(f"1.")
             return item_names.get_first_reference(asi.item.name)
-        elif asi.item.itemtype.data.name == 'l-armor':
+        elif asi.item.itemtype.model.name == 'l-armor':
+            magentaprint(f"2.")
             return item_names.get_last_reference(asi.item.name)
-        elif asi.item.itemtype.data.name == 'm-armor':
+        elif asi.item.itemtype.model.name == 'm-armor':
             # If menu contains a large, then we still need first ref, if a small, then we need firstref+1
-            if any(i.name == asi.item.name and i.data.name == 's-armor' for i in menu):
-                return MobTargetDeterminator().increment_ref(item_names.get_first_reference(asi.item.name))
+            if any(m.item.name == asi.item.name and m.item.itemtype.model.name == 's-armor' for m in menu):
+                magentaprint(f"3.")
+                # This is checking if there is a small version of the item with the exact same name anywhere in the menu
+                # So it'd need both
+                magentaprint(f"Shopping bot choose reference going with increment ref for medium armour as small of same name is present, {asi.item.name}")
+                magentaprint(f"Shopping menu is {menu}")
+                magentaprint(f"Shopping menu is {[m.item.name for m in menu]}")
+                return MobTargetDeterminator().increment_ref(item_names.get_first_reference(asi.item.name)) # Should increment it to be 1 above small
             else:
-                return item_names.get_first_reference(asi.item.name)
+                magentaprint(f"4.")
+                return item_names.get_first_reference(asi.item.name) # Sould have gotten studded 3 (first reference)
+            # Ehrm had trouble with studded leather leggings (m), came out as studded 4 which hit the large one
         else:
-            return item_names.get_first_reference(asi.item.name)
+            magentaprint(f"5.") #Whoops we were getting this
+            return item_names.get_first_reference(asi.item.name) #
+        # Can test with:
+        # exec print(self.armour_bot.shopping_bot.choose_reference(AreaStoreItem.get_by_item_type_and_level_max("m-armor","Legs",1).get()))

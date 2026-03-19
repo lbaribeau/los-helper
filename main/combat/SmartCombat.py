@@ -800,6 +800,7 @@ class SmartCombat(CombatObject):
 
         # self.character.TRYING_TO_MOVE=True # Such that cartography matches the area we get to... maybe flee should be a Command object
         # NOPE JANKY (You run like a chicken gets matched)
+        self.character.LAST_DIRECTION="fleeing" # If we get a dark area, this variable would have been the previous "go", which Cartography uses to guess where we went
         self.telnetHandler.write("fl")
         self.telnetHandler.write("fl")
         self.telnetHandler.write("fl")
@@ -834,9 +835,9 @@ class SmartCombat(CombatObject):
         self.potion_thread_handler.stop()
 
         if w1 != '':
-            self.wield.execute(self.character.inventory.get_last_reference_with_print(w1))
+            self.wield.execute_and_wait(self.character.inventory.get_last_reference_with_print(w1))
         if w2 != '':
-            self.wield.second.execute(self.character.inventory.get_last_reference_with_print(w2))
+            self.wield.second.execute_and_wait(self.character.inventory.get_last_reference_with_print(w2))
 
         # Alright well SmartCombat should return a code maybe the bot can reconstruct the path... a safe path... or rest on the spot??? That'd be good
         # Currently it tries to continue and messes up where it is

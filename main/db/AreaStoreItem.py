@@ -98,10 +98,11 @@ class AreaStoreItem(BaseModel):
         magentaprint("AreaStoreItem get_by_item_type_and_level_max returning " + str([i.item.name for i in items]))
         return items
 
-    def get_buyable_armour(size, location, max_level=1):
-        return AreaStoreItem.get_armour_by_size_location_and_level(size, location, max_level)
+    def get_buyable_armour(size, slot, max_level=1):
+        return AreaStoreItem.get_armour_by_size_location_and_level(size, slot, max_level)
 
     def get_armour_by_size_location_and_level(size, location, max_level=1):
+        # Location is actually armour slot like legs or shield, not store location
         if size in ('s-armor', 'm-armor', 'l-armor', 'armor'):
             sized_armours = list(AreaStoreItem.get_by_item_type_and_level_max(size, location, max_level))
             if size == 'armour':

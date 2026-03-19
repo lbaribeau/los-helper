@@ -60,6 +60,8 @@ class TravelBot(MiniBot):
                     return False
                 elif go.failure:
                     while go.blocked:
+                        smartCombat = self.command_handler.smartCombat
+                        C=self.char
                         # ie. - A mugger the bot didn't want to engage due to HP.
                         #     - Gnoll bandit (rare)
                         # TravelBot needs to be able to engage enemies or trust the caller to do so.
@@ -77,7 +79,13 @@ class TravelBot(MiniBot):
                         # self.command_handler.smartCombat.set_pot_thread = False
                         # self.command_handler.smartCombat.run()  # Calling run explicitly since we don't want to spawn a thread
                         # self.fight(self.char.mobs.get_reference(self.char.mobs.read_match(go.M_obj)))
-                        self.command_handler.smartCombat.fight(self.char.mobs.get_reference(self.char.mobs.read_match(go.M_obj))) # Doesn't spawn a thread
+                        # self.command_handler.smartCombat.fight(self.char.mobs.get_reference(self.char.mobs.read_match(go.M_obj))) # Doesn't spawn a thread
+                        smartCombat.fight(C.mobs.get_ref_of_attacking_mob(go.M_obj))
+                            # It is R.blocked_path, should work 
+                        if smartCombat.fleeing:
+                            magentaprint("Travel bot got blocked! Had to flee!")
+                            self.command_handler.process('rest')
+                            return False
                         magentaprint("TravelBot's smartCombat completed!")
                         go.wait_execute_and_wait(exit)
                     if go.success:

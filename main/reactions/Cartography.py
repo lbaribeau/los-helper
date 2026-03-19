@@ -156,7 +156,7 @@ class Cartography(BotReactionWithFlag):
         C = self.character
         magentaprint("Cartography receiving too_dark notification, previous area: " + str(C.AREA_ID)+", previous MUD_AREA:"+str(C.MUD_AREA))
         if C.AREA_ID != None:
-            guessed_area = self.guess_location(C.AREA_ID, C.LAST_DIRECTION)
+            guessed_area = self.guess_location(C.AREA_ID, C.LAST_DIRECTION) # Ehrm this is wrong if we fled
             magentaprint("Cartography guessed area (too dark): " +str(guessed_area))
 
             if guessed_area != None:
@@ -301,12 +301,12 @@ class Cartography(BotReactionWithFlag):
         self.store_item_re = r"\s+(?P<item>([A-Za-z']+ )+)\s+(\((?P<size>[sml])\)\s+)?Cost: (?P<cost>\d+)[\r\n]{2}"  
         # for store_item_match in re.findall(self.store_item_re, M.group('store_list') + '\r\n'):
         for imatch in re.finditer(self.store_item_re, M.group('store_list') + '\r\n'):
-            area_item = self.catalog_item(
+            area_item = self.catalog_store_item(
                 self.character.inventory.remove_a_an_some(imatch.group('item').strip()), 
                 str(imatch.group('size')), 
                 int(imatch.group('cost')))
             magentaprint(
-                'Parsed item: ' + self.character.inventory.remove_a_an_some(imatch.group('item').strip()) + \
+                'Cartography store_list catalog_store_item parsed: ' + self.character.inventory.remove_a_an_some(imatch.group('item').strip()) + \
                 ', size: ' + str(imatch.group('size')) + \
                 ', cost: ' + imatch.group('cost') + \
                 '. Got item id: ' + str(area_item.id))
@@ -327,6 +327,8 @@ class Cartography(BotReactionWithFlag):
         #     magentaprint("Cartography mapped asi area/ item: {}/{}".format(asitem.area.id, asitem.item.id))
 
         # Ehrm cost not getting uploaded?? Not sure why not maybe since the record exists already?
+
+        # Could do an "if" on "size" above
 
     #Used if it's dark and / or the current area doesn't appear to be findable
     def guess_location(self, area_from_id, direction_from):
@@ -443,10 +445,20 @@ class Cartography(BotReactionWithFlag):
             mob.blocks_pickup = True
             mob.save()
 
-    def catalog_item(self, item_name, item_size, item_value):
-        item = Item(name=item_name, value=item_value, description=item_size)
-        item.map()
+    def catalog_store_item(self, item_name, item_size, item_value):
+        item = Item(name=item_name, value=item_value, description=item_size) # Peewee implements the constructor with args/kwargs according to the database
+        # Ok so the code actually does rely on the description to have size(!!??)
+        # Yes it doesn't actually use the ItemType field
+        # (Cartography store_item)
+        if item_size and item_size != "None":
+            # Yes, it can come in as str(None)
+            item.map_given_name_and_description() # Queries on more than just the item name
+        else:
+            item.map() # Any item without a size, gets item_size "None" at this point
         return item
+        # Ehrm should we use description for size? We could
+        # I don't think that how ItemType works is coded up anywhere
+
 
     def catalog_area_store_item(self, item, area):
         asitem = AreaStoreItem(area=area,item=item)

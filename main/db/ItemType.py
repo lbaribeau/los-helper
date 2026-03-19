@@ -44,7 +44,7 @@ from misc_functions import *
 
 class ItemType(BaseModel):
     model = ForeignKeyField(ItemTypeModel, null=True)
-    data = ForeignKeyField(ItemTypeData, null=True)
+    data = ForeignKeyField(ItemTypeData, null=True)  #ie exec print(self.armour_bot.shopping_bot.choose_reference(AreaStoreItem.get_by_item_type_and_level_max("m-armor","Legs",1).get())) then asi.item.itemtype.data.name can be "Legs"
     note = CharField(null=True)
 
     def to_string(self):

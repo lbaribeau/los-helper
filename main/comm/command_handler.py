@@ -110,6 +110,7 @@ class CommandHandler(object):
         self.info = Info(self.mudReaderHandler, self.telnetHandler)
         self.character.info = self.info
         self.set_up_character_info()
+        self.reinit_aura_timer()
 
         self.smartCombat = SmartCombat(self.kill,self.cast,self.potion_thread_handler,self.wield,self.telnetHandler,self.character,self.weapon_bot,self.prompt, self.info, self.mudReaderHandler.mudReaderThread.mud_reader_completion_event, self.mudReaderHandler.mudReaderThread.MLT.regex_busy) 
         mudReaderHandler.add_subscriber(self.smartCombat)
@@ -160,26 +161,26 @@ class CommandHandler(object):
             self.init_map_and_bots()
 
         self.actions = {
-            'go_smithy' : self.go_smithy,
-            # 'go_pawn' : self.go_to_nearest_pawn_shop,
-            'suit_up': self.suit_up,
-            'bdrop' : self.bulk_drop,
-            'lookup_armour' : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
-            'print_reactions' : lambda a : self.mudReaderHandler.print_reactions(),
-            'weapon' : lambda a : self.start_weapon_bot(),
-            'plot_map' : self.plot_map,
-            'print_gold_exp' : self.print_gold_exp_etc,
-            'rest_loop' : self.do_rest_loop,
+            'go_smithy'                      : self.go_smithy,
+            # 'go_pawn'                      : self.go_to_nearest_pawn_shop,
+            'suit_up'                        : self.suit_up,
+            'bdrop'                          : self.bulk_drop,
+            'lookup_armour'                  : lambda a : magentaprint(self.mud_map.lookup_armour_type(a)),
+            'print_reactions'                : lambda a : self.mudReaderHandler.print_reactions(),
+            'weapon'                         : lambda a : self.start_weapon_bot(),
+            'plot_map'                       : self.plot_map,
+            'print_gold_exp'                 : self.print_gold_exp_etc,
+            'rest_loop'                      : self.do_rest_loop,
             'has_usable_weapon_in_inventory' : self.has_usable_weapon_in_inventory,
-            'waitformobattack' : self.wait_for_mob_attack,
-            'waitformobarrive' : self.wait_for_mob_arrive,
-            'camp_here'   : self.camp_here,
-            'armour_init' : self.armour_init,
-            'weapon_init' : self.weapon_init,
-            'gear_init'   : self.gear_init,
-            'Sel' : self.sell_items,
-            'Sell' : self.sell_items,
-            'Drop' : self.drop_items
+            'waitformobattack'               : self.wait_for_mob_attack,
+            'waitformobarrive'               : self.wait_for_mob_arrive,
+            'camp_here'                      : self.camp_here,
+            'armour_init'                    : self.armour_init,
+            'weapon_init'                    : self.weapon_init,
+            'gear_init'                      : self.gear_init,
+            'Sel'                            : self.sell_items,
+            'Sell'                           : self.sell_items,
+            'Drop'                           : self.drop_items
             # 'toggle_prints' : self.toggle_prints
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
@@ -192,20 +193,21 @@ class CommandHandler(object):
         if not self.bot_check() or not hasattr(self, 'sell_bot'): #or not hasattr(self, "bot_thread") or self.bot_thread == None:
             magentaprint("Botcheck failed")
             return
-        if not hasattr(self, "bot_thread") or self.bot_thread == None:
+        if not hasattr(self, "bot_thread") or self.bot_thread == None or not hasattr(self.bot_thread, "sell_items"):
             magentaprint("Creating a botthread!")
             # Ok I might be hacking at this point... construct bot if it's not constructed...
             self.bot_thread = TrackGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, starting_path=0)
         # self.bot_thread.start()
         # self.bot_thread.stopping = False
             magentaprint("Calling self.bot_thread.sell_items()")
+        self.bot_thread.stopping = False
         self.bot_thread.sell_items()
 
     def drop_items(self, args):
         if not self.bot_check() or not hasattr(self, 'sell_bot'):# or not hasattr(self, "bot_thread") or self.bot_thread == None:
             magentaprint("Botcheck failed")
             return
-        if not hasattr(self, "bot_thread") or self.bot_thread == None:
+        if not hasattr(self, "bot_thread") or self.bot_thread == None or not hasattr(self.bot_thread, "drop_items"):
             magentaprint("Creating a botthread!")
             self.bot_thread = TrackGrindThread(self.character, self, self.mudReaderHandler, self.mud_map, starting_path=0)
         magentaprint("Calling self.bot_thread.drop_items()")
@@ -293,6 +295,19 @@ class CommandHandler(object):
         magentaprint("  self.character.GOLD:    "+str(C.GOLD))
         magentaprint("  C.info.gold_to_level:   "+str(C.info.gold_to_level))
         magentaprint("  C.EXPERIENCE (exp this session):   "+str(C.EXPERIENCE))
+
+    def reinit_aura_timer(self):
+        # I want to change the aura timer... higher levels have the luxury of keeping it maintained... at level 1 and 2 I guess I want more time between checks
+        if self.character.level == 1:
+            self.cast.aura_refresh = 60*50 # 50 minutes
+        elif self.character.level == 2:
+            self.cast.aura_refresh = 60*40 # 40 minutes
+        elif self.character.level == 3:
+            self.cast.aura_refresh = 60*30 # 30 minutes
+        elif self.character.level == 4:
+            self.cast.aura_refresh = 60*20 # 20 minutes
+        else:
+            self.cast.aura_refresh = 60*8  # 8 minutes
 
     def set_up_character_info(self):
         self.info.execute_and_wait()
@@ -585,6 +600,7 @@ class CommandHandler(object):
             self.combat_reactions.report()
         elif re.match("(?i)reset", user_input):
             self.combat_reactions.reset()
+            magentaprint("Cleared report arrays")
         elif re.match("(?i)plot_report", user_input):
             self.combat_reactions.plot()
         elif re.match("(?i)mobs_joined_in", user_input):

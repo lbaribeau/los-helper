@@ -6,7 +6,7 @@ from db.Database import *
 import db.BaseModel
 
 class NamedModel(db.BaseModel.BaseModel):
-    name = peewee.CharField() #Chapel
+    name = peewee.CharField() # Chapel, or, 'studded leather leggings'
 
     '''Static Item Functions'''
     def get_by_name(name):

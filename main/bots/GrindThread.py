@@ -277,12 +277,31 @@ class GrindThread(BotThread):
                 if C.mobs.list:
                     chase_ref = C.mobs.get_ref_of_attacking_mob(mob_attack_match)
                 else:
+                    # Probably dark room... 
                     # chase_ref = mob_attack_match.split(' ')[0]
-                    chase_ref = C.mobs.get_ref_of_attacking_mob(mob_attack_match, ReferencingList([C.mobs.chase])) # Handles the match object... tells it it's ok to use given mob list
-                    # This clause is unexpected as I think mobs.list exists even if it's dark
+                    # This clause is unexpected as I think mobs.list exists even if it's dark(?) (Wouldn't we get False then... why would it exist... I think it's empty in the dark)
+                    # chase_ref = C.mobs.get_ref_of_attacking_mob(mob_attack_match, ReferencingList([C.mobs.chase])) # Handles the match object... tells it it's ok to use given mob list
+                    # Ok hmmm why did we do it that way
+                    # Why not manual
+                    # I think I was too lazy to work with the match object        
+                    # With no list in a dark room
+                    # Lots of problems aren't there if there are no other mobs, ie 2nd stall holder is attacking, with a stall bolder present...
+                    mob_text = C.mobs.read_mob_name_from_regex_match(mob_attack_match) # Mob text ie. "Floor Manager" (no "The"), "stall holder", "Annette Plover"
+                    mob_text_split = mob_text.split(' ')
+                    if mob_text_split[0] in ['kobold', 'gnoll', 'bandit', 'spider', 'knight', 'hooker', 'miner'] and len(mob_text_split)>1:
+                        chase_ref = mob_text_split[1]
+                    else:
+                        chase_ref = mob_text_split[0]
+                        # No integers in this target
             else:
                 # No mob attack?
-                chase_ref = C.mobs.chase.split(' ')[0]
+                # chase_ref = C.mobs.chase.split(' ')[0]
+                mob_text = C.mobs.chase
+                mob_text_split = mob_text.split(' ')
+                if mob_text_split[0] in ['kobold', 'gnoll', 'bandit', 'spider', 'knight', 'hooker', 'miner'] and len(mob_text_split)>1:
+                    chase_ref = mob_text_split[1]
+                else:
+                    chase_ref = mob_text_split[0]
                 magentaprint("do_regular_actions(): wait_for_mob_attack() oddly timed out... try engaging chase_ref as is ("+chase_ref+")")
 
             C.mobs.chase      = ''  # It should be a chase list (no would be better to chase one at a time)
@@ -923,6 +942,7 @@ class GrindThread(BotThread):
         self.command_handler.weapon_bot.stop()
 
     def sell_items(self):
+        magentaprint("GrindThread sell items")
         if self.stopping:
             return
 
@@ -1277,17 +1297,74 @@ class GrindThread(BotThread):
             go = self.command_handler.go
             go.clear()
             go.cartography.clear() # Ok we are "simulating" a "go" pretty well here... both of them should get 
-            self.command_handler.process("l")
+            self.command_handler.process("l") # Is this an extra look? Didn't smart combat put a flee in, wihthout a wait?
+            # Yeah seems a bit extra
+            # Flee just runs for it and sleeps a second
+            # We noted current location before starting the fight
+
             go.wait_for_flag() # waits for cartography??? DOESN"T?!!! Ehrm how about we wait for both... with waits that will return immediately if late...
 
             # go.cartography.wait_for_flag() # Correct, you do not need this because "go" calls it, BUT, we were missing cartography.clear()
 
             # Ehrm his is really trackgrind code(?) Maybe it'll work anyway
-            self.direction_list = self.mud_map.get_path(self.character.AREA_ID, note_current_location) + self.direction_list
+            # self.direction_list = self.mud_map.get_path(self.character.AREA_ID, note_current_location) + self.direction_list
+                # Ok we get a KeyError here, suppose we run away from a dark room and end up in a dark room, AREA_ID is None
+                # Maybe handle that here? Sure, as part of engage monster
+                # Before resting... use glowing, look... assume we know previous location 
+                # We are talking about changing flee... hmmm
+                # Well we could try-it-and-see... if it's None here, drink glowing, and look again, and map.get_path again?
+                # Yeah would be good because we still know note_current_location in this scope because the idea is to rest and go back 
+
+            # if not self.character.AREA_ID and go.too_dark:
+            if not self.character.AREA_ID and go.too_dark:
+                # Copying light code from BotThread.do_on_successful_go
+                light=False
+                glowing_pot = self.inventory.get_first_reference("glowing potion")
+                if glowing_pot:
+                    self.command_handler.drink.execute_and_wait(glowing_pot)
+                    light=True
+                elif Spells.light in self.character.spells and self.character.MANA>=5:
+                    self.command_handler.cast.cast_and_wait(Spells.light)
+                    while self.command_handler.cast.failure and not self.command_handler.cast.result_no_mana:
+                        self.command_handler.cast.cast_and_wait(Spells.light)
+                    if self.command_handler.cast.result_no_mana:
+                        magentaprint("GrindThread flee code couldn't cast light!")
+                    else:
+                        light=True
+                if not light:
+                    # self.direction_list = ['rest_here','areaid2']+self.mud_map.get_path(self.character.AREA_ID, note_current_location) + self.direction_list
+                    magentaprint("Fleeing got us lost in the dark") # Idea: Try to infer the location by inferring from the exits
+                    self.rest_to_full()
+                    self.stop() # Put stop after because rest_to_full does check stopping
+                else:
+                    # Simulate a "go" to correct area id (see elsewhere in current function or BotThread.do_on_successful_go)
+                    self.character.TRYING_TO_MOVE=True
+                    go.clear()
+                    go.cartography.clear() # Ok we are "simulating" a "go" pretty well here... both of them should get 
+                    self.command_handler.process("l")
+                    go.wait_for_flag() # Might have AREA_ID now
+
+            if self.character.AREA_ID:
+                back_to_flee_spot = self.mud_map.get_path(self.character.AREA_ID, note_current_location) + self.direction_list
+                if back_to_flee_spot:
+                    self.direction_list = back_to_flee_spot+self.direction_list
+                else:
+                    magentaprint("Fleeing got us lost!!") # Idea: Try to infer the location by inferring from the exits
+                    self.stop()
+            else:
+                magentaprint("Fleeing got us lost!") # Idea: Try to infer the location by inferring from the exits
+                self.stop()
+
+            # path_back = self.mud_map.get_path(self.character.AREA_ID, note_current_location) + self.direction_list
+            # if not path_back:
+
             # Ok skipping the Try Except on that mud_map call...
             # self.rest_until_ready()
             C.mobs.chase = SC.target # Make sure we'll attack it
-            self.rest_to_full() # new
+
+            # Ok let's handle try to handle if if we get attacked AGAIN... ok above at "Fleeing got us lost in the dark", call stop after .rest_to_full
+
+            self.rest_to_full() # new (might be better to push 'rest_here' onto direction list front... might do the same thing... rest_to_full can engage an attacker... but maybe not chase everything
             # PERFECT
             # Ok there was some JANK
             # "You run like a chicken" gets matched by cartography... so, do a look instead
@@ -1297,13 +1374,13 @@ class GrindThread(BotThread):
             # The problem was we'd "Go" and get the wrong area... "chase" is set... but "flee" mapping should work...
             self.character.TRYING_TO_MOVE=True
             go.clear()
-            go.cartography.clear() # Ok we are "simulating" a "go" pretty well here... both of them should get 
+            go.cartography.clear() # Ok we are "simulating" a "go" pretty well here... both of them should get done (flee/cartography)
             self.command_handler.process("l")
             go.wait_for_flag() # Will get incorrect area match
 
             self.character.TRYING_TO_MOVE=True
             go.clear()
-            go.cartography.clear() # Ok we are "simulating" a "go" pretty well here... both of them should get 
+            go.cartography.clear()
             self.command_handler.process("l")
             go.wait_for_flag() # Correct current area match
 

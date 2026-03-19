@@ -149,6 +149,7 @@ class ArmourBot(MiniBot):
                 # Also this is the correct time to check because gold can change
                 magentaprint("Skipping can't afford to buy {}, need {}+{}, have {}".format(str(asi.item.name), self.gold_to_save_for_weapon, asi.item.value, self.char.GOLD))
                 self.no_gold = True # unnecessary as we are just about done
+                # Hmmm maybe move this to determine shopping list? No because it might matter if we bought one earlier in the loop
                 continue
 
             magentaprint("ArmourBot.get_needed_default_armour GOING TO GET " + str(asi.item.name))
@@ -419,80 +420,118 @@ class ArmourBot(MiniBot):
 
         for slot in self.command_handler.equipment.slot_names:
             if self.command_handler.equipment.dict[slot]:
+                continue # Skip equipment slot if are already wearing something
+
+            # Search db for a piece given size, class, slot
+            # size  = self.determine_size(self.char.info.race)
+            # armour_level = self.determine_armour_level(self.char.class_string)
+            # size  = ArmourSizeDeterminator().determine(self.char.info.race)
+            # armour_level = ArmourLevelDeterminator().determine(self.char.class_string)
+            size  = self.get_size(self.char.info.race)
+            armour_level = self.get_armour_level(self.char.info.level)  # checks class and level (low level paladin can't wear steel yet)
+            # magentaprint("armour_bot.determine_shopping_list() size: " + size + ", slot: " + str(slot) + ", armour_level: " + str(armour_level))
+            if slot == 'wielded' or slot == 'seconded':
                 continue
+            if slot == 'face' or slot == 'holding':
+                continue  # no masks in shops, so this hack will probably stay.  We should add 'face' slot to the db.
+            if re.search(r'\d$', slot):
+                slot = slot[:len(slot)-1]  # neck2, finger3, etc.
+            slot = slot.title()
+            # buyable_items = AreaStoreItem.get_by_item_type_and_level_max(size, slot, armour_level)
+            buyable_items = AreaStoreItem.get_buyable_armour(size, slot, armour_level) # Returns any possible items for current slot
+            # This is a good print... but so large
+            # magentaprint("Called get_buyable_armour(size={},slot={},armour_level={}), got {}.".format(size, slot, armour_level, len(buyable_items)))
+
+            #magentaprint("determine_shopping_list() buyable_items: " + str(buyable_items))
+            # if buyable_items:
+            #     if len(buyable_items) > 0:
+            #         magentaprint(str(len(buyable_items)))  # Object of type 'SelectQuery' has no len()
+            #         magentaprint("determine_shopping_list() buyable_items[0]: " + str(buyable_items[0]))
+            #         magentaprint("determine_shopping_list() buyable_items[0].level: " + str(buyable_items[0].level))
+            #         buyable_items.sort(key=lambda item: item.level, reverse=True)
+            #         desired_items.append(buyable_items[0])
+            # if buyable_items:
+            #     buyable_items.sort(key=lambda item: item.level, reverse=True)  # Use the highest armour_level match
+            #     # 'SelectQuery' object has no attribute 'sort'  ... maybe it is an iterator though
+            #     magentaprint("determine_shopping_list chose " + buyable_items[0].item.name)
+            #     desired_items.append(buyable_items[0])
+            #dir(buyable_items)
+            # magentaprint("ArmourBot determine_shopping_list() size {0}, slot {1}, armour_level {2}, found {3}".format(size, slot, armour_level, str(buyable_items)))
+            magentaprint("armour bot got {}".format(buyable_items))
+
+            # index = self.inventory.index(a.item.)
+
+            # (x) This outer any may be somewhat efficient but i think it's better to skip it ... maybe need tests happening this code
+            # -- No, it's not redundant because we use the ELSE
+            # If we have already any of the desired items in inventory, use that
+            # If we don't have any, use buyable_items[0]
+
+            # if any(self.inventory.has(a.item.name) for a in buyable_items):
+            if any(inventory_copy.has(a.item.name) for a in buyable_items):
+                # That was a pre-check on "has"... maybe slow though (has any) ... but there is an else that's needed
+                # That is, "if we have any of buyable_items"
+                for item in buyable_items:
+                    if inventory_copy.has(item.item.name):
+                        # Add the item we have to desired_items, which will trigger repairing, instead of buying something else, which [0] could be
+                        desired_items.append(item) 
+                        inventory_copy.remove(item.item.name)
+                        # Prefer what we have... armour bot will try to repair it or keep using it... if it broke at smithy we can then give a different answer as we won't have it
+                        break
+                        # Suppose we have a steel ring and an iron ring...
+                        # Ok I think I can handle this (inventory_copy)
+                        # Now, .has can be false, so, iron ring and steel ring could both end up in desired_items and therefore keep list
             else:
-                # Search db for a piece given size, class, slot
-                # size  = self.determine_size(self.char.info.race)
-                # level = self.determine_armour_level(self.char.class_string)
-                # size  = ArmourSizeDeterminator().determine(self.char.info.race)
-                # level = ArmourLevelDeterminator().determine(self.char.class_string)
-                size  = self.get_size(self.char.info.race)
-                level = self.get_armour_level(self.char.info.level)  # checks class and level (low level paladin can't wear steel yet)
-                # magentaprint("armour_bot.determine_shopping_list() size: " + size + ", slot: " + str(slot) + ", level: " + str(level))
-                if slot == 'wielded' or slot == 'seconded':
-                    continue
-                if slot == 'face' or slot == 'holding':
-                    continue  # no masks in shops, so this hack will probably stay.  We should add 'face' slot to the db.
-                if re.search(r'\d$', slot):
-                    slot = slot[:len(slot)-1]  # neck2, finger3, etc.
-                slot = slot.title()
-                # buyable_items = AreaStoreItem.get_by_item_type_and_level_max(size, slot, level)
-                buyable_items = AreaStoreItem.get_buyable_armour(size, slot, level)
-                # This is a good print... but so large
-                # magentaprint("Called get_buyable_armour(size={},slot={},level={}), got {}.".format(size, slot, level, len(buyable_items)))
-
-                #magentaprint("determine_shopping_list() buyable_items: " + str(buyable_items))
-                # if buyable_items:
-                #     if len(buyable_items) > 0:
-                #         magentaprint(str(len(buyable_items)))  # Object of type 'SelectQuery' has no len()
-                #         magentaprint("determine_shopping_list() buyable_items[0]: " + str(buyable_items[0]))
-                #         magentaprint("determine_shopping_list() buyable_items[0].level: " + str(buyable_items[0].level))
-                #         buyable_items.sort(key=lambda item: item.level, reverse=True)
-                #         desired_items.append(buyable_items[0])
-                # if buyable_items:
-                #     buyable_items.sort(key=lambda item: item.level, reverse=True)  # Use the highest level match
-                #     # 'SelectQuery' object has no attribute 'sort'  ... maybe it is an iterator though
-                #     magentaprint("determine_shopping_list chose " + buyable_items[0].item.name)
-                #     desired_items.append(buyable_items[0])
-                #dir(buyable_items)
-                # magentaprint("ArmourBot determine_shopping_list() size {0}, slot {1}, level {2}, found {3}".format(size, slot, level, str(buyable_items)))
-                magentaprint("armour bot got {}".format(buyable_items))
-
-                # index = self.inventory.index(a.item.)
-
-                # if any(self.inventory.has(a.item.name) for a in buyable_items):
-                if any(inventory_copy.has(a.item.name) for a in buyable_items):
-                    # That was a pre-check on "has"... maybe slow though (has any) ... but there is an else that's needed
-                    # That is, "if we have any of buyable_items"
-                    for item in buyable_items:
-                        if inventory_copy.has(item.item.name):
-                            # Add the item we have to desired_items, which will trigger repairing, instead of buying something else, which [0] could be
-                            desired_items.append(item) 
-                            inventory_copy.remove(item.item.name)
-                            # Prefer what we have... armour bot will try to repair it or keep using it... if it broke at smithy we can then give a different answer as we won't have it
-                            break
-                            # Suppose we have a steel ring and an iron ring...
-                            # Ok I think I can handle this (inventory_copy)
-                            # Now, .has can be false, so, iron ring and steel ring could both end up in desired_items and therefore keep list
-                else:
-                    # If we didn't have any in inventory, then we can add anything buyable we found
-                    if buyable_items:
+                # If we didn't have any in inventory, then we can add anything buyable we found (xxx)
+                # Add restrictions to not over buy at low level
+                if buyable_items:
+                    if self.char.info.level==1:
+                        pass # Don't buy armour at level 1, leveling is only 64g I think
+                    elif self.char.info.level==2: # && 'leather jerkin' in [b.item.name for b in buyable_items]:
+                        # desired_items.append
+                        # pass # Even leather jerkin is a money sink at level 2
+                        for b in buyable_items:
+                            if b.item.name == 'studded leather leggings':
+                                desired_items.append(b) # Just testing a recent fix
+                                break; # So we only add one item for the slot
+                                # Probably suboptimal to buy even this at level 2 but let's buy one armour for fun
+                                # Bot could struggle with gold at level 2 if it has bad combat stats
+                    elif self.char.info.level==3:
+                        for b in buyable_items:
+                            if b.item.name in ['leather jerkin']:
+                                desired_items.append(b)
+                                break; # So we only add one item for the slot
+                                # Yeah do need to drop the money drains at low level, to be able to buy long sword, or to level up gold is needed, expenses down like repairs
+                    elif self.char.info.level==4:
+                        for b in buyable_items:
+                            if b.item.name in ['hard cap', 'hard boots', 'studded leather gloves', 'lacquered wooden shield', 'studded leather leggings', 'studded leather sleeves', 'studded leather armour']:
+                                desired_items.append(b)
+                                break; # So we only add one item for the slot
+                                # leave out iron ring
+                                # The idea here is that we don't want to buy so much armour that the guy can't make gold net positive eventually... or afford a decent weapon...
+                    else:
                         desired_items.append(buyable_items[0]) # This adds the first one in buyable_items
-                # Why not just add it regardless?
-                # Because we want to add what we have first, which may not be [0]
-                # 
+                        # If level >= 4 any armour in the dB is fair game
+                        # Test code btw is 
+                        # exec print(AreaStoreItem.get_buyable_armour(self.armour_bot.get_size('Dwarf'), 'Body', 1))
+                        # and armour_init
+            # Why not just add it regardless?
+            # Because we want to add what we have first, which may not be [0]
+            # 
 
-                # for item in buyable_items:
-                #     # magentaprint("Won't print if there's no valid item: " + str(item))
-                #     # Don't bother sorting for now
-                #     desired_items.append(item)
-                #     magentaprint("armour appended {}".format(item)) # Yeah we are clobbering result here, we're only taking the top result... because "break"
-                #     break
+            # for item in buyable_items:
+            #     # magentaprint("Won't print if there's no valid item: " + str(item))
+            #     # Don't bother sorting for now
+            #     desired_items.append(item)
+            #     magentaprint("armour appended {}".format(item)) # Yeah we are clobbering result here, we're only taking the top result... because "break"
+            #     break
+
+        # Ok fair to say... we don't want to spend too much on armour at level 2...
+        # Leveling costs 128g... maybe he'll get there eventually... or will he forever spend all his money on hard caps and gloves and boots...
 
         #magentaprint("Armour bot shopping list " + str(desired_items))
         # magentaprint("Armour bot shopping list: \n" + str([asi.item.name for asi in desired_items]))
         magentaprint("ARMOUR BOT SHOPPING LIST: [\n" + "\n".join("    {} {}".format(asi.item, asi.item.name) for asi in desired_items)+']')
-        magentaprint("Race: {}; Size: {}; Level: {}".format(self.char.info.race, self.get_size(self.char.info.race), self.get_armour_level(self.char.info.level)))
+        magentaprint("Race: {}; Size: {}; Armour_level: {}".format(self.char.info.race, self.get_size(self.char.info.race), self.get_armour_level(self.char.info.level)))
         return desired_items
         # TODO: One issue: shields aren't sized - so queries that use any size need to return the shield, whose type may be
         # the generic armour type.   SELECT "t1"."id", "t1"."area_id", "t1"."item_id" FROM "areastoreitem" AS t1 INNER JOIN "item"

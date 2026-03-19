@@ -17,12 +17,15 @@ class BaseModel(peewee.Model):
 
     def to_string(self):
         return str(self.id)
+
     __str__   = to_string
     __repr__  = to_string # Why might this be wrong?
+
     # def __str__(self):
     #     return self.to_string()
     # def __repr__(self):
     #     return self.to_string()
+
     def __eq__(self, other): 
         # Say if type is equal
         if type(other) is type(self):
@@ -47,3 +50,6 @@ class BaseModel(peewee.Model):
     #         datetime.now().time().strftime("%H:%M:%S.%f")[:-4], # two decimal poits
     #         text)) 
     #     comm.ConsoleHandler.newConsoleHandler().white()
+
+    # This gets inherited by things like Item
+    # It implements a few generic functions like string representation, but also, more importantly, basic peewee save to db

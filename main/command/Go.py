@@ -21,7 +21,7 @@ class Go(Command):
     ]
     failure_regexes = [
         R.blocked_path          , # == [__Three_possible_mob_strings + r" blocks your exit\."]
-        R.cant_go               ,
+        R.cant_go               , # ie. "w' when you can't go west, "You can't go that way\."
         R.open_first            ,
         R.class_prohibited      ,
         R.level_too_low         ,

@@ -613,6 +613,11 @@ class TrackGrindThread(GrindThread):
 
         # if self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > C.info.gold_to_level + 2*self.command_handler.weapon_bot.possible_weapons[0].item.value and \
         # if C.current_experience > C.info.exp_to_level and C.GOLD > C.info.gold_to_level + self.command_handler.armour_bot.gold_to_save_for_weapon:
+        if hasattr(self.command_handler, 'weapon_bot') and WB and WB.possible_weapons:
+            magentaprint(f"To save {AB.gold_to_save_for_weapon} gold for weapon, need {C.info.gold_to_level + AB.gold_to_save_for_weapon} gold to train")
+        else:
+            magentaprint(f"Can't tell you if we will train because weapon and armour bot aren't ready")
+
         if C.current_experience > C.info.exp_to_level and WB.possible_weapons != [] and C.GOLD > C.info.gold_to_level + AB.gold_to_save_for_weapon:
             magentaprint(f"To save {AB.gold_to_save_for_weapon} gold for weapon, need {C.info.gold_to_level + AB.gold_to_save_for_weapon} gold to train")
             if C._class.id == 'Bar':

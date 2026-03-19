@@ -79,10 +79,14 @@ class BotThread(threading.Thread):
             magentaprint('BotThread.run: decide_where_to_go returned ' + str(self.direction_list))
             self.do_pre_go_actions() # Can do shopping here, which can insert at the beginning of the direction list
 
+            count_confused = 0
             while self.direction_list and not self.stopping:
-                magentaprint("BotThread has direction list")
+                magentaprint(f"BotThread has direction list: {self.direction_list}")
+                if count_confused > 7:
+                    raise Exception("BotThread exiting, seems like inifinite loop (count_confused")
                 self.do_regular_actions()
                 if self.go(self.direction_list[0]):
+                    count_confused=0
                     self.do_on_successful_go() # area regex or too_dark matched
                 else:
                     # if self.character.mobs.GO_BLOCKING_MOB != "":
@@ -97,13 +101,16 @@ class BotThread(threading.Thread):
                         continue
                     # elif self.character.GO_TIMEOUT:
                     elif self.command_handler.go.timed_out:
+                        count_confused+=1
                         self.do_on_go_timeout()
                     # elif self.character.GO_NO_EXIT:
                     elif self.command_handler.go.result_no_exit:
+                        count_confused+=1
                         self.no_exit_count += 1
                         self.do_on_go_no_exit()
                         continue
                     elif self.command_handler.go.result_go_where:
+                        count_confused+=1 # I was getting a pawnshop tip path looking like from town centre but in chapel (no "w")
                         magentaprint("BotThread: Ok go command is really confused (no target)")
                     elif self.command_handler.go.result_cliff:
                         self.do_on_go_result_cliff()
@@ -128,7 +135,7 @@ class BotThread(threading.Thread):
 
     def go(self, exit_str):
         # Not overridden
-        magentaprint("BotThread go() function, going  " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)), False)
+        magentaprint("BotThread go() function, going " + exit_str + (". %.1f" % (time.time() - self.character.START_TIME)), False)
         if self.stopping:
             return True
 
