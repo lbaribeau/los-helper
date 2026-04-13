@@ -3,6 +3,8 @@ from misc_functions import *
 
 class MudArea():
     # Seems like "MudArea" is a Python object for Area that is more than the Peewee Area (DB object)"
+    # The area is just and area but the MudArea has an area and it has the exits of the area
+    
     area = None
     area_exits = []
 
@@ -88,6 +90,10 @@ class MudArea():
 
     @staticmethod
     def set_area_exit_as_unusable(regex, area_from, exit_type):
+        # Cartography calls MudArea.set_area_exit_as_unusable(regex, C.AREA_ID, C.LAST_DIRECTION)
+        # So area_from is just an integer (area_id)
+        # Exit_type being just an exit string works
+
         if area_from is not None and exit_type is not None:
             area_from = Area.get_area_by_id(area_from)
             exit_type = ExitType.get_exit_type_by_name_or_shorthand(exit_type)
@@ -131,3 +137,13 @@ class MudArea():
 
     def __str__(self):
         return self.to_string()
+
+
+
+
+
+
+
+
+
+

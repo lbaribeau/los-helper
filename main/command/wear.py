@@ -27,7 +27,13 @@ class Wear(CommandThatRemovesFromInventory):
     #     super().__init__(telnetHandler, inventory)
     #     self.ring_wearing_reaction = ring_wearing_reaction
 
+    # def __init__(self, telnetHandler, inventory, equipment_command):
+    #     super().__init__(telnetHandler, inventory)
+    #     self.eq = equipment_command
+
     def notify(self, r, m):
+        # if r in R.you_wear:
+        #     self.eq # Ohhhh sh&$#*$&# not so easy to know the slot!
         if r in R.broken:
             item = self.inventory.get(self._sent_target)
             if item:
@@ -43,4 +49,7 @@ class Wear(CommandThatRemovesFromInventory):
     @property
     def no_room(self):
         return self.result in R.no_room
+
+    # I think "wear" (command) should update equipment...  yeah... so call that not implemented yet
+    # I guess the bot doesn't really keep track, it just calls 'eq' when it wants to know, like a full re-init instead of maintaining
 

@@ -44,7 +44,7 @@ class Look(Command):
 
         # So how do we know that we aren't looking at the held weapon or armour
         # Equipment gets looked at if not in inventory
-        super().notify(r,m)
+        super().notify(r,m) # note that self.result is the last match object
 
     def execute(self, target=None):
         self.condition = ''

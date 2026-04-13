@@ -44,6 +44,9 @@ class Tracks:
             'w','w','w','nw','nw','n','gate',
             'e','n','n','n','w','n','chapel'
         ]
+        self.GREENHAVEN_LARGE_TORCH = [
+            'areaid353','buy_large_torches','areaid2' # Could make it part of fort path... fort path has an inefficiency at the fort
+        ]
         self.to_glowing_portal = [
             'out','s','e','s','s','s','w','gate','s','se','se','e','e','e','se','se','se','s','s','s','s','s','e','e',
             'se','e','s','s','s','s']#,#'glowing portal','passage','mines','down','n','n','n','n','ne','n','w','n','n',
@@ -506,46 +509,47 @@ class TrackGrindThread(GrindThread):
         self.tracks = Tracks()
 
         if C.level <= 2:
-            self.__TOTALPATHS = 14 # Theatre, market, main roads (militia soldiers path), easy coral path, and kobolds are level 1 safe. 
+            self.__TOTALPATHS = 16 # Theatre, market, main roads (militia soldiers path), easy coral path, and kobolds are level 1 safe. 
             # Idea: picnic hill for level 1s (if there's a spot safe from guards showing up)
             # Amethyst centre, bidders, animals, theatre goers, actors, auctioneers, acrobats (add window shopper)
             # Added coral zombies recently
             # Putting fort path and mill workers in because we want milky potions and maybe they'll help level 1 somehow
             # So it's theatre, market, militia soldiers, fort, mill, kobolds
+            # Add greenhaven torches
         elif C.level <= 3:
-            self.__TOTALPATHS = 20 # Coral Zombies Coral chickens, Coral alley
+            self.__TOTALPATHS = 22 # Coral Zombies Coral chickens, Coral alley
             # Coral alley (hookers help aura at level 3)
         elif C.level <= 4:
-            self.__TOTALPATHS = 22 # Add angry hooker
+            self.__TOTALPATHS = 24 # Add angry hooker
         elif C.level <= 5:
-            self.__TOTALPATHS = 24 # Add barman
+            self.__TOTALPATHS = 26 # Add barman
             # Coral alley (hookers help aura at level 3), kobold back door (lvl 7), mill worker area
             # idea: casino, or look around amber for level 4/5 mobs... not sure if casino is safe tho
         elif C.level <= 6:
-            self.__TOTALPATHS = 30 # mime artist, muggers
+            self.__TOTALPATHS = 32 # mime artist, muggers
             # idea: amber taverns, stage
         elif C.level <= 7:
-            self.__TOTALPATHS = 44 # Southern bandits, weakest guards (safer than other level 6's), seekers
+            self.__TOTALPATHS = 46 # Southern bandits, weakest guards (safer than other level 6's), seekers
         elif C.level <= 8:
-            self.__TOTALPATHS = 48 # Usher, sword swallower, northern bandits, dwarven field workers (should have level 6 in kill list since farm hands are just spawns)
+            self.__TOTALPATHS = 50 # Usher, sword swallower, northern bandits, dwarven field workers (should have level 6 in kill list since farm hands are just spawns)
             # Why add dwarf path at level 8 without adding to kill list
         elif C.level <= 9:
-            self.__TOTALPATHS = 58 # Lvl 8 guards x4
+            self.__TOTALPATHS = 60 # Lvl 8 guards x4
         elif C.level <= 10:
-            self.__TOTALPATHS = 60 # Rancher sentries, west amethyst guards
+            self.__TOTALPATHS = 62 # Rancher sentries, west amethyst guards
         elif C.level <= 12:
-            self.__TOTALPATHS = 62 # East amethyst guards
+            self.__TOTALPATHS = 64 # East amethyst guards
             # Todo: level 10 Amber guards, Coral guards
         elif C.level <= 14:
-            self.__TOTALPATHS = 110 # Brotain, Aldo, Jerrek, Tag, Dini,...
+            self.__TOTALPATHS = 112 # Brotain, Aldo, Jerrek, Tag, Dini,...
         elif C.level <= 15:
-            self.__TOTALPATHS = 123 # Gregor, Bertram Dalram, brother
+            self.__TOTALPATHS = 125 # Gregor, Bertram Dalram, brother
             # Could do level 12 Coral guards
         elif C.level <= 16:
-            self.__TOTALPATHS = 136 # Horbuk, Hurn, Tardan, Floor manager
+            self.__TOTALPATHS = 138 # Horbuk, Hurn, Tardan, Floor manager
             # Could do Coral guard groups
         else:
-            self.__TOTALPATHS = 136
+            self.__TOTALPATHS = 138
 
         magentaprint("TrackGrindThread __init__() __TOTALPATHS is " + str(self.__TOTALPATHS))
 
@@ -735,6 +739,9 @@ class TrackGrindThread(GrindThread):
                 else:
                     return self.tracks.kobold_massacre[:]
         elif self.nextpath == 15:
+            return self.tracks.GREENHAVEN_LARGE_TORCH[:]
+        elif self.nextpath == 17:
+            # --- LEVEL 3 ---
             # if C.level in range(1,11):
                 # return self.tracks.CORAL[:] 
                 # This doesn't seem all that necessary...
@@ -745,14 +752,14 @@ class TrackGrindThread(GrindThread):
             else:
                 magentaprint("Skipping coral alley (level: {})".format(C.level))
                 return self.skip()
-        elif self.nextpath == 17:
+        elif self.nextpath == 19:
             if C.level == 6:
                 return self.tracks.CORAL_CHICKENS[:]
                 # Eh unfortunately more chickens can arrive, then we're in bad shape... flee, then map incomplete... 
             else:
                 magentaprint("Skipping coral chickens (level: {})".format(C.level))
                 return self.skip()
-        elif self.nextpath == 19:
+        elif self.nextpath == 21:
             if C.level in range(1,6):
                 # hookers ... I would avoid the drunken trouble makers, but I don't
                 # quite remember where they are and don't want to go through Amber
@@ -762,26 +769,26 @@ class TrackGrindThread(GrindThread):
             else:
                 magentaprint("Skipping coral alley (level: {})".format(C.level))
                 return self.skip()
-        elif self.nextpath == 21:
+        elif self.nextpath == 23:
             if C.level in range(1,6):
                 # Should we include zombies in this? Sure...
                 return self.tracks.ANGRY_HOOKER[:]
             else:
                 magentaprint("Skipping coral alley (level: {})".format(C.level))
                 return self.skip()
-        elif self.nextpath == 23:
+        elif self.nextpath == 25:
             if C.level <= 6:
                 return self.tracks.CORAL_BARMAN[:]
             else:
                 magentaprint("Skipping coral alley (level: {})".format(C.level))
                 return self.skip()
-        elif self.nextpath == 25:
+        elif self.nextpath == 27:
             # Ok insert shaft manager - it's a kobold back door pretrack
             if 'shaft manager' in self.character.MONSTER_KILL_LIST and C.level < 11:
                 return self.tracks.SHAFT_MANAGER[:] # Goes up to the water?
             else:
                 return self.skip()
-        elif self.nextpath == 27:
+        elif self.nextpath == 29:
             # So I made a track for the kobold back door
             # This reduces the need for kobold_massacre (all in one shot)
             # It avoids a few insanes and a few guards though
@@ -796,7 +803,7 @@ class TrackGrindThread(GrindThread):
                 # I guess I wanted to skip if we were too low and pale blue due to hostility? Rewrote logic
             magentaprint("Skip kobold waterway, aura too blue.")
             return self.skip()
-        elif self.nextpath == 29:
+        elif self.nextpath == 31:
             if C.level >= 6 and (not self.cast.aura or self.cast.aura <= C.preferred_aura):
                 # Problem is when a 4th mugger shows up
                 return self.tracks.MUGGER_PATH[:]
@@ -804,19 +811,19 @@ class TrackGrindThread(GrindThread):
                 magentaprint("Not going to do muggers. (Level %s, current aura %s, and preferred %s.)" %
                              (C.level, self.cast.aura, C.preferred_aura))
                 return self.skip()
-        elif self.nextpath == 31:
+        elif self.nextpath == 33:
             if self.cast.aura and self.cast.aura <= C.preferred_aura:
                 return self.tracks.BANDITS1[:] # 2 guards and 1 sentry I think
                 # Wow! my guy escapes the guards and takes out the sentry!
             else:
                 return self.skip()
-        elif self.nextpath == 33:
+        elif self.nextpath == 35:
             if self.cast.aura and self.cast.aura <= C.preferred_aura:
                 return self.tracks.BANDITS2[:] # Might get another bandit off of the alarm
                 # Here the guards block and fight
             else:
                 return self.skip()
-        elif self.nextpath == 35:
+        elif self.nextpath == 37:
             if self.cast.aura and self.cast.aura <= C.preferred_aura:
                 return self.tracks.BANDITS3[:] # 2 sentries
                 # (Getting dangerous if guards respawn)
@@ -824,18 +831,18 @@ class TrackGrindThread(GrindThread):
                 # Causes mob target determinator problem when bandit arrives
             else:
                 return self.skip()
-        elif self.nextpath == 37:
+        elif self.nextpath == 39:
             if self.cast.aura and self.cast.aura <= C.preferred_aura:
                 return self.tracks.BANDITS4[:] # cook, sentry, bandit (TODO: better to do sentry first)
             else:
                 return self.skip()
-        elif self.nextpath == 39:
-            return self.tracks.GUARD1[:]
         elif self.nextpath == 41:
-            return self.tracks.GUARD2[:]
+            return self.tracks.GUARD1[:]
         elif self.nextpath == 43:
-            return self.tracks.SEEKERS[:] # level 7
+            return self.tracks.GUARD2[:]
         elif self.nextpath == 45:
+            return self.tracks.SEEKERS[:] # level 7
+        elif self.nextpath == 47:
             if not self.cast.aura:
                 if C.level >= 8:
                     return self.tracks.NORTHERN_BANDITS_PATH[:]
@@ -851,57 +858,57 @@ class TrackGrindThread(GrindThread):
                 magentaprint("Not going to do northern bandits. (Level %s, current aura %s, and preferred %s.)" %
                              (C.level, self.cast.aura, C.preferred_aura))
                 return self.skip()
-        elif self.nextpath == 47:
+        elif self.nextpath == 49:
             # The thing with dwarves is the farm hands are spawns
             # So the lowest level static mob is level 6, so it's not worth going unless there's stuff in the kill list
             return self.tracks.DWARVEN_FIELD_WORKERS_PATH[:]
-        elif self.nextpath == 49:
-            return self.tracks.GUARD3[:]
         elif self.nextpath == 51:
-            return self.tracks.GUARD4[:]
+            return self.tracks.GUARD3[:]
         elif self.nextpath == 53:
-            return self.tracks.AMBER_GUARD1[:]
+            return self.tracks.GUARD4[:]
         elif self.nextpath == 55:
-            return self.tracks.AMBER_GUARD2[:]
+            return self.tracks.AMBER_GUARD1[:]
         elif self.nextpath == 57:
-            return self.tracks.RANCHER_SENTRY[:]
+            return self.tracks.AMBER_GUARD2[:]
         elif self.nextpath == 59:
-            return self.tracks.GUARD5[:]
+            return self.tracks.RANCHER_SENTRY[:]
         elif self.nextpath == 61:
-            return self.tracks.GUARD6[:]
+            return self.tracks.GUARD5[:]
         elif self.nextpath == 63:
-            return self.get_path_to_and_from_mob("Brotain")
+            return self.tracks.GUARD6[:]
         elif self.nextpath == 65:
-            return self.get_path_to_and_from_mob("Aldo") # Level 7
+            return self.get_path_to_and_from_mob("Brotain")
         elif self.nextpath == 67:
+            return self.get_path_to_and_from_mob("Aldo") # Level 7
+        elif self.nextpath == 69:
             return self.get_path_to_and_from_mob("Jerrek") 
             # He gets fought occasionally but we should fight him before Tag
             # This can spend some time if he's not in the kill list
-        elif self.nextpath == 69:
-            return self.get_path_to_and_from_mob("Tag") # Level 8
         elif self.nextpath == 71:
-            return self.get_path_to_and_from_mob("Olmer") # Level 8
+            return self.get_path_to_and_from_mob("Tag") # Level 8
         elif self.nextpath == 73:
+            return self.get_path_to_and_from_mob("Olmer") # Level 8
+        elif self.nextpath == 75:
             return self.get_path_with_all_mobs('Dini Stonehammer') # Level 8
             # Viladin
             # Douvan would be good but isn't on my map
             # Servant of the Night
             # Trent the Merchant
-        elif self.nextpath == 75:
-            return self.get_path_to_and_from_mob("sonneteer")
         elif self.nextpath == 77:
-            return self.get_path_with_all_mobs('Thereze')
+            return self.get_path_to_and_from_mob("sonneteer")
         elif self.nextpath == 79:
-            return self.get_path_with_all_mobs('Rancher Renstone')
+            return self.get_path_with_all_mobs('Thereze')
         elif self.nextpath == 81:
-            return self.get_path_with_all_mobs('artificer')
+            return self.get_path_with_all_mobs('Rancher Renstone')
         elif self.nextpath == 83:
+            return self.get_path_with_all_mobs('artificer')
+        elif self.nextpath == 85:
             return self.get_path_with_all_mobs('enchantress') 
             # Higher level but needs to be done right after artificer
             # Maybe she's too blue though
-        elif self.nextpath == 85:
-            return self.get_path_with_all_mobs("mine manager") # tough path
         elif self.nextpath == 87:
+            return self.get_path_with_all_mobs("mine manager") # tough path
+        elif self.nextpath == 89:
             return self.get_path_with_all_mobs('refinery supervisor')
             # tough path
             # oremaster steel collar (m) and (l), granite rods in keep list right now
@@ -909,80 +916,80 @@ class TrackGrindThread(GrindThread):
             # forge worker
             # steel collar
         # CHARACTER 13 / MOBS 9
-        elif self.nextpath == 89:
-            return self.get_path_with_all_mobs('Elder Barthrodue')
         elif self.nextpath == 91:
-            return self.tracks.MUGGER_PATH[:] # Clear the muggers so we don't run out of mana later
+            return self.get_path_with_all_mobs('Elder Barthrodue')
         elif self.nextpath == 93:
+            return self.tracks.MUGGER_PATH[:] # Clear the muggers so we don't run out of mana later
+        elif self.nextpath == 95:
             return self.get_path_with_all_mobs('director')
         # CHARACTER 14 / MOBS 10
-        elif self.nextpath == 95:
+        elif self.nextpath == 97:
             return self.get_path_with_all_mobs('Dame Brethil')
             # makeup kits don't sell well
-        elif self.nextpath == 97:
-            return self.get_path_with_all_mobs('Kelluran')
         elif self.nextpath == 99:
+            return self.get_path_with_all_mobs('Kelluran')
+        elif self.nextpath == 101:
             return self.get_path_with_all_mobs('Master of Ceremonies')
             # Remove silver knight if you don't want to fight him
             # Also there will be tourney organiser and other things on this path
             # He seems to have a long spawn time
-        elif self.nextpath == 101:
+        elif self.nextpath == 103:
             return self.get_path_with_all_mobs('war horse')
             # white knights on this path
-        elif self.nextpath == 103:
-            return self.tracks.FORT_PATH[:] # fort sergeant prefight
         elif self.nextpath == 105:
-            return self.get_path_with_all_mobs('Commander Rilmenson') # hastes
+            return self.tracks.FORT_PATH[:] # fort sergeant prefight
         elif self.nextpath == 107:
-            return self.get_path_with_all_mobs('Rimark') # This guy is like a guard, right?
+            return self.get_path_with_all_mobs('Commander Rilmenson') # hastes
         elif self.nextpath == 109:
+            return self.get_path_with_all_mobs('Rimark') # This guy is like a guard, right?
+        elif self.nextpath == 111:
             return self.get_path_with_all_mobs('dwarven blacksmith')
             # barbarian cook
             # shaman's assistant
         # CHARACTER 15 / MOBS 11
-        elif self.nextpath == 111:
-            return self.get_path_with_all_mobs('minstrel')
         elif self.nextpath == 113:
-            return self.get_path_with_all_mobs('Brotain')
+            return self.get_path_with_all_mobs('minstrel')
         elif self.nextpath == 115:
+            return self.get_path_with_all_mobs('Brotain')
+        elif self.nextpath == 117:
             # Pre-fights (sawmill people) can make this harder
             # Maybe do path -1
             return self.get_path_to_previous_node('Gregor')
-        elif self.nextpath == 117:
-            return self.get_path_with_all_mobs('Gregor')
         elif self.nextpath == 119:
-            return self.get_path_with_all_mobs('Bertram Dalram') # Longer respawn?
+            return self.get_path_with_all_mobs('Gregor')
         elif self.nextpath == 121:
+            return self.get_path_with_all_mobs('Bertram Dalram') # Longer respawn?
+        elif self.nextpath == 123:
             return self.get_specific_path_to_and_from_mob('brother', 0) # throwing stars
         # elif self.nextpath == 85:
         #     return self.get_specific_path_to_and_from_mob('brother', 1) # Didn't have a brother waiting there
         # CHARACTER 16 / MOBS 12
-        elif self.nextpath == 123:
+        elif self.nextpath == 125:
             return self.get_path_with_all_mobs('Horbuk')
         # elif self.nextpath == 89:
         #     return self.get_path_with_all_mobs('Horbuk') 
         #    Do twice in case a mine manager was there... hoping engage controls are high (?)
         #    Actually they got cleared in one pass, on the mine manager path, so never mind this double
-        elif self.nextpath == 125:
+        elif self.nextpath == 127:
             # Remember to check character level restriction
             return self.get_path_with_all_mobs('Tardan') # he got me to 0 mana somehow but didn't potion
             # He also made me run like a chicken at [1 HP 1 MP]... so let's wait for level 16
             # Did he have a +1 war hammer (1250 gold)
-        elif self.nextpath == 127:
+        elif self.nextpath == 129:
             # Prefight some dwarven travellers? Was 5 hp
             return self.get_path_with_all_mobs('Boris Ironfounder')
             # He is also in another path...
             # He does respawn though
-        elif self.nextpath == 129:
-            return self.get_path_to_previous_node('Hurn the Smith') # swordsman
         elif self.nextpath == 131:
-            return self.get_path_with_all_mobs('Hurn the Smith') # 600 exp, 202-290g, easy peasy
+            return self.get_path_to_previous_node('Hurn the Smith') # swordsman
         elif self.nextpath == 133:
+            return self.get_path_with_all_mobs('Hurn the Smith') # 600 exp, 202-290g, easy peasy
+        elif self.nextpath == 135:
             return self.get_path_with_all_mobs('Gorban')
             # Golden potion, but seems hard, could be rng
-        elif self.nextpath == 135:
-            return self.get_path_with_all_mobs('floor manager') # About the same as Tardan
         elif self.nextpath == 137:
+            return self.get_path_with_all_mobs('floor manager') # About the same as Tardan
+        elif self.nextpath == 139:
             return self.get_path_with_all_mobs('Shaldena the Red') # Burstflame might cause some characters problems, but she runs out of mana pretty fast
         elif self.nextpath == "XXX":
             # Watch out for mob targetting bug (ranch foreman hitting Rancher Plover!)

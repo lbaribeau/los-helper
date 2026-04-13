@@ -123,19 +123,30 @@ class GrindThread(BotThread):
             return self.potion_shopping()
         elif exit_str == 'cast_light':
             return self.cast_light()
+        elif exit_str == 'buy_large_torches':
+            self.command_handler.large_torch_manager.at_shop_buy_torch_if_needed()
+            return True # "return True" here prevents "go buy_large_lorches"
         else:
             return super().do_go_hooks(exit_str) # BotThread does areaid[\d] pathfinding 
 
-    def cast_light(self):
-        pot=self.inventory.get_first_reference("glowing potion")
-        if pot:
-            self.command_handler.process("drin "+pot)
-        return True
+    # def cast_light(self):
+    #     magentaprint("I'm not sure GrindThread.cast_light() gets used")
+    #     # Yeah, it got removed from kobold path, hmph, but light is needed to see the guards, so we could add it back as a go hook
+    #     glowing_pot=self.inventory.get_first_reference("glowing potion")
+    #     if self.command_handler.large_torch_manager.can_handle_it():
+    #         self.command_handler.large_torch_manager.use_torch()
+    #     elif glowing_pot:
+    #         # self.command_handler.process("drin "+glowing_pot)
+    #         self.command_handler.drink.execute_and_wait(glowing_pot)
+    #     magentaprint("GrindThread.cast_light can't do it; LTM.can_handle_it() was False and so was glowing pot.")
+    #     return False
+    # Ehrm BotThread definition is better
+    
 
     def potion_shopping(self):
         buy = self.command_handler.buy
 
-        while self.inventory.count('misty potion') < 4 and not self.stopping:
+        while self.inventory.count('misty potion') < min(self.character.level-1, 4) and not self.stopping:
             buy.execute_and_wait('misty')
             if buy.success:
                 self.inventory.add('misty potion')
@@ -144,7 +155,7 @@ class GrindThread(BotThread):
                 magentaprint("Error buying misty potions!")
                 return True
 
-        while self.inventory.count('glowing potion') < 1 and not self.stopping:
+        while self.inventory.count('glowing potion') < 1 and self.character.level >= 4 and not self.stopping:
             buy.execute_and_wait('glowing')
             if buy.success:
                 self.inventory.add('glowing potion')
@@ -1000,6 +1011,10 @@ class GrindThread(BotThread):
 
         # We also have broken rings...
         # Hmmmm, what if some of it is restoratives?
+        # self.command_handler.large_torch_manager.at_tip_drop_held_torch() # Saving money reusing torches I suppose
+        self.command_handler.large_torch_manager.remove_torch()
+        self.command_handler.large_torch_manager.setup() # I suppose we could presume it'll still work if condition isn't 'unusable'... I guess we should have a backup torch too... 
+        self.command_handler.large_torch_manager.at_tip_drop_bad_torches()
 
     def item_was_sold(self):
         # TODO: class Sell(Command)  - Get rid of these all caps flag variables and copypasta polling code
@@ -1320,7 +1335,10 @@ class GrindThread(BotThread):
                 # Copying light code from BotThread.do_on_successful_go
                 light=False
                 glowing_pot = self.inventory.get_first_reference("glowing potion")
-                if glowing_pot:
+                if self.command_handler.large_torch_manager.can_handle_it():
+                    self.command_handler.large_torch_manager.use_torch() 
+                    light=True
+                elif glowing_pot:
                     self.command_handler.drink.execute_and_wait(glowing_pot)
                     light=True
                 elif Spells.light in self.character.spells and self.character.MANA>=5:
@@ -1345,7 +1363,7 @@ class GrindThread(BotThread):
                     go.wait_for_flag() # Might have AREA_ID now
 
             if self.character.AREA_ID:
-                back_to_flee_spot = self.mud_map.get_path(self.character.AREA_ID, note_current_location) + self.direction_list
+                back_to_flee_spot = self.mud_map.get_path(self.character.AREA_ID, note_current_location)# + self.direction_list
                 if back_to_flee_spot:
                     self.direction_list = back_to_flee_spot+self.direction_list
                 else:

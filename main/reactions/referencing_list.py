@@ -52,7 +52,7 @@ class ReferencingList(object):
 
     def add(self, obj_or_string):
         if isinstance(obj_or_string, 'str'.__class__):
-            obj = GameObject(obj_or_string)  # This probably causes problems - overwrite add
+            obj = GameObject(obj_or_string)  # I'm a bit confused but, maybe this will make .unusable or .usable exist on the item in the list
         else:
             obj = obj_or_string
 
@@ -433,3 +433,26 @@ class ReferencingList(object):
         return item in self.list
     def __iter__(self):
         return iter(self.list)
+
+    def count_unbroken(self, item_name):
+        return count_usable(item_name)
+
+    def count_usable(self, item_name):
+        c=0
+        for x in self.list:
+            if hasattr(x, 'name') and x.name == item_name or x == item_name:
+                if not hasattr(x, 'usable'):
+                    magentaprint(f"Item {x.name} doesn't have .usable set")
+                elif x.usable:
+                    c+=1
+                else:
+                    magentaprint(f"Passing unusable item")
+        magentaprint(f"Referencing_list, count_usable({item_name}) returning {c}")
+        return c
+
+    def count_unusable(self, item_name):
+        return self.count(item_name)-self.count_usable(item_name)
+
+    def set_usable(self, ref):
+        magentaprint("ReferencingList set_usable on {0} ({1})".format(ref, self.get(ref)))
+        self.get(ref).usable = True

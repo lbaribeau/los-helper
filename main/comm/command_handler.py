@@ -60,7 +60,10 @@ magentaprint("... MobAttackWaiter");       from reactions.wait_for_mob_attack im
 magentaprint("... db.Item");               from db.Item                    import Item
 magentaprint("... MobArriveWaiter");       from mini_bots.camping_bot      import MobArriveWaiter
 magentaprint("... CampingBot");            from mini_bots.camping_bot      import CampingBot
-
+magentaprint("... Hold...");               from command.Hold               import Hold
+magentaprint("... Remove...");             from command.Remove             import Remove
+magentaprint("... LargeTorchManager...");  from LargeTorchManager          import LargeTorchManager
+from command import Inventory
 
 magentaprint("... Done command_handler.py import section, now defining classes")
 
@@ -118,11 +121,11 @@ class CommandHandler(object):
         self.go = Go(self.kill, self.cast, telnetHandler, character)
         mudReaderHandler.add_subscriber(self.go)
         mudReaderHandler.add_subscriber(self.go.open)
-        self.buy = Buy(telnetHandler, character.inventory);       mudReaderHandler.add_subscriber(self.buy)
+        self.buy    = Buy(telnetHandler, character.inventory);    mudReaderHandler.add_subscriber(self.buy)
         # self.drop = Drop(telnetHandler);                        mudReaderHandler.add_subscriber(self.drop)
-        self.get = Get(telnetHandler, character.inventory);       mudReaderHandler.add_subscriber(self.get)
+        self.get    = Get(telnetHandler, character.inventory);    mudReaderHandler.add_subscriber(self.get)
         self.repair = Repair(telnetHandler, character.inventory); mudReaderHandler.add_subscriber(self.repair)
-        self.wear = Wear(telnetHandler, character.inventory);     mudReaderHandler.add_subscriber(self.wear)
+        self.wear   = Wear(telnetHandler, character.inventory);   mudReaderHandler.add_subscriber(self.wear)
         # magentaprint(str(Equipment))
         self.equipment = Equipment(telnetHandler)
         # self.eq_bot = EquipmentBot(character, self, self.mudReaderHandler, self.mud_map)
@@ -140,7 +143,9 @@ class CommandHandler(object):
         self.rest_loop = RestLoop(self.rest, self.character.mobs, self.character); mudReaderHandler.add_subscriber(self.rest_loop)
         self.mob_attack_waiter = MobAttackWaiter(); mudReaderHandler.add_subscriber(self.mob_attack_waiter)
         self.mob_arrive_waiter = MobArriveWaiter(); mudReaderHandler.add_subscriber(self.mob_arrive_waiter)
-
+        self.hold      = Hold(telnetHandler, self.character.inventory, self.equipment);   mudReaderHandler.add_subscriber(self.hold)
+        self.remove    = Remove(telnetHandler, self.character.inventory, self.equipment); mudReaderHandler.add_subscriber(self.remove)
+        self.large_torch_manager = LargeTorchManager(self.character.inventory, self.look, self.hold, self.remove, self.drop, self.buy, self.character); #mudReaderHandler.add_subscriber(self.large_torch_manager)
         if '-fake' in sys.argv:
             Go.good_mud_timeout = 2.0
             Command.good_mud_timeout = 2.0
@@ -180,13 +185,39 @@ class CommandHandler(object):
             'gear_init'                      : self.gear_init,
             'Sel'                            : self.sell_items,
             'Sell'                           : self.sell_items,
-            'Drop'                           : self.drop_items
+            'Drop'                           : self.drop_items,
+            'ho'     : self.hold_item,
+            'hol'    : self.hold_item,
+            'hold'   : self.hold_item,
+            'rm'     : self.remove_gear,
+            'rem'    : self.remove_gear,
+            'remo'   : self.remove_gear,
+            'remov'  : self.remove_gear,
+            'remove' : self.remove_gear,
+            'cast_light' : self.cast_light,
             # 'toggle_prints' : self.toggle_prints
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
         # Each action is going to be passed "a" which is string.partition(' ')[2] on the command that came in
         # So make sure the function has the right signature (self, args)
+
+    def cast_light(self, args):
+        self.bot_thread.cast_light()
+    def remove_gear(self, args):
+        self.remove.execute_and_wait(args.partition(' ')[0])
+        # In Command.notify()
+        # self.result = regex
+        # self.M_obj = M_obj
+        # if 'large torch' in self.inventory.last_added... self.remove.M_obj.group(1) # last added
+        # Should we ask 'eq' what we just targeted?
+        # if 'large torch' self.remove.M_obj.group(1) # last added
+        if 'large torch' in Inventory.parse_item_list(self.remove.M_obj.group(1)):
+            self.large_torch_manager.setup_done=False
+            magentaprint("Good, command handler saw the command removed a torch, so we put LTM.setup_done")
+
+    def hold_item(self, args):
+        self.hold.execute(args.partition(' ')[0])
 
     def sell_items(self, args):
         # if not self.bot_check() or not hasattr(self, 'sell_bot') or not hasattr(self, "bot_thread") or self.bot_thread == None:
@@ -462,7 +493,7 @@ class CommandHandler(object):
             # )
             # self.inventory.sellable()
             self.sell_bot.sellable()
-        elif user_input.startswith('droppable'):
+        elif user_input.startswith('droppable') or user_input.startswith('Droppable'):
             magentaprint(str(self.inventory.droppable()))
         # elif user_input.startswith('Sel') and not user_input.startswith('Sella'):
         #     # self.inventory.sell_stuff()
@@ -709,6 +740,7 @@ class CommandHandler(object):
             try:
                 exec(user_input.partition(' ')[2]) # General purpose, for example, try, "exec self.weapon_bot.possible_weapons"
             except Exception as e:
+                magentaprint("Command handler catching the exception...:")
                 magentaprint(str(e))
         elif user_input.startswith('count_weapons_in_inventory'):
             magentaprint(self.weapon_bot.count_weapons_in_inventory())

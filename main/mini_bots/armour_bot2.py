@@ -457,7 +457,8 @@ class ArmourBot(MiniBot):
             #     desired_items.append(buyable_items[0])
             #dir(buyable_items)
             # magentaprint("ArmourBot determine_shopping_list() size {0}, slot {1}, armour_level {2}, found {3}".format(size, slot, armour_level, str(buyable_items)))
-            magentaprint("armour bot got {}".format(buyable_items))
+            
+            # magentaprint("armour bot got {}".format(buyable_items))
 
             # index = self.inventory.index(a.item.)
 
@@ -485,30 +486,50 @@ class ArmourBot(MiniBot):
                 # Add restrictions to not over buy at low level
                 if buyable_items:
                     if self.char.info.level==1:
+                        # Need 64g to level
                         pass # Don't buy armour at level 1, leveling is only 64g I think
                     elif self.char.info.level==2: # && 'leather jerkin' in [b.item.name for b in buyable_items]:
+                        # Need 128g to level
                         # desired_items.append
-                        # pass # Even leather jerkin is a money sink at level 2
-                        for b in buyable_items:
-                            if b.item.name == 'studded leather leggings':
-                                desired_items.append(b) # Just testing a recent fix
-                                break; # So we only add one item for the slot
-                                # Probably suboptimal to buy even this at level 2 but let's buy one armour for fun
-                                # Bot could struggle with gold at level 2 if it has bad combat stats
+                        pass # Even leather jerkin is a money sink at level 2 (only need 128g to level) (prioritize leveling, don't buy these money sinks...)
+                        # for b in buyable_items:
+                        #     if b.item.name == 'studded leather leggings':
+                        #         desired_items.append(b) # Just testing a recent fix
+                        #         break; # So we only add one item for the slot
+                        #         # Probably suboptimal to buy even this at level 2 but let's buy one armour for fun
+                        #         # Bot could struggle with gold at level 2 if it has bad combat stats
+                        # My guy finally got it done with just leggings and a long sword... I think long sword only might have been better... annnyyywayayyyyy
                     elif self.char.info.level==3:
-                        for b in buyable_items:
-                            if b.item.name in ['leather jerkin']:
-                                desired_items.append(b)
-                                break; # So we only add one item for the slot
+                        pass
+                        # Need 1024g to level... maybe can afford some armour now
+                        # Still long sword (300g) is way more helpful than armour I think... so we do damage... 
+                        # for b in buyable_items:
+                        #     if b.item.name in [\
+                        #             'leather jerkin', 
+                        #             'studded leather leggings', 
+                        #             'studded leather gloves', 
+                        #             'studded leather sleeves', 
+                        #             'lacquered wooden shield']:
+                        #         desired_items.append(b)
+                        #         break; # So we only add one item for the slot
                                 # Yeah do need to drop the money drains at low level, to be able to buy long sword, or to level up gold is needed, expenses down like repairs
                     elif self.char.info.level==4:
-                        for b in buyable_items:
-                            if b.item.name in ['hard cap', 'hard boots', 'studded leather gloves', 'lacquered wooden shield', 'studded leather leggings', 'studded leather sleeves', 'studded leather armour']:
-                                desired_items.append(b)
-                                break; # So we only add one item for the slot
-                                # leave out iron ring
-                                # The idea here is that we don't want to buy so much armour that the guy can't make gold net positive eventually... or afford a decent weapon...
-                    else:
+                        desired_items.append(buyable_items[0]) # This adds the first one in buyable_items
+                    #     for b in buyable_items:
+                    #         if b.item.name in [\
+                    #                 'hard cap', 
+                    #                 'hard boots', 
+                    #                 'studded leather gloves', 
+                    #                 'lacquered wooden shield', 
+                    #                 'studded leather leggings', 
+                    #                 'studded leather sleeves', 
+                    #                 'studded leather gloves',
+                    #                 'studded leather armour']:
+                    #             desired_items.append(b)
+                    #             break; # So we only add one item for the slot
+                    #             # leave out iron ring
+                    #             # The idea here is that we don't want to buy so much armour that the guy can't make gold net positive eventually... or afford a decent weapon...
+                    # else:
                         desired_items.append(buyable_items[0]) # This adds the first one in buyable_items
                         # If level >= 4 any armour in the dB is fair game
                         # Test code btw is 

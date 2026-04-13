@@ -231,7 +231,8 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'iron shield'
         # 'platinum ring', 'gold ring', 'steel ring', 'silver ring'
         #'steel mask' # spiv, sawmill
-        'green potion' # Bless I think
+        'green potion', # Bless I think
+        'large torch'
     ]
     def __init__(self, telnetHandler, character):
         # I am now thinking that inventory is only concerned about the backpack, not what is equipped.
@@ -245,7 +246,7 @@ class Inventory(SimpleCommand, ReferencingList):
             R.not_empty         ,
             R.gave_you          ,
             R.bought            ,
-            R.you_hold          ,
+            # R.you_hold          ,
             R.disintegrates     ,
             R.you_drink         ,
             R.sold              ,
@@ -255,7 +256,7 @@ class Inventory(SimpleCommand, ReferencingList):
             R.you_wield         ,
             # R.you_wear        ,
             R.nothing_to_wear   ,
-            R.you_remove        ,
+            # R.you_remove        ,
             R.nothing_to_remove ,
             R.weapon_break      ,
             R.weapon_shatters   ,
@@ -270,7 +271,7 @@ class Inventory(SimpleCommand, ReferencingList):
         self.gold = 0
         self.__stopping = False
         self.is_bulk_vendoring = False
-        self.equipped_items = {}
+        self.equipped_items = {} # We have eq object also...
         #self.already_removed_dropped_item = False
         # equipped_items = {'body': [], 'arms':[], 'legs':[],'neck':[],'hands':[],'head':[],'feet':[],'face':[],'finger':[],'Shield':[],'Wielded':[],'Second':[]}
 
@@ -353,12 +354,16 @@ class Inventory(SimpleCommand, ReferencingList):
         # elif regex in R.you_give + R.you_put_in_bag:
             self.remove_many(match.group(1))
         # elif regex in R.you_wear + R.you_hold:
-        elif regex in R.you_hold:
-            self.remove_many(match.group(1))
+        # elif regex in R.you_hold:
+        #     self.remove_many(match.group(1))
             #self.get_equipment()
             #we know this is armour of some kind so we need to find a way to assign it to the right spot
-        elif regex in R.you_remove + R.gave_you:
+            # Ok 'hold' command can put it into 'holding' slot
+            # "Remove"... maybe we don't need a command object at this point...just check the entire equipment dict
+        elif regex in R.gave_you:
             self.add(match.group(1))
+        # elif regex in R.you_remove:
+        #     self.add(match.group(1))
         elif regex in R.bought:
             pass
             # if not self.is_bulk_vendoring:
@@ -458,8 +463,14 @@ class Inventory(SimpleCommand, ReferencingList):
         # Note that this isn't trustworthy until Sell is fixed to remove the correct item
         if item_name.__class__ != ''.__class__:
             raise Exception("Inventory.has_broken() argument must be a string")
-        if any([i.usable for i in self.get_all_by_name(item_name)]):
-            return True
+        return any([i.usable for i in self.get_all_by_name(item_name)])
+            # return True
+        # return [i.usable for i in self.get_all_by_name(item_name)].index(True)
+        # booleans = [i.usable for i in self.get_all_by_name(item_name)]
+        # if any(booleans):
+        #     return booleans.index(True) # No doesn't work because we only operated on a subset (get_all_by_name is a subset and can't give us a proper inventory index of the item)
+        # else:
+        #     return None
 
     def get_unbroken(self, item_name):
         if item_name.__class__ != ''.__class__:
@@ -467,7 +478,13 @@ class Inventory(SimpleCommand, ReferencingList):
         # return [not i.usable for i in self.get_all_by_name(item_name)].index(True)
         # return self.inventory.list.index(item_name)
         # return [not i.usable for i in self.get_all_by_name(item_name)].index(True)
-        return self.get_reference_from_index([i.name == item_name and i.usable for i in self.list].index(True))
+        # if self.has_unbroken
+        # return self.get_reference_from_index([i.name == item_name and i.usable for i in self.list].index(True))
+        # return self.get_reference_from_index(self.has_unbroken(item_name)) # Not happening
+        if self.has_unbroken(item_name):
+            return self.get_reference_from_index([i.name == item_name and i.usable for i in self.list].index(True))
+        else:
+            return None
 
     def has_any_broken(self, item_name_list):
         if item_name_list.__class__ != [].__class__:
@@ -478,17 +495,14 @@ class Inventory(SimpleCommand, ReferencingList):
                 return True
 
     def has_slot_equipped(self, slot_to_check, quantity=1):
-        has_slot_equipped = False
-
         for slot in self.equipped_items:
             magentaprint(slot)
             if slot == slot_to_check:
                 magentaprint(str(self.equipped_items))
                 if len(self.equipped_items[slot]) >= quantity:
-                    has_slot_equipped = True
-                    break
+                    return True
 
-        return has_slot_equipped
+        return False
 
     def get_usable_item_of_type(self, item_model, item_data, level=1):
     #     return self.inventory.get_object_of_type(itemModel, itemData, level)
@@ -657,6 +671,7 @@ class Inventory(SimpleCommand, ReferencingList):
     def add(self, item_string):
         magentaprint("Inventory.add %s parses as %s." % (item_string, str(parse_item_list(item_string))))
         items = parse_item_list(item_string)  # This is overloaded for "hammer" and "a hammer"
+        # self.last_added=items
         for i in items:
             # magentaprint("Inventory adding %s" % str(i))
             super().add(i)  
@@ -664,6 +679,7 @@ class Inventory(SimpleCommand, ReferencingList):
 
     def add_broken(self, item_string):
         items = parse_item_list(item_string)
+        # self.last_added=items
 
         for i in items:
             i.usable = False
@@ -1094,10 +1110,14 @@ class Inventory(SimpleCommand, ReferencingList):
             magentaprint("Inventory item didn't define usable??")
 
     def add_to_keep_list_ref(self, ref):
-        name=self.get_item_name_from_reference(ref)
-        if name not in self.keep_list:
-            magentaprint("Adding to keep list!!! Happens if we were wearing armour that we can't afford to repair and isn't in DB {}, {}".format(ref, name))
+        self.add_to_keep_list_by_name(self.get_item_name_from_reference(ref))
 
+    def add_to_keep_list_by_name(self, item_name):
+        magentaprint(f"Inventory.add_to_keep_list_by_name() {item_name}")
+        if item_name not in self.keep_list:
+            magentaprint("Adding to keep list!!! Happens if we were wearing armour that we can't afford to repair and isn't in DB (also torches) name:{}".format(item_name))
+            self.keep_list.append(item_name)
+        # raise Exception("Need stack trace")
 
 # Ok I want to set up reactions to keep myself up to date.
 # I am thinking of steel bottles and restoratives, so I want

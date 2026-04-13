@@ -6,7 +6,7 @@
 
 prompt            = [r"\[(\d+) H (\d+) M\]: (You feel the benefits of resting\.)?"]
 __item            = r"(?P<item>[A-Za-z0-9\-'\s]+)"
-__items           = r"(?P<items>[A-Za-z0-9\-'\s,]+)"
+__items           = r"(?P<items>[A-Za-z0-9\-'\s,]+)" # ok so the entire list of items is in one group that matches lots of characters, but not dot (\.)
 __player          = r"(?P<player>[A-Za-z]+)"
 you_have          = [r"You have: " + __items + r"\."]
 wont_buy          = [r'The shopkeep says, "I won\'t buy that rubbish from you\."'] # Could get the prompt with the regex, so ^ might not match
@@ -31,13 +31,18 @@ you_get           = [r"^(You weren't able to carry everything\.\n\r)?You get " +
 # around it 30+ times
 # We could miss a "You get" this way
 # Eh now we don't match if you don't get everything because of the ^... so we put that in as an optional group, since we need the ^
-you_remove        = [r"You removed? " + __items + r"\."]
+you_remove        = [r"You removed? " + __items + r"\."] # ok so the entire list of items is in one group that matches lots of characters, but not dot (\.)
+remove_what       = [r"Remove what\?"]
+not_worn          = [r"You aren't using that\."]
 nothing_to_remove = [r"^You aren't wearing anything that can be removed\."]
 # you_wield       = [r"You wield (.+?)( in your off hand)?\."]
 you_give          = [r"^You give " + __items + r" to " + __player + r"\."]
 you_put_in_bag    = [r"^You put " + __items + r" in(:?to)? " + __item + r"\."]
 gave_you          = [__player + r" gave " + __items + r" to you\."]
 you_hold          = [r"^You hold " + __items + r"\."]
+you_cant_hold     = [r"^You can't hold that\."]
+already_holding   = [r"^You're already holding something\."]
+
 # weapon_breaks   = [r"Your (.+?) breaks and you have to remove it\."]
 # weapon_shatters = [r"Your (.+?) shatters\."]
 armour_breaks     = [r"Your " + __item + r" fell apart\."]

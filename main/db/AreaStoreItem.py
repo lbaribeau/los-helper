@@ -95,7 +95,7 @@ class AreaStoreItem(BaseModel):
         # BaseModel.magentaprint("AreaStoreItem get_by_item_type_and_level_max returning " + str([i for i in items]))
         # Level max means you include all levels below (you supply a maximum)
         # Ok, so do we sort it? Brocolli is buying a small mace, and Alfredo doesn't have a level 3 thrusting
-        magentaprint("AreaStoreItem get_by_item_type_and_level_max returning " + str([i.item.name for i in items]))
+        magentaprint(f"AreaStoreItem get_by_item_type_and_level_max given model {model_name} and data {data_name} and level {level_max} returning " + str([i.item.name for i in items]))
         return items
 
     def get_buyable_armour(size, slot, max_level=1):

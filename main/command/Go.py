@@ -59,6 +59,8 @@ class Go(Command):
         self.cast = cast
         self.character = character
         # self.regex_cart.append(R.ze_mob_fled)
+        self.go_hist=[]
+        self.go_hist_len=0
 
     def wait_for_flag(self, **kwargs):
         # magentaprint("Go.wait_for_flag()")
@@ -102,7 +104,13 @@ class Go(Command):
         # self.cartography.wait_for_flag(timeout=3)
         self.cartography.clear() # Sets it up so you can wait for its notify() to finish (super().notify() will call ".set()" which frees the event)
         # magentaprint("Go.execute() 2")
+        self.update_history(target)
         super().execute(target) # self.clear()
+        
+    def update_history(self, target):
+        if self.go_hist_len < 500:
+            self.go_hist.append(target)
+            self.go_hist_len+=1
 
     def persistent_execute(self, target):
         super().persistent_execute(target)

@@ -145,7 +145,7 @@ class CombatReactions(object):
         magentaprint(f"Circles hit              : {self.circles}")
         magentaprint(f"Circles missed           : {self.circle_fails}")
         if circles_attempted:
-            magentaprint(f"Circle hit rate      : {self.circles/(self.circles+self.circle_fails)*100:.2f}%") 
+            magentaprint(f"Circle hit rate          : {self.circles/(self.circles+self.circle_fails)*100:.2f}%") 
         magentaprint("---")
         magentaprint("Spell damage:")
         magentaprint(self.spell_damage)
@@ -163,12 +163,12 @@ class CombatReactions(object):
         else:
             num_hits=len(self.hits_received)
             D=self.hits_received
-            magentaprint(f"Mob attacks            : {num_hits}")
-            magentaprint(f"Misses/blocks          : {D.count(0)}")
-            magentaprint(self.hits_received)
-            magentaprint(f"Total damage: {sum(self.hits_received)}")
-            magentaprint(f"Block/Dodge rate       : {D.count(0)/num_hits*100:.2f}%")
-            magentaprint(f"Damage expectation     : {sum(D)/num_hits:.2f}")
+            magentaprint(f"Mob attacks              : {num_hits}")
+            magentaprint(f"Misses/blocks            : {D.count(0)}")
+            magentaprint(D)
+            magentaprint(f"Total damage             : {sum(D)}")
+            magentaprint(f"Block/Dodge rate         : {D.count(0)/num_hits*100:.2f}%")
+            magentaprint(f"Damage expectation       : {sum(D)/num_hits:.2f}")
             magentaprint(f"(Remove zeros from mob damage array because it's like misses, unlike how we did player damage)")
             D=[_D for _D in D if _D > 0]
             _sorted=sorted(D)
@@ -180,28 +180,28 @@ class CombatReactions(object):
             else:
                 magentaprint(f"All stats are 0")
                 return
-            magentaprint(f"Mob attack stdev       : {stdev:.2f}")
-            magentaprint(f"2 stdevs               : {2*stdev:.2f}")
+            magentaprint(f"Mob attack stdev         : {stdev:.2f}")
+            magentaprint(f"2 stdevs                 : {2*stdev:.2f}")
             # magentaprint(f"Attack hit average damage: {statistics.mean(self.damage_array):.2f}") # Or do sum(self.damage_array)/len(self.damage_array)
             # magentaprint(f"Damage expectation: {sum(D)/(num_hits):.2f}")
             # magentaprint(f"Median: {sorted(self.damage_array)[num_hits/2-1] if num_hits % 2 else (int(self.damage_array[num_hits/2])+int(self.damage_array[num_hits/2+1]))/2}")
             # magentaprintprint(f"Median: {_sorted[int(num_hits/2)-1] if num_hits % 2 == 0 else (int(_sorted[int(num_hits/2+.5)])+int(_sorted[int(num_hits/2)-.5]))/2}")
             median=_sorted[int(num_hits/2-.5)] if num_hits % 2 else (int(_sorted[int(num_hits/2-1)])+int(_sorted[int(num_hits/2)]))/2
-            magentaprint(f"Median                 : {median:.1f}")
+            magentaprint(f"Median                   : {median:.1f}")
             if stdev > .1:
                 magentaprint(f"Z score (distance from 0): {statistics.mean(D)/stdev*100:.2f}%")
             else:
                 magentaprint(f"Z score (distance from 0): infinite")
-            magentaprint(f"Variability           : {stdev/statistics.mean(D)*100:.2f}%")
-            magentaprint(f"Skew                  : {statistics.mean(D)-median:.2f}")
-            magentaprint(f"Range without 0       : {max(D)-min([_D for _D in D if _D != 0])}")
-            magentaprint(f"Min (0th percentile)  : {min(D)}")
-            magentaprint(f"10th percentile       : {self.get_percentile(_sorted, .1):.1f}")
-            magentaprint(f"25th percentile       : {self.get_percentile(_sorted, .25):.1f}")
-            magentaprint(f"Median                : {median:.1f}")
-            magentaprint(f"75th percentile       : {self.get_percentile(_sorted, .75):.1f}")
-            magentaprint(f"90th percentile       : {self.get_percentile(_sorted, .90):.1f}")
-            magentaprint(f"Max (100th percentile): {max(D)}")
+            magentaprint(f"Variability              : {stdev/statistics.mean(D)*100:.2f}%")
+            magentaprint(f"Skew                     : {statistics.mean(D)-median:.2f}")
+            magentaprint(f"Range, without 0         : {max(D)-min([_D for _D in D if _D != 0])}")
+            magentaprint(f"Min (0th percentile)     : {min(D)}")
+            magentaprint(f"10th percentile          : {self.get_percentile(_sorted, .1):.1f}")
+            magentaprint(f"25th percentile          : {self.get_percentile(_sorted, .25):.1f}")
+            magentaprint(f"Median                   : {median:.1f}")
+            magentaprint(f"75th percentile          : {self.get_percentile(_sorted, .75):.1f}")
+            magentaprint(f"90th percentile          : {self.get_percentile(_sorted, .90):.1f}")
+            magentaprint(f"Max (100th percentile)   : {max(D)}")
         magentaprint("---")
         # Idea: bashes (R.bash, R.bash_fail)... I don't bash lately it's not great... gives acolytes time to regen mana, mime artists land their spells anyway
         # Maybe plot histograms of player damage and mob damage, even spells

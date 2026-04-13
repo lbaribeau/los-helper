@@ -793,10 +793,16 @@ class SmartCombat(CombatObject):
         else:
             w1=''
 
+        # Removed leather cap instead of leather whip(!)
+        # self.character.equipment.get_ref_of_item_by_slot('wielded')
+
         if w1 != '':
             self.telnetHandler.write("rm " + w1)  # Could split off second word, ie. "mace" in "small mace"
+            # self.telnetHandler.write("rm " + self.character.equipment.get_ref_of_item_by_slot('wielded')) # I don't think this works
+            # Could use "Remove" command... inventory might get messed up...
         if w2 != '':
             self.telnetHandler.write("rm " + w2)
+            # self.telnetHandler.write("rm " + self.character.equipment.get_ref_of_item_by_slot('seconded')) # I don't think this works
 
         # self.character.TRYING_TO_MOVE=True # Such that cartography matches the area we get to... maybe flee should be a Command object
         # NOPE JANKY (You run like a chicken gets matched)
@@ -822,7 +828,6 @@ class SmartCombat(CombatObject):
         # # What if it blocks
         # # Well... ideally we find a place to rest at I guess
         # The fact is we died because we got lost... so it's better to repair the path... maybe add a rest after fleeing
-        
 
 
         # Maybe use remove command if it exists? Fleeing is kind of panic-mode... also this might work

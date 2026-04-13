@@ -155,42 +155,51 @@ class Cartography(BotReactionWithFlag):
     def too_dark(self, regex, M):
         C = self.character
         magentaprint("Cartography receiving too_dark notification, previous area: " + str(C.AREA_ID)+", previous MUD_AREA:"+str(C.MUD_AREA))
-        if C.AREA_ID != None:
-            guessed_area = self.guess_location(C.AREA_ID, C.LAST_DIRECTION) # Ehrm this is wrong if we fled
-            magentaprint("Cartography guessed area (too dark): " +str(guessed_area))
+        if C.TRYING_TO_MOVE:
+            if C.AREA_ID != None:
+                # Previous area id is available
+                guessed_area = self.guess_location(C.AREA_ID, C.LAST_DIRECTION) # Ehrm this is wrong if we fled
+                magentaprint("Cartography guessed area (too dark): " +str(guessed_area))
 
-            if guessed_area != None:
-                C.AREA_ID    = guessed_area.area.id
-                C.AREA_TITLE = guessed_area.area.name
-                C.EXIT_LIST  = guessed_area.area_exits
-                C.MUD_AREA   = guessed_area
-            else:
-                C.AREA_ID    = None
-                C.AREA_TITLE = None
-                C.MUD_AREA   = None
-                C.EXIT_LIST  = []
+                if guessed_area != None:
+                    C.AREA_ID    = guessed_area.area.id
+                    C.AREA_TITLE = guessed_area.area.name
+                    C.EXIT_LIST  = guessed_area.area_exits
+                    C.MUD_AREA   = guessed_area
+                    if C.AREA_ID:
+                        magentaprint(f"Obvious exits: {[ae.exit_type.name for ae in AreaExit.get_area_exits_from_area_given_areaid(C.AREA_ID)]}")
+                else:
+                    C.AREA_ID    = None
+                    C.AREA_TITLE = None
+                    C.MUD_AREA   = None
+                    C.EXIT_LIST  = []
 
-        C.mobs.list = ReferencingList([]) # Will have to deal with unknown mobs list
-        C.mobs.attacking = []
-        if C.mobs.chase:
-            C.mobs.list.add(C.mobs.chase)
-            C.mobs.attacking = [C.mobs.chase]
-            # Cartography is a place that gets the notification that it's dark, and it's not the Go object,
-            # so it's currently a good place to make this correction
-            # The bot should now see ok a mob is attacking and there is a mob here and it can base decisions on that like
-            # Ok let's fight the attacking mob then
-            # By the way it also has code regarding chasing specifically
-            # But we could just unset C.mobs.chase and have the bot decide ok there's an attacker
-            # Better though is for it to know it chased
-            # I think that by default I might make the Go object do this or we could have a Go handler and a go-between for more state handling
-            # Anyway, this should help us to know if we chased into a dark room
-            # But why wouldn't a chase happen in a dark room?
+            C.mobs.list = ReferencingList([]) # Will have to deal with unknown mobs list
+            C.mobs.attacking = []
 
-        C.SUCCESSFUL_GO  = True
-        self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
-        C.CAN_SEE        = False
-        C.CONFUSED       = False
-        C.TRYING_TO_MOVE = False
+            if C.mobs.chase:
+                C.mobs.list.add(C.mobs.chase)
+                C.mobs.attacking = [C.mobs.chase]
+                # Cartography is a place that gets the notification that it's dark, and it's not the Go object,
+                # so it's currently a good place to make this correction
+                # The bot should now see ok a mob is attacking and there is a mob here and it can base decisions on that like
+                # Ok let's fight the attacking mob then
+                # By the way it also has code regarding chasing specifically
+                # But we could just unset C.mobs.chase and have the bot decide ok there's an attacker
+                # Better though is for it to know it chased
+                # I think that by default I might make the Go object do this or we could have a Go handler and a go-between for more state handling
+                # Anyway, this should help us to know if we chased into a dark room
+                # But why wouldn't a chase happen in a dark room?
+
+            C.SUCCESSFUL_GO  = True
+            self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
+            C.CAN_SEE        = False
+            C.CONFUSED       = False
+            C.TRYING_TO_MOVE = False
+        else:
+            if C.AREA_ID != None:
+                magentaprint(f"Obvious exits: {[ae.exit_type.name for ae in AreaExit.get_area_exits_from_area_given_areaid(C.AREA_ID)]}")
+                # Could just be a "look" in the dark (not trying to move)
 
     def area(self, match):
         # This is what we do when area regex matches in notify(), we are given "match" which is the regex matched text
@@ -330,6 +339,117 @@ class Cartography(BotReactionWithFlag):
 
         # Could do an "if" on "size" above
 
+    def string_match_area_exit(self, area_exits, direction_from):
+        area_exits.sort(key=lambda areaexit: areaexit.exit_type.name) # .name should be inherited from NamedModel... or .to_string()... should be the exit text
+        magentaprint(f"Obvious exits: {[ae.exit_type.name for ae in area_exits]}")
+        if direction_from in ['d', 'do']:
+            # These refer to 'down' unequivically and won't actually work on 'door', so we have to return None to prevent returning door
+            for ae in area_exits:
+                if ae.exit_type.name == 'down':
+                    return ae
+            return None
+        # I think "up" and "u" will be ok because they string match with "up"
+        # This code is not very concise
+        if direction_from == 'sw':
+            direction_from = 'southwest'
+            # for ae in area_exits:
+            #     if ae.exit_type.name == 'southwest':
+            #         return ae
+        elif direction_from == 'nw':
+            direction_from = 'northwest'
+            # for ae in area_exits:
+                # if ae.exit_type.name == 'northwest':
+                    # return ae
+        elif direction_from == 'se':
+            direction_from = 'southeast'
+            # for ae in area_exits:
+                # if ae.exit_type.name == 'southeast':
+                    # return ae
+        elif direction_from == 'ne':
+            direction_from = 'northeast'
+            # for ae in area_exits:
+                # if ae.exit_type.name == 'northeast':
+                    # return ae
+        # Alright now how about "c 3" can we get "cave 3"???
+        # Do we need a referencing list?
+        # Why not?
+        # RL=ReferencingList(area_exits)
+        # return RL.get(direction_from) # Interprets direction_from as a "reference", such as in for exambple "go cav 3"
+        # return ReferencingList(area_exits).get(direction_from) # Interprets direction_from as a "reference", such as in for example "go cav 3"
+        # return ReferencingList([ae.exit_type for ae in area_exits]).get(direction_from)
+
+        # return area_exits[ReferencingList([ae.exit_type for ae in area_exits]).index(direction_from)] 
+            # Makes a parallel array because ReferencingList needs .name,
+            # Uses referencingList.index to find the appropriate item
+            # Indexes the parallel array to get the right area_exit out
+            # The point here is for "goto" to still work even though we've walked through the dark
+        # Why did I get None??!
+
+        # Why not copy code from referencing_list.index() (trigger warning)
+        # Ok turns out there are some differences so can't run the same code... similar algorithm though
+        ref=direction_from
+        if len(ref.split(' ')) >= 2:
+            refw, n = ref.split(' ')[0], int(ref.split(' ')[1])
+        else:
+            refw, n = ref, 1
+
+        # Ok well we don't have cave, cave, cave, cave from the DB
+        # We have cave, cave 2, cave 3... 
+        # Not sure how good or bad that is but
+        # We can assume that...
+        # So let's start by extending "c" to cave?
+        # It wouldn't give us caverns would it
+        # That would be bananas
+        # "c 7" would have to hit cavern
+        # Let's just not handle that
+
+        # This code assumes cave, cave, cave in the db so it's no good... counting 'cave' won't help because in the DB it's saved as cave, cave 2, cave 3
+        # index=None
+        # for name_from_list in sorted(list(set(x.exit_type.name for x in area_exits))):
+        #     magentaprint("Cartography RefList name_from_list: %s, list.count(obj): %s" % (name_from_list, str(area_exits.count(name_from_list))))
+        #     if any(w.startswith(refw) for w in name_from_list.split(' ')):
+        #         # If any of the words of the thing in the list start with "refw", we could have a hit, if "n" is low enough
+        #         if n <= area_exits.count(name_from_list):
+        #             magentaprint("Cartography RefList.index returning " + str(area_exits.index(name_from_list)+n-1))
+        #             # return area_exits.index(name_from_list) + n - 1 # Returns index of item given by ref
+        #             index = name_from_list + n - 1 # Returns index of item given by ref
+        #         else:
+        #             n = n - area_exits.count(name_from_list) # Reduces "n" and continues
+        # Above code assumes cave, cave, cave but it's cave, cave 2, cave 3, so... gotta modify it
+        # if index:
+        #     area_exits...
+        # exit_list = [x.exit_type.name for x in area_exits]
+        # exit_list = area_exits
+
+        # Lengthen "c" to "cave" by looking through area_exits to find "cave"
+        for e in [x.exit_type.name for x in area_exits]:
+            if e.startswith(refw):
+                refw=e.split(' ')[0] # Assumes there's nothing like "cavern"... that first hit is true
+                break
+
+        # Now use "cave 3" to get the AreaExit, which is what we want to return
+        # First, though, handle the case n == 1 because there shouldn't be "cave 1"
+        if n == 1:
+            db_exit_name = refw
+        else:
+            db_exit_name = refw+' '+str(n) # ie "cave 3"
+
+        for e in area_exits:
+            if e.exit_type.name == db_exit_name:
+            # if e.exit_type.name.startswith(db_exit_name): # We don't need startswith now because we extended the term
+                return e
+
+        # Ok well the problem is now that in the DB it's actually "cave 3"
+        # So we just need to extend "c" to "cave"
+        # I wonder how it got saved that way
+
+        # Below code was good but didn't handle cave 3
+        # (Now we end the same way)
+        # for ae in area_exits:
+        #     # Suppose "go n" and north and northwest exist, north sorts first so we'll correctly get north
+        #     if ae.exit_type.name.startswith(direction_from):
+        #         return ae
+
     #Used if it's dark and / or the current area doesn't appear to be findable
     def guess_location(self, area_from_id, direction_from):
         C=self.character
@@ -341,6 +461,32 @@ class Cartography(BotReactionWithFlag):
         # boulder doesn't come up with "go b"
         # Using startswith can get backroom
         # The bot doesn't shorten exits so it's fine
+
+        # Yeah it'd be nice to fix this
+        # Suppose we go up with "u" in the dark
+        # We can't call an ExitType fuction without telling it area_from_id
+        # because this is just a global call... there are collsions
+        # Also, we don't have to call it guessing
+        # This can be a straightforward DB lookup, we are given, area from and direction from
+        # Might not even be a DB lookup, I think we load up a map graph on startup
+
+        # I suppose we are guessing because we are just reacting... go object probably didn't exist at all
+
+        area_exits = AreaExit.get_area_exits_from_area_given_areaid(area_from_id)
+        magentaprint(f"Guess location got current area exits code got: {area_exits}")
+        ae = self.string_match_area_exit(area_exits, direction_from)
+        magentaprint(f"New area exit code got: {ae}")
+        if ae and ae.area_to:
+            # return ae.area_to # Ehrm I guess we need the MUD_AREA... how do we get that
+            return MudArea(ae.area_to)
+        else:
+            magentaprint(f"Seems like map is incomplete here(!!!) Got ae:{ae}, and didn't get area_to")
+            # For example, area_from_id: 1819 (Large Cave with large kobolds in it), area_to_id: NULL (MAP NOT DONE), exit_type_id: 2 (out)
+
+        # Ok hopefully the above worked
+        # Code below kinda does
+        # Behaviour I am getting is, walk into dark room, and areaId becomes None
+        # I think the below code certainly has issue with 'boulder' and 'up'... it does a global look for exit type so can't handle shortened typing ('backroom' returns)
 
         if C.MUD_AREA != None:
             exit_type = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
@@ -458,7 +604,6 @@ class Cartography(BotReactionWithFlag):
         return item
         # Ehrm should we use description for size? We could
         # I don't think that how ItemType works is coded up anywhere
-
 
     def catalog_area_store_item(self, item, area):
         asitem = AreaStoreItem(area=area,item=item)

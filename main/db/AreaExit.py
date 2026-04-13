@@ -5,12 +5,12 @@ from db.Area import *
 from db.ExitType import *
 
 class AreaExit(BaseModel):
-    area_from = ForeignKeyField(Area, related_name='area_from') #id is a default attribute
-    area_to = ForeignKeyField(Area, related_name='area_to', null=True) #id is a default attribute
-    exit_type = ForeignKeyField(ExitType)
+    area_from  = ForeignKeyField(Area, related_name='area_from') #id is a default attribute
+    area_to    = ForeignKeyField(Area, related_name='area_to', null=True) #id is a default attribute
+    exit_type  = ForeignKeyField(ExitType)
     is_useable = BooleanField(default=True) #if the link is broken or potentially harzardous we don't want to use it
-    is_hidden = BooleanField(default=False) #these will be manually set for now
-    note = CharField(default="")
+    is_hidden  = BooleanField(default=False) #these will be manually set for now
+    note       = CharField(default="")
 
     '''Private Area Functions'''
     def map(self, area_from=None, exit_from=None):
@@ -58,6 +58,19 @@ class AreaExit(BaseModel):
 
         return area_exit
 
+    # def get_area_exit_by_from_areaid_and_exit_type_id(from_areaid, exit_type_id):
+    #     try:
+    #         for areaexit in AreaExit.select().where((AreaExit.area_from == from_areaid) & (AreaExit.exit_type == exit_type_id)):
+    #             return areaexit
+    #     except AreaExit.DoesNotExist:
+    #         return None
+    # def get_area_exit_by_from_areaid_and_exit_string(from_areaid, exit_string_partial):
+    #     try:
+    #         for areaexit in AreaExit.select().where((AreaExit.area_from == from_areaid) & (AreaExit.exit_type == exit_type_id)):
+    #             return areaexit
+    #     except AreaExit.DoesNotExist:
+    #         return None
+
     def get_area_exits_from_area(area):
         area_exits = []
         try:
@@ -67,3 +80,43 @@ class AreaExit(BaseModel):
             area_exits = []
 
         return area_exits
+
+    def get_area_exits_from_area_given_areaid(areaid):
+        area_exits = []
+        try:
+            for areaexit in AreaExit.select().where((AreaExit.area_from == areaid)):
+                area_exits.append(areaexit)
+        except AreaExit.DoesNotExist:
+            area_exits = []
+
+        return area_exits
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

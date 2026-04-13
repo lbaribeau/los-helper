@@ -82,7 +82,7 @@ class BotThread(threading.Thread):
             count_confused = 0
             while self.direction_list and not self.stopping:
                 magentaprint(f"BotThread has direction list: {self.direction_list}")
-                if count_confused > 7:
+                if count_confused > 4:
                     raise Exception("BotThread exiting, seems like inifinite loop (count_confused")
                 self.do_regular_actions()
                 if self.go(self.direction_list[0]):
@@ -112,6 +112,7 @@ class BotThread(threading.Thread):
                     elif self.command_handler.go.result_go_where:
                         count_confused+=1 # I was getting a pawnshop tip path looking like from town centre but in chapel (no "w")
                         magentaprint("BotThread: Ok go command is really confused (no target)")
+                        # Ok well instead of fixing it with something like self.direction_list = '' let's leave it in because we want to know why it happens
                     elif self.command_handler.go.result_cliff:
                         self.do_on_go_result_cliff()
                     else:
@@ -278,6 +279,39 @@ class BotThread(threading.Thread):
         # GoTo thread inherits this
         return
 
+    def cast_light(self):
+        LTM=self.command_handler.large_torch_manager
+
+        if LTM.holding_torch():
+            # Presumably it's an expired torch if we are trying to cast light
+            LTM.remove_torch() # Then we'll do "setup" which will mark it as a bad torch with "look"
+
+        if not LTM.setup_done:
+            LTM.setup()
+
+        if LTM.can_handle_it():
+            # Ok well why do we need light so urgently?
+            # suppose we start a fight and we flee... then I can see using a torch
+            if LTM.use_torch():
+                return True
+
+        glowing_pot = self.inventory.get_first_reference("glowing potion")
+        if glowing_pot:
+            if self.command_handler.drink.execute_and_wait(glowing_pot):
+                return True
+            else:
+                magentaprint(f"Not sure why that wouldn't have worked (drink {glowing_pot})")
+        elif Spells.light in self.character.spells and self.character.MANA>=5:
+            self.command_handler.cast.cast_and_wait(Spells.light)
+            while self.command_handler.cast.failure and not self.command_handler.cast.result_no_mana:
+                self.command_handler.cast.cast_and_wait(Spells.light)
+            if self.command_handler.cast.result_no_mana:
+                magentaprint("BotThread couldn't cast light!")
+                return False
+            else:
+                return True
+        return False
+
     def do_on_successful_go(self):
         # Ok well go command returned, I guess that means cartography ran already, but, cartography needs C.LAST_DIRECTION if we want to know where we are when it's dark
         # But all the notifies go through before we get action/priority again
@@ -292,25 +326,28 @@ class BotThread(threading.Thread):
             # "It's too dark to see"
             self.character.mobs.list=ReferencingList([]) # Maybe Cartography also does this
             self.character.mobs.attacking=[]             # Maybe Cartography also does this
-            glowing_pot = self.inventory.get_first_reference("glowing potion")
-            if glowing_pot:
-                self.command_handler.drink.execute_and_wait(glowing_pot)
-            elif Spells.light in self.character.spells and self.character.MANA>=5:
-                self.command_handler.cast.cast_and_wait(Spells.light)
-                while self.command_handler.cast.failure and not self.command_handler.cast.result_no_mana:
-                    self.command_handler.cast.cast_and_wait(Spells.light)
-                if self.command_handler.cast.result_no_mana:
-                    magentaprint("BotThread couldn't cast light!")
+            c=self.cast_light() # Ok we should put some conditions on this
+                # Ok well why do we need light so urgently?
+                # suppose we start a fight and we flee... then I can see using a torch
+                # How about when we chase in the dark then we cast light so we don't hit the wrong kobold
+                # If we walked there in the dark we should still have area id (I did have to fix that)
+                # But if we flee somewhere into the dark we should then cast light so we don't have to write an algorthm to explor around and find out which way we ran
+                # Wondering how it ended up right here... we cast light no matter what
+                # Ok I see form Jan 8 commit log that the point was that the bot needed to see the kobold guards
+                # Without light cast all the time the bot won't even see its intended targets
+                # Ok well we can keep it in then... if it has a purpose
+                # Large torches are quite cheap... alternative would be to create a go_hook to know the kobold guards are there in the dark
+            if c:
+                # Let's simulate a "go" to correct area id
+                # Did this before in GrindThread.engage_monster after a flee to find ourselves
+                self.character.TRYING_TO_MOVE=True
+                self.command_handler.go.clear()
+                self.command_handler.go.cartography.clear() # Ok we are "simulating" a "go" pretty well here... both of them should get 
+                self.command_handler.process("l")
+                self.command_handler.go.wait_for_flag()
             else:
                 magentaprint("BotThread couldn't cast light!")
-                return None
-            # Let's simulate a "go" to correct area id
-            # Did this before in GrindThread.engage_monster after a flee to find ourselves
-            self.character.TRYING_TO_MOVE=True
-            self.command_handler.go.clear()
-            self.command_handler.go.cartography.clear() # Ok we are "simulating" a "go" pretty well here... both of them should get 
-            self.command_handler.process("l")
-            self.command_handler.go.wait_for_flag()
+                return False
 
     def do_on_blocking_mob(self):
         # Ok well we TRIED to leave and COULDN"T

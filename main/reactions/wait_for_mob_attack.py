@@ -40,7 +40,8 @@ class MobAttackWaiter(threading.Event):
         magentaprint("MobAttackWater.wait() called.")
         self.last_regex = None
         self.last_match = None
-        super().wait(5) # Should set last_regex and last_match to something if a mob attacked
+        super().wait(7) # Should set last_regex and last_match to something if a mob attacked
+        # 5 wasn't enough once! Then the bot didn't really catch the situation, it kind of expects the wait to be long enough
         # If a mob didn't attack, we could use 
         # (Presumes an attacker will attack in 5 seconds)
         return self.last_match

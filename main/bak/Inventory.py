@@ -348,8 +348,8 @@ class Inventory(SimpleCommand, ReferencingList):
         # elif regex in R.you_give + R.you_put_in_bag:
                 self.remove_many(match.group(1))
         # elif regex in R.you_wear + R.you_hold:
-        elif regex in R.you_hold:
-            self.remove_many(match.group(1))
+        # elif regex in R.you_hold:
+        #     self.remove_many(match.group(1))
             #self.get_equipment()
             #we know this is armour of some kind so we need to find a way to assign it to the right spot
         elif regex in R.you_remove + R.gave_you:

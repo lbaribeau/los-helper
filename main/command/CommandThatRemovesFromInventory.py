@@ -4,6 +4,10 @@ from comm import RegexStore as R
 from misc_functions import magentaprint
 
 class CommandThatRemovesFromInventory(Command):
+    """ Commands need telnetHandler, this kind of command also takes Inventory.
+    So this is a Command with the additional feature that it'll update the inventory.
+    You gotta call super() on __init__ and on notify(self, regex, match)
+    """
     # Don't forget to make sure command handler calls the command object so that inventory gets updated
     def __init__(self, telnetHandler, inventory):
         # Sell needs inventory so we can remove the right item from the inventory

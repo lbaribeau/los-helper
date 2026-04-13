@@ -7,6 +7,8 @@ from misc_functions import magentaprint
 from command.Inventory import parse_item_names
 
 class Equipment(Command):
+    """ This gets complicated enough that we want this object to just handle when you type "eq"
+    More code should probably go into some sort of handler object"""
     command = 'eq'
     def __init__(self, telnetHandler):
         # self.regex_cart = [R.you_arent_wearing_anything,
@@ -34,7 +36,8 @@ class Equipment(Command):
             'hands',
             'head',
             'feet',
-            'face','finger','finger2','finger3','finger4','finger5','finger6','finger7','finger8',
+            'face',
+            'finger','finger2','finger3','finger4','finger5','finger6','finger7','finger8',
             'shield',
             'wielded',
             'seconded',
@@ -86,7 +89,8 @@ class Equipment(Command):
         # if self.eq_flag:
             #magentaprint("Equipment dict is " + str(self.dict))
             #magentaprint("Equipment dict is {\n" + '\n\t'.join([('{0}'.ljust(10)+': {1}').format(k, v) for k, v in self.dict.items()]))
-            magentaprint("Equipment dict is {\n" + ''.join(['{0: <10}: {1}\n'.format(k, v) if v is not None else '' for k, v in self.dict.items()])+'}')
+            # magentaprint("Equipment dict is {\n" + ''.join(['{0: <10}: {1}\n'.format(k, v) if v is not None else '' for k, v in self.dict.items()])+'}')
+            self.print()
                 #+ str(self.dict))
             # magentaprint("Equipment completed.")
             self.eq_flag = False
@@ -98,6 +102,9 @@ class Equipment(Command):
             # It's finicky - there's another issue when the prompt is sent with the eq text and gets registered before it,
             # so we need to wait for both flags.
             self.telnetHandler.write('')
+
+    def print(self):
+        magentaprint("Equipment dict is {\n" + ''.join(['   {0: <10}: {1}\n'.format(k, v) if v is not None else '' for k, v in self.dict.items()])+'}')
 
     def execute(self, target=None):
         self.reset()
@@ -130,6 +137,53 @@ class Equipment(Command):
 
     def determine_gear_name(self, text_after_colon):
         return parse_item_names(text_after_colon)[0]
+
+    # def get_ref_for_slot(self, slot):
+        # (Slot names reminder... self.slot_names above = 
+        # ['body', 'arms', 'legs', 'neck', 'neck2', 'hands', 'head', 'feet', 'face','finger', 'finger2', (2 through to 8 inclusive),
+        # 'shield', 'wielded', 'seconded', 'holding']
+        # The idea here is we want to remove large torch
+        # Large torch probably won't have any name collisions but
+        # Why not implement this
+        # 
+
+    def make_ref(self, word, number):
+        # Simple function...
+        if number==1:
+            return word
+        else:
+            return word + ' ' + str(number)
+
+    def get_ref_of_item_by_name(self, item_name):
+        # Ok the idea is suppose we want to remove 'studded leather leggings'
+        # Can we prepare some code to try to manage that
+        # Well that could be ambiguous, so, we should also have, get_ref_for_slot
+        # I think that 'eq' items are prioritized over inventory items in the game... depending on the command ('remove' will hit 'eq')
+        # 'Look'... is the one that could hit either 'eq' gear or inventory gear, and, I'm still not sure what the collision logic is
+        word = item_name.split(' ')[0]
+        inc = 1
+        for s in self.slot_names:
+            if word in self.dict[s].split(' '):
+                if self.dict[s] == item_name:
+                    break
+                else:
+                    inc+=1
+        return self.make_ref(word, inc)
+
+    def get_ref_of_item_by_slot(self, slot_name):
+        item_name = self.dict[slot_name]
+        if not item_name:
+            return None
+        word = item_name.split(' ')[0]
+        inc = 1
+        for s in self.slot_names:
+            if self.dict[s] != None and word in self.dict[s].split(' '):
+                if s == slot_name:
+                    break
+                else:
+                    inc+=1
+        return self.make_ref(word, inc)
+
 
 # you_arent_wearing_anything = [r"You aren't wearing anything\."]
 # on_body = [r"On body:   (.+?)\n\r"]

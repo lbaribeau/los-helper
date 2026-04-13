@@ -235,7 +235,8 @@ class Character(object):
     
     lvl2_monsters = [ #~ 15 xp
         'hawker', 'barmaid', 'smelly beggar', 'black crow', 'sheep', 'goose', 'singer', 'musician', 'spiv', 'bidder', 'dairy cow',
-        'scholar', 'juggler', 'shepherd', 'gazelle', 'jongleur', 'clerk', 'stablehand', 'rich kid', 'bladesman',
+        'scholar', 'juggler', 'shepherd', 'gazelle', 'jongleur', 'clerk', 'stablehand', # Greenhaven
+        'rich kid', 'bladesman',
         "cook's assistant", 
         "miner's assistant", 
         'mare', 'tabby cat', 'plumber', 'old fisherman', 'hungry diner',
@@ -282,7 +283,8 @@ class Character(object):
         'retired miner',
         'old miner',
         'travelling tourist', # guide book, pristine condition, not sure how to use it, "it says welcome to sunny Amethyst"
-        'large bore worm' # could be level 4 but lets have it kill on sight for the quest to work
+        'large bore worm', # could be level 4 but lets have it kill on sight for the quest to work
+        'antelope' # Appeared on south plains rode
     ]
     lvl3_red_monsters = [
         'large kobold', 'insane kobold', 'kobold scout', 'drunk',
