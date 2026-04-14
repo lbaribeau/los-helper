@@ -5,6 +5,8 @@ from misc_functions import *
 from db.NamedModel import NamedModel
 
 class Area(NamedModel):
+    # "name" (NamedModel)
+    # "id" (BaseModel)
     description      = peewee.CharField(null=True) #This will only be used for crawler comparisons
     is_always_dark   = peewee.BooleanField(default=False)
     is_dark_at_night = peewee.BooleanField(default=False)

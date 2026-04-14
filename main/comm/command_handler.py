@@ -63,7 +63,9 @@ magentaprint("... CampingBot");            from mini_bots.camping_bot      impor
 magentaprint("... Hold...");               from command.Hold               import Hold
 magentaprint("... Remove...");             from command.Remove             import Remove
 magentaprint("... LargeTorchManager...");  from LargeTorchManager          import LargeTorchManager
-from command import Inventory
+magentaprint(".... Inventory...");         from command import Inventory
+magentaprint("... MapCommandHandler...");  from comm.MapCommandHandler import MapCommandHandler
+from reactions.Cartography     import Cartography
 
 magentaprint("... Done command_handler.py import section, now defining classes")
 
@@ -151,9 +153,17 @@ class CommandHandler(object):
             Command.good_mud_timeout = 2.0
             Go.cooldown_after_success = 0.2
 
-        self.bot_thread = None
-        self.mud_map = None
-        self.mud_map_thread = None
+        self.bot_thread          = None
+        self.mud_map             = None
+        self.mud_map_thread      = None
+        # self.map_command_handler = MapCommandHandler(self.character, self.go.cartography, self.mud_map, self.mud_map_thread)
+        # Ehrm Cartography is made in los helper
+        # self.cartography = Cartography(mudReaderHandler, self.commandHandler, self.character)
+        self.cartography = Cartography(mudReaderHandler, self, self.character) # Creates a circle! Wow! Just to cast light
+            # Doubt that'd trigger an infinite loop but theoretically possible
+        self.go.cartography = self.cartography
+        self.map_command_handler = MapCommandHandler(self.character, self.mud_map, self.mud_map_thread)
+
         if self.threaded_map_setup:
             # Threading the db setup causes a locking error if the starting area needs to be saved
             self.mud_map_thread = threading.Thread(target=self.init_map_and_bots)
@@ -195,12 +205,19 @@ class CommandHandler(object):
             'remov'  : self.remove_gear,
             'remove' : self.remove_gear,
             'cast_light' : self.cast_light,
+            # 'map' : self.write_map, # Ok this is supposed to happen all the time in the background...
+            'mapcheck' : self.check_current_area
             # 'toggle_prints' : self.toggle_prints
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
         # Each action is going to be passed "a" which is string.partition(' ')[2] on the command that came in
         # So make sure the function has the right signature (self, args)
+
+    # def write_map(self, args):
+    #     pass
+    def check_current_area(self, args):
+        self.map_command_handler.check_current_area()
 
     def cast_light(self, args):
         self.bot_thread.cast_light()
@@ -360,7 +377,8 @@ class CommandHandler(object):
             # Ehrm not ture... we don't really want to "remake" all of the abilities...
 
     def plot_map(self, args):
-        magentaprint("... Plotter...");            from plotter                    import Plotter
+        magentaprint("... Plotter...");
+        from plotter import Plotter
         #(lambda a : Plotter(self.mud_map)
         self.join_mud_map_thread()
         Plotter(self.mud_map.los_map).plot_map()
@@ -432,7 +450,7 @@ class CommandHandler(object):
 
         # for action in self.actions.keys():
         if the_split[0] in self.actions.keys():
-            magentaprint("Calling command handler action " + str(the_split[0]))
+            magentaprint("--- Command Handler Action: " + str(the_split[0]))
             self.actions[the_split[0]](args)
             return
 

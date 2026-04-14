@@ -68,7 +68,7 @@ class Cartography(BotReactionWithFlag):
     #     super().wait_for_flag()
 
     def notify(self, regex, M):
-        C=self.character
+        C = self.character
         if regex in R.too_dark:
             self.too_dark(regex, M)
         elif regex in R.area:
@@ -235,12 +235,14 @@ class Cartography(BotReactionWithFlag):
         C.CAN_SEE       = True
         C.CONFUSED      = False
         C.SUCCESSFUL_GO = True #successful go should be true everytime the area parses - here we are setting it as we see Go worked
-        # Better way is that "Go" command object exists now... not sure if it's used
+        # Better way is that "Go" command object exists now... 
         self.mudReaderHandler.mudReaderThread.CHECK_GO_FLAG = 0
 
         # C.TRYING_TO_MOVE=False # Getting DB lock error atm
 
         if C.TRYING_TO_MOVE:
+            magentaprint(f"Cartography TRYING_TO_MOVE is TRUE ({C.TRYING_TO_MOVE}), so, mapping")
+            magentaprint(f"Cartography C.EXIT_LIST is {C.EXIT_LIST}")
             # I think TRYING_TO_MOVE prevents multiple saves of the area
             # Yes, and ensures that variables related to the 'from' area are present
             #if C.EXIT_LIST != []: 
@@ -272,9 +274,11 @@ class Cartography(BotReactionWithFlag):
                 # - (check ReferencingList.add - items/things are GameObjects)
                 C.AREA_ID = C.MUD_AREA.area.id
             else:
-                magentaprint("Cartography warning: exit list was empty???")
+                magentaprint("Cartography warning: exit list was empty!??? AREA_ID->None")
                 C.AREA_ID = None
             C.TRYING_TO_MOVE = False
+        else:
+            magentaprint("Cartography TRYING_TO_MOVE is FALSE ({C.TRYING_TO_MOVE}), so, not mapping")
 
     def blocked_path(self, regex, M):
         # mob_name = M.group('mob_name')

@@ -46,7 +46,7 @@ from combat.SmartCombat        import SmartCombat
 # from command.Info              import Info
 from command.Whois             import Whois
 from command.SpellsCommand     import SpellsCommand2
-from reactions.Cartography     import Cartography
+# from reactions.Cartography     import Cartography
 from reactions.BotReactions    import *
 # from reactions.WieldReaction import WieldReaction
 from comm.TelnetHandler        import TelnetHandler
@@ -99,9 +99,9 @@ class LosHelper(object):
         self.check_spells()
 
         self.commandHandler = CommandHandler(self.character, self.mud_reader_handler, self.telnetHandler)
-        self.check_info()
-        self.cartography = Cartography(self.mud_reader_handler, self.commandHandler, self.character)
-        self.commandHandler.go.cartography = self.cartography
+        # self.check_info()
+        # self.cartography = Cartography(self.mud_reader_handler, self.commandHandler, self.character)
+        # self.commandHandler.go.cartography = self.cartography
             # Cartography shouldn't need commandHandler to fix dependencies
 
         self.character.TRYING_TO_MOVE = True  # required for mapping (Hack - look into this - better init for Goto)

@@ -12,6 +12,7 @@ import comm.ConsoleHandler
 from datetime import datetime
 
 class BaseModel(peewee.Model):
+    # I suppose this implements self.id
     class Meta:
         database = Database.db
 

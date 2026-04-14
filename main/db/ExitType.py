@@ -4,6 +4,11 @@ from db.NamedModel import NamedModel
 from misc_functions import *
 
 class ExitType(NamedModel):
+    """ 
+        Has:
+            name : ie. northeast
+            id   : ie. 7
+    """
 
     '''Private Area Functions'''
     def map(self):
@@ -54,7 +59,7 @@ class ExitType(NamedModel):
             #exit_types = ExitType.select().join(ExitSynonym, JOIN_LEFT_OUTER).where((ExitType.name == name) | (ExitSynonym.name == name) ).get() # worked in 2016, now bad identifier
             #exit_types = ExitType.select().join(ExitSynonym, join_type='LEFT_OUTER').where((ExitType.name == name) | (ExitSynonym.name == name) ).get() # syntax error
             # exit_types = ExitType.select().join(ExitSynonym, JOIN.LEFT_OUTER).where((ExitType.name == name) | (ExitSynonym.name == name) ).get() # 2022, works
-            exit_types = ExitType.select().join(ExitSynonym, JOIN.LEFT_OUTER).where((ExitType.name == name) | (ExitSynonym.name == name) ).get() # 2022, works
+            exits = ExitType.select().join(ExitSynonym, JOIN.LEFT_OUTER).where((ExitType.name == name) | (ExitSynonym.name == name) ).get() # 2026, variable name 
             # "d" is down and doesn't match "door" for that reason I think? I think you need "doo" for door... yep "You can't go that way" on "go do" need "doo"
             # Should we be told here if "go" was used? Maybe don't bother
             # "startswith" use could even kibosh the need for exit synonym
@@ -98,7 +103,7 @@ class ExitType(NamedModel):
 # So the code might want recognize that equivalence to understand what happened when "n" was typed
 
 class ExitOpposite(BaseModel):
-    exit = ForeignKeyField(ExitType, related_name='exit_to')
+    exit     = ForeignKeyField(ExitType, related_name='exit_to')
     opposite = ForeignKeyField(ExitType, related_name='exit_from')
 
 class ExitSynonym(BaseModel):

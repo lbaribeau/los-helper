@@ -5,9 +5,20 @@ from db.Area import *
 from db.ExitType import *
 
 class AreaExit(BaseModel):
-    area_from  = ForeignKeyField(Area, related_name='area_from') #id is a default attribute
-    area_to    = ForeignKeyField(Area, related_name='area_to', null=True) #id is a default attribute
-    exit_type  = ForeignKeyField(ExitType)
+    """ 
+        Has:
+            exit_type : ie. 
+                id: 7, 
+                name: northeast
+            area_from <Area> # A MudArea??? No just an AREA
+            area_to   <Area>
+            is_useable <Boolean>
+            is_hidden <Boolean>
+            note <string>
+    """
+    area_from  = ForeignKeyField(Area, related_name='area_from') #id is a default attribute ie. "431, The South Plains Road"
+    area_to    = ForeignKeyField(Area, related_name='area_to', null=True) #id is a default attribute... ie. "430, The South Plains Road"
+    exit_type  = ForeignKeyField(ExitType)  # ie. "17, northeast"
     is_useable = BooleanField(default=True) #if the link is broken or potentially harzardous we don't want to use it
     is_hidden  = BooleanField(default=False) #these will be manually set for now
     note       = CharField(default="")
@@ -44,6 +55,18 @@ class AreaExit(BaseModel):
 
     def __repr__(self):
         return self.to_string()
+
+    def pretty_string(self):
+        # return f"Area: {str(self.area)},"+ '\nArea Exits '.join(Area Exits: {str(s) for s in self.area_exits)}"
+        # return f"Area: {str(self.area)},"+ '\nArea Exit: '+'\nArea Exit n: '.join(str(s) for s in self.area_exits)
+        return "AreaExit ... : \n" + \
+            "    .exit_type.name : " + str(self.exit_type.name if hasattr(self.exit_type, 'name'      ) else "<None>") + "\n" + \
+            "    .area_from.id   : " + str(self.area_from.id   if hasattr(self.area_from, 'id'        ) else "<None>") + "\n" + \
+            "    .area_to.id     : " + str(self.area_to.id     if hasattr(self.area_to,   'id'        ) else "<None>") + "\n" + \
+            "    .id             : " + str(self.id             if hasattr(self,           'id'        ) else "<None>") + "\n" + \
+            "    .exit_type.id   : " + str(self.exit_type.id   if hasattr(self.exit_type, 'id'        ) else "<None>") + "\n" + \
+            "    .is_useable     : " + str(self.is_useable     if hasattr(self,           'is_useable') else "<None>") + "\n" + \
+            "    .is_hidden      : " + str(self.is_hidden      if hasattr(self,           'is_hidden' ) else "<None>") + "\n"
 
     '''Static AreaExit Functions'''
     def get_area_exit_by_area_from_and_exit_type(cur_area_from, cur_exit_type):
@@ -90,6 +113,7 @@ class AreaExit(BaseModel):
             area_exits = []
 
         return area_exits
+
 
 
 

@@ -305,8 +305,10 @@ class Character(object):
         # enlightened  # "arrives" in the large Kings road dojo (not always there)
         'actress', # blue balance
         'bandit cook', # leather bracers
-        'bandit sentry', 'bandit', 'ghast'
+        'bandit sentry', 'bandit', 'ghast',
+        'wildebeeste' # At the South Plains Road outside bandit junction
         #'viper' # Poisons
+        # 'dingo' # Level 3 but he probably has friends... who will arrive if you start a fight btw
     ]
     # hungry spiders are hostile
     lvl4_red_monsters = [

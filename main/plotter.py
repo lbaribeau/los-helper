@@ -29,8 +29,11 @@ import copy
 from matplotlib import pyplot
 def plot_map(los_map):
 	# I get an interactive session and edit/copy/paste this function
+	magentaprint("Entering \"plot_map\"")
 	magentaprint("dir(self.los_map)")
-	magentaprint(dir(los_map))
+	# magentaprint(dir(los_map))
+	[magentaprint(d) for d in dir(los_map)]
+	magentaprint("            ---------------------            ")
 	# networkx.draw_networkx_edges(self.los_map) # missing required argment 'pos''
 	# networkx.draw_networkx_edges(self.los_map, networkx.spring_layout(self.los_map, seed=13648)) # scipy error
 	# networkx.draw(self.los_map) # gcf()._axstack isn't callable, but draw calls draw_networkx
@@ -45,6 +48,7 @@ def plot_map(los_map):
 	los_map.add_edges_from(new_edges)
 	los_map.add_nodes_from(new_nodes)
 	pos = {
+		# Trying to place certain nodes in certain places... not currently used
 		# 2    : (   0,    0), # Chapel
 		# 28   : (0.3, 1), # North gate
 		# 120  : (-1, -1), # Willan's Amethyst pawn shop
@@ -61,7 +65,7 @@ def plot_map(los_map):
 		28   : (-2, 3), # North gate
 		120  : (-3, -2), # Willan's Amethyst pawn shop
 		215  : (30, 5), # Olarma 140
-	}
+	} # I don't think this got used
 	networkx.draw_networkx(
 		los_map, # Ok we need to edit los_map
 		networkx.drawing.kamada_kawai_layout(los_map
@@ -95,6 +99,7 @@ def plot_map(los_map):
 	# pyplot.grid(which='minor',color='#eaeaea')
 	pyplot.ion()
 	pyplot.show()
+	magentaprint("Exiting \"plot_map\" (interactive is \"on\", just called \"show()\"")
 #plot_map(los_map)
 
 	def first_try(self):

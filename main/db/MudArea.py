@@ -2,8 +2,30 @@ from db.Database import *
 from misc_functions import *
 
 class MudArea():
-    # Seems like "MudArea" is a Python object for Area that is more than the Peewee Area (DB object)"
-    # The area is just and area but the MudArea has an area and it has the exits of the area
+    # An object for area that is more than the just the Peewee Area (DB object) because it also has the exits of the area
+    # Area: 
+    #    - id (BaseModel)
+    #    - name (NamedModel)
+    #    - description      = peewee.CharField(null=True)        
+    #        # Text associated with the area
+    #        # (This will only be used for crawler comparisons)
+    #    - is_always_dark   = peewee.BooleanField(default=False)
+    #    - is_dark_at_night = peewee.BooleanField(default=False)
+    #    - is_restorative   = peewee.BooleanField(default=False)
+    #    - is_smithy        = peewee.BooleanField(default=False)
+    #    - is_pawn_shop     = peewee.BooleanField(default=False)
+    #    - is_tip           = peewee.BooleanField(default=False)
+    # area_exits[]:
+    #    - id (BaseModel)
+    #    x (no "name")
+    #    - exit_type : ie. 
+    #        - id: 7, 
+    #        - name: northeast
+    #    - area_from <MudArea>
+    #    - area_to   <MudArea>
+    #    - is_useable <Boolean>
+    #    - is_hidden <Boolean>
+    #    - note <string>
     
     area = None
     area_exits = []
@@ -18,7 +40,7 @@ class MudArea():
             else:
                 self.area_exits = area_exits
         else:
-            print("MudArea given area is null for some awful reason.")
+            print("MudArea init, given area is null for some awful reason.")
 
     @staticmethod
     def map(area_title, area_description, exit_list, area_from, direction_from, cur_mud_area):
@@ -67,13 +89,18 @@ class MudArea():
     def discern_location(area, direction_list, area_from_id, direction_from, cur_mud_area):
         # Ok here we know what exit was taken and from what area
         # So we can use that to do a db lookup to find out where we have ended up
-        # We also have "direction_list" which is basically what is matched after "Obvious exits".
+        # We also have "direction_list" which is basically what is matched after "Obvious exits" (ie. an exit list)
         # But we don't use it
+        # Area_from_id isn't used
+        # We just use current_mud_area
+        # Basically the point here is to get the next area given the current mud_area and the exit name
+        # MudArea constructor gets called on the areaid from the exit
+        # So I'd have called it get_mud_area(current_mud_area, exit_name)
 
         discerned_area = None
 
         if cur_mud_area is not None:
-            exit_type = ExitType.get_exit_type_by_name_or_shorthand(direction_from)
+            exit_type = ExitType.get_exit_type_by_name_or_shorthand(direction_from) # Gets the exit DB object given the exit name
 
             if exit_type is None:
                 exit_type = ExitType(name=direction_from)
@@ -130,7 +157,7 @@ class MudArea():
         return matchFound
 
     def to_string(self):
-        return str(self.area) + str(self.area_exits)[1:-1]
+        return str(self.area) + str(self.area_exits)[1:-1]  # I think this strips off the [ and ], otherwise, self.area_exits would look like a list
 
     def __repr__(self):
         return self.to_string()
@@ -138,8 +165,27 @@ class MudArea():
     def __str__(self):
         return self.to_string()
 
+    def pretty_string(self):
+        # return f"Area: {str(self.area)},"+ '\nArea Exits '.join(Area Exits: {str(s) for s in self.area_exits)}"
+        # return f"Area: {str(self.area)},"+ '\nArea Exit: '+'\nArea Exit n: '.join(str(s) for s in self.area_exits)
+        # return "AreaExit ... : \n" + \
+        #     "    .id             : " + str(self.id)             + "\n" + \
+        #     "    .exit_type.id   : " + str(self.exit_type.id)   + "\n" + \
+        #     "    .exit_type.name : " + str(self.exit_type.name) + "\n" + \
+        #     "    .area_from.id   : " + str(self.area_from.id)   + "\n" + \
+        #     "    .area_to.id     : " + str(self.area_to.id)     + "\n" + \
+        #     "    .is_useable     : " + str(self.is_useable)     + "\n" + \
+        #     "    .is_hidden      : " + str(self.is_hidden)      + "\n"
+        return f"Area : \n"+\
+            "    .area.id : " + str(self.area.id) + "\n"+ \
+            "    .area_exits[] (len: " + str(len(self.area_exits)) + ")" + \
+            "\n        ".join(str(s) for s in self.area_exits)
 
-
+    def pretty_string2(self):
+        return "MudArea : \n"+\
+            "    .area.id : "  + str(self.area.id) + "\n"+ \
+            "- ".join(ae.pretty_string() for ae in self.area_exits)
+            # "Exits: \n"+\
 
 
 
