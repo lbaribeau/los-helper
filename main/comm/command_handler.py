@@ -66,6 +66,7 @@ magentaprint("... LargeTorchManager...");  from LargeTorchManager          impor
 magentaprint(".... Inventory...");         from command import Inventory
 magentaprint("... MapCommandHandler...");  from comm.MapCommandHandler import MapCommandHandler
 from reactions.Cartography     import Cartography
+print("... db.Area..."); import db.Area
 
 magentaprint("... Done command_handler.py import section, now defining classes")
 
@@ -206,7 +207,12 @@ class CommandHandler(object):
             'remove' : self.remove_gear,
             'cast_light' : self.cast_light,
             # 'map' : self.write_map, # Ok this is supposed to happen all the time in the background...
-            'mapcheck' : self.check_current_area
+            'mapcheck' : self.check_current_area, # Prints out details of current node
+            # 'mapcheck2' : self.check_current_area, # Plots a map, given depth, from current location
+            'reload_map' : self.reload_map,  # Test case, showto 2, "can't find path", walk back (writes exit links), walk out, "reload_map", then showto 2 connects
+            'showcrawl' : self.showcrawl,
+            'plot_near_nodes' : self.plot_near_nodes,
+            'plot_near_nodes3d' : self.plot_near_nodes3d
             # 'toggle_prints' : self.toggle_prints
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
@@ -214,6 +220,52 @@ class CommandHandler(object):
         # Each action is going to be passed "a" which is string.partition(' ')[2] on the command that came in
         # So make sure the function has the right signature (self, args)
 
+    def plot_map(self, args):
+        magentaprint("... Plotter...");
+        from plotter import Plotter
+        #(lambda a : Plotter(self.mud_map)
+        self.join_mud_map_thread()
+        Plotter(self.mud_map.los_map).plot_map()
+
+    def plot_near_nodes3d(self, args):
+        from plot_map_given_depth_3d import PlotNearNodes
+        self.join_mud_map_thread()
+        # self.reload_map(None)
+        magentaprint("Call \"reload_map\" if there were recent writes.")
+        PlotNearNodes(self.mud_map.los_map).plot(area_id=self.character.AREA_ID, depth=int(args) if args else 8)
+
+    def plot_near_nodes(self, args):
+        from plot_map_given_depth import PlotNearNodes
+        self.join_mud_map_thread()
+        self.reload_map(None)
+        # Suppose we recently wrote to the db... have to refresh the mudmap!
+        # if args:
+        #     depth=int(args)
+        # else:
+        #     depth=8
+        PlotNearNodes(self.mud_map.los_map).plot(area_id=self.character.AREA_ID, depth=int(args) if args else 8)
+
+    def showcrawl(self, args):
+        self.join_mud_map_thread()
+        # self.map_command_handler.wait_for_map()
+        # See also CrawlThread, MudMap... basically all unfinished exits point to a common special node,  "1"
+        node_path = self.mud_map.get_node_path(self.character.AREA_ID, 1)
+        edge_path = self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID)
+        # magentaprint(f"Go to area id: {self.mud_map.get_areaid_by_nearest_unexplored_path(self.character.AREA_ID)}")
+        magentaprint(f" ---SHOWCRAWL--- ")
+        magentaprint(f"Go to area id:  {node_path[-2]}")
+        magentaprint(f"Area id path: \n    {node_path[:-1]}")
+        # magentaprint(self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID))
+        # magentaprint(f"Path is: {self.mud_map.get_nearest_unexplored_path(self.character.AREA_ID)}"))
+        magentaprint(f"Path is: \n    {edge_path}")
+        # magentaprint(f"Take exit:  to area id: {self.mud_map.get_areaid_by_nearest_unexplored_path(self.character.AREA_ID)}")
+        # magentaprint(f"Take exit: {path[-1]
+        # magentaprint(f"Area title is {node_path[-1]}")
+        magentaprint(f"Area title is \"{db.Area.Area.get_area_by_id(node_path[-2]).name}\"")
+        magentaprint(f" ---END SHOWCRAWL --- ")
+
+    def reload_map(self, args):
+        self.mud_map = MudMap()
     # def write_map(self, args):
     #     pass
     def check_current_area(self, args):
@@ -376,12 +428,7 @@ class CommandHandler(object):
                 self.mudReaderHandler.add_subscriber(a)
             # Ehrm not ture... we don't really want to "remake" all of the abilities...
 
-    def plot_map(self, args):
-        magentaprint("... Plotter...");
-        from plotter import Plotter
-        #(lambda a : Plotter(self.mud_map)
-        self.join_mud_map_thread()
-        Plotter(self.mud_map.los_map).plot_map()
+
 
     def join_mud_map_thread(self):
         if self.threaded_map_setup:
@@ -451,7 +498,7 @@ class CommandHandler(object):
         # for action in self.actions.keys():
         if the_split[0] in self.actions.keys():
             magentaprint("--- Command Handler Action: " + str(the_split[0]))
-            self.actions[the_split[0]](args)
+            self.actions[the_split[0]](args) # So the function will get user_input.partition(' ')[2] if it exits otherwise None... so... args is a string that could have spaces
             return
 
         for ability in self.character._class.abilities.values():
@@ -587,7 +634,7 @@ class CommandHandler(object):
         elif re.match("goto -?[0-9]+$", user_input):
             self.start_goto(user_input)
         elif re.match("showto -?[0-9]+$", user_input):
-            self.start_goto(user_input, True)
+            self.start_goto(user_input, True) # "is_showto" is passed in as "True" so it ends up just printing and not "going"
         elif re.match("domix .+?", user_input):
             #domix 'tree root' berry 50 - first param must be exact match
             self.start_mix(user_input)

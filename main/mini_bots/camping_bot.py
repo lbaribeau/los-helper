@@ -206,9 +206,13 @@ class CampingBot(GrindThread):
         magentaprint('CampingBot starting botthread loop, direction list is ' + str(self.direction_list))
         self.do_pre_go_actions() # Can do shopping here, which can insert at the beginning of the direction list
 
+        # Ehrm does this while loop work??? I think so...
+        
+
         while self.direction_list and not self.stopping:
             magentaprint("CampingBot looping on direction list, " + str(self.direction_list))
             self.do_regular_actions()
+            magentaprint("CampingBot: do_regular_actions() exited so calling \"go\" (direction list is %s}" %(str(self.direction_list)))
             if self.go(self.direction_list[0]):
                 self.do_on_successful_go() # area regex or too_dark matched
             else:

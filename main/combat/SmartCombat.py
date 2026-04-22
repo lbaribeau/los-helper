@@ -16,14 +16,14 @@ class SmartCombat(CombatObject):
 
     def __init__(self, kill, cast, potion_thread_handler, wield, telnetHandler, character, weapon_bot, prompt, info, mud_reader_completion_event, regex_busy):
         super().__init__(telnetHandler)
-        self.thread   = None
-        self.target   = None
-        self.stopping = None
-        self.broken_weapon = ''
-        self.activated = False
-        self.kill  = kill
-        self.cast  = cast
-        self.wield = wield
+        self.thread         = None
+        self.target         = None
+        self.stopping       = None
+        self.broken_weapon  = ''
+        self.activated      = False
+        self.kill           = kill
+        self.cast           = cast
+        self.wield          = wield
         self.potion_thread_handler = potion_thread_handler
         #self.wear = Wear(character, telnetHandler)
         self.abilities = character._class.abilities.values()
@@ -40,7 +40,7 @@ class SmartCombat(CombatObject):
         # spell_percent = max(character.earth, character.wind, character.fire, character.water)
         spell_percent = max(info.spell_proficiencies.values())
         # magentaprint("SmartCombat info.pty " + str(info.pty))
-        self.black_magic = info.pty < 7 or spell_percent >= 5
+        self.black_magic = info.pty < 7 or spell_percent >= 1 or Spells.vigor not in character.spells
         # self.favourite_spell = Spells.vigor if not self.black_magic else \
         if spell_percent == 0 and self.black_magic:
             self.favourite_spell = Spells.rumble if Spells.rumble in character.spells else \
@@ -372,7 +372,9 @@ class SmartCombat(CombatObject):
                 C = self.character
                 damage = C.maxHP - C.HEALTH
                 cast.wait_until_ready()
-                if self.stopping:
+                if self.stopping or self.end_combat_check or self.end_combat:
+                    # Add a few clauses here because I got a) kill mob, b) (.02s later) cast rumble
+                    # Wondering if we hit the brakes effectively enough somehow
                     break
                 elif self.fleeing and not self.berserking():
                     self.escape() # added recently to improve flee as I felt the bot was not noticing it should flee and issuing an attack, not confirmed though

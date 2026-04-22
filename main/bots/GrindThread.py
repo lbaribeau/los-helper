@@ -365,7 +365,7 @@ class GrindThread(BotThread):
         # I guess you have to spawn a thread to do the sleep time part unless there's some other tool for that
         fresh_target = self.decide_which_mob_to_kill(C.mobs.list) 
         if fresh_target and self.ready_for_combat():
-            self.engage_monster(fresh_target)
+            self.engage_monster(fresh_target) #!
             # Why not just call do_regular_actions at this point (handles chasing and attackers)
             # Because it doesn't handle chasing, we need to return for that
             if self.ready_for_combat():
@@ -375,6 +375,7 @@ class GrindThread(BotThread):
             # We'll have the paths pushed but we'll forget we were fighting... (multiple runners) that's probably fine
             if C.mobs.chase:
                 # Ack we need to do the combat wait setup before chasing right? No, Go will do that
+                magentaprint("Do regular actions sees we have to chase %s, so return" % (C.mobs.chase))
                 return
             else:
                 self.do_regular_actions() # Does the wait setup and fights another fresh_target
@@ -1414,7 +1415,19 @@ class GrindThread(BotThread):
             magentaprint("GrindThread.engage_monster() chasing mob, pushing onto direction list!")
             if C.AREA_ID is not None:
                 # We can't assume it'll work here - we have to check to see if it'll work.
+                # magentaprint(str(self.mud_map.los_map[C.AREA_ID]))
+                    # This prints the network graph at given area id
+                    # The networkx graph here is indexed with a hash for the area id
+                    # If you look up the node you get the edges
+                    # Ie. C.AREA_ID (not printed) gives you keys for attached nodes and "items" for edges to get there
+                    # ie los_map[1678]
+                g = self.mud_map.los_map
+                magentaprint(f"Adding chase... current area id: {C.AREA_ID}")
+                for attached_node, exit in g[C.AREA_ID].items():
+                    magentaprint(f"... exit \"{exit['name']}\": {attached_node})")
                 magentaprint(str(self.mud_map.los_map[C.AREA_ID]))
+
+                # magentaprint(f"Attached nodes: {g[C.AREA_ID]}... current area id: {C.AREA_ID}")
                 # magentaprint(str(self.mud_map.los_map[C.AREA_ID].edges(data=True)))  # dict object has no attribute 'edges'
                 # magentaprint(str(self.mud_map.los_map[C.AREA_ID].edges()))
 
@@ -1502,6 +1515,8 @@ class GrindThread(BotThread):
         #     self.get_items_if_weapon()
         if not C.mobs.chase and not SC.error and not SC.fleeing:
             self.get_items_if_weapon()
+
+        magentaprint("Engage monster ending... chase is %s, chase exit is %s, SC.target was %s, given monster in C.mobs.attacking is %s, if we fled we probably returned out by now, SC.fleeing %s" % (C.mobs.chase, C.mobs.chase_exit, SC.target, str(monster in C.mobs.attacking), SC.fleeing))
 
         return 1 # If we return None, it means there's a problem with mobs.attacking, maybe trouble finding that mob
 

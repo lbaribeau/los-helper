@@ -49,6 +49,8 @@ def plot_map(los_map):
 	los_map.add_nodes_from(new_nodes)
 	pos = {
 		# Trying to place certain nodes in certain places... not currently used
+		# https://networkx.org/documentation/stable/reference/generated/networkx.drawing.layout.kamada_kawai_layout.html
+		# "pos : dict or None optional; Initial positions for nodes as a dictionary with node as keys and values as coordinate list or tuple."
 		# 2    : (   0,    0), # Chapel
 		# 28   : (0.3, 1), # North gate
 		# 120  : (-1, -1), # Willan's Amethyst pawn shop

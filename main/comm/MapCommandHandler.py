@@ -10,6 +10,7 @@ class MapCommandHandler:
     def wait_for_map(self):
         magentaprint("MapCommandHandler.wait_for_map()")
         self.join_thread(self.mud_map_thread)
+        # Doesn't work... call command_handler.join_mud_map_thread()
 
     def join_thread(self, thread):
         if thread and thread.is_alive():
@@ -18,8 +19,10 @@ class MapCommandHandler:
     def write_map(self):
         magentaprint("MapCommandHandler.write_map()")
         self.wait_for_map()
+        # I didn't need this... fixed Cartography auto write
 
     def fix_current_node(self, go):
+        # I didn't need this... fixed Cartography auto write
     	# Looks at current exits for a None
     	# Takes that exit to get area text and writes DB
     	mudarea=self.character.MUD_AREA
@@ -40,8 +43,8 @@ class MapCommandHandler:
     	# Is it because the things already exist partially?
 	    	        #     "    .area_to.id     : " + str(self.area_to.id)     + "\n" + \
 
-
     def check_current_area(self):
+    	# Ok I think that this is good...
         self.wait_for_map()
         magentaprint("MapCommandHandler.check_current_area()")
         # Suppose I enter "mapcheck northeast"

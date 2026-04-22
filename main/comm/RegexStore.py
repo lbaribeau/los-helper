@@ -399,32 +399,32 @@ magic_crit = [
 # ]
 attack_hit = [
     # Sharp
-    r"(?s)You swing with your .+?,\s+hacking\s+ " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
-    r"(?s)You slice " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\s+with\s+your\s+.+?\.",
-    r"(?s)You slash at " + __three_possible_mob_strings + r"\s+and\s+hit\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You swing with your\s.+?,\s+hacking\s+" + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.", # Watch for extra spaces
+    r"(?s)You slice "                             + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\s+with\s+your\s+.+?\.",
+    r"(?s)You slash at "                          + __three_possible_mob_strings + r"\s+and\s+hit\s+for\s+(?P<d>\d+)\s+damage\.",
     # Thrust
-    r"(?s)You chop at " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
-    r"(?s)You stab " + __three_possible_mob_strings + r" with\s+your\s+.+?,\s+causing\s+(?P<d>\d+)\s+damage",
-    r"(?s)You lunge at " + __three_possible_mob_strings + r",\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You chop at "                           + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You stab "                              + __three_possible_mob_strings + r" with\s+your\s+.+?,\s+causing\s+(?P<d>\d+)\s+damage",
+    r"(?s)You lunge at "                          + __three_possible_mob_strings + r",\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
     # Unarmed
-    r"(?s)You lash out and thump " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
-    r"(?s)You punch " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
-    r"(?s)You kick " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
-    r"(?s)You head-butt " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
-    r"(?s)You grab " + __three_possible_mob_strings + r"\s+and\s+gouge\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You lash out and thump "                + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You punch "                             + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You kick "                              + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You head-butt "                         + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You grab "                              + __three_possible_mob_strings + r"\s+and\s+gouge\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
     # Blunt
-    r"(?s)You smash your .+? into " + __three_possible_mob_strings + r",\s+causing\s+(?P<d>\d+)\s+damage\.",
-    r"(?s)You heave your .+? at " + __three_possible_mob_strings + r",\s+smashing\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
-    r"(?s)You bludgeon " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You smash your .+? into "               + __three_possible_mob_strings + r",\s+causing\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You heave your .+? at "                 + __three_possible_mob_strings + r",\s+smashing\s+(him|her|it)\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You bludgeon "                          + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
     # Pole
-    r"(?s)You lunge at " + __three_possible_mob_strings + r",\s+hitting\s+them\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You lunge at "                          + __three_possible_mob_strings + r",\s+hitting\s+them\s+for\s+(?P<d>\d+)\s+damage\.",
     # r"(?s)You swing your .+? at " + __three_possible_mob_strings + ", striking for (?P<d>\d+) damage\.", # Is this correct??
     r"(?s)You swing your .+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.", # Check this one... won't time out but using the wildcard here
-    r"(?s)You sweep " + __three_possible_mob_strings + r"\s+with\s+your\s+.+?\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You sweep "                             + __three_possible_mob_strings + r"\s+with\s+your\s+.+?\s+for\s+(?P<d>\d+)\s+damage\.",
     # Missile
-    r"(?s)Your missile slams into " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
-    r"(?s)You attack " + __three_possible_mob_strings + r"\s+with\s+your\s+.+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
-    r"(?s)You use your .+? to strike " + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)Your missile slams into "               + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You attack "                            + __three_possible_mob_strings + r"\s+with\s+your\s+.+?,\s+striking\s+for\s+(?P<d>\d+)\s+damage\.",
+    r"(?s)You use your .+? to strike "            + __three_possible_mob_strings + r"\s+for\s+(?P<d>\d+)\s+damage\.",
     r"(?s)Your blow did no damage\." # Should be a hit for 0
 ]
 

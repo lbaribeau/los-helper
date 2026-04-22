@@ -121,7 +121,19 @@ class Character(object):
 
         self.preferred_aura = self.info.preferred_alignment
 
-        if self.level <= 3:
+        self.MAX_MANA = self.info.maxMP
+        self.MANA_TO_ENGAGE = self.info.maxMP * 0.4
+
+        if self.level == 1:
+            # Best be maxed at level 1
+            self.HEALTH_TO_HEAL = self.info.maxHP
+            self.MANA_TO_ENGAGE = min(3, self.info.maxMP)
+        elif self.level == 2:
+            # Keeping things robust
+            self.HEALTH_TO_HEAL = self.info.maxHP-1
+            self.MANA_TO_ENGAGE = min(3, self.info.maxMP)
+        elif self.level == 3:
+            # There's now some wiggle room at level 3
             self.HEALTH_TO_HEAL = 0.85 * self.info.maxHP # Safer heal threshold for low level
         else:
             self.HEALTH_TO_HEAL = 0.75 * self.info.maxHP  # We can crank this back up when we fight stronger mobs
@@ -134,9 +146,7 @@ class Character(object):
         self.GOLD = self.info.gold
         self.level = self.info.level
 
-        self.MANA_TO_ENGAGE = self.info.maxMP * 0.4
         self.HEALTH_TO_FLEE = self.info.maxHP * 0.4 # Increased from 0.35 as I've improved flee recovery... 8 hp is ok I guess?? Not sure why he didn't flee at 8 with max 24
-        self.MAX_MANA = self.info.maxMP
 
         # self.EXPERIENCE = self.info.exp # Ehrm I guess this isn't right, "EXPERIENCE" is more like, how much we got this session
         self.current_experience = self.info.exp # Ehrm I guess this isn't right, "EXPERIENCE" is more like, how much we got this session

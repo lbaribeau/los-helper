@@ -237,11 +237,19 @@ class CombatReactions(object):
         D=self.damage_array
         L=len(D)
         plots.do_grid()
-        bars=pyplot.bar(range(0, max(D)+1), [D.count(i) for i in range(0,max(D)+1)], align='center', color='skyblue', edgecolor='black') #[self.damage_array.count(i) for i in range(0,6)]
+        bars=pyplot.bar(
+            range(0, max(D)+1), # x values start at 0 and go up to the maximum damage
+            [D.count(i) for i in range(0,max(D)+1)], # y values are each a "count" from the damage array, D
+            align='center', 
+            color='skyblue', 
+            edgecolor='black'
+        ) #[self.damage_array.count(i) for i in range(0,6)]
         bars[0].set_color("dodgerblue") # https://matplotlib.org/stable/gallery/color/named_colors.html
         bars[0].set_edgecolor("black")
-        pyplot.gca().set_xticks(range(0, max(D)+1))
-        pyplot.gca().set_yticks(range(0, max([D.count(i) for i in range(0,max(D)+1)])+1))
+        pyplot.gca().set_xticks(range(0, max(D)+1)) # The +1 is so we get the last tick mark on the right
+        pyplot.gca().set_yticks(range(0, max([D.count(i) for i in range(0,max(D)+1)])+1)) 
+            # The 1st +1 is so we count every result that needs to be counted
+            # The 2nd +1 is so we get the last tick mark at the top
         pyplot.xlabel("Damage")
         pyplot.ylabel("Count")
         pyplot.tight_layout()
@@ -261,7 +269,14 @@ class CombatReactions(object):
         D=self.hits_received
         L=len(D)
         plots.do_grid()
-        bars=pyplot.bar(range(0, max(D)+1), [D.count(i) for i in range(0,max(D)+1)], align='center', color='lightcoral', edgecolor='black') #[self.damage_array.count(i) for i in range(0,6)]
+        # pyplot.bar is analogous like .scatter or .plot, it'll make the plot, and return you objects of the plot
+        bars=pyplot.bar(
+            range(0, max(D)+1),  
+            [D.count(i) for i in range(0, max(D)+1)],  
+            align='center', 
+            color='lightcoral', 
+            edgecolor='black'
+        ) #[self.damage_array.count(i) for i in range(0,6)]
         bars[0].set_color("coral")
         bars[0].set_edgecolor("black")
         pyplot.gca().set_xticks(range(0, max(D)+1))

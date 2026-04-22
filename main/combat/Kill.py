@@ -10,7 +10,7 @@ class Kill(SimpleCombatObject):
 
     good_MUD_timeout = 4  # You don't want to fail too badly during combat.
 
-    success_regexes = [R.attack_hit]
+    success_regexes = [R.attack_hit] # Used by "Command"
     failure_regexes = [R.attack_miss]
     error_regexes   = [R.bad_k_target] 
     # SmartCombat also has to stop on bad target

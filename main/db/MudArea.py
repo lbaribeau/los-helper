@@ -137,6 +137,21 @@ class MudArea():
                 if areaexit.area_to is not None:
                     return MudArea(areaexit.area_to)
 
+    def get_exit_name_to_areaid(self, areaid):
+        # class AreaExit(BaseModel):
+        # Has:
+        #     exit_type : ie. 
+        #         id: 7, 
+        #         name: northeast
+        #     area_from <Area> # A MudArea??? No just an AREA
+        #     area_to   <Area>
+        #     is_useable <Boolean>
+        #     is_hidden <Boolean>
+        #     note <string>
+        for areaexit in self.area_exits:
+            if areaexit.area_to and areaexit.area_to.id == areaid or (areaid == 1 and areaexit.area_to == None):
+                return areaexit.exit_type.name
+
     def compare_to_area_and_exit_list(self, area, exit_list):
         matchFound = True
 
