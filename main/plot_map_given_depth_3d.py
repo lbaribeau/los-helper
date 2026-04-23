@@ -10,6 +10,8 @@ from matplotlib import pyplot
 print("... db.Area..."); import db.Area
 from db.MudArea import MudArea
 
+from plots.MyDigraphCopier import MyDigraphCopier
+
 from mpl_toolkits.mplot3d import Axes3D
 
 class PlotNearNodes:
@@ -31,55 +33,6 @@ class PlotNearNodes:
 		# pyplot.ion()
 		# pyplot.show()
 		plot_near_nodes(self.los_map, area_id, depth)
-
-class MyDigraphCopier:
-	def __init__(self, reference_graph, area_id, depth):
-		self.mini_graph = networkx.DiGraph()
-		# self.mini_graph.add_node(area_id)  # Assumes area_id is in reference_graph
-		self.add_to_mini_graph(reference_graph, area_id, depth)
-		for source_node, target_node, d in self.mini_graph.edges(data=True):
-			# d is attribute dictionary of an edge
-			d['label'] = 'nw' if d['label'] == 'northwest' else d['label']
-			d['label'] = 'ne' if d['label'] == 'northeast' else d['label']
-			d['label'] = 'sw' if d['label'] == 'southwest' else d['label']
-			d['label'] = 'se' if d['label'] == 'southeast' else d['label']
-			d['label'] = 'n' if d['label'] == 'north' else d['label']
-			d['label'] = 's' if d['label'] == 'south' else d['label']
-			d['label'] = 'e' if d['label'] == 'east' else d['label']
-			d['label'] = 'w' if d['label'] == 'west' else d['label']
-			d['label'] = 'd' if d['label'] == 'down' else d['label']
-			d['label'] = 'u' if d['label'] == 'up' else d['label']
-			d['label'] = 'ou' if d['label'] == 'out' else d['label']
-
-	def add_to_mini_graph(self, reference_graph, area_id, depth):
-		# Adds given node area_id to graph, adds edges from lookup from reference graph, and recursively adds connected nodes and their edges
-		magentaprint(f"Depth {depth}")
-		if depth <= 0:
-		# if depth <= 0 or area_id in self.mini_graph:
-			# magentaprint("Got to base case!")
-			return 
-
-		# self.mini_graph.add_node(area_id) # Could get double added I guess
-			# No need to add nodes AND edges, just add edges
-		for n in reference_graph.successors(area_id):
-			# self.mini_graph.add_edge(area_id, n, label='test')
-			mudarea = MudArea(db.Area.Area.get_area_by_id(area_id))
-			exit_name = mudarea.get_exit_name_to_areaid(n)
-			magentaprint(f"... From {area_id:4} ({mudarea.area.name}) (depth is {depth}), to get to {n:4}, go {exit_name}. ")
-			if n == 1:
-				magentaprint("... ... Got a \"1\" (Unmapped)")
-				continue # 1 is special node indicating unknown (don't map)
-			if n in self.mini_graph:
-				self.mini_graph.add_edge(area_id, n, label=exit_name) # !!! what a line of code... goes to DB to get whole MudArea which loops to retrieve exit
-			else:
-				self.mini_graph.add_edge(area_id, n, label=exit_name) # !!! what a line of code... goes to DB to get whole MudArea which loops to retrieve exit
-				self.add_to_mini_graph(reference_graph, n, depth-1)
-			# magentaprint(f"... From {area_id:4} ({mudarea.area.name}), go {exit_name} to get to {n:4}")
-			# area_n = db.Area.Area.get_area_by_id(n)
-			# area_n_title = area_n.name if hasattr(area_n, 'name') else None
-			# magentaprint(f"... From {area_id:4} ({mudarea.area.name}), go {exit_name} to get to {n:4} ({area_n_title})")
-			# This print is nice but it takes a step farther than we have already gone
-			# Could also hit the predecessors
 
 def plot_near_nodes(los_map, area_id, depth):
 	# Reference: Plotter.py
@@ -116,7 +69,9 @@ def plot_near_nodes(los_map, area_id, depth):
 		# fixed=pos.keys()#[2,1258,1380,1050,120,1388, 1265, 698, 1621,215,28]
 	) # returns positions (pos)
 
-	pyplot.figure()
+	pyplot.figure("plot_map_given_depth_3d.py")
+	pyplot.cla() # clear axis
+	# pyplot.figure()
 	ax=pyplot.gcf().add_subplot(111, projection='3d')
 	for edge in mini_graph.edges:
 		ax.plot(\
@@ -190,5 +145,15 @@ def plot_near_nodes(los_map, area_id, depth):
 	# pyplot.grid(which='minor',color='#eaeaea')
 	pyplot.ion()
 	pyplot.show()
+
+	# Could try ax.plot_wireframe()
+	# Google prompt: "is there a way in pyplot to tell matplotlib to slowly spin the 3d plot instead of me having to mouse drag it"
+	# for angle in range(0, 360):
+	#     ax.view_init(
+	#     	elev = 10, 
+	#     	azim = angle)
+	#     pyplot.draw()
+	#     pyplot.pause(0.02) # Controls the "spin" speed
+
 	magentaprint(" --- Exiting \"plot_map_given_depth.plot_near_nodes()\" (interactive is \"on\", just called \"show()\" --- ")
 #plot_map(los_map)

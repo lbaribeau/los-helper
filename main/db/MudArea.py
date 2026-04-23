@@ -4,8 +4,8 @@ from misc_functions import *
 class MudArea():
     # An object for area that is more than the just the Peewee Area (DB object) because it also has the exits of the area
     # Area: 
-    #    - id (BaseModel)
-    #    - name (NamedModel)
+    #    - id (BaseModel)     # Identifying integer (2 is chapel, 1258 is coral medi centre)
+    #    - name (NamedModel)  # Area title
     #    - description      = peewee.CharField(null=True)        
     #        # Text associated with the area
     #        # (This will only be used for crawler comparisons)
@@ -47,6 +47,7 @@ class MudArea():
         # This tries to make a DB-synced area object (Cartography sets C.MUD_AREA, calling this)
         # I mean, adds it to the DB with an identifier if it doesn't exist, or
         # looks it up in the dB
+        # Note that a MudArea is a bit more than an Area, it's got an Area and it's got a list of area_exits
         area = Area(
             name        = str(area_title), 
             description = str(area_description).replace("\n\r", ' ') # Removes newlines from matched description text
@@ -70,6 +71,9 @@ class MudArea():
             cur_mud_area # This is the previous record of the area that we left from
             # It is used with LAST_DIRECTION which was picked up by user_move to determine where we have gone to
         )
+        # Ok this follows the given direction
+        # If this succeeds, we return the result
+        # So if an areaexit is wrong, we don't detect it
 
         if discerned_area is not None:
             area = discerned_area.area
@@ -84,6 +88,25 @@ class MudArea():
         area_exits = AreaExit.get_area_exits_from_area(area)  # Ummm this should be one to the left??? Let's try it
         return MudArea(area, area_exits)
         # I guess .map is being used as kind of a constructor
+
+    def find_exit(self, exit_name):
+        for e in self.area_exits:
+            magentaprint("Looping, looking for "+str(exit_name)+" ... " + str(e.exit_type.name))
+            if e.exit_type.name == exit_name:
+                magentaprint("Got it.")
+                return e
+
+    def unset_exit(self, exit_name):
+        area_exit = self.find_exit(exit_name)
+        magentaprint(f"MUDAREA DELETED AREA EXIT AREA TO: {area_exit.area_to}")
+        area_exit.area_to = None  # NoneType object has no attribute 'area_to'
+        area_exit.map()
+        # self.map()
+
+    def unset_area_exit(self, area_exit):
+        magentaprint(f"Gotta set {area_exit.area_to} to None")
+        area_exit.area_to = None
+        ae.map()
 
     @staticmethod
     def discern_location(area, direction_list, area_from_id, direction_from, cur_mud_area):
@@ -202,9 +225,8 @@ class MudArea():
             "- ".join(ae.pretty_string() for ae in self.area_exits)
             # "Exits: \n"+\
 
-
-
-
-
+    def shorter_map_node_string(self):
+        return f"MudArea {self.area.id} exits: \n- "+\
+            "\n- ".join(ae.shorter_pretty_string() for ae in self.area_exits) + "\n"
 
 

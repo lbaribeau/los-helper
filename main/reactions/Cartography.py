@@ -250,6 +250,8 @@ class Cartography(BotReactionWithFlag):
             # I don't think the regex will match without an exit list.
             if C.EXIT_LIST != []:
                 # area = self.draw_map(area_title, area_description, C.EXIT_LIST)
+                prev_mud_area = C.MUD_AREA
+                # prev_exit_list = C.EXIT_LIST
                 C.MUD_AREA = MudArea.map(
                     C.AREA_TITLE, 
                     match.group(2).strip(), # area description (eat the description - doesn't give the full text)
@@ -262,6 +264,29 @@ class Cartography(BotReactionWithFlag):
                 # Maybe we can handle two kinds of descriptions.... hmmmm
                 # Can MudArea.map handle that?
                 magentaprint("Cartography area match: " + str(C.MUD_AREA.area))
+                magentaprint("Cartography, Check the result")
+                # magentaprint("... Area title match: %s" % (C.AREA_TITLE == C.MUD_AREA.area.name))
+                # Area description is probably the most reliable...
+                magentaprint("Cartography DB description equals what we got?!: %s" % (match.group(2).strip().replace("\n\r", ' ') == C.MUD_AREA.area.description))
+                magentaprint(match.group(2).strip().replace("\n\r", ' '))
+                magentaprint(C.MUD_AREA.area.description)
+                magentaprint("... Area title match: \n- Read : %s, \n- DB   : %s" % (C.AREA_TITLE, C.MUD_AREA.area.name))
+                magentaprint("... Area exit list length match: %s" % (len(C.EXIT_LIST) == len(C.MUD_AREA.area_exits)))
+                for e in C.EXIT_LIST:
+                    magentaprint("... Exit (%s) in DB result: %s" % (e, e in [ae.exit_type.name for ae in C.MUD_AREA.area_exits]))
+
+                if match.group(2).strip().replace("\n\r", ' ') == C.MUD_AREA.area.description:
+                    magentaprint("Descriptions match so we're good.")
+                else:
+                    # This issue can happen if we flee... hmmm
+                    magentaprint("Cartography DETECTED AN ISSUE ... so... let's unset the last exit (disabled)")
+                    # prev_mud_area.unset_exit(ReferencingList([ae.exit_type.name for ae in prev_mud_area.area_exits]).get(C.LAST_DIRECTION)) # Converts "e" to "east"
+                    # Ugh have to hit "nw" also... 
+                    magentaprint("prev_mud_area.unset_exit(self.string_match_area_exit(prev_mud_area.area_exits, C.LAST_DIRECTION).exit_type.name)")
+                    # prev_mud_area.unset_exit(self.string_match_area_exit(prev_mud_area.area_exits, C.LAST_DIRECTION).exit_type.name) # Converts "e" to "east"
+                    # prev_mud_area.unset_area_exit(self.string_match_area_exit(prev_mud_area.area_exits, C.LAST_DIRECTION))
+                    # AreaExit.get_area_exits_from_area_given_areaid(area_from_id)
+
                 #magentaprint("Try [m for m in C.mobs.list.list] " + str([m for m in C.mobs.list.list]))
                 #magentaprint("Try [str(m).lower() for m in C.mobs.list.list]" + str([str(m).lower() for m in C.mobs.list.list]))
                 #magentaprint("Cartography monster list: " + str(C.mobs.list))

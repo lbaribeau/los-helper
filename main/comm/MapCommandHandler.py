@@ -49,7 +49,7 @@ class MapCommandHandler:
         magentaprint("MapCommandHandler.check_current_area()")
         # Suppose I enter "mapcheck northeast"
         # Just give me back an areaid
-        mudarea=self.character.MUD_AREA
+        # mudarea=self.character.MUD_AREA
         # magentaprint("Assuming current character mud area: " + str(mudarea))
         # magentaprint("Assuming current character mud area: " + str(mudarea.area.id))
         # magentaprint(f"Pretty string:\n{mudarea.pretty_string()}")
@@ -59,7 +59,7 @@ class MapCommandHandler:
         # 	magentaprint(f"No area attribute!")
 
         # magentaprint(f"Pretty string 2: \n{mudarea.pretty_string2()}")
-        magentaprint("\n\n"+mudarea.pretty_string2())
+        magentaprint("\n\n"+self.character.MUD_AREA.pretty_string2() if hasattr(self.character.MUD_AREA, 'pretty_string2') else "\n\n<None>")
 
         # if hasattr(mudarea, 'area_exits'):
         #     # magentaprint("Has exits: " + str([ae.exit_type.name for ae in mudarea.area_exits]))
@@ -73,6 +73,11 @@ class MapCommandHandler:
         #             magentaprint(f"Incomplete!: {ae}")
         # else:
         #     magentaprint(f"No area_exits attribute!")
+    def shorter_map_node_print(self):
+        self.wait_for_map()
+        magentaprint("MapCommandHandler.shorter_map_node_print()")
+        magentaprint(f"\n\n{self.character.MUD_AREA.shorter_map_node_string()}")
+
 
     # def check_exit(self, given_exit):
     # 	self.wait_for_map()

@@ -208,17 +208,28 @@ class CommandHandler(object):
             'cast_light' : self.cast_light,
             # 'map' : self.write_map, # Ok this is supposed to happen all the time in the background...
             'mapcheck' : self.check_current_area, # Prints out details of current node
-            # 'mapcheck2' : self.check_current_area, # Plots a map, given depth, from current location
+            'mapcheck2' : self.shorter_map_node_print, 
             'reload_map' : self.reload_map,  # Test case, showto 2, "can't find path", walk back (writes exit links), walk out, "reload_map", then showto 2 connects
             'showcrawl' : self.showcrawl,
             'plot_near_nodes' : self.plot_near_nodes,
             'plot_near_nodes3d' : self.plot_near_nodes3d
+            # 'delexit' : self.delexit
             # 'toggle_prints' : self.toggle_prints
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
         # Each action is going to be passed "a" which is string.partition(' ')[2] on the command that came in
         # So make sure the function has the right signature (self, args)
+
+    # def delexit(self, args):
+        # The idea here is you see an error in mapcheck such as
+        # MudArea 1194 exits:
+        # - south -> 1195
+        # - north ->1193
+        # - east -> 1195
+        # - west -> 1190
+        # East is wrong, it is pointing at where south goes
+        # Going "east", I think Cartography uses MudArea to figure out what happened... 
 
     def plot_map(self, args):
         magentaprint("... Plotter...");
@@ -270,6 +281,8 @@ class CommandHandler(object):
     #     pass
     def check_current_area(self, args):
         self.map_command_handler.check_current_area()
+    def shorter_map_node_print(self, args):
+        self.map_command_handler.shorter_map_node_print()
 
     def cast_light(self, args):
         self.bot_thread.cast_light()

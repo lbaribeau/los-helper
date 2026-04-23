@@ -10,6 +10,8 @@ from matplotlib import pyplot
 print("... db.Area..."); import db.Area
 from db.MudArea import MudArea
 
+from plots.MyDigraphCopier import MyDigraphCopier
+
 class PlotNearNodes:
 	def __init__(self, los_map):
 		self.los_map = los_map # networkx DiGraph
@@ -29,55 +31,6 @@ class PlotNearNodes:
 		# pyplot.ion()
 		# pyplot.show()
 		plot_near_nodes(self.los_map, area_id, depth)
-
-class MyDigraphCopier:
-	def __init__(self, reference_graph, area_id, depth):
-		self.mini_graph = networkx.DiGraph()
-		# self.mini_graph.add_node(area_id)  # Assumes area_id is in reference_graph
-		self.add_to_mini_graph(reference_graph, area_id, depth)
-		for source_node, target_node, d in self.mini_graph.edges(data=True):
-			# d is attribute dictionary of an edge
-			d['label'] = 'nw' if d['label'] == 'northwest' else d['label']
-			d['label'] = 'ne' if d['label'] == 'northeast' else d['label']
-			d['label'] = 'sw' if d['label'] == 'southwest' else d['label']
-			d['label'] = 'se' if d['label'] == 'southeast' else d['label']
-			d['label'] = 'n' if d['label'] == 'north' else d['label']
-			d['label'] = 's' if d['label'] == 'south' else d['label']
-			d['label'] = 'e' if d['label'] == 'east' else d['label']
-			d['label'] = 'w' if d['label'] == 'west' else d['label']
-			d['label'] = 'd' if d['label'] == 'down' else d['label']
-			d['label'] = 'u' if d['label'] == 'up' else d['label']
-			d['label'] = 'ou' if d['label'] == 'out' else d['label']
-
-	def add_to_mini_graph(self, reference_graph, area_id, depth):
-		# Adds given node area_id to graph, adds edges from lookup from reference graph, and recursively adds connected nodes and their edges
-		magentaprint(f"Depth {depth}")
-		if depth <= 0:
-		# if depth <= 0 or area_id in self.mini_graph:
-			# magentaprint("Got to base case!")
-			return 
-
-		# self.mini_graph.add_node(area_id) # Could get double added I guess
-			# No need to add nodes AND edges, just add edges
-		for n in reference_graph.successors(area_id):
-			# self.mini_graph.add_edge(area_id, n, label='test')
-			mudarea = MudArea(db.Area.Area.get_area_by_id(area_id))
-			exit_name = mudarea.get_exit_name_to_areaid(n)
-			magentaprint(f"... From {area_id:4} ({mudarea.area.name}) (depth is {depth}), to get to {n:4}, go {exit_name}. ")
-			if n == 1:
-				magentaprint("... ... Got a \"1\" (Unmapped)")
-				continue # 1 is special node indicating unknown (don't map)
-			if n in self.mini_graph:
-				self.mini_graph.add_edge(area_id, n, label=exit_name) # !!! what a line of code... goes to DB to get whole MudArea which loops to retrieve exit
-			else:
-				self.mini_graph.add_edge(area_id, n, label=exit_name) # !!! what a line of code... goes to DB to get whole MudArea which loops to retrieve exit
-				self.add_to_mini_graph(reference_graph, n, depth-1)
-			# magentaprint(f"... From {area_id:4} ({mudarea.area.name}), go {exit_name} to get to {n:4}")
-			# area_n = db.Area.Area.get_area_by_id(n)
-			# area_n_title = area_n.name if hasattr(area_n, 'name') else None
-			# magentaprint(f"... From {area_id:4} ({mudarea.area.name}), go {exit_name} to get to {n:4} ({area_n_title})")
-			# This print is nice but it takes a step farther than we have already gone
-			# Could also hit the predecessors
 
 def plot_near_nodes(los_map, area_id, depth):
 	# Reference: Plotter.py
@@ -115,7 +68,8 @@ def plot_near_nodes(los_map, area_id, depth):
 		# fixed=pos.keys()#[2,1258,1380,1050,120,1388, 1265, 698, 1621,215,28]
 	) # returns positions (pos)
 
-	pyplot.figure("plot_map_given_depth.py")
+	# pyplot.figure("plot_map_given_depth.py")
+	pyplot.figure()
 
 	networkx.draw_networkx(
 		mini_graph, # Graph G
@@ -147,20 +101,36 @@ def plot_near_nodes(los_map, area_id, depth):
         # chapel_aid    = db.Area.Area.get_by_name("The Chapel of Healing").id
 	)
 
-	if True: # Exit labels
-		networkx.draw_networkx_edge_labels(
-			mini_graph,
-			kamada_kawai_positions,
-			edge_labels = networkx.get_edge_attributes(mini_graph, 'label'),
-			bbox=dict(alpha=0, boxstyle='round,pad=.1',fc='white',ec='none'), # label bounding boxes are intended to prioritize being able to see the label but cover the graph
-			label_pos=.667, # so they aren't centered (hopefully can see both directions)
-			rotate=True,
-			font_weight='light',
-			font_family='sans-serif',
-			alpha=.7,
-			clip_on=False,
-			horizontalalignment='center'
-		)
+	# networkx.draw_networkx(
+	# 	mini_graph, # Graph G
+	# 	kamada_kawai_positions,
+	# 	nodelist    = [], # (Only plot the edges between nodes)
+	# 	edgelist    = [e for e in mini_graph.edges if e[0] != 1 and e[1] != 1], 
+	# 	# (Node 1 is special, not to be included) 
+	# 	alpha       = 0.7, 
+	# 	width       = 0.2, 
+	# 	edge_color  = 'black', 
+	# 	font_size   = 7, 
+	# 	arrows      = False,
+	# 	with_labels = True,
+	# 	labels = {id: id for id in list(mini_graph)} 
+	# )
+
+	networkx.draw_networkx_edge_labels(
+		mini_graph             ,
+		kamada_kawai_positions ,
+		edge_labels            = networkx.get_edge_attributes(mini_graph, 'label'),
+		bbox                   = dict(alpha=0, boxstyle='round,pad=.1',fc='white',ec='none'), 
+		# Remove bounding boxes around label
+		label_pos              = 0.7, # Where to put the exit name label along the line
+		rotate                 = True,
+		font_weight            = 'light',
+		font_family            = 'sans-serif',
+		font_size              = 8,
+		alpha                  = 0.7,
+		clip_on                = False,
+		horizontalalignment    = 'center'
+	)
 
 	# for p in [_p for _p in pos.values() if _p :
 	# for (n, p) in [(_n, _p) for (_n, _p) in pos.items() if _n<216]:

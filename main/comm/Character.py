@@ -230,7 +230,8 @@ class Character(object):
         'searcher', 'delivery boy', 'wanderer', 'villager', 'vagrant', 'dropout', 'tramp', 'serf', 'dishwasher',
         'punter','chicken','coopers apprentice', 'diner', "cook's assistant", 
         'surveyor', 'pit pony', 'cleaner',
-        'hungy busker', 'beggar', 'dropout', 'one-armed beggar', 'sitting beggar','fighting cock'
+        'hungy busker', 'beggar', 'dropout', 'one-armed beggar', 'sitting beggar','fighting cock',
+        'field mouse', 'hedgehog', 'deer', 'rabbit', 'hare', 'shrew' # These spawn in the "trail" north of Amethyst
         # level 3 travellers exist, spawn near the amethyst town crier, so, not level 1
         # There is certainly a level 2 one so we can't have miner's assisstant in this list
         # chained adherant in dark knight area is blue aura, could be useful
@@ -264,7 +265,8 @@ class Character(object):
         # leather collars nice to have dropped in hooker area
         'apprentice', # via apothecary in highmarket... need to be "small"
         'treehugger',
-        'small bore worm'
+        'small bore worm', 
+        'weasel', 'ferret' # forest trail north of Amethyst, by the watering hole
     ]
     lvl2_red_monsters = [
         'kobold sentry', 'blond hooker', 'sultry hooker', 'kobold', 'spiv', # steel mask

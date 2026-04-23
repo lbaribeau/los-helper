@@ -27,15 +27,15 @@ class AreaExit(BaseModel):
     def map(self, area_from=None, exit_from=None):
         is_new_mapping = False
 
-        if area_from is not None and exit_from is not None:
-            if exit_from.opposite is not None:
-                if self.exit_type.id == exit_from.opposite.id:
-                    area_exit.area_to = area_from
-            #else:
-                '''code a case to handle this exit issue on opposites (west opposite out)
-                since most of the exit types are likely going to have hardcoded opposite at first
-                and then especially for exceptions like this it might not be worth the effort
-                A github issue will be made'''
+        # # if area_from is not None and exit_from is not None:
+        #     # if exit_from.opposite is not None:
+        #         # if self.exit_type.id == exit_from.opposite.id:
+        #             # area_exit.area_to = area_from  # No, this isn't always true, east, then west, lots of places that doesn't work, like forests, caves, mazes
+        #     #else:
+        #         '''code a case to handle this exit issue on opposites (west opposite out)
+        #         since most of the exit types are likely going to have hardcoded opposite at first
+        #         and then especially for exceptions like this it might not be worth the effort
+        #         A github issue will be made'''
 
         super(AreaExit, self).save()
 
@@ -67,6 +67,8 @@ class AreaExit(BaseModel):
             "    .exit_type.id   : " + str(self.exit_type.id   if hasattr(self.exit_type, 'id'        ) else "<None>") + "\n" + \
             "    .is_useable     : " + str(self.is_useable     if hasattr(self,           'is_useable') else "<None>") + "\n" + \
             "    .is_hidden      : " + str(self.is_hidden      if hasattr(self,           'is_hidden' ) else "<None>") + "\n"
+    def shorter_pretty_string(self):
+        return f"{self.exit_type.name} -> "+str(self.area_to.id if hasattr(self.area_to, 'id') else "<None>")
 
     '''Static AreaExit Functions'''
     def get_area_exit_by_area_from_and_exit_type(cur_area_from, cur_exit_type):
