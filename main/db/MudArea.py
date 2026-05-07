@@ -43,7 +43,7 @@ class MudArea():
             print("MudArea init, given area is null for some awful reason.")
 
     @staticmethod
-    def map(area_title, area_description, exit_list, area_from, direction_from, cur_mud_area):
+    def map(area_title, area_description, exit_list, area_from, direction_from, previous_mud_area):
         # This tries to make a DB-synced area object (Cartography sets C.MUD_AREA, calling this)
         # I mean, adds it to the DB with an identifier if it doesn't exist, or
         # looks it up in the dB
@@ -68,12 +68,30 @@ class MudArea():
             direction_list ,
             area_from      ,
             direction_from ,
-            cur_mud_area # This is the previous record of the area that we left from
+            previous_mud_area # This is the previous record of the area that we left from
             # It is used with LAST_DIRECTION which was picked up by user_move to determine where we have gone to
         )
         # Ok this follows the given direction
         # If this succeeds, we return the result
         # So if an areaexit is wrong, we don't detect it
+        # Yes the idea is that the preious mud area could have a link to follow
+        # It creates a MudArea using the areaid after following the current (previous) MudArea's area_exit
+        # So it does assume the DB is solid, right? Yes, but there is some checking in the caller, which also has the 
+        # A new MudArea is made below though, I think it puts the area_exits on there
+        # Ok so if both links go to 1708, that's not good... and I don't see to unlink it since the descs and exits are the same...
+        # Also it'd definitely presume if there was no area that we got into the same area by a different exit...
+        # I guess I need to tell it to make a new area node
+        # I could do it in dBeaver but let's do it here...
+        # Suppose we say "newarea south"... would that break anything... hopefully not... 
+
+        # Let's just assume that Cartography wants us to figure this out... if we can...
+        # Only the human seems to be able to know that a new node is needed
+        # So... we could skip Cartography or "tell" it... last time I thought I'd write a command to delete an exit,
+        # I ended up not because I was able to get Cartography to figure out... but not this time, so...
+        # Could just make the command this time for that reason... either way is possible but a new "flag" variable would be needed...
+        # Not about that lately
+        # I mean I guess we could presume that if the water sprite is there it's a new node... or we could just do dBeaver manually
+        # I think a new node command would be good...
 
         if discerned_area is not None:
             area = discerned_area.area
@@ -85,7 +103,7 @@ class MudArea():
                 area.map(direction_list, area_from, direction_from)
             else:
                 area.map(direction_list)
-        area_exits = AreaExit.get_area_exits_from_area(area)  # Ummm this should be one to the left??? Let's try it
+        area_exits = AreaExit.get_area_exits_from_area(area)  # Ummm this should be unindented one??? Let's try it
         return MudArea(area, area_exits)
         # I guess .map is being used as kind of a constructor
 
@@ -109,10 +127,10 @@ class MudArea():
         ae.map()
 
     @staticmethod
-    def discern_location(area, direction_list, area_from_id, direction_from, cur_mud_area):
+    def discern_location(area, direction_list, area_from_id, direction_from, previous_mud_area):
         # Ok here we know what exit was taken and from what area
         # So we can use that to do a db lookup to find out where we have ended up
-        # We also have "direction_list" which is basically what is matched after "Obvious exits" (ie. an exit list)
+        # We also have "direction_list" which is what is matched after "Obvious exits" (ie. an exit list)
         # But we don't use it
         # Area_from_id isn't used
         # We just use current_mud_area
@@ -120,23 +138,24 @@ class MudArea():
         # MudArea constructor gets called on the areaid from the exit
         # So I'd have called it get_mud_area(current_mud_area, exit_name)
 
-        discerned_area = None
-
-        if cur_mud_area is not None:
+        if previous_mud_area is not None:
             exit_type = ExitType.get_exit_type_by_name_or_shorthand(direction_from) # Gets the exit DB object given the exit name
 
             if exit_type is None:
                 exit_type = ExitType(name=direction_from)
             
-            discerned_area = cur_mud_area.get_area_to_from_exit(exit_type)
+            return previous_mud_area.get_area_to_from_exit(exit_type) # A MudArea
 
             #if isNewExit: - this is logic we can implement once we have exit_type mapping completely bullet proof
-
             # magentaprint("MudArea discerning: " + str(cur_mud_area) + " against " + str(area))
-
             # Ok I'm a bit concerned that every "north" is 5 and it looks like we are using only that to figure out where we are
 
-        return discerned_area
+    def get_area_to_from_exit(self, exit_type):
+        # Makes a MudArea from the areaid on the appropriate area_exit
+        for areaexit in self.area_exits:
+            if areaexit.exit_type.name == exit_type.name:
+                if areaexit.area_to is not None:
+                    return MudArea(areaexit.area_to)
 
     @staticmethod
     def set_area_exit_as_unusable(regex, area_from, exit_type):
@@ -153,12 +172,6 @@ class MudArea():
                 area_exit.is_useable = False
                 area_exit.note = str(regex)
                 area_exit.save()
-
-    def get_area_to_from_exit(self, exit_type):
-        for areaexit in self.area_exits:
-            if areaexit.exit_type.name == exit_type.name:
-                if areaexit.area_to is not None:
-                    return MudArea(areaexit.area_to)
 
     def get_exit_name_to_areaid(self, areaid):
         # class AreaExit(BaseModel):

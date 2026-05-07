@@ -135,8 +135,11 @@ class Character(object):
         elif self.level == 3:
             # There's now some wiggle room at level 3
             self.HEALTH_TO_HEAL = 0.85 * self.info.maxHP # Safer heal threshold for low level
+            self.MANA_TO_ENGAGE = min(6, self.info.maxMP)
         else:
-            self.HEALTH_TO_HEAL = 0.75 * self.info.maxHP  # We can crank this back up when we fight stronger mobs
+            # self.HEALTH_TO_HEAL = 0.75 * self.info.maxHP  # We can crank this back up when we fight stronger mobs
+            self.HEALTH_TO_HEAL = 0.80 * self.info.maxHP  # Be patient... 
+            self.MANA_TO_ENGAGE = min(9, self.info.maxMP) # Died to a hawker after two rumbles oy
 
         # self.hp_tick = floor((self.info.con-1)/3)  # This was wrong for my 3 con bard (returned 0)
         # Chapel bonus is +3
@@ -146,7 +149,8 @@ class Character(object):
         self.GOLD = self.info.gold
         self.level = self.info.level
 
-        self.HEALTH_TO_FLEE = self.info.maxHP * 0.4 # Increased from 0.35 as I've improved flee recovery... 8 hp is ok I guess?? Not sure why he didn't flee at 8 with max 24
+        # self.HEALTH_TO_FLEE = self.info.maxHP * 0.4 # Increased from 0.35 as I've improved flee recovery... 8 hp is ok I guess?? Not sure why he didn't flee at 8 with max 24
+        self.HEALTH_TO_FLEE = self.info.maxHP * 0.45 # Increased again to try avoid deaths (ie. to a hawker at level 4)
 
         # self.EXPERIENCE = self.info.exp # Ehrm I guess this isn't right, "EXPERIENCE" is more like, how much we got this session
         self.current_experience = self.info.exp # Ehrm I guess this isn't right, "EXPERIENCE" is more like, how much we got this session
@@ -293,7 +297,8 @@ class Character(object):
         # stevedore leather gloves
         'singing drunk', # Highmarket
         'retired miner',
-        'old miner',
+        'old miner', 
+        'digger', # Deep in mine
         'travelling tourist', # guide book, pristine condition, not sure how to use it, "it says welcome to sunny Amethyst"
         'large bore worm', # could be level 4 but lets have it kill on sight for the quest to work
         'antelope' # Appeared on south plains rode

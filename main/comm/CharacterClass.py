@@ -154,7 +154,7 @@ class CharacterClass(object):
             self.lvl1_maxHP = 15
             self.lvl1_maxMP = 4
             abilities = [ Barkskin ]
-            Cast.cooldown_after_success = 3
+            Cast.cooldown_after_success = 4  # Yeah I think 3 is too fast
         elif self.id == "Alc":
             self.lvl1_maxHP = 15
             lvl1_maxMP = 4

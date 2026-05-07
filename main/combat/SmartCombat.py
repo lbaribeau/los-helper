@@ -368,7 +368,7 @@ class SmartCombat(CombatObject):
                 # magentaprint("After mud reader completion, end combat is {}, stopping, {}, event, {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
                 # We have regex_busy now, could use that too
             else:
-                # magentaprint("SmartCombat cast block") # Good info but prints too much
+                magentaprint("SmartCombat cast block") # Good info but prints too much
                 C = self.character
                 damage = C.maxHP - C.HEALTH
                 cast.wait_until_ready()

@@ -86,12 +86,16 @@ class LargeTorchManager:
 		self.drop_last_torch()
 
 	def decrement_ref(self, ref_string):
+		# Eh hopefully ref is "decrementable"
 		ref_split = ref_string.split(' ')
-		new_n = int(ref_split[1])-1
-		if new_n > 1:
-			return ref_split[0]+' '+str(new_n)
+		if len(ref_split) > 1:
+			new_n = int(ref_split[1])-1 # Ehrm [1] is out of range if "l large 1"
+			if new_n > 1:
+				return ref_split[0]+' '+str(new_n)
+			else:
+				return ref_split[0]
 		else:
-			return ref_split[0]
+			return -1
 
 	# def at_tip_drop_bad_torches(self):
 	# 	# Ok what if we logged out holding a torch and it went bad
@@ -135,8 +139,9 @@ class LargeTorchManager:
 				if self.drop.execute_and_wait(ref):
 					magentaprint("Good, dropped a torch")
 				else:
-					magentaprint("What the $#&* happened, LargeTorchManager couldn't drop a torch")
-			ref = self.decrement_ref(ref)
+					magentaprint("What the h$#&! happened, LargeTorchManager couldn't drop a torch")
+			ref = self.decrement_ref(ref) # ie. large 2, large 1
+				# Ok we do call decrement ref even though we're on the last one... 
 			num_torches_remaining-=1
 
 	def at_shop_buy_torch_if_needed(self):

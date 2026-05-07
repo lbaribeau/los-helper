@@ -94,7 +94,8 @@ class GrindThread(BotThread):
         elif exit_str == "train":
             C = self.character
             # if C.current_experience > C.info.exp_to_level and self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > C.info.gold_to_level + 2*self.command_handler.weapon_bot.possible_weapons[0].item.value:
-            if C.current_experience > C.info.exp_to_level and self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > 2*C.info.gold_to_level:
+            # if C.current_experience > C.info.exp_to_level and self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > 2*C.info.gold_to_level:
+            if self.ready_to_train():
                 # just wait for double gold I guess so we don't spend it all... weapon bot should be able to deal with that... because it'll only buy a weapon if it can afford triple
                 # hmmm maybe they should interact a little more... weapon bot could check training cost to help it not spend too much but still spend
                 self.command_handler.train.execute_and_wait()

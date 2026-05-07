@@ -514,23 +514,24 @@ class ArmourBot(MiniBot):
                         #         break; # So we only add one item for the slot
                                 # Yeah do need to drop the money drains at low level, to be able to buy long sword, or to level up gold is needed, expenses down like repairs
                     elif self.char.info.level==4:
-                        desired_items.append(buyable_items[0]) # This adds the first one in buyable_items
-                    #     for b in buyable_items:
-                    #         if b.item.name in [\
-                    #                 'hard cap', 
-                    #                 'hard boots', 
-                    #                 'studded leather gloves', 
-                    #                 'lacquered wooden shield', 
-                    #                 'studded leather leggings', 
-                    #                 'studded leather sleeves', 
-                    #                 'studded leather gloves',
-                    #                 'studded leather armour']:
-                    #             desired_items.append(b)
-                    #             break; # So we only add one item for the slot
+                        # desired_items.append(buyable_items[0]) # This adds the first one in buyable_items
+                        for b in buyable_items:
+                            if b.item.name in [               \
+                                    'leather cap'             , 
+                                    'leather boots'           , 
+                                    'studded leather armour'  ,
+                                    'studded leather gloves'  , 
+                                    'studded leather leggings', 
+                                    'studded leather sleeves' , 
+                                    'lacquered wooden shield' ,
+                                    'iron ring'               ]: # See if it gets it at the fort (closer than Garbo's)
+                                    # 'copper ring']: # steel ring is too expensive... copper ring probably is too though... rule it out it's far (Garbo's)
+                                desired_items.append(b)
+                                break; # So we only add one item for the slot
                     #             # leave out iron ring
                     #             # The idea here is that we don't want to buy so much armour that the guy can't make gold net positive eventually... or afford a decent weapon...
-                    # else:
-                        # desired_items.append(buyable_items[0]) # This adds the first one in buyable_items
+                    else:
+                        desired_items.append(buyable_items[0]) # This adds the first one in buyable_items
                         # If level >= 4 any armour in the dB is fair game
                         # Test code btw is 
                         # exec print(AreaStoreItem.get_buyable_armour(self.armour_bot.get_size('Dwarf'), 'Body', 1))

@@ -16,20 +16,25 @@ from mini_bots.mini_bot import MiniBot
 class SmithyBot(MiniBot):
     def __init__(self, char, command_handler, mud_map):
         super().__init__()
-        self.char = char
-        self.command_handler = command_handler  # We should create a "BasicCommandHandler" to eliminate this circular dependence
+        CH=command_handler # alias for brevity, equivalent
+        self.char            = char
+        self.command_handler = CH  # We should create a "BasicCommandHandler" to eliminate this circular dependence
         # (CommandHandler makes bots who need to use CommandHandler - instead they can use BasicCommandHandler which can't make bots)
-        self.map = mud_map
-        self.smartCombat = command_handler.smartCombat
-        self.kill = command_handler.smartCombat.kill
-        self.cast = command_handler.smartCombat.cast
-        self.equipment = command_handler.equipment
+        self.map             = mud_map
+        self.smartCombat     = CH.smartCombat
+        self.kill            = CH.smartCombat.kill
+        self.cast            = CH.smartCombat.cast
+        self.equipment       = CH.equipment
         # self.equipment = Equipment()
-        self.slot_names = [
-            'body','arms','legs','neck','neck2','face','hands','feet','finger','finger2','finger3',
-            'finger4','finger5','finger6','finger7','shield','wielded','seconded','holding']
-        self.equipment = dict.fromkeys(self.slot_names)
-        self.travel_bot = TravelBot(self.char, self.command_handler, mud_map)
+        # self.slot_names = [
+        #     'body'    , 'arms', 'legs',
+        #     'neck'    , 'neck2', 
+        #     'face'    , 'hands', 'feet',
+        #     'wielded', 'seconded',
+        #     'shield'  , 'holding',
+        #     'finger'  ]+["finger"+n for n in range(2,9)]
+        # self.equipment = dict.fromkeys(self.slot_names) # This is sketchy! Probably doesn't clobber CH.equipment though
+        self.travel_bot = TravelBot(char, CH, mud_map)
 
     def stop(self):
         super().stop()  # Unnecessary since travel_bot is the only loop

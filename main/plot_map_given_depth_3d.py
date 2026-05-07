@@ -57,7 +57,10 @@ def plot_near_nodes(los_map, area_id, depth):
     # mini_graph.add_node(area_id)
     # for i in range(depth)
 	    # s = los_map.successors(area_id) 
-	mini_graph = MyDigraphCopier(los_map, area_id, depth).mini_graph
+	# mini_graph = MyDigraphCopier(los_map, area_id, depth).mini_graph
+	mini_graph = MyDigraphCopier(los_map, area_id, depth).mini_graph.to_undirected(as_view=True) 
+	# Saying ok treat unidirectional edges the same... also, no need to modify the graph, just need a view of this
+	# So each edge isn't double plotted
 
 	kamada_kawai_positions = networkx.drawing.kamada_kawai_layout(
 	# kamada_kawai_positions = networkx.drawing.spring_layout(
@@ -73,23 +76,33 @@ def plot_near_nodes(los_map, area_id, depth):
 	pyplot.cla() # clear axis
 	# pyplot.figure()
 	ax=pyplot.gcf().add_subplot(111, projection='3d')
+	x=0
+	y=1
+	z=2
 	for edge in mini_graph.edges:
 		ax.plot(\
-			[kamada_kawai_positions[edge[0]][0], kamada_kawai_positions[edge[1]][0]],
-			[kamada_kawai_positions[edge[0]][1], kamada_kawai_positions[edge[1]][1]],
-			[kamada_kawai_positions[edge[0]][2], kamada_kawai_positions[edge[1]][2]],
-			c='grey',
-			alpha=0.7,
-			linewidth=0.7)
+			# Plot is taking
+			# [x1, x2],
+			# [y1, y2],
+			# [z1, z2]
+			# edge[0] and edge[1] are each nodes that have positions in kamada_kawai
+			[kamada_kawai_positions[edge[0]][x], kamada_kawai_positions[edge[1]][x]],
+			[kamada_kawai_positions[edge[0]][y], kamada_kawai_positions[edge[1]][y]],
+			[kamada_kawai_positions[edge[0]][z], kamada_kawai_positions[edge[1]][z]],
+			c='#111111',
+			alpha=0.6,
+			linewidth=1)
 
-	if False:
+	if True:
 		# Plotting nodes don't look great and really slow it down... just plot the edges
+		# Ok well they look ok but really slow it down
 		for node, coords in kamada_kawai_positions.items():
 			# ax.scatter(coords[0], coords[1], coords[2], c='blue', s=20)
-			ax.scatter(coords[0], coords[1], coords[2], alpha=0.5, c='grey')
+			# ax.scatter(coords[0], coords[1], coords[2], alpha=0.5, c='grey')
+			# ax.scatter(coords[0], coords[1], coords[2], alpha=0.3, c='black', s=1)
+			ax.scatter(coords[0], coords[1], coords[2], alpha=0.6, c='#111111', s=1)
 			# label = db.Area.Area.get_area_by_id(node)
-			label = node
-			# ax.text(coords[0], coords[1], coords[2], label, size=7)
+			# ax.text(coords[0], coords[1], coords[2], node, size=7)
 
 	ax.set_xticklabels([])
 	ax.set_yticklabels([])

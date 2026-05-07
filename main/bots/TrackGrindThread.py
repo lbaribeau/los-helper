@@ -561,9 +561,34 @@ class TrackGrindThread(GrindThread):
     def total_paths(self):
         return self.__TOTALPATHS
 
+    def ready_to_train(self):
+        C = self.character
+        magentaprint(" --- Checking if ready to train --- ")
+        self.command_handler.print_gold_exp_etc("")
+
+        # if C.current_experience > C.info.exp_to_level and self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > 2*C.info.gold_to_level: # GrindThread
+        # if C.current_experience > C.info.exp_to_level and WB.possible_weapons != [] and C.GOLD > 2*C.info.gold_to_level: # GrindThread
+        # if C.current_experience > C.info.exp_to_level and WB.possible_weapons != [] and C.GOLD > C.info.gold_to_level + AB.gold_to_save_for_weapon:
+
+        if hasattr(self.command_handler, 'weapon_bot') and self.command_handler.weapon_bot and self.command_handler.weapon_bot.possible_weapons:
+            magentaprint(f"To save {self.command_handler.armour_bot.gold_to_save_for_weapon} gold for weapon, need {C.info.gold_to_level + self.command_handler.armour_bot.gold_to_save_for_weapon} gold to train")
+        else:
+            magentaprint(f"Can't tell you if we will train because weapon and armour bot aren't ready... false for now")
+            return False
+
+        WB = self.command_handler.weapon_bot
+        AB = self.command_handler.armour_bot
+
+        # if C.current_experience > C.info.exp_to_level and WB.possible_weapons != [] and C.GOLD > C.info.gold_to_level + AB.gold_to_save_for_weapon:
+        ret = C.current_experience > C.info.exp_to_level and WB.possible_weapons != [] and C.GOLD > C.info.gold_to_level + AB.gold_to_save_for_weapon
+        magentaprint(f"To save {AB.gold_to_save_for_weapon} gold for weapon, need {C.info.gold_to_level + AB.gold_to_save_for_weapon} gold to train")
+        magentaprint(f" --- {ret} --- ")
+        return ret
+
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go...", False)
-        C=self.character
+        C = self.character
+
         if C.AREA_ID != 2:
             magentaprint("CAUTION: decide_where_to_go called when we should be in the chapel! AREA_ID is {}.".format(C.AREA_ID))
             self.command_handler.process("l")
@@ -611,19 +636,13 @@ class TrackGrindThread(GrindThread):
     #         character.GOLD > info.gold_to_level + 2*self.command_handler.weapon_bot.possible_weapons[0].item.value and \
     #         info.level 
 
-        self.command_handler.print_gold_exp_etc("")
-        WB = self.command_handler.weapon_bot
-        AB = self.command_handler.armour_bot
-
         # if self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > C.info.gold_to_level + 2*self.command_handler.weapon_bot.possible_weapons[0].item.value and \
         # if C.current_experience > C.info.exp_to_level and C.GOLD > C.info.gold_to_level + self.command_handler.armour_bot.gold_to_save_for_weapon:
-        if hasattr(self.command_handler, 'weapon_bot') and WB and WB.possible_weapons:
-            magentaprint(f"To save {AB.gold_to_save_for_weapon} gold for weapon, need {C.info.gold_to_level + AB.gold_to_save_for_weapon} gold to train")
-        else:
-            magentaprint(f"Can't tell you if we will train because weapon and armour bot aren't ready")
-
-        if C.current_experience > C.info.exp_to_level and WB.possible_weapons != [] and C.GOLD > C.info.gold_to_level + AB.gold_to_save_for_weapon:
-            magentaprint(f"To save {AB.gold_to_save_for_weapon} gold for weapon, need {C.info.gold_to_level + AB.gold_to_save_for_weapon} gold to train")
+        # if C.current_experience > C.info.exp_to_level and WB.possible_weapons != [] and C.GOLD > C.info.gold_to_level + AB.gold_to_save_for_weapon:
+        # WB = self.command_handler.weapon_bot
+        # AB = self.command_handler.armour_bot
+        if self.ready_to_train():
+            # magentaprint(f"To save {AB.gold_to_save_for_weapon} gold for weapon, need {C.info.gold_to_level + AB.gold_to_save_for_weapon} gold to train")
             if C._class.id == 'Bar':
                 if C.level in [1,2,3,4]:
                     return ['ou','n','n','w','g','n','n','n','n','n','g','n','n','g','n','nw','nw','n','nw','nw','nw','nw','n','nw','n','n','nw','n','se','doo','e','train','areaid2']
@@ -662,6 +681,24 @@ class TrackGrindThread(GrindThread):
                         # If that's the only issue... we might be ok? The hp check is only AFTER failing a climb... he could just do multiple attempts after dying I guess...
                         # If Train fails what do we do btw...
                         return ['ou','s','e','s','s','s','w','g','s','se','se','e','e','e','se','se','se','s','s','s','s','s','s','s','s','s','s','e','ac','ar','stairs','door','train','out','stairs','ar','out','areaid2']
+            elif C._class.id == 'Dru':
+                if C.level in [1,2]:
+                    return ['out', 's', 'e', 's', 's', 's', 'w', 'gate', 's', 'se','se','e','e','e','se','se','sw','w','w','glade','oak','train','d', 'areaid2']
+                elif C.level in [3,4]:
+                    return ['out', 's', 'e', 's', 's', 's', 'w', 'gate', 's', 'se','se','e','e','e','se','se','sw','w','w','glade','elm','train','d', 'areaid2']
+                elif C.level == 5:
+                    # Ehrm don't repeat yourself
+                    if not hasattr(self, large_bore_worm) or not self.large_bore_worm:
+                        self.large_bore_worm = True
+                        return ['ou','s','e','s','s','s','w','g','s','se','se','e','e','e','se','se','se','s','s','s','s','s','s','s','s','s','s',\
+                        'w','s','sw','n','burrow','d','d','d','hole','rest_here','rest_here','passage','rest_here','rest_here','rest_here','rest_here','out','rest_here', 'hole','rest_here',\
+                        'u','rest_here','u','rest_here','u','rest_here',\
+                        'out','s','ne','n','e','areaid2']
+                    else:
+                        self.large_bore_worm = False
+                    return ['out', 's', 'e', 's', 's', 's', 'w', 'gate', 's', 'se','se','e','e','e','se','se','sw','w','w','glade','ash','train','d', 'areaid2']
+                elif C.level == 6:
+                    return ['out', 's', 'e', 's', 's', 's', 'w', 'gate', 's', 'se','se','e','e','e','se','se','sw','w','w','glade','elm','train','d', 'areaid2']
         else:
             magentaprint("TrackGrindThread.decide_where_to_go decided not to train, not sure of the numbers though")
             # magentaprint("Note: keeping " + str(2*self.command_handler.weapon_bot.possible_weapons[0].item.value) + " backup gold for weapons.")

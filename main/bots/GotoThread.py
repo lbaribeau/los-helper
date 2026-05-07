@@ -26,6 +26,18 @@ class GotoThread(BotThread):
             self.stop()
             raise e  # Not sure which exceptions we want to survive...
 
+        for i in range(len(directions)):
+            exit_split = directions[i].split(' ')
+            if len(exit_split) > 1:
+                try:
+                    int(exit_split[1])
+                except ValueError:
+                    directions[i]=exit_split[0]
+                # The idea here is, to convert "mine shaft" to "mine", just because "go mine shaft" isn't right
+                # (I had code that expected an integer... Cartography string match exit name)
+                # But keep "cave 3", since the 2nd part is needed...
+                # Hopefully 1st word approach is ok, doesn't have ambiguity... 2 words would never work anyway though so, wouldn't be a regression error
+
         if "amethyst" in directions:
             magentaprint(directions, False)
             magentaprint("Path goes through limbo!")

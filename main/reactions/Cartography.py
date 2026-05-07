@@ -275,12 +275,17 @@ class Cartography(BotReactionWithFlag):
                 for e in C.EXIT_LIST:
                     magentaprint("... Exit (%s) in DB result: %s" % (e, e in [ae.exit_type.name for ae in C.MUD_AREA.area_exits]))
 
-                if match.group(2).strip().replace("\n\r", ' ') == C.MUD_AREA.area.description:
-                    magentaprint("Descriptions match so we're good.")
+                # if match.group(2).strip().replace("\n\r", ' ') == C.MUD_AREA.area.description:
+                # if match.group(2).strip().replace("\n\r", ' ') == C.MUD_AREA.area.description and len(C.EXIT_LIST) == len(C.MUD_AREA.area_exits):
+                # ^ That is just an exit list length check, we should check the exit names
+                c_exit_list = sorted(C.EXIT_LIST)
+                db_exit_list = sorted([e.exit_type.name for e in C.MUD_AREA.area_exits])
+                if match.group(2).strip().replace("\n\r", ' ') == C.MUD_AREA.area.description and len(C.EXIT_LIST) == len(C.MUD_AREA.area_exits) and c_exit_list == db_exit_list:
+                    magentaprint("Descriptions and exits match so we're good.")
                 else:
                     # This issue can happen if we flee... hmmm
-                    magentaprint("Cartography DETECTED AN ISSUE ... so... let's unset the last exit (disabled)")
-                    # prev_mud_area.unset_exit(ReferencingList([ae.exit_type.name for ae in prev_mud_area.area_exits]).get(C.LAST_DIRECTION)) # Converts "e" to "east"
+                    magentaprint("Cartography ----- DETECTED - AN - ISSUE ----- ... so... let's unset the last exit (disabled)")
+                    prev_mud_area.unset_exit(ReferencingList([ae.exit_type.name for ae in prev_mud_area.area_exits]).get(C.LAST_DIRECTION)) # Converts "e" to "east"
                     # Ugh have to hit "nw" also... 
                     magentaprint("prev_mud_area.unset_exit(self.string_match_area_exit(prev_mud_area.area_exits, C.LAST_DIRECTION).exit_type.name)")
                     # prev_mud_area.unset_exit(self.string_match_area_exit(prev_mud_area.area_exits, C.LAST_DIRECTION).exit_type.name) # Converts "e" to "east"
@@ -416,9 +421,12 @@ class Cartography(BotReactionWithFlag):
 
         # Why not copy code from referencing_list.index() (trigger warning)
         # Ok turns out there are some differences so can't run the same code... similar algorithm though
-        ref=direction_from
+        ref = direction_from
         if len(ref.split(' ')) >= 2:
-            refw, n = ref.split(' ')[0], int(ref.split(' ')[1])
+            try:
+                refw, n = ref.split(' ')[0], int(ref.split(' ')[1])
+            except ValueError:
+                refw, n = ref.split(' ')[0], 1 # Example: "go mine shaft". Probably shouldn't have goto do that anyway 
         else:
             refw, n = ref, 1
 
@@ -453,7 +461,7 @@ class Cartography(BotReactionWithFlag):
         # Lengthen "c" to "cave" by looking through area_exits to find "cave"
         for e in [x.exit_type.name for x in area_exits]:
             if e.startswith(refw):
-                refw=e.split(' ')[0] # Assumes there's nothing like "cavern"... that first hit is true
+                refw = e.split(' ')[0] # Assumes there's nothing like "cavern"... that first hit is true
                 break
 
         # Now use "cave 3" to get the AreaExit, which is what we want to return
@@ -478,6 +486,8 @@ class Cartography(BotReactionWithFlag):
         #     # Suppose "go n" and north and northwest exist, north sorts first so we'll correctly get north
         #     if ae.exit_type.name.startswith(direction_from):
         #         return ae
+
+        # Ehrm I find I have to type the whole exit name for it to map... I guess that's fine...
 
     #Used if it's dark and / or the current area doesn't appear to be findable
     def guess_location(self, area_from_id, direction_from):
@@ -679,19 +689,20 @@ class Cartography(BotReactionWithFlag):
 
         return exit_list
 
-    def create_exit_regex_for_character(self, E_LIST):
+    def create_exit_regex_for_character(self, parsed_exit_strings):
         exit_regex = "(NEVERMATCHTHISEVEREVER)"
-        if E_LIST != None:
+        if parsed_exit_strings != None:
             exit_regex = "(?:go )?(!?"
 
-            for i,s in enumerate(E_LIST):
+            for i, s in enumerate(parsed_exit_strings):
                 exit_regex += "(" + str(s) + ")"
 
-                if (i < len(E_LIST) - 1):
+                if (i < len(parsed_exit_strings) - 1):
                     exit_regex += "|"
 
             exit_regex +=")"
 
+        magentaprint(f"Cartography.create_exit_regex_for_character({parsed_exit_strings}) made: "+exit_regex)
         return exit_regex
 
     def parse_monster_list(self, MUD_mob_str):

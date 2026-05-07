@@ -157,7 +157,6 @@ class CommandHandler(object):
         self.bot_thread          = None
         self.mud_map             = None
         self.mud_map_thread      = None
-        # self.map_command_handler = MapCommandHandler(self.character, self.go.cartography, self.mud_map, self.mud_map_thread)
         # Ehrm Cartography is made in los helper
         # self.cartography = Cartography(mudReaderHandler, self.commandHandler, self.character)
         self.cartography = Cartography(mudReaderHandler, self, self.character) # Creates a circle! Wow! Just to cast light
@@ -211,8 +210,10 @@ class CommandHandler(object):
             'mapcheck2' : self.shorter_map_node_print, 
             'reload_map' : self.reload_map,  # Test case, showto 2, "can't find path", walk back (writes exit links), walk out, "reload_map", then showto 2 connects
             'showcrawl' : self.showcrawl,
+            'showcrawl2' : self.showcrawl2,
             'plot_near_nodes' : self.plot_near_nodes,
-            'plot_near_nodes3d' : self.plot_near_nodes3d
+            'plot_near_nodes3d' : self.plot_near_nodes3d,
+            'new_node' : self.make_new_area_node
             # 'delexit' : self.delexit
             # 'toggle_prints' : self.toggle_prints
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
@@ -231,12 +232,41 @@ class CommandHandler(object):
         # East is wrong, it is pointing at where south goes
         # Going "east", I think Cartography uses MudArea to figure out what happened... 
 
+    def make_new_area_node(self, args):
+        # Suppose we have nodes with identical description and exit that only the human knows needs to be a new node
+        # (Would be pretty hard to get the bot to figure out whether or not a node is a different node with everything the same)
+        # So let's make a human runnable command to make a node 
+        # It should map the current area and given area exit and make the node based on the text that comes in 
+        prev_mudarea = C.MUD_AREA
+        exit_str_partial = args[0] # User command to make a new node in this direction
+        self.go.execute_and_wait(exit_str_partial)
+        if not go.success:
+            magentaprint("command_handler make_new_area_node ran into trouble! (Go failed?!)")
+            return
+
+        # Ok.... well... presumably... who knows what Cartography did with that but, let's just ignore
+        # It probably mapped our exit to the existing wrong node...
+        # I feel we need to ...
+
+        # (Maybe make another object to do this... mapcommandhandler)
+        # - make new area node
+        # - make new "area_exit"
+        # - map the exit name to exit_type
+        # - set all the fields of the area... restorative, hidden etc.... some defaults (all False)
+        # - Use prev_mudarea, get the exit on it, and tie it to a new Mud_area
+        # Save the new mud_area
+        # 
+        # Yeah could we just... kind of... do it in python and call peewee save...
+        # We know Cartography didn't make a new area, it probably linked to the existing area...
+        
+
     def plot_map(self, args):
         magentaprint("... Plotter...");
         from plotter import Plotter
         #(lambda a : Plotter(self.mud_map)
         self.join_mud_map_thread()
         Plotter(self.mud_map.los_map).plot_map()
+        self.process('mapcheck2')
 
     def plot_near_nodes3d(self, args):
         from plot_map_given_depth_3d import PlotNearNodes
@@ -244,6 +274,7 @@ class CommandHandler(object):
         # self.reload_map(None)
         magentaprint("Call \"reload_map\" if there were recent writes.")
         PlotNearNodes(self.mud_map.los_map).plot(area_id=self.character.AREA_ID, depth=int(args) if args else 8)
+        self.process('mapcheck2')
 
     def plot_near_nodes(self, args):
         from plot_map_given_depth import PlotNearNodes
@@ -255,6 +286,16 @@ class CommandHandler(object):
         # else:
         #     depth=8
         PlotNearNodes(self.mud_map.los_map).plot(area_id=self.character.AREA_ID, depth=int(args) if args else 8)
+        self.process('mapcheck2')
+
+    def showcrawl2(self, args):
+        # Let's show ALL ways to node "1"
+        # Not doing "None" now, not sure if it's needed yet, or if there's always a "1"
+        # self.mud_map.get_all_paths(self.character.AREA_ID, 1)
+        self.join_mud_map_thread()
+        self.map_command_handler = MapCommandHandler(self.character, self.mud_map, self.mud_map_thread)
+        self.map_command_handler.showcrawl2() 
+        self.process('mapcheck2')
 
     def showcrawl(self, args):
         self.join_mud_map_thread()
@@ -274,6 +315,7 @@ class CommandHandler(object):
         # magentaprint(f"Area title is {node_path[-1]}")
         magentaprint(f"Area title is \"{db.Area.Area.get_area_by_id(node_path[-2]).name}\"")
         magentaprint(f" ---END SHOWCRAWL --- ")
+        self.process('mapcheck2')
 
     def reload_map(self, args):
         self.mud_map = MudMap()
@@ -281,6 +323,7 @@ class CommandHandler(object):
     #     pass
     def check_current_area(self, args):
         self.map_command_handler.check_current_area()
+        self.process('mapcheck2')
     def shorter_map_node_print(self, args):
         self.map_command_handler.shorter_map_node_print()
 
@@ -440,8 +483,6 @@ class CommandHandler(object):
             if a.level == self.info.level:
                 self.mudReaderHandler.add_subscriber(a)
             # Ehrm not ture... we don't really want to "remake" all of the abilities...
-
-
 
     def join_mud_map_thread(self):
         if self.threaded_map_setup:
@@ -865,6 +906,8 @@ class CommandHandler(object):
             # self.telnetHandler.write(user_input)
             self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
             # self.go.execute(self.character.LAST_DIRECTION)
+            magentaprint("Go is done, user_move printing mapcheck2")
+            self.shorter_map_node_print('')
         else:
             magentaprint("Wait %.1f more seconds." % time_remaining)
 

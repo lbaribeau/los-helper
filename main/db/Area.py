@@ -29,7 +29,7 @@ class Area(NamedModel):
 
     '''Private Area Functions'''
     def map(self, exits, cur_area_from=None, cur_exit_from=None):
-        is_new_mapping = True
+        # is_new_mapping = True
         is_new_exit_mapping = False
 
         mapped_exits = []
@@ -43,8 +43,9 @@ class Area(NamedModel):
         #elif (cur_area_from.name != self.name): #if the names are the same then this is a new area since we have moved
         #    is_new_mapping = self.search_for_area(mapped_exits)
 
-        if is_new_mapping: # this means the search has found the matching area and our Area.ID is set
+        if is_new_mapping: # this means the search hasn't found an area with the same description and exits, and our Area.ID is not set
             super().save()  # Db can be locked if this happens immediately...
+            # (Ok pretty sure by all this logic we can't make two areas with the same exits and description...)
 
             #now we map our area exits
             for exit in mapped_exits:
@@ -68,15 +69,57 @@ class Area(NamedModel):
 
         return is_new_mapping, is_new_exit_mapping
 
-    def search_for_area(self, mapped_exits):
-        is_new_mapping = True
-        matching_areas = Area.get_areas_by_name_and_exits(self.name, mapped_exits, self.description)
+    def map_new_duplicate_area(self, description, exits, area_from_id):
+        # L writing... need to create an area node even if it has the same description and exits
+        # Try copying above map() code and see what happens
+        # Let's say area_from is required in this case... maybe direction from is required? area_exit_from?
+        # Caller can do some of that, maybe just make the area?
+        # Caller could do all of it... instead of super().save just have the caller do it...
+        # So would need so save the area, each area_exit, have exit_type lookup.. 
+        magentaprint("TODO")
+        return
 
+        mapped_exits = []
+        for exit in exits:
+            exit.map() # this will update our exit objects with their corresponding ids
+            mapped_exits.append(exit)
+
+        # is_new_mapping = self.search_for_area(mapped_exits)
+        #if (cur_area_from is None):
+        #elif (cur_area_from.name != self.name): #if the names are the same then this is a new area since we have moved
+        #    is_new_mapping = self.search_for_area(mapped_exits)
+
+        super().save()  # Db can be locked if this happens immediately...
+            # (Ok pretty sure by all this logic we can't make two areas with the same exits and description...)
+
+        #now we map our area exits
+        for exit in mapped_exits:
+            #magentaprint("exit " + str(exit.to_string()), False)
+            area_exit = AreaExit(area_from=self.id, area_to=None, exit_type=exit)
+            '''if (exit_from.opposite is None):
+                if (exit.id == exit_from.opposite.id):
+                    area_exit.map(area_from, exit_from)
+                else:'''
+            area_exit.map()
+            is_new_exit_mapping = True
+
+        #last but not least we want to try to update our area_from with its area_to value :)
+        if cur_area_from is not None and cur_exit_from is not None:
+            area_exit_from = AreaExit.get_area_exit_by_area_from_and_exit_type(cur_area_from, cur_exit_from)
+            if (area_exit_from is not None):
+                if (area_exit_from.area_to is None): #don't overwrite values that have been
+                    area_exit_from.area_to = self
+                    area_exit_from.save()
+                    #magentaprint("Updating AreaExit with: \n" + area_exit_from.to_string())
+
+        return is_new_mapping, is_new_exit_mapping
+
+    def search_for_area(self, mapped_exits):
+        matching_areas = Area.get_areas_by_name_and_exits(self.name, mapped_exits, self.description)
         #print ("matching areas: " + str(matching_areas) + " is new mapping: " + str(is_new_mapping))
 
         if len(matching_areas) > 0:
             self.metadata.is_dirty = True
-            is_new_mapping = False
 
             for area in matching_areas:
                 self.id               = area.id
@@ -86,18 +129,18 @@ class Area(NamedModel):
                 self.is_smithy        = area.is_smithy
                 self.is_pawn_shop     = area.is_pawn_shop
                 self.is_tip           = area.is_tip
-                break
+                return False # "is_new_mapping" is False (there was a matching area in the DB)
 
         #print ("matching areas: " + str(matching_areas) + " is new mapping: " + str(is_new_mapping))
 
         if not self.metadata.is_dirty:
-            #update the database with the longest description possible
+            # update the database with the longest description possible
             if len(self.description) > len(str(area.description)):
                 super(Area, self).save()
             else:
-                self.description = area.description
+                self.description = area.description # This doesn't happen, because, above it said is_dirty = True
 
-        return is_new_mapping
+        return True # is a new mapping, return True
 
     def has_exits(self, exits): #receiving mapped exits with IDs so we just do a compare on the Area Links
         area_exits = AreaExit.get_area_exits_from_area(self)
@@ -107,8 +150,10 @@ class Area(NamedModel):
 
         for area_exit in area_exits:
             if area_exit.is_hidden:
-                contains_hidden = True
+                contains_hidden = True 
                 break
+
+        # Same as: any([x.is_hidden for x in area_exits])... which might not be faster though
 
         if (has_exits or contains_hidden): #if the number of exits we have is the same
             exit_found = False
@@ -134,12 +179,10 @@ class Area(NamedModel):
 
     '''Static Area Functions'''
     def get_areas_by_name(area_name):
-        areas = []
         try:
-            areas = Area.select().where((Area.name == area_name))
+            return Area.select().where((Area.name == area_name)) # areas
         except Area.DoesNotExist:
-            areas = []
-        return areas
+            return []
 
     def get_by_name(area_name):
         # NamedModel.get_by_name wasn't working for me (overwrite it)
@@ -147,66 +190,50 @@ class Area(NamedModel):
         return Area.get_areas_by_name(area_name)[0]
 
     def get_areas_by_name_and_description(area_name, area_description):
-        areas = []
         try:
-            areas = Area.select().where((Area.name == area_name) & (Area.description == area_description))  
+            return Area.select().where((Area.name == area_name) & (Area.description == area_description)) # areas
             # ',' might work over '&'
         except Area.DoesNotExist:
-            areas = []
-        return areas
+            return []
 
     def get_area_by_id(area_id):
-        area = []
         try:
-            area = Area.select().where(Area.id == area_id).get()
+            return Area.select().where(Area.id == area_id).get() # area
         except Area.DoesNotExist:
-            area = None
-        return area
+            return None
 
     def get_areas_by_partial_name(area_name_part):
-        areas = []
         area_name = "*" + area_name_part + "*"
         try:
-            areas = Area.select().where((Area.name % area_name))
+            return Area.select().where((Area.name % area_name)) # areas
         except Area.DoesNotExist:
-            areas = []
-        return areas
+            return []
 
     def get_restorative_areas():
-        areas = []
         try:
-            areas = Area.select().where((Area.is_restorative == 1))
-
+            return Area.select().where((Area.is_restorative == 1)) # areas
         except Area.DoesNotExist:
-            areas = []
-        return areas
+            return []
 
     def get_smithy_areas():
-        areas = []
         try:
-            areas = Area.select().where((Area.is_smithy == 1))
+            return Area.select().where((Area.is_smithy == 1)) # areas
         except Area.DoesNotExist:
-            areas = []
-        return areas
+            return []
 
     def get_pawn_shops():
-        areas = []
         try:
-            areas = Area.select().where((Area.is_pawn_shop == 1))
+            return Area.select().where((Area.is_pawn_shop == 1)) # areas
         except Area.DoesNotExist:
-            areas = []
-        return areas
+            return []
 
     def get_tips():
-        areas = []
         try:
-            areas = Area.select().where((Area.is_tip == 1))
+            return Area.select().where((Area.is_tip == 1)) # areas
         except Area.DoesNotExist:
-            areas = []
-        return areas
+            return []
 
     def get_areas_by_name_and_exits(area_name, exit_type_list, area_description=""):
-        areas = []
         exit_id_list = ""
         exit_count = len(exit_type_list)
         description_clause = ""
@@ -238,15 +265,15 @@ class Area(NamedModel):
                     "having count(*) = %s "
                 ) % (area_name, description_clause, str(exit_count), exit_id_list, str(exit_count))
                 # print (formatted_query)
+                areas = []
                 for derp in Area.raw(query):
                     areas.append(derp)
 
+                return areas
             except Area.DoesNotExist:
-                areas = []
+                return []
         else:
-            areas = []
-
-        return areas
+            return []
 
 from db.AreaExit import *
 from db.ExitType import *

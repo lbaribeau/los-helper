@@ -4,7 +4,7 @@ class MapCommandHandler:
     def __init__(self, character, mud_map, mud_map_thread):
         self.character      = character
         # self.cartography  = cartography
-        self.mudmap         = mud_map
+        self.mud_map        = mud_map
         self.mud_map_thread = mud_map_thread
 
     def wait_for_map(self):
@@ -74,10 +74,12 @@ class MapCommandHandler:
         # else:
         #     magentaprint(f"No area_exits attribute!")
     def shorter_map_node_print(self):
-        self.wait_for_map()
         magentaprint("MapCommandHandler.shorter_map_node_print()")
-        magentaprint(f"\n\n{self.character.MUD_AREA.shorter_map_node_string()}")
-
+        if self.character.MUD_AREA != None:
+            self.wait_for_map()
+            magentaprint(f"\n\n{self.character.MUD_AREA.shorter_map_node_string()}")
+        else:
+            magentaprint("MUD_AREA is None!")
 
     # def check_exit(self, given_exit):
     # 	self.wait_for_map()
@@ -89,6 +91,10 @@ class MapCommandHandler:
 
     def print_node(self, aid):
         pass
+
+    def showcrawl2(self):
+    	# Try showing precessors to areaid 1
+    	magentaprint([n for n in self.mud_map.get_predecessors(1)])
 
 #class MudArea():
     # An object for area that is more than the just the Peewee Area (DB object) because it also has the exits of the area

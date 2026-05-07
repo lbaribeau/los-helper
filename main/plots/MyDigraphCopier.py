@@ -35,8 +35,8 @@ class MyDigraphCopier:
 
 		# self.mini_graph.add_node(area_id) # Could get double added I guess
 			# No need to add nodes AND edges, just add edges
-		list_set_list_neighbors = list(set(list(reference_graph.successors(area_id))+list(reference_graph.predecessors(area_id))))
-		for n in list_set_list_neighbors:
+		adjacent_nodes = list(set(list(reference_graph.successors(area_id))+list(reference_graph.predecessors(area_id))))
+		for n in adjacent_nodes:
 			# self.mini_graph.add_edge(area_id, n, label='test')
 			mudarea = MudArea(db.Area.Area.get_area_by_id(area_id))
 			exit_name = mudarea.get_exit_name_to_areaid(n)
@@ -47,7 +47,7 @@ class MyDigraphCopier:
 		# for n in reference_graph.successors(area_id):
 		# for n in list(set(reference_graph.successors(area_id)+reference_graph.predecessors(area_id))):
 		# for n in list(set(list(reference_graph.successors(area_id))+list(reference_graph.predecessors(area_id)))):
-		for n in list_set_list_neighbors:
+		for n in adjacent_nodes:
 			# self.mini_graph.add_edge(area_id, n, label='test')
 			mudarea = MudArea(db.Area.Area.get_area_by_id(area_id))
 			exit_name = mudarea.get_exit_name_to_areaid(n)

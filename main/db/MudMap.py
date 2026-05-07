@@ -94,6 +94,7 @@ class MudMap(object):
         try:
             # node_path = networkx.shortest_path(self.los_map, source=start_area_id, target=end_area_id)
             node_path = self.get_node_path(start_area_id, end_area_id)
+            # I think there's also get_edge_path available
         except Exception as e:
             do_magentaprint("MudMap.get_path exception!: " + str(e))
             raise e
@@ -112,6 +113,12 @@ class MudMap(object):
         do_magentaprint("MudMap.get_path() got path of length {0}.".format(len(edge_path)))
         do_magentaprint(str(edge_path))
         return edge_path
+
+    # def get_all_paths(self, start_aid, end_aid):
+    #     node_list_generator = networkx.all_simple_paths(self.los_map, source=start_aid, target=end_aid)
+    #     # What if I just called "1".precessors?!?!?
+    def get_predecessors(self, aid):
+        return self.los_map.predecessors(aid)
 
     def get_nearest_unexplored_path(self, start_area_id):
         return self.get_path(start_area_id, 1)
