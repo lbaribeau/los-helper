@@ -530,7 +530,7 @@ class ArmourBot(MiniBot):
                     #             # leave out iron ring
                     #             # The idea here is that we don't want to buy so much armour that the guy can't make gold net positive eventually... or afford a decent weapon...
                     # else:
-                        desired_items.append(buyable_items[0]) # This adds the first one in buyable_items
+                        # desired_items.append(buyable_items[0]) # This adds the first one in buyable_items
                         # If level >= 4 any armour in the dB is fair game
                         # Test code btw is 
                         # exec print(AreaStoreItem.get_buyable_armour(self.armour_bot.get_size('Dwarf'), 'Body', 1))
