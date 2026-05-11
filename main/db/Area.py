@@ -37,7 +37,7 @@ class Area(NamedModel):
             exit.map() # this will update our exit objects with their corresponding ids
             mapped_exits.append(exit)
 
-        is_new_mapping = self.search_for_area(mapped_exits)
+        is_new_mapping = self.search_for_area(mapped_exits) # See this is why I can't use this function as-is
 
         #if (cur_area_from is None):
         #elif (cur_area_from.name != self.name): #if the names are the same then this is a new area since we have moved
@@ -69,50 +69,57 @@ class Area(NamedModel):
 
         return is_new_mapping, is_new_exit_mapping
 
-    def map_new_duplicate_area(self, description, exits, area_from_id):
-        # L writing... need to create an area node even if it has the same description and exits
-        # Try copying above map() code and see what happens
-        # Let's say area_from is required in this case... maybe direction from is required? area_exit_from?
-        # Caller can do some of that, maybe just make the area?
-        # Caller could do all of it... instead of super().save just have the caller do it...
-        # So would need so save the area, each area_exit, have exit_type lookup.. 
-        magentaprint("TODO")
-        return
+    # @classmethod
+    # def create_new_area(cls, title, description, obvious_exit_string_list, current_area_from=None, current_exit_from=None):
+    #     # This is a lot like  .map() except my problem with that is that if there is existing an area with the same title and description, it doesn't make a new one
 
-        mapped_exits = []
-        for exit in exits:
-            exit.map() # this will update our exit objects with their corresponding ids
-            mapped_exits.append(exit)
+    #     # Try it this way... keeping it simple...
+    #     # new_area_id = Area.create_new_area(C.AREA_TITLE, C.AREA_DESC)
+    #     # def map_new_duplicate_area(self, description, exits, area_from_id):
 
-        # is_new_mapping = self.search_for_area(mapped_exits)
-        #if (cur_area_from is None):
-        #elif (cur_area_from.name != self.name): #if the names are the same then this is a new area since we have moved
-        #    is_new_mapping = self.search_for_area(mapped_exits)
+    #     # L writing... need to create an area node even if it has the same description and exits
+    #     # Try copying above map() code and see what happens
+    #     # Let's say area_from is required in this case... maybe direction from is required? area_exit_from?
+    #     # Caller can do some of that, maybe just make the area?
+    #     # Caller could do all of it... instead of super().save just have the caller do it...
+    #     # So would need so save the area, each area_exit, have exit_type lookup.. 
 
-        super().save()  # Db can be locked if this happens immediately...
-            # (Ok pretty sure by all this logic we can't make two areas with the same exits and description...)
+    #     mapped_exits = []
+    #     for exit in exits:
+    #         exit.map() # this will update our exit objects with their corresponding ids
+    #         mapped_exits.append(exit)
 
-        #now we map our area exits
-        for exit in mapped_exits:
-            #magentaprint("exit " + str(exit.to_string()), False)
-            area_exit = AreaExit(area_from=self.id, area_to=None, exit_type=exit)
-            '''if (exit_from.opposite is None):
-                if (exit.id == exit_from.opposite.id):
-                    area_exit.map(area_from, exit_from)
-                else:'''
-            area_exit.map()
-            is_new_exit_mapping = True
+    #     # is_new_mapping = self.search_for_area(mapped_exits)
+    #     #if (cur_area_from is None):
+    #     #elif (cur_area_from.name != self.name): #if the names are the same then this is a new area since we have moved
+    #     #    is_new_mapping = self.search_for_area(mapped_exits)
 
-        #last but not least we want to try to update our area_from with its area_to value :)
-        if cur_area_from is not None and cur_exit_from is not None:
-            area_exit_from = AreaExit.get_area_exit_by_area_from_and_exit_type(cur_area_from, cur_exit_from)
-            if (area_exit_from is not None):
-                if (area_exit_from.area_to is None): #don't overwrite values that have been
-                    area_exit_from.area_to = self
-                    area_exit_from.save()
-                    #magentaprint("Updating AreaExit with: \n" + area_exit_from.to_string())
+    #     super().save()  # Db can be locked if this happens immediately...
+    #         # (Ok pretty sure by all this logic we can't make two areas with the same exits and description...)
+    #         # Creates the area...
+    #         # Needs SELF though... so... how was self made...
 
-        return is_new_mapping, is_new_exit_mapping
+    #     #now we map our area exits
+    #     for exit in mapped_exits:
+    #         #magentaprint("exit " + str(exit.to_string()), False)
+    #         area_exit = AreaExit(area_from=self.id, area_to=None, exit_type=exit)
+    #         '''if (exit_from.opposite is None):
+    #             if (exit.id == exit_from.opposite.id):
+    #                 area_exit.map(area_from, exit_from)
+    #             else:'''
+    #         area_exit.map()
+    #         is_new_exit_mapping = True
+
+    #     #last but not least we want to try to update our area_from with its area_to value :)
+    #     if cur_area_from is not None and cur_exit_from is not None:
+    #         area_exit_from = AreaExit.get_area_exit_by_area_from_and_exit_type(cur_area_from, cur_exit_from)
+    #         if (area_exit_from is not None):
+    #             if (area_exit_from.area_to is None): #don't overwrite values that have been
+    #                 area_exit_from.area_to = self
+    #                 area_exit_from.save()
+    #                 #magentaprint("Updating AreaExit with: \n" + area_exit_from.to_string())
+
+    #     return is_new_mapping, is_new_exit_mapping
 
     def search_for_area(self, mapped_exits):
         matching_areas = Area.get_areas_by_name_and_exits(self.name, mapped_exits, self.description)
@@ -266,8 +273,8 @@ class Area(NamedModel):
                 ) % (area_name, description_clause, str(exit_count), exit_id_list, str(exit_count))
                 # print (formatted_query)
                 areas = []
-                for derp in Area.raw(query):
-                    areas.append(derp)
+                for area in Area.raw(query):
+                    areas.append(area)
 
                 return areas
             except Area.DoesNotExist:

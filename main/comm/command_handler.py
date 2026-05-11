@@ -196,31 +196,64 @@ class CommandHandler(object):
             'Sel'                            : self.sell_items,
             'Sell'                           : self.sell_items,
             'Drop'                           : self.drop_items,
-            'ho'     : self.hold_item,
-            'hol'    : self.hold_item,
-            'hold'   : self.hold_item,
-            'rm'     : self.remove_gear,
-            'rem'    : self.remove_gear,
-            'remo'   : self.remove_gear,
-            'remov'  : self.remove_gear,
-            'remove' : self.remove_gear,
-            'cast_light' : self.cast_light,
-            # 'map' : self.write_map, # Ok this is supposed to happen all the time in the background...
-            'mapcheck' : self.check_current_area, # Prints out details of current node
-            'mapcheck2' : self.shorter_map_node_print, 
-            'reload_map' : self.reload_map,  # Test case, showto 2, "can't find path", walk back (writes exit links), walk out, "reload_map", then showto 2 connects
-            'showcrawl' : self.showcrawl,
-            'showcrawl2' : self.showcrawl2,
-            'plot_near_nodes' : self.plot_near_nodes,
-            'plot_near_nodes3d' : self.plot_near_nodes3d,
-            'new_node' : self.make_new_area_node
-            # 'delexit' : self.delexit
-            # 'toggle_prints' : self.toggle_prints
+            'ho'                             : self.hold_item,
+            'hol'                            : self.hold_item,
+            'hold'                           : self.hold_item,
+            'rm'                             : self.remove_gear,
+            'rem'                            : self.remove_gear,
+            'remo'                           : self.remove_gear,
+            'remov'                          : self.remove_gear,
+            'remove'                         : self.remove_gear,
+            'cast_light'                     : self.cast_light,
+            # 'map'                          : self.write_map, # Ok this is supposed to happen all the time in the background...
+            'mapcheck'                       : self.check_current_area, # Prints out details of current node
+            'mapcheck2'                      : self.shorter_map_node_print, 
+            'reload_map'                     : self.reload_map,  # Test case, showto 2, "can't find path", walk back (writes exit links), walk out, "reload_map", then showto 2 connects
+            'showcrawl'                      : self.showcrawl,
+            'showcrawl2'                     : self.showcrawl2,
+            'plot_near_nodes'                : self.plot_near_nodes,
+            'plot_near_nodes3d'              : self.plot_near_nodes3d,
+            'new_node'                       : self.make_new_area_node,
+            'manual_map'                     : self.manual_map
+            # 'delexit'                      : self.delexit
+            # 'toggle_prints'                : self.toggle_prints
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq_bot.execute_eq_command()
             # re.compile('equ?|equip?|equipme?|equipment?') : lambda a : self.eq.execute()
         }
         # Each action is going to be passed "a" which is string.partition(' ')[2] on the command that came in
         # So make sure the function has the right signature (self, args)
+        # So "args" will be one string that you could split but the 1st command part of the split will be gone (ie. "new_node") 
+        # So for example you can use 'args.strip().split(' ')[0]' for the first argument
+        # "args = user_input.partition(' ')[2] if len(the_split) >= 2 else None"
+
+    def manual_map(self, args):
+        argsplit=args.split(' ')
+        exit_name_partial = argsplit[0]
+        area_id_to = argsplit[1]
+        # This function allows the user to write the area id than an exit goes to
+        # Cartography generally tries to map but in the water cave, there are nodes that look totally identical
+        # So it could write an exit going to another identical node...
+        # Then it thinks you're at the wrong node, and it starts deleting links that it thinks are wrong
+        # Keep in mind we just wrote 'new_node' which allows us to make a new node by going through an exit...
+        # It'll link it to the current node...
+        # (Cartography does its thing then new_node uses the regex stuff but then it does what it needs)
+        # Anyway, suppose you are in the water cave
+        # (If the DB is done you won't see this...)(
+        # But if the DB is not done you might see you went through an exit and it took you way back to another node that looked the same
+        # In that case it might start deleting links until it figures out where it is...
+        # Anyway, with this function, you can start correcting it
+        # You can tell it "manual_map south 2720"
+        # (I had it wrongly map it to a node that looked identical, 1707)
+        # Anyway, then it'll correct the area exit
+        # It'll assume that the area_from is correct on the area exit because... that's how the issue is currently
+        # Anyway here goes
+        self.map_command_handler.write_area_exit(self.character.AREA_ID, exit_name_partial, self.cartography, area_id_to, self.character)
+        # Ok "manual_map" and "new_ndoe" were sufficient to fix up the water maze but it was a bit sketch
+        # Was a fun puzzle to get it all fixed up
+        # Best to use "manual_map" if ever you see an exit is linking wrong, but then, travel through a different exit and come back, to make sure 
+        # everything loaded (ie. Mud Area gets made I think)
+        # Also had to notice that a node deep in the maze was identical to one near the entrance... so... use new_node for that then fix up all the links
+        # It starts unlinking things if they don't line up
 
     # def delexit(self, args):
         # The idea here is you see an error in mapcheck such as
@@ -233,32 +266,56 @@ class CommandHandler(object):
         # Going "east", I think Cartography uses MudArea to figure out what happened... 
 
     def make_new_area_node(self, args):
-        # Suppose we have nodes with identical description and exit that only the human knows needs to be a new node
-        # (Would be pretty hard to get the bot to figure out whether or not a node is a different node with everything the same)
-        # So let's make a human runnable command to make a node 
-        # It should map the current area and given area exit and make the node based on the text that comes in 
-        prev_mudarea = C.MUD_AREA
-        exit_str_partial = args[0] # User command to make a new node in this direction
-        self.go.execute_and_wait(exit_str_partial)
-        if not go.success:
-            magentaprint("command_handler make_new_area_node ran into trouble! (Go failed?!)")
-            return
+        # We have to set it up like we did user_move to make sure Cartography operates like normal (ie. C.TRYING_TO_MOVE)
+        # exit_string_partial = args.split(' ')[0]
+        exit_string_partial = args.split(' ')[0] 
+        self.character.LAST_DIRECTION = exit_string_partial
+        new_mudarea = self.map_command_handler.make_new_area_node(exit_string_partial, self.character, self.go, self.cartography)
 
-        # Ok.... well... presumably... who knows what Cartography did with that but, let's just ignore
-        # It probably mapped our exit to the existing wrong node...
-        # I feel we need to ...
+    def user_move(self, user_input):
+        # if user_input.startswith("go "):
+        #     exit = user_input.split(" ")[1]
+        #     if exit == "nw":
+        #         user_input = "nw"
+        #     elif exit == "sw":
+        #         user_input = "sw"
+        #     elif exit == "ne":
+        #         user_input = "ne"
+        #     elif exit == "se":
+        #         user_input = "se"
 
-        # (Maybe make another object to do this... mapcommandhandler)
-        # - make new area node
-        # - make new "area_exit"
-        # - map the exit name to exit_type
-        # - set all the fields of the area... restorative, hidden etc.... some defaults (all False)
-        # - Use prev_mudarea, get the exit on it, and tie it to a new Mud_area
-        # Save the new mud_area
-        # 
-        # Yeah could we just... kind of... do it in python and call peewee save...
-        # We know Cartography didn't make a new area, it probably linked to the existing area...
-        
+        # self.character.TRYING_TO_MOVE = True
+        self.character.LAST_DIRECTION = user_input.replace('go ', '')
+        self.kill.stop()
+        self.cast.stop()
+        now = time.time()
+        # wait_from_move = self.character.MOVE_WAIT - (now - self.character.MOVE_CLK)
+        wait_from_move = self.go.wait_time()
+        # time_remaining = max(wait_from_move, self.kill.wait_time(), self.cast.wait_time(), 0);
+        time_remaining = max(self.go.wait_time(), self.kill.wait_time(), self.cast.wait_time(), 0);
+        # magentaprint("user_move: MOVE wait time: %.2f" % round(wait_from_move, 2))
+        # magentaprint("user_move: kill.wait_time(): " + str(self.kill.wait_time()))
+        # magentaprint("user_move: cast.wait_time(): " + str(self.cast.wait_time()))
+        magentaprint("CommandHandler.user_move waiting %.1f" % round(time_remaining, 1))
+
+        if time_remaining < 3.0:
+            time.sleep(time_remaining)
+            # self.character.MOVE_CLK = now
+            # self.telnetHandler.write(user_input)
+            self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
+            # self.go.execute(self.character.LAST_DIRECTION)
+            magentaprint("Go is done, user_move printing mapcheck2")
+            self.shorter_map_node_print('')
+        else:
+            magentaprint("Wait %.1f more seconds." % time_remaining)
+
+        # elif time_remaining < 1.0:
+        #     magentaprint("(Python) Delaying by %.1f sec ..." % time_remaining)
+        #     time.sleep(time_remaining)
+        #     magentaprint("Sent.")
+        #     self.character.MOVE_CLK = now
+        #     self.telnetHandler.write(user_input)
+        # else:
 
     def plot_map(self, args):
         magentaprint("... Plotter...");
@@ -457,11 +514,20 @@ class CommandHandler(object):
         if self.character.level == 1:
             self.cast.aura_refresh = 60*50 # 50 minutes
         elif self.character.level == 2:
-            self.cast.aura_refresh = 60*40 # 40 minutes
+            self.cast.aura_refresh = 60*45 # 45 minutes
         elif self.character.level == 3:
-            self.cast.aura_refresh = 60*30 # 30 minutes
+            self.cast.aura_refresh = 60*35 # 35 minutes
         elif self.character.level == 4:
-            self.cast.aura_refresh = 60*20 # 20 minutes
+            self.cast.aura_refresh = 60*30 # 30 minutes
+        elif self.character.level == 5:
+            self.cast.aura_refresh = 60*25 # Level 5 still needs money, doesn't even want to bleed 10g that often... if it's a slow grinder
+            # 8 minutes seemed like too often
+        elif self.character.level == 6:
+            self.cast.aura_refresh = 60*20
+        elif self.character.level == 7:
+            self.cast.aura_refresh = 60*15
+        elif self.character.level == 8:
+            self.cast.aura_refresh = 60*10
         else:
             self.cast.aura_refresh = 60*8  # 8 minutes
 
@@ -473,7 +539,7 @@ class CommandHandler(object):
 
     def patch_character_info_after_level_up(self):
         # Doing again what los-helper.py did at start
-        self.info.execute_and_wait()
+        self.info.execute_and_wait() # Yes this will set GOLD
         self.character.process_info()
         # self.character.configure_health_and_mana_variables(self.character.level)
         self.character.set_monster_kill_list(self.character.level)
@@ -550,6 +616,7 @@ class CommandHandler(object):
         # Answer: do both
 
         # for action in self.actions.keys():
+        # Isn't this a low way to use a dict? Maybe do actions.get(the_split[0]) and check if not None
         if the_split[0] in self.actions.keys():
             magentaprint("--- Command Handler Action: " + str(the_split[0]))
             self.actions[the_split[0]](args) # So the function will get user_input.partition(' ')[2] if it exits otherwise None... so... args is a string that could have spaces
@@ -874,50 +941,7 @@ class CommandHandler(object):
             # Doesn't match any command we are looking for, send it to server
             self.telnetHandler.write(user_input)
 
-    def user_move(self, user_input):
-        # if user_input.startswith("go "):
-        #     exit = user_input.split(" ")[1]
-        #     if exit == "nw":
-        #         user_input = "nw"
-        #     elif exit == "sw":
-        #         user_input = "sw"
-        #     elif exit == "ne":
-        #         user_input = "ne"
-        #     elif exit == "se":
-        #         user_input = "se"
 
-        # self.character.TRYING_TO_MOVE = True
-        self.character.LAST_DIRECTION = user_input.replace('go ', '')
-        self.kill.stop()
-        self.cast.stop()
-        now = time.time()
-        # wait_from_move = self.character.MOVE_WAIT - (now - self.character.MOVE_CLK)
-        wait_from_move = self.go.wait_time()
-        # time_remaining = max(wait_from_move, self.kill.wait_time(), self.cast.wait_time(), 0);
-        time_remaining = max(self.go.wait_time(), self.kill.wait_time(), self.cast.wait_time(), 0);
-        # magentaprint("user_move: MOVE wait time: %.2f" % round(wait_from_move, 2))
-        # magentaprint("user_move: kill.wait_time(): " + str(self.kill.wait_time()))
-        # magentaprint("user_move: cast.wait_time(): " + str(self.cast.wait_time()))
-        magentaprint("CommandHandler.user_move waiting %.1f" % round(time_remaining, 1))
-
-        if time_remaining < 3.0:
-            time.sleep(time_remaining)
-            # self.character.MOVE_CLK = now
-            # self.telnetHandler.write(user_input)
-            self.go.persistent_execute(self.character.LAST_DIRECTION)   # Todo:  shouldn't use a hanging go call for human user
-            # self.go.execute(self.character.LAST_DIRECTION)
-            magentaprint("Go is done, user_move printing mapcheck2")
-            self.shorter_map_node_print('')
-        else:
-            magentaprint("Wait %.1f more seconds." % time_remaining)
-
-        # elif time_remaining < 1.0:
-        #     magentaprint("(Python) Delaying by %.1f sec ..." % time_remaining)
-        #     time.sleep(time_remaining)
-        #     magentaprint("Sent.")
-        #     self.character.MOVE_CLK = now
-        #     self.telnetHandler.write(user_input)
-        # else:
         
     # def user_dr(self, user_input):
     #     # [command, item] = user_input.split(" ", maxsplit=1)

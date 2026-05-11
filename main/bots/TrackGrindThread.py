@@ -565,6 +565,7 @@ class TrackGrindThread(GrindThread):
         C = self.character
         magentaprint(" --- Checking if ready to train --- ")
         self.command_handler.print_gold_exp_etc("")
+        self.command_handler.process("report")
 
         # if C.current_experience > C.info.exp_to_level and self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > 2*C.info.gold_to_level: # GrindThread
         # if C.current_experience > C.info.exp_to_level and WB.possible_weapons != [] and C.GOLD > 2*C.info.gold_to_level: # GrindThread
@@ -658,7 +659,7 @@ class TrackGrindThread(GrindThread):
                 elif C.level in [3,4]:
                     return ['ou','s','e','s','s','s','w','g','s','se','se','e','e','e','se','se','se','s','s','s','s','s','s','s','s','s','s','e','ac','ar','doo 3','train','out','ar','ou', 'areaid2']
                 elif C.level == 5:
-                    if not hasattr(self, large_bore_worm) or not self.large_bore_worm:
+                    if not hasattr(self, 'large_bore_worm') or not self.large_bore_worm:
                         self.large_bore_worm = True
                         return ['ou','s','e','s','s','s','w','g','s','se','se','e','e','e','se','se','se','s','s','s','s','s','s','s','s','s','s',\
                         'w','s','sw','n','burrow','d','d','d','hole','rest_here','rest_here','passage','rest_here','rest_here','rest_here','rest_here','out','rest_here', 'hole','rest_here',\
@@ -688,7 +689,7 @@ class TrackGrindThread(GrindThread):
                     return ['out', 's', 'e', 's', 's', 's', 'w', 'gate', 's', 'se','se','e','e','e','se','se','sw','w','w','glade','elm','train','d', 'areaid2']
                 elif C.level == 5:
                     # Ehrm don't repeat yourself
-                    if not hasattr(self, large_bore_worm) or not self.large_bore_worm:
+                    if not hasattr(self, 'large_bore_worm') or not self.large_bore_worm:
                         self.large_bore_worm = True
                         return ['ou','s','e','s','s','s','w','g','s','se','se','e','e','e','se','se','se','s','s','s','s','s','s','s','s','s','s',\
                         'w','s','sw','n','burrow','d','d','d','hole','rest_here','rest_here','passage','rest_here','rest_here','rest_here','rest_here','out','rest_here', 'hole','rest_here',\
@@ -698,7 +699,7 @@ class TrackGrindThread(GrindThread):
                         self.large_bore_worm = False
                     return ['out', 's', 'e', 's', 's', 's', 'w', 'gate', 's', 'se','se','e','e','e','se','se','sw','w','w','glade','ash','train','d', 'areaid2']
                 elif C.level == 6:
-                    return ['out', 's', 'e', 's', 's', 's', 'w', 'gate', 's', 'se','se','e','e','e','se','se','sw','w','w','glade','elm','train','d', 'areaid2']
+                    return ['out', 's', 'e', 's', 's', 's', 'w', 'gate', 's', 'se','se','e','e','e','se','se','sw','w','w','glade','ash','train','d', 'areaid2']
         else:
             magentaprint("TrackGrindThread.decide_where_to_go decided not to train, not sure of the numbers though")
             # magentaprint("Note: keeping " + str(2*self.command_handler.weapon_bot.possible_weapons[0].item.value) + " backup gold for weapons.")

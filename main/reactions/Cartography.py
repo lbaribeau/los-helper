@@ -220,6 +220,7 @@ class Cartography(BotReactionWithFlag):
         C            = self.character
         C.AREA_TITLE = match.group(1).strip() 
         # Area title sometimes has issues if TRYING_TO_MOVE was set prematurely and we get rubbish prepended
+        C.AREA_DESC = match.group(2).strip() # Creating this so we have a record... MapCommandHandler needs the ability to create an area node
         C.EXIT_LIST  = self.parse_exit_list(match.group(3))
         C.EXIT_REGEX = self.create_exit_regex_for_character(C.EXIT_LIST)
         C.mobs.list  = ReferencingList(self.parse_monster_list(match.group(4)))
@@ -254,7 +255,7 @@ class Cartography(BotReactionWithFlag):
                 # prev_exit_list = C.EXIT_LIST
                 C.MUD_AREA = MudArea.map(
                     C.AREA_TITLE, 
-                    match.group(2).strip(), # area description (eat the description - doesn't give the full text)
+                    C.AREA_DESC, # area description (eat the description - doesn't give the full text)
                     C.EXIT_LIST, 
                     C.AREA_ID, 
                     C.LAST_DIRECTION, # command_handler user_move() picks up to where we issued a go command
@@ -284,10 +285,12 @@ class Cartography(BotReactionWithFlag):
                     magentaprint("Descriptions and exits match so we're good.")
                 else:
                     # This issue can happen if we flee... hmmm
-                    magentaprint("Cartography ----- DETECTED - AN - ISSUE ----- ... so... let's unset the last exit (disabled)")
-                    prev_mud_area.unset_exit(ReferencingList([ae.exit_type.name for ae in prev_mud_area.area_exits]).get(C.LAST_DIRECTION)) # Converts "e" to "east"
+                    enabled = True
+                    magentaprint(f"Cartography ----- !!! DETECTED AN ISSUE !!! ----- ... so... let's unset the last exit (enabled is {enabled}!)")
+                    if enabled:
+                        prev_mud_area.unset_exit(ReferencingList([ae.exit_type.name for ae in prev_mud_area.area_exits]).get(C.LAST_DIRECTION)) # Converts "e" to "east"
                     # Ugh have to hit "nw" also... 
-                    magentaprint("prev_mud_area.unset_exit(self.string_match_area_exit(prev_mud_area.area_exits, C.LAST_DIRECTION).exit_type.name)")
+                    magentaprint("Command would have been: prev_mud_area.unset_exit(self.string_match_area_exit(prev_mud_area.area_exits, C.LAST_DIRECTION).exit_type.name)")
                     # prev_mud_area.unset_exit(self.string_match_area_exit(prev_mud_area.area_exits, C.LAST_DIRECTION).exit_type.name) # Converts "e" to "east"
                     # prev_mud_area.unset_area_exit(self.string_match_area_exit(prev_mud_area.area_exits, C.LAST_DIRECTION))
                     # AreaExit.get_area_exits_from_area_given_areaid(area_from_id)
@@ -396,7 +399,7 @@ class Cartography(BotReactionWithFlag):
                     # return ae
         elif direction_from == 'se':
             direction_from = 'southeast'
-            # for ae in area_exits:
+            # for ae in area_exits: 
                 # if ae.exit_type.name == 'southeast':
                     # return ae
         elif direction_from == 'ne':

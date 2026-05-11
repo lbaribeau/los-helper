@@ -122,7 +122,7 @@ class Character(object):
         self.preferred_aura = self.info.preferred_alignment
 
         self.MAX_MANA = self.info.maxMP
-        self.MANA_TO_ENGAGE = self.info.maxMP * 0.4
+        self.MANA_TO_ENGAGE = self.info.maxMP * 0.4 # Yeesh so low! Works at high level I guess
 
         if self.level == 1:
             # Best be maxed at level 1
@@ -136,10 +136,22 @@ class Character(object):
             # There's now some wiggle room at level 3
             self.HEALTH_TO_HEAL = 0.85 * self.info.maxHP # Safer heal threshold for low level
             self.MANA_TO_ENGAGE = min(6, self.info.maxMP)
-        else:
+        elif self.level == 4:
             # self.HEALTH_TO_HEAL = 0.75 * self.info.maxHP  # We can crank this back up when we fight stronger mobs
             self.HEALTH_TO_HEAL = 0.80 * self.info.maxHP  # Be patient... 
             self.MANA_TO_ENGAGE = min(9, self.info.maxMP) # Died to a hawker after two rumbles oy
+        elif self.level == 5:
+            # Immediately ran into trouble with a market official when I had 9 mana... so... best be patient
+            # I guess bot had 7 mana after killing a hawker and a stall holder then ticked up to 9 then fought the market official
+            # Maxes (level 5 druid) are [36 H 16 M]... he really relies on his magic to be enough damage
+            # Also a shepherd gave me trouble before I loaded this... so... yeah PROBABLY need that 12 mana at least on the druid...
+            # I guess his staff is not good... he has armour...
+            # I guess he fought a smelly beggar (13 mana), a stall holder (10 mana) a dustman and a tick (9 mana) then fought the shepherd
+            self.HEALTH_TO_HEAL = 0.80 * self.info.maxHP  
+            self.MANA_TO_ENGAGE = min(12, self.info.maxMP) 
+        elif self.level >= 6:
+            # Guessing what we need at level 6
+            self.HEALTH_TO_HEAL = 0.75 * self.info.maxHP  
 
         # self.hp_tick = floor((self.info.con-1)/3)  # This was wrong for my 3 con bard (returned 0)
         # Chapel bonus is +3
@@ -266,7 +278,7 @@ class Character(object):
         # They just appear in places like The Black Plume, three at a time
         # There are PLENTY of hookers
         # Maybe avoid the NORTH
-        # leather collars nice to have dropped in hooker area
+        # leather collars, nice to have dropped in hooker area (thugs)
         'apprentice', # via apothecary in highmarket... need to be "small"
         'treehugger',
         'small bore worm', 
@@ -635,7 +647,7 @@ class Character(object):
 
     def configure_health_and_mana_variables(self, level):
         # Health to heal is now a percentage (see process_info)
-        # ALL THIS GETS OVERWRITTEN IN prcoess_info
+        # ALL THIS GETS OVERWRITTEN IN process_info
         if level <= 2:
             # self.HEALTH_TO_HEAL = 19
             self.HEALTH_TO_FLEE = 8

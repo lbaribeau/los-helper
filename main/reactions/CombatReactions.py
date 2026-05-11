@@ -6,7 +6,6 @@ import comm.RegexStore as R
 import statistics
 import datetime
 import math
-from plots import plots
 
 class CombatReactions(object):
     def __init__(self, character):
@@ -221,6 +220,7 @@ class CombatReactions(object):
         self.circle_fails         = 0
 
     def plot(self):
+        from plots import plots
         if not self.damage_array:
             magentaprint("No player damage samples")
             return

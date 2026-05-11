@@ -415,28 +415,32 @@ class ArmourBot(MiniBot):
 
         self.command_handler.equipment.execute_and_wait()
         desired_items = []
-
         inventory_copy = ReferencingList(self.inventory.list)
+        # Search db for a piece given size, class, slot
+        # size  = self.determine_size(self.char.info.race)
+        # armour_level = self.determine_armour_level(self.char.class_string)
+        # size  = ArmourSizeDeterminator().determine(self.char.info.race)
+        # armour_level = ArmourLevelDeterminator().determine(self.char.class_string)
+        size         = self.get_size(self.char.info.race)
+        armour_level = self.get_armour_level(self.char.info.level)  # checks class and level (low level paladin can't wear steel yet)
+        # magentaprint("armour_bot.determine_shopping_list() size: " + size + ", slot: " + str(slot) + ", armour_level: " + str(armour_level))
 
         for slot in self.command_handler.equipment.slot_names:
             if self.command_handler.equipment.dict[slot]:
                 continue # Skip equipment slot if are already wearing something
 
-            # Search db for a piece given size, class, slot
-            # size  = self.determine_size(self.char.info.race)
-            # armour_level = self.determine_armour_level(self.char.class_string)
-            # size  = ArmourSizeDeterminator().determine(self.char.info.race)
-            # armour_level = ArmourLevelDeterminator().determine(self.char.class_string)
-            size  = self.get_size(self.char.info.race)
-            armour_level = self.get_armour_level(self.char.info.level)  # checks class and level (low level paladin can't wear steel yet)
-            # magentaprint("armour_bot.determine_shopping_list() size: " + size + ", slot: " + str(slot) + ", armour_level: " + str(armour_level))
             if slot == 'wielded' or slot == 'seconded':
                 continue
+
             if slot == 'face' or slot == 'holding':
                 continue  # no masks in shops, so this hack will probably stay.  We should add 'face' slot to the db.
+
             if re.search(r'\d$', slot):
-                slot = slot[:len(slot)-1]  # neck2, finger3, etc.
-            slot = slot.title()
+                # neck2, finger3, etc. (local slot names)
+                slot = slot[:len(slot)-1] # Trim the digit
+
+            slot = slot.title() # Converts the string to a consistent upper/lower case
+
             # buyable_items = AreaStoreItem.get_by_item_type_and_level_max(size, slot, armour_level)
             buyable_items = AreaStoreItem.get_buyable_armour(size, slot, armour_level) # Returns any possible items for current slot
             # This is a good print... but so large
@@ -473,16 +477,16 @@ class ArmourBot(MiniBot):
                 # That is, "if we have any of buyable_items"
                 for item in buyable_items:
                     if inventory_copy.has(item.item.name):
+                        # Prefer what we have... armour bot will try to repair it or keep using it... if it broke at smithy we can then give a different answer as we won't have it
                         # Add the item we have to desired_items, which will trigger repairing, instead of buying something else, which [0] could be
                         desired_items.append(item) 
                         inventory_copy.remove(item.item.name)
-                        # Prefer what we have... armour bot will try to repair it or keep using it... if it broke at smithy we can then give a different answer as we won't have it
-                        break
                         # Suppose we have a steel ring and an iron ring...
-                        # Ok I think I can handle this (inventory_copy)
+                        # inventory_copy is for counting out things like rings 
                         # Now, .has can be false, so, iron ring and steel ring could both end up in desired_items and therefore keep list
+                        break
             else:
-                # If we didn't have any in inventory, then we can add anything buyable we found (xxx)
+                # If we didn't have any in inventory, then we can add anything buyable we found
                 # Add restrictions to not over buy at low level
                 if buyable_items:
                     if self.char.info.level==1:
@@ -512,26 +516,56 @@ class ArmourBot(MiniBot):
                         #             'lacquered wooden shield']:
                         #         desired_items.append(b)
                         #         break; # So we only add one item for the slot
-                                # Yeah do need to drop the money drains at low level, to be able to buy long sword, or to level up gold is needed, expenses down like repairs
+                        # Yeah do need to drop the money drains at low level, to be able to buy long sword, or to level up gold is needed, expenses down like repairs
+                        # Yeah just race through level 3 without armour 
                     elif self.char.info.level==4:
+                        # Level 4 has NO quest and needs 2000g... 
+                        # We should have decent enough stats to grind out some money now (ie 30 H, 13 M on Druid)
+                        # Let's do basic armour pieces but leave the rings out of it
+                        # Rings are a lot of work and a bit suboptimal at this point
+                        # Hopefully our combat is efficient enough that our armour doesn't all fall apart...  (con / piety fighter)
                         # desired_items.append(buyable_items[0]) # This adds the first one in buyable_items
                         for b in buyable_items:
-                            if b.item.name in [               \
-                                    'leather cap'             , 
-                                    'leather boots'           , 
-                                    'studded leather armour'  ,
-                                    'studded leather gloves'  , 
-                                    'studded leather leggings', 
-                                    'studded leather sleeves' , 
-                                    'lacquered wooden shield' ,
-                                    'iron ring'               ]: # See if it gets it at the fort (closer than Garbo's)
+                            if b.item.name in [                \
+                                    'leather cap'              , 
+                                    'leather boots'            , 
+                                    'studded leather armour'   ,
+                                    'studded leather gloves'   , 
+                                    'studded leather leggings' , 
+                                    'studded leather sleeves'  , 
+                                    'lacquered wooden shield'  ]:
+                                    # 'iron ring'               ]: # See if it gets it at the fort (closer than Garbo's)
                                     # 'copper ring']: # steel ring is too expensive... copper ring probably is too though... rule it out it's far (Garbo's)
+                                    # Ok this is a lot of work for level 4 but... could help with the automatic bore worm... iron rings are close by
                                 desired_items.append(b)
-                                break; # So we only add one item for the slot
-                    #             # leave out iron ring
+                                break; # Break so we only add one item for the slot
+                    #             # could leave out iron ring but my guy was able to do it
+                    #             # The idea here is that we don't want to buy so much armour that the guy can't make gold net positive eventually... or afford a decent weapon...
+                    elif self.char.info.level == 5:
+                        # Ok NOWWWW is when the bore worm quest is
+                        # To get to level 6 we'll need 8192 exp and 4096 gold
+                        # Maybe just do steel rings? Try it like this I guess I'd like to introduce iron rings at some point before steel rings so... maybe here
+                        # Means no steel rings for the bore worm though
+                        # Also no chain mail... we could put an else here... 
+                        # So you know that'll be 6000 gold it had to raise so... it can probably afford this stuff... maybe not before it got 8k exp though
+                        for b in buyable_items:
+                            if b.item.name in [                \
+                                    'leather cap'              , 
+                                    'leather boots'            , 
+                                    'studded leather armour'   ,
+                                    'studded leather gloves'   , 
+                                    'studded leather leggings' , 
+                                    'studded leather sleeves'  , 
+                                    'lacquered wooden shield'  ,
+                                    'iron ring'                ]: # See if it gets it at the fort (closer than Garbo's)
+                                    # 'copper ring']: # steel ring is too expensive... copper ring probably is too though... rule it out it's far (Garbo's)
+                                    # Ok this is a lot of work for level 4 but... could help with the automatic bore worm... iron rings are close by
+                                desired_items.append(b)
+                                break; # Break so we only add one item for the slot
+                    #             # could leave out iron ring but my guy was able to do it
                     #             # The idea here is that we don't want to buy so much armour that the guy can't make gold net positive eventually... or afford a decent weapon...
                     else:
-                        desired_items.append(buyable_items[0]) # This adds the first one in buyable_items
+                        desired_items.append(buyable_items[0]) # This adds the first one in buyable_items (steel ring)
                         # If level >= 4 any armour in the dB is fair game
                         # Test code btw is 
                         # exec print(AreaStoreItem.get_buyable_armour(self.armour_bot.get_size('Dwarf'), 'Body', 1))

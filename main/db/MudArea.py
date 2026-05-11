@@ -1,3 +1,4 @@
+
 from db.Database import *
 from misc_functions import *
 
@@ -21,13 +22,13 @@ class MudArea():
     #    - exit_type : ie. 
     #        - id: 7, 
     #        - name: northeast
-    #    - area_from <MudArea>
-    #    - area_to   <MudArea>
+    #    - area_from  <MudArea>
+    #    - area_to    <MudArea>
     #    - is_useable <Boolean>
-    #    - is_hidden <Boolean>
-    #    - note <string>
+    #    - is_hidden  <Boolean>
+    #    - note       <string>
     
-    area = None
+    area       = None
     area_exits = []
 
     def __init__(self, area, area_exits=None):
@@ -76,7 +77,8 @@ class MudArea():
         # So if an areaexit is wrong, we don't detect it
         # Yes the idea is that the preious mud area could have a link to follow
         # It creates a MudArea using the areaid after following the current (previous) MudArea's area_exit
-        # So it does assume the DB is solid, right? Yes, but there is some checking in the caller, which also has the 
+        # So it does assume the DB is solid, right? Yes, but there is some checking in the caller, which also has the (?)
+
         # A new MudArea is made below though, I think it puts the area_exits on there
         # Ok so if both links go to 1708, that's not good... and I don't see to unlink it since the descs and exits are the same...
         # Also it'd definitely presume if there was no area that we got into the same area by a different exit...

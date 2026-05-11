@@ -39,7 +39,7 @@ class AreaExit(BaseModel):
 
         super(AreaExit, self).save()
 
-        return is_new_mapping
+        return is_new_mapping  # Erhm this looks wrong (is_new_mapping)
 
     def get_area_to_name(self):
         if (self.area_to is not None):
@@ -72,16 +72,31 @@ class AreaExit(BaseModel):
 
     '''Static AreaExit Functions'''
     def get_area_exit_by_area_from_and_exit_type(cur_area_from, cur_exit_type):
-        area_exit = None
-
+        # area_exit = None
         try:
             for ae in AreaExit.select().where((AreaExit.area_from == cur_area_from.id) & (AreaExit.exit_type == cur_exit_type.id)):
-                area_exit = ae
-                break
+                return ae
+                # area_exit = ae
+                # break
         except AreaExit.DoesNotExist:
-            area_exit = None
+            # area_exit = None
+            return None
 
-        return area_exit
+        # return area_exit
+
+    def get_area_exit_by_area_from_id_and_exit_type_id(area_from_id, exit_type_id):
+        # area_exit = None
+        try:
+            for ae in AreaExit.select().where((AreaExit.area_from == area_from_id) & (AreaExit.exit_type == exit_type_id)):
+                return ae
+                # area_exit = ae
+                # break
+        except AreaExit.DoesNotExist:
+            # area_exit = None
+            return None
+
+        # return area_exit
+
 
     # def get_area_exit_by_from_areaid_and_exit_type_id(from_areaid, exit_type_id):
     #     try:
