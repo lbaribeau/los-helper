@@ -489,7 +489,8 @@ class TrackGrindThread(GrindThread):
             # So we correct it here
             # This does happen, so, in_chapel() doesn't work (legacy assumption that the loop always runs from chapel)           
             if self.character.AREA_ID != 2:
-                self.direction_list.insert(0,'areaid2') # Check weapons can stop in the shop, then try to go on a tip path, get to the end of the path, then it notices after
+                # self.direction_list.insert(0,'areaid2') # Check weapons can stop in the shop, then try to go on a tip path, get to the end of the path, then it notices after
+                self.direction_list.appendleft('areaid2') # Check weapons can stop in the shop, then try to go on a tip path, get to the end of the path, then it notices after
 
             if self.has_buff_ability():
                 if self.use_buff_ability():

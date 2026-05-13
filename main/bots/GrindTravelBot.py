@@ -10,6 +10,7 @@
 # from bots.GrindThread import GrindThread
 from bots.TrackGrindThread import TrackGrindThread
 from misc_functions import magentaprint
+from collections import deque
 
 class GrindTravelBot(TrackGrindThread):
     def __init__(self, character, command_handler, mudReaderHandler, mud_map):
@@ -24,7 +25,8 @@ class GrindTravelBot(TrackGrindThread):
         # At some point we will call a GrindThread function on self
         # But we have to make sure it's not an infinite loop that uses decide_where_to_go
         # So this is basically a super-heavyweight travel the same way track grind travels
-        self.direction_list = self.mud_map.get_path(self.character.AREA_ID, destination_id)
+        # self.direction_list = self.mud_map.get_path(self.character.AREA_ID, destination_id)
+        self.direction_list = deque(self.mud_map.get_path(self.character.AREA_ID, destination_id))
         self.run() # I rewrote run to exit once we finish
         # Ok should GrindThread be a singleton or anything like that??!
         # I guess we'll find out

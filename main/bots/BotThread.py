@@ -13,6 +13,7 @@ magentaprint("... ... ... ... BotThread import db.MudMap"); from db.MudMap impor
 
 magentaprint("... ... ... ... BotThread import comm.Spells"); from comm import Spells
 from reactions.referencing_list     import ReferencingList
+from collections import deque
 
 
 # Refer to https://docs.python.org/3/library/threading.html
@@ -32,7 +33,8 @@ class BotThread(threading.Thread):
         self.smartCombat      = command_handler.smartCombat
         self.kill             = command_handler.smartCombat.kill
         self.cast             = command_handler.smartCombat.cast
-        self.direction_list   = []
+        # self.direction_list   = []
+        self.direction_list   = deque()
 
         self.character.ACTIVELY_BOTTING = False
 
@@ -75,7 +77,8 @@ class BotThread(threading.Thread):
         self.do_run_startup()
 
         while not self.stopping:
-            self.direction_list = self.decide_where_to_go()
+            # self.direction_list = self.decide_where_to_go()
+            self.direction_list = deque(self.decide_where_to_go())
             magentaprint('BotThread.run: decide_where_to_go returned ' + str(self.direction_list))
             self.do_pre_go_actions() # Can do shopping here, which can insert at the beginning of the direction list
 
@@ -86,6 +89,7 @@ class BotThread(threading.Thread):
                     raise Exception("BotThread exiting, seems like inifinite loop (count_confused")
                 self.do_regular_actions()
                 if self.go(self.direction_list[0]):
+                    # By the way [0] is fast on a double ended q... indexing to the middle though is slow... indexing to [-1] is also fast
                     count_confused=0
                     self.do_on_successful_go() # area regex or too_dark matched
                 else:
@@ -226,17 +230,25 @@ class BotThread(threading.Thread):
         if re.match("areaid[\d]*", exit_str):
             #magentaprint("go hook found with: " + str(self.direction_list), False)
             area_id = int(exit_str.replace("areaid", ""))
-            self.direction_list.pop(0)
+            # self.direction_list.pop(0)
+            self.direction_list.popleft()
             try:
                 path = self.mud_map.get_path(self.character.AREA_ID, area_id)
-                if len(path) == 0:
-                    self.direction_list = ["buffer"] + self.direction_list
-                else:
-                    self.direction_list = ["buffer"] + path + self.direction_list
+                # if len(path) == 0:
+                #     # self.direction_list = ["buffer"] + self.direction_list
+                #     self.direction_list.appendleft("buffer")
+                # else:
+                #     # self.direction_list = ["buffer"] + path + self.direction_list
+                #     self.direction_list.extendleft(reversed(path))
+                #     self.direction_list.appendleft("buffer")
+                self.direction_list.extendleft(reversed(path))
+                self.direction_list.appendleft("buffer")
             except Exception:
                 magentaprint("BotThread.do_go_hooks() problem with go hook " + exit_str + ", unsuccessful go.")
-                if len(self.direction_list) > 0:
-                    self.direction_list.pop(0) #remove the areaid[/d]*
+                # if len(self.direction_list) > 0:
+                if self.direction_list:
+                    # self.direction_list.pop(0) #remove the areaid[/d]*
+                    self.direction_list.popleft() #remove the areaid[/d]*
                 return False
 
             #magentaprint("path added to list: " + str(self.direction_list), False)
@@ -318,7 +330,8 @@ class BotThread(threading.Thread):
         # But all the notifies go through before we get action/priority again
         # Not sure if we know what order they run in but go wait waits for cartography
         # I guess we should set LAST_DIRECTION before we send the command, that's probably fine
-        self.direction_list.pop(0)
+        # self.direction_list.pop(0)
+        self.direction_list.popleft()
         # self.character.MOBS_JOINED_IN = []
         # self.character.MOBS_ATTACKING = []
         # Just let mobs.list get overwritten, don't set it to []
@@ -391,12 +404,14 @@ class BotThread(threading.Thread):
             magentaprint("Go failed weirdly? I guess don't pop direction_list") # Try again...
         else:
             magentaprint("I think we got Go to match this time, so pop() and continue.")
-            self.direction_list.pop(0)
+            # self.direction_list.pop(0)
+            self.direction_list.popleft()
 
     def do_on_go_no_exit(self):
         # This is a tough one.  Hopefully it never happens.  I'm gonna assume it happened
         # because the last go actually worked and was wrongly determined not to.
-        magentaprint("Go no exit on: " + self.direction_list.pop(0) + ". Try a look and cross fingers.", False)
+        # magentaprint("Go no exit on: " + self.direction_list.pop(0) + ". Try a look and cross fingers.", False)
+        magentaprint("Go no exit on: " + self.direction_list.popleft() + ". Try a look and cross fingers.", False)
             # We did drop one of the directions... did we go twice north by accident? Try to prevent that
         # self.character.MOBS_JOINED_IN = []
         # self.character.MOBS_ATTACKING = []

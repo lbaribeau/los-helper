@@ -14,6 +14,7 @@ magentaprint("... ... ... GrindThread import db.Mob"); from db.Mob              
 magentaprint("... ... ... GrindThread import BlessTimer, ProtTimer"); from mini_bots.bless_and_prot import BlessTimer, ProtTimer
 # magentaprint("... ... ... GrindThread import Rest"); # from command.Rest import Rest
 magentaprint("... ... ... GrindThread import time"); import time
+from collections import deque
 
 magentaprint("GrindThread done imports, starting class GrindThread(BotThread)")
 
@@ -85,7 +86,8 @@ class GrindThread(BotThread):
             else:
                 # Ok seems like we got attacked during resting... so let's push rest_here onto the direction list because I think it should get removed once...
                 # Or we just inifinte loop here? No it wanted to return for some reason... for chase? For engage_any_attacking_mobs? Try re-adding it...
-                self.direction_list.insert(0,'rest_here') # So this should accomplish our "while True:" when it comes to resting and we get attacked
+                # self.direction_list.insert(0,'rest_here') # So this should accomplish our "while True:" when it comes to resting and we get attacked
+                self.direction_list.appendleft('rest_here')
                 return True
             # Ok so this is complicated...
             # rest here will return True if it got through without attackers
@@ -908,7 +910,8 @@ class GrindThread(BotThread):
     def go_purchase_item(self, item):
         magentaprint("GrindThread.go_purchase_item() got location id: " + str(item.get_purchase_location_id()))
         if item.get_purchase_location_id():
-            self.direction_list = ["areaid%s" % item.get_purchase_location_id(), "dobuy%s" % item.to_string(), "areaid2"]
+            # self.direction_list = ["areaid%s" % item.get_purchase_location_id(), "dobuy%s" % item.to_string(), "areaid2"]
+            self.direction_list = deque(("areaid%s" % item.get_purchase_location_id(), "dobuy%s" % item.to_string(), "areaid2"))
             return True
         else:
             return False
@@ -917,7 +920,8 @@ class GrindThread(BotThread):
         places = AreaStoreItem.get_by_name(name)
         magentaprint("GrindThread going to buy " + str(places))
 
-        self.direction_list = ["areaid%s" % places.values()[0] , "dobuy%s" % name, "areaid2"]  # Something like that
+        # self.direction_list = ["areaid%s" % places.values()[0] , "dobuy%s" % name, "areaid2"]      # Something like that
+        self.direction_list = deque(("areaid%s" % places.values()[0] , "dobuy%s" % name, "areaid2")) # "Something like that"?!
         # no peewee .get?
 
     def go_purchase_item_by_type(self, model, data, level):
@@ -933,7 +937,8 @@ class GrindThread(BotThread):
         if not suitable_weapons:
             return False
 
-        direction_list = []
+        # direction_list = []
+        direction_list = deque()
         # self.character.MONSTER_KILL_LIST = []
         weapon = None
 
@@ -946,8 +951,9 @@ class GrindThread(BotThread):
         magentaprint('go_purchase_item_by_type() chose ' + str(weapon))
 
         if weapon is not None:
-            direction_list = ["areaid%s" % areaid]
-            direction_list.append("dobuy%s" % weapon.obj.name)
+            # direction_list = deque("areaid%s" % areaid)
+            # direction_list.append("dobuy%s" % weapon.obj.name)
+            direction_list.extendleft(reversed(("areaid%s" % areaid, "dobuy%s" % weapon.obj.name)))
 
         self.direction_list = direction_list
 
@@ -1417,7 +1423,8 @@ class GrindThread(BotThread):
             if self.character.AREA_ID:
                 back_to_flee_spot = self.mud_map.get_path(self.character.AREA_ID, note_current_location)# + self.direction_list
                 if back_to_flee_spot:
-                    self.direction_list = back_to_flee_spot+self.direction_list
+                    # self.direction_list = back_to_flee_spot+self.direction_list
+                    self.direction_list.extend_left(reversed(back_to_flee_spot))
                 else:
                     magentaprint("Fleeing got us lost!!") # Idea: Try to infer the location by inferring from the exits
                     self.stop()
@@ -1517,7 +1524,8 @@ class GrindThread(BotThread):
 
                     if len(return_path) > 0:
                         magentaprint("GrindThread.engage_monster adding directions " + str([C.mobs.chase_exit] + return_path))
-                        self.direction_list = [C.mobs.chase_exit] + return_path + self.direction_list
+                        # self.direction_list = [C.mobs.chase_exit] + return_path + self.direction_list # List version
+                        self.direction_list.extendleft(reversed([C.mobs.chase_exit] + return_path))
                         # buffer necessary?
                 except Exception:
                     magentaprint("GrindThread.engage_monster() cannot chase because we would then be lost.")
@@ -1525,7 +1533,8 @@ class GrindThread(BotThread):
                     C.mobs.chase_exit = ''
             else:
                 magentaprint("BotThread.engage_monster() area id is none, so go to chapel after chasing (seems we don't know where we were).")
-                self.direction_list.insert(0, "areaid2") # go hook
+                # self.direction_list.insert(0, "areaid2") # go hook
+                self.direction_list.appendleft("areaid2") # go hook
 
             # self.go(C.chase_dir)
             # C.chase_dir = ""

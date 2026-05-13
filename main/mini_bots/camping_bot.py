@@ -53,6 +53,8 @@ class MobArriveWaiter(threading.Event):
     def stop(self):
         self.set()
 
+from collections import deque
+
 # class CampingBot(MiniBot):
 class CampingBot(GrindThread):
     # def __init__(self, character, command_handler, mud_map, rest_loop):
@@ -74,7 +76,8 @@ class CampingBot(GrindThread):
 
     def camp_here(self):
         C=self.character
-        self.direction_list = []
+        # self.direction_list = []
+        self.direction_list = deque()
         while not self.stopping:
             magentaprint("CampingBot camp_here starting, camping_bot.stopping: " +str(self.stopping))
             self.sleep(1) # Just to prevent spinning an infinite loop too fast if that would happen
@@ -115,7 +118,8 @@ class CampingBot(GrindThread):
             # self.rest_here()
             # fled_mob, fled_exit = (was going to call "engage" and get flee as return values")
             # (Instead we are putting "hooks" into direction list because rest could cause and engagement which could cause a chase)
-            self.direction_list = ['rest_here'] # Ok I'm thinking that implements "chase" and attack retaliation
+            # self.direction_list = ['rest_here'] # Ok I'm thinking that implements "chase" and attack retaliation
+            self.direction_list = deque('rest_here')
             self.bothread_run_without_decide_where_to_go() # should call rest_to_full...  (rest as the first order of business)
                 # 'rest_here' will rest, engage, and hopefully chase anything that attacked while resting
                 # I think "flee" also puts things onto the stack like rest again and the return direction
