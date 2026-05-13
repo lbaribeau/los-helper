@@ -17,8 +17,8 @@ class CombatObject(ThreadingMixin):
         #     R.you_died
         # ]
         self.end_combat_regexes = [
-            R.ze_mob_died,
-            R.ze_mob_fled,
+            R.ze_mob_died         ,
+            R.ze_mob_fled         ,
             R.you_died
         ]
         self.telnetHandler = telnetHandler
@@ -43,8 +43,21 @@ class CombatObject(ThreadingMixin):
     @property
     def end_combat_check(self):
         # return self.result in R.ze_mob_died or self.result in R.ze_mob_fled or self.result in R.you_died
+        #magentaprint(f"CombatObject self.result (ie combat command return regex) is: {self.result}")
+        #magentaprint(f"checking if in : {R.ze_mob_died + R.ze_mob_fled + R.you_died}")
+        # magentaprint(f"Combat object end combat check: {self.result in R.ze_mob_died + R.ze_mob_fled + R.you_died}")
         return self.result in R.ze_mob_died + R.ze_mob_fled + R.you_died
+        # magentaprint(f"Combat object end combat check: {self.result in R.ze_mob_died + R.ze_mob_fled + R.you_died}")
+        # magentaprint(f"CombatObject self.result (ie combat command return regex) is: {self.result}")
+        # magentaprint(f"checking if in : {itertools.chain.from_iterable(R.ze_mob_died + R.ze_mob_fled + R.you_died)}")
+        # magentaprint(f"checking if in : {[i for i in itertools.chain.from_iterable(R.ze_mob_died + R.ze_mob_fled + R.you_died)]}")
+        # magentaprint(f"Combat object end combat check: {self.result in itertools.chain.from_iterable(R.ze_mob_died + R.ze_mob_fled + R.you_died)}")
+        # return self.result in itertools.chain.from_iterable(R.ze_mob_died + R.ze_mob_fled + R.you_died)
         #return self.result in self.end_combat_regexes
+
+        # The thing is... combat objects... send commands like kill and cast... which return when the attack lands.
+        # Why not just make an entire object whose job it is to know if a mob died? 
+        # We send the command... 
     @property
     def mob_died(self):
         return self.result in itertools.chain.from_iterable(R.ze_mob_died)

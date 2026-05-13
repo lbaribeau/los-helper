@@ -290,6 +290,19 @@ class Tracks:
             'e','n','n','w','w','s','s','e','n','s','gate', # skip the middle? nothing there..
             's','s','s','s','s','gate','w','sw','s','s','s','e','e','e','e','n','w','n','chap' # Has extra mime artist, window shopper, stilt walker, acrobat
         ] # This went straight north at first for some reason, I guess to order the fur traders first
+        self.BUY_GREEN_POTION = [
+            'out','s','e','s','s','s','w','g',
+            's','s','s','s','s','sw','s','se','sw','s','s','se','s','s','sw','bridge',         # Wild path through the dark forest
+            # (Can't always go through "yards" in Amber... maybe try the picnic hill though)
+            's','sw','w','w','sw','w','w','sw','w','sw','bridge',                              # Riverside path by the canal and loggers
+            'nw','nw','w','nw','w','w','w','sw','road',                                        # Whitesand cove
+            'se','ne','e','shop','buy_green','out',                                            # Goourd's shop
+            'w','sw','nw','nw','ne',                                                           # Whitesand cove
+            'e','e','e','se','e','se','bridge','se','s','se','s','sw','hill',                  # Picnic hill
+            'se','s','se','se',                                                                # Central Amber
+            'n','n','n','n','n','n','n','nw','ne','n','n','n','ne','ne','ne','ne','n','n','g', # Amethyst
+            'e','n','n','n','w','n','chapel'
+        ]
         self.MUGGER_PATH = [
             'ou','s','w','w','w','s','alley','w','alley','e','e','e','e','e','n','w','n','chap'
         ]
@@ -564,8 +577,8 @@ class TrackGrindThread(GrindThread):
     def ready_to_train(self):
         C = self.character
         magentaprint(" --- Checking if ready to train --- ")
-        self.command_handler.print_gold_exp_etc("")
-        self.command_handler.process("report")
+        self.command_handler.print_gold_exp_etc("") 
+        # self.command_handler.process("report") # Too much text
 
         # if C.current_experience > C.info.exp_to_level and self.command_handler.weapon_bot.possible_weapons != [] and C.GOLD > 2*C.info.gold_to_level: # GrindThread
         # if C.current_experience > C.info.exp_to_level and WB.possible_weapons != [] and C.GOLD > 2*C.info.gold_to_level: # GrindThread
@@ -585,6 +598,9 @@ class TrackGrindThread(GrindThread):
         magentaprint(f"To save {AB.gold_to_save_for_weapon} gold for weapon, need {C.info.gold_to_level + AB.gold_to_save_for_weapon} gold to train")
         magentaprint(f" --- {ret} --- ")
         return ret
+
+    def needs_green_potion(self):
+        return self.character.level >= 5 and self.character.GOLD >= 3500 and not self.inventory.has("green potion") and not self.inventory.has('steel bottle')
 
     def decide_where_to_go(self):
         magentaprint("Inside decide_where_to_go...", False)
@@ -642,6 +658,11 @@ class TrackGrindThread(GrindThread):
         # if C.current_experience > C.info.exp_to_level and WB.possible_weapons != [] and C.GOLD > C.info.gold_to_level + AB.gold_to_save_for_weapon:
         # WB = self.command_handler.weapon_bot
         # AB = self.command_handler.armour_bot
+        large_bore_worm_path = ['ou','s','e','s','s','s','w','g','s','se','se','e','e','e','se','se','se','s','s','s','s','s','s','s','s','s','s',\
+            'e','ne','centre', 'rest_here', 'out', 'sw','w', 'rest_here', 'use_buff_items',
+            'w','s','sw','n','burrow','d','d','d','hole','rest_here','rest_here','passage','rest_here','rest_here','rest_here','rest_here','out','rest_here', 'hole','rest_here',\
+            'u','rest_here','u','rest_here','u','rest_here',\
+            'out','s','ne','n','e','areaid2']
         if self.ready_to_train():
             # magentaprint(f"To save {AB.gold_to_save_for_weapon} gold for weapon, need {C.info.gold_to_level + AB.gold_to_save_for_weapon} gold to train")
             if C._class.id == 'Bar':
@@ -660,11 +681,9 @@ class TrackGrindThread(GrindThread):
                     return ['ou','s','e','s','s','s','w','g','s','se','se','e','e','e','se','se','se','s','s','s','s','s','s','s','s','s','s','e','ac','ar','doo 3','train','out','ar','ou', 'areaid2']
                 elif C.level == 5:
                     if not hasattr(self, 'large_bore_worm') or not self.large_bore_worm:
-                        self.large_bore_worm = True
-                        return ['ou','s','e','s','s','s','w','g','s','se','se','e','e','e','se','se','se','s','s','s','s','s','s','s','s','s','s',\
-                        'w','s','sw','n','burrow','d','d','d','hole','rest_here','rest_here','passage','rest_here','rest_here','rest_here','rest_here','out','rest_here', 'hole','rest_here',\
-                        'u','rest_here','u','rest_here','u','rest_here',\
-                        'out','s','ne','n','e','areaid2']
+                        self.large_bore_worm = True # Well this probably needs to react to "your attack overwhelms" the large bore worm because... 
+                        # What happened was... one "arrived" in the node before...
+                        return large_bore_worm_path[:]
                         # Now... supposing large bore worms show up... hopefully we get enough rest? I believe resting gets interrupted if attacked...
                         # Yes, rest can get interrupted... by an attacker... doesn't get called again... interesting
                         # I think resting outside the passage could be as big a problem as resting inside that hole... 
@@ -691,10 +710,7 @@ class TrackGrindThread(GrindThread):
                     # Ehrm don't repeat yourself
                     if not hasattr(self, 'large_bore_worm') or not self.large_bore_worm:
                         self.large_bore_worm = True
-                        return ['ou','s','e','s','s','s','w','g','s','se','se','e','e','e','se','se','se','s','s','s','s','s','s','s','s','s','s',\
-                        'w','s','sw','n','burrow','d','d','d','hole','rest_here','rest_here','passage','rest_here','rest_here','rest_here','rest_here','out','rest_here', 'hole','rest_here',\
-                        'u','rest_here','u','rest_here','u','rest_here',\
-                        'out','s','ne','n','e','areaid2']
+                        return large_bore_worm_path[:]
                     else:
                         self.large_bore_worm = False
                     return ['out', 's', 'e', 's', 's', 's', 'w', 'gate', 's', 'se','se','e','e','e','se','se','sw','w','w','glade','ash','train','d', 'areaid2']
@@ -707,6 +723,11 @@ class TrackGrindThread(GrindThread):
         # If execution got here, we aren't training
 
     # def decide_grind_path(self):
+        # self.character.level >= 5 and self.character.GOLD >= 3500 and not self.inventory.has("green potion") and not self.inventory.has('steel bottle')
+        if self.needs_green_potion():
+            magentaprint("TrackGrindThread going to buy a green potion")
+            # Trying to get the bot to be able to do the large bore worm with buffs.
+            return self.tracks.BUY_GREEN_POTION[:]
 
         # This is still decide_where_to_go()
         magentaprint("...self.__TOTALPATHS is " + str(self.__TOTALPATHS), False)

@@ -4,6 +4,7 @@ import time, itertools
 # from Command import Command
 from command.ThreadingMixin2 import ThreadingMixin2
 from combat.Kill import Kill
+from combat.Cast import Cast
 from reactions.BotReactions import BotReactionWithFlag
 from comm import RegexStore
 from misc_functions import magentaprint
@@ -312,20 +313,22 @@ class Bash(SlowCombatAbility):
             # Bit of a race condition... are we setting our flag (super.notify) too early... but we also need the Kill.timer code to go
 
 class Circle(SlowCombatAbility):
-    command = "ci"
+    command                = "ci"
     cooldown_after_success = 3
-    cooldown_after_failure = 3  # 4 I think
-    success_regexes = [RegexStore.circle]
-    failure_regexes = [RegexStore.circle_fail]
-    error_regexes = [RegexStore.circle_whom, RegexStore.not_here]
-    # classes = ["Bar", "Fig"]
+    cooldown_after_failure = 4  # 4 I think
+    success_regexes        = [RegexStore.circle]
+    failure_regexes        = [RegexStore.circle_fail]
+    error_regexes          = [RegexStore.circle_whom, RegexStore.not_here]
+    # classes              = ["Bar", "Fig"]
     level = 1
 
     def notify(self, r, m):
         super().notify(r, m)
+        Cast.timer = max(Cast.timer, 3) # Seems like circle makes you wait to cast... ... might be 3
         if r in RegexStore.circle_fail:
-            Kill.timer = Kill.timer + 1
+            Kill.timer += 1 # I don't know what this does...
             # Bit of a race condition... are we setting our flag (super.notify) too early... but we also need the Kill.timer code to go
+            # (super.notify is before Kill.timer += 1
 
 # class Hide(object):
 # class Backstab(object):

@@ -37,7 +37,11 @@ class Area(NamedModel):
             exit.map() # this will update our exit objects with their corresponding ids
             mapped_exits.append(exit)
 
-        is_new_mapping = self.search_for_area(mapped_exits) # See this is why I can't use this function as-is
+        is_new_mapping = self.search_for_area(mapped_exits) 
+            # See this is why I can't use this function as-is
+            # (Wanting to create a new node for the DB manually so that existing code doesn't map to another node with the same description/title (LOOKS the same))
+            # But area.map tries to find an existing node in the DB based on those things
+            # So it's now checking the DB 
 
         #if (cur_area_from is None):
         #elif (cur_area_from.name != self.name): #if the names are the same then this is a new area since we have moved
@@ -254,19 +258,21 @@ class Area(NamedModel):
                 exit_id_list += ", " + str(exit_type_list[i].id)
 
             try:
+                # So this seems to be trying to get an area that has the given exits
+                # (has the same number as exits anyway)
                 query = (
                     "select a.* "                                 +
                     "from area a "                                +
                     "join areaexit as ae "                        +
                     "on a.id = ae.[area_from_id] "                +
                     "where a.id in ( "                            +
-                    "select ae.area_from_id "                     +
-                    "from areaexit as ae "                        +
-                    "join area as a "                             +
-                    "on a.id = ae.area_from_id "                  +
-                    'where a.name = "%s"%s and ae.is_hidden = 0 ' +
-                    "group by ae.area_from_id "                   +
-                    "having count(*) = %s "                       +
+                        "select ae.area_from_id "                     +
+                        "from areaexit as ae "                        +
+                        "join area as a "                             +
+                        "on a.id = ae.area_from_id "                  +
+                        'where a.name = "%s"%s and ae.is_hidden = 0 ' +
+                        "group by ae.area_from_id "                   +
+                        "having count(*) = %s "                       +
                     ") and ae.[exit_type_id] in (%s) "            +
                     "group by a.id "                              +
                     "having count(*) = %s "

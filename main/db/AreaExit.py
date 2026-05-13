@@ -16,11 +16,11 @@ class AreaExit(BaseModel):
             is_hidden <Boolean>
             note <string>
     """
-    area_from  = ForeignKeyField(Area, related_name='area_from') #id is a default attribute ie. "431, The South Plains Road"
-    area_to    = ForeignKeyField(Area, related_name='area_to', null=True) #id is a default attribute... ie. "430, The South Plains Road"
-    exit_type  = ForeignKeyField(ExitType)  # ie. "17, northeast"
-    is_useable = BooleanField(default=True) #if the link is broken or potentially harzardous we don't want to use it
-    is_hidden  = BooleanField(default=False) #these will be manually set for now
+    area_from  = ForeignKeyField(Area, related_name='area_from')          # id is a default attribute... ie. "431, The South Plains Road"
+    area_to    = ForeignKeyField(Area, related_name='area_to', null=True) # id is a default attribute... ie. "430, The South Plains Road"
+    exit_type  = ForeignKeyField(ExitType)                                # ie. "17, northeast"... it's an "exit" (name) with an id number associated
+    is_useable = BooleanField(default=True)  # if the link is broken or potentially harzardous we don't want to use it
+    is_hidden  = BooleanField(default=False) # these will be manually set for now
     note       = CharField(default="")
 
     '''Private Area Functions'''
@@ -88,7 +88,7 @@ class AreaExit(BaseModel):
         # area_exit = None
         try:
             for ae in AreaExit.select().where((AreaExit.area_from == area_from_id) & (AreaExit.exit_type == exit_type_id)):
-                return ae
+                return ae # Only returns ONE hmmm... should only need one... 
                 # area_exit = ae
                 # break
         except AreaExit.DoesNotExist:

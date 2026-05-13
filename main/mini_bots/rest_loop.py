@@ -39,9 +39,9 @@ class RestLoop(MiniBot):
             # R.mob_wandered,
             # R.you_attack,
             R.mob_attacked,
+            # R.mob_aggro,
             # R.mob_joined1,
             # R.mob_joined2,
-            # R.mob_aggro,
             # R.ze_mob_died,
             # R.mob_defeated,
             # R.ze_mob_fled,
@@ -52,6 +52,8 @@ class RestLoop(MiniBot):
         self.character=character
 
     def notify(self, r, M):
+        # if r in R.mob_attacked:
+        # if r in R.mob_attacked or r in R.mob_aggro:
         if r in R.mob_attacked:
             # Most of Mobs.py doesn't care WHICH mob is which, ie., which mob left... it only cares to have an accurate count
             # The only example code I see that uses "nth" is commented out of mobs attacking
@@ -70,8 +72,16 @@ class RestLoop(MiniBot):
             # This code takes the mob text and finds out a reference for that mob
             # ie. "2nd stall holder" -> "stall 3" (supposing a stall bolder is present)
 
-            self.attacking_mob_ref = self.mobs.get_ref_of_attacking_mob(M)
+            self.attacking_mob_ref = self.mobs.get_ref_of_attacking_mob(M) 
             # return self.attacking_mob_ref
+
+            # I think mob aggro ("The large bore worm attacks you.") does give you a proper mob reference... 
+            # Mob aggro can come a few seconds before the attack...
+
+            # Hopefully mobs object went first to add this to the list when it arrived...
+            # Maybe just leave it out... 
+
+
         # super().notify(r, match)
 
     def run(self):

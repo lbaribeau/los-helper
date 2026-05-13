@@ -127,6 +127,13 @@ class GrindThread(BotThread):
         elif exit_str == 'buy_large_torches':
             self.command_handler.large_torch_manager.at_shop_buy_torch_if_needed()
             return True # "return True" here prevents "go buy_large_lorches"
+        elif exit_str == 'buy_green':
+            self.buy_green_potion()
+            return True # Return true prevents the special text from being put into a "go" command
+        elif exit_str == 'use_buff_items':
+            self.do_buff_skills()
+            self.use_buff_items()
+            return True # Return true prevents the special text from being put into a "go" command
         else:
             return super().do_go_hooks(exit_str) # BotThread does areaid[\d] pathfinding 
 
@@ -142,7 +149,6 @@ class GrindThread(BotThread):
     #     magentaprint("GrindThread.cast_light can't do it; LTM.can_handle_it() was False and so was glowing pot.")
     #     return False
     # Ehrm BotThread definition is better
-    
 
     def potion_shopping(self):
         buy = self.command_handler.buy
@@ -165,6 +171,26 @@ class GrindThread(BotThread):
                 magentaprint("Error buying glowing potion!")
                 return True
 
+        while self.inventory.count('milky potion') + self.inventory.count('silver chalice') < 1 and self.character.level >= 5 and not self.stopping and self.character.GOLD > 3500:
+            buy.execute_and_wait('milky')
+            if buy.success:
+                self.inventory.add('milky potion')
+                self.character.GOLD-=200
+            else:
+                magentaprint("Error buying milky potion!")
+                return True
+
+        return True # Helps the go hook know to pop I think
+
+    def buy_green_potion(self):
+        while self.inventory.count('green potion') < 1 and not self.stopping:
+            self.command_handler.buy.execute_and_wait('green')
+            if self.command_handler.buy.success:
+                self.inventory.add('green potion')
+                self.character.GOLD-=150
+            else:
+                magentaprint("Error buying green potion!")
+                return True
         return True # Helps the go hook know to pop I think
 
     def buy_and_wield(self, exit_str):
@@ -259,7 +285,7 @@ class GrindThread(BotThread):
         # 5) Fight a fresh target, maybe multiple (recursive)
 
         C = self.character
-        magentaprint("do_regular_actions starting, C.mobs.chase: " + str(C.mobs.chase))
+        magentaprint("GrindThread.do_regular_actions() starting... C.mobs.chase is : " + str(C.mobs.chase))
         if C.mobs.chase:
             # C.mobs.chase is the string of a mob that ran
             # if self.is_dark():
@@ -759,8 +785,18 @@ class GrindThread(BotThread):
             return
         self.do_buff_skills()
         if BotThread.can_use_timed_ability(self.character.LAST_BUFF, 180):
-            self.use_buff_items()
-            self.character.LAST_BUFF = time.time()
+            # Ok there was some jank here before...
+            # I think I was calling "use_buff_items"
+            # I changed use_buff_items though
+            # So I had to change this
+            # so now in "buff_up"... only use "extra" items (above certain thresholds, like, if you have more than x number of chalices
+            # If you REALLY want to buff up without checking quantity thresholds... call use_buff_items
+            # When added a bit to "use_buff_items()" (changed it) my guy started using milky potions too much
+            # So I guess the only reason the bot wasn't using milky potions is that it didn't have any
+            if self.use_extra_bless_item():
+                self.character.LAST_BUFF = time.time()
+            if self.use_extra_steel_bottle():
+                self.character.LAST_BUFF = time.time()
 
     def use_buff_ability(self):
         magentaprint("GrindThread.use_buff_ability()")
@@ -768,26 +804,40 @@ class GrindThread(BotThread):
 
     def use_buff_items(self):
         if self.inventory.has("milky potion"):
-            self.command_handler.process('drink milky')
+            # self.command_handler.process('drink milky')
+            self.command_handler.drink.execute_and_wait(self.inventory.get_first_reference('milky potion'))
+        elif self.inventory.has("silver chalice"):
+            # self.command_handler.process('drink chalice') # Oy...
+            self.command_handler.drink.execute_and_wait(self.inventory.get_first_reference('silver chalice'))
+
+        if self.inventory.has("green potion"):
+            self.command_handler.drink.execute_and_wait(self.inventory.get_first_reference('green potion'))
         elif self.inventory.has("steel bottle"):
-            self.command_handler.process('drink steel')
+            # self.command_handler.process('drink steel')
+            self.command_handler.drink.execute_and_wait(self.inventory.get_first_reference('steel bottle'))
             # Note: green potion casts protect as well, can be bought
-        else:
-            self.character.HAS_BUFF_ITEMS = False
+        # else:
+            # self.character.HAS_BUFF_ITEMS = False
 
     def use_extra_bless_item(self):
+        # See also bless_timer.py, maybe_bless() which does get called I believe
         magentaprint("GrindThread.use_extra_bless_item()")
         if self.inventory.count('milky potion') + self.inventory.count('silver chalice') > 3:
             if self.inventory.has('milky potion'):
                 self.command_handler.use.execute_and_wait(self.inventory.get_first_reference('milky potion'))
             else:
                 self.command_handler.use.execute_and_wait(self.inventory.get_first_reference('silver chalice'))
+            return self.command_handler.use.success
             # self.command_handler.use.wait_for_flag()
 
     def use_extra_steel_bottle(self):
         magentaprint("GrindThread.use_extra_steel_bottle()")
         if self.inventory.count('steel bottle') > self.character.steel_bottle_keep_amount:
-            self.command_handler.use.execute_and_wait(self.inventory.get_first_reference('steel bottle'))
+            if self.inventory.has('green potion'):
+                self.command_handler.use.execute_and_wait(self.inventory.get_first_reference('green potion'))
+            else:
+                self.command_handler.use.execute_and_wait(self.inventory.get_first_reference('steel bottle'))
+        return self.command_handler.use.success
             # self.command_handler.use.wait_for_flag()
 
     def use_restorative_items(self):

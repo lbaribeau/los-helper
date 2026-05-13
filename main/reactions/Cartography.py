@@ -207,31 +207,38 @@ class Cartography(BotReactionWithFlag):
         # magentaprint(M.group(0),False,False,True)
         magentaprint("Cartography got area match... area title: " + str(match.group(1).strip()) + 
             "\n... exit list: " + str(self.parse_exit_list(match.group(3)))+
-            "\n... (number of match groups: " + str(len(match.groups()))+")"+
+            # "\n... (number of match groups: " + str(len(match.groups()))+")"+ # 16 match groups at Blackstar Bridge
             "\n... group(1): " + str(match.group(1))+
             # "\n... group(2): " + str(match.group(2))+
             # "\n... group(3): " + str(match.group(3))+
-            "\n... group(3): " + str(self.parse_exit_list(match.group(3))) +
+            "\n... group(3): " + str(self.parse_exit_list(match.group(3))) +  # ie. ['north', 'south']
             # "\n... group(4): " + str(match.group(4))+
-            "\n... mobs list: " + str(ReferencingList(self.parse_monster_list(match.group(4))))+\
+            # "\n... mobs list: " + str(ReferencingList(self.parse_monster_list(match.group(4))))+\
+            "\n... mobs list: " + str(ReferencingList(self.parse_monster_list(match.group(4))))
             # "\n... mobs group match (group(4)): " + str(match.group(4))+
-            "\n... group(5): " + str(match.group(5)))
+            # "\n... group(5): " + str(match.group(5))) # None I guess
             # "\n... group(6): " + str(match.group(6))+
+        )
         C            = self.character
         C.AREA_TITLE = match.group(1).strip() 
         # Area title sometimes has issues if TRYING_TO_MOVE was set prematurely and we get rubbish prepended
-        C.AREA_DESC = match.group(2).strip() # Creating this so we have a record... MapCommandHandler needs the ability to create an area node
+        C.AREA_DESC  = match.group(2).strip().replace("\n\r", ' ') # Creating this so we have a record... MapCommandHandler needs the ability to create an area node
+        prev_exit_list = C.EXIT_LIST
         C.EXIT_LIST  = self.parse_exit_list(match.group(3))
-        C.EXIT_REGEX = self.create_exit_regex_for_character(C.EXIT_LIST)
+        C.EXIT_REGEX = self.create_exit_regex_for_character(C.EXIT_LIST) # Not sure what this is doing... 
         C.mobs.list  = ReferencingList(self.parse_monster_list(match.group(4)))
         # This calls mobs.parse_mob_string
         # magentaprint("Cartography.area (id is {}) set character.mobs.list: {}".format(C.))
         # magentaprint("Cartography set character.mobs.list.list: " + str(C.mobs.list.list))
         # C.mobs.attacking = [] # TODO: match regex for entering an area where a mob is already attacking you
+        
         ref_of_attacking_mob = C.mobs.get_ref_of_attacking_mob(match)
         if ref_of_attacking_mob:
             magentaprint("Cartography got attacking mob: " + ref_of_attacking_mob)
-            C.mobs.attacking = [ref_of_attacking_mob] # Works if only one mob is attacking, and works on "look" not on "go"
+            C.mobs.attacking = [ref_of_attacking_mob] 
+            # Works if only one mob is attacking, and works on "look" not on "go"
+            # Ehrm maybe delete then? Seems like JANK... well it's ok I guess... correct attacking list on "look"
+            # Produces a warning though
 
         C.CAN_SEE       = True
         C.CONFUSED      = False
@@ -243,6 +250,7 @@ class Cartography(BotReactionWithFlag):
 
         if C.TRYING_TO_MOVE:
             magentaprint(f"Cartography TRYING_TO_MOVE is TRUE ({C.TRYING_TO_MOVE}), so, mapping")
+            magentaprint(f"Cartography prev_exit_list is {prev_exit_list}")
             magentaprint(f"Cartography C.EXIT_LIST is {C.EXIT_LIST}")
             # I think TRYING_TO_MOVE prevents multiple saves of the area
             # Yes, and ensures that variables related to the 'from' area are present
@@ -255,37 +263,56 @@ class Cartography(BotReactionWithFlag):
                 # prev_exit_list = C.EXIT_LIST
                 C.MUD_AREA = MudArea.map(
                     C.AREA_TITLE, 
-                    C.AREA_DESC, # area description (eat the description - doesn't give the full text)
-                    C.EXIT_LIST, 
+                    C.AREA_DESC,      # area description (eat the description - doesn't give the full text)
+                    prev_exit_list, 
+                    C.EXIT_LIST,
                     C.AREA_ID, 
                     C.LAST_DIRECTION, # command_handler user_move() picks up to where we issued a go command
-                    C.MUD_AREA # Here we are giving the PREVIOUS C.MUD_AREA, which should be a record of where we WERE
+                    C.MUD_AREA        # Here we are giving the PREVIOUS C.MUD_AREA, which should be a record of where we WERE
                     # This will use the direction we went and from where to find out where we are now
                 ) # Creates a "MudArea" object... also interfaces with the DB... MudArea object is a bit more than an "Area" from the DB table
                 # Maybe we can handle two kinds of descriptions.... hmmmm
                 # Can MudArea.map handle that?
-                magentaprint("Cartography area match: " + str(C.MUD_AREA.area))
-                magentaprint("Cartography, Check the result")
-                # magentaprint("... Area title match: %s" % (C.AREA_TITLE == C.MUD_AREA.area.name))
+                # magentaprint("Cartography, Check the result")
+                # magentaprint("... Area title match: %s" % (C.AREA_TITLE == C.MUD_AREA.area.name))fdsafdsa
                 # Area description is probably the most reliable...
-                magentaprint("Cartography DB description equals what we got?!: %s" % (match.group(2).strip().replace("\n\r", ' ') == C.MUD_AREA.area.description))
-                magentaprint(match.group(2).strip().replace("\n\r", ' '))
-                magentaprint(C.MUD_AREA.area.description)
-                magentaprint("... Area title match: \n- Read : %s, \n- DB   : %s" % (C.AREA_TITLE, C.MUD_AREA.area.name))
-                magentaprint("... Area exit list length match: %s" % (len(C.EXIT_LIST) == len(C.MUD_AREA.area_exits)))
-                for e in C.EXIT_LIST:
-                    magentaprint("... Exit (%s) in DB result: %s" % (e, e in [ae.exit_type.name for ae in C.MUD_AREA.area_exits]))
+                magentaprint("Cartography got MUD_AREA.area: " + str(C.MUD_AREA.area))
+                magentaprint(
+                    "Cartography, regex-matched description length: %d, DB check length: %d" % (
+                        len(C.AREA_DESC), 
+                        len(C.MUD_AREA.area.description)
+                    )
+                ) 
+                # len(match.group(2).strip().replace('\n\r', ' ')), 
+                # magentaprint("Cartography DB description equals ?!: %s" % (match.group(2).strip().replace('\n\r', ' ') == C.MUD_AREA.area.description))
+                magentaprint("Cartography DB description equals ?!: %s" % (C.AREA_DESC == C.MUD_AREA.area.description))
+                # magentaprint(match.group(2).strip().replace("\n\r", ' ')) # Reprints the descriptions to see 
+                # magentaprint(C.MUD_AREA.area.description)
+                # magentaprint(f"DB mapped C.MUD_AREA.area.description length: {len(C.MUD_AREA.area.description)}")
+                # magentaprint("... Area title match: \n- Read : %s, \n- DB   : %s" % (C.AREA_TITLE, C.MUD_AREA.area.name))
+                magentaprint(f"... Area title match: {C.AREA_TITLE == C.MUD_AREA.area.name}")
+                # magentaprint("... Area exit list length match: %s" % (len(C.EXIT_LIST) == len(C.MUD_AREA.area_exits)))
+                if len(C.EXIT_LIST) != len(C.MUD_AREA.area_exits):
+                    magentaprint("Cartography: Whoops area exits list doesn't match length seen in text! (could be ok if a hidden one)")
+                # for e in C.EXIT_LIST:
+                if any(ae.exit_type.name not in C.EXIT_LIST for ae in C.MUD_AREA.area_exits):
+                    magentaprint("Cartography: Whoops an area exit is not in the seen exit list!")
+                if any(e not in [ae.exit_type.name for ae in C.MUD_AREA.area_exits] for e in C.EXIT_LIST):
+                    magentaprint("Cartography: Whoops there is an exit without an area exit!")
+                    # magentaprint("... Exit (%s) in DB result: %s" % (e, e in [ae.exit_type.name for ae in C.MUD_AREA.area_exits]))
+                # magentaprint(f"... Exit lists match from DB lookup and regex text: {exit_lists_match}")
 
                 # if match.group(2).strip().replace("\n\r", ' ') == C.MUD_AREA.area.description:
                 # if match.group(2).strip().replace("\n\r", ' ') == C.MUD_AREA.area.description and len(C.EXIT_LIST) == len(C.MUD_AREA.area_exits):
                 # ^ That is just an exit list length check, we should check the exit names
-                c_exit_list = sorted(C.EXIT_LIST)
+                c_exit_list  = sorted(C.EXIT_LIST)
                 db_exit_list = sorted([e.exit_type.name for e in C.MUD_AREA.area_exits])
-                if match.group(2).strip().replace("\n\r", ' ') == C.MUD_AREA.area.description and len(C.EXIT_LIST) == len(C.MUD_AREA.area_exits) and c_exit_list == db_exit_list:
-                    magentaprint("Descriptions and exits match so we're good.")
+                # if match.group(2).strip().replace("\n\r", ' ') == C.MUD_AREA.area.description and len(C.EXIT_LIST) == len(C.MUD_AREA.area_exits) and c_exit_list == db_exit_list:
+                if C.AREA_DESC == C.MUD_AREA.area.description and len(C.EXIT_LIST) == len(C.MUD_AREA.area_exits) and c_exit_list == db_exit_list:
+                    magentaprint("Descriptions and exits match so no issue.")
                 else:
                     # This issue can happen if we flee... hmmm
-                    enabled = True
+                    enabled = False
                     magentaprint(f"Cartography ----- !!! DETECTED AN ISSUE !!! ----- ... so... let's unset the last exit (enabled is {enabled}!)")
                     if enabled:
                         prev_mud_area.unset_exit(ReferencingList([ae.exit_type.name for ae in prev_mud_area.area_exits]).get(C.LAST_DIRECTION)) # Converts "e" to "east"
@@ -294,6 +321,11 @@ class Cartography(BotReactionWithFlag):
                     # prev_mud_area.unset_exit(self.string_match_area_exit(prev_mud_area.area_exits, C.LAST_DIRECTION).exit_type.name) # Converts "e" to "east"
                     # prev_mud_area.unset_area_exit(self.string_match_area_exit(prev_mud_area.area_exits, C.LAST_DIRECTION))
                     # AreaExit.get_area_exits_from_area_given_areaid(area_from_id)
+                    # Ok I have had the bot skip a beat and get lost and start repeatedly deleting exits so.... 
+                    # I mean that was after a few days so... 
+                    # It's KINDA safe to have this enabled but there is a risk factor... 
+                    # It just makes .area_to None so not too hard to repair but it keeps walking thinking it knows where it is...
+                    # Maybe do pause if that happens... here
 
                 #magentaprint("Try [m for m in C.mobs.list.list] " + str([m for m in C.mobs.list.list]))
                 #magentaprint("Try [str(m).lower() for m in C.mobs.list.list]" + str([str(m).lower() for m in C.mobs.list.list]))
@@ -376,121 +408,8 @@ class Cartography(BotReactionWithFlag):
 
         # Could do an "if" on "size" above
 
-    def string_match_area_exit(self, area_exits, direction_from):
-        area_exits.sort(key=lambda areaexit: areaexit.exit_type.name) # .name should be inherited from NamedModel... or .to_string()... should be the exit text
-        magentaprint(f"Obvious exits: {[ae.exit_type.name for ae in area_exits]}")
-        if direction_from in ['d', 'do']:
-            # These refer to 'down' unequivically and won't actually work on 'door', so we have to return None to prevent returning door
-            for ae in area_exits:
-                if ae.exit_type.name == 'down':
-                    return ae
-            return None
-        # I think "up" and "u" will be ok because they string match with "up"
-        # This code is not very concise
-        if direction_from == 'sw':
-            direction_from = 'southwest'
-            # for ae in area_exits:
-            #     if ae.exit_type.name == 'southwest':
-            #         return ae
-        elif direction_from == 'nw':
-            direction_from = 'northwest'
-            # for ae in area_exits:
-                # if ae.exit_type.name == 'northwest':
-                    # return ae
-        elif direction_from == 'se':
-            direction_from = 'southeast'
-            # for ae in area_exits: 
-                # if ae.exit_type.name == 'southeast':
-                    # return ae
-        elif direction_from == 'ne':
-            direction_from = 'northeast'
-            # for ae in area_exits:
-                # if ae.exit_type.name == 'northeast':
-                    # return ae
-        # Alright now how about "c 3" can we get "cave 3"???
-        # Do we need a referencing list?
-        # Why not?
-        # RL=ReferencingList(area_exits)
-        # return RL.get(direction_from) # Interprets direction_from as a "reference", such as in for exambple "go cav 3"
-        # return ReferencingList(area_exits).get(direction_from) # Interprets direction_from as a "reference", such as in for example "go cav 3"
-        # return ReferencingList([ae.exit_type for ae in area_exits]).get(direction_from)
-
-        # return area_exits[ReferencingList([ae.exit_type for ae in area_exits]).index(direction_from)] 
-            # Makes a parallel array because ReferencingList needs .name,
-            # Uses referencingList.index to find the appropriate item
-            # Indexes the parallel array to get the right area_exit out
-            # The point here is for "goto" to still work even though we've walked through the dark
-        # Why did I get None??!
-
-        # Why not copy code from referencing_list.index() (trigger warning)
-        # Ok turns out there are some differences so can't run the same code... similar algorithm though
-        ref = direction_from
-        if len(ref.split(' ')) >= 2:
-            try:
-                refw, n = ref.split(' ')[0], int(ref.split(' ')[1])
-            except ValueError:
-                refw, n = ref.split(' ')[0], 1 # Example: "go mine shaft". Probably shouldn't have goto do that anyway 
-        else:
-            refw, n = ref, 1
-
-        # Ok well we don't have cave, cave, cave, cave from the DB
-        # We have cave, cave 2, cave 3... 
-        # Not sure how good or bad that is but
-        # We can assume that...
-        # So let's start by extending "c" to cave?
-        # It wouldn't give us caverns would it
-        # That would be bananas
-        # "c 7" would have to hit cavern
-        # Let's just not handle that
-
-        # This code assumes cave, cave, cave in the db so it's no good... counting 'cave' won't help because in the DB it's saved as cave, cave 2, cave 3
-        # index=None
-        # for name_from_list in sorted(list(set(x.exit_type.name for x in area_exits))):
-        #     magentaprint("Cartography RefList name_from_list: %s, list.count(obj): %s" % (name_from_list, str(area_exits.count(name_from_list))))
-        #     if any(w.startswith(refw) for w in name_from_list.split(' ')):
-        #         # If any of the words of the thing in the list start with "refw", we could have a hit, if "n" is low enough
-        #         if n <= area_exits.count(name_from_list):
-        #             magentaprint("Cartography RefList.index returning " + str(area_exits.index(name_from_list)+n-1))
-        #             # return area_exits.index(name_from_list) + n - 1 # Returns index of item given by ref
-        #             index = name_from_list + n - 1 # Returns index of item given by ref
-        #         else:
-        #             n = n - area_exits.count(name_from_list) # Reduces "n" and continues
-        # Above code assumes cave, cave, cave but it's cave, cave 2, cave 3, so... gotta modify it
-        # if index:
-        #     area_exits...
-        # exit_list = [x.exit_type.name for x in area_exits]
-        # exit_list = area_exits
-
-        # Lengthen "c" to "cave" by looking through area_exits to find "cave"
-        for e in [x.exit_type.name for x in area_exits]:
-            if e.startswith(refw):
-                refw = e.split(' ')[0] # Assumes there's nothing like "cavern"... that first hit is true
-                break
-
-        # Now use "cave 3" to get the AreaExit, which is what we want to return
-        # First, though, handle the case n == 1 because there shouldn't be "cave 1"
-        if n == 1:
-            db_exit_name = refw
-        else:
-            db_exit_name = refw+' '+str(n) # ie "cave 3"
-
-        for e in area_exits:
-            if e.exit_type.name == db_exit_name:
-            # if e.exit_type.name.startswith(db_exit_name): # We don't need startswith now because we extended the term
-                return e
-
-        # Ok well the problem is now that in the DB it's actually "cave 3"
-        # So we just need to extend "c" to "cave"
-        # I wonder how it got saved that way
-
-        # Below code was good but didn't handle cave 3
-        # (Now we end the same way)
-        # for ae in area_exits:
-        #     # Suppose "go n" and north and northwest exist, north sorts first so we'll correctly get north
-        #     if ae.exit_type.name.startswith(direction_from):
-        #         return ae
-
-        # Ehrm I find I have to type the whole exit name for it to map... I guess that's fine...
+    def string_match_area_exit(self, area_exits, go_argmuent_from):
+        return MudArea.string_match_area_exit(area_exits, go_argmuent_from)
 
     #Used if it's dark and / or the current area doesn't appear to be findable
     def guess_location(self, area_from_id, direction_from):

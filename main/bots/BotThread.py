@@ -313,6 +313,7 @@ class BotThread(threading.Thread):
         return False
 
     def do_on_successful_go(self):
+        magentaprint("BotThread.do_on_successful_go()")
         # Ok well go command returned, I guess that means cartography ran already, but, cartography needs C.LAST_DIRECTION if we want to know where we are when it's dark
         # But all the notifies go through before we get action/priority again
         # Not sure if we know what order they run in but go wait waits for cartography

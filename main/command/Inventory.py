@@ -231,7 +231,7 @@ class Inventory(SimpleCommand, ReferencingList):
         # 'iron shield'
         # 'platinum ring', 'gold ring', 'steel ring', 'silver ring'
         #'steel mask' # spiv, sawmill
-        'green potion', # Bless I think
+        'green potion', # prot for 150g in Whitesand Cove (Goourd's shop)
         'large torch'
     ]
     def __init__(self, telnetHandler, character):

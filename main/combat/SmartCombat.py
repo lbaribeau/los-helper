@@ -44,13 +44,13 @@ class SmartCombat(CombatObject):
         # self.favourite_spell = Spells.vigor if not self.black_magic else \
         if spell_percent == 0 and self.black_magic:
             self.favourite_spell = Spells.rumble if Spells.rumble in character.spells else \
-                                   Spells.hurt if Spells.hurt in character.spells else \
-                                   Spells.burn if Spells.burn in character.spells else \
+                                   Spells.hurt   if Spells.hurt   in character.spells else \
+                                   Spells.burn   if Spells.burn   in character.spells else \
                                    Spells.blister
         else:
             self.favourite_spell = Spells.rumble if spell_percent == info.earth else \
-                                   Spells.hurt if spell_percent == info.wind else \
-                                   Spells.burn if spell_percent == info.fire else \
+                                   Spells.hurt   if spell_percent == info.wind  else \
+                                   Spells.burn   if spell_percent == info.fire  else \
                                    Spells.blister
         # magentaprint("SmartCombat favourite_spell is \'" + self.favourite_spell + "\'.")  # works
         self.character = character
@@ -350,7 +350,7 @@ class SmartCombat(CombatObject):
                     break
                 self.prompt.clear()
                 self.mud_reader_completion_event.clear()
-                self.prompt.clear()
+                self.prompt.clear() # Two clears?
                 if self.stopping:
                     break
                 self.use_slow_combat_ability_or_attack()
@@ -364,8 +364,11 @@ class SmartCombat(CombatObject):
                 # time.sleep(0.1) # How do we wait to know if the mob was killed. (Wait for prompt)
                 # Oooookkkkkk now we're waiting too long... 
                 # magentaprint("After prompt wait, end combat is {}, stopping is {}, event is {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
-                self.mud_reader_completion_event.wait()
-                # magentaprint("After mud reader completion, end combat is {}, stopping, {}, event, {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
+
+                # Ehrm why did I comment out mud_reader_completion_event.clear()... that seems important... ahh well there's a clear higher up... 
+                
+                self.mud_reader_completion_event.wait() # Ok I think this flag got clobbered by a "prompt" before all the text was done... hmmm
+                magentaprint("After mud reader completion, end combat is {}, stopping, {}, event, {}".format(self.end_combat, self.stopping, self.mud_reader_completion_event.is_set()))
                 # We have regex_busy now, could use that too
             else:
                 magentaprint("SmartCombat cast block") # Good info but prints too much
@@ -422,12 +425,18 @@ class SmartCombat(CombatObject):
         time.sleep(max(self.kill.wait_time(), self.cast.wait_time(),0))
 
     def do_cast(self, spell, target=None):
+        self.mud_reader_completion_event.clear()
         self.prompt.clear()
-        self.cast.persistent_cast(spell, target)
+        self.cast.persistent_cast(spell, target) 
+        # Ok well there is a "hole" here...??? mud reader completion could get done if we we have to persistently cast... 
+        # I guess we could suppose that persistent cast is overkill
+        # (Want to make sure buffer is cleared so we know if a mob died and we don't send another attack after)
         self.prompt.wait()
         if self.cast.error:
             self.error = True
             self.stop()
+        self.mud_reader_completion_event.wait() # Should help if we cast and the mob died that .stopping ends up true in the kill block but I think there's still an issue with that clause
+        self.regex_busy.wait() 
 
     def use_any_fast_combat_abilities(self):
         for a in self.fast_combat_abilities:
@@ -489,7 +498,8 @@ class SmartCombat(CombatObject):
                 # self.mudReaderThread.MLT.regex_busy.wait() # Just to make sure notifies from Mobs aren't currently happening (ie. MTD - mob target determinator)
                 self.regex_busy.wait() # Just to make sure notifies from Mobs aren't currently happening (ie. MTD - mob target determinator)
                 # magentaprint("SmartCombat executing ability \"a\" (class" + str(a.__class__)+")") # We'll get a print of the command
-                a.execute(self.target) # Ehrm this didn't use to wait, now it waits? Yes... No it doesn't wait but it clears the waiter flag
+                # a.execute(self.target) # Ehrm this didn't use to wait, now it waits? Yes... No it doesn't wait but it clears the waiter flag
+                a.persistent_execute(self.target) # Ok let's make sure this attack goes through (or circle...)
                 # if a.success and not self.stopping and not self.end_combat and a.result not in R.ze_mob_fled + R.ze_mob_died:
 
                 # Be careful of multiple adding... it checks for that...
@@ -562,6 +572,11 @@ class SmartCombat(CombatObject):
                     # self.target = self.character.mobs.get_ref_of_attacking_mob(a.M_obj)
                 # Smart combat doesn't know if the mob died???
                 # Combat objects get killed (stopped) by a reaction
+
+                self.regex_busy.wait() 
+                # Suppose it's possible that the attack returned (You hit for x damage) but we haven't processed that the mob died yet?
+                # There are prompt waits but a prompt can come in between which can also set mud completion event
+                # So... this could help
                 return
 
         # # self.attack_wait()

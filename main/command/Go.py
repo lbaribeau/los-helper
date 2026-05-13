@@ -86,7 +86,8 @@ class Go(Command):
         #     # time.sleep(0.8)  # Hacked fix to get_heal_path being called before Cartography updates area_id
         # Maybe also wait for cartography? Our wait function waits for cartography
         super().notify(regex, M_obj)
-        magentaprint("Go notify done... too_dark: " + str(self.result in R.too_dark))
+        # magentaprint("Go notify done... too_dark: " + str(self.result in R.too_dark))
+        magentaprint("Go super.notify done... ")
 
     def execute(self, target):
         magentaprint("Go.execute(\""+str(target)+"\")")
@@ -152,7 +153,7 @@ class Go(Command):
 
     @property
     def too_dark(self):
-        magentaprint("Go too_dark: " + str(self.result in R.too_dark))
+        # magentaprint("Go too_dark: " + str(self.result in R.too_dark))
         return self.result in R.too_dark
 
 class Open(Command):
